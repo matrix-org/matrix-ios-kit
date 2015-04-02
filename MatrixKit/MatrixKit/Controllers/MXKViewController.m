@@ -16,9 +16,6 @@
 
 #import "MXKViewController.h"
 
-NSString *const kMXKViewControllerStartShakingNotification = @"kMXKViewControllerStartShakingNotification";
-NSString *const kMXKViewControllerStopShakingNotification = @"kMXKViewControllerStopShakingNotification";
-
 @interface MXKViewController () {
     id mxkViewControllerSessionStateObserver;
 }
@@ -47,6 +44,10 @@ NSString *const kMXKViewControllerStopShakingNotification = @"kMXKViewController
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    if (_rageShakeManager) {
+        [_rageShakeManager cancel:self];
+    }
+    
     if (_mxSession) {
         // Register mxSession observer
         self.mxSession = _mxSession;
@@ -58,6 +59,10 @@ NSString *const kMXKViewControllerStopShakingNotification = @"kMXKViewController
     
     [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
     [_activityIndicator stopAnimating];
+    
+    if (_rageShakeManager) {
+        [_rageShakeManager cancel:self];
+    }
 }
 
 - (void)setView:(UIView *)view {
@@ -150,10 +155,8 @@ NSString *const kMXKViewControllerStopShakingNotification = @"kMXKViewController
 #pragma mark - Shake handling
 
 - (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-    if (motion == UIEventSubtypeMotionShake) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKViewControllerStartShakingNotification
-                                                            object:self
-                                                          userInfo:nil];
+    if (motion == UIEventSubtypeMotionShake && _rageShakeManager) {
+        [_rageShakeManager startShaking:self];
     }
 }
 
@@ -162,15 +165,13 @@ NSString *const kMXKViewControllerStopShakingNotification = @"kMXKViewController
 }
 
 - (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-    if (motion == UIEventSubtypeMotionShake) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKViewControllerStopShakingNotification
-                                                            object:self
-                                                          userInfo:nil];
+    if (_rageShakeManager) {
+        [_rageShakeManager stopShaking:self];
     }
 }
 
 - (BOOL)canBecomeFirstResponder {
-    return _postShakeNotification;
+    return (_rageShakeManager);
 }
 
 

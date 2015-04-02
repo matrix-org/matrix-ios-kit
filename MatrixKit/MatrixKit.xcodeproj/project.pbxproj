@@ -189,6 +189,7 @@
 		F0F148C11AB31237005F5D4A /* MXKMediaManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKMediaManager.m; sourceTree = "<group>"; };
 		F0F148C41AB31240005F5D4A /* MXKTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKTools.h; sourceTree = "<group>"; };
 		F0F148C51AB31240005F5D4A /* MXKTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTools.m; sourceTree = "<group>"; };
+		F0F535BC1ACD748E00B603F8 /* MXKResponderRageShaking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKResponderRageShaking.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -351,6 +352,7 @@
 				32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */,
 				F0F148C41AB31240005F5D4A /* MXKTools.h */,
 				F0F148C51AB31240005F5D4A /* MXKTools.m */,
+				F0F535BC1ACD748E00B603F8 /* MXKResponderRageShaking.h */,
 			);
 			path = Utils;
 			sourceTree = "<group>";

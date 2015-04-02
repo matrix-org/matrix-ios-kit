@@ -18,17 +18,7 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-/**
- Posted when the user starts shaking the device on this view controller.
- The notification object is the view controller itself. The `userInfo` dictionary is nil.
- */
-extern NSString *const kMXKViewControllerStartShakingNotification;
-
-/**
- Posted when the user stops shaking the device on this view controller.
- The notification object is the view controller itself. The `userInfo` dictionary is nil.
- */
-extern NSString *const kMXKViewControllerStopShakingNotification;
+#import "MXKResponderRageShaking.h"
 
 /**
  MXKViewController extends UIViewController to handle requirements for
@@ -37,6 +27,7 @@ extern NSString *const kMXKViewControllerStopShakingNotification;
  It manages the following points:
  - stop/start activity indicator according to associated matrix session state.
  - update view appearance on matrix session state change.
+ - support rage shake mechanism (depend on `rageShakeManager` property).
  */
 
 @interface MXKViewController : UIViewController
@@ -48,12 +39,13 @@ extern NSString *const kMXKViewControllerStopShakingNotification;
 @property (nonatomic) MXSession *mxSession;
 
 /**
- NO by default.
- When this property value is YES, the view controller posts a notification when the user starts or stops
- shaking the device while the view controller is displayed (see kMXKViewControllerStartShakingNotification/
- kMXKViewControllerStopShakingNotification notifications).
+ An object implementing the `MXKResponderRageShaking` protocol.
+ The view controller uses this object (if any) to report beginning and end of potential
+ rage shake when it is the first responder.
+ 
+ This property is nil by default.
  */
-@property (nonatomic) BOOL postShakeNotification;
+@property (nonatomic) id<MXKResponderRageShaking> rageShakeManager;
 
 /**
  Activity indicator view.
