@@ -40,6 +40,8 @@ static NSAttributedString *messageSeparator = nil;
 
 @implementation MXKRoomBubbleMergingMessagesCellData
 
+#pragma mark - MXKRoomBubbleCellDataStoring
+
 - (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)roomState andRoomDataSource:(MXKRoomDataSource *)inRoomDataSource {
     self = [super initWithEvent:event andRoomState:roomState andRoomDataSource:inRoomDataSource];
     if (self) {
@@ -83,7 +85,23 @@ static NSAttributedString *messageSeparator = nil;
     return NO;
 }
 
-#pragma mark - 
+- (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData {
+    
+    if ([self hasSameSenderAsBubbleCellData:bubbleCellData]) {
+        
+        MXKRoomBubbleCellData *cellData = (MXKRoomBubbleCellData*)bubbleCellData;
+        if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText)) {
+            // Add all components of the provided message
+            for (MXKRoomBubbleComponent* component in cellData.bubbleComponents) {
+                [self addComponent:component];
+            }
+            return YES;
+        }
+    }
+    return NO;
+}
+
+#pragma mark -
 
 - (void)prepareBubbleComponentsPosition {
     // Set position of the first component

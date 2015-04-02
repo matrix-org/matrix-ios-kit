@@ -141,6 +141,14 @@ Update the event because its mxkState changed or it is has been redacted.
  */
 - (NSUInteger)removeEvent:(NSString*)eventId;
 
+/**
+ Check if the receiver has the same sender as another bubble.
+ 
+ @param bubbleCellData an object conforms to `MXKRoomBubbleCellDataStoring` protocol.
+ @return YES if the receiver has the same sender as the provided bubble
+ */
+- (BOOL)hasSameSenderAsBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData;
+
 @optional
 /**
  Attempt to add a new event to the bubble.
@@ -150,5 +158,13 @@ Update the event because its mxkState changed or it is has been redacted.
  @return YES if the model accepts that the event can concatenated to events already in the bubble.
  */
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState;
+
+/**
+ The receiver appends to its content the provided bubble cell data, if both have the same sender.
+ 
+ @param bubbleCellData an object conforms to `MXKRoomBubbleCellDataStoring` protocol.
+ @return YES if the provided cell data has been merged into receiver.
+ */
+- (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData;
 
 @end
