@@ -27,21 +27,21 @@
  
  @param responder the view controller (or another kind of `UIResponder`) which observed the motion.
  */
-+ (void)startShaking:(UIResponder*)responder;
+- (void)startShaking:(UIResponder*)responder;
 
 /**
  Tells the receiver that a motion event has ended.
  
  @param responder the view controller (or another kind of `UIResponder`) which observed the motion.
  */
-+ (void)stopShaking:(UIResponder*)responder;
+- (void)stopShaking:(UIResponder*)responder;
 
 /**
  Ignore pending rage shake related to the provided responder.
  
  @param responder a view controller (or another kind of `UIResponder`).
  */
-+ (void)cancel:(UIResponder*)responder;
+- (void)cancel:(UIResponder*)responder;
 
 @end
 
