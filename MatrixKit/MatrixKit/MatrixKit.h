@@ -18,6 +18,9 @@
 
 #import "MXEvent+MatrixKit.h"
 
+#import "MXKAlert.h"
+#import "MXKMediaManager.h"
+
 #import "MXKViewController.h"
 #import "MXKRoomViewController.h"
 #import "MXKRecentListViewController.h"
