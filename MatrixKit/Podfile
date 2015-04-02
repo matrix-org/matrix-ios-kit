@@ -6,7 +6,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 target "MatrixKitSample" do
 
 # Points to SDK local sources file
-pod 'MatrixSDK', :path => '../MatrixSDK.podspec'
+pod 'MatrixSDK', :path => '../../matrix-ios-sdk/MatrixSDK.podspec'
+
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.0.0'
 end
