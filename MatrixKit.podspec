@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   
   s.requires_arc  = true
 
-  #s.dependency 'MatrixSDK', '~> 0.3.1'
+  s.dependency 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'develop'
   s.dependency 'HPGrowingTextView', '~> 1.1'
 
 end
