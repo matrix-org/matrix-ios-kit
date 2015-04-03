@@ -153,7 +153,7 @@
             }
         } failure:^(NSError *error) {
             backPaginationOperation = nil;
-            NSLog(@"[RecentRoom] Failed to paginate back: %@", error);
+            NSLog(@"[MXKRecentCellData] Failed to paginate back: %@", error);
             [self cancelBackPagination];
         }];
     } else {

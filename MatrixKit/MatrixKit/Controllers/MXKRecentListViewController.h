@@ -43,6 +43,16 @@ limitations under the License.
 @interface MXKRecentListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate>
 
 /**
+ The recents table view
+ */
+@property (nonatomic) IBOutlet UITableView *tableView;
+
+/**
+ The current data source associated to the view controller.
+ */
+@property (nonatomic, readonly) MXKRecentListDataSource *dataSource;
+
+/**
  The delegate for the view controller.
  */
 @property (nonatomic) id<MXKRecentListViewControllerDelegate> delegate;

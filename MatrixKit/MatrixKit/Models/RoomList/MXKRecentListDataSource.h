@@ -37,6 +37,11 @@ extern NSString *const kMXKRecentCellIdentifier;
      The data for the cells served by `MXKRecentsDataSource`.
      */
     NSMutableArray *cellDataArray;
+    
+    /**
+     The filtered recents: sub-list of `cellDataArray` defined by `searchWithPatterns:` call.
+     */
+    NSMutableArray *filteredCellDataArray;
 }
 
 /**
@@ -72,6 +77,15 @@ extern NSString *const kMXKRecentCellIdentifier;
  @return the newly created instance.
  */
 - (instancetype)initWithMatrixSession:(MXSession*)mxSession;
+
+/**
+ Filter the current recents list according to the provided patterns.
+ When patterns are not empty, the search result is stored in `filteredCellDataArray`,
+ this array provides then data for the cells served by `MXKRecentsDataSource`.
+ 
+ @param patternsList the list of patterns (`NSString` instances) to match with. Set nil to cancel search.
+ */
+- (void)searchWithPatterns:(NSArray*)patternsList;
 
 /**
  Get the data for the cell at the given index.

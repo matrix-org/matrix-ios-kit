@@ -38,6 +38,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     if (self) {
 
         cellDataArray = [NSMutableArray array];
+        filteredCellDataArray = nil;
 
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
@@ -60,6 +61,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (void)destroy {
     cellDataArray = nil;
+    filteredCellDataArray = nil;
+    
     _eventFormatter = nil;
     if (liveEventsListener) {
         [self.mxSession removeListener:liveEventsListener];
@@ -75,8 +78,34 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     }
 }
 
+- (void)searchWithPatterns:(NSArray*)patternsList {
+    if (patternsList.count) {
+        if (filteredCellDataArray) {
+            [filteredCellDataArray removeAllObjects];
+        } else {
+            filteredCellDataArray = [NSMutableArray arrayWithCapacity:cellDataArray.count];
+        }
+        
+        for (id<MXKRecentCellDataStoring> cellData in cellDataArray) {
+            for (NSString* pattern in patternsList) {
+                if ([[cellData.room.state displayname] rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound) {
+                    [filteredCellDataArray addObject:cellData];
+                    break;
+                }
+            }
+        }
+    } else {
+        filteredCellDataArray = nil;
+    }
+    
+    [self.delegate dataSource:self didCellChange:nil];
+}
+
 - (id<MXKRecentCellDataStoring>)cellDataAtIndex:(NSInteger)index {
 
+    if (filteredCellDataArray) {
+        return filteredCellDataArray[index];
+    }
     return cellDataArray[index];
 }
 
@@ -128,14 +157,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
                         // Remove left room
                         [cellDataArray removeObjectAtIndex:index];
 
-                        /* @TODO
-                        if (filteredRecents) {
-                            NSUInteger filteredIndex = [filteredRecents indexOfObject:recentRoom];
+                        if (filteredCellDataArray) {
+                            NSUInteger filteredIndex = [filteredCellDataArray indexOfObject:cellData];
                             if (filteredIndex != NSNotFound) {
-                                [filteredRecents removeObjectAtIndex:filteredIndex];
+                                [filteredCellDataArray removeObjectAtIndex:filteredIndex];
                             }
                         }
-                         */
                     } else {
                         if ([cellData updateWithLastEvent:event andRoomState:roomState markAsUnread:isUnread]) {
                             if (index) {
@@ -144,15 +171,13 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
                                 [cellDataArray insertObject:cellData atIndex:0];
                             }
                             // Update filtered recents (if any)
-                            /* @TODO: Do it at this level?
-                            if (filteredRecents) {
-                                NSUInteger filteredIndex = [filteredRecents indexOfObject:recentRoom];
+                            if (filteredCellDataArray) {
+                                NSUInteger filteredIndex = [filteredCellDataArray indexOfObject:cellData];
                                 if (filteredIndex && filteredIndex != NSNotFound) {
-                                    [filteredRecents removeObjectAtIndex:filteredIndex];
-                                    [filteredRecents insertObject:recentRoom atIndex:0];
+                                    [filteredCellDataArray removeObjectAtIndex:filteredIndex];
+                                    [filteredCellDataArray insertObject:cellData atIndex:0];
                                 }
                             }
-                             */
                         }
                         // Refresh global unreads count
                         // @TODO unreadCount += recentRoom.unreadCount;
@@ -219,6 +244,9 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
+    if (filteredCellDataArray) {
+        return filteredCellDataArray.count;
+    }
     return cellDataArray.count;
 }
 

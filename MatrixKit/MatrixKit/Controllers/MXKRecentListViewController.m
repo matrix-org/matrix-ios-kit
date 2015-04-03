@@ -24,11 +24,10 @@
     MXKRecentListDataSource *dataSource;
 }
 
-@property (nonatomic) IBOutlet UITableView *tableView;
-
 @end
 
 @implementation MXKRecentListViewController
+@synthesize dataSource;
 
 #pragma mark - Class methods
 
