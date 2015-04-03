@@ -39,7 +39,12 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     /**
      Potential request in progress to join the selected room
      */
-    MXHTTPOperation *joinRequestInProgress;
+    MXHTTPOperation *joinRoomRequest;
+    
+    /**
+     Current back pagination request (if any)
+     */
+    MXHTTPOperation *backPaginationRequest;
 
     /**
      The listener to incoming events in the room.
@@ -118,12 +123,15 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
 - (void)destroy {
 
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
-        
-    processingQueue = nil;
     
-    if (joinRequestInProgress) {
-        [joinRequestInProgress cancel];
-        joinRequestInProgress = nil;
+    if (joinRoomRequest) {
+        [joinRoomRequest cancel];
+        joinRoomRequest = nil;
+    }
+    
+    if (backPaginationRequest) {
+        [backPaginationRequest cancel];
+        backPaginationRequest = nil;
     }
     
     if (_room && liveEventsListener) {
@@ -145,6 +153,8 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     eventIdToBubbleMap = nil;
     pendingLocalEchoes = nil;
     
+    processingQueue = nil;
+    
     [super destroy];
 }
 
@@ -153,17 +163,17 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     if (MXSessionStateStoreDataReady < self.mxSession.state) {
 
         // Check whether the room is not already set (and if no request is in progress to join the room)
-        if (!_room && !joinRequestInProgress) {
+        if (!_room && !joinRoomRequest) {
 
             MXRoom *selectedRoom = [self.mxSession roomWithRoomId:_roomId];
             if (selectedRoom) {
                 // Check first whether we have to join the room
                 if (selectedRoom.state.membership == MXMembershipInvite) {
-                    joinRequestInProgress = [selectedRoom join:^{
-                        joinRequestInProgress = nil;
+                    joinRoomRequest = [selectedRoom join:^{
+                        joinRoomRequest = nil;
                         [self didMXSessionStateChange];
                     } failure:^(NSError *error) {
-                        joinRequestInProgress = nil;
+                        joinRoomRequest = nil;
                         NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", selectedRoom.state.displayname, error);
                         // TODO Alert user
                         //                        [[AppDelegate theDelegate] showErrorAsAlert:error];
@@ -367,15 +377,17 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     }];
     
     // Launch the pagination
-    [_room paginateBackMessages:numItems complete:^{
+    backPaginationRequest = [_room paginateBackMessages:numItems complete:^{
         
+        backPaginationRequest = nil;
         // Once done, process retrieved events
         [_room removeListener:backPaginateListener];
         [self processQueuedEvents:success];
         
     } failure:^(NSError *error) {
-        NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
         
+        NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
+        backPaginationRequest = nil;
         if (failure) {
             failure(error);
         }
