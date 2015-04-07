@@ -531,60 +531,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - Post messages
 
-- (void)sendMessage:(NSDictionary*)msgContent withLocalEvent:(MXEvent*)localEvent {
-    MXMessageType msgType = msgContent[@"msgtype"];
-    if (msgType) {
-        // Check whether a temporary event has already been added for local echo (this happens on attachments)
-        if (localEvent) {
-//            // Look for this local event in messages
-//            RoomMessage *message = [self messageWithEventId:localEvent.eventId];
-//            if (message) {
-//                // Update the local event with the actual msg content
-//                localEvent.content = msgContent;
-//                if (message.thumbnailURL) {
-//                    // Reuse the current thumbnailURL as preview
-//                    [localEvent.content setValue:message.thumbnailURL forKey:kRoomMessageLocalPreviewKey];
-//                }
-//                
-//                if (message.messageType == RoomMessageTypeText) {
-//                    [message removeEvent:localEvent.eventId];
-//                    [message addEvent:localEvent withRoomState:self.mxRoom.state];
-//                    if (!message.components.count) {
-//                        [self removeMessage:message];
-//                    }
-//                } else {
-//                    // Create a new message
-//                    RoomMessage *aNewMessage = [[RoomMessage alloc] initWithEvent:localEvent andRoomState:self.mxRoom.state];
-//                    if (aNewMessage) {
-//                        [self replaceMessage:message withMessage:aNewMessage];
-//                    } else {
-//                        [self removeMessage:message];
-//                    }
-//                }
-//            }
-//            
-//            [self.messagesTableView reloadData];
-        } else {
-            // Add a new local event
-            localEvent = [self createLocalEchoEventWithoutContent];
-            localEvent.content = msgContent;
-            // TODO: MXKRoomDataSource must handle this pending event
-//            [dataSource addLocalEchoEvent:localEvent];
-        }
-        
-        // Send message to the room
-        [dataSource.room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId) {
-            // We let the dataSource update the outgoing message status (pending to received) according to live event stream notification.
-        } failure:^(NSError *error) {
-            // TODO: Notify data source in order to remove the pending event
-            
-            NSLog(@"[MXKRoomVC] Post message failed: %@", error);
-            // TODO: Alert user
-//            [[AppDelegate theDelegate] showErrorAsAlert:error];
-        }];
-    }
-}
-
 - (BOOL)isIRCStyleCommand:(NSString*)string {
     
     // Check whether the provided text may be an IRC-style command
@@ -760,19 +706,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // @TODO
         NSLog(@"[MXKRoomViewController] sendTextMessage failed. Error:%@", error);
     }];
-}
-
-- (MXEvent*)createLocalEchoEventWithoutContent {
-    // Create a temporary event to displayed outgoing message (local echo)
-    NSString *localEventId = [NSString stringWithFormat:@"%@", [[NSProcessInfo processInfo] globallyUniqueString]];
-    MXEvent *localEvent = [[MXEvent alloc] init];
-    localEvent.roomId = dataSource.room.state.roomId;
-    localEvent.eventId = localEventId;
-    localEvent.type = kMXEventTypeStringRoomMessage;
-    localEvent.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-    
-    localEvent.userId = dataSource.mxSession.myUser.userId;
-    return localEvent;
 }
 
 # pragma mark - Event handling
@@ -1237,7 +1170,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFinishNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFailNotification object:nil];
 
-    [self dismissAttachmentImageViews];
+    if (highResImageView) {
+        [highResImageView removeFromSuperview];
+        highResImageView = nil;
+    }
 
     // Restore audio category
     if (AVAudioSessionCategory) {
@@ -1274,19 +1210,4 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-
-- (void)dismissAttachmentImageViews {
-    /* @TODO
-    if (self.imageValidationView) {
-        [self.imageValidationView dismissSelection];
-        [self.imageValidationView removeFromSuperview];
-        self.imageValidationView = nil;
-    }
-    */
-
-    if (highResImageView) {
-        [highResImageView removeFromSuperview];
-        highResImageView = nil;
-    }
-}
 @end
