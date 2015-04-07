@@ -29,24 +29,53 @@
 @implementation MXKRecentListViewController
 @synthesize dataSource;
 
-#pragma mark - Class methods
-
-+ (UINib *)nib {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRecentListViewController class])
-                          bundle:[NSBundle bundleForClass:[MXKRecentListViewController class]]];
-}
-
-+ (instancetype)roomViewController {
-    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRecentListViewController class])
-                                          bundle:[NSBundle bundleForClass:[MXKRecentListViewController class]]];
-}
-
 #pragma mark -
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [[[self class] nib] instantiateWithOwner:self options:nil];
+    // Add programmatically the table view and set its constraints here.
+    // We do not use .xib to define view controller content because we observed wrong display when
+    // this view controller was used as `master view controller` in split view controller (In some scenario,
+    // the view controller was refreshed with null width and height).
+    
+    self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
+    [self.tableView setTranslatesAutoresizingMaskIntoConstraints: NO];
+    [self.view addSubview:self.tableView];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.tableView
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0f
+                                                           constant:0.0f]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topLayoutGuide
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.tableView
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0f
+                                                           constant:0.0f]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view
+                                                     attribute:NSLayoutAttributeLeading
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.tableView
+                                                     attribute:NSLayoutAttributeLeading
+                                                    multiplier:1.0f
+                                                      constant:0.0f]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view
+                                                     attribute:NSLayoutAttributeTrailing
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.tableView
+                                                     attribute:NSLayoutAttributeTrailing
+                                                    multiplier:1.0f
+                                                      constant:0.0f]];
+    
+    
     
     // Check whether a room has been defined
     if (dataSource) {
