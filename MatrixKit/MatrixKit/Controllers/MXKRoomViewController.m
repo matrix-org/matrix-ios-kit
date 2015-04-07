@@ -238,7 +238,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
 }
 
-- (BOOL)isMessagesTableScrollViewAtTheBottom {
+- (BOOL)isBubblesTableScrollViewAtTheBottom {
     
     // Check whether the most recent message is visible.
     // Compute the max vertical position visible according to contentOffset
@@ -251,7 +251,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     return (isScrolledToBottom || isScrollingToBottom);
 }
 
-- (void)scrollMessagesTableViewToBottomAnimated:(BOOL)animated {
+- (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated {
     
     if (_bubblesTableView.contentSize.height) {
         CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom;
@@ -440,7 +440,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         inputToolbarView.maxHeight = maxTextHeight;
         
         // Scroll the tableview content
-        [self scrollMessagesTableViewToBottomAnimated:NO];
+        [self scrollBubblesTableViewToBottomAnimated:NO];
     } completion:^(BOOL finished) {
         
         // Check whether the keyboard is still visible at the end of animation
@@ -836,12 +836,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - MXKDataSourceDelegate
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
     
+    // We will scroll to bottom if the bottom of the table is currently visible
+    BOOL shouldScrollToBottom = (shouldScrollToBottomOnTableRefresh || [self isBubblesTableScrollViewAtTheBottom]);
+    
     // For now, do a simple full reload
     [_bubblesTableView reloadData];
     
-    if (shouldScrollToBottomOnTableRefresh) {
+    if (shouldScrollToBottom) {
         // Scroll to the bottom
-        [self scrollMessagesTableViewToBottomAnimated:NO];
+        [self scrollBubblesTableViewToBottomAnimated:NO];
         shouldScrollToBottomOnTableRefresh = NO;
     }
 }
@@ -1004,14 +1007,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Lays out the subviews immediately
     // We will scroll to bottom if the bottom of the table is currently visible
-    BOOL shouldScrollToBottom = [self isMessagesTableScrollViewAtTheBottom];
+    BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
     CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant;
     if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst) {
         _bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
         // Force to render the view
         [self.view layoutIfNeeded];
         if (shouldScrollToBottom) {
-            [self scrollMessagesTableViewToBottomAnimated:NO];
+            [self scrollBubblesTableViewToBottomAnimated:NO];
         }
     }
 }
