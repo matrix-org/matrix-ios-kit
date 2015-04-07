@@ -63,6 +63,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     UIView *keyboardView;
     
     /**
+     Boolean value used to scroll to bottom the bubble history at first display.
+     */
+    BOOL shouldScrollToBottomOnTableRefresh;
+    
+    /**
      YES if scrolling to bottom is in progress
      */
     BOOL isScrollingToBottom;
@@ -145,6 +150,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Set default input toolbar view
     [self setRoomInputToolbarViewClass:MXKRoomInputToolbarViewWithSimpleTextView.class];
+    
+    // Scroll to bottom the bubble history at first display
+    shouldScrollToBottomOnTableRefresh = YES;
     
     // Check whether a room source has been defined
     if (dataSource) {
@@ -830,6 +838,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // For now, do a simple full reload
     [_bubblesTableView reloadData];
+    
+    if (shouldScrollToBottomOnTableRefresh) {
+        // Scroll to the bottom
+        [self scrollMessagesTableViewToBottomAnimated:NO];
+        shouldScrollToBottomOnTableRefresh = NO;
+    }
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state {
