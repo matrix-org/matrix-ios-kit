@@ -171,7 +171,7 @@
 }
 
 - (BOOL)canBecomeFirstResponder {
-    return (_rageShakeManager);
+    return (_rageShakeManager != nil);
 }
 
 
