@@ -133,22 +133,33 @@
         
         // Run activity indicator if need
         if (_mxSession.state == MXSessionStateSyncInProgress || _mxSession.state == MXSessionStateInitialised) {
-            [self.view bringSubviewToFront:_activityIndicator];
-            [_activityIndicator startAnimating];
+            [self startActivityIndicator];
         } else {
-            [_activityIndicator stopAnimating];
+            [self stopActivityIndicator];
         }
     } else {
         // Hide potential activity indicator
-        if (_activityIndicator) {
-            [_activityIndicator stopAnimating];
-        }
+        [self stopActivityIndicator];
         
         // Restore default tintColor
         self.navigationController.navigationBar.barTintColor = nil;
         if (mainNavigationController) {
             mainNavigationController.navigationBar.barTintColor = nil;
         }
+    }
+}
+
+#pragma mark - activity indicator
+
+- (void)startActivityIndicator {
+    [self.view bringSubviewToFront:_activityIndicator];
+    [_activityIndicator startAnimating];
+}
+
+- (void)stopActivityIndicator {
+    // Check whether all conditions are satisfied before stopping loading wheel
+    if (!_mxSession || (_mxSession.state != MXSessionStateSyncInProgress && _mxSession.state != MXSessionStateInitialised)) {
+        [_activityIndicator stopAnimating];
     }
 }
 

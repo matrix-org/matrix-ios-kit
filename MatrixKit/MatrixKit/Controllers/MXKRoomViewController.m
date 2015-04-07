@@ -17,6 +17,8 @@
 #define MXKROOMVIEWCONTROLLER_DEFAULT_TYPING_TIMEOUT_SEC 10
 #define MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT 50
 
+#define MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET 100
+
 #import "MXKRoomViewController.h"
 
 #import <MediaPlayer/MediaPlayer.h>
@@ -40,7 +42,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     /**
      The data source providing UITableViewCells for the current room.
      */
-    MXKRoomDataSource *dataSource;
+    MXKRoomDataSource *roomDataSource;
     
     /**
      The input toolbar view.
@@ -81,6 +83,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      Local typing timout
      */
     NSTimer* typingTimer;
+    
+    /**
+     YES when back pagination is in progress.
+     */
+    BOOL isBackPaginationInProgress;
+    
+    /**
+     Store current number of bubbles before back pagination.
+     */
+    NSInteger backPaginationSavedBubblesNb;
+    
+    /**
+     Store the height of the first bubble before back pagination.
+     */
+    CGFloat backPaginationSavedFirstBubbleHeight;
 
     // Attachment handling
     MXKImageView *highResImageView;
@@ -100,7 +117,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 @end
 
 @implementation MXKRoomViewController
-@synthesize dataSource, inputToolbarView;
+@synthesize roomDataSource, inputToolbarView;
 
 #pragma mark - Class methods
 
@@ -155,7 +172,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     shouldScrollToBottomOnTableRefresh = YES;
     
     // Check whether a room source has been defined
-    if (dataSource) {
+    if (roomDataSource) {
         [self configureView];
     }
 }
@@ -229,13 +246,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
     // Set up table delegates
     _bubblesTableView.delegate = self;
-    _bubblesTableView.dataSource = dataSource;
+    _bubblesTableView.dataSource = roomDataSource;
     
     // Set up classes to use for cells
-    [_bubblesTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
 }
 
 - (BOOL)isBubblesTableScrollViewAtTheBottom {
@@ -268,31 +285,26 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - Public API
 
-- (void)displayRoom:(MXKRoomDataSource *)roomDataSource {
+- (void)displayRoom:(MXKRoomDataSource *)dataSource {
     
-    if (roomDataSource) {
-        dataSource = roomDataSource;
-        dataSource.delegate = self;
+    if (dataSource) {
+        roomDataSource = dataSource;
+        roomDataSource.delegate = self;
         
         // Report the matrix session at view controller level to update UI according to session state
-        self.mxSession = dataSource.mxSession;
+        self.mxSession = roomDataSource.mxSession;
         
         if (_bubblesTableView) {
             [self configureView];
         }
         
-        // Check data source state
-        if (dataSource.state == MXKDataSourceStateReady) {
-            // Start retrieving history right now
-            [self.dataSource paginateBackMessagesToFillRect:self.view.frame success:^{
-                // @TODO (hide loading wheel)
-            } failure:^(NSError *error) {
-                // @TODO
-            }];
+        // Check whether an initial back pagination is required to fill the bubbles table
+        if (roomDataSource.state == MXKDataSourceStateReady && ![roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0]) {
+            [self triggerInitialBackPagination];
         }
     } else {
-        [dataSource destroy];
-        dataSource = nil;
+        [roomDataSource destroy];
+        roomDataSource = nil;
         self.mxSession = nil;
     }
 }
@@ -314,8 +326,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
 
-    [dataSource destroy];
-    dataSource = nil;
+    [roomDataSource destroy];
+    roomDataSource = nil;
     
     self.mxSession = nil;
     
@@ -394,6 +406,20 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                           multiplier:1.0f
                                                                             constant:0.0f]];
     [_roomInputToolbarContainer setNeedsUpdateConstraints];
+}
+
+#pragma mark - activity indicator
+
+- (void)stopActivityIndicator {
+    
+    // Check internal processes before stopping the loading wheel
+    if (isBackPaginationInProgress) {
+        // Keep activity indicator running
+        return;
+    }
+    
+    // Leave super decide
+    [super stopActivityIndicator];
 }
 
 #pragma mark - Keyboard handling
@@ -524,9 +550,81 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - Back pagination
 
+- (void)triggerInitialBackPagination {
+    
+    // Trigger back pagination to fill all the screen
+    [roomDataSource paginateBackMessagesToFillRect:self.view.frame success:nil failure:nil];
+}
+
 - (void)triggerBackPagination {
-    // TODO: implement back pagination
-    [dataSource paginateBackMessages:10 success:nil failure:nil];
+    
+    // Store the current height of the first bubble (if any)
+    backPaginationSavedFirstBubbleHeight = 0;
+    backPaginationSavedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
+    if (backPaginationSavedBubblesNb) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+    }
+    isBackPaginationInProgress = YES;
+    [self startActivityIndicator];
+    
+    // Trigger back pagination
+    [roomDataSource paginateBackMessages:10 success:^{
+        
+        // We will scroll to bottom if the displayed content does not reach the bottom (after adding back pagination)
+        BOOL shouldScrollToBottom = NO;
+        CGFloat maxPositionY = self.bubblesTableView.contentOffset.y + (self.bubblesTableView.frame.size.height - self.bubblesTableView.contentInset.bottom);
+        // Compute the height of the blank part at the bottom
+        if (maxPositionY > self.bubblesTableView.contentSize.height) {
+            CGFloat blankAreaHeight = maxPositionY - self.bubblesTableView.contentSize.height;
+            // Scroll to bottom if this blank area is greater than max scrolling offet
+            shouldScrollToBottom = (blankAreaHeight >= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET);
+        }
+        
+        CGFloat verticalOffset = 0;
+        if (shouldScrollToBottom == NO) {
+            NSInteger addedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0] - backPaginationSavedBubblesNb;
+            if (addedBubblesNb >= 0) {
+                
+                // We will adjust the vertical offset in order to make visible only a few part of added messages (at the top of the table)
+                NSIndexPath *indexPath;
+                // Compute the cumulative height of the added messages
+                for (NSUInteger index = 0; index < addedBubblesNb; index++) {
+                    indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                    verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+                }
+                
+                // Add delta of the height of the first existing message
+                indexPath = [NSIndexPath indexPathForRow:addedBubblesNb inSection:0];
+                verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+                
+                // Deduce the vertical offset from this height
+                verticalOffset -= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET;
+            }
+        }
+        
+        // Adjust vertical content offset
+        if (shouldScrollToBottom) {
+            [self scrollBubblesTableViewToBottomAnimated:NO];
+        } else if (verticalOffset > 0) {
+            // Adjust vertical offset in order to limit scrolling down
+            CGPoint contentOffset = self.bubblesTableView.contentOffset;
+            contentOffset.y = verticalOffset - self.bubblesTableView.contentInset.top;
+            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+        }
+        
+        // Reload table
+        isBackPaginationInProgress = NO;
+        [_bubblesTableView reloadData];
+        [self stopActivityIndicator];
+        
+    }
+                                 failure:^(NSError *error) {
+                                     // Reload table
+                                     isBackPaginationInProgress = NO;
+                                     [_bubblesTableView reloadData];
+                                     [self stopActivityIndicator];
+                                 }];
 }
 
 #pragma mark - Post messages
@@ -553,7 +651,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
         if (displayName.length) {
-            [dataSource.mxSession.matrixRestClient setDisplayName:displayName success:^{
+            [roomDataSource.mxSession.matrixRestClient setDisplayName:displayName success:^{
             } failure:^(NSError *error) {
                 NSLog(@"[MXKRoomVC] Set displayName failed: %@", error);
                 // TODO Alert user
@@ -571,7 +669,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         // Check
         if (roomAlias.length) {
-            [dataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
+            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
                 // Do nothing by default when we succeed to join the room
             } failure:^(NSError *error) {
                 NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed: %@", roomAlias, error);
@@ -607,7 +705,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }
                 }
                 // Kick the user
-                [dataSource.room kickUser:userId reason:reason success:^{
+                [roomDataSource.room kickUser:userId reason:reason success:^{
                 } failure:^(NSError *error) {
                     NSLog(@"[MXKRoomVC] Kick user (%@) failed: %@", userId, error);
                     // TODO Alert user
@@ -629,7 +727,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }
                 }
                 // Ban the user
-                [dataSource.room banUser:userId reason:reason success:^{
+                [roomDataSource.room banUser:userId reason:reason success:^{
                 } failure:^(NSError *error) {
                     NSLog(@"[MXKRoomVC] Ban user (%@) failed: %@", userId, error);
                     // TODO Alert user
@@ -642,7 +740,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         } else if ([cmd isEqualToString:kCmdUnbanUser]) {
             if (userId) {
                 // Unban the user
-                [dataSource.room unbanUser:userId success:^{
+                [roomDataSource.room unbanUser:userId success:^{
                 } failure:^(NSError *error) {
                     NSLog(@"[MXKRoomVC] Unban user (%@) failed: %@", userId, error);
                     // TODO Alert user
@@ -667,7 +765,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             // Set power level
             if (userId && powerLevel) {
                 // Set user power level
-                [dataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:[powerLevel integerValue] success:^{
+                [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:[powerLevel integerValue] success:^{
                 } failure:^(NSError *error) {
                     NSLog(@"[MXKRoomVC] Set user power (%@) failed: %@", userId, error);
                     // TODO Alert user
@@ -680,7 +778,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         } else if ([cmd isEqualToString:kCmdResetUserPowerLevel]) {
             if (userId) {
                 // Reset user power level
-                [dataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
+                [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
                 } failure:^(NSError *error) {
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
                     // TODO Alert user
@@ -701,7 +799,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)sendTextMessage:(NSString*)msgTxt {
 
     // Let the datasource send it and manage the local echo
-    [dataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error) {
+    [roomDataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error) {
 
         // @TODO
         NSLog(@"[MXKRoomViewController] sendTextMessage failed. Error:%@", error);
@@ -717,7 +815,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (eventDetailsView) {
         [eventDetailsView removeFromSuperview];
     }
-    eventDetailsView = [[MXKEventDetailsView alloc] initWithEvent:event andMatrixSession:dataSource.mxSession];
+    eventDetailsView = [[MXKEventDetailsView alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
     
     // Add shadow on event details view
     eventDetailsView.layer.cornerRadius = 5;
@@ -769,6 +867,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - MXKDataSourceDelegate
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
     
+    if (isBackPaginationInProgress) {
+        // table will be updated at the end of pagination.
+        return;
+    }
+    
     // We will scroll to bottom if the bottom of the table is currently visible
     BOOL shouldScrollToBottom = (shouldScrollToBottomOnTableRefresh || [self isBubblesTableScrollViewAtTheBottom]);
     
@@ -784,13 +887,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state {
     
-    if (state == MXKDataSourceStateReady) {
-        // Start retrieving history now
-        [self.dataSource paginateBackMessagesToFillRect:self.view.frame success:^{
-            // @TODO (hide loading wheel)
-        } failure:^(NSError *error) {
-            // @TODO
-        }];
+    if (state == MXKDataSourceStateReady && ![roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0]) {
+        [self triggerInitialBackPagination];
     }
 }
 
@@ -869,7 +967,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Compute here height of bubble cell
     CGFloat rowHeight;
     
-    id<MXKRoomBubbleCellDataStoring> bubbleData = [dataSource cellDataAtIndex:indexPath.row];
+    id<MXKRoomBubbleCellDataStoring> bubbleData = [roomDataSource cellDataAtIndex:indexPath.row];
     
     // Sanity check
     if (!bubbleData) {
@@ -879,14 +977,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     Class cellViewClass;
     if (bubbleData.isIncoming) {
         if (bubbleData.isAttachment) {
-            cellViewClass = [dataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
+            cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
         } else {
-            cellViewClass = [dataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
+            cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
         }
     } else if (bubbleData.isAttachment) {
-        cellViewClass = [dataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+        cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
     } else {
-        cellViewClass = [dataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
+        cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
     }
     
     rowHeight = [cellViewClass heightForCellData:bubbleData withMaximumWidth:tableView.frame.size.width];
@@ -963,7 +1061,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(UIImage*)image {
     // Let the datasource send it and manage the local echo
-    [dataSource sendImage:image success:nil failure:^(NSError *error) {
+    [roomDataSource sendImage:image success:nil failure:^(NSError *error) {
         // @TODO
         NSLog(@"[MXKRoomViewController] sendImage failed. Error:%@", error);
     }];
@@ -975,7 +1073,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId {
-    [dataSource.room inviteUser:mxUserId success:^{
+    [roomDataSource.room inviteUser:mxUserId success:^{
     } failure:^(NSError *error) {
         NSLog(@"[MXKRoomVC] Invite %@ failed: %@", mxUserId, error);
         // TODO: Alert user
@@ -1042,7 +1140,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     
     // Send typing notification to server
-    [dataSource.room sendTypingNotification:typing
+    [roomDataSource.room sendTypingNotification:typing
                                 timeout:notificationTimeoutMS
                                 success:^{
                                     // Reset last typing date
@@ -1082,7 +1180,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
            // Use another MXKImageView that will show the fullscreen image URL in fullscreen
             highResImageView = [[MXKImageView alloc] initWithFrame:self.view.frame];
             highResImageView.stretchable = YES;
-            highResImageView.mediaFolder = dataSource.roomId;
+            highResImageView.mediaFolder = roomDataSource.roomId;
             [highResImageView setImageURL:url withImageOrientation:UIImageOrientationUp andPreviewImage:attachment.image];
             [highResImageView showFullScreen];
 
@@ -1122,7 +1220,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 if ([[NSFileManager defaultManager] fileExistsAtPath:selectedVideoURL]) {
                     selectedVideoCachePath = selectedVideoURL;
                 } else {
-                    selectedVideoCachePath = [MXKMediaManager cachePathForMediaWithURL:selectedVideoURL andType:mimetype inFolder:dataSource.roomId];
+                    selectedVideoCachePath = [MXKMediaManager cachePathForMediaWithURL:selectedVideoURL andType:mimetype inFolder:roomDataSource.roomId];
                 }
 
                 if ([[NSFileManager defaultManager] fileExistsAtPath:selectedVideoCachePath]) {
@@ -1132,7 +1230,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
 
-                    NSString *localFilePath = [MXKMediaManager cachePathForMediaWithURL:selectedVideoURL andType:mimetype inFolder:dataSource.roomId];
+                    NSString *localFilePath = [MXKMediaManager cachePathForMediaWithURL:selectedVideoURL andType:mimetype inFolder:roomDataSource.roomId];
                     [MXKMediaManager downloadMediaFromURL:selectedVideoURL andSaveAtFilePath:localFilePath];
                 }
             }

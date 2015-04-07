@@ -37,7 +37,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 /**
  The current data source associated to the view controller.
  */
-@property (nonatomic, readonly) MXKRoomDataSource *dataSource;
+@property (nonatomic, readonly) MXKRoomDataSource *roomDataSource;
 
 /**
  The current input toolbar view defined into the view controller.
@@ -49,7 +49,7 @@ extern NSString *const kCmdResetUserPowerLevel;
  
  @param roomDataSource the data source .
  */
-- (void)displayRoom:(MXKRoomDataSource*)roomDataSource;
+- (void)displayRoom:(MXKRoomDataSource*)dataSource;
 
 /**
  Dispose of any resources.

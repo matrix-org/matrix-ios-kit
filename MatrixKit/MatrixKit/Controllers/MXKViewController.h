@@ -68,5 +68,15 @@
   */
 - (void)didMatrixSessionStateChange;
 
+/**
+ Bring the activity indicator to the front and start it.
+ */
+- (void)startActivityIndicator;
+
+/**
+ Stop the activity indicator if all conditions are satisfied.
+ */
+- (void)stopActivityIndicator;
+
 @end
 
