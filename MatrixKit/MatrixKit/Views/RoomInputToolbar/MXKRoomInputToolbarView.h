@@ -113,6 +113,14 @@
 }
 
 /**
+ *  Returns the `UINib` object initialized for the tool bar view.
+ *
+ *  @return The initialized `UINib` object or `nil` if there were errors during
+ *  initialization or the nib file could not be located.
+ */
++ (UINib *)nib;
+
+/**
  The delegate notified when inputs are ready.
  */
 @property (nonatomic) id<MXKRoomInputToolbarViewDelegate> delegate;

@@ -29,6 +29,14 @@
 @protocol MXKCellRendering <NSObject>
 
 /**
+ *  Returns the `UINib` object initialized for the cell.
+ *
+ *  @return The initialized `UINib` object or `nil` if there were errors during
+ *  initialization or the nib file could not be located.
+ */
++ (UINib *)nib;
+
+/**
  Configure the cell in order to display the passed data.
  
  The object implementing the `MXKCellRendering` protocol should be able to cast the past object

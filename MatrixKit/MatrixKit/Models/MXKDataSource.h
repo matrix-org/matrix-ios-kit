@@ -120,7 +120,7 @@ typedef enum : NSUInteger {
  @param cellViewClass a class implementing the `MXKCellRendering` protocol.
  @param identifier the identifier of targeted cell.
  */
-- (void)registerCellViewClass:(Class)cellViewClass forCellIdentifier:(NSString *)identifier;
+- (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier;
 
 /**
  Return the MXKCellRendering-compliant class that manages the display of cells with the designated identifier.
@@ -128,7 +128,7 @@ typedef enum : NSUInteger {
  @param identifier the cell identifier.
  @return the associated MXKCellData-inherited class.
  */
-- (Class)cellViewClassForCellIdentifier:(NSString *)identifier;
+- (Class<MXKCellRendering>)cellViewClassForCellIdentifier:(NSString *)identifier;
 
 
 #pragma mark - Pending HTTP requests 

@@ -20,6 +20,11 @@
 
 @implementation MXKRoomIOSBubbleTableViewCell
 
++ (UINib *)nib {
+    // No nib is available here.
+    return nil;
+}
+
 - (void)render:(MXKCellData *)cellData {
 
     id<MXKRoomBubbleCellDataStoring> bubbleData = (id<MXKRoomBubbleCellDataStoring>)cellData;

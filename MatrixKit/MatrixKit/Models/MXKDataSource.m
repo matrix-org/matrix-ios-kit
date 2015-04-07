@@ -95,15 +95,12 @@
 
 
 #pragma mark - MXKCellRendering classes
-- (void)registerCellViewClass:(Class)cellViewClass forCellIdentifier:(NSString *)identifier {
-
-    // Sanity check: accept only classes implementing MXKCellRendering
-    NSParameterAssert([cellViewClass conformsToProtocol:@protocol(MXKCellRendering)]);
+- (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier {
 
     cellViewMap[identifier] = cellViewClass;
 }
 
-- (Class)cellViewClassForCellIdentifier:(NSString *)identifier {
+- (Class<MXKCellRendering>)cellViewClassForCellIdentifier:(NSString *)identifier {
 
     return cellViewMap[identifier];
 }
