@@ -33,6 +33,8 @@ NSString *const kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoo
 NSString *const kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier";
 NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier";
 
+NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastMessageChanged";
+
 
 @interface MXKRoomDataSource () {
     
@@ -210,6 +212,17 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     }
 }
 
+- (MXEvent *)lastMessage {
+
+    MXEvent *lastMessage;
+
+    id<MXKRoomBubbleCellDataStoring> lastBubbleData = bubbles.lastObject;
+    if (lastBubbleData) {
+        lastMessage = lastBubbleData.events.lastObject;
+    }
+    return lastMessage;
+}
+
 - (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages {
 
     // Remove the previous live listener
@@ -298,6 +311,9 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
                             [self.delegate dataSource:self didCellChange:nil];
                         }
                     });
+
+                    // Notify the last message may have changed
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
                 }
             });
         }
@@ -508,6 +524,9 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
         if (self.delegate) {
             [self.delegate dataSource:self didCellChange:nil];
         }
+
+        // Notify the last message may have changed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
     }];
 }
 
@@ -545,6 +564,9 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     if (self.delegate) {
         [self.delegate dataSource:self didCellChange:nil];
     }
+
+    // Notify the last message may have changed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
 }
 
 - (void)replaceLocalEcho:(MXEvent*)localEcho withEvent:(MXEvent*)event {
@@ -574,6 +596,9 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
     if (self.delegate) {
         [self.delegate dataSource:self didCellChange:nil];
     }
+
+    // Notify the last message may have changed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
 }
 
 - (void)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData {
@@ -678,6 +703,9 @@ NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXK
             if (self.delegate) {
                 [self.delegate dataSource:self didCellChange:nil];
             }
+
+            // Notify the last message has changed
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
 
             // Inform about the end if requested
             if (onComplete) {

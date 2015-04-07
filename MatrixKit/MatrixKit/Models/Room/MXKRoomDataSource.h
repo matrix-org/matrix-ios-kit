@@ -20,6 +20,8 @@
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
 
+
+#pragma mark - Cells identifiers
 /**
  String identifying the object used to store and prepare room bubble data.
  */
@@ -46,6 +48,14 @@ extern NSString *const kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier;
 extern NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier;
 
 
+#pragma mark - Notifications
+/**
+ Noticafication sent when last message in the room has changed.
+ */
+extern NSString *const kMXKRoomDataSourceLastMessageChanged;
+
+
+#pragma mark - MXKRoomDataSource
 @protocol MXKRoomBubbleCellDataStoring;
 
 /**
@@ -83,6 +93,12 @@ extern NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier;
  The object is defined when the MXSession has data for the room
  */
 @property (nonatomic, readonly) MXRoom *room;
+
+/**
+ The last event in the room that matches the `eventsFilterForMessages` property.
+ nil if not known yet. 
+ */
+@property (nonatomic, readonly) MXEvent *lastMessage;
 
 
 #pragma mark - Configuration
