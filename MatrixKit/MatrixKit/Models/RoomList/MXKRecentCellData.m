@@ -30,7 +30,7 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventDescription, lastEventDate, unreadCount, containsBingUnread;
+@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventDescription, lastEventDate, containsBingUnread;
 
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKRecentListDataSource *)recentListDataSource2 {
 
@@ -96,15 +96,13 @@
     lastEvent = roomDataSource.lastMessage;
 }
 
-- (void)resetUnreadCount {
-    unreadCount = 0;
-    containsBingUnread = NO;
-}
-
-
 - (void)dealloc {
     lastEvent = nil;
     lastEventDescription = nil;
+}
+
+- (NSUInteger)unreadCount {
+    return roomDataSource.unreadCount;
 }
 
 @end

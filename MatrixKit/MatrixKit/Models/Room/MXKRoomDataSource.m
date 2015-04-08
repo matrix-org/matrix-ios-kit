@@ -629,6 +629,8 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
             bubblesSnapshot = [bubbles mutableCopy];
         }
 
+        NSUInteger unreadCount = 0;
+
         for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot) {
 
             // Retrieve the MXKCellData class to manage the data
@@ -673,11 +675,19 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
             @synchronized (eventsToProcess) {
                 [eventsToProcess removeObject:queuedEvent];
             }
+
+            // Count message sent by other users
+            if (bubbleData.isIncoming) {
+                unreadCount++;
+            }
         }
 
         // Updated data can be displayed now
         dispatch_async(dispatch_get_main_queue(), ^{
             bubbles = bubblesSnapshot;
+
+            // Update the total unread count
+            _unreadCount += unreadCount;
 
             if (self.delegate) {
                 [self.delegate dataSource:self didCellChange:nil];
@@ -697,6 +707,10 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+
+    // The view controller will display all messages
+    // Automatically reset the unread count
+    _unreadCount = 0;
 
     NSInteger count;
     @synchronized(bubbles) {

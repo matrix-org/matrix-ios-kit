@@ -45,7 +45,7 @@
 @property (nonatomic, readonly) NSString *lastEventDescription;
 @property (nonatomic, readonly) NSString *lastEventDate;
 
-@property (nonatomic) NSUInteger unreadCount;
+@property (nonatomic, readonly) NSUInteger unreadCount;
 @property (nonatomic) BOOL containsBingUnread;
 
 #pragma mark - Public methods
@@ -62,7 +62,5 @@
  The `MXKRecentListDataSource` object call this method when it detects a change in the room.
  */
 - (void)update;
-
-- (void)resetUnreadCount;
 
 @end

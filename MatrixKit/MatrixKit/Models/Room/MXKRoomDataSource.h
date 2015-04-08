@@ -96,9 +96,14 @@ extern NSString *const kMXKRoomDataSourceLastMessageChanged;
 
 /**
  The last event in the room that matches the `eventsFilterForMessages` property.
- nil if not known yet. 
  */
 @property (nonatomic, readonly) MXEvent *lastMessage;
+
+/**
+ The number of unread messages.
+ It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
+ */
+@property (nonatomic, readonly) NSUInteger unreadCount;
 
 
 #pragma mark - Configuration
