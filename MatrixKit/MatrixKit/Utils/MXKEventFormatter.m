@@ -18,7 +18,7 @@
 
 #import "MXEvent+MatrixKit.h"
 
-NSString *const kMXKEventFormatterUnsupportedEventDescriptionPrefix = @"Unsupported event: ";
+NSString *const kMXKEventFormatterUnsupportedEventDescriptionPrefix = @"Unsupported event";
 
 @interface MXKEventFormatter () {
     /**
@@ -439,9 +439,15 @@ NSString *const kMXKEventFormatterUnsupportedEventDescriptionPrefix = @"Unsuppor
 
     if (!displayText) {
         NSLog(@"[MXKEventFormatter] Warning: Unsupported event %@)", event.description);
-        if (!_isForSubtitle && !_hideUnsupportedEvents) {
-            // Return event content as unsupported event
-            displayText = [NSString stringWithFormat:@"%@%@", kMXKEventFormatterUnsupportedEventDescriptionPrefix, event.description];
+        if (!_hideUnsupportedEvents) {
+            if (!_isForSubtitle) {
+                // Return event content as unsupported event
+                displayText = [NSString stringWithFormat:@"%@: %@", kMXKEventFormatterUnsupportedEventDescriptionPrefix, event.description];
+            }
+            else {
+                // Return a short error description
+                displayText = kMXKEventFormatterUnsupportedEventDescriptionPrefix;
+            }
 
             if (MXKEventFormatterErrorNone == *error) {
                 *error = MXKEventFormatterErrorUnsupported;
