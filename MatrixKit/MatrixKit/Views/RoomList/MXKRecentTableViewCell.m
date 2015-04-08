@@ -39,7 +39,7 @@
 
         // Report computed values as is
         _roomTitle.text = roomCellData.roomDisplayname;
-        _lastEventDescription.text = roomCellData.lastEventDescription;
+        _lastEventDescription.text = roomCellData.lastEventTextMessage;
         _lastEventDate.text = roomCellData.lastEventDate;
 
         // Set in bold public room name

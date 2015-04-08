@@ -30,7 +30,7 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventDescription, lastEventDate, containsBingUnread;
+@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventDate, containsBingUnread;
 
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKRecentListDataSource *)recentListDataSource2 {
 
@@ -86,7 +86,7 @@
     roomDisplayname = roomDataSource.room.state.displayname;
 
     MXKEventFormatterError error;
-    lastEventDescription = [recentListDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+    lastEventTextMessage = [recentListDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
     lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:lastEvent];
 
     // In case of unread, check whether the last event description contains bing words
@@ -98,7 +98,7 @@
 
 - (void)dealloc {
     lastEvent = nil;
-    lastEventDescription = nil;
+    lastEventTextMessage = nil;
 }
 
 - (NSUInteger)unreadCount {

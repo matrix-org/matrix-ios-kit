@@ -42,7 +42,7 @@
 @property (nonatomic, readonly) MXEvent *lastEvent;
 
 @property (nonatomic, readonly) NSString *roomDisplayname;
-@property (nonatomic, readonly) NSString *lastEventDescription;
+@property (nonatomic, readonly) NSString *lastEventTextMessage;
 @property (nonatomic, readonly) NSString *lastEventDate;
 
 @property (nonatomic, readonly) NSUInteger unreadCount;
