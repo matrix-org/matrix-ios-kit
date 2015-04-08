@@ -289,10 +289,10 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
                         if (self.delegate) {
                             [self.delegate dataSource:self didCellChange:nil];
                         }
-                    });
 
-                    // Notify the last message may have changed
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+                        // Notify the last message may have changed
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+                    });
                 }
             });
         }
