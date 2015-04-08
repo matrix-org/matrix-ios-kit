@@ -99,6 +99,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      */
     CGFloat backPaginationSavedFirstBubbleHeight;
 
+    /**
+     Potential request in progress to join the selected room
+     */
+    MXHTTPOperation *joinRoomRequest;
+
     // Attachment handling
     MXKImageView *highResImageView;
     NSString *AVAudioSessionCategory;
@@ -348,6 +353,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [typingTimer invalidate];
     typingTimer = nil;
+
+    if (joinRoomRequest) {
+        [joinRoomRequest cancel];
+        joinRoomRequest = nil;
+    }
 }
 
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass {
@@ -411,7 +421,39 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - activity indicator
 
 - (void)stopActivityIndicator {
-    
+
+    // Check membership state before stopping the loading wheel
+    // If the user is only invited, auto-join the room
+    if (roomDataSource.room.state.membership == MXMembershipInvite && !joinRoomRequest) {
+        joinRoomRequest = [roomDataSource.room join:^{
+            
+            joinRoomRequest = nil;
+            [self didMatrixSessionStateChange];
+        } failure:^(NSError *error) {
+
+            NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
+
+            joinRoomRequest = nil;
+
+            // Show the error to the end user
+            __weak typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:@"Error"
+                                                   message:[NSString stringWithFormat:@"Failed to join room (%@): %@", roomDataSource.room.state.displayname, error]
+                                                     style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                typeof(self) self = weakSelf;
+                self->currentAlert = nil;
+            }];
+
+            [currentAlert showInViewController:self];
+        }];
+    }
+
+    // Keep the loading wheel displayed while we are joining the room
+    if (joinRoomRequest) {
+        return;
+    }
+
     // Check internal processes before stopping the loading wheel
     if (isBackPaginationInProgress) {
         // Keep activity indicator running

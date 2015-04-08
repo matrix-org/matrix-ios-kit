@@ -39,11 +39,6 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
 @interface MXKRoomDataSource () {
     
     /**
-     Potential request in progress to join the selected room
-     */
-    MXHTTPOperation *joinRoomRequest;
-    
-    /**
      Current back pagination request (if any)
      */
     MXHTTPOperation *backPaginationRequest;
@@ -126,11 +121,6 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
 
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
-    if (joinRoomRequest) {
-        [joinRoomRequest cancel];
-        joinRoomRequest = nil;
-    }
-    
     if (backPaginationRequest) {
         [backPaginationRequest cancel];
         backPaginationRequest = nil;
@@ -164,27 +154,12 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
 
     if (MXSessionStateStoreDataReady < self.mxSession.state) {
 
-        // Check whether the room is not already set (and if no request is in progress to join the room)
-        if (!_room && !joinRoomRequest) {
+        // Check whether the room is not already set
+        if (!_room) {
 
-            MXRoom *selectedRoom = [self.mxSession roomWithRoomId:_roomId];
-            if (selectedRoom) {
-                // Check first whether we have to join the room
-                if (selectedRoom.state.membership == MXMembershipInvite) {
-                    joinRoomRequest = [selectedRoom join:^{
-                        joinRoomRequest = nil;
-                        [self didMXSessionStateChange];
-                    } failure:^(NSError *error) {
-                        joinRoomRequest = nil;
-                        NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", selectedRoom.state.displayname, error);
-                        // TODO Alert user
-                        //                        [[AppDelegate theDelegate] showErrorAsAlert:error];
-                    }];
-                    return;
-                }
-                
-                _room = selectedRoom;
-                
+            _room = [self.mxSession roomWithRoomId:_roomId];
+            if (_room) {
+
                 // @TODO: SDK: we need a reference when paginating back.
                 // Else, how to not conflict with other view controller?
                 [_room resetBackState];
