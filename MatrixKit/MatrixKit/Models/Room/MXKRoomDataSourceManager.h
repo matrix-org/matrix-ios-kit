@@ -33,7 +33,7 @@ typedef enum : NSUInteger {
     MXKRoomDataSourceManagerReleasePolicyNeverRelease,
 
     /**
-     Created `MXKRoomDataSource` instances are once released when they are closed.
+     Created `MXKRoomDataSource` instances are released when they are closed.
      */
     MXKRoomDataSourceManagerReleasePolicyReleaseOnClose,
 

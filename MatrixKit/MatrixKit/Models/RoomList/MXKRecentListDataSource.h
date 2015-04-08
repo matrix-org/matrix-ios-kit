@@ -57,10 +57,6 @@ extern NSString *const kMXKRecentCellIdentifier;
 
 
 #pragma mark - Configuration
-/**
- The type of events to display as messages.
- */
-@property (nonatomic) NSArray *eventsFilterForMessages;
 
 /**
  The events to display texts formatter.
@@ -102,12 +98,5 @@ extern NSString *const kMXKRecentCellIdentifier;
  @return the cell height
  */
 - (CGFloat)cellHeightAtIndex:(NSInteger)index;
-
-/**
- Inform the data source that one of its cells data has changed.
- 
- @param cellData the cell that has changed.
- */
-- (void)didCellDataChange:(id<MXKRecentCellDataStoring>)cellData;
 
 @end

@@ -195,6 +195,10 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
     if (lastBubbleData) {
         lastMessage = lastBubbleData.events.lastObject;
     }
+    else {
+        // If no bubble was loaded yet, use MXRoom data
+        lastMessage = [_room lastMessageWithTypeIn:_eventsFilterForMessages];
+    }
     return lastMessage;
 }
 

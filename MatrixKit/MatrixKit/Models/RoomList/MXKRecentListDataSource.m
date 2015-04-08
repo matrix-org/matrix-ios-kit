@@ -19,14 +19,15 @@
 #import "MXKRecentCellData.h"
 #import "MXKRecentTableViewCell.h"
 
+#import "MXKRoomDataSourceManager.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 
 @interface MXKRecentListDataSource () {
 
-    // The listener to incoming events in the room
-    id liveEventsListener;
+    MXKRoomDataSourceManager *roomDataSourceManager;
 }
 
 @end
@@ -36,6 +37,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession {
     self = [super initWithMatrixSession:matrixSession];
     if (self) {
+
+        roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
 
         cellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
@@ -48,13 +51,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         _eventFormatter.isForSubtitle = YES;
 
-        // Display only a subset of events
-        self.eventsFilterForMessages = @[
-                                         kMXEventTypeStringRoomName,
-                                         kMXEventTypeStringRoomTopic,
-                                         kMXEventTypeStringRoomMember,
-                                         kMXEventTypeStringRoomMessage
-                                         ];
+        [self didMXSessionStateChange];
+
+        // Listen to MXRoomDataSource
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomLastMessageChanged:) name:kMXKRoomDataSourceLastMessageChanged object:nil];
+
     }
     return self;
 }
@@ -64,16 +65,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     filteredCellDataArray = nil;
     
     _eventFormatter = nil;
-    if (liveEventsListener) {
-        [self.mxSession removeListener:liveEventsListener];
-        liveEventsListener = nil;
-    }
     
     [super destroy];
 }
 
 - (void)didMXSessionStateChange {
-    if (MXSessionStateStoreDataReady < self.mxSession.state) {
+    if (MXSessionStateStoreDataReady < self.mxSession.state && (0 == cellDataArray.count)) {
         [self loadData];
     }
 }
@@ -117,118 +114,117 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     return [class heightForCellData:cellData withMaximumWidth:0];
 }
 
-- (void)didCellDataChange:(id<MXKRecentCellDataStoring>)cellData {
-
-    if (self.delegate) {
-        [self.delegate dataSource:self didCellChange:nil];
-    }
-}
-
-- (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages {
-
-    // Remove the previous live listener
-    if (liveEventsListener) {
-        [self.mxSession removeListener:liveEventsListener];
-    }
-
-    // And register a new one with the requested filter
-    _eventsFilterForMessages = [eventsFilterForMessages copy];
-    liveEventsListener = [self.mxSession listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
-        if (MXEventDirectionForwards == direction) {
-
-            // Check user's membership in live room state (We will remove left rooms from recents)
-            MXRoom *mxRoom = [self.mxSession roomWithRoomId:event.roomId];
-            BOOL isLeft = (mxRoom == nil || mxRoom.state.membership == MXMembershipLeave || mxRoom.state.membership == MXMembershipBan);
-
-            // Consider this new event as unread only if the sender is not the user and if the room is not visible
-            BOOL isUnread = (![event.userId isEqualToString:self.mxSession.matrixRestClient.credentials.userId]
-                             /* @TODO: Applicable at this low level? && ![[AppDelegate theDelegate].masterTabBarController.visibleRoomId isEqualToString:event.roomId]*/);
-
-            // Look for the room
-            BOOL isFound = NO;
-            for (NSUInteger index = 0; index < cellDataArray.count; index++) {
-                id<MXKRecentCellDataStoring> cellData = cellDataArray[index];
-                if ([event.roomId isEqualToString:cellData.room.state.roomId]) {
-                    isFound = YES;
-                    // Decrement here unreads count for this recent (we will add later the refreshed count)
-                    // @TODO unreadCount -= recentRoom.unreadCount;
-
-                    if (isLeft) {
-                        // Remove left room
-                        [cellDataArray removeObjectAtIndex:index];
-
-                        if (filteredCellDataArray) {
-                            NSUInteger filteredIndex = [filteredCellDataArray indexOfObject:cellData];
-                            if (filteredIndex != NSNotFound) {
-                                [filteredCellDataArray removeObjectAtIndex:filteredIndex];
-                            }
-                        }
-                    } else {
-                        if ([cellData updateWithLastEvent:event andRoomState:roomState markAsUnread:isUnread]) {
-                            if (index) {
-                                // Move this room at first position
-                                [cellDataArray removeObjectAtIndex:index];
-                                [cellDataArray insertObject:cellData atIndex:0];
-                            }
-                            // Update filtered recents (if any)
-                            if (filteredCellDataArray) {
-                                NSUInteger filteredIndex = [filteredCellDataArray indexOfObject:cellData];
-                                if (filteredIndex && filteredIndex != NSNotFound) {
-                                    [filteredCellDataArray removeObjectAtIndex:filteredIndex];
-                                    [filteredCellDataArray insertObject:cellData atIndex:0];
-                                }
-                            }
-                        }
-                        // Refresh global unreads count
-                        // @TODO unreadCount += recentRoom.unreadCount;
-                    }
-
-                    // Signal change
-                    if (self.delegate) {
-                        [self.delegate dataSource:self didCellChange:nil];
-                    }
-                    break;
-                }
-            }
-
-            if (!isFound && !isLeft) {
-                // Insert in first position this new room
-                Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-                id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithLastEvent:event andRoomState:mxRoom.state markAsUnread:isUnread andRecentListDataSource:self];
-                if (cellData) {
-
-                    [cellDataArray insertObject:cellData atIndex:0];
-
-                    // Signal change
-                    if (self.delegate) {
-                        [self.delegate dataSource:self didCellChange:nil];
-                    }
-                }
-            }
-        }
-    }];
-
-    [self loadData];
-}
+//- (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages {
+//
+//    // Remove the previous live listener
+//    if (liveEventsListener) {
+//        [self.mxSession removeListener:liveEventsListener];
+//    }
+//
+//    // And register a new one with the requested filter
+//    _eventsFilterForMessages = [eventsFilterForMessages copy];
+//    liveEventsListener = [self.mxSession listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
+//        if (MXEventDirectionForwards == direction) {
+//
+//            // Check user's membership in live room state (We will remove left rooms from recents)
+//            MXRoom *mxRoom = [self.mxSession roomWithRoomId:event.roomId];
+//            BOOL isLeft = (mxRoom == nil || mxRoom.state.membership == MXMembershipLeave || mxRoom.state.membership == MXMembershipBan);
+//
+//            // Consider this new event as unread only if the sender is not the user and if the room is not visible
+//            BOOL isUnread = (![event.userId isEqualToString:self.mxSession.matrixRestClient.credentials.userId]
+//                             /* @TODO: Applicable at this low level? && ![[AppDelegate theDelegate].masterTabBarController.visibleRoomId isEqualToString:event.roomId]*/);
+//
+//            // Look for the room
+//            BOOL isFound = NO;
+//            for (NSUInteger index = 0; index < cellDataArray.count; index++) {
+//                id<MXKRecentCellDataStoring> cellData = cellDataArray[index];
+//                if ([event.roomId isEqualToString:cellData.room.state.roomId]) {
+//                    isFound = YES;
+//                    // Decrement here unreads count for this recent (we will add later the refreshed count)
+//                    // @TODO unreadCount -= recentRoom.unreadCount;
+//
+//                    if (isLeft) {
+//                        // Remove left room
+//                        [cellDataArray removeObjectAtIndex:index];
+//
+//                        if (filteredCellDataArray) {
+//                            NSUInteger filteredIndex = [filteredCellDataArray indexOfObject:cellData];
+//                            if (filteredIndex != NSNotFound) {
+//                                [filteredCellDataArray removeObjectAtIndex:filteredIndex];
+//                            }
+//                        }
+//                    } else {
+//                        if ([cellData updateWithLastEvent:event andRoomState:roomState markAsUnread:isUnread]) {
+//                            if (index) {
+//                                // Move this room at first position
+//                                [cellDataArray removeObjectAtIndex:index];
+//                                [cellDataArray insertObject:cellData atIndex:0];
+//                            }
+//                            // Update filtered recents (if any)
+//                            if (filteredCellDataArray) {
+//                                NSUInteger filteredIndex = [filteredCellDataArray indexOfObject:cellData];
+//                                if (filteredIndex && filteredIndex != NSNotFound) {
+//                                    [filteredCellDataArray removeObjectAtIndex:filteredIndex];
+//                                    [filteredCellDataArray insertObject:cellData atIndex:0];
+//                                }
+//                            }
+//                        }
+//                        // Refresh global unreads count
+//                        // @TODO unreadCount += recentRoom.unreadCount;
+//                    }
+//
+//                    // Signal change
+//                    if (self.delegate) {
+//                        [self.delegate dataSource:self didCellChange:nil];
+//                    }
+//                    break;
+//                }
+//            }
+//
+//            if (!isFound && !isLeft) {
+//                // Insert in first position this new room
+//                Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
+//                id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithLastEvent:event andRoomState:mxRoom.state markAsUnread:isUnread andRecentListDataSource:self];
+//                if (cellData) {
+//
+//                    [cellDataArray insertObject:cellData atIndex:0];
+//
+//                    // Signal change
+//                    if (self.delegate) {
+//                        [self.delegate dataSource:self didCellChange:nil];
+//                    }
+//                }
+//            }
+//        }
+//    }];
+//
+//    [self loadData];
+//}
 
 
 #pragma mark - Events processing
 - (void)loadData {
-    NSArray *recentEvents = [self.mxSession recentsWithTypeIn:_eventsFilterForMessages];
+
+    // Reset the table
+    [cellDataArray removeAllObjects];
 
     // Retrieve the MXKCellData class to manage the data
     Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
     NSAssert([class conformsToProtocol:@protocol(MXKRecentCellDataStoring)], @"MXKRecentListDataSource only manages MXKCellData that conforms to MXKRecentCellDataStoring protocol");
 
-    for (MXEvent *recentEvent in recentEvents) {
+    for (MXRoom *room in self.mxSession.rooms) {
 
-        MXRoom *mxRoom = [self.mxSession roomWithRoomId:recentEvent.roomId];
-        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithLastEvent:recentEvent andRoomState:mxRoom.state markAsUnread:NO andRecentListDataSource:self];
+        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
+
+        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithLastEvent:roomDataSource.lastMessage
+                                                                    andRoomState:room.state
+                                                                    markAsUnread:NO
+                                                         andRecentListDataSource:self];
         if (cellData) {
             [cellDataArray addObject:cellData];
         }
     }
-    
+
     // Update here data source state if it is not already ready
     if (state != MXKDataSourceStateReady) {
         state = MXKDataSourceStateReady;
@@ -237,7 +233,28 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
     }
 
+    // Order them by origin_server_ts
+    [cellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2) {
+        NSComparisonResult result = NSOrderedAscending;
+        if (cellData2.lastEvent.originServerTs > cellData1.lastEvent.originServerTs) {
+            result = NSOrderedDescending;
+        } else if (cellData2.lastEvent.originServerTs == cellData1.lastEvent.originServerTs) {
+            result = NSOrderedSame;
+        }
+        return result;
+    }];
+
     [self.delegate dataSource:self didCellChange:nil];
+}
+
+- (void)didRoomLastMessageChanged:(NSNotification *)notif {
+
+    MXKRoomDataSource *roomDataSource = notif.object;
+    if (roomDataSource.mxSession == self.mxSession) {
+
+        // For now, reload all data
+        [self loadData];
+    }
 }
 
 
