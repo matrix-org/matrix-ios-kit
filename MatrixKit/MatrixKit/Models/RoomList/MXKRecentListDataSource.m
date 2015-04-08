@@ -85,7 +85,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         
         for (id<MXKRecentCellDataStoring> cellData in cellDataArray) {
             for (NSString* pattern in patternsList) {
-                if ([[cellData.room.state displayname] rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound) {
+                if ([[cellData.roomDataSource.room.state displayname] rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound) {
                     [filteredCellDataArray addObject:cellData];
                     break;
                 }
@@ -216,10 +216,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
 
-        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithLastEvent:roomDataSource.lastMessage
-                                                                    andRoomState:room.state
-                                                                    markAsUnread:NO
-                                                         andRecentListDataSource:self];
+        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
         if (cellData) {
             [cellDataArray addObject:cellData];
         }
@@ -233,6 +230,38 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
     }
 
+    [self sortCellData];
+}
+
+- (void)didRoomLastMessageChanged:(NSNotification *)notif {
+
+    MXKRoomDataSource *roomDataSource = notif.object;
+    if (roomDataSource.mxSession == self.mxSession) {
+
+        // Retrieve the corresponding cell data
+        id<MXKRecentCellDataStoring> theRoomData;
+        for (id<MXKRecentCellDataStoring> roomData in cellDataArray) {
+            if (roomData.roomDataSource ==roomDataSource) {
+                theRoomData = roomData;
+                break;
+            }
+        }
+
+        // And update it
+        if (theRoomData) {
+            [theRoomData update];
+            [self sortCellData];
+        }
+        else {
+            NSLog(@"[MXKRecentListDataSource] didRoomLastMessageChanged: Cannot find the changed room data source");
+        }
+
+    }
+}
+
+// Order cells
+- (void)sortCellData {
+
     // Order them by origin_server_ts
     [cellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2) {
         NSComparisonResult result = NSOrderedAscending;
@@ -244,17 +273,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         return result;
     }];
 
+    // And inform the delegate about the update
     [self.delegate dataSource:self didCellChange:nil];
-}
-
-- (void)didRoomLastMessageChanged:(NSNotification *)notif {
-
-    MXKRoomDataSource *roomDataSource = notif.object;
-    if (roomDataSource.mxSession == self.mxSession) {
-
-        // For now, reload all data
-        [self loadData];
-    }
 }
 
 

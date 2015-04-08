@@ -16,13 +16,12 @@
 
 #import "MXKRecentCellData.h"
 
+#import "MXKRoomDataSource.h"
 #import "MXKRecentListDataSource.h"
 
 @interface MXKRecentCellData () {
 
     MXKRecentListDataSource *recentListDataSource;
-
-    MXRoom *mxRoom;
 
     // Keep reference on last event (used in case of redaction)
     MXEvent *lastEvent;
@@ -31,66 +30,70 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize room, lastEvent, roomDisplayname, lastEventDescription, lastEventDate, unreadCount, containsBingUnread;
+@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventDescription, lastEventDate, unreadCount, containsBingUnread;
 
-- (instancetype)initWithLastEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState markAsUnread:(BOOL)isUnread andRecentListDataSource:(MXKRecentListDataSource*)recentListDataSource2 {
+- (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKRecentListDataSource *)recentListDataSource2 {
 
     self = [self init];
     if (self) {
+        roomDataSource = roomDataSource2;
         recentListDataSource = recentListDataSource2;
-        room = [recentListDataSource.mxSession roomWithRoomId:event.roomId];
 
-        [self updateWithLastEvent:event andRoomState:roomState markAsUnread:isUnread];
-
-        // @TODO: Do some cleaning: following code seems duplicating what updateWithLastEvent: does
-        unreadCount = isUnread ? 1 : 0;
-
-        MXKEventFormatterError error;
-        lastEventDescription = [recentListDataSource.eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
-
-        // In case of unread, check whether the last event description contains bing words
-        containsBingUnread = (isUnread && !event.isState && !event.redactedBecause && NO /*[mxHandler containsBingWord:_lastEventDescription] @TODO*/);
-
-        // Keep ref on event
-        lastEvent = event;
+        [self update];
     }
     return self;
 }
 
-- (BOOL)updateWithLastEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState markAsUnread:(BOOL)isUnread {
+- (void)update {
 
-    lastEvent = event;
-    roomDisplayname = room.state.displayname;
+//    lastEvent = event;
+//    roomDisplayname = room.state.displayname;
+//
+//    // Check whether the description of the provided event is not empty
+//    MXKEventFormatterError error;
+//    NSString *description = [recentListDataSource.eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
+//
+//    if (description.length) {
+//        // Update current last event
+//        lastEvent = event;
+//        lastEventDescription = description;
+//        lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:event];
+//        if (isUnread) {
+//            unreadCount ++;
+//            containsBingUnread = (containsBingUnread || (!event.isState && !event.redactedBecause && NO /*[mxHandler containsBingWord:_lastEventDescription] @TODO*/));
+//        }
+//        return YES;
+//    } else if (lastEventDescription.length) {
+//        // Here we tried to update the last event with a new live one, but the description of this new one is empty.
+//        // Consider the specific case of redaction event
+//        if (event.eventType == MXEventTypeRoomRedaction) {
+//            // Check whether the redacted event is the current last event
+//            if ([event.redacts isEqualToString:lastEvent.eventId]) {
+//                // Update last event description
+//                MXEvent *redactedEvent = [lastEvent prune];
+//                redactedEvent.redactedBecause = event.originalDictionary;
+//
+//                return YES;
+//            }
+//        }
+//    }
+//    return NO;
 
-    // Check whether the description of the provided event is not empty
+    // @TODO: Do some cleaning: following code seems duplicating what updateWithLastEvent: does
+    //unreadCount = isUnread ? 1 : 0;
+
+    lastEvent = roomDataSource.lastMessage;
+    roomDisplayname = roomDataSource.room.state.displayname;
+
     MXKEventFormatterError error;
-    NSString *description = [recentListDataSource.eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
+    lastEventDescription = [recentListDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+    lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:lastEvent];
 
-    if (description.length) {
-        // Update current last event
-        lastEvent = event;
-        lastEventDescription = description;
-        lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:event];
-        if (isUnread) {
-            unreadCount ++;
-            containsBingUnread = (containsBingUnread || (!event.isState && !event.redactedBecause && NO /*[mxHandler containsBingWord:_lastEventDescription] @TODO*/));
-        }
-        return YES;
-    } else if (lastEventDescription.length) {
-        // Here we tried to update the last event with a new live one, but the description of this new one is empty.
-        // Consider the specific case of redaction event
-        if (event.eventType == MXEventTypeRoomRedaction) {
-            // Check whether the redacted event is the current last event
-            if ([event.redacts isEqualToString:lastEvent.eventId]) {
-                // Update last event description
-                MXEvent *redactedEvent = [lastEvent prune];
-                redactedEvent.redactedBecause = event.originalDictionary;
+    // In case of unread, check whether the last event description contains bing words
+    //containsBingUnread = (!event.isState && !event.redactedBecause && NO /*[mxHandler containsBingWord:_lastEventDescription] @TODO*/);
 
-                return YES;
-            }
-        }
-    }
-    return NO;
+    // Keep ref on event
+    lastEvent = roomDataSource.lastMessage;
 }
 
 - (void)resetUnreadCount {

@@ -43,7 +43,7 @@
         _lastEventDate.text = roomCellData.lastEventDate;
 
         // Set in bold public room name
-        if (roomCellData.room.state.isPublic) {
+        if (roomCellData.roomDataSource.room.state.isPublic) {
             _roomTitle.font = [UIFont boldSystemFontOfSize:20];
         } else {
             _roomTitle.font = [UIFont systemFontOfSize:19];

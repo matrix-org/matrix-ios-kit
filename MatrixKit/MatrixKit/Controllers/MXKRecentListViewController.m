@@ -138,7 +138,7 @@
     if (_delegate) {
         id<MXKRecentCellDataStoring> cellData = [dataSource cellDataAtIndex:indexPath.row];
 
-        [_delegate recentListViewController:self didSelectRoom:cellData.room.state.roomId];
+        [_delegate recentListViewController:self didSelectRoom:cellData.roomDataSource.room.state.roomId];
     }
 }
 

@@ -19,6 +19,8 @@
 
 #import "MXKCellData.h"
 
+#import "MXKRoomDataSource.h"
+
 @class MXKRecentListDataSource;
 
 /**
@@ -30,9 +32,9 @@
 #pragma mark - Data displayed by a room recent cell
 
 /**
- The room displayed by the cell.
+ The `MXKRoomDataSource` instance of the room displayed by the cell.
  */
-@property (nonatomic, readonly) MXRoom *room;
+@property (nonatomic, readonly) MXKRoomDataSource *roomDataSource;
 
 /**
  The last event to display.
@@ -50,14 +52,16 @@
 /**
  Create a new `MXKCellData` object for a new bubble cell.
 
+ @param roomDataSource the `MXKRoomDataSource` object that has data about the room.
  @param recentListDataSource the `MXKRecentListDataSource` object that will use this instance.
  @return the newly created instance.
  */
-- (instancetype)initWithLastEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState markAsUnread:(BOOL)isUnread andRecentListDataSource:(MXKRecentListDataSource*)recentListDataSource;
+- (instancetype)initWithRoomDataSource:(MXKRoomDataSource*)roomDataSource andRecentListDataSource:(MXKRecentListDataSource*)recentListDataSource;
 
-// Update the current last event description with the provided event, except if this description is empty (see unsupported/unexpected events).
-// Return true when the provided event is considered as new last event
-- (BOOL)updateWithLastEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState markAsUnread:(BOOL)isUnread;
+/**
+ The `MXKRecentListDataSource` object call this method when it detects a change in the room.
+ */
+- (void)update;
 
 - (void)resetUnreadCount;
 
