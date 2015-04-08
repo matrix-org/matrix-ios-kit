@@ -39,8 +39,15 @@
 
         // Report computed values as is
         _roomTitle.text = roomCellData.roomDisplayname;
-        _lastEventDescription.text = roomCellData.lastEventTextMessage;
         _lastEventDate.text = roomCellData.lastEventDate;
+
+        // Manage lastEventAttributedTextMessage optional property
+        if ([roomCellData respondsToSelector:@selector(lastEventAttributedTextMessage)]) {
+            _lastEventDescription.attributedText = roomCellData.lastEventAttributedTextMessage;
+        }
+        else {
+            _lastEventDescription.text = roomCellData.lastEventTextMessage;
+        }
 
         // Set in bold public room name
         if (roomCellData.roomDataSource.room.state.isPublic) {

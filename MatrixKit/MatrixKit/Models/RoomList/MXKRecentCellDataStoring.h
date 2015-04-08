@@ -59,8 +59,14 @@
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource*)roomDataSource andRecentListDataSource:(MXKRecentListDataSource*)recentListDataSource;
 
 /**
- The `MXKRecentListDataSource` object call this method when it detects a change in the room.
+ The `MXKRecentListDataSource` object calls this method when it detects a change in the room.
  */
 - (void)update;
+
+@optional
+/**
+ The `lastEventTextMessage` with sets of attributes.
+ */
+@property (nonatomic, readonly) NSAttributedString *lastEventAttributedTextMessage;
 
 @end

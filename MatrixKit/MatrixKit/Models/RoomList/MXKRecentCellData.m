@@ -30,7 +30,7 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventDate, containsBingUnread;
+@synthesize roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate, containsBingUnread;
 
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKRecentListDataSource *)recentListDataSource2 {
 
@@ -84,10 +84,37 @@
 
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
+    lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:lastEvent];
 
+    // Compute the text message
     MXKEventFormatterError error;
     lastEventTextMessage = [recentListDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
-    lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:lastEvent];
+
+    // Manage error
+    if (error != MXKEventFormatterErrorNone) {
+        switch (error) {
+            case MXKEventFormatterErrorUnsupported:
+                lastEvent.mxkState = MXKEventStateUnsupported;
+                break;
+            case MXKEventFormatterErrorUnexpected:
+                lastEvent.mxkState = MXKEventStateUnexpected;
+                break;
+            case MXKEventFormatterErrorUnknownEventType:
+                lastEvent.mxkState = MXKEventStateUnknownType;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    // Compute the attribute text message
+    NSDictionary *attributes = [recentListDataSource.eventFormatter stringAttributesForEvent:lastEvent];
+    if (attributes) {
+        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage attributes:attributes];
+    } else {
+        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage];
+    }
 
     // In case of unread, check whether the last event description contains bing words
     //containsBingUnread = (!event.isState && !event.redactedBecause && NO /*[mxHandler containsBingWord:_lastEventDescription] @TODO*/);
@@ -99,6 +126,7 @@
 - (void)dealloc {
     lastEvent = nil;
     lastEventTextMessage = nil;
+    lastEventAttributedTextMessage = nil;
 }
 
 - (NSUInteger)unreadCount {
