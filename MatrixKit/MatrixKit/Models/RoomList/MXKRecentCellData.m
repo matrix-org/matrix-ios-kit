@@ -46,9 +46,7 @@
 
 - (void)update {
 
-//    lastEvent = event;
-//    roomDisplayname = room.state.displayname;
-//
+
 //    // Check whether the description of the provided event is not empty
 //    MXKEventFormatterError error;
 //    NSString *description = [recentListDataSource.eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
@@ -79,9 +77,6 @@
 //    }
 //    return NO;
 
-    // @TODO: Do some cleaning: following code seems duplicating what updateWithLastEvent: does
-    //unreadCount = isUnread ? 1 : 0;
-
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
     lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:lastEvent];
@@ -106,6 +101,10 @@
             default:
                 break;
         }
+    }
+
+    if (0 == lastEventTextMessage.length) {
+        lastEventTextMessage = @"TODO: Manage redaction";
     }
 
     // Compute the attribute text message
