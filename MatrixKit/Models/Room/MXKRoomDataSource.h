@@ -50,9 +50,10 @@ extern NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier;
 
 #pragma mark - Notifications
 /**
- Noticafication sent when last message in the room has changed.
+ Notification sent when an information about the room has changed.
+ Tracked informations are: lastMessage, unreadCount
  */
-extern NSString *const kMXKRoomDataSourceLastMessageChanged;
+extern NSString *const kMXKRoomDataSourceMetaDataChanged;
 
 
 #pragma mark - MXKRoomDataSource

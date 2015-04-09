@@ -33,7 +33,7 @@ NSString *const kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoo
 NSString *const kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier";
 NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier";
 
-NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastMessageChanged";
+NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
 
 
 @interface MXKRoomDataSource () {
@@ -291,7 +291,7 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
                         }
 
                         // Notify the last message may have changed
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
                     });
                 }
             });
@@ -505,7 +505,7 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
         }
 
         // Notify the last message may have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }];
 }
 
@@ -545,7 +545,7 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
     }
 
     // Notify the last message may have changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
 }
 
 - (void)replaceLocalEcho:(MXEvent*)localEcho withEvent:(MXEvent*)event {
@@ -577,7 +577,7 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
     }
 
     // Notify the last message may have changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
 }
 
 - (void)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData {
@@ -693,8 +693,8 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
                 [self.delegate dataSource:self didCellChange:nil];
             }
 
-            // Notify the last message has changed
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceLastMessageChanged object:self userInfo:nil];
+            // Notify the last message and unreadCount have changed
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
 
             // Inform about the end if requested
             if (onComplete) {
@@ -708,9 +708,12 @@ NSString *const kMXKRoomDataSourceLastMessageChanged = @"kMXKRoomDataSourceLastM
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    // The view controller will display all messages
+    // The view controller is going to display all messages
     // Automatically reset the unread count
     _unreadCount = 0;
+
+    // Notify the unreadCount has changed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
 
     NSInteger count;
     @synchronized(bubbles) {

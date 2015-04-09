@@ -54,13 +54,15 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         [self didMXSessionStateChange];
 
         // Listen to MXRoomDataSource
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomLastMessageChanged:) name:kMXKRoomDataSourceLastMessageChanged object:nil];
-
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
     }
     return self;
 }
 
 - (void)destroy {
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+
     cellDataArray = nil;
     filteredCellDataArray = nil;
     
@@ -233,7 +235,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [self sortCellData];
 }
 
-- (void)didRoomLastMessageChanged:(NSNotification *)notif {
+- (void)didRoomInformationChanged:(NSNotification *)notif {
 
     MXKRoomDataSource *roomDataSource = notif.object;
     if (roomDataSource.mxSession == self.mxSession) {
