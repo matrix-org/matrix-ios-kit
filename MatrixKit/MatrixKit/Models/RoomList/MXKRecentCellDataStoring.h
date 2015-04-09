@@ -24,7 +24,7 @@
 @class MXKRecentListDataSource;
 
 /**
- `MXKRoomCellDataStoring` defines a protocol a class must conform in order to store MXKRoom cell data
+ `MXKRecentCellDataStoring` defines a protocol a class must conform in order to store recent cell data
  managed by `MXKRecentListDataSource`.
  */
 @protocol MXKRecentCellDataStoring <NSObject>
@@ -50,7 +50,7 @@
 
 #pragma mark - Public methods
 /**
- Create a new `MXKCellData` object for a new bubble cell.
+ Create a new `MXKCellData` object for a new recent cell.
 
  @param roomDataSource the `MXKRoomDataSource` object that has data about the room.
  @param recentListDataSource the `MXKRecentListDataSource` object that will use this instance.

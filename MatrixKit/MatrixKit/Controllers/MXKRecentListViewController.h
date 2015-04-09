@@ -45,7 +45,7 @@ limitations under the License.
 /**
  The recents table view
  */
-@property (nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic) UITableView *tableView;
 
 /**
  The current data source associated to the view controller.
