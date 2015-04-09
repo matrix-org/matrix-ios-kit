@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "7.0"
 
   s.source       = { :git => "https://github.com/matrix-org/matrix-ios-kit.git", :tag => "v0.0.1" }
-  s.source_files  = "MatrixKit", "MatrixKit/MatrixKit/**/*.{h,m}"
-  s.resources	 = 'MatrixKit/MatrixKit/**/*.{xib}'
+  s.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m}"
+  s.resources	 = 'MatrixKit/**/*.{xib}'
   
   s.requires_arc  = true
 
