@@ -45,7 +45,7 @@
 /**
  The members table view
  */
-@property (nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic) UITableView *tableView;
 
 /**
  The current data source associated to the view controller.

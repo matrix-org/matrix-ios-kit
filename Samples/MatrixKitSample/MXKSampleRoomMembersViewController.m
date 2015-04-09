@@ -14,27 +14,21 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKSampleRoomMembersViewController.h"
 
-#import "MXEvent+MatrixKit.h"
+@interface MXKSampleRoomMembersViewController ()
 
-#import "MXKAlert.h"
-#import "MXKMediaManager.h"
+@end
 
-#import "MXKViewController.h"
-#import "MXKRoomViewController.h"
-#import "MXKRecentListViewController.h"
-#import "MXKRoomMemberListViewController.h"
+@implementation MXKSampleRoomMembersViewController
 
-#import "MXKRoomInputToolbarView.h"
-#import "MXKRoomInputToolbarViewWithHPGrowingText.h"
+- (void)viewDidLoad {
+    [super viewDidLoad];
+}
 
-#import "MXKRoomDataSourceManager.h"
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
 
-#import "MXKRoomBubbleCellData.h"
-#import "MXKRoomBubbleMergingMessagesCellData.h"
-
-/**
- The Matrix iOS Kit version.
- */
-FOUNDATION_EXPORT NSString *MatrixKitVersion;
+@end

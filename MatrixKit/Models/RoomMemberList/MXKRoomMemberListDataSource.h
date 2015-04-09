@@ -49,20 +49,16 @@ extern NSString *const kMXKRoomMemberCellIdentifier;
 @property (nonatomic, readonly) NSString *roomId;
 
 /**
- The matrix session.
- */
-@property (nonatomic, readonly) MXSession *mxSession;
-
-/**
  YES by default, sort members by considering their presence.
  Set NO to sort members in alphabetic order.
  */
 @property (nonatomic) BOOL sortMembersUsingLastSeenTime;
 
 /**
- Set YES to show left members. By default this property value is NO.
+ YES by default, hide members who have left the room.
+ Set NO to show this left members.
  */
-@property (nonatomic) BOOL displayLeftUsers;
+@property (nonatomic) BOOL hideLeftUsers;
 
 
 #pragma mark - Life cycle

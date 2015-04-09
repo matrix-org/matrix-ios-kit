@@ -16,25 +16,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXEvent+MatrixKit.h"
+#import "MatrixKit.h"
 
-#import "MXKAlert.h"
-#import "MXKMediaManager.h"
+@interface MXKSampleRoomMembersViewController : MXKRoomMemberListViewController
 
-#import "MXKViewController.h"
-#import "MXKRoomViewController.h"
-#import "MXKRecentListViewController.h"
-#import "MXKRoomMemberListViewController.h"
 
-#import "MXKRoomInputToolbarView.h"
-#import "MXKRoomInputToolbarViewWithHPGrowingText.h"
+@end
 
-#import "MXKRoomDataSourceManager.h"
-
-#import "MXKRoomBubbleCellData.h"
-#import "MXKRoomBubbleMergingMessagesCellData.h"
-
-/**
- The Matrix iOS Kit version.
- */
-FOUNDATION_EXPORT NSString *MatrixKitVersion;

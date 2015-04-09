@@ -51,6 +51,8 @@
 }
 
 - (void)dealloc {
+    roomMember = nil;
+    roomMemberListDataSource = nil;
 }
 
 - (MXSession*)mxSession {

@@ -66,6 +66,7 @@
 		F0CE56EA1AA8BB5E003BE77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E01AA8BB5E003BE77A /* main.m */; };
 		F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E21AA8BB5E003BE77A /* MXKSampleMainTableViewController.m */; };
 		F0CE56EC1AA8BB5E003BE77A /* MXKSampleRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */; };
+		F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */; };
 		F0F1489B1AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F1489A1AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.m */; };
 		F0F148A51AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A21AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m */; };
 		F0F148A61AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A41AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m */; };
@@ -190,6 +191,8 @@
 		F0CE56E21AA8BB5E003BE77A /* MXKSampleMainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleMainTableViewController.m; sourceTree = "<group>"; };
 		F0CE56E31AA8BB5E003BE77A /* MXKSampleRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomViewController.h; sourceTree = "<group>"; };
 		F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomViewController.m; sourceTree = "<group>"; };
+		F0E0CE691AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomMembersViewController.h; sourceTree = "<group>"; };
+		F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomMembersViewController.m; sourceTree = "<group>"; };
 		F0F148991AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleJSQMessagesViewController.h; sourceTree = "<group>"; };
 		F0F1489A1AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleJSQMessagesViewController.m; sourceTree = "<group>"; };
 		F0F148A11AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleJSQRoomBubbleCellData.h; sourceTree = "<group>"; };
@@ -295,10 +298,10 @@
 		3219CBBB1AA6FB1C0027D7E2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */,
-				F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */,
 				32CEE2201AB1E37600F7C74D /* MXKRecentListViewController.h */,
 				32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */,
+				F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */,
+				F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */,
 				3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */,
 				3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */,
 				F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */,
@@ -311,9 +314,9 @@
 		3219CBBC1AA6FB1C0027D7E2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F05FB1721AD5129500DC0647 /* RoomMemberList */,
 				F07E18031ABC2EDA00DE3766 /* Room */,
 				32CEE2251AB1EC9B00F7C74D /* RoomList */,
+				F05FB1721AD5129500DC0647 /* RoomMemberList */,
 				F00BB44B1AB88DCC00AE388E /* MXKAlert.h */,
 				F00BB44C1AB88DCC00AE388E /* MXKAlert.m */,
 				328AC48D1AA86E110044A6FB /* MXKDataSource.h */,
@@ -327,10 +330,10 @@
 		3219CBBD1AA6FB1C0027D7E2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				F05FB17D1AD6643900DC0647 /* RoomMemberList */,
+				328AC47A1AA75D140044A6FB /* RoomBubbleList */,
 				F00BB4471AB840B300AE388E /* RoomInputToolbar */,
 				32CEE22D1AB1EE0900F7C74D /* RoomList */,
-				328AC47A1AA75D140044A6FB /* RoomBubbleList */,
+				F05FB17D1AD6643900DC0647 /* RoomMemberList */,
 				328AC4901AA8AF5B0044A6FB /* MXKCellRendering.h */,
 				F07D74AA1AC5A29800D83B98 /* MXKEventDetailsView.h */,
 				F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */,
@@ -502,6 +505,8 @@
 				F0CE56E21AA8BB5E003BE77A /* MXKSampleMainTableViewController.m */,
 				32CEE2311AB1F5CB00F7C74D /* MXKSampleRecentsViewController.h */,
 				32CEE2321AB1F5CB00F7C74D /* MXKSampleRecentsViewController.m */,
+				F0E0CE691AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.h */,
+				F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */,
 				F0CE56E31AA8BB5E003BE77A /* MXKSampleRoomViewController.h */,
 				F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */,
 			);
@@ -700,6 +705,7 @@
 				32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */,
 				32CEE2231AB1E37600F7C74D /* MXKRecentListViewController.m in Sources */,
 				32CEE22C1AB1EC9B00F7C74D /* MXKRecentCellData.m in Sources */,
+				F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */,
 				F0F148C21AB31237005F5D4A /* MXKMediaLoader.m in Sources */,
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
 				F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */,

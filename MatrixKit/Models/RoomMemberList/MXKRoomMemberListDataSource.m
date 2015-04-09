@@ -54,7 +54,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         cellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
         _sortMembersUsingLastSeenTime = YES;
-        _displayLeftUsers = NO;
+        _hideLeftUsers = YES;
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRoomMemberCellData.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
@@ -95,18 +95,30 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 // Register on typing notif
                 [self listenTypingNotifications];
                 
-                // Update here data source state if it is not already ready
+                // Register on members events
+                [self listenMembersEvents];
+                
+                // Update here data source state
                 state = MXKDataSourceStateReady;
+                
+                // Notify delegate
+                if (self.delegate) {
+                    if ([self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
+                        [self.delegate dataSource:self didStateChange:state];
+                    }
+                    [self.delegate dataSource:self didCellChange:nil];
+                }
             }
             else {
                 NSLog(@"[MXKRoomMemberDataSource] The user does not know the room %@", _roomId);
                 
-                // Update here data source state if it is not already ready
+                // Update here data source state
                 state = MXKDataSourceStateFailed;
-            }
-            
-            if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
-                [self.delegate dataSource:self didStateChange:state];
+                
+                // Notify delegate
+                if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
+                    [self.delegate dataSource:self didStateChange:state];
+                }
             }
         }
     }
@@ -132,7 +144,9 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         filteredCellDataArray = nil;
     }
     
-    [self.delegate dataSource:self didCellChange:nil];
+    if (self.delegate) {
+        [self.delegate dataSource:self didCellChange:nil];
+    }
 }
 
 - (id<MXKRoomMemberCellDataStoring>)cellDataAtIndex:(NSInteger)index {
@@ -151,20 +165,13 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     return [class heightForCellData:cellData withMaximumWidth:0];
 }
 
-- (void)didCellDataChange:(id<MXKRoomMemberCellDataStoring>)cellData {
-
-    if (self.delegate) {
-        [self.delegate dataSource:self didCellChange:nil];
-    }
-}
-
 #pragma mark - Members processing
 
 - (void)loadData {
     
     NSArray* membersList = [mxRoom.state members];
     
-    if (!_displayLeftUsers) {
+    if (_hideLeftUsers) {
         NSMutableArray* filteredMembers = [[NSMutableArray alloc] init];
         
         for (MXRoomMember* member in membersList) {
@@ -189,16 +196,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     }
     
     [self sortMembers];
-    
-    // Update here data source state if it is not already ready
-    if (state != MXKDataSourceStateReady) {
-        state = MXKDataSourceStateReady;
-        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
-            [self.delegate dataSource:self didStateChange:state];
-        }
-    }
-    
-    [self.delegate dataSource:self didCellChange:nil];
 }
 
 - (void)sortMembers {
@@ -295,6 +292,10 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             
             // refresh the whole members list. TODO GFO refresh only the updated members.
             [self loadData];
+            
+            if (self.delegate) {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
         }
     }];
 }
