@@ -86,7 +86,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             NSString *avatarThumbURL = nil;
             if (bubbleData.senderAvatarUrl) {
                 // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                avatarThumbURL = [bubbleData.eventFormatter thumbnailURLForContent:bubbleData.senderAvatarUrl inViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
+                avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
             }
             [self.pictureView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];

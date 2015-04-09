@@ -245,7 +245,7 @@
     _thumbnailInfo = event.content[@"thumbnail_info"];
     if (!_thumbnailURL) {
         // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        _thumbnailURL = [roomDataSource.eventFormatter thumbnailURLForContent:contentURL inViewSize:self.contentSize withMethod:MXThumbnailingMethodScale];
+        _thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:contentURL toFitViewSize:self.contentSize withMethod:MXThumbnailingMethodScale];
         
         // Check whether the image has been uploaded with an orientation
         if (_attachmentInfo[@"rotation"]) {
@@ -262,6 +262,10 @@
 }
 
 #pragma mark - Properties
+
+- (MXSession*)mxSession {
+    return roomDataSource.mxSession;
+}
 
 - (NSArray*)bubbleComponents {
     return [bubbleComponents copy];

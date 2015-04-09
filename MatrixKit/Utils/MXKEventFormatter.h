@@ -90,17 +90,6 @@ typedef enum : NSUInteger {
  */
 - (BOOL)isSupportedAttachment:(MXEvent*)event;
 
-/**
- Return the suitable url to display the content thumbnail into the provided view size.
- 
- @param contentURI
- @param viewSize in points, this method will convert this size in pixels by considering screen scale
- @param thumbnailingMethod method of thumbnailing supported by the matrix content repository
- @return the thumbnail url
- */
-- (NSString*)thumbnailURLForContent:(NSString*)contentURI inViewSize:(CGSize)viewSize withMethod:(MXThumbnailingMethod)thumbnailingMethod;
-
-
 #pragma mark - Events to strings conversion methods
 /**
  Compose the event sender display name according to the current room state.

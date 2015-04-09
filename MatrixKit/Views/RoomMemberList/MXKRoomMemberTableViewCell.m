@@ -22,8 +22,6 @@
 
 #import "MXKMediaManager.h"
 
-#import "MXKEventFormatter.h"
-
 @interface MXKRoomMemberTableViewCell () {
     
     NSRange lastSeenRange;
@@ -74,8 +72,7 @@
         NSString *thumbnailURL = nil;
         if (memberCellData.roomMember.avatarUrl) {
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            MXKEventFormatter *eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:mxSession];
-            thumbnailURL = [eventFormatter thumbnailURLForContent:memberCellData.roomMember.avatarUrl inViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
+            thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         [self.pictureView setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];

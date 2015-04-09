@@ -54,6 +54,11 @@ typedef enum : NSUInteger {
 }
 
 /**
+ The matrix session
+ */
+@property (nonatomic, readonly) MXSession *mxSession;
+
+/**
  The bubble content type
  */
 @property (nonatomic) MXKRoomBubbleCellDataType dataType;

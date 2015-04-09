@@ -72,22 +72,6 @@ NSString *const kMXKEventFormatterUnsupportedEventDescriptionPrefix = @"Unsuppor
     return isSupportedAttachment;
 }
 
-#pragma mark - Thumbnail
-
-// Return the suitable url to display the content thumbnail into the provided view size
-// Note: the provided view size is supposed in points, this method will convert this size in pixels by considering screen scale
-- (NSString*)thumbnailURLForContent:(NSString*)contentURI inViewSize:(CGSize)viewSize withMethod:(MXThumbnailingMethod)thumbnailingMethod {
-    // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-    // Convert first the provided size in pixels
-    CGFloat scale = [[UIScreen mainScreen] scale];
-    CGSize sizeInPixels = CGSizeMake(viewSize.width * scale, viewSize.height * scale);
-    NSString *thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:contentURI withSize:sizeInPixels andMethod:thumbnailingMethod];
-    if (nil == thumbnailURL) {
-        // Manage backward compatibility. The content URL used to be an absolute HTTP URL
-        thumbnailURL = contentURI;
-    }
-    return thumbnailURL;
-}
 
 #pragma mark event sender info
 
