@@ -308,7 +308,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self triggerInitialBackPagination];
         }
     } else {
-        [roomDataSource destroy];
         roomDataSource = nil;
         self.mxSession = nil;
     }
@@ -331,7 +330,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
 
-    [roomDataSource destroy];
     roomDataSource = nil;
     
     self.mxSession = nil;
