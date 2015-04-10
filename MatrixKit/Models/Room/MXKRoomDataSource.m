@@ -82,7 +82,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     self = [super initWithMatrixSession:matrixSession];
     if (self) {
 
-        NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, _roomId);
+        NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
 
         _roomId = roomId;
         processingQueue = dispatch_queue_create("MXKRoomDataSource", DISPATCH_QUEUE_SERIAL);
@@ -361,6 +361,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         if (failure) {
             failure(nil);
         }
+        return;
+    }
+
+    if (backPaginationRequest) {
+        NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
         return;
     }
     
