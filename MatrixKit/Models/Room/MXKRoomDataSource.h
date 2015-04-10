@@ -119,15 +119,6 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
-/**
- Flag to not list redacted events in the messages list.
- */
-@property (nonatomic) BOOL hideRedactions;
-
-/**
- Flag to not list unsupported events in the messages list.
- */
-@property (nonatomic) BOOL hideUnsupportedEvents;
 
 
 #pragma mark - Life cycle

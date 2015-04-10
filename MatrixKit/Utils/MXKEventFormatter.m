@@ -371,7 +371,7 @@
                     displayText = displayText? displayText : @"audio attachment";
                     if (![self isSupportedAttachment:event]) {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || _hideUnsupportedEvents) {
+                        if (_isForSubtitle || !_showUnsupportedEvents) {
                             displayText = @"invalid audio attachment";
                         } else {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
@@ -382,7 +382,7 @@
                     displayText = displayText? displayText : @"video attachment";
                     if (![self isSupportedAttachment:event]) {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || _hideUnsupportedEvents) {
+                        if (_isForSubtitle || !_showUnsupportedEvents) {
                             displayText = @"invalid video attachment";
                         } else {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
@@ -393,7 +393,7 @@
                     displayText = displayText? displayText : @"location attachment";
                     if (![self isSupportedAttachment:event]) {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || _hideUnsupportedEvents) {
+                        if (_isForSubtitle || !_showUnsupportedEvents) {
                             displayText = @"invalid location attachment";
                         } else {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
@@ -433,7 +433,7 @@
 
     if (!displayText) {
         NSLog(@"[MXKEventFormatter] Warning: Unsupported event %@)", event.description);
-        if (!_hideUnsupportedEvents) {
+        if (_showUnsupportedEvents) {
             
             if (MXKEventFormatterErrorNone == *error) {
                 *error = MXKEventFormatterErrorUnsupported;

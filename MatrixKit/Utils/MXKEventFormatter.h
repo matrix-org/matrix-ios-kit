@@ -58,10 +58,10 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL hideRedactions;
 
 /**
- Flag to not list unsupported events in the messages list.
+ Flag to list unsupported/unexpected events in the messages list.
  Default is NO.
  */
-@property (nonatomic) BOOL hideUnsupportedEvents;
+@property (nonatomic) BOOL showUnsupportedEvents;
 
 /**
  Flag indicating if the formatter must build strings that will be displayed as subtitle.
