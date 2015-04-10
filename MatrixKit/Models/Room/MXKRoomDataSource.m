@@ -644,6 +644,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             NSUInteger unreadCount = 0;
 
             for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot) {
+                
+                // The event can be now unqueued
+                @synchronized (eventsToProcess) {
+                    [eventsToProcess removeObject:queuedEvent];
+                }
 
                 // Retrieve the MXKCellData class to manage the data
                 Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
@@ -670,6 +675,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
                     // The event has not been concatenated to an existing cell, create a new bubble for this event
                     bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
+                    if (!bubbleData) {
+                        // The event is ignored
+                        continue;
+                    }
+                    
                     if (queuedEvent.direction == MXEventDirectionBackwards) {
                         [bubblesSnapshot insertObject:bubbleData atIndex:0];
                     }
@@ -681,11 +691,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 // Store event-bubble link to the map
                 @synchronized (eventIdToBubbleMap) {
                     eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
-                }
-
-                // The event can be now unqueued
-                @synchronized (eventsToProcess) {
-                    [eventsToProcess removeObject:queuedEvent];
                 }
 
                 // Count message sent by other users
