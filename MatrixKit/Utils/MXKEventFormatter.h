@@ -52,10 +52,10 @@ typedef enum : NSUInteger {
 @interface MXKEventFormatter : NSObject
 
 /**
- Flag to not list redacted events in the messages list.
+ Flag to list redacted events in the messages list.
  Default is NO.
  */
-@property (nonatomic) BOOL hideRedactions;
+@property (nonatomic) BOOL showRedactions;
 
 /**
  Flag to list unsupported/unexpected events in the messages list.

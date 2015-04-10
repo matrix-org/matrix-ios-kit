@@ -110,7 +110,7 @@
     if (isRedacted) {
         NSLog(@"[MXKEventFormatter] Redacted event %@ (%@)", event.description, event.redactedBecause);
         // Check whether redacted information is required
-        if (!_isForSubtitle && !_hideRedactions) {
+        if (!_isForSubtitle && _showRedactions) {
             redactedInfo = @"<redacted>";
             // Consider live room state to resolve redactor name if no roomState is provided
             MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
