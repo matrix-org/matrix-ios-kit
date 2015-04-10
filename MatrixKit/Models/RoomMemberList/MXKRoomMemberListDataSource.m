@@ -183,6 +183,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         membersList = filteredMembers;
     }
     
+    [cellDataArray removeAllObjects];
+    
     // Retrieve the MXKCellData class to manage the data
     Class class = [self cellDataClassForCellIdentifier:kMXKRoomMemberCellIdentifier];
     NSAssert([class conformsToProtocol:@protocol(MXKRoomMemberCellDataStoring)], @"MXKRoomMemberListDataSource only manages MXKCellData that conforms to MXKRoomMemberCellDataStoring protocol");

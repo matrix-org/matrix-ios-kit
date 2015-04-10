@@ -30,9 +30,9 @@
  Tells the delegate that the user selected a member.
 
  @param roomMemberListViewController the `MXKRoomMemberListViewController` instance.
- @param memberId the id of the selected member.
+ @param member the selected member.
  */
-- (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(NSString*)memberId;
+- (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(MXRoomMember*)member;
 
 @end
 
@@ -55,7 +55,7 @@
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKRoomMemberListViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKRoomMemberListViewControllerDelegate> delegate;
 
 /**
  Display the members list.

@@ -138,8 +138,9 @@
     if (_delegate) {
         id<MXKRoomMemberCellDataStoring> cellData = [dataSource cellDataAtIndex:indexPath.row];
 
-        [_delegate roomMemberListViewController:self didSelectMember:cellData.roomMember.userId];
+        [_delegate roomMemberListViewController:self didSelectMember:cellData.roomMember];
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 @end
