@@ -169,6 +169,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         [self.view setNeedsUpdateConstraints];
     }
+    // Hide bubbles table by default in order to hide initial scrolling to the bottom
+    _bubblesTableView.hidden = YES;
     
     // Set default input toolbar view
     [self setRoomInputToolbarViewClass:MXKRoomInputToolbarViewWithSimpleTextView.class];
@@ -188,6 +190,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    
+    [super viewDidAppear:animated];
+    
+    // Refresh bubbles table if data are available.
+    // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
+    if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0]) {
+        [self reloadBubblesTable];
+    }
+    
+    _bubblesTableView.hidden = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -215,7 +230,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self updateMessageTextViewFrame];
         }
         // Cell width will be updated, force table refresh to take into account changes of message components
-        [self.bubblesTableView reloadData];
+        [self reloadBubblesTable];
     });
 }
 
@@ -225,7 +240,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Cell width will be updated, force table refresh to take into account changes of message components
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.bubblesTableView reloadData];
+        [self reloadBubblesTable];
     });
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -655,14 +670,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         // Reload table
         isBackPaginationInProgress = NO;
-        [_bubblesTableView reloadData];
+        [self reloadBubblesTable];
         [self stopActivityIndicator];
         
     }
                                  failure:^(NSError *error) {
                                      // Reload table
                                      isBackPaginationInProgress = NO;
-                                     [_bubblesTableView reloadData];
+                                     [self reloadBubblesTable];
                                      [self stopActivityIndicator];
                                  }];
 }
@@ -904,14 +919,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSLog(@"[MXKRoomViewController] resend event is not supported yet (%@)", eventId);
 }
 
-#pragma mark - MXKDataSourceDelegate
-- (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
-    
-    if (isBackPaginationInProgress) {
-        // table will be updated at the end of pagination.
-        return;
-    }
-    
+#pragma mark - bubbles table
+
+- (void)reloadBubblesTable {
     // We will scroll to bottom if the bottom of the table is currently visible
     BOOL shouldScrollToBottom = (shouldScrollToBottomOnTableRefresh || [self isBubblesTableScrollViewAtTheBottom]);
     
@@ -923,6 +933,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [self scrollBubblesTableViewToBottomAnimated:NO];
         shouldScrollToBottomOnTableRefresh = NO;
     }
+}
+
+#pragma mark - MXKDataSourceDelegate
+- (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
+    
+    if (isBackPaginationInProgress) {
+        // table will be updated at the end of pagination.
+        return;
+    }
+    
+    [self reloadBubblesTable];
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state {
