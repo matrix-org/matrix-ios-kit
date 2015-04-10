@@ -629,83 +629,93 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         @synchronized(eventsToProcess) {
             eventsToProcessSnapshot = [eventsToProcess copy];
         }
-        NSMutableArray *bubblesSnapshot;
-        @synchronized(bubbles) {
-            bubblesSnapshot = [bubbles mutableCopy];
+
+        // Is there still events to process?
+        // The list can be empty because several calls of processQueuedEvents may be processed
+        // in one pass in the processingQueue
+        if (eventsToProcessSnapshot.count) {
+
+            // Make a quick copy of changing data to avoid to lock it too long time
+            NSMutableArray *bubblesSnapshot;
+            @synchronized(bubbles) {
+                bubblesSnapshot = [bubbles mutableCopy];
+            }
+
+            NSUInteger unreadCount = 0;
+
+            for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot) {
+
+                // Retrieve the MXKCellData class to manage the data
+                Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+                NSAssert([class conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)], @"MXKRoomDataSource only manages MXKCellData that conforms to MXKRoomBubbleCellDataStoring protocol");
+
+                BOOL eventManaged = NO;
+                id<MXKRoomBubbleCellDataStoring> bubbleData;
+                if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count) {
+
+                    // Try to concatenate the event to the last or the oldest bubble?
+                    if (queuedEvent.direction == MXEventDirectionBackwards) {
+                        bubbleData = bubblesSnapshot.firstObject;
+                    }
+                    else {
+                        bubbleData = bubblesSnapshot.lastObject;
+                    }
+
+                    @synchronized (bubbleData) {
+                        eventManaged = [bubbleData addEvent:queuedEvent.event andRoomState:queuedEvent.state];
+                    }
+                }
+
+                if (NO == eventManaged) {
+
+                    // The event has not been concatenated to an existing cell, create a new bubble for this event
+                    bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
+                    if (queuedEvent.direction == MXEventDirectionBackwards) {
+                        [bubblesSnapshot insertObject:bubbleData atIndex:0];
+                    }
+                    else {
+                        [bubblesSnapshot addObject:bubbleData];
+                    }
+                }
+
+                // Store event-bubble link to the map
+                @synchronized (eventIdToBubbleMap) {
+                    eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
+                }
+
+                // The event can be now unqueued
+                @synchronized (eventsToProcess) {
+                    [eventsToProcess removeObject:queuedEvent];
+                }
+
+                // Count message sent by other users
+                if (bubbleData.isIncoming) {
+                    unreadCount++;
+                }
+            }
+
+            // Updated data can be displayed now
+            // Synchronously wait for the end of the block execution to 
+            dispatch_sync(dispatch_get_main_queue(), ^{
+
+                bubbles = bubblesSnapshot;
+
+                // Update the total unread count
+                _unreadCount += unreadCount;
+                
+                if (self.delegate) {
+                    [self.delegate dataSource:self didCellChange:nil];
+                }
+                
+                // Notify the last message and unreadCount have changed
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+                
+                // Inform about the end if requested
+                if (onComplete) {
+                    onComplete();
+                }
+            });
         }
-
-        NSUInteger unreadCount = 0;
-
-        for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot) {
-
-            // Retrieve the MXKCellData class to manage the data
-            Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
-            NSAssert([class conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)], @"MXKRoomDataSource only manages MXKCellData that conforms to MXKRoomBubbleCellDataStoring protocol");
-
-            BOOL eventManaged = NO;
-            id<MXKRoomBubbleCellDataStoring> bubbleData;
-            if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count) {
-
-                // Try to concatenate the event to the last or the oldest bubble?
-                if (queuedEvent.direction == MXEventDirectionBackwards) {
-                    bubbleData = bubblesSnapshot.firstObject;
-                }
-                else {
-                    bubbleData = bubblesSnapshot.lastObject;
-                }
-
-                @synchronized (bubbleData) {
-                    eventManaged = [bubbleData addEvent:queuedEvent.event andRoomState:queuedEvent.state];
-                }
-            }
-
-            if (NO == eventManaged) {
-
-                // The event has not been concatenated to an existing cell, create a new bubble for this event
-                bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
-                if (queuedEvent.direction == MXEventDirectionBackwards) {
-                    [bubblesSnapshot insertObject:bubbleData atIndex:0];
-                }
-                else {
-                    [bubblesSnapshot addObject:bubbleData];
-                }
-            }
-
-            // Store event-bubble link to the map
-            @synchronized (eventIdToBubbleMap) {
-                eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
-            }
-
-            // The event can be now unqueued
-            @synchronized (eventsToProcess) {
-                [eventsToProcess removeObject:queuedEvent];
-            }
-
-            // Count message sent by other users
-            if (bubbleData.isIncoming) {
-                unreadCount++;
-            }
-        }
-
-        // Updated data can be displayed now
-        dispatch_async(dispatch_get_main_queue(), ^{
-            bubbles = bubblesSnapshot;
-
-            // Update the total unread count
-            _unreadCount += unreadCount;
-
-            if (self.delegate) {
-                [self.delegate dataSource:self didCellChange:nil];
-            }
-
-            // Notify the last message and unreadCount have changed
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-
-            // Inform about the end if requested
-            if (onComplete) {
-                onComplete();
-            }
-        });
     });
 }
 
