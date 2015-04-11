@@ -57,6 +57,11 @@ typedef enum : NSUInteger {
 + (MXKRoomDataSourceManager*)sharedManagerForMatrixSession:(MXSession*)mxSession;
 
 /**
+ Force close all the current room data source instances.
+ */
+- (void)reset;
+
+/**
  Get a room data source corresponding to a room id.
  
  If a room data source already exists for this room, its reference will be returned. Else,

@@ -41,6 +41,13 @@
     [self.view addSubview:_activityIndicator];
 }
 
+- (void)dealloc {
+    if (_activityIndicator) {
+        [_activityIndicator removeFromSuperview];
+        _activityIndicator = nil;
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -52,6 +59,12 @@
         // Register mxSession observer
         self.mxSession = _mxSession;
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [self.view bringSubviewToFront:_activityIndicator];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -152,7 +165,6 @@
 #pragma mark - activity indicator
 
 - (void)startActivityIndicator {
-    [self.view bringSubviewToFront:_activityIndicator];
     [_activityIndicator startAnimating];
 }
 

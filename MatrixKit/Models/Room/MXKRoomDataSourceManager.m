@@ -68,6 +68,14 @@
     return self;
 }
 
+- (void)reset {
+    NSArray *roomIds =  roomDataSources.allKeys;
+    for (NSString *roomId in roomIds) {
+        MXKRoomDataSource *roomDataSource = roomDataSources[roomId];
+        [self closeRoomDataSource:roomDataSource forceClose:YES];
+    }
+}
+
 - (MXKRoomDataSource *)roomDataSourceForRoom:(NSString *)roomId create:(BOOL)create {
 
     // If not available yet, create the room data source

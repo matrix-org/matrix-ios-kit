@@ -114,6 +114,9 @@
 
     dataSource = listDataSource;
     dataSource.delegate = self;
+    
+    // Report the matrix session at view controller level to update UI according to session state
+    self.mxSession = dataSource.mxSession;
 
     if (_tableView) {
         [self configureView];
