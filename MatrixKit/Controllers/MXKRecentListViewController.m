@@ -51,13 +51,24 @@
                                                          multiplier:1.0f
                                                            constant:0.0f]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topLayoutGuide
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.tableView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0f
-                                                           constant:0.0f]];
+    // TODO Understand why self.topLayoutGuide could not be used to define constraint in case of split view controller
+    if (self.splitViewController) {
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view
+                                                              attribute:NSLayoutAttributeTop
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.tableView
+                                                              attribute:NSLayoutAttributeTop
+                                                             multiplier:1.0f
+                                                               constant:0.0f]];
+    } else {
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topLayoutGuide
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.tableView
+                                                              attribute:NSLayoutAttributeTop
+                                                             multiplier:1.0f
+                                                               constant:0.0f]];
+    }
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view
                                                      attribute:NSLayoutAttributeLeading

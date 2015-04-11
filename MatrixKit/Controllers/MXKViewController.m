@@ -61,12 +61,6 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    [self.view bringSubviewToFront:_activityIndicator];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
@@ -165,6 +159,7 @@
 #pragma mark - activity indicator
 
 - (void)startActivityIndicator {
+    [self.view bringSubviewToFront:_activityIndicator];
     [_activityIndicator startAnimating];
 }
 
