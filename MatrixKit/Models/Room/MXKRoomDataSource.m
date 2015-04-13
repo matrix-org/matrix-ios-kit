@@ -423,7 +423,50 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)paginateBackMessagesToFillRect:(CGRect)rect success:(void (^)())success failure:(void (^)(NSError *error))failure {
 
-    [self paginateBackMessages:10 success:success failure:failure];
+    // Get the total height of cells already loaded in memory
+    CGFloat minMessageHeight = CGFLOAT_MAX;
+    CGFloat bubblesTotalHeight = 0;
+    for (NSInteger i = bubbles.count - 1; i >= 0; i--) {
+
+        CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
+
+        bubblesTotalHeight += bubbleHeight;
+        if (bubblesTotalHeight > rect.size.height) {
+            // No need to compute more cells heights, there are enough to fill the rect
+            break;
+        }
+
+        // Compute the minimal height an event takes
+        id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+        minMessageHeight = MIN(minMessageHeight,  bubbleHeight / bubbleData.events.count);
+    }
+
+    // Is there enough cells to cover all the requested height?
+    if (bubblesTotalHeight < rect.size.height) {
+
+        // No. Paginate to get more messages
+
+        // Bound the minimal height to 44
+        minMessageHeight = MIN(minMessageHeight, 44);
+
+        // Load messages to cover the remaining height
+        // Use an extra of 50% to manage unsupported/unexpected/redated events
+        NSUInteger messagesToLoad = (rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5;
+
+        NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
+        [self paginateBackMessages:messagesToLoad success:^{
+
+            [self paginateBackMessagesToFillRect:rect success:success failure:failure];
+
+        } failure:failure];
+    }
+    else {
+
+        // Yes. Nothing to do
+        if (success) {
+            success();
+        }
+    }
 }
 
 

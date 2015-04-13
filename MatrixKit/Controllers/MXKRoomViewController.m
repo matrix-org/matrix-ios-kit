@@ -318,8 +318,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self configureView];
         }
         
-        // Check whether an initial back pagination is required to fill the bubbles table
-        if (roomDataSource.state == MXKDataSourceStateReady && ![roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0]) {
+        // When ready, do the initial back pagination
+        if (roomDataSource.state == MXKDataSourceStateReady) {
             [self triggerInitialBackPagination];
         }
     } else {
@@ -608,7 +608,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)triggerInitialBackPagination {
     
     // Trigger back pagination to fill all the screen
-    [roomDataSource paginateBackMessagesToFillRect:self.view.frame success:nil failure:nil];
+    // This is currently done with best effort depending on views already loaded
+
+    // Ideally, the targetted frame is the one of the tableview
+    CGRect frame = self.bubblesTableView.frame;
+    if (0 == frame.size.height) {
+        
+        // If not available, use the vc one
+        frame = self.view.frame;
+    }
+        
+    [roomDataSource paginateBackMessagesToFillRect:frame success:nil failure:nil];
 }
 
 - (void)triggerBackPagination {
@@ -948,7 +958,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state {
     
-    if (state == MXKDataSourceStateReady && ![roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0]) {
+    if (state == MXKDataSourceStateReady) {
         [self triggerInitialBackPagination];
     }
 }
