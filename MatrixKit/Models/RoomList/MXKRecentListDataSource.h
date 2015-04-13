@@ -87,7 +87,7 @@ extern NSString *const kMXKRecentCellIdentifier;
 - (id<MXKRecentCellDataStoring>)cellDataAtIndex:(NSInteger)index;
 
 /**
- Get height of the celle at the given index.
+ Get height of the cell at the given index.
 
  @param index the index of the cell in the array
  @return the cell height

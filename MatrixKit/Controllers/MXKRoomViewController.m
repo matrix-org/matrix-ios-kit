@@ -1025,31 +1025,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - UITableView delegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Compute here height of bubble cell
-    CGFloat rowHeight;
-    
-    id<MXKRoomBubbleCellDataStoring> bubbleData = [roomDataSource cellDataAtIndex:indexPath.row];
-    
-    // Sanity check
-    if (!bubbleData) {
-        return 0;
-    }
-    
-    Class cellViewClass;
-    if (bubbleData.isIncoming) {
-        if (bubbleData.isAttachment) {
-            cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
-        } else {
-            cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
-        }
-    } else if (bubbleData.isAttachment) {
-        cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
-    } else {
-        cellViewClass = [roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
-    }
-    
-    rowHeight = [cellViewClass heightForCellData:bubbleData withMaximumWidth:tableView.frame.size.width];
-    return rowHeight;
+
+    return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

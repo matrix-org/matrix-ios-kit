@@ -149,6 +149,14 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  */
 - (id<MXKRoomBubbleCellDataStoring>)cellDataOfEventWithEventId:(NSString*)eventId;
 
+/**
+ Get height of the cell at the given index.
+
+ @param index the index of the cell in the array.
+ @param maxWidth the maximum available width.
+ @return the cell height.
+ */
+- (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth;
 
 #pragma mark - Pagination
 /**

@@ -352,6 +352,33 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     return bubbleData;
 }
 
+- (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth {
+    // Compute here height of bubble cell
+    CGFloat rowHeight;
+
+    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataAtIndex:index];
+
+    // Sanity check
+    if (!bubbleData) {
+        return 0;
+    }
+
+    Class cellViewClass;
+    if (bubbleData.isIncoming) {
+        if (bubbleData.isAttachment) {
+            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
+        } else {
+            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
+        }
+    } else if (bubbleData.isAttachment) {
+        cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+    } else {
+        cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
+    }
+
+    rowHeight = [cellViewClass heightForCellData:bubbleData withMaximumWidth:maxWidth];
+    return rowHeight;
+}
 
 #pragma mark - Pagination
 - (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure {
