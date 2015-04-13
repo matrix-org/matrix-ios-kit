@@ -16,7 +16,7 @@ limitations under the License.
 
 #import <UIKit/UIKit.h>
 
-#import "MXKViewController.h"
+#import "MXKTableViewController.h"
 #import "MXKRecentListDataSource.h"
 
 @class MXKRecentListViewController;
@@ -40,12 +40,8 @@ limitations under the License.
 /**
  This view controller displays messages of a room.
  */
-@interface MXKRecentListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate>
+@interface MXKRecentListViewController : MXKTableViewController <MXKDataSourceDelegate>
 
-/**
- The recents table view
- */
-@property (nonatomic) UITableView *tableView;
 
 /**
  The current data source associated to the view controller.

@@ -43,40 +43,40 @@
             <point key="canvasLocation" x="-190" y="-1310"/>
         </scene>
         <!--Sample Recents View Controller-->
-        <scene sceneID="m9F-Wc-GCr">
+        <scene sceneID="TAe-cT-fQU">
             <objects>
-                <viewController id="aPJ-SZ-qo8" customClass="MXKSampleRecentsViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="rm6-YE-3uw"/>
-                        <viewControllerLayoutGuide type="bottom" id="gCp-NF-o0A"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="yQ1-H4-44O">
+                <tableViewController id="xYP-xv-2cb" customClass="MXKSampleRecentsViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Lkt-Ok-qiD">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tE1-gi-bJe" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <connections>
+                            <outlet property="dataSource" destination="xYP-xv-2cb" id="oh2-7m-9IS"/>
+                            <outlet property="delegate" destination="xYP-xv-2cb" id="OXA-ET-6Bt"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Myg-fM-iMh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-862" y="-2058"/>
+            <point key="canvasLocation" x="-850" y="-2072"/>
         </scene>
         <!--Sample Room Members View Controller-->
-        <scene sceneID="wMf-BD-0v4">
+        <scene sceneID="wke-Om-3we">
             <objects>
-                <viewController id="dbu-rx-u27" customClass="MXKSampleRoomMembersViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="CXq-pw-yO5"/>
-                        <viewControllerLayoutGuide type="bottom" id="k1e-dG-Neh"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Uja-C4-EEd">
+                <tableViewController id="QAG-34-oEa" customClass="MXKSampleRoomMembersViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="STL-du-v5j">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="h0J-Ah-SjM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <connections>
+                            <outlet property="dataSource" destination="QAG-34-oEa" id="4PK-yn-F5q"/>
+                            <outlet property="delegate" destination="QAG-34-oEa" id="0n4-a3-1M7"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pHi-Cd-dr1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-862" y="-570"/>
+            <point key="canvasLocation" x="-850" y="-570"/>
         </scene>
         <!--MatrixKit Samples-->
         <scene sceneID="HuU-tB-Z5y">
@@ -105,7 +105,7 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <segue destination="aPJ-SZ-qo8" kind="show" identifier="showSampleRecentsViewController" id="cIP-Q5-gOT"/>
+                                        <segue destination="xYP-xv-2cb" kind="show" identifier="showSampleRecentsViewController" id="lFv-iu-VuN"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -147,7 +147,7 @@
                         <outlet property="tableView" destination="a3F-qI-Vdh" id="VyL-gx-Ge0"/>
                         <segue destination="XgL-bX-RPC" kind="show" identifier="showSampleRoomViewController" id="xhv-fW-ZTq"/>
                         <segue destination="aaK-R6-eRn" kind="show" identifier="showSampleJSQMessagesViewController" id="mwb-xA-dOT"/>
-                        <segue destination="dbu-rx-u27" kind="show" identifier="showSampleRoomMembersViewController" id="3w9-TQ-7AJ"/>
+                        <segue destination="QAG-34-oEa" kind="show" identifier="showSampleRoomMembersViewController" id="f7u-wO-NGI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>

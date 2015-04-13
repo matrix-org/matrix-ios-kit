@@ -17,11 +17,11 @@
 #import "MXKViewControllerHandling.h"
 
 /**
- MXKViewController extends UIViewController to handle requirements for
- any matrixKit view controllers (see MXKViewControllerHandling protocol).
+ MXKViewController extends UITableViewController to handle requirements for
+ any matrixKit table view controllers (see MXKViewControllerHandling protocol).
  */
 
-@interface MXKViewController : UIViewController <MXKViewControllerHandling>
+@interface MXKTableViewController : UITableViewController <MXKViewControllerHandling>
 
 @end
 

@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXKViewController.h"
+#import "MXKTableViewController.h"
 #import "MXKRoomMemberListDataSource.h"
 
 @class MXKRoomMemberListViewController;
@@ -40,12 +40,7 @@
 /**
  This view controller displays members of a room.
  */
-@interface MXKRoomMemberListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate>
-
-/**
- The members table view
- */
-@property (nonatomic) UITableView *tableView;
+@interface MXKRoomMemberListViewController : MXKTableViewController <MXKDataSourceDelegate>
 
 /**
  The current data source associated to the view controller.

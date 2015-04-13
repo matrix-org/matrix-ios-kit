@@ -34,47 +34,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Add programmatically the table view and set its constraints here.
-    // We do not use .xib to define view controller content because we observed wrong display when
-    // this view controller was used as `master view controller` in split view controller (In some scenario,
-    // the view controller was refreshed with null width and height).
-    
-    self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
-    [self.tableView setTranslatesAutoresizingMaskIntoConstraints: NO];
-    [self.view addSubview:self.tableView];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.tableView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1.0f
-                                                           constant:0.0f]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topLayoutGuide
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.tableView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0f
-                                                           constant:0.0f]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view
-                                                     attribute:NSLayoutAttributeLeading
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self.tableView
-                                                     attribute:NSLayoutAttributeLeading
-                                                    multiplier:1.0f
-                                                      constant:0.0f]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view
-                                                     attribute:NSLayoutAttributeTrailing
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self.tableView
-                                                     attribute:NSLayoutAttributeTrailing
-                                                    multiplier:1.0f
-                                                      constant:0.0f]];
-    
     // Check whether a room has been defined
     if (dataSource) {
         [self configureView];
@@ -82,9 +41,9 @@
 }
 
 - (void)dealloc {
-    _tableView.dataSource = nil;
-    _tableView.delegate = nil;
-    _tableView = nil;
+    self.tableView.dataSource = nil;
+    self.tableView.delegate = nil;
+    self.tableView = nil;
     dataSource = nil;
 }
 
@@ -96,16 +55,16 @@
 
 - (void)configureView {
 
-    _tableView.delegate = self;
+    self.tableView.delegate = self;
 
     // Set up table data source
-    _tableView.dataSource = dataSource;
+    self.tableView.dataSource = dataSource;
     
     // Set up classes to use for cells
     if ([[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib]) {
-        [_tableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
+        [self.tableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
     } else {
-        [_tableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
+        [self.tableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
     }
 }
 
@@ -118,7 +77,7 @@
     // Report the matrix session at view controller level to update UI according to session state
     self.mxSession = dataSource.mxSession;
 
-    if (_tableView) {
+    if (self.tableView) {
         [self configureView];
     }
 }
@@ -126,7 +85,7 @@
 #pragma mark - MXKDataSourceDelegate
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
     // For now, do a simple full reload
-    [_tableView reloadData];
+    [self.tableView reloadData];
 }
 
 

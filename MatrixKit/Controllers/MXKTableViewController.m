@@ -14,14 +14,14 @@
  limitations under the License.
  */
 
-#import "MXKViewController.h"
+#import "MXKTableViewController.h"
 
-@interface MXKViewController () {
+@interface MXKTableViewController () {
     id mxkViewControllerSessionStateObserver;
 }
 @end
 
-@implementation MXKViewController
+@implementation MXKTableViewController
 @synthesize mxSession;
 @synthesize activityIndicator, rageShakeManager;
 
