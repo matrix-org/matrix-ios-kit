@@ -74,7 +74,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 }
 
 - (void)didMXSessionStateChange {
-    if (MXSessionStateStoreDataReady < self.mxSession.state && (0 == cellDataArray.count)) {
+    if (MXSessionStateStoreDataReady <= self.mxSession.state && (0 == cellDataArray.count)) {
         [self loadData];
     }
 }

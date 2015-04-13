@@ -16,8 +16,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MatrixSDK/MatrixSDK.h>
+
 #import "MXEvent+MatrixKit.h"
 
+#import "MXKTools.h"
 #import "MXKAlert.h"
 #import "MXKMediaManager.h"
 

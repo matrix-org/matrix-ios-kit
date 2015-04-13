@@ -84,7 +84,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)didMXSessionStateChange {
     
-    if (MXSessionStateStoreDataReady < self.mxSession.state) {
+    if (MXSessionStateStoreDataReady <= self.mxSession.state) {
         
         // Check whether the room is not already set
         if (!mxRoom) {
