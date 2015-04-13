@@ -609,16 +609,20 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Trigger back pagination to fill all the screen
     // This is currently done with best effort depending on views already loaded
+    // Delay the call, provide a better chance to get the true self.bubblesTableView.frame.
+    // Thus, we can download as less as messages to fill the table view. But it is not crucial.
+    dispatch_async(dispatch_get_main_queue(), ^{
 
-    // Ideally, the targetted frame is the one of the tableview
-    CGRect frame = self.bubblesTableView.frame;
-    if (0 == frame.size.height) {
-        
-        // If not available, use the vc one
-        frame = self.view.frame;
-    }
-        
-    [roomDataSource paginateBackMessagesToFillRect:frame success:nil failure:nil];
+        // Ideally, the targetted frame is the one of the tableview
+        CGRect frame = self.bubblesTableView.frame;
+        if (0 == frame.size.height) {
+
+            // If not available, use the vc one
+            frame = self.view.frame;
+        }
+
+        [roomDataSource paginateBackMessagesToFillRect:frame success:nil failure:nil];
+    });
 }
 
 - (void)triggerBackPagination {
