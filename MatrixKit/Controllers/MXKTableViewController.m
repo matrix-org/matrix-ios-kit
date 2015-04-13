@@ -17,7 +17,7 @@
 #import "MXKTableViewController.h"
 
 @interface MXKTableViewController () {
-    id mxkViewControllerSessionStateObserver;
+    id mxkTableViewControllerSessionStateObserver;
 }
 @end
 
@@ -66,7 +66,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
     [self.activityIndicator stopAnimating];
     
     if (self.rageShakeManager) {
@@ -88,11 +88,11 @@
 
 - (void)setMxSession:(MXSession *)session {
     // Remove potential session observer
-    [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
     
     if (session) {
         // Register session state observer
-        mxkViewControllerSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        mxkTableViewControllerSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             // Check whether the concerned session is the associated one
             if (notif.object == mxSession) {
