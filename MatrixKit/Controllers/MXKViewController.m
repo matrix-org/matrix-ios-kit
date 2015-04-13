@@ -29,24 +29,24 @@
     [super viewDidLoad];
     
     // Add default activity indicator
-    self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    self.activityIndicator.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-    self.activityIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    activityIndicator.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0];
+    activityIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
     
-    CGRect frame = self.activityIndicator.frame;
+    CGRect frame = activityIndicator.frame;
     frame.size.width += 30;
     frame.size.height += 30;
-    self.activityIndicator.bounds = frame;
-    [self.activityIndicator.layer setCornerRadius:5];
+    activityIndicator.bounds = frame;
+    [activityIndicator.layer setCornerRadius:5];
     
-    self.activityIndicator.center = self.view.center;
-    [self.view addSubview:self.activityIndicator];
+    activityIndicator.center = self.view.center;
+    [self.view addSubview:activityIndicator];
 }
 
 - (void)dealloc {
-    if (self.activityIndicator) {
-        [self.activityIndicator removeFromSuperview];
-        self.activityIndicator = nil;
+    if (activityIndicator) {
+        [activityIndicator removeFromSuperview];
+        activityIndicator = nil;
     }
 }
 
@@ -67,7 +67,7 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
-    [self.activityIndicator stopAnimating];
+    [activityIndicator stopAnimating];
     
     if (self.rageShakeManager) {
         [self.rageShakeManager cancel:self];
@@ -78,9 +78,9 @@
     [super setView:view];
     
     // Keep the activity indicator (if any)
-    if (self.activityIndicator) {
-        self.activityIndicator.center = self.view.center;
-        [self.view addSubview:self.activityIndicator];
+    if (activityIndicator) {
+        activityIndicator.center = self.view.center;
+        [self.view addSubview:activityIndicator];
     }
 }
 
@@ -159,14 +159,14 @@
 #pragma mark - activity indicator
 
 - (void)startActivityIndicator {
-    [self.view bringSubviewToFront:self.activityIndicator];
-    [self.activityIndicator startAnimating];
+    [self.view bringSubviewToFront:activityIndicator];
+    [activityIndicator startAnimating];
 }
 
 - (void)stopActivityIndicator {
     // Check whether all conditions are satisfied before stopping loading wheel
     if (!mxSession || (mxSession.state != MXSessionStateSyncInProgress && mxSession.state != MXSessionStateInitialised)) {
-        [self.activityIndicator stopAnimating];
+        [activityIndicator stopAnimating];
     }
 }
 
