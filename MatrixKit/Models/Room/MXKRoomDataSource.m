@@ -160,8 +160,8 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             _room = [self.mxSession roomWithRoomId:_roomId];
             if (_room) {
 
-                // @TODO: SDK: we need a reference when paginating back.
-                // Else, how to not conflict with other view controller?
+                // Only one pagination process can be done at a time by an MXRoom object.
+                // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                 [_room resetBackState];
 
                 // Force to set the filter at the MXRoom level
