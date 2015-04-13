@@ -45,11 +45,6 @@ extern NSString *const kMXKRecentCellIdentifier;
 }
 
 /**
- The matrix session.
- */
-@property (nonatomic, readonly) MXSession *mxSession;
-
-/**
  The total count of unread messages.
  @TODO
  */
