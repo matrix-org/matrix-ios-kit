@@ -21,6 +21,14 @@
 @class MXKRoomInputToolbarView;
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
+/**
+ Tells the delegate that a MXKAlert must be presented.
+ 
+ @param toolbarView the room input toolbar view
+ @param alert to present
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert;
+
 @optional
 
 /**
@@ -67,21 +75,17 @@
 /**
  Tells the delegate that the user wants invite a matrix user.
  
+ Note: `Invite matrix user` option is displayed in actions list only if the delegate implements this method.
+ 
  @param toolbarView the room input toolbar view
  @param mxUserId matrix user id
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId;
 
 /**
- Tells the delegate that a MXKAlert must be presented.
- 
- @param toolbarView the room input toolbar view
- @param alert to present
- */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert;
-
-/**
  Tells the delegate that a media picker must be presented.
+ 
+ Note: Media attachment is available only if the delegate implements this method.
  
  @param toolbarView the room input toolbar view
  @param media picker to present

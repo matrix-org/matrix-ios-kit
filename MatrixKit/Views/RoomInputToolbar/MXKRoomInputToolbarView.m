@@ -124,76 +124,83 @@
 - (IBAction)onTouchUpInside:(UIButton*)button {
     if (button == self.leftInputToolbarButton) {
         // Option button has been pressed
-        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMXKAlert:)]) {
-            // List available options
-            __weak typeof(self) weakSelf = self;
+        // List available options
+        __weak typeof(self) weakSelf = self;
+        
+        // Check whether media attachment is supported
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)]) {
+            
             currentAlert = [[MXKAlert alloc] initWithTitle:@"Select an action:" message:nil style:MXKAlertStyleActionSheet];
             
-            // Check whether media attachment is supported
-            if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)]) {
-                [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+                
+                // Open media gallery
+                strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
+                strongSelf->mediaPicker.delegate = strongSelf;
+                strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                strongSelf->mediaPicker.allowsEditing = NO;
+                strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
+                [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+            }];
+            
+            [currentAlert addActionWithTitle:@"Take Photo/Video" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+                
+                // Open Camera
+                strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
+                strongSelf->mediaPicker.delegate = strongSelf;
+                strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+                strongSelf->mediaPicker.allowsEditing = NO;
+                strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
+                [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+            }];
+        } else {
+            NSLog(@"[MXKRoomInputToolbarView] Attach media is not supported");
+        }
+        
+        // Check whether user invitation is supported
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:inviteMatrixUser:)]) {
+            
+            if (!currentAlert) {
+                currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
+            }
+            
+            [currentAlert addActionWithTitle:@"Invite matrix User" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                
+                // Ask for userId to invite
+                strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
+                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
-                    
-                    // Open media gallery
-                    strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                    strongSelf->mediaPicker.delegate = strongSelf;
-                    strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-                    strongSelf->mediaPicker.allowsEditing = NO;
-                    strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
-                    [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
                 }];
                 
-                [currentAlert addActionWithTitle:@"Take Photo/Video" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [strongSelf->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                    textField.secureTextEntry = NO;
+                    textField.placeholder = @"ex: @bob:homeserver";
+                }];
+                [strongSelf->currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    UITextField *textField = [alert textFieldAtIndex:0];
+                    NSString *userId = textField.text;
+                    
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    // Open Camera
-                    strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                    strongSelf->mediaPicker.delegate = strongSelf;
-                    strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-                    strongSelf->mediaPicker.allowsEditing = NO;
-                    strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
-                    [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+                    if (userId.length) {
+                        [strongSelf.delegate roomInputToolbarView:strongSelf inviteMatrixUser:userId];
+                    }
                 }];
-            } else {
-                NSLog(@"[MXKRoomInputToolbarView] Attach media is not supported");
-            }
-            
-            // Check whether user invitation is supported
-            if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:inviteMatrixUser:)]) {
-                [currentAlert addActionWithTitle:@"Invite matrix User" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    
-                    // Ask for userId to invite
-                    strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
-                    strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                        strongSelf->currentAlert = nil;
-                    }];
-                    
-                    [strongSelf->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                        textField.secureTextEntry = NO;
-                        textField.placeholder = @"ex: @bob:homeserver";
-                    }];
-                    [strongSelf->currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                        UITextField *textField = [alert textFieldAtIndex:0];
-                        NSString *userId = textField.text;
-                        
-                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                        strongSelf->currentAlert = nil;
-                        
-                        if (userId.length) {
-                            [strongSelf.delegate roomInputToolbarView:strongSelf inviteMatrixUser:userId];
-                        }
-                    }];
-                    
-                    [strongSelf.delegate roomInputToolbarView:strongSelf presentMXKAlert:strongSelf->currentAlert];
-                }];
-            } else {
-                NSLog(@"[MXKRoomInputToolbarView] Invitation is not supported");
-            }
-            
+                
+                [strongSelf.delegate roomInputToolbarView:strongSelf presentMXKAlert:strongSelf->currentAlert];
+            }];
+        } else {
+            NSLog(@"[MXKRoomInputToolbarView] Invitation is not supported");
+        }
+        
+        if (currentAlert) {
             currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -203,7 +210,7 @@
             
             [self.delegate roomInputToolbarView:self presentMXKAlert:currentAlert];
         } else {
-            NSLog(@"[MXKRoomInputToolbarView] Option display is not supported");
+            NSLog(@"[MXKRoomInputToolbarView] No option is supported");
         }
     } else if (button == self.rightInputToolbarButton) {
         // Send button has been pressed

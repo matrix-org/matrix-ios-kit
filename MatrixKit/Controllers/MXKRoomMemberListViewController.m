@@ -16,12 +16,36 @@
 
 #import "MXKRoomMemberListViewController.h"
 
+#import "MXKAlert.h"
+
 @interface MXKRoomMemberListViewController () {
 
     /**
      The data source providing UITableViewCells
      */
     MXKRoomMemberListDataSource *dataSource;
+    
+    /**
+     Optional bar buttons
+     */
+    UIBarButtonItem *searchBarButton;
+    UIBarButtonItem *addBarButton;
+    
+    /**
+     The current displayed alert (if any).
+     */
+    MXKAlert *currentAlert;
+    
+    /**
+     Search bar
+     */
+    UISearchBar  *roomMembersSearchBar;
+    BOOL searchBarShouldEndEditing;
+    
+    /**
+     Used to auto scroll at the top when search session is started or cancelled.
+     */
+    BOOL shouldScrollToTopOnRefresh;
 }
 
 @end
@@ -34,9 +58,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
+    addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(inviteNewMember:)];
+    
+    // Enable both bar button by default.
+    _enableMemberInvitation = YES;
+    _enableMemberSearch = YES;
+    [self refreshUIBarButtons];
+    
     // Check whether a room has been defined
     if (dataSource) {
         [self configureView];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    // Leave potential search session
+    if (roomMembersSearchBar) {
+        [self searchBarCancelButtonClicked:roomMembersSearchBar];
     }
 }
 
@@ -45,6 +86,15 @@
     self.tableView.delegate = nil;
     self.tableView = nil;
     dataSource = nil;
+    
+    if (currentAlert) {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
+    roomMembersSearchBar = nil;
+    searchBarButton = nil;
+    addBarButton = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,6 +102,8 @@
 
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Internal methods
 
 - (void)configureView {
 
@@ -65,6 +117,41 @@
         [self.tableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
     } else {
         [self.tableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
+    }
+}
+
+- (void)scrollToTop {
+    // stop any scrolling effect
+    [UIView setAnimationsEnabled:NO];
+    // before scrolling to the tableview top
+    self.tableView.contentOffset = CGPointMake(-self.tableView.contentInset.left, -self.tableView.contentInset.top);
+    [UIView setAnimationsEnabled:YES];
+}
+
+#pragma mark - UIBarButton handling
+
+- (void)setEnableMemberSearch:(BOOL)enableMemberSearch {
+    _enableMemberSearch = enableMemberSearch;
+    [self refreshUIBarButtons];
+}
+
+- (void)setEnableMemberInvitation:(BOOL)enableMemberInvitation {
+    _enableMemberInvitation = enableMemberInvitation;
+    [self refreshUIBarButtons];
+    
+}
+
+- (void)refreshUIBarButtons {
+    if (_enableMemberInvitation) {
+        if (_enableMemberSearch) {
+            self.navigationItem.rightBarButtonItems = @[searchBarButton, addBarButton];
+        } else {
+            self.navigationItem.rightBarButtonItems = @[addBarButton];
+        }
+    } else if (_enableMemberSearch) {
+        self.navigationItem.rightBarButtonItems = @[searchBarButton];
+    } else {
+        self.navigationItem.rightBarButtonItems = nil;
     }
 }
 
@@ -86,8 +173,12 @@
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
     // For now, do a simple full reload
     [self.tableView reloadData];
+    
+    if (shouldScrollToTopOnRefresh) {
+        [self scrollToTop];
+        shouldScrollToTopOnRefresh = NO;
+    }
 }
-
 
 #pragma mark - UITableView delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -103,6 +194,117 @@
         [_delegate roomMemberListViewController:self didSelectMember:cellData.roomMember];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (roomMembersSearchBar) {
+        return (roomMembersSearchBar.frame.size.height);
+    }
+    return 0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    return roomMembersSearchBar;
+}
+
+#pragma mark - UISearchBarDelegate
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    searchBarShouldEndEditing = NO;
+    return YES;
+}
+
+- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar {
+    return searchBarShouldEndEditing;
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    
+    // Apply filter
+    shouldScrollToTopOnRefresh = YES;
+    if (searchText.length) {
+        [self.dataSource searchWithPatterns:@[searchText]];
+    } else {
+        [self.dataSource searchWithPatterns:nil];
+    }
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    // "Done" key has been pressed
+    searchBarShouldEndEditing = YES;
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    
+    // Leave search
+    searchBarShouldEndEditing = YES;
+    [searchBar resignFirstResponder];
+    roomMembersSearchBar = nil;
+    
+    // Refresh display
+    shouldScrollToTopOnRefresh = YES;
+    [self.dataSource searchWithPatterns:nil];
+}
+
+#pragma mark - Actions
+
+- (void)search:(id)sender {
+    if (!roomMembersSearchBar) {
+        // Check whether there are data in which search
+        if ([self.dataSource tableView:self.tableView numberOfRowsInSection:0]) {
+            // Create search bar
+            roomMembersSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+            roomMembersSearchBar.showsCancelButton = YES;
+            roomMembersSearchBar.returnKeyType = UIReturnKeyDone;
+            roomMembersSearchBar.delegate = self;
+            searchBarShouldEndEditing = NO;
+            [roomMembersSearchBar becomeFirstResponder];
+            
+            // Force table refresh to add search bar in section header
+            shouldScrollToTopOnRefresh = YES;
+            [self dataSource:self.dataSource didCellChange:nil];
+        }
+    } else {
+        [self searchBarCancelButtonClicked: roomMembersSearchBar];
+    }
+}
+
+- (void)inviteNewMember:(id)sender {
+    __weak typeof(self) weakSelf = self;
+    
+    // Ask for userId to invite
+    currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
+    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+        typeof(self) self = weakSelf;
+        self->currentAlert = nil;
+    }];
+    
+    [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.secureTextEntry = NO;
+        textField.placeholder = @"ex: @bob:homeserver";
+    }];
+    [currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+        UITextField *textField = [alert textFieldAtIndex:0];
+        NSString *userId = textField.text;
+        
+        typeof(self) self = weakSelf;
+        self->currentAlert = nil;
+        
+        if (userId.length) {
+            MXRoom *mxRoom = [self.mxSession roomWithRoomId:self.dataSource.roomId];
+            if (mxRoom) {
+                [mxRoom inviteUser:userId success:^{
+                } failure:^(NSError *error) {
+                    NSLog(@"[MXKRoomVC] Invite %@ failed: %@", userId, error);
+                    // TODO: Alert user
+                    //        [[AppDelegate theDelegate] showErrorAsAlert:error];
+                }];
+            }
+        }
+    }];
+    
+    [currentAlert showInViewController:self];
 }
 
 @end

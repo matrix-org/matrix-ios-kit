@@ -40,7 +40,7 @@
 /**
  This view controller displays members of a room.
  */
-@interface MXKRoomMemberListViewController : MXKTableViewController <MXKDataSourceDelegate>
+@interface MXKRoomMemberListViewController : MXKTableViewController <MXKDataSourceDelegate, UISearchBarDelegate>
 
 /**
  The current data source associated to the view controller.
@@ -51,6 +51,18 @@
  The delegate for the view controller.
  */
 @property (nonatomic, weak) id<MXKRoomMemberListViewControllerDelegate> delegate;
+
+/**
+ Enable the search in room members list according to the member's display name (YES by default).
+ Set NO this property to disable this option and hide the related bar button.
+ */
+@property (nonatomic) BOOL enableMemberSearch;
+
+/**
+ Enable the invitation of a new member (YES by default).
+ Set NO this property to disable this option and hide the related bar button.
+ */
+@property (nonatomic) BOOL enableMemberInvitation;
 
 /**
  Display the members list.

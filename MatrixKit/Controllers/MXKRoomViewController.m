@@ -1135,15 +1135,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // TODO
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId {
-    [roomDataSource.room inviteUser:mxUserId success:^{
-    } failure:^(NSError *error) {
-        NSLog(@"[MXKRoomVC] Invite %@ failed: %@", mxUserId, error);
-        // TODO: Alert user
-//        [[AppDelegate theDelegate] showErrorAsAlert:error];
-    }];
-}
-
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert {
     [alert showInViewController:self];
 }
