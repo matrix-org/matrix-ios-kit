@@ -275,6 +275,44 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
 }
 
+- (void)onRoomDataSourceReady {
+    
+    // If the user is only invited, auto-join the room
+    if (roomDataSource.room.state.membership == MXMembershipInvite) {
+        // Check whether a join request is not already running
+        if (!joinRoomRequest) {
+            [self startActivityIndicator];
+            joinRoomRequest = [roomDataSource.room join:^{
+                
+                joinRoomRequest = nil;
+                [self stopActivityIndicator];
+                
+                [self triggerInitialBackPagination];
+            } failure:^(NSError *error) {
+                
+                NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
+                
+                joinRoomRequest = nil;
+                [self stopActivityIndicator];
+                
+                // Show the error to the end user
+                __weak typeof(self) weakSelf = self;
+                currentAlert = [[MXKAlert alloc] initWithTitle:@"Error"
+                                                       message:[NSString stringWithFormat:@"Failed to join room (%@): %@", roomDataSource.room.state.displayname, error]
+                                                         style:MXKAlertStyleAlert];
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
+                }];
+                
+                [currentAlert showInViewController:self];
+            }];
+        }
+    } else {
+        [self triggerInitialBackPagination];
+    }
+}
+
 - (BOOL)isBubblesTableScrollViewAtTheBottom {
     
     // Check whether the most recent message is visible.
@@ -320,7 +358,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         // When ready, do the initial back pagination
         if (roomDataSource.state == MXKDataSourceStateReady) {
-            [self triggerInitialBackPagination];
+            [self onRoomDataSourceReady];
         }
     } else {
         roomDataSource = nil;
@@ -434,33 +472,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - activity indicator
 
 - (void)stopActivityIndicator {
-
-    // Check membership state before stopping the loading wheel
-    // If the user is only invited, auto-join the room
-    if (roomDataSource.room.state.membership == MXMembershipInvite && !joinRoomRequest) {
-        joinRoomRequest = [roomDataSource.room join:^{
-            
-            joinRoomRequest = nil;
-            [self didMatrixSessionStateChange];
-        } failure:^(NSError *error) {
-
-            NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
-
-            joinRoomRequest = nil;
-
-            // Show the error to the end user
-            __weak typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:@"Error"
-                                                   message:[NSString stringWithFormat:@"Failed to join room (%@): %@", roomDataSource.room.state.displayname, error]
-                                                     style:MXKAlertStyleAlert];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                typeof(self) self = weakSelf;
-                self->currentAlert = nil;
-            }];
-
-            [currentAlert showInViewController:self];
-        }];
-    }
 
     // Keep the loading wheel displayed while we are joining the room
     if (joinRoomRequest) {
@@ -963,7 +974,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state {
     
     if (state == MXKDataSourceStateReady) {
-        [self triggerInitialBackPagination];
+        [self onRoomDataSourceReady];
     }
 }
 
