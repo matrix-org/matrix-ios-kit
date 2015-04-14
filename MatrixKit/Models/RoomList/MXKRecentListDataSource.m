@@ -185,7 +185,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         NSString *roomId = notif.userInfo[@"roomId"];
 
         // Add the room if there is not yet a cell for it
-        id<MXKRecentCellDataStoring> roomData = [self CellDataWithRoomId:roomId];
+        id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
         if (nil == roomData) {
 
             NSLog(@"MXKRecentListDataSource] Add newly joined room: %@", roomId);
@@ -210,7 +210,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     if (mxSession == self.mxSession) {
 
         NSString *roomId = notif.userInfo[@"roomId"];
-        id<MXKRecentCellDataStoring> roomData = [self CellDataWithRoomId:roomId];
+        id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
 
         if (roomData) {
 
@@ -242,11 +242,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 
 // Find the cell data that stores information about the given room id
-- (id<MXKRecentCellDataStoring>)CellDataWithRoomId:(NSString*)roomId {
+- (id<MXKRecentCellDataStoring>)cellDataWithRoomId:(NSString*)roomId {
 
     id<MXKRecentCellDataStoring> theRoomData;
     for (id<MXKRecentCellDataStoring> roomData in cellDataArray) {
-        if (roomData.roomDataSource.roomId == roomId) {
+        if ([roomData.roomDataSource.roomId isEqualToString:roomId]) {
             theRoomData = roomData;
             break;
         }

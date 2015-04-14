@@ -64,8 +64,14 @@
         mxSession = matrixSession;
         roomDataSources = [NSMutableDictionary dictionary];
         _releasePolicy = MXKRoomDataSourceManagerReleasePolicyNeverRelease;
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionLeaveRoom:) name:MXSessionLeftRoomNotification object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionLeftRoomNotification object:nil];
 }
 
 - (void)reset {
@@ -120,6 +126,18 @@
 
         default:
             break;
+    }
+}
+
+- (void)didMXSessionLeaveRoom:(NSNotification *)notif {
+
+    if (mxSession == notif.object) {
+
+        // The room is no more available, remove it from the manager
+        MXKRoomDataSource *roomDataSourceForRoom = [self roomDataSourceForRoom:notif.userInfo[@"roomId"] create:NO];
+        if (roomDataSourceForRoom) {
+            [self closeRoomDataSource:roomDataSourceForRoom forceClose:YES];
+        }
     }
 }
 
