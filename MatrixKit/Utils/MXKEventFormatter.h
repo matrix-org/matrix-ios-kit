@@ -18,6 +18,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKAppSettings.h"
+
 /**
  Formatting result codes.
  */
@@ -52,16 +54,11 @@ typedef enum : NSUInteger {
 @interface MXKEventFormatter : NSObject
 
 /**
- Flag to list redacted events in the messages list.
- Default is NO.
+ The settings used to handle room events.
+ 
+ By default the shared application settings are considered.
  */
-@property (nonatomic) BOOL showRedactions;
-
-/**
- Flag to list unsupported/unexpected events in the messages list.
- Default is NO.
- */
-@property (nonatomic) BOOL showUnsupportedEvents;
+@property (nonatomic) MXKAppSettings *settings;
 
 /**
  Flag indicating if the formatter must build strings that will be displayed as subtitle.

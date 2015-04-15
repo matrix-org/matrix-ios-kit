@@ -39,6 +39,9 @@
         [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
         [_dateFormatter setDateFormat:dateFormat];
+        
+        // Consider by default the shared app settings
+        _settings = [MXKAppSettings sharedSettings];
     }
     return self;
 }
@@ -110,7 +113,7 @@
     if (isRedacted) {
         NSLog(@"[MXKEventFormatter] Redacted event %@ (%@)", event.description, event.redactedBecause);
         // Check whether redacted information is required
-        if (!_isForSubtitle && _showRedactions) {
+        if (!_isForSubtitle && _settings.showRedactionsInRoomHistory) {
             redactedInfo = @"<redacted>";
             // Consider live room state to resolve redactor name if no roomState is provided
             MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
@@ -371,7 +374,7 @@
                     displayText = displayText? displayText : @"audio attachment";
                     if (![self isSupportedAttachment:event]) {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || !_showUnsupportedEvents) {
+                        if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory) {
                             displayText = @"invalid audio attachment";
                         } else {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
@@ -382,7 +385,7 @@
                     displayText = displayText? displayText : @"video attachment";
                     if (![self isSupportedAttachment:event]) {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || !_showUnsupportedEvents) {
+                        if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory) {
                             displayText = @"invalid video attachment";
                         } else {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
@@ -393,7 +396,7 @@
                     displayText = displayText? displayText : @"location attachment";
                     if (![self isSupportedAttachment:event]) {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || !_showUnsupportedEvents) {
+                        if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory) {
                             displayText = @"invalid location attachment";
                         } else {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
@@ -424,6 +427,7 @@
         case MXEventTypeRoomRedaction: {
             NSString *eventId = event.redacts;
             displayText = [NSString stringWithFormat:@"%@ redacted an event (id: %@)", senderDisplayName, eventId];
+            break;
         }
 
         default:
@@ -433,7 +437,7 @@
 
     if (!displayText) {
         NSLog(@"[MXKEventFormatter] Warning: Unsupported event %@)", event.description);
-        if (_showUnsupportedEvents) {
+        if (_settings.showUnsupportedEventsInRoomHistory) {
             
             if (MXKEventFormatterErrorNone == *error) {
                 *error = MXKEventFormatterErrorUnsupported;
