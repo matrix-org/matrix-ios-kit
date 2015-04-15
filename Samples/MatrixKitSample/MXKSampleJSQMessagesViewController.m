@@ -58,7 +58,7 @@
     
     membersPlaceHolderAvatar = nil;
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -113,7 +113,7 @@
     }
 
     // Listen to MXSession state changes
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:MXSessionStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:kMXSessionStateDidChangeNotification object:nil];
 }
 
 #pragma mark - MXKDataSourceDelegate
