@@ -637,7 +637,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)triggerBackPagination {
-    
+
+    // Paginate only if possible
+    if (NO == roomDataSource.room.canPaginate) {
+        return;
+    }
+
     // Store the current height of the first bubble (if any)
     backPaginationSavedFirstBubbleHeight = 0;
     backPaginationSavedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
