@@ -294,11 +294,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                     
                     // If there is no more events, remove the bubble
                     if (0 == remainingEvents) {
-                        // Remove the broken link from the map
-                        @synchronized (eventIdToBubbleMap) {
-                            [eventIdToBubbleMap removeObjectForKey:redactionEvent.redacts];
-                        }
-                        
                         [self removeCellData:bubbleData];
                         
                         // TODO GFO: check whether the adjacent bubbles can merge together
@@ -656,9 +651,14 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
        remainingEvents = [bubbleData updateEvent:localEcho.eventId withEvent:event];
     }
 
-    // Remove the broken link from the map
+    // Update bubbles mapping
     @synchronized (eventIdToBubbleMap) {
+        // Remove the broken link from the map
         [eventIdToBubbleMap removeObjectForKey:localEcho.eventId];
+        
+        if (remainingEvents) {
+            eventIdToBubbleMap[event.eventId] = bubbleData;
+        }
     }
 
     // If there is no more events in the bubble, kill it
@@ -676,6 +676,16 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 }
 
 - (void)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData {
+    
+    // Remove potential occurrences in bubble map
+    @synchronized (eventIdToBubbleMap) {
+        NSArray *keys = eventIdToBubbleMap.allKeys;
+        for (NSString *key in keys) {
+            if (eventIdToBubbleMap[key] == cellData) {
+                [eventIdToBubbleMap removeObjectForKey:key];
+            }
+        }
+    }
 
     @synchronized(bubbles) {
         [bubbles removeObject:cellData];
@@ -701,7 +711,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 }
 
 /**
- Start processing prending events.
+ Start processing pending events.
  
  @param onComplete a block called (on the main thread) when the processing has been done. Can be nil.
  */
