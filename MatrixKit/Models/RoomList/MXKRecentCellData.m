@@ -104,7 +104,10 @@
     }
 
     if (0 == lastEventTextMessage.length) {
-        lastEventTextMessage = @"TODO: Manage redaction";
+        lastEventTextMessage = @"";
+        
+        // Trigger a back pagination to retrieve the actual last message
+        [roomDataSource paginateBackMessages:5 success:nil failure:nil];
     }
 
     // Compute the attribute text message
