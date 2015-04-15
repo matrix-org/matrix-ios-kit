@@ -181,7 +181,9 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         typingNotifListener = nil;
     }
     currentTypingUsers = nil;
-    
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionInitialSyncedRoomNotification object:nil];
+
     bubbles = nil;
     eventsToProcess = nil;
     eventIdToBubbleMap = nil;
@@ -214,6 +216,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateReady;
+
+                if (NO == _room.isSync) {
+                    // Listen to MXSession rooms count changes
+                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:MXSessionInitialSyncedRoomNotification object:nil];
+                }
             }
             else {
                 NSLog(@"[MXKRoomDataSource] The user does not know the room %@", _roomId);
@@ -735,6 +742,20 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
     @synchronized(bubbles) {
         [bubbles removeObject:cellData];
+    }
+}
+
+- (void)didMXRoomInitialSynced:(NSNotification *)notif {
+
+    // Refresh the room data source when the room has been initialSync'ed
+    MXSession *mxSession = notif.object;
+    if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[@"roomId"]]) {
+
+        NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
+
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionInitialSyncedRoomNotification object:nil];
+
+        [self reload];
     }
 }
 
