@@ -21,23 +21,33 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
-static MXKAppSettings *sharedSettings = nil;
+static MXKAppSettings *standardAppSettings = nil;
 
 @implementation MXKAppSettings
+@synthesize enableInAppNotifications;
+@synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory;
+@synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
+@synthesize syncLocalContacts, phonebookCountryCode;
 
-+ (MXKAppSettings *)sharedSettings {
++ (MXKAppSettings *)standardAppSettings {
     @synchronized(self) {
-        if(sharedSettings == nil) {
-            sharedSettings = [[super allocWithZone:NULL] init];
+        if(standardAppSettings == nil) {
+            standardAppSettings = [[super allocWithZone:NULL] init];
         }
     }
-    return sharedSettings;
+    return standardAppSettings;
 }
 
 #pragma  mark - 
 
--(MXKAppSettings *)init {
+-(instancetype)init {
     if (self = [super init]) {
+        
+        // Use presence to sort room members by default
+        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"]) {
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"sortRoomMembersUsingLastSeenTime"];
+        }
+        sortRoomMembersUsingLastSeenTime = YES;
     }
     return self;
 }
@@ -46,82 +56,165 @@ static MXKAppSettings *sharedSettings = nil;
 }
 
 - (void)reset {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableInAppNotifications"];
     
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showUnsupportedEventsInRoomHistory"];
-    
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"sortRoomMembersUsingLastSeenTime"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showLeftMembersInRoomMemberList"];
-    
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncLocalContacts"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        // Flush shared user defaults
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableInAppNotifications"];
+        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showUnsupportedEventsInRoomHistory"];
+        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"sortRoomMembersUsingLastSeenTime"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showLeftMembersInRoomMemberList"];
+        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncLocalContacts"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phonebookCountryCode"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    } else {
+        enableInAppNotifications = NO;
+        
+        showAllEventsInRoomHistory = NO;
+        showRedactionsInRoomHistory = NO;
+        showUnsupportedEventsInRoomHistory = NO;
+        
+        sortRoomMembersUsingLastSeenTime = YES;
+        showLeftMembersInRoomMemberList = NO;
+        
+        syncLocalContacts = NO;
+        phonebookCountryCode = nil;
+    }
 }
 
-#pragma mark - TODO move this settings in MatrixSessionHandler
+#pragma mark -
 
 - (BOOL)enableInAppNotifications {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableInAppNotifications"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableInAppNotifications"];
+    } else {
+        return enableInAppNotifications;
+    }
 }
 
-- (void)setEnableInAppNotifications:(BOOL)notifications {
-//    [[MatrixSDKHandler sharedHandler] enableInAppNotifications:notifications];
-    [[NSUserDefaults standardUserDefaults] setBool:notifications forKey:@"enableInAppNotifications"];
+- (void)setEnableInAppNotifications:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        // TODO GFO   [[MatrixSDKHandler sharedHandler] enableInAppNotifications:notifications];
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"enableInAppNotifications"];
+    } else {
+        enableInAppNotifications = boolValue;
+    }
 }
+
+#pragma mark -
 
 - (BOOL)showAllEventsInRoomHistory {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"showAllEventsInRoomHistory"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"showAllEventsInRoomHistory"];
+    } else {
+        return showAllEventsInRoomHistory;
+    }
 }
 
-- (void)setShowAllEventsInRoomHistory:(BOOL)showAllEventsInRoomHistory {
-    [[NSUserDefaults standardUserDefaults] setBool:showAllEventsInRoomHistory forKey:@"showAllEventsInRoomHistory"];
-    // Flush and restore Matrix data
-//    [[MatrixSDKHandler sharedHandler] reload:NO];
+- (void)setShowAllEventsInRoomHistory:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showAllEventsInRoomHistory"];
+        // TOD GFO Flush and restore Matrix data
+        //    [[MatrixSDKHandler sharedHandler] reload:NO];
+    } else {
+        showAllEventsInRoomHistory = boolValue;
+    }
 }
 
 - (BOOL)showRedactionsInRoomHistory {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"showRedactionsInRoomHistory"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"showRedactionsInRoomHistory"];
+    } else {
+        return showRedactionsInRoomHistory;
+    }
 }
 
-- (void)setShowRedactionsInRoomHistory:(BOOL)showRedactionsInRoomHistory {
-    [[NSUserDefaults standardUserDefaults] setBool:showRedactionsInRoomHistory forKey:@"showRedactionsInRoomHistory"];
+- (void)setShowRedactionsInRoomHistory:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showRedactionsInRoomHistory"];
+    } else {
+        showRedactionsInRoomHistory = boolValue;
+    }
 }
 
 - (BOOL)showUnsupportedEventsInRoomHistory {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"showUnsupportedEventsInRoomHistory"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"showUnsupportedEventsInRoomHistory"];
+    } else {
+        return showUnsupportedEventsInRoomHistory;
+    }
 }
 
-- (void)setShowUnsupportedEventsInRoomHistory:(BOOL)showUnsupportedEventsInRoomHistory {
-    [[NSUserDefaults standardUserDefaults] setBool:showUnsupportedEventsInRoomHistory forKey:@"showUnsupportedEventsInRoomHistory"];
+- (void)setShowUnsupportedEventsInRoomHistory:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showUnsupportedEventsInRoomHistory"];
+    } else {
+        showUnsupportedEventsInRoomHistory = boolValue;
+    }
 }
+
+#pragma mark -
 
 - (BOOL)sortRoomMembersUsingLastSeenTime {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"sortRoomMembersUsingLastSeenTime"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"sortRoomMembersUsingLastSeenTime"];
+    } else {
+        return sortRoomMembersUsingLastSeenTime;
+    }
 }
 
-- (void)setSortRoomMembersUsingLastSeenTime:(BOOL)sortRoomMembersUsingLastSeenTime {
-    [[NSUserDefaults standardUserDefaults] setBool:sortRoomMembersUsingLastSeenTime forKey:@"sortRoomMembersUsingLastSeenTime"];
+- (void)setSortRoomMembersUsingLastSeenTime:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"sortRoomMembersUsingLastSeenTime"];
+    } else {
+        sortRoomMembersUsingLastSeenTime = boolValue;
+    }
 }
 
 - (BOOL)showLeftMembersInRoomMemberList {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"showLeftMembersInRoomMemberList"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"showLeftMembersInRoomMemberList"];
+    } else {
+        return showLeftMembersInRoomMemberList;
+    }
 }
 
-- (void)setShowLeftMembersInRoomMemberList:(BOOL)showLeftMembersInRoomMemberList {
-    [[NSUserDefaults standardUserDefaults] setBool:showLeftMembersInRoomMemberList forKey:@"showLeftMembersInRoomMemberList"];
+- (void)setShowLeftMembersInRoomMemberList:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showLeftMembersInRoomMemberList"];
+    } else {
+        showLeftMembersInRoomMemberList = boolValue;
+    }
 }
+
+#pragma mark -
 
 - (BOOL)syncLocalContacts {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"syncLocalContacts"];
+    if (self == [MXKAppSettings standardAppSettings]) {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"syncLocalContacts"];
+    } else {
+        return syncLocalContacts;
+    }
 }
 
-- (void)setSyncLocalContacts:(BOOL)syncLocalContacts {
-    [[NSUserDefaults standardUserDefaults] setBool:syncLocalContacts forKey:@"syncLocalContacts"];
+- (void)setSyncLocalContacts:(BOOL)boolValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"syncLocalContacts"];
+    } else {
+        syncLocalContacts = boolValue;
+    }
 }
 
 - (NSString*)phonebookCountryCode {
-    NSString* res = [[NSUserDefaults standardUserDefaults] stringForKey:@"phonebookCountryCode"];
+    NSString* res = phonebookCountryCode;
+    
+    if (self == [MXKAppSettings standardAppSettings]) {
+        res = [[NSUserDefaults standardUserDefaults] stringForKey:@"phonebookCountryCode"];
+    }
     
     // does not exist : try to get the SIM card information
     if (!res) {
@@ -141,8 +234,12 @@ static MXKAppSettings *sharedSettings = nil;
     return res;
 }
 
-- (void)setPhonebookCountryCode:(NSString *)phonebookCountryCode{
-    [[NSUserDefaults standardUserDefaults] setObject:phonebookCountryCode forKey:@"phonebookCountryCode"];
+- (void)setPhonebookCountryCode:(NSString *)stringValue {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"phonebookCountryCode"];
+    } else {
+        phonebookCountryCode = stringValue;
+    }
 }
 
 @end

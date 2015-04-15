@@ -53,8 +53,9 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         
         cellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
-        // Consider by default the shared app settings
-        _settings = [MXKAppSettings sharedSettings];
+        
+        // Consider the shared app settings by default
+        _settings = [MXKAppSettings standardAppSettings];
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRoomMemberCellData.class forCellIdentifier:kMXKRoomMemberCellIdentifier];

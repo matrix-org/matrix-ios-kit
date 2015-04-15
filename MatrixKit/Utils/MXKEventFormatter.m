@@ -40,8 +40,8 @@
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
         [_dateFormatter setDateFormat:dateFormat];
         
-        // Consider by default the shared app settings
-        _settings = [MXKAppSettings sharedSettings];
+        // Consider the shared app settings by default
+        _settings = [MXKAppSettings standardAppSettings];
     }
     return self;
 }

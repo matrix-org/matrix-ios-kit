@@ -107,7 +107,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         
         // Check here whether the app user wants to display all the events
-        if ([[MXKAppSettings sharedSettings] showAllEventsInRoomHistory]) {
+        if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory]) {
             // Use a filter to retrieve all the events (except kMXEventTypeStringPresence which are not related to a specific room)
             self.eventsFilterForMessages = @[
                                              kMXEventTypeStringRoomName,

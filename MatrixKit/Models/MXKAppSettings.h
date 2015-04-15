@@ -15,37 +15,45 @@
  */
 #import <UIKit/UIKit.h>
 
+/**
+ `MXKAppSettings` represents the application settings. Most of them are used to handle matrix session data.
+ 
+ The shared object `standardAppSettings` provides the default application settings defined in `standardUserDefaults`.
+ Any property change of this shared settings is reported into `standardUserDefaults`.
+ 
+ Developper may define their own `MXKAppSettings` instances to handle specific setting values without impacting the shared object.
+ */
 @interface MXKAppSettings : NSObject
 
 /**
  Enable In-App notifications based on Remote notifications rules.
  
- This boolean value is stored in shared defaults object with `enableInAppNotifications` key.
- Return NO if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `enableInAppNotifications`.
+ Return NO if no value is defined.
  */
 @property (nonatomic) BOOL enableInAppNotifications;
 
 /**
  Display all received events in room history (Only recognized events are displayed, presently `custom` events are ignored).
  
- This boolean value is stored in shared defaults object with `showAllEventsInRoomHistory` key.
- Return NO if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `showAllEventsInRoomHistory`.
+ Return NO if no value is defined.
  */
 @property (nonatomic) BOOL showAllEventsInRoomHistory;
 
 /**
  Display redacted events in room history.
  
- This boolean value is stored in shared defaults object with `showRedactionsInRoomHistory` key.
- Return NO if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `showRedactionsInRoomHistory`.
+ Return NO if no value is defined.
  */
 @property (nonatomic) BOOL showRedactionsInRoomHistory;
 
 /**
  Display unsupported/unexpected events in room history.
  
- This boolean value is stored in shared defaults object with `showUnsupportedEventsInRoomHistory` key.
- Return NO if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `showUnsupportedEventsInRoomHistory`.
+ Return NO if no value is defined.
  */
 @property (nonatomic) BOOL showUnsupportedEventsInRoomHistory;
 
@@ -53,42 +61,42 @@
  Sort room members by considering their presence.
  Set NO to sort members in alphabetic order.
  
- This boolean value is stored in shared defaults object with `sortRoomMembersUsingLastSeenTime` key.
- Return YES if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `sortRoomMembersUsingLastSeenTime`.
+ Return YES if no value is defined.
  */
 @property (nonatomic) BOOL sortRoomMembersUsingLastSeenTime;
 
 /**
  Show left members in room member list.
  
- This boolean value is stored in shared defaults object with `showLeftMembersInRoomMemberList` key.
- Return NO if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `showLeftMembersInRoomMemberList`.
+ Return NO if no value is defined.
  */
 @property (nonatomic) BOOL showLeftMembersInRoomMemberList;
 
 /**
  Return YES if the user allows the local contacts sync.
  
- This boolean value is stored in shared defaults object with `syncLocalContacts` key.
- Return NO if no default value is defined.
+ This boolean value is defined in shared settings object with the key: `syncLocalContacts`.
+ Return NO if no value is defined.
  */
 @property (nonatomic) BOOL syncLocalContacts;
 
 /**
  The current selected country code for the phonebook.
  
- This value is stored in shared defaults object with `phonebookCountryCode` key.
+ This value is defined in shared settings object with the key: `phonebookCountryCode`.
  Return the SIM card information (if any) if no default value is defined.
  */
 @property (nonatomic) NSString* phonebookCountryCode;
 
 /**
- Return the current application settings.
+ Return the shared application settings object. These settings are retrieved/stored in the shared defaults object (`[NSUserDefaults standardUserDefaults]`).
  */
-+ (MXKAppSettings *)sharedSettings;
++ (MXKAppSettings *)standardAppSettings;
 
 /**
- Restore the default values
+ Restore the default values.
  */
 - (void)reset;
 
