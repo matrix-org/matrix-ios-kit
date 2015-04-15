@@ -153,8 +153,18 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
  */
 + (NSUInteger)cacheSize;
 + (NSUInteger)minCacheSize;
+
+/**
+ The current maximum size of the media cache (in bytes).
+ */
 + (NSInteger)currentMaxCacheSize;
 + (void)setCurrentMaxCacheSize:(NSInteger)maxCacheSize;
-+ (NSUInteger)maxAllowedCacheSize;
+
+/**
+ The maximum allowed size of the media cache (in bytes).
+ 
+ Return the value for the key `maxAllowedMediaCacheSize` in the shared defaults object (1 GB if no default value is defined).
+ */
++ (NSInteger)maxAllowedCacheSize;
 
 @end

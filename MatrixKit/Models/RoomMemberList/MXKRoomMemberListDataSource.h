@@ -20,6 +20,8 @@
 #import "MXKDataSource.h"
 #import "MXKRoomMemberCellData.h"
 
+#import "MXKAppSettings.h"
+
 /**
  Identifier to use for cells that display a room member.
  */
@@ -49,16 +51,11 @@ extern NSString *const kMXKRoomMemberCellIdentifier;
 @property (nonatomic, readonly) NSString *roomId;
 
 /**
- YES by default, sort members by considering their presence.
- Set NO to sort members in alphabetic order.
+ The settings used to sort/display room members.
+ 
+ By default the shared application settings are considered.
  */
-@property (nonatomic) BOOL sortMembersUsingLastSeenTime;
-
-/**
- YES by default, hide members who have left the room.
- Set NO to show this left members.
- */
-@property (nonatomic) BOOL hideLeftUsers;
+@property (nonatomic) MXKAppSettings *settings;
 
 
 #pragma mark - Life cycle

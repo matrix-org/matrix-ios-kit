@@ -335,26 +335,33 @@ static NSMutableDictionary* uploadTableById = nil;
 }
 
 + (NSInteger)currentMaxCacheSize {
-    NSInteger res = [[NSUserDefaults standardUserDefaults] integerForKey:@"maxMediaCacheSize"];
     
-    // no default value, assume that 1 GB is enough
+    NSInteger res = [[NSUserDefaults standardUserDefaults] integerForKey:@"maxMediaCacheSize"];
     if (res == 0) {
-        res = self.maxAllowedCacheSize;
+        // no default value, use the max allowed value
+        res = [MXKMediaManager maxAllowedCacheSize];
     }
     
     return res;
 }
 
 + (void)setCurrentMaxCacheSize:(NSInteger)maxCacheSize {
-    if ((maxCacheSize == 0) && (maxCacheSize > self.maxAllowedCacheSize)) {
-        maxCacheSize = self.maxAllowedCacheSize;
+    if ((maxCacheSize == 0) || (maxCacheSize > [MXKMediaManager maxAllowedCacheSize])) {
+        maxCacheSize = [MXKMediaManager maxAllowedCacheSize];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:maxCacheSize forKey:@"maxMediaCacheSize"];
 }
 
-+ (NSUInteger)maxAllowedCacheSize {
-    return 1024 * 1024 * 1024;
++ (NSInteger)maxAllowedCacheSize {
+    
+    NSInteger res = [[NSUserDefaults standardUserDefaults] integerForKey:@"maxAllowedMediaCacheSize"];
+    if (res == 0) {
+        // no default value, assume that 1 GB is enough
+        res = 1024 * 1024 * 1024;
+    }
+    
+    return res;
 }
 
 + (void)clearCache {

@@ -53,8 +53,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         
         cellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
-        _sortMembersUsingLastSeenTime = YES;
-        _hideLeftUsers = YES;
+        // Consider by default the shared app settings
+        _settings = [MXKAppSettings sharedSettings];
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRoomMemberCellData.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
@@ -171,7 +171,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     
     NSArray* membersList = [mxRoom.state members];
     
-    if (_hideLeftUsers) {
+    if (!_settings.showLeftMembersInRoomMemberList) {
         NSMutableArray* filteredMembers = [[NSMutableArray alloc] init];
         
         for (MXRoomMember* member in membersList) {
@@ -221,7 +221,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             return NSOrderedAscending;
         }
         
-        if (_sortMembersUsingLastSeenTime) {
+        if (_settings.sortRoomMembersUsingLastSeenTime) {
             // Get the users that correspond to these members
             MXUser *user1 = [self.mxSession userWithUserId:member1.roomMember.userId];
             MXUser *user2 = [self.mxSession userWithUserId:member2.roomMember.userId];

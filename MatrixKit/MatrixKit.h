@@ -18,6 +18,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKAppSettings.h"
+
 #import "MXEvent+MatrixKit.h"
 
 #import "MXKTools.h"

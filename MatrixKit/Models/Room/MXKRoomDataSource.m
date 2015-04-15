@@ -25,6 +25,8 @@
 
 #import "MXKTools.h"
 
+#import "MXKAppSettings.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
 
@@ -103,14 +105,32 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
-
-        // Display only a subset of events
-        _eventsFilterForMessages = @[
-                                     kMXEventTypeStringRoomName,
-                                     kMXEventTypeStringRoomTopic,
-                                     kMXEventTypeStringRoomMember,
-                                     kMXEventTypeStringRoomMessage
-                                     ];
+        
+        // Check here whether the app user wants to display all the events
+        if ([[MXKAppSettings sharedSettings] showAllEventsInRoomHistory]) {
+            // Use a filter to retrieve all the events (except kMXEventTypeStringPresence which are not related to a specific room)
+            self.eventsFilterForMessages = @[
+                                             kMXEventTypeStringRoomName,
+                                             kMXEventTypeStringRoomTopic,
+                                             kMXEventTypeStringRoomMember,
+                                             kMXEventTypeStringRoomCreate,
+                                             kMXEventTypeStringRoomJoinRules,
+                                             kMXEventTypeStringRoomPowerLevels,
+                                             kMXEventTypeStringRoomAliases,
+                                             kMXEventTypeStringRoomMessage,
+                                             kMXEventTypeStringRoomMessageFeedback,
+                                             kMXEventTypeStringRoomRedaction
+                                             ];
+        }
+        else {
+            // Display only a subset of events
+            self.eventsFilterForMessages = @[
+                                             kMXEventTypeStringRoomName,
+                                             kMXEventTypeStringRoomTopic,
+                                             kMXEventTypeStringRoomMember,
+                                             kMXEventTypeStringRoomMessage
+                                             ];
+        }
 
         [self didMXSessionStateChange];
     }
