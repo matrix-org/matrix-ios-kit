@@ -46,7 +46,7 @@
         cellViewMap = [NSMutableDictionary dictionary];
 
         // Listen to MXSession state changes
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:MXSessionStateDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:kMXSessionStateDidChangeNotification object:nil];
     }
     return self;
 }

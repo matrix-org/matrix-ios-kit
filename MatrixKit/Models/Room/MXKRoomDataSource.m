@@ -182,7 +182,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     }
     currentTypingUsers = nil;
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionInitialSyncedRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
 
     bubbles = nil;
     eventsToProcess = nil;
@@ -219,7 +219,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
                 if (NO == _room.isSync) {
                     // Listen to MXSession rooms count changes
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:MXSessionInitialSyncedRoomNotification object:nil];
+                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXSessionInitialSyncedRoomNotification object:nil];
                 }
             }
             else {
@@ -753,7 +753,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
 
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionInitialSyncedRoomNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
 
         [self reload];
     }

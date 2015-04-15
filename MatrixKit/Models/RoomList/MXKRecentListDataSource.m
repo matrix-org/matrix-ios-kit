@@ -62,8 +62,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 - (void)destroy {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionNewRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionLeftRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionLeftRoomNotification object:nil];
 
     cellDataArray = nil;
     filteredCellDataArray = nil;
@@ -149,8 +149,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [self sortCellData];
 
     // Listen to MXSession rooms count changes
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:MXSessionNewRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionLeaveRoom:) name:MXSessionLeftRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionLeaveRoom:) name:kMXSessionLeftRoomNotification object:nil];
 
 }
 

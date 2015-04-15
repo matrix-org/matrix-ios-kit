@@ -91,7 +91,7 @@
     
     if (session) {
         // Register session state observer
-        mxkTableViewControllerSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        mxkTableViewControllerSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             // Check whether the concerned session is the associated one
             if (notif.object == mxSession) {

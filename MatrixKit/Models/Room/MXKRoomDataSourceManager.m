@@ -65,13 +65,13 @@
         roomDataSources = [NSMutableDictionary dictionary];
         _releasePolicy = MXKRoomDataSourceManagerReleasePolicyNeverRelease;
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionLeaveRoom:) name:MXSessionLeftRoomNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionLeaveRoom:) name:kMXSessionLeftRoomNotification object:nil];
     }
     return self;
 }
 
 - (void)dealloc {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:MXSessionLeftRoomNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionLeftRoomNotification object:nil];
 }
 
 - (void)reset {

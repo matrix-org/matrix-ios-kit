@@ -47,8 +47,8 @@
     // We need a room
     // So, initialise a Matrix session on matrix.org to display #test:matrix.org
     MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:@"https://matrix.org"
-                                                                    userId:@"@your_matrix_id"
-                                                               accessToken:@"your_access_token"];
+                                                                    userId:@"@Manu:matrix.org"
+                                                               accessToken:@"QE1hbnU6bWF0cml4Lm9yZw...EWjyTqXXxMLUgaUOCO"];
 
     self.mxSession = [[MXSession alloc] initWithMatrixRestClient:[[MXRestClient alloc] initWithCredentials:credentials]];
 
