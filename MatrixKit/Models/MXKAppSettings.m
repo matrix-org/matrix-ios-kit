@@ -98,7 +98,6 @@ static MXKAppSettings *standardAppSettings = nil;
 
 - (void)setEnableInAppNotifications:(BOOL)boolValue {
     if (self == [MXKAppSettings standardAppSettings]) {
-        // TODO GFO   [[MatrixSDKHandler sharedHandler] enableInAppNotifications:notifications];
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"enableInAppNotifications"];
     } else {
         enableInAppNotifications = boolValue;
@@ -118,8 +117,6 @@ static MXKAppSettings *standardAppSettings = nil;
 - (void)setShowAllEventsInRoomHistory:(BOOL)boolValue {
     if (self == [MXKAppSettings standardAppSettings]) {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showAllEventsInRoomHistory"];
-        // TOD GFO Flush and restore Matrix data
-        //    [[MatrixSDKHandler sharedHandler] reload:NO];
     } else {
         showAllEventsInRoomHistory = boolValue;
     }

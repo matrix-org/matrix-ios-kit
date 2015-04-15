@@ -383,6 +383,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
 
+    roomDataSource.delegate = nil;
     roomDataSource = nil;
     
     self.mxSession = nil;

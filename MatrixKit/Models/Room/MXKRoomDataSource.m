@@ -104,7 +104,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         [self registerCellViewClass:MXKRoomOutgoingBubbleTableViewCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
         
         // Set default MXEvent -> NSString formatter
-        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
+        self.eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         
         // Check here whether the app user wants to display all the events
         if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory]) {
@@ -137,9 +137,31 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     return self;
 }
 
+- (void)reload {
+    state = MXKDataSourceStatePreparing;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
+        [self.delegate dataSource:self didStateChange:state];
+    }
+    
+    // Flush the current bubble data
+    _room = nil;
+    [bubbles removeAllObjects];
+    [eventsToProcess removeAllObjects];
+    [eventIdToBubbleMap removeAllObjects];
+    [pendingLocalEchoes removeAllObjects];
+    
+    // Reload
+    [self didMXSessionStateChange];
+    
+    // Notify the last message may have changed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+}
+
 - (void)destroy {
 
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
+    
+    self.eventFormatter = nil;
     
     if (backPaginationRequest) {
         [backPaginationRequest cancel];
@@ -314,6 +336,22 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     }];
 }
 
+- (void)setEventFormatter:(MXKEventFormatter *)eventFormatter {
+    if (_eventFormatter) {
+        // Remove observers on previous event formatter settings
+        [_eventFormatter.settings removeObserver:self forKeyPath:@"showRedactionsInRoomHistory"];
+        [_eventFormatter.settings removeObserver:self forKeyPath:@"showUnsupportedEventsInRoomHistory"];
+    }
+    
+    _eventFormatter = eventFormatter;
+    
+    if (_eventFormatter) {
+        // Add observer to flush stored data on settings changes
+        [_eventFormatter.settings  addObserver:self forKeyPath:@"showRedactionsInRoomHistory" options:0 context:nil];
+        [_eventFormatter.settings  addObserver:self forKeyPath:@"showUnsupportedEventsInRoomHistory" options:0 context:nil];
+    }
+}
+
 - (void)listenTypingNotifications {
     
     // Remove the previous live listener
@@ -347,6 +385,14 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     currentTypingUsers = _room.typingUsers;
 }
 
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([@"showRedactionsInRoomHistory" isEqualToString:keyPath] || [@"showUnsupportedEventsInRoomHistory" isEqualToString:keyPath]) {
+        // Flush the current bubble data and rebuild them
+        [self reload];
+    }
+}
 
 #pragma mark - Public methods
 - (id<MXKRoomBubbleCellDataStoring>)cellDataAtIndex:(NSInteger)index {
