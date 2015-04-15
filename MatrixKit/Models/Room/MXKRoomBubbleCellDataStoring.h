@@ -112,6 +112,11 @@
  */
 @property (nonatomic) BOOL isTyping;
 
+/**
+ Show the date time label in rendered bubble cell (NO by default)
+ */
+@property (nonatomic) BOOL showBubbleDateTime;
+
 
 #pragma mark - Public methods
 /**

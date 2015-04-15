@@ -110,9 +110,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         }
         self.dateTimeLabelContainer.hidden = YES;
         
-        BOOL displayMsgTimestamp = YES; // TODO GFO (nil != dateFormatter);
-        
-        // Set message content // TODO GFO
+        // Set message content
         bubbleData.maxTextViewWidth = self.frame.size.width - MXKROOMBUBBLETABLEVIEWCELL_TEXTVIEW_LEADING_AND_TRAILING_CONSTRAINT_TO_SUPERVIEW;
         CGSize contentSize = bubbleData.contentSize;
         if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText) {
@@ -183,7 +181,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         }
         
         // Handle timestamp display
-        if (displayMsgTimestamp) {
+        if (bubbleData.showBubbleDateTime) {
             // Add datetime label for each component
             self.dateTimeLabelContainer.hidden = NO;
             [bubbleData prepareBubbleComponentsPosition];

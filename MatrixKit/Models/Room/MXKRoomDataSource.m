@@ -936,6 +936,8 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     
     // Update typing flag before rendering
     bubbleData.isTyping = ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
+    // Report the current timestamp display option
+    bubbleData.showBubbleDateTime = self.showBubblesDateTime;
 
     // Make the bubble display the data
     [cell render:bubbleData];

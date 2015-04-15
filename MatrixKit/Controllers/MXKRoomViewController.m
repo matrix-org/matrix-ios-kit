@@ -992,16 +992,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnDateTimeContainer]) {
-        MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-        BOOL newDateTimeLabelContainerHidden = !roomBubbleTableViewCell.dateTimeLabelContainer.hidden;
-
-        NSLog(@"    -> Turn %@ cells date", newDateTimeLabelContainerHidden ? @"OFF" : @"ON");
-
-        // @TODO: How to indicate MXKRoomBubbleTableViewCell cells they must not show date anymore
-        // The only global object we pass to them is the event formatter but its jobs is converting MXEvents into texts.
-        // It cannot be used to pass cells config.
-        // If this VC implements its tableview datasource, it will be far easier. We could customise cells
-        // just before providing them to the tableview.
+        roomDataSource.showBubblesDateTime = !roomDataSource.showBubblesDateTime;
+        NSLog(@"    -> Turn %@ cells date", roomDataSource.showBubblesDateTime ? @"ON" : @"OFF");
+        
+        [self reloadBubblesTable];
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAttachmentView]) {
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;

@@ -119,6 +119,10 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
+/**
+ Show the date time label in rendered room bubble cells (NO by default)
+ */
+@property (nonatomic) BOOL showBubblesDateTime;
 
 
 #pragma mark - Life cycle
