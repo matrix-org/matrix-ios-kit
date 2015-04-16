@@ -51,7 +51,7 @@ extern NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier;
 #pragma mark - Notifications
 /**
  Notification sent when an information about the room has changed.
- Tracked informations are: lastMessage, unreadCount
+ Tracked informations are: lastMessage, unreadCount, unreadBingCount.
  */
 extern NSString *const kMXKRoomDataSourceMetaDataChanged;
 
@@ -105,6 +105,13 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
  */
 @property (nonatomic, readonly) NSUInteger unreadCount;
+
+/**
+ The number of unread messages that match the push notification rules.
+ It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
+ */
+@property (nonatomic, readonly) NSUInteger unreadBingCount;
+
 
 
 #pragma mark - Configuration

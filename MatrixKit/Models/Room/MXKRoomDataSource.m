@@ -809,12 +809,24 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             }
 
             NSUInteger unreadCount = 0;
+            NSUInteger unreadBingCount = 0;
 
             for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot) {
                 
                 // The event can be now unqueued
                 @synchronized (eventsToProcess) {
                     [eventsToProcess removeObject:queuedEvent];
+                }
+
+                // Check if we should bing this event
+                MXPushRule *rule = [self.mxSession.notificationCenter ruleMatchingEvent:queuedEvent.event];
+                if (rule) {
+                    queuedEvent.event.mxkState = MXKEventStateBing;
+
+                    // Cound unread bing message only for live events
+                    if (MXEventDirectionForwards == queuedEvent.direction) {
+                        unreadBingCount++;
+                    }
                 }
 
                 // Retrieve the MXKCellData class to manage the data
@@ -874,12 +886,13 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
                 // Update the total unread count
                 _unreadCount += unreadCount;
+                _unreadBingCount += unreadBingCount;
                 
                 if (self.delegate) {
                     [self.delegate dataSource:self didCellChange:nil];
                 }
                 
-                // Notify the last message and unreadCount have changed
+                // Notify the last message, unreadCount and/or unreadBingCount have changed
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
                 
                 // Inform about the end if requested
@@ -904,8 +917,9 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     // The view controller is going to display all messages
-    // Automatically reset the unread count
+    // Automatically reset the counters
     _unreadCount = 0;
+    _unreadBingCount = 0;
 
     // Notify the unreadCount has changed
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
