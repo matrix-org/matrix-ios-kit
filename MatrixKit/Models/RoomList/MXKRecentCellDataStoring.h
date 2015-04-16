@@ -46,7 +46,7 @@
 @property (nonatomic, readonly) NSString *lastEventDate;
 
 @property (nonatomic, readonly) NSUInteger unreadCount;
-@property (nonatomic) BOOL containsBingUnread;
+@property (nonatomic, readonly) NSUInteger unreadBingCount;
 
 #pragma mark - Public methods
 /**

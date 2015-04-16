@@ -58,7 +58,7 @@
 
         // Set background color and unread count
         if (roomCellData.unreadCount) {
-            if (roomCellData.containsBingUnread) {
+            if (0 < roomCellData.unreadBingCount) {
                 self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:1 alpha:1.0];
             } else {
                 self.backgroundColor = [UIColor colorWithRed:1 green:0.9 blue:0.9 alpha:1.0];
