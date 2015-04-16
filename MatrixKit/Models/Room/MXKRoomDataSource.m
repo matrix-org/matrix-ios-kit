@@ -887,6 +887,14 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                     onComplete();
                 }
             });
+        } else {
+            // No new event has been added, we just inform about the end if requested.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (onComplete) {
+                    onComplete();
+                }
+            });
         }
     });
 }
