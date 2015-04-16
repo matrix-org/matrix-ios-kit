@@ -934,6 +934,14 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         cell.delegate = self;
     }
     
+    // Check whether the previous bubble has been sent by the same user.
+    // The user's picture and name are displayed only for the first message.
+    bubbleData.isSameSenderAsPreviousBubble = NO;
+    if (indexPath.row) {
+        id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
+        bubbleData.isSameSenderAsPreviousBubble = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
+    }
+    
     // Update typing flag before rendering
     bubbleData.isTyping = ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
