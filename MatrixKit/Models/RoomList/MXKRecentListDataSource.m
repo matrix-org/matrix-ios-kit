@@ -79,6 +79,20 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     }
 }
 
+- (NSUInteger)unreadCount {
+
+    NSUInteger unreadCount = 0;
+
+    // Sum unreadCount of all current cells
+    // Use numberOfRowsInSection methods so that we take benefit of the filtering
+    for (NSUInteger i = 0; i < [self tableView:nil numberOfRowsInSection:0]; i++) {
+
+        id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
+        unreadCount += cellData.unreadCount;
+    }
+    return unreadCount;
+}
+
 - (void)searchWithPatterns:(NSArray*)patternsList {
     if (patternsList.count) {
         if (filteredCellDataArray) {

@@ -46,7 +46,6 @@ extern NSString *const kMXKRecentCellIdentifier;
 
 /**
  The total count of unread messages.
- @TODO
  */
 @property (nonatomic, readonly) NSUInteger unreadCount;
 
