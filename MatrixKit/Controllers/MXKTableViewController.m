@@ -155,6 +155,28 @@
     }
 }
 
+#pragma mark -
+
+- (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion {
+    
+    // Check whether the view controller is embedded inside a navigation controller.
+    if (self.navigationController) {
+        // We pop the view controller (except if it is the root view controller).
+        NSUInteger index = [self.navigationController.viewControllers indexOfObject:self];
+        if (index != NSNotFound && index > 0) {
+            UIViewController *previousViewController = [self.navigationController.viewControllers objectAtIndex:(index - 1)];
+            
+            [self.navigationController popToViewController:previousViewController animated:animated];
+            if (completion) {
+                completion();
+            }
+        }
+    } else {
+        // Suppose here the view controller has been presented modally. We dismiss it
+        [self dismissViewControllerAnimated:animated completion:completion];
+    }
+}
+
 #pragma mark - activity indicator
 
 - (void)startActivityIndicator {

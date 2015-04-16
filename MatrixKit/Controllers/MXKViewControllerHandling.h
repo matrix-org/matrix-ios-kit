@@ -68,6 +68,14 @@
 - (void)didMatrixSessionStateChange;
 
 /**
+ Pop or dismiss the view controller. It depends if the view controller is embedded inside a navigation controller or not.
+ 
+ @param animated YES to animate the transition.
+ @param completion the block to execute after the view controller is popped or dismissed. This block has no return value and takes no parameters. You may specify nil for this parameter.
+ */
+- (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion;
+
+/**
  Bring the activity indicator to the front and start it.
  */
 - (void)startActivityIndicator;

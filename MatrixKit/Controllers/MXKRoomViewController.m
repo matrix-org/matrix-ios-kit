@@ -103,6 +103,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      Potential request in progress to join the selected room
      */
     MXHTTPOperation *joinRoomRequest;
+    
+    /**
+     Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+     */
+    id kMXSessionWillLeaveRoomNotificationObserver;
 
     // Attachment handling
     MXKImageView *highResImageView;
@@ -190,6 +195,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether the user will leave the current room
+        if (notif.object == self.mxSession) {
+            NSString *roomId = notif.userInfo[@"roomId"];
+            if (roomId && [roomId isEqualToString:roomDataSource.roomId]) {
+                // Update view controller appearance
+                [self leaveRoomOnEvent:notif.userInfo[@"event"]];
+            }
+        }
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -202,7 +220,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [self reloadBubblesTable];
     }
     
+    // Finalize view controller appearance
     _bubblesTableView.hidden = NO;
+    [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -211,6 +231,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    
+    if (kMXSessionWillLeaveRoomNotificationObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
+        kMXSessionWillLeaveRoomNotificationObserver = nil;
+    }
 }
 
 - (void)dealloc {
@@ -263,6 +288,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark -
 
 - (void)configureView {
+    
+    [self dismissTemporarySubViews];
 
     // Set up table delegates
     _bubblesTableView.delegate = self;
@@ -341,6 +368,38 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
+#pragma mark -
+
+- (void)dismissTemporarySubViews {
+    
+    [self dismissKeyboard];
+    
+    [self hideAttachmentView];
+    
+    if (currentAlert) {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
+    if (eventDetailsView) {
+        [eventDetailsView removeFromSuperview];
+        eventDetailsView = nil;
+    }
+    
+    if (_leftRoomReasonLabel) {
+        [_leftRoomReasonLabel removeFromSuperview];
+        _leftRoomReasonLabel = nil;
+        _bubblesTableView.tableHeaderView = nil;
+    }
+    
+    if (keyboardView) {
+        // Remove keyboard view observers
+        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
+        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
+        keyboardView = nil;
+    }
+}
+
 #pragma mark - Public API
 
 - (void)displayRoom:(MXKRoomDataSource *)dataSource {
@@ -364,20 +423,71 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         roomDataSource = nil;
         self.mxSession = nil;
     }
+    
+    [self updateViewControllerAppearanceOnRoomDataSourceState];
+}
+
+- (void)updateViewControllerAppearanceOnRoomDataSourceState {
+    
+    // Update UI by considering dataSource state
+    if (roomDataSource && roomDataSource.state == MXKDataSourceStateReady) {
+        [self stopActivityIndicator];
+        
+        // Show input tool bar
+        inputToolbarView.hidden = NO;
+        
+        self.navigationItem.title = roomDataSource.room.state.displayname;
+    }
+    else {
+        inputToolbarView.hidden = YES;
+        
+        // Update the title except if the room has just been left
+        if (!_leftRoomReasonLabel) {
+            if (roomDataSource && roomDataSource.state == MXKDataSourceStatePreparing) {
+                self.navigationItem.title = roomDataSource.room.state.displayname;
+            } else  {
+                self.navigationItem.title = nil;
+            }
+        }
+    }
+}
+
+- (void)leaveRoomOnEvent:(MXEvent*)event {
+    
+    [self dismissTemporarySubViews];
+    
+    MXKEventFormatterError error;
+    NSString *reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.room.state error:&error];
+    if ((error != MXKEventFormatterErrorNone)) {
+        reason = @"You left the room";
+    }
+    
+    _bubblesTableView.dataSource = nil;
+    _bubblesTableView.delegate = nil;
+    
+    roomDataSource.delegate = nil;
+    roomDataSource = nil;
+    
+    // Add reason label
+    _leftRoomReasonLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 4, self.view.frame.size.width - 16, 44)];
+    _leftRoomReasonLabel.text = reason;
+    _leftRoomReasonLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    _bubblesTableView.tableHeaderView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 36)];
+    [_bubblesTableView.tableHeaderView addSubview:_leftRoomReasonLabel];
+    [_bubblesTableView reloadData];
+    
+    [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
 - (void)destroy {
     
-    [self hideAttachmentView];
+    if (kMXSessionWillLeaveRoomNotificationObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
+    }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    if (keyboardView) {
-        // Remove keyboard view observers
-        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
-        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
-        keyboardView = nil;
-    }
+    [self dismissTemporarySubViews];
     
     _bubblesTableView.dataSource = nil;
     _bubblesTableView.delegate = nil;
@@ -387,16 +497,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     roomDataSource = nil;
     
     self.mxSession = nil;
-    
-    if (currentAlert) {
-        [currentAlert dismiss:NO];
-        currentAlert = nil;
-    }
-    
-    if (eventDetailsView) {
-        [eventDetailsView removeFromSuperview];
-        eventDetailsView = nil;
-    }
     
     if (inputToolbarView) {
         inputToolbarView.delegate = nil;
@@ -419,6 +519,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Remove potential toolbar
     if (inputToolbarView) {
         inputToolbarView.delegate = nil;
+        
+        if (keyboardView) {
+            // Remove keyboard view observers
+            [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
+            [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
+            keyboardView = nil;
+        }
         
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
             [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
@@ -468,6 +575,177 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                           multiplier:1.0f
                                                                             constant:0.0f]];
     [_roomInputToolbarContainer setNeedsUpdateConstraints];
+}
+
+- (BOOL)isIRCStyleCommand:(NSString*)string {
+    
+    // Check whether the provided text may be an IRC-style command
+    if ([string hasPrefix:@"/"] == NO || [string hasPrefix:@"//"] == YES) {
+        return NO;
+    }
+    
+    // Parse command line
+    NSArray *components = [string componentsSeparatedByString:@" "];
+    NSString *cmd = [components objectAtIndex:0];
+    NSUInteger index = 1;
+    
+    if ([cmd isEqualToString:kCmdEmote]) {
+        // send message as an emote
+        [self sendTextMessage:string];
+    } else if ([string hasPrefix:kCmdChangeDisplayName]) {
+        // Change display name
+        NSString *displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
+        // Remove white space from both ends
+        displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        
+        if (displayName.length) {
+            [roomDataSource.mxSession.matrixRestClient setDisplayName:displayName success:^{
+            } failure:^(NSError *error) {
+                NSLog(@"[MXKRoomVC] Set displayName failed: %@", error);
+                // TODO Alert user
+                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+            }];
+        } else {
+            // Display cmd usage in text input as placeholder
+            inputToolbarView.placeholder = @"Usage: /nick <display_name>";
+        }
+    } else if ([string hasPrefix:kCmdJoinRoom]) {
+        // Join a room
+        NSString *roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
+        // Remove white space from both ends
+        roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        
+        // Check
+        if (roomAlias.length) {
+            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
+                // Do nothing by default when we succeed to join the room
+            } failure:^(NSError *error) {
+                NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed: %@", roomAlias, error);
+                // TODO Alert user
+                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+            }];
+        } else {
+            // Display cmd usage in text input as placeholder
+            inputToolbarView.placeholder = @"Usage: /join <room_alias>";
+        }
+    } else {
+        // Retrieve userId
+        NSString *userId = nil;
+        while (index < components.count) {
+            userId = [components objectAtIndex:index++];
+            if (userId.length) {
+                // done
+                break;
+            }
+            // reset
+            userId = nil;
+        }
+        
+        if ([cmd isEqualToString:kCmdKickUser]) {
+            if (userId) {
+                // Retrieve potential reason
+                NSString *reason = nil;
+                while (index < components.count) {
+                    if (reason) {
+                        reason = [NSString stringWithFormat:@"%@ %@", reason, [components objectAtIndex:index++]];
+                    } else {
+                        reason = [components objectAtIndex:index++];
+                    }
+                }
+                // Kick the user
+                [roomDataSource.room kickUser:userId reason:reason success:^{
+                } failure:^(NSError *error) {
+                    NSLog(@"[MXKRoomVC] Kick user (%@) failed: %@", userId, error);
+                    // TODO Alert user
+                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                }];
+            } else {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /kick <userId> [<reason>]";
+            }
+        } else if ([cmd isEqualToString:kCmdBanUser]) {
+            if (userId) {
+                // Retrieve potential reason
+                NSString *reason = nil;
+                while (index < components.count) {
+                    if (reason) {
+                        reason = [NSString stringWithFormat:@"%@ %@", reason, [components objectAtIndex:index++]];
+                    } else {
+                        reason = [components objectAtIndex:index++];
+                    }
+                }
+                // Ban the user
+                [roomDataSource.room banUser:userId reason:reason success:^{
+                } failure:^(NSError *error) {
+                    NSLog(@"[MXKRoomVC] Ban user (%@) failed: %@", userId, error);
+                    // TODO Alert user
+                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                }];
+            } else {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /ban <userId> [<reason>]";
+            }
+        } else if ([cmd isEqualToString:kCmdUnbanUser]) {
+            if (userId) {
+                // Unban the user
+                [roomDataSource.room unbanUser:userId success:^{
+                } failure:^(NSError *error) {
+                    NSLog(@"[MXKRoomVC] Unban user (%@) failed: %@", userId, error);
+                    // TODO Alert user
+                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                }];
+            } else {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /unban <userId>";
+            }
+        } else if ([cmd isEqualToString:kCmdSetUserPowerLevel]) {
+            // Retrieve power level
+            NSString *powerLevel = nil;
+            while (index < components.count) {
+                powerLevel = [components objectAtIndex:index++];
+                if (powerLevel.length) {
+                    // done
+                    break;
+                }
+                // reset
+                powerLevel = nil;
+            }
+            // Set power level
+            if (userId && powerLevel) {
+                // Set user power level
+                [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:[powerLevel integerValue] success:^{
+                } failure:^(NSError *error) {
+                    NSLog(@"[MXKRoomVC] Set user power (%@) failed: %@", userId, error);
+                    // TODO Alert user
+                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                }];
+            } else {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /op <userId> <power level>";
+            }
+        } else if ([cmd isEqualToString:kCmdResetUserPowerLevel]) {
+            if (userId) {
+                // Reset user power level
+                [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
+                } failure:^(NSError *error) {
+                    NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
+                    // TODO Alert user
+                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                }];
+            } else {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /deop <userId>";
+            }
+        } else {
+            NSLog(@"[MXKRoomVC] Unrecognised IRC-style command: %@", string);
+            inputToolbarView.placeholder = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
+        }
+    }
+    return YES;
+}
+
+- (void)dismissKeyboard {
+    [inputToolbarView dismissKeyboard];
 }
 
 #pragma mark - activity indicator
@@ -578,10 +856,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [_roomInputToolbarContainer setNeedsUpdateConstraints];
     } completion:^(BOOL finished) {
     }];
-}
-
-- (void)dismissKeyboard {
-    [inputToolbarView dismissKeyboard];
 }
 
 #pragma mark - KVO
@@ -715,173 +989,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - Post messages
 
-- (BOOL)isIRCStyleCommand:(NSString*)string {
-    
-    // Check whether the provided text may be an IRC-style command
-    if ([string hasPrefix:@"/"] == NO || [string hasPrefix:@"//"] == YES) {
-        return NO;
-    }
-    
-    // Parse command line
-    NSArray *components = [string componentsSeparatedByString:@" "];
-    NSString *cmd = [components objectAtIndex:0];
-    NSUInteger index = 1;
-    
-    if ([cmd isEqualToString:kCmdEmote]) {
-        // send message as an emote
-        [self sendTextMessage:string];
-    } else if ([string hasPrefix:kCmdChangeDisplayName]) {
-        // Change display name
-        NSString *displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
-        // Remove white space from both ends
-        displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        
-        if (displayName.length) {
-            [roomDataSource.mxSession.matrixRestClient setDisplayName:displayName success:^{
-            } failure:^(NSError *error) {
-                NSLog(@"[MXKRoomVC] Set displayName failed: %@", error);
-                // TODO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-        } else {
-            // Display cmd usage in text input as placeholder
-            inputToolbarView.placeholder = @"Usage: /nick <display_name>";
-        }
-    } else if ([string hasPrefix:kCmdJoinRoom]) {
-        // Join a room
-        NSString *roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
-        // Remove white space from both ends
-        roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        
-        // Check
-        if (roomAlias.length) {
-            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
-                // Do nothing by default when we succeed to join the room
-            } failure:^(NSError *error) {
-                NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed: %@", roomAlias, error);
-                // TODO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-        } else {
-            // Display cmd usage in text input as placeholder
-            inputToolbarView.placeholder = @"Usage: /join <room_alias>";
-        }
-    } else {
-        // Retrieve userId
-        NSString *userId = nil;
-        while (index < components.count) {
-            userId = [components objectAtIndex:index++];
-            if (userId.length) {
-                // done
-                break;
-            }
-            // reset
-            userId = nil;
-        }
-        
-        if ([cmd isEqualToString:kCmdKickUser]) {
-            if (userId) {
-                // Retrieve potential reason
-                NSString *reason = nil;
-                while (index < components.count) {
-                    if (reason) {
-                        reason = [NSString stringWithFormat:@"%@ %@", reason, [components objectAtIndex:index++]];
-                    } else {
-                        reason = [components objectAtIndex:index++];
-                    }
-                }
-                // Kick the user
-                [roomDataSource.room kickUser:userId reason:reason success:^{
-                } failure:^(NSError *error) {
-                    NSLog(@"[MXKRoomVC] Kick user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-//                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                }];
-            } else {
-                // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /kick <userId> [<reason>]";
-            }
-        } else if ([cmd isEqualToString:kCmdBanUser]) {
-            if (userId) {
-                // Retrieve potential reason
-                NSString *reason = nil;
-                while (index < components.count) {
-                    if (reason) {
-                        reason = [NSString stringWithFormat:@"%@ %@", reason, [components objectAtIndex:index++]];
-                    } else {
-                        reason = [components objectAtIndex:index++];
-                    }
-                }
-                // Ban the user
-                [roomDataSource.room banUser:userId reason:reason success:^{
-                } failure:^(NSError *error) {
-                    NSLog(@"[MXKRoomVC] Ban user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-//                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                }];
-            } else {
-                // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /ban <userId> [<reason>]";
-            }
-        } else if ([cmd isEqualToString:kCmdUnbanUser]) {
-            if (userId) {
-                // Unban the user
-                [roomDataSource.room unbanUser:userId success:^{
-                } failure:^(NSError *error) {
-                    NSLog(@"[MXKRoomVC] Unban user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-//                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                }];
-            } else {
-                // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /unban <userId>";
-            }
-        } else if ([cmd isEqualToString:kCmdSetUserPowerLevel]) {
-            // Retrieve power level
-            NSString *powerLevel = nil;
-            while (index < components.count) {
-                powerLevel = [components objectAtIndex:index++];
-                if (powerLevel.length) {
-                    // done
-                    break;
-                }
-                // reset
-                powerLevel = nil;
-            }
-            // Set power level
-            if (userId && powerLevel) {
-                // Set user power level
-                [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:[powerLevel integerValue] success:^{
-                } failure:^(NSError *error) {
-                    NSLog(@"[MXKRoomVC] Set user power (%@) failed: %@", userId, error);
-                    // TODO Alert user
-//                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                }];
-            } else {
-                // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /op <userId> <power level>";
-            }
-        } else if ([cmd isEqualToString:kCmdResetUserPowerLevel]) {
-            if (userId) {
-                // Reset user power level
-                [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
-                } failure:^(NSError *error) {
-                    NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
-                    // TODO Alert user
-//                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                }];
-            } else {
-                // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /deop <userId>";
-            }
-        } else {
-            NSLog(@"[MXKRoomVC] Unrecognised IRC-style command: %@", string);
-            inputToolbarView.placeholder = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
-        }
-    }
-    return YES;
-}
-
 - (void)sendTextMessage:(NSString*)msgTxt {
 
     // Let the datasource send it and manage the local echo
@@ -978,6 +1085,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state {
+
+    [self updateViewControllerAppearanceOnRoomDataSourceState];
     
     if (state == MXKDataSourceStateReady) {
         [self onRoomDataSourceReady];

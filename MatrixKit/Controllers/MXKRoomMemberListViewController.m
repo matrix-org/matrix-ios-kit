@@ -46,6 +46,11 @@
      Used to auto scroll at the top when search session is started or cancelled.
      */
     BOOL shouldScrollToTopOnRefresh;
+    
+    /**
+     Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+     */
+    id kMXSessionWillLeaveRoomNotificationObserver;
 }
 
 @end
@@ -72,8 +77,29 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether the user will leave the room related to the displayed member list
+        if (notif.object == self.mxSession) {
+            NSString *roomId = notif.userInfo[@"roomId"];
+            if (roomId && [roomId isEqualToString:self.dataSource.roomId]) {
+                // We remove the current view controller.
+                [self withdrawViewControllerAnimated:YES completion:nil];
+            }
+        }
+    }];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
+    
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
     
     // Leave potential search session
     if (roomMembersSearchBar) {

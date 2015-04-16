@@ -45,11 +45,49 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic, readonly) MXKRoomInputToolbarView* inputToolbarView;
 
 /**
+ This object is defined when the displayed room is left. It is added into the bubbles table header.
+ This label is used to display the reason why the room has been left.
+ */
+@property (nonatomic, readonly) UILabel *leftRoomReasonLabel;
+
+/**
  Display a room.
  
  @param roomDataSource the data source .
  */
 - (void)displayRoom:(MXKRoomDataSource*)dataSource;
+
+/**
+ Update view controller appearance according to the state of its associated data source.
+ This method is called in the following use cases:
+ - on data source change (see `[MXKRoomViewController displayRoom:]`).
+ - on data source state change (see `[MXKDataSourceDelegate dataSource:didStateChange:]`)
+ - when view did appear.
+ 
+ The default implementation:
+ - show input toolbar view if the dataSource is defined and ready (`MXKDataSourceStateReady`), hide toolbar in others use cases.
+ - stop activity indicator if the dataSource is defined and ready (`MXKDataSourceStateReady`).
+ - update view controller title with room information.
+ 
+ Override it to customize view appearance according to data source state.
+ */
+- (void)updateViewControllerAppearanceOnRoomDataSourceState;
+
+/**
+ Update view controller appearance when the user is about to leave the displayed room.
+ This method is called when the user will leave the current room (see `kMXSessionWillLeaveRoomNotification`).
+ 
+ The default implementation:
+ - discard `roomDataSource`
+ - hide input toolbar view
+ - freeze the room title display
+ - add a label (`leftRoomReasonLabel`) in bubbles table header to display the reason why the room has been left.
+ 
+ Override it to customize view appearance, or to withdraw the view controller.
+ 
+ @param event the MXEvent responsible for the leaving.
+ */
+- (void)leaveRoomOnEvent:(MXEvent*)event;
 
 /**
  Dispose of any resources.
