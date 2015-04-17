@@ -196,7 +196,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 - (void)didMXSessionHaveNewRoom:(NSNotification *)notif {
     MXSession *mxSession = notif.object;
     if (mxSession == self.mxSession) {
-        NSString *roomId = notif.userInfo[@"roomId"];
+        NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
 
         // Add the room if there is not yet a cell for it
         id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
@@ -223,7 +223,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     MXSession *mxSession = notif.object;
     if (mxSession == self.mxSession) {
 
-        NSString *roomId = notif.userInfo[@"roomId"];
+        NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
         id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
 
         if (roomData) {

@@ -134,7 +134,7 @@
     if (mxSession == notif.object) {
 
         // The room is no more available, remove it from the manager
-        MXKRoomDataSource *roomDataSourceForRoom = [self roomDataSourceForRoom:notif.userInfo[@"roomId"] create:NO];
+        MXKRoomDataSource *roomDataSourceForRoom = [self roomDataSourceForRoom:notif.userInfo[kMXSessionNotificationRoomIdKey] create:NO];
         if (roomDataSourceForRoom) {
             [self closeRoomDataSource:roomDataSourceForRoom forceClose:YES];
         }

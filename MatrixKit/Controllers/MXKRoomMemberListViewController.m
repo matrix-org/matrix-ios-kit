@@ -86,7 +86,7 @@
         
         // Check whether the user will leave the room related to the displayed member list
         if (notif.object == self.mxSession) {
-            NSString *roomId = notif.userInfo[@"roomId"];
+            NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
             if (roomId && [roomId isEqualToString:self.dataSource.roomId]) {
                 // We remove the current view controller.
                 [self withdrawViewControllerAnimated:YES completion:nil];

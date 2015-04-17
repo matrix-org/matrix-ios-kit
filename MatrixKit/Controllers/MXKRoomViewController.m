@@ -201,10 +201,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         // Check whether the user will leave the current room
         if (notif.object == self.mxSession) {
-            NSString *roomId = notif.userInfo[@"roomId"];
+            NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
             if (roomId && [roomId isEqualToString:roomDataSource.roomId]) {
                 // Update view controller appearance
-                [self leaveRoomOnEvent:notif.userInfo[@"event"]];
+                [self leaveRoomOnEvent:notif.userInfo[kMXSessionNotificationEventKey]];
             }
         }
     }];

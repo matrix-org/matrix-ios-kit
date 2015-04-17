@@ -749,7 +749,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
     // Refresh the room data source when the room has been initialSync'ed
     MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[@"roomId"]]) {
+    if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[kMXSessionNotificationRoomIdKey]]) {
 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
 
