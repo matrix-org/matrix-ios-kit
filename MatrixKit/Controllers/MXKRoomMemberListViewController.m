@@ -81,6 +81,8 @@
     
     [super viewWillAppear:animated];
     
+    [self refreshUIBarButtons];
+    
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
     kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
@@ -168,7 +170,19 @@
 }
 
 - (void)refreshUIBarButtons {
-    if (_enableMemberInvitation) {
+    
+    BOOL showInvitationOption = _enableMemberInvitation;
+    
+    if (showInvitationOption && dataSource) {
+        // Check conditions to be able to invite someone
+        MXRoom *mxRoom = [self.mxSession roomWithRoomId:dataSource.roomId];
+        NSUInteger oneSelfPowerLevel = [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxSession.myUser.userId];
+        if (oneSelfPowerLevel < [mxRoom.state.powerLevels invite]) {
+            showInvitationOption = NO;
+        }
+    }
+    
+    if (showInvitationOption) {
         if (_enableMemberSearch) {
             self.navigationItem.rightBarButtonItems = @[searchBarButton, addBarButton];
         } else {
