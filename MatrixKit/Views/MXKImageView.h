@@ -40,7 +40,7 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 @property (nonatomic, readonly) BOOL fullScreen;
 
 // mediaManager folder where the image is stored
-@property (nonatomic, readwrite) NSString* mediaFolder;
+@property (nonatomic) NSString* mediaFolder;
 
 // Let the user defines some custom buttons over the tabbar
 - (void)setLeftButtonTitle :leftButtonTitle handler:(blockMXKImageView_onClick)handler;

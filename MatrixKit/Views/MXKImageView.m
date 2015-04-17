@@ -314,7 +314,25 @@
         imageView.image = self.image;
     }
     
-    CGRect tabBarFrame = CGRectZero;// TODO [AppDelegate theDelegate].masterTabBarController.tabBar.frame;
+    CGRect tabBarFrame = CGRectZero;
+    UITabBarController *tabBarController = nil;
+    
+    if (leftButtonTitle || rightButtonTitle) {
+        UIViewController *rootViewController = [[UIApplication sharedApplication] keyWindow].rootViewController;
+        
+        tabBarController = rootViewController.tabBarController;
+        if (!tabBarController && [rootViewController isKindOfClass:[UITabBarController class]]) {
+            tabBarController = (UITabBarController*)rootViewController;
+        }
+        
+        if (tabBarController) {
+            tabBarFrame = tabBarController.tabBar.frame;
+        }
+        else {
+            // TODO GFO: Handle the case where there is no tab bar!
+            NSLog(@"Warning MXKImageView: Buttons display is not presently supported in app without tabbar");
+        }
+    }
 
     // update the scrollview frame
     CGRect oneSelfFrame = self.frame;
@@ -356,15 +374,15 @@
                 bottomBarView.backgroundColor = [UIColor blackColor];
                 [self addSubview:bottomBarView];
             }
-            // display them above the tabbar
-            else {
+            else if (tabBarController){
                 // default tabbar background color
                 CGFloat base = 248.0 / 255.0f;
-  
                 bottomBarView.backgroundColor = [UIColor colorWithRed:base green:base blue:base alpha:1.0];
-                // TODO
-//                [[AppDelegate theDelegate].masterTabBarController.tabBar addSubview:bottomBarView];
+                
+                // Display them over the tabbar
+                [tabBarController.tabBar addSubview:bottomBarView];
             }
+            // TODO GFO: else ...
         }
         
         if (_fullScreen) {

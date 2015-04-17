@@ -22,6 +22,8 @@
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
 
+#import "MXKImageView.h"
+
 @interface MXKRoomInputToolbarView() {
     /**
      Alert used to list options.
@@ -32,6 +34,11 @@
      Current media picker
      */
     UIImagePickerController *mediaPicker;
+    
+    /**
+     Image selection preview (image picker does not offer a preview).
+     */
+    MXKImageView* imageValidationView;
     
     /**
      Temporary movie player used to retrieve video thumbnail
@@ -109,6 +116,8 @@
 
 - (void)dealloc {
     self.inputAccessoryView = nil;
+    
+    [self dismissImageValidationView];
     
     if (currentAlert) {
         [currentAlert dismiss:NO];
@@ -236,39 +245,79 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
-
-
-
+        
         /*
-        NSData *dataOfGif = [NSData dataWithContentsOfFile: [info objectForKey:UIImagePickerControllerReferenceURL]];
-
-        NSLog(@"%d", dataOfGif.length);
-
-        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL] resultBlock:^(ALAsset *asset) {
-
-            NSLog(@"%@", asset.defaultRepresentation.metadata);
-
-
-            NSLog(@"%@", asset.defaultRepresentation.url);
-
-            NSData *dataOfGif = [NSData dataWithContentsOfURL: asset.defaultRepresentation.url];
-
-            NSLog(@"%d", dataOfGif.length);
-            ;
-
-                 } failureBlock:^(NSError *error) {
-
-                 }];
+         NSData *dataOfGif = [NSData dataWithContentsOfFile: [info objectForKey:UIImagePickerControllerReferenceURL]];
+         
+         NSLog(@"%d", dataOfGif.length);
+         
+         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+         [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL] resultBlock:^(ALAsset *asset) {
+         
+         NSLog(@"%@", asset.defaultRepresentation.metadata);
+         
+         
+         NSLog(@"%@", asset.defaultRepresentation.url);
+         
+         NSData *dataOfGif = [NSData dataWithContentsOfURL: asset.defaultRepresentation.url];
+         
+         NSLog(@"%d", dataOfGif.length);
+         ;
+         
+         } failureBlock:^(NSError *error) {
+         
+         }];
          
          */
 
-        UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-        if (selectedImage) {
-            if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)]) {
-                [self.delegate roomInputToolbarView:self sendImage:selectedImage];
-            } else {
-                NSLog(@"[MXKRoomInputToolbarView] Attach image is not supported");
+        if (![self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)]) {
+            NSLog(@"[MXKRoomInputToolbarView] Attach image is not supported");
+        } else {
+            UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+            if (selectedImage) {
+                
+                // media picker does not offer a preview
+                // so add a preview to let the user validates his selection
+                if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+                    
+                    __weak typeof(self) weakSelf = self;
+                    
+                    imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+                    imageValidationView.stretchable = YES;
+                    
+                    // the user validates the image
+                    [imageValidationView setRightButtonTitle:@"OK" handler:^(MXKImageView* imageView, NSString* buttonTitle) {
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        
+                        // Dismiss the image view
+                        [strongSelf dismissImageValidationView];
+                        // Send the selected image
+                        [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:selectedImage];
+                    }];
+                    
+                    // the user wants to use an other image
+                    [imageValidationView setLeftButtonTitle:@"Cancel" handler:^(MXKImageView* imageView, NSString* buttonTitle) {
+                        
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        
+                        // dismiss the image view
+                        [strongSelf dismissImageValidationView];
+                        
+                        // Open again media gallery
+                        strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
+                        strongSelf->mediaPicker.delegate = strongSelf;
+                        strongSelf->mediaPicker.sourceType = picker.sourceType;
+                        strongSelf->mediaPicker.allowsEditing = NO;
+                        strongSelf->mediaPicker.mediaTypes = picker.mediaTypes;
+                        [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+                    }];
+                    
+                    imageValidationView.image = selectedImage;
+                    [imageValidationView showFullScreen];
+                } else {
+                    // Send the selected image
+                    [self.delegate roomInputToolbarView:self sendImage:selectedImage];
+                }
             }
         }
     } else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
@@ -295,6 +344,14 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [self dismissMediaPicker];
+}
+
+- (void)dismissImageValidationView {
+    if (imageValidationView) {
+        [imageValidationView dismissSelection];
+        [imageValidationView removeFromSuperview];
+        imageValidationView = nil;
+    }
 }
 
 #pragma mark - Media Picker handling

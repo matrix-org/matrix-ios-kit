@@ -1249,10 +1249,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMediaPicker:(UIImagePickerController*)mediaPicker {
+    
+    [self dismissKeyboard];
     [self presentViewController:mediaPicker animated:YES completion:nil];
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissMediaPicker:(UIImagePickerController*)mediaPicker {
+    
     if (self.presentedViewController == mediaPicker) {
         [self dismissViewControllerAnimated:NO completion:nil];
     }
