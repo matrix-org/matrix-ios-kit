@@ -60,11 +60,13 @@
     // Set up table data source
     self.tableView.dataSource = dataSource;
     
-    // Set up classes to use for cells
-    if ([[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] nib]) {
-        [self.tableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] nib] forCellReuseIdentifier:kMXKRecentCellIdentifier];
-    } else {
-        [self.tableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellReuseIdentifier:kMXKRecentCellIdentifier];
+    if (dataSource) {
+        // Set up classes to use for cells
+        if ([[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] nib]) {
+            [self.tableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] nib] forCellReuseIdentifier:kMXKRecentCellIdentifier];
+        } else {
+            [self.tableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellReuseIdentifier:kMXKRecentCellIdentifier];
+        }
     }
 }
 
