@@ -57,10 +57,8 @@
         [self.rageShakeManager cancel:self];
     }
     
-    if (mxSession) {
-        // Register mxSession observer
-        self.mxSession = mxSession;
-    }
+    // Update UI according to mxSession state, and add observer (if need)
+    self.mxSession = mxSession;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
