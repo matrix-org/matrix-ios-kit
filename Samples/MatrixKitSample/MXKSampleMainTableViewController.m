@@ -70,7 +70,7 @@
             }];
 
         } failure:^(NSError *error) {
-            NSAssert(false, @"%@", error);
+            NSAssert(false, @"Make sure you have hardcoded your matrix id and your access token in the code few lines above. Error: %@", error);
         }];
     } failure:^(NSError *error) {
     }];
