@@ -463,7 +463,15 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
         return;
     }
-    
+
+    if (NO == _room.canPaginate) {
+
+        NSLog(@"[MXKRoomDataSource] paginateBackMessages: No more events to paginate");
+        if (success) {
+            success();
+        }
+    }
+
     // Keep events from the past to later processing
     id backPaginateListener = [_room listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
         if (MXEventDirectionBackwards == direction) {
@@ -513,20 +521,29 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     if (bubblesTotalHeight < rect.size.height) {
 
         // No. Paginate to get more messages
+        if (_room.canPaginate) {
 
-        // Bound the minimal height to 44
-        minMessageHeight = MIN(minMessageHeight, 44);
+            // Bound the minimal height to 44
+            minMessageHeight = MIN(minMessageHeight, 44);
 
-        // Load messages to cover the remaining height
-        // Use an extra of 50% to manage unsupported/unexpected/redated events
-        NSUInteger messagesToLoad = (rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5;
+            // Load messages to cover the remaining height
+            // Use an extra of 50% to manage unsupported/unexpected/redated events
+            NSUInteger messagesToLoad = (rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5;
 
-        NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
-        [self paginateBackMessages:messagesToLoad success:^{
+            NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
+            [self paginateBackMessages:messagesToLoad success:^{
 
-            [self paginateBackMessagesToFillRect:rect success:success failure:failure];
+                [self paginateBackMessagesToFillRect:rect success:success failure:failure];
+                
+            } failure:failure];
+        }
+        else {
 
-        } failure:failure];
+            NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: No more events to paginate");
+            if (success) {
+                success();
+            }
+        }
     }
     else {
 
