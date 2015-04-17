@@ -821,11 +821,25 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 // Check if we should bing this event
                 MXPushRule *rule = [self.mxSession.notificationCenter ruleMatchingEvent:queuedEvent.event];
                 if (rule) {
-                    queuedEvent.event.mxkState = MXKEventStateBing;
 
-                    // Cound unread bing message only for live events
-                    if (MXEventDirectionForwards == queuedEvent.direction) {
-                        unreadBingCount++;
+                    // Check whether is there an highlight tweak on it
+                    for (MXPushRuleAction *ruleAction in rule.actions) {
+                        if (ruleAction.actionType == MXPushRuleActionTypeSetTweak) {
+
+                            if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"highlight"]) {
+
+                                // Check the highlight tweak "value"
+                                // If not present, highlight. Else check its value before highlighting
+                                if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue]) {
+                                    queuedEvent.event.mxkState = MXKEventStateBing;
+
+                                    // Count unread bing message only for live events
+                                    if (MXEventDirectionForwards == queuedEvent.direction) {
+                                        unreadBingCount++;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
