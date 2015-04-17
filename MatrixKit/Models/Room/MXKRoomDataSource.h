@@ -112,6 +112,10 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  */
 @property (nonatomic, readonly) NSUInteger unreadBingCount;
 
+/**
+ The current text message partially typed in text input (use nil to reset it).
+ */
+@property (nonatomic) NSString *partialTextMessage;
 
 
 #pragma mark - Configuration
