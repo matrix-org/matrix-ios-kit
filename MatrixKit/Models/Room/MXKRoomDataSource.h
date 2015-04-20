@@ -226,4 +226,21 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
           success:(void (^)(NSString *eventId))success
           failure:(void (^)(NSError *error))failure;
 
+
+#pragma mark - Events management
+/**
+ Get an event loaded in this room datasource.
+
+ @param the id of the event to retrieve.
+ @return the MXEvent object or nil if not found.
+ */
+- (MXEvent *)eventWithEventId:(NSString *)eventId;
+
+/**
+ Remove an event from the events loaded by room datasource.
+
+ @param the id of the event to remove.
+ */
+- (void)removeEventWithEventId:(NSString *)eventId;
+
 @end

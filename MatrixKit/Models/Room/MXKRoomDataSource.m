@@ -585,6 +585,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
         [self updateLocalEcho:localEcho];
     }];
 }
@@ -646,6 +647,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
+            [self removePendingLocalEcho:localEcho];
             [self updateLocalEcho:localEcho];
         }];
 
@@ -653,6 +655,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
 
         id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
         @synchronized (bubbleData) {
@@ -667,6 +670,55 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         // Notify the last message may have changed
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }];
+}
+
+
+#pragma mark - Events management
+- (MXEvent *)eventWithEventId:(NSString *)eventId {
+
+    MXEvent *theEvent;
+
+    // First, retrieve the cell data hosting the event
+    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
+    if (bubbleData) {
+
+        // Then look into the events in this cell
+        for (MXEvent *event in bubbleData.events) {
+
+            if ([event.eventId isEqualToString:eventId]) {
+
+                theEvent = event;
+                break;
+            }
+        }
+    }
+    return theEvent;
+}
+
+- (void)removeEventWithEventId:(NSString *)eventId {
+
+    // First, retrieve the cell data hosting the event
+    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
+    if (bubbleData) {
+
+        NSUInteger remainingEvents;
+        @synchronized (bubbleData) {
+            remainingEvents = [bubbleData removeEvent:eventId];
+        }
+
+        // If there is no more events in the bubble, kill it
+        if (0 == remainingEvents) {
+            [self removeCellData:bubbleData];
+        }
+
+        // Update the delegate
+        if (self.delegate) {
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+
+        // Notify the last message may have changed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    }
 }
 
 

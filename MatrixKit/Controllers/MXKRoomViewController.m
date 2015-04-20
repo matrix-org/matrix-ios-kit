@@ -1053,8 +1053,50 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)promptUserToResendEvent:(NSString *)eventId {
-    // TODO prompt User To Resend Event
-    NSLog(@"[MXKRoomViewController] resend event is not supported yet (%@)", eventId);
+
+    MXEvent *event = [roomDataSource eventWithEventId:eventId];
+
+    NSLog(@"[MXKRoomViewController] promptUserToResendEvent: %@", event);
+
+    if (event && event.eventType == MXEventTypeRoomMessage) {
+
+        NSString *msgtype = event.content[@"msgtype"];
+
+        NSString* textMessage;
+        if ([msgtype isEqualToString:kMXMessageTypeText]) {
+
+            textMessage = event.content[@"body"];
+        }
+
+        // Show a confirmation popup to the end user
+        __weak typeof(self) weakSelf = self;
+        currentAlert = [[MXKAlert alloc] initWithTitle:@"Resend the message"
+                                               message:textMessage
+                                                 style:MXKAlertStyleAlert];
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            typeof(self) self = weakSelf;
+            self->currentAlert = nil;
+        }];
+
+        [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            typeof(self) self = weakSelf;
+            self->currentAlert = nil;
+
+            // Remove the local echo
+            [self->roomDataSource removeEventWithEventId:eventId];
+
+            // And retry the send the message accoding to its type
+            if ([msgtype isEqualToString:kMXMessageTypeText]) {
+
+                [self sendTextMessage:textMessage];
+            }
+            else {
+                NSLog(@"[MXKRoomViewController] promptUserToResendEvent: Warning - Unable to resend : %@", event);
+            }
+        }];
+
+        [currentAlert showInViewController:self];
+    }
 }
 
 #pragma mark - bubbles table
