@@ -33,13 +33,15 @@ The left one is the stock room viewcontroller. This is the one used by `Console
 The right one is an override of `JSQMessagesViewController 
 <https://github.com/jessesquires/JSQMessagesViewController>`_. The display is fully managed by  JSQMessagesViewController but the implemantation uses data computed by MatrixKit components: MXKRoomDataSource & MXKRoomBubbleCellData. See the next session for definition of datasource and celldata. 
 
-.. image:: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKRoomViewController.jpeg
+.. image:: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKRoomViewController-w240.jpeg
     :width: 240px
     :align: left
+    :target: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKRoomViewController.jpeg
 
-.. image:: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKJSQMessagesViewController.jpeg
+.. image:: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKJSQMessagesViewController-w240.jpeg
     :width: 240px
     :align: right
+    :target: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKJSQMessagesViewController.jpeg
 
 
 Overview
