@@ -219,7 +219,7 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
 
  @param text the text to send.
  @param success A block object called when the operation succeeds. It returns
- the event id of the event generated on the home server
+                the event id of the event generated on the home server
  @param failure A block object called when the operation fails.
  */
 - (void)sendImage:(UIImage*)image
@@ -228,17 +228,36 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
 
 /**
  Send a room message to a room.
+ 
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
 
  @param msgType the type of the message. @see MXMessageType.
  @param content the message content that will be sent to the server as a JSON object.
  @param success A block object called when the operation succeeds. It returns
- the event id of the event generated on the home server
+                the event id of the event generated on the home server
  @param failure A block object called when the operation fails.
  */
 - (void)sendMessageOfType:(MXMessageType)msgType
                   content:(NSDictionary*)content
                   success:(void (^)(NSString *eventId))success
                   failure:(void (^)(NSError *error))failure;
+
+/**
+ Resend a room message event.
+ 
+ The echo message corresponding to the event will be removed and a new echo message
+ will be added at the end of the room history.
+
+ @param the id of the event to resend.
+ @param success A block object called when the operation succeeds. It returns
+                the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)resendEventWithEventId:(NSString*)eventId
+                  success:(void (^)(NSString *eventId))success
+                  failure:(void (^)(NSError *error))failure;
+
 
 #pragma mark - Events management
 /**

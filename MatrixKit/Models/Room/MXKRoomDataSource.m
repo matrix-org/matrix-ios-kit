@@ -687,6 +687,60 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     }];
 }
 
+- (void)resendEventWithEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
+
+    MXEvent *event = [self eventWithEventId:eventId];
+
+    NSLog(@"[MXKRoomDataSource] resendEventWithEventId. Event: %@", event);
+
+    if (event && event.eventType == MXEventTypeRoomMessage) {
+
+        // And retry the send the message accoding to its type
+        NSString *msgType = event.content[@"msgtype"];
+        if ([msgType isEqualToString:kMXMessageTypeText]) {
+
+            // Remove the local echo
+            [self removeEventWithEventId:eventId];
+
+            // And resend
+            [self sendMessageOfType:msgType content:event.content success:success failure:failure];
+        }
+        else if ([msgType isEqualToString:kMXMessageTypeImage]) {
+
+            // Remove the local echo
+            [self removeEventWithEventId:eventId];
+
+            UIImage* image;
+            NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:event.content[@"url"] inFolder:_roomId];
+            if (localImagePath) {
+
+                image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
+            }
+
+            // Did the sending fail while uploading the image or while sending the corresponding Matrix event?
+            // If the image is still available in the MXKMediaManager cache, the upload was not complete
+            if (image) {
+
+                // Restart sending the image from the beginning
+                [self sendImage:image success:success failure:failure];
+            }
+            else {
+
+                // Resend the Matrix event
+                [self sendMessageOfType:msgType content:event.content success:success failure:failure];
+            }
+        }
+        else {
+            
+            NSLog(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+        }
+    }
+    else {
+
+        NSLog(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
+    }
+}
+
 
 #pragma mark - Events management
 - (MXEvent *)eventWithEventId:(NSString *)eventId {

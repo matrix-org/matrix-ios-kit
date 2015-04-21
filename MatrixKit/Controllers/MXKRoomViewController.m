@@ -994,7 +994,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Let the datasource send it and manage the local echo
     [roomDataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error) {
 
-        // @TODO
+        // Just log the error. The message will be displayed in red in the room history
         NSLog(@"[MXKRoomViewController] sendTextMessage failed. Error:%@", error);
     }];
 }
@@ -1082,17 +1082,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             typeof(self) self = weakSelf;
             self->currentAlert = nil;
 
-            // Remove the local echo
-            [self->roomDataSource removeEventWithEventId:eventId];
-
-            // And retry the send the message accoding to its type
-            if ([msgtype isEqualToString:kMXMessageTypeText]) {
-
-                [self sendTextMessage:textMessage];
-            }
-            else {
-                NSLog(@"[MXKRoomViewController] promptUserToResendEvent: Warning - Unable to resend : %@", event);
-            }
+            // Let the datasource resend. It will manage local echo, etc.
+            [self->roomDataSource resendEventWithEventId:eventId success:nil failure:nil];
         }];
 
         [currentAlert showInViewController:self];
