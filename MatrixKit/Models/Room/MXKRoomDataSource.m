@@ -528,7 +528,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
             // Load messages to cover the remaining height
             // Use an extra of 50% to manage unsupported/unexpected/redated events
-            NSUInteger messagesToLoad = (rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5;
+            NSUInteger messagesToLoad = ceil((rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5);
 
             NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
             [self paginateBackMessages:messagesToLoad success:^{
