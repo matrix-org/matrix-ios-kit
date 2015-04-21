@@ -155,6 +155,10 @@
         if ([roomBubbleComponent.event.eventId isEqualToString:eventId]) {
             
             [bubbleComponents removeObject:roomBubbleComponent];
+
+            // flush the current attributed string to force refresh
+            self.attributedTextMessage = nil;
+            
             break;
         }
     }
