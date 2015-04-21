@@ -697,7 +697,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
         // And retry the send the message accoding to its type
         NSString *msgType = event.content[@"msgtype"];
-        if ([msgType isEqualToString:kMXMessageTypeText]) {
+        if ([msgType isEqualToString:kMXMessageTypeText] || [msgType isEqualToString:kMXMessageTypeEmote]) {
 
             // Remove the local echo
             [self removeEventWithEventId:eventId];
