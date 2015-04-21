@@ -568,26 +568,13 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         text = [text substringFromIndex:4];
     }
 
-    // Prepare the message content for building an echo message
+    // Prepare the message content
     NSDictionary *msgContent = @{
                                  @"msgtype": msgType,
                                  @"body": text
                                  };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent];
 
-    // Make the request to the homeserver
-    [_room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId) {
-
-        // Nothing to do here
-        // The local echo will be removed when the corresponding event will come through the events stream
-
-    } failure:^(NSError *error) {
-
-        // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
-        [self removePendingLocalEcho:localEcho];
-        [self updateLocalEcho:localEcho];
-    }];
+    [self sendMessageOfType:msgType content:msgContent success:success failure:failure];
 }
 
 - (void)sendImage:(UIImage *)image success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
@@ -643,12 +630,20 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             // Nothing to do here
             // The local echo will be removed when the corresponding event will come through the events stream
 
+            if (success) {
+                success(eventId);
+            }
+
         } failure:^(NSError *error) {
 
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
             [self removePendingLocalEcho:localEcho];
             [self updateLocalEcho:localEcho];
+
+            if (failure) {
+                failure(error);
+            }
         }];
 
     } failure:^(NSError *error) {
@@ -656,19 +651,39 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
         [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
 
-        id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
-        @synchronized (bubbleData) {
-            [bubbleData updateEvent:localEcho.eventId withEvent:localEcho];
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+- (void)sendMessageOfType:(MXMessageType)msgType content:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
+
+    // Build the local echo
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent];
+
+    // Make the request to the homeserver
+    [_room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId) {
+
+        // Nothing to do here
+        // The local echo will be removed when the corresponding event will come through the events stream
+
+        if (success) {
+            success(eventId);
         }
 
-        // Inform the delegate
-        if (self.delegate) {
-            [self.delegate dataSource:self didCellChange:nil];
-        }
+    } failure:^(NSError *error) {
 
-        // Notify the last message may have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
+
+        if (failure) {
+            failure(error);
+        }
     }];
 }
 
