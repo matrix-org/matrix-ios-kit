@@ -28,6 +28,7 @@
 #import "MXKAppSettings.h"
 
 #pragma mark - Constant definitions
+const NSString *MatrixKitVersion = @"0.1.0";
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
 
 NSString *const kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier";
