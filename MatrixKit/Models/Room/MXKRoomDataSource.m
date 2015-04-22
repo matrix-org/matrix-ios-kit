@@ -677,7 +677,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     NSMutableDictionary *msgContent = [@{
                                          @"msgtype": kMXMessageTypeVideo,
                                          @"body": @"Video",
-                                         @"url": videoLocalURL.path,
+                                         @"url": fakeMediaManagerThumbnailURL,
                                          @"info": [@{
                                                      @"thumbnail_url": fakeMediaManagerThumbnailURL,
                                                      @"thumbnail_info": @{
@@ -701,6 +701,12 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
            if (videoData) {
 
                MXKMediaLoader *videoUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
+
+               // Apply the nasty trick again so that the cell can monitor the upload progress
+               msgContent[@"url"] = videoUploader.uploadId;
+               localEcho.content = msgContent;
+               [self updateLocalEcho:localEcho];
+
                [videoUploader uploadData:videoData mimeType:mimetype success:^(NSString *videoUrl) {
 
                    // Finalise msgContent
@@ -710,6 +716,9 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                    msgContent[@"info"][@"h"] = @(size.height);
                    msgContent[@"info"][@"duration"] = @(durationInMs);
                    msgContent[@"info"][@"thumbnail_url"] = thumbnailUrl;
+
+                   localEcho.content = msgContent;
+                   [self updateLocalEcho:localEcho];
 
                    // And send the Matrix room message video event to the homeserver
                    [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {

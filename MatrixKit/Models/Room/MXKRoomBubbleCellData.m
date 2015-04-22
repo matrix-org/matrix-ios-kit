@@ -109,20 +109,25 @@
         }
     }
 
-    // The case of update of image event happens when an image echo is replaced by its true event
+    // The case of update of image event happens when an image or video echo is replaced by its true event
     // received back by the events stream
-    if (MXKRoomBubbleCellDataTypeImage == _dataType) {
+    if (MXKRoomBubbleCellDataTypeImage == _dataType || MXKRoomBubbleCellDataTypeVideo == _dataType) {
 
         NSString *msgtype =  event.content[@"msgtype"];
-        if ([msgtype isEqualToString:kMXMessageTypeImage]) {
+        if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] ) {
 
             if (NO == [_attachmentURL isEqualToString:event.content[@"url"]]) {
 
                 // Store the echo image as preview to prevent the cell from flashing
                 _previewURL = _attachmentURL;
 
-                // Update the data with new image event
-                [self handleImageMessage:event];
+                // Update the data with new image or video event
+                if ([msgtype isEqualToString:kMXMessageTypeImage]) {
+                    [self handleImageMessage:event];
+                }
+                else {
+                    [self handleVideoMessage:event];
+                }
             }
         }
         else {
