@@ -14,7 +14,7 @@ target "MatrixKitSample" do
 #pod 'MatrixSDK'
 
 # The develop branch version
-pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'matrix_kit'
+pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'develop'
 
 # The one used for developping both MatrixSDK and MatrixKit
 # Note that MatrixSDK must be cloned into a folder called matrix-ios-sdk next to the MatrixKit folder
