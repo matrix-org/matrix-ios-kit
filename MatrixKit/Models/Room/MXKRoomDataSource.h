@@ -217,12 +217,29 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  While sending, a fake event will be echoed in the messages list.
  Once complete, this local echo will be replaced by the event saved by the homeserver.
 
- @param text the text to send.
+ @param image the UIImage containing the image to send.
  @param success A block object called when the operation succeeds. It returns
                 the event id of the event generated on the home server
  @param failure A block object called when the operation fails.
  */
 - (void)sendImage:(UIImage*)image
+          success:(void (^)(NSString *eventId))success
+          failure:(void (^)(NSError *error))failure;
+
+/**
+ Send an video to the room.
+
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+
+ @param videoLocalURL the local filesystem path of the video to send.
+ @param videoThumbnail the UIImage hosting a video thumbnail.
+ @param success A block object called when the operation succeeds. It returns
+                the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendVideo:(NSURL*)videoLocalURL
+    withThumbnail:(UIImage*)videoThumbnail
           success:(void (^)(NSString *eventId))success
           failure:(void (^)(NSError *error))failure;
 

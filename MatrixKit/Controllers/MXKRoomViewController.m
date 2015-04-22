@@ -1265,16 +1265,23 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(UIImage*)image {
+
     // Let the datasource send it and manage the local echo
     [roomDataSource sendImage:image success:nil failure:^(NSError *error) {
-        // @TODO
+
+        // Nothing to do. The image is marked as unsent in the room history by the datasource
         NSLog(@"[MXKRoomViewController] sendImage failed. Error:%@", error);
     }];
-
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoURL withThumbnail:(UIImage*)videoThumbnail {
-    // TODO
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail {
+
+    // Let the datasource send it and manage the local echo
+    [roomDataSource sendVideo:videoLocalURL withThumbnail:videoThumbnail success:nil failure:^(NSError *error) {
+
+        // Nothing to do. The video is marked as unsent in the room history by the datasource
+        NSLog(@"[MXKRoomViewController] sendVideo failed. Error:%@", error);
+    }];
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert {

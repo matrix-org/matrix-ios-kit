@@ -24,8 +24,8 @@
 /**
  Tells the delegate that a MXKAlert must be presented.
  
- @param toolbarView the room input toolbar view
- @param alert to present
+ @param toolbarView the room input toolbar view.
+ @param alert the alert to present.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert;
 
@@ -42,43 +42,43 @@
 /**
  Tells the delegate that toolbar height has been updated.
  
- @param toolbarView the room input toolbar view
- @param height the updted height of toolbar view.
+ @param toolbarView the room input toolbar view.
+ @param height the updated height of toolbar view.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height;
 
 /**
- Tells the delegate that the user wants send a text message.
+ Tells the delegate that the user wants to send a text message.
  
- @param toolbarView the room input toolbar view
- @param textMessage
+ @param toolbarView the room input toolbar view.
+ @param textMessage the string to send.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendTextMessage:(NSString*)textMessage;
 
 /**
- Tells the delegate that the user wants send an image.
+ Tells the delegate that the user wants to send an image.
  
- @param toolbarView the room input toolbar view
- @param image
+ @param toolbarView the room input toolbar view.
+ @param image the UIImage hosting the image data to send.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(UIImage*)image;
 
 /**
- Tells the delegate that the user wants send a video.
+ Tells the delegate that the user wants to send a video.
  
- @param toolbarView the room input toolbar view
- @param videoURL
- @param videoThumbnail
+ @param toolbarView the room input toolbar view.
+ @param videoLocalURL the local filesystem path of the video to send.
+ @param videoThumbnail the UIImage hosting a video thumbnail.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoURL withThumbnail:(UIImage*)videoThumbnail;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail;
 
 /**
  Tells the delegate that the user wants invite a matrix user.
  
  Note: `Invite matrix user` option is displayed in actions list only if the delegate implements this method.
  
- @param toolbarView the room input toolbar view
- @param mxUserId matrix user id
+ @param toolbarView the room input toolbar view.
+ @param mxUserId the Matrix user id.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId;
 
@@ -87,16 +87,16 @@
  
  Note: Media attachment is available only if the delegate implements this method.
  
- @param toolbarView the room input toolbar view
- @param media picker to present
+ @param toolbarView the room input toolbar view.
+ @param mediaPicker the media picker to present.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMediaPicker:(UIImagePickerController*)mediaPicker;
 
 /**
  Tells the delegate that a media picker must be dismissed.
  
- @param toolbarView the room input toolbar view
- @param media picker to dismiss
+ @param toolbarView the room input toolbar view.
+ @param mediaPicker the media picker to dismiss.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissMediaPicker:(UIImagePickerController*)mediaPicker;
 
@@ -189,7 +189,7 @@
 @property UIView *inputAccessoryView;
 
 /**
- Force dismiss keyboard
+ Force dismiss keyboard.
  */
 - (void)dismissKeyboard;
 

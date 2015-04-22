@@ -69,22 +69,7 @@
                     // Not supported yet
                     //_dataType = MXKRoomBubbleCellDataTypeAudio;
                 } else if ([msgtype isEqualToString:kMXMessageTypeVideo]) {
-                    _dataType = MXKRoomBubbleCellDataTypeVideo;
-                    // Retrieve content url/info
-                    NSString *contentURL = event.content[@"url"];
-                    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-                    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-                    if (nil == _attachmentURL) {
-                        // It was not a matrix content uri, we keep the provided url
-                        _attachmentURL = contentURL;
-                    }
-                    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL inFolder:event.roomId];
-                    _attachmentInfo = event.content[@"info"];
-                    if (_attachmentInfo) {
-                        // Get video thumbnail info
-                        _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
-                        _thumbnailInfo = _attachmentInfo[@"thumbnail_info"];
-                    }
+                    [self handleVideoMessage:event];
                 } else if ([msgtype isEqualToString:kMXMessageTypeLocation]) {
                     // Not supported yet
                     // _dataType = MXKRoomBubbleCellDataTypeLocation;
@@ -263,6 +248,29 @@
                 _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
             }
         }
+    }
+}
+
+- (void)handleVideoMessage:(MXEvent*)event {
+
+    _dataType = MXKRoomBubbleCellDataTypeVideo;
+
+    // Retrieve content url/info
+    NSString *contentURL = event.content[@"url"];
+    
+    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
+    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
+    if (nil == _attachmentURL) {
+        // It was not a matrix content uri, we keep the provided url
+        _attachmentURL = contentURL;
+    }
+    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL inFolder:event.roomId];
+    _attachmentInfo = event.content[@"info"];
+
+    if (_attachmentInfo) {
+        // Get video thumbnail info
+        _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
+        _thumbnailInfo = _attachmentInfo[@"thumbnail_info"];
     }
 }
 

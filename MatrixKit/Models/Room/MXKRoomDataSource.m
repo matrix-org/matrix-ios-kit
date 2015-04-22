@@ -582,7 +582,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     // Make sure the uploaded image orientation is up
     image = [MXKTools forceImageOrientationUp:image];
 
-    // @TODO: Does not limit images to jpeg
+    // @TODO: Do not limit images to jpeg
     NSString *mimetype = @"image/jpeg";
     NSData *imageData = UIImageJPEGRepresentation(image, 0.8);
 
@@ -634,6 +634,126 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 success(eventId);
             }
 
+        } failure:^(NSError *error) {
+
+            // Update the local echo with the error state
+            localEcho.mxkState = MXKEventStateSendingFailed;
+            [self removePendingLocalEcho:localEcho];
+            [self updateLocalEcho:localEcho];
+
+            if (failure) {
+                failure(error);
+            }
+        }];
+
+    } failure:^(NSError *error) {
+
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
+
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+- (void)sendVideo:(NSURL *)videoLocalURL withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
+
+    NSData *videoThumbnailData = UIImageJPEGRepresentation(videoThumbnail, 0.8);
+
+    // Use the uploader id as fake URL for this image data
+    // The URL does not need to be valid as the MediaManager will get the data
+    // directly from its cache
+    // Pass this id in the URL is a nasty trick to retrieve it later
+    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.1];
+    NSString *fakeMediaManagerThumbnailURL = uploader.uploadId;
+
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerThumbnailURL inFolder:self.roomId];
+    [MXKMediaManager writeMediaData:videoThumbnailData toFilePath:cacheFilePath];
+
+    // Prepare the message content for building an echo message
+    NSMutableDictionary *msgContent = [@{
+                                         @"msgtype": kMXMessageTypeVideo,
+                                         @"body": @"Video",
+                                         @"url": videoLocalURL.path,
+                                         @"info": [@{
+                                                     @"thumbnail_url": fakeMediaManagerThumbnailURL,
+                                                     @"thumbnail_info": @{
+                                                             @"mimetype": @"image/jpeg",
+                                                             @"w": @(videoThumbnail.size.width),
+                                                             @"h": @(videoThumbnail.size.height),
+                                                             @"size": @(videoThumbnailData.length)
+                                                             }
+                                                     } mutableCopy]
+                                         } mutableCopy];
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+
+    // Before sending data to the server, convert the video to MP4
+    [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs) {
+
+        // Upload thumbnail
+        [uploader uploadData:videoThumbnailData mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
+
+           // Upload video
+           NSData* videoData = [NSData dataWithContentsOfFile:videoLocalURL.path];
+           if (videoData) {
+
+               MXKMediaLoader *videoUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
+               [videoUploader uploadData:videoData mimeType:mimetype success:^(NSString *videoUrl) {
+
+                   // Finalise msgContent
+                   msgContent[@"url"] = videoUrl;
+                   msgContent[@"info"][@"mimetype"] = mimetype;
+                   msgContent[@"info"][@"w"] = @(size.width);
+                   msgContent[@"info"][@"h"] = @(size.height);
+                   msgContent[@"info"][@"duration"] = @(durationInMs);
+                   msgContent[@"info"][@"thumbnail_url"] = thumbnailUrl;
+
+                   // And send the Matrix room message video event to the homeserver
+                   [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {
+
+                       // Nothing to do here
+                       // The local echo will be removed when the corresponding event will come through the events stream
+
+                       if (success) {
+                           success(eventId);
+                       }
+                   } failure:^(NSError *error) {
+
+                       // Update the local echo with the error state
+                       localEcho.mxkState = MXKEventStateSendingFailed;
+                       [self removePendingLocalEcho:localEcho];
+                       [self updateLocalEcho:localEcho];
+                       
+                       if (failure) {
+                           failure(error);
+                       }
+                   }];
+
+               } failure:^(NSError *error) {
+
+                   // Update the local echo with the error state
+                   localEcho.mxkState = MXKEventStateSendingFailed;
+                   [self removePendingLocalEcho:localEcho];
+                   [self updateLocalEcho:localEcho];
+
+                   if (failure) {
+                       failure(error);
+                   }
+               }];
+           }
+           else {
+               // Update the local echo with the error state
+               localEcho.mxkState = MXKEventStateSendingFailed;
+               [self removePendingLocalEcho:localEcho];
+               [self updateLocalEcho:localEcho];
+
+               if (failure) {
+                   failure(nil);
+               }
+           }
         } failure:^(NSError *error) {
 
             // Update the local echo with the error state
