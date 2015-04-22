@@ -371,13 +371,13 @@
     [tmpVideoPlayer stop];
     tmpVideoPlayer = nil;
 
-    [self dismissMediaPicker];
-    
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)]) {
         [self.delegate roomInputToolbarView:self sendVideo:selectedVideo withThumbnail:videoThumbnail];
     } else {
         NSLog(@"[MXKRoomInputToolbarView] Attach video is not supported");
     }
+
+    [self dismissMediaPicker];
 }
 
 @end
