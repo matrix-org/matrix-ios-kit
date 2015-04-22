@@ -270,6 +270,11 @@
     if (_attachmentInfo) {
         // Get video thumbnail info
         _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
+        _thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:_thumbnailURL];
+        if (nil == _thumbnailURL) {
+            _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
+        }
+
         _thumbnailInfo = _attachmentInfo[@"thumbnail_info"];
     }
 }
