@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7531" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKRoomInputToolbarView">
@@ -32,9 +32,9 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Owf-M8-qJi" userLabel="right Button">
-                    <rect key="frame" x="556" y="0.0" width="36" height="41"/>
+                    <rect key="frame" x="552" y="0.0" width="44" height="41"/>
                     <constraints>
-                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="35" id="9FZ-CI-diT"/>
+                        <constraint firstAttribute="width" constant="44" id="9FZ-CI-diT"/>
                     </constraints>
                     <state key="normal" title="Send">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -50,14 +50,14 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="Owf-M8-qJi" secondAttribute="trailing" constant="8" id="2M8-Gu-0f6"/>
+                <constraint firstAttribute="trailing" secondItem="Owf-M8-qJi" secondAttribute="trailing" constant="4" id="2M8-Gu-0f6"/>
                 <constraint firstItem="QWp-NV-uh5" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="4" id="570-8j-VYY"/>
                 <constraint firstAttribute="bottom" secondItem="QWp-NV-uh5" secondAttribute="bottom" constant="4" id="9Ya-0H-03W"/>
                 <constraint firstItem="Hga-l8-Wua" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="Bc8-T7-wmA"/>
                 <constraint firstItem="Hga-l8-Wua" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Cvk-xZ-ODy"/>
                 <constraint firstItem="Owf-M8-qJi" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="SV8-U3-8dd"/>
                 <constraint firstAttribute="bottom" secondItem="Hga-l8-Wua" secondAttribute="bottom" id="Slr-2H-laO"/>
-                <constraint firstItem="Owf-M8-qJi" firstAttribute="leading" secondItem="QWp-NV-uh5" secondAttribute="trailing" constant="8" id="UEd-gb-jgR"/>
+                <constraint firstItem="Owf-M8-qJi" firstAttribute="leading" secondItem="QWp-NV-uh5" secondAttribute="trailing" constant="4" id="UEd-gb-jgR"/>
                 <constraint firstItem="QWp-NV-uh5" firstAttribute="leading" secondItem="Hga-l8-Wua" secondAttribute="trailing" constant="8" id="cCr-Am-M7d"/>
                 <constraint firstAttribute="bottom" secondItem="Owf-M8-qJi" secondAttribute="bottom" id="ycc-x9-PAv"/>
             </constraints>
