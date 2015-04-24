@@ -224,7 +224,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 }
             }
             else {
-                NSLog(@"[MXKRoomDataSource] The user does not know the room %@", _roomId);
+                NSLog(@"[MXKRoomDataSource] Warning: The user does not know the room %@", _roomId);
                 
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateFailed;
