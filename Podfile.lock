@@ -34,7 +34,17 @@ PODS:
 DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.0.0)
-  - MatrixSDK (~> 0.4.0)
+  - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
+
+EXTERNAL SOURCES:
+  MatrixSDK:
+    :branch: develop
+    :git: https://github.com/matrix-org/matrix-ios-sdk.git
+
+CHECKOUT OPTIONS:
+  MatrixSDK:
+    :commit: f6adbf3bd4c0835e0a412c13786d51d9ec3e8d89
+    :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
   AFNetworking: e1d86c2a96bb5d2e7408da36149806706ee122fe
