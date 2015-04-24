@@ -28,7 +28,8 @@ Screenshots
 Here are two samples for displaying messages of a room.
 
 The left one is the stock room viewcontroller. This is the one used by `Console 
-<https://itunes.apple.com/gb/app/matrix-console/id970074271?mt=8>`_ (https://github.com/matrix-org/matrix-ios-console).
+<https://itunes.apple.com/gb/app/matrix-console/id970074271?mt=8>`_ (`GitHub 
+<https://github.com/matrix-org/matrix-ios-console>`_).
 
 The right one is an override of `JSQMessagesViewController 
 <https://github.com/jessesquires/JSQMessagesViewController>`_. The display is fully managed by  JSQMessagesViewController but the implemantation uses data computed by MatrixKit components: MXKRoomDataSource & MXKRoomBubbleCellData. See the next session for definition of datasource and celldata. 
@@ -67,23 +68,56 @@ cellview
      This is an abstract object. It is often a UITableViewCellView or a UICollectionViewCell but can be any UIView. This is the view for an item displayed by the viewcontroller.
 
 
+How to use it in your app
+=========================
+
+Installation
+------------
+You can embed MatrixKit to your application project with CocoaPods. The pod for the last MatrixKit release is::
+
+    pod 'MatrixKit'
+
+Use case #1: Display a screen to chat in a room
+-----------------------------------------------
+Suppose you have a MXSession instance stored in `mxSession` (you can learn how to get in the Matrix SDK tutorials `here 
+<https://github.com/matrix-org/matrix-ios-sdk#use-case-2-get-the-rooms-the-user-has-interacted-with>`_ ) and you want to chat in `#matrix:matrix.org` which room id is `!cURbafjkfsMDVwdRDQ:matrix.org`.
+
+You will have to instantiate a MXKRoomViewController and attach a MXKRoomDataSource object to it. This object that will manage the room data. This gives the following code::
+
+        // Create a data souce for managing data for the targeted room
+        MXKRoomDataSource *roomDataSource = [[MXKRoomDataSource alloc] initWithRoomId:@"!cURbafjkfsMDVwdRDQ:matrix.org" andMatrixSession:mxSession];
+
+        // Create the room view controller that will display it
+        MXKRoomViewController *roomViewController = [[MXKRoomViewController alloc] init];
+        [roomViewController displayRoom:roomDataSource];
+
+Then, let your app present `roomViewController`. Your end user is now able to post messages or images to the room, he can navigate in the history, etc.
+
+Use case #2: Display list of user's rooms
+-----------------------------------------
+The approach is similar to the previous use case. You need to create a data source and pass it to the view controller::
+
+        // Create a data source for managing data
+        MXKRecentListDataSource *recentListDataSource = [[MXKRecentListDataSource alloc] initWithMatrixSession:mxSession];
+
+        // Create the view controller that will display it
+        MXKRecentListViewController *recentListViewController = [[MXKRecentListViewController alloc] init];
+        [recentListViewController displayList:recentListDataSource];
+
+
 Customisation
 =============
 
 The kit has been designed so that developers can make customisations at different levels, which are:
 
-UIAppearance
-
-    Views in  MatrixKit use the UIKit UIAppearance concept to allow easy skinning (Not yet available).
-	
 viewcontroller
 
 	The provided viewcontrollers can be subclassed in order to change their default behavior.
-	
+
 cellview
 
 	The developer can indicate to the datasource which view class it must use to render celldata. Thus, the display of items can be totally modified. Note that cellview classes must implement the MXKCellRendering protocol.
-	
+
 celldata
 
 	The developer can provide another cellData class in order to compute data differently.
@@ -92,20 +126,34 @@ datasource
 
 	This object gets the data from the Matrix SDK and serves it to the view controller via cellView and cellData objects. The developer can override the default one to have a different behaviour.
     
+UIAppearance (Not yet available)
+
+    Views in  MatrixKit use the UIKit UIAppearance concept to allow easy skinning.
+    
 
 Customisation example
 =====================
 
-TODO.
+Use case #1: Change cells in the room chat
+------------------------------------------
+This use case shows how to make `cellView` customisation.
 
+A room chat is basically a list of items where each item represents a message or a set of messages if they are grouped by sender. In the code, these items are UITableViewCell inherited objects. If you are not happy with the default ones used by MXKRoomViewController and MXKRoomDataSource, you can request them to use a UITableViewCell class of your own as follow::
 
-Use it in your app 
-==================
+        // Init the room data source
+        MXKRoomDataSource *roomDataSource = [[MXKRoomDataSource alloc] initWithRoomId:@"!cURbafjkfsMDVwdRDQ:matrix.org" andMatrixSession:mxSession];
 
-You can embed MatrixKit to your application project with CocoaPods. The pod for the last MatrixKit release is::
+        // `cellView` Customisation
+        // Let the `MyOwnIncomingBubbleTableViewCell` class manage the display of message cells
+        // This class must inherit from UITableViewCell and must conform the `MXKCellRendering` protocol
+        [roomDataSource registerCellViewClass:MyOwnIncomingBubbleTableViewCell.class
+                            forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
 
-    pod 'MatrixKit'
-
+        // Then finalise the room view controller
+        MXKRoomViewController *roomViewController = [[MXKRoomViewController alloc] init];
+        [roomViewController displayRoom:roomDataSource];
+        
+As you can notice, you can define different `cellView` classes for received and sent messages. 
 
 Development
 ===========
