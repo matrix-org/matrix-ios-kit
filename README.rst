@@ -8,7 +8,7 @@ Basicallly, MatrixKit is a set of viewcontrollers and views. An app developer ca
 
 Each of the provided UI components has been designed to run standalone. There is no depency between them.
 
-The currently available viewcontrollers are:
+The currently available view controllers are:
 
 	- MXKRoomViewController: it shows messages of a room and allows user to chat
 	- MXKRecentListViewController: it displays the rooms of the user ordered by their last message
@@ -25,14 +25,7 @@ Coming soon:
 Screenshots
 ===========
 
-Here are two samples for displaying messages of a room.
-
-The left one is the stock room viewcontroller. This is the one used by `Console 
-<https://itunes.apple.com/gb/app/matrix-console/id970074271?mt=8>`_ (`GitHub 
-<https://github.com/matrix-org/matrix-ios-console>`_).
-
-The right one is an override of `JSQMessagesViewController 
-<https://github.com/jessesquires/JSQMessagesViewController>`_. The display is fully managed by  JSQMessagesViewController but the implemantation uses data computed by MatrixKit components: MXKRoomDataSource & MXKRoomBubbleCellData. See the next session for definition of datasource and celldata. 
+Here are two samples for displaying messages of a room:
 
 .. image:: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKRoomViewController-w240.jpeg
     :width: 240px
@@ -44,14 +37,21 @@ The right one is an override of `JSQMessagesViewController
     :align: right
     :target: https://raw.githubusercontent.com/matrix-org/matrix-ios-kit/develop/Screenshots/MXKJSQMessagesViewController.jpeg
 
+The left one is the stock room view controller. This is the one used by `Console 
+<https://itunes.apple.com/gb/app/matrix-console/id970074271?mt=8>`_ (`GitHub 
+<https://github.com/matrix-org/matrix-ios-console>`_).
+
+The right one is an override of `JSQMessagesViewController 
+<https://github.com/jessesquires/JSQMessagesViewController>`_. The display is fully managed by  JSQMessagesViewController but the implemantation uses data computed by MatrixKit components: MXKRoomDataSource & MXKRoomBubbleCellData. See the next session for definition of datasource and celldata. 
+
 
 Overview
 ========
-All viewcontrollers in MatrixKit displaying a list of items share the same ecosystem based on 4 components:
+All view controllers in MatrixKit displaying a list of items share the same ecosystem based on 4 components:
 
 viewcontroller
 
-  	The viewcontroller is responsible for managing the display and the user actions.
+  	The viewcontroller is responsible for managing the display and user actions.
 
 datasource
 
@@ -112,7 +112,7 @@ The kit has been designed so that developers can make customisations at differen
 
 viewcontroller
 
-	The provided viewcontrollers can be subclassed in order to change their default behavior.
+	The provided viewcontrollers can be subclassed in order to change their default behavior and the interactions with the end user.
 
 cellview
 
@@ -128,7 +128,7 @@ datasource
     
 UIAppearance (Not yet available)
 
-    Views in  MatrixKit use the UIKit UIAppearance concept to allow easy skinning.
+    Views in MatrixKit use the UIKit UIAppearance concept to allow easy skinning.
     
 
 Customisation example
@@ -138,7 +138,7 @@ Use case #1: Change cells in the room chat
 ------------------------------------------
 This use case shows how to make `cellView` customisation.
 
-A room chat is basically a list of items where each item represents a message or a set of messages if they are grouped by sender. In the code, these items are UITableViewCell inherited objects. If you are not happy with the default ones used by MXKRoomViewController and MXKRoomDataSource, you can request them to use a UITableViewCell class of your own as follow::
+A room chat is basically a list of items where each item represents a message (or a set of messages if they are grouped by sender). In the code, these items are UITableViewCell inherited objects. If you are not happy with the default ones used by MXKRoomViewController and MXKRoomDataSource, you can request them to use a UITableViewCell class of your own as follow::
 
         // Init the room data source
         MXKRoomDataSource *roomDataSource = [[MXKRoomDataSource alloc] initWithRoomId:@"!cURbafjkfsMDVwdRDQ:matrix.org" andMatrixSession:mxSession];
@@ -159,7 +159,7 @@ Development
 ===========
 
 If you want to help to improve MatrixKit by adding new viewcontrollers, new views, new cellviews or whatever, this git repository contains a sample Xcode project for demoing all reusable UI. 
-Please hack code on the `develop` branch and make git pull requests from it.
+Please hack on the `develop` branch and make git pull requests from it.
 
 As its dependencies are based on CocoaPods, you will need to run `pod install` before opening MatrixKit.xcworkspace.
 
