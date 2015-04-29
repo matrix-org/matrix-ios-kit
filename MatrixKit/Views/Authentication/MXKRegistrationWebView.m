@@ -17,7 +17,7 @@
 #import "MXKRegistrationWebView.h"
 
 // Generic method to make a bridge between JS and the UIWebView
-NSString *kMXCJavascriptSendObjectMessage = @"window.matrixRegistration.sendObjectMessage = function(parameters) {   \
+NSString *kMXKJavascriptSendObjectMessage = @"window.matrixRegistration.sendObjectMessage = function(parameters) {   \
     var iframe = document.createElement('iframe');                              \
     iframe.setAttribute('src', 'js:' + JSON.stringify(parameters));             \
                                                                                 \
@@ -27,7 +27,7 @@ NSString *kMXCJavascriptSendObjectMessage = @"window.matrixRegistration.sendObje
 };";
 
 // The function the fallback page calls when the registration is complete
-NSString *kMXCJavascriptOnRegistered = @"window.matrixRegistration.onRegistered = function(homeserverUrl, userId, accessToken) {   \
+NSString *kMXKJavascriptOnRegistered = @"window.matrixRegistration.onRegistered = function(homeserverUrl, userId, accessToken) {   \
     matrixRegistration.sendObjectMessage({  \
         'action': 'onRegistered',           \
         'homeServer': homeserverUrl,        \
@@ -74,8 +74,8 @@ NSString *kMXCJavascriptOnRegistered = @"window.matrixRegistration.onRegistered 
         activityIndicator = nil;
     }
     
-    [self stringByEvaluatingJavaScriptFromString:kMXCJavascriptSendObjectMessage];
-    [self stringByEvaluatingJavaScriptFromString:kMXCJavascriptOnRegistered];
+    [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptSendObjectMessage];
+    [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptOnRegistered];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
