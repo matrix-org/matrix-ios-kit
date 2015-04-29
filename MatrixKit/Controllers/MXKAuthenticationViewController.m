@@ -152,6 +152,9 @@
         [mxCurrentOperation cancel];
         mxCurrentOperation = nil;
     }
+    
+    [mxRestClient close];
+    mxRestClient = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -285,6 +288,28 @@
     _contentViewHeightConstraint.constant = _authSwitchButton.frame.origin.y + _authSwitchButton.frame.size.height + 15;
     
     _selectedFlow = selectedFlow;
+}
+
+- (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl {
+    _defaultHomeServerUrl = defaultHomeServerUrl;
+    
+    if (!_homeServerTextField.text.length) {
+        _homeServerTextField.text = _defaultHomeServerUrl;
+        
+        // Update UI
+        [self textFieldDidEndEditing:_homeServerTextField];
+    }
+}
+
+- (void)setDefaultIdentityServerUrl:(NSString *)defaultIdentityServerUrl {
+    _defaultIdentityServerUrl = defaultIdentityServerUrl;
+    
+    if (!_identityServerTextField.text.length) {
+        _identityServerTextField.text = _defaultIdentityServerUrl;
+        
+        // Update UI
+        [self textFieldDidEndEditing:_identityServerTextField];
+    }
 }
 
 - (void)setUserInteractionEnabled:(BOOL)isEnabled {
@@ -573,6 +598,9 @@
             if (_identityServerTextField.text.length) {
                 [mxRestClient setIdentityServer:_identityServerTextField.text];
             }
+        } else {
+            [mxRestClient close];
+            mxRestClient = nil;
         }
         
         // Refresh UI
