@@ -65,6 +65,7 @@ static MXKAccountManager *sharedAccountManager = nil;
     } else {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
     }
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)loadAccounts {
