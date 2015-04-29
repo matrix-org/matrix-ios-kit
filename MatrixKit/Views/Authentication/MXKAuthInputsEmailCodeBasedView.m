@@ -17,6 +17,7 @@
 #import "MXKAuthInputsEmailCodeBasedView.h"
 
 @implementation MXKAuthInputsEmailCodeBasedView
+@dynamic displayNameTextField;
 
 + (UINib *)nib {
     return [UINib nibWithNibName:NSStringFromClass([MXKAuthInputsEmailCodeBasedView class])

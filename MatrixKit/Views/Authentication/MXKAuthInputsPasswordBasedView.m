@@ -17,6 +17,7 @@
 #import "MXKAuthInputsPasswordBasedView.h"
 
 @implementation MXKAuthInputsPasswordBasedView
+@dynamic displayNameTextField;
 
 + (UINib *)nib {
     return [UINib nibWithNibName:NSStringFromClass([MXKAuthInputsPasswordBasedView class])
