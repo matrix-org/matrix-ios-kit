@@ -255,7 +255,7 @@
                                 <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="Pxo-2q-AdE"/>
                             </connections>
                         </button>
-                        <webView contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhh-m0-nXN" userLabel="registrationWebView" customClass="MXCRegistrationWebView">
+                        <webView contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhh-m0-nXN" userLabel="registrationWebView" customClass="MXKRegistrationWebView">
                             <rect key="frame" x="0.0" y="40" width="600" height="540"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </webView>
