@@ -96,6 +96,8 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet MXKPieChartView *progressChartView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateTimeLabelContainerTopConstraint;

@@ -30,11 +30,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 
 #pragma mark - UI Constant definitions
-#define MXKROOMBUBBLETABLEVIEWCELL_TEXTVIEW_LEADING_AND_TRAILING_CONSTRAINT_TO_SUPERVIEW 120 // (51 + 69)
-
-#define MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_HEIGHT 50
-#define MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_TEXTVIEW_TOP_CONST 10
-#define MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_ATTACHMENTVIEW_TOP_CONST 18
 #define MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN -10
 
 @implementation MXKRoomBubbleTableViewCell
@@ -43,6 +38,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 + (UINib *)nib {
     // By default, no nib is available.
     return nil;
+}
+
++ (instancetype)roomBubbleTableViewCell {
+
+    // Check whether a xib is defined
+    if ([[self class] nib]) {
+        return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+    }
+
+    return [[[self class] alloc] init];
 }
 
 - (void)awakeFromNib {
@@ -76,12 +81,12 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Handle sender's picture and adjust view's constraints
         if (bubbleData.isSameSenderAsPreviousBubble) {
             self.pictureView.hidden = YES;
-            self.msgTextViewTopConstraint.constant = MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_TEXTVIEW_TOP_CONST + MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            self.attachViewTopConstraint.constant = MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_ATTACHMENTVIEW_TOP_CONST + MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+            self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+            self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
         } else {
             self.pictureView.hidden = NO;
-            self.msgTextViewTopConstraint.constant = MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_TEXTVIEW_TOP_CONST;
-            self.attachViewTopConstraint.constant = MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_ATTACHMENTVIEW_TOP_CONST;
+            self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
+            self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
             // Handle user's picture
             NSString *avatarThumbURL = nil;
             if (bubbleData.senderAvatarUrl) {
@@ -111,7 +116,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.dateTimeLabelContainer.hidden = YES;
         
         // Set message content
-        bubbleData.maxTextViewWidth = self.frame.size.width - MXKROOMBUBBLETABLEVIEWCELL_TEXTVIEW_LEADING_AND_TRAILING_CONSTRAINT_TO_SUPERVIEW;
+        bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
         if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText) {
             self.messageTextView.hidden = YES;
@@ -251,14 +256,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
     // Compute height of message content (The maximum width available for the textview must be updated dynamically)
-    bubbleData.maxTextViewWidth = maxWidth - MXKROOMBUBBLETABLEVIEWCELL_TEXTVIEW_LEADING_AND_TRAILING_CONSTRAINT_TO_SUPERVIEW;
+    bubbleData.maxTextViewWidth = maxWidth - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
     if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText) {
-        rowHeight += MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_TEXTVIEW_TOP_CONST;
+        rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
     } else {
-        rowHeight += MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_ATTACHMENTVIEW_TOP_CONST;
+        rowHeight += self.cellWithOriginalXib.attachViewTopConstraint.constant ;
     }
     
     // Check whether the previous message has been sent by the same user.
@@ -268,8 +273,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         rowHeight += MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
     } else {
         // We consider a minimun cell height in order to display correctly user's picture
-        if (rowHeight < MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_HEIGHT) {
-            rowHeight = MXKROOMBUBBLETABLEVIEWCELL_DEFAULT_HEIGHT;
+        if (rowHeight < self.cellWithOriginalXib.frame.size.height) {
+            rowHeight = self.cellWithOriginalXib.frame.size.height;
         }
     }
     return rowHeight;
@@ -409,6 +414,38 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     // ensure there is no more progress bar
     [self stopProgressUI];
+}
+
+#pragma mark - Original Xib values
+
+/**
+ `childClasses` hosts one instance of each child classes of `MXKRoomBubbleTableViewCell`.
+ The key is the child class name. The value, the instance.
+ */
+static NSMutableDictionary *childClasses;
+
+/**
+ Get an original instance of the `MXKRoomBubbleTableViewCell` child class.
+ 
+ @return an instance of the child class caller which has the original Xib values.
+ */
++ (MXKRoomBubbleTableViewCell*)cellWithOriginalXib {
+    MXKRoomBubbleTableViewCell *cellWithOriginalXib;
+
+    @synchronized(self) {
+        if(childClasses == nil) {
+            childClasses = [NSMutableDictionary dictionary];
+        }
+
+        // To save memory, use only one original instance per child class
+        cellWithOriginalXib = childClasses[NSStringFromClass(self.class)];
+        if (nil == cellWithOriginalXib) {
+            cellWithOriginalXib = [self roomBubbleTableViewCell];
+
+            childClasses[NSStringFromClass(self.class)] = cellWithOriginalXib;
+        }
+    }
+    return cellWithOriginalXib;
 }
 
 #pragma mark - User actions

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -124,7 +124,9 @@
                 <outlet property="dateTimeLabelContainer" destination="a51-cR-7FE" id="wrR-cU-DVm"/>
                 <outlet property="dateTimeLabelContainerTopConstraint" destination="fQv-07-Pgx" id="82c-KH-Wop"/>
                 <outlet property="messageTextView" destination="tgO-Rv-C7R" id="LZ5-hQ-AbQ"/>
+                <outlet property="msgTextViewLeadingConstraint" destination="hwr-aa-TB4" id="c9j-8p-cpx"/>
                 <outlet property="msgTextViewTopConstraint" destination="8Sy-eu-tYs" id="7yx-oJ-KBP"/>
+                <outlet property="msgTextViewTrailingConstraint" destination="xYz-lp-c7K" id="ubt-P4-J2o"/>
                 <outlet property="pictureView" destination="ezT-Dl-ESR" id="YsO-Kp-xaD"/>
                 <outlet property="playIconView" destination="ZC1-hT-7fs" id="zeH-8B-gxw"/>
                 <outlet property="progressChartView" destination="Oec-kb-Tsz" id="uoq-6v-6Tm"/>
