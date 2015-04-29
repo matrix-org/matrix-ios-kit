@@ -50,6 +50,29 @@ extern NSString *const kCmdResetUserPowerLevel;
  */
 @property (nonatomic, readonly) UILabel *leftRoomReasonLabel;
 
+#pragma mark - Class methods
+
+/**
+ *  Returns the `UINib` object initialized for a `MXKRoomViewController`.
+ *
+ *  @return The initialized `UINib` object or `nil` if there were errors during initialization
+ *  or the nib file could not be located.
+ *
+ *  @discussion You may override this method to provide a customized nib. If you do,
+ *  you should also override `roomViewController` to return your
+ *  view controller loaded from your custom nib.
+ */
++ (UINib *)nib;
+
+/**
+ *  Creates and returns a new `MXKRoomViewController` object.
+ *
+ *  @discussion This is the designated initializer for programmatic instantiation.
+ *
+ *  @return An initialized `MXKRoomViewController` object if successful, `nil` otherwise.
+ */
++ (instancetype)roomViewController;
+
 /**
  Display a room.
  

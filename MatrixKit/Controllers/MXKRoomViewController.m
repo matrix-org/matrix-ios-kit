@@ -40,16 +40,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 @interface MXKRoomViewController () {
     /**
-     The data source providing UITableViewCells for the current room.
-     */
-    MXKRoomDataSource *roomDataSource;
-    
-    /**
-     The input toolbar view.
-     */
-    MXKRoomInputToolbarView *inputToolbarView;
-    
-    /**
      Potential event details view.
      */
     MXKEventDetailsView *eventDetailsView;
