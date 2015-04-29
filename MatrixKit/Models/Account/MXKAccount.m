@@ -47,6 +47,9 @@
     
     [self closeSession];
     mxSession = nil;
+    
+    [mxRestClient close];
+    mxRestClient = nil;
 }
 
 #pragma mark - NSCoding
@@ -219,9 +222,6 @@
     
     [mxSession close];
     mxSession = nil;
-    
-    [mxRestClient close];
-    mxRestClient = nil;
 }
 
 #pragma mark -
