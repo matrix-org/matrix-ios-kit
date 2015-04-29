@@ -38,7 +38,7 @@ limitations under the License.
 
 
 /**
- This view controller displays messages of a room.
+ This view controller displays a room list.
  */
 @interface MXKRecentListViewController : MXKTableViewController <MXKDataSourceDelegate>
 
