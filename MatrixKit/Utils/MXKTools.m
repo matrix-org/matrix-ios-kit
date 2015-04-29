@@ -170,6 +170,17 @@
     return @"";
 }
 
+#pragma mark - Hex color to UIColor conversion
+
++ (UIColor *)colorWithRGBValue:(NSUInteger)rgbValue {
+
+    return [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0];
+}
+
++ (UIColor *)colorWithARGBValue:(NSUInteger)argbValue {
+    return [UIColor colorWithRed:((float)((argbValue & 0xFF0000) >> 16))/255.0 green:((float)((argbValue & 0xFF00) >> 8))/255.0 blue:((float)(argbValue & 0xFF))/255.0 alpha:((float)((argbValue & 0xFF000000) >> 24))/255.0];
+}
+
 #pragma mark - Image
 
 + (UIImage*)forceImageOrientationUp:(UIImage*)imageSrc {
@@ -227,6 +238,36 @@
     }
     
     return resizedImage;
+}
+
++ (UIImage*)paintImage:(UIImage*)image withColor:(UIColor*)color {
+
+    UIImage *newImage;
+
+    const CGFloat *colorComponents = CGColorGetComponents(color.CGColor);
+
+    // Create a new image with the same size
+    UIGraphicsBeginImageContextWithOptions(image.size, 0, 0);
+
+    CGContextRef gc = UIGraphicsGetCurrentContext();
+
+    CGRect rect = (CGRect){ .size = image.size};
+
+    [image drawInRect:rect
+            blendMode:kCGBlendModeNormal
+                alpha:1];
+
+    // Binarize the image: Transform all colors into the provided color but keep the alpha
+    CGContextSetBlendMode(gc, kCGBlendModeSourceIn);
+    CGContextSetRGBFillColor(gc, colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
+    CGContextFillRect(gc, rect);
+
+    // Retrieve the result into an UIImage
+    newImage = UIGraphicsGetImageFromCurrentImageContext();
+
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 + (UIImageOrientation)imageOrientationForRotationAngleInDegree:(NSInteger)angle {
