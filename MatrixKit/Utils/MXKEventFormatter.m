@@ -39,6 +39,12 @@
         [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
         [_dateFormatter setDateFormat:dateFormat];
+
+        // Set default colors
+        _defaultTextColor = [UIColor blackColor];
+        _bingTextColor = [UIColor blueColor];
+        _sendingTextColor = [UIColor lightGrayColor];
+        _errorTextColor = [UIColor redColor];
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
@@ -481,22 +487,22 @@
     
     switch (event.mxkState) {
         case MXKEventStateDefault:
-            textColor = [UIColor blackColor];
+            textColor = _defaultTextColor;
             break;
         case MXKEventStateBing:
-            textColor = [UIColor blueColor];
+            textColor = _bingTextColor;
             break;
         case MXKEventStateSending:
-            textColor = [UIColor lightGrayColor];
+            textColor = _sendingTextColor;
             break;
         case MXKEventStateSendingFailed:
         case MXKEventStateUnsupported:
         case MXKEventStateUnexpected:
         case MXKEventStateUnknownType:
-            textColor = [UIColor redColor];
+            textColor = _errorTextColor;
             break;
         default:
-            textColor = [UIColor blackColor];
+            textColor = _defaultTextColor;
             break;
     }
     
