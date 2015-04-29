@@ -31,6 +31,8 @@
 #import "MXKRecentListViewController.h"
 #import "MXKRoomMemberListViewController.h"
 
+#import "MXKAuthenticationViewController.h"
+
 #import "MXKRoomInputToolbarView.h"
 #import "MXKRoomInputToolbarViewWithHPGrowingText.h"
 
@@ -38,6 +40,8 @@
 
 #import "MXKRoomBubbleCellData.h"
 #import "MXKRoomBubbleMergingMessagesCellData.h"
+
+#import "MXKAccountManager.h"
 
 /**
  The Matrix iOS Kit version.

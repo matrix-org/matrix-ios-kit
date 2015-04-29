@@ -18,7 +18,7 @@
 
 #import "MatrixKit.h"
 
-@interface MXKSampleMainTableViewController : MXKViewController <UITableViewDataSource, UITableViewDelegate, MXKRecentListViewControllerDelegate, MXKRoomMemberListViewControllerDelegate>
+@interface MXKSampleMainTableViewController : MXKViewController <UITableViewDataSource, UITableViewDelegate, MXKRecentListViewControllerDelegate, MXKRoomMemberListViewControllerDelegate, MXKAuthenticationViewControllerDelegate>
 
 @property (nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *selectedRoomDisplayName;

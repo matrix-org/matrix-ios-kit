@@ -19,61 +19,42 @@
 #import "MXKSampleRoomViewController.h"
 #import "MXKSampleJSQMessagesViewController.h"
 #import "MXKSampleRoomMembersViewController.h"
+
 #import <MatrixSDK/MXFileStore.h>
 
 @interface MXKSampleMainTableViewController () {
     
     /**
-     The room data source manager for the current Matrix sesion
+     The current selected room.
      */
-    MXKRoomDataSourceManager *roomDataSourceManager;
+    MXRoom *selectedRoom;
+    
+    /**
+     Current index of sections
+     */
+    NSInteger roomSectionIndex;
+    NSInteger roomMembersSectionIndex;
+    NSInteger authenticationSectionIndex;
 }
-
-/**
- The id of the current room.
- */
-@property NSString *roomId;
 
 @end
 
 @implementation MXKSampleMainTableViewController
-@synthesize roomId;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self configureView];
-
-    // We need a room
-    // So, initialise a Matrix session on matrix.org to display #test:matrix.org
-    MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:@"https://matrix.org"
-                                                                    userId:@"@your_matrix_id"
-                                                               accessToken:@"your_access_token"];
-
-    self.mxSession = [[MXSession alloc] initWithMatrixRestClient:[[MXRestClient alloc] initWithCredentials:credentials]];
-
-    roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
-
-    // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
-    MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-    __weak typeof(self) weakSelf = self;
-    [self.mxSession setStore:mxFileStore success:^{
-        typeof(self) self = weakSelf;
-        [self.mxSession start:^{
-            // Resolve #test:matrix.org to room id in order to make tests there
-            [self.mxSession.matrixRestClient roomIDForRoomAlias:@"#test:matrix.org" success:^(NSString *aRoomId) {
-
-                self.roomId = aRoomId;
-
-            } failure:^(NSError *error) {
-                NSAssert(false, @"roomIDForRoomAlias should not fail. Error: %@", error);
-            }];
-
-        } failure:^(NSError *error) {
-            NSAssert(false, @"Make sure you have hardcoded your matrix id and your access token in the code few lines above. Error: %@", error);
-        }];
-    } failure:^(NSError *error) {
-    }];
+    self.tableView.tableHeaderView.hidden = YES;
+    self.tableView.allowsSelection = YES;
+    [self.tableView reloadData];
+    
+    // Check whether some accounts are availables
+    if ([[MXKAccountManager sharedManager] accounts].count) {
+        [self launchMatrixSession];
+    } else {
+        // Ask for a matrix account first
+        [self performSegueWithIdentifier:@"showAuthenticationViewController" sender:self];
+    }
 
     // Test code for directly opening a VC
     //roomId = @"!vfFxDRtZSSdspfTSEr:matrix.org";
@@ -82,11 +63,14 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
-    // Let the manager release the previous room data source
-     MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:roomId create:NO];
-    if (roomDataSource) {
-        [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:NO];
+    
+    if (selectedRoom) {
+        // Let the manager release the previous room data source
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
+        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
+        if (roomDataSource) {
+            [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:NO];
+        }
     }
 }
 
@@ -95,32 +79,70 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)configureView {
-    [self.tableView reloadData];
-    self.tableView.allowsSelection = YES;
+- (void)launchMatrixSession {
+    
+    // Launch a matrix session only for the first one (TODO launch a session for each account).
+    
+    NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
+    MXKAccount *account = [accounts firstObject];
+    
+    // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
+    MXFileStore *mxFileStore = [[MXFileStore alloc] init];
+    [account createSessionWithStore:mxFileStore success:^{
+        
+        // report created matrix session
+        self.mxSession = account.mxSession;
+        
+        self.tableView.tableHeaderView.hidden = NO;
+        [self.tableView reloadData];
+        
+        // Complete the session registration
+        [account startSession:^{
+            NSLog(@"Matrix session successfully started (%@)", account.mxCredentials.userId);
+        } failure:^(NSError *error) {
+            NSAssert(false, @"Start matrix session should not fail. Error: %@", error);
+        }];
+    } failure:^(NSError *error) {
+        NSAssert(false, @"Create matrix session should not fail. Error: %@", error);
+    }];
 }
 
 
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    NSInteger count = 0;
+    
+    roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = -1;
+    
+    if (selectedRoom) {
+        roomSectionIndex = count++;
+        roomMembersSectionIndex = count++;
+    }
+    
+    authenticationSectionIndex = count++;
+    
+    return count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
+    if (section == roomSectionIndex) {
         return 2;
-    } else if (section == 1) {
+    } else if (section == roomMembersSectionIndex) {
+        return 1;
+    } else if (section == authenticationSectionIndex) {
         return 1;
     }
     return 0;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 0) {
-        return @"Room view controller samples:";
-    } else if (section == 1) {
-        return @"Member list samples:";
+    if (section == roomSectionIndex) {
+        return @"Room samples:";
+    } else if (section == roomMembersSectionIndex) {
+        return @"Room members samples:";
+    } else if (section == authenticationSectionIndex) {
+        return @"Authentication samples:";
     }
     return nil;
 }
@@ -128,7 +150,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SampleMainTableViewCell" forIndexPath:indexPath];
 
-    if (indexPath.section == 0) {
+    if (indexPath.section == roomSectionIndex) {
         switch (indexPath.row) {
             case 0:
                 cell.textLabel.text = @"Default implementation";
@@ -137,7 +159,9 @@
                 cell.textLabel.text = @"Demo based on JSQMessagesViewController lib";
                 break;
         }
-    } else {
+    } else if (indexPath.section == roomMembersSectionIndex) {
+        cell.textLabel.text = @"Default implementation";
+    } else if (indexPath.section == authenticationSectionIndex) {
         cell.textLabel.text = @"Default implementation";
     }
     
@@ -152,12 +176,7 @@
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    // Ignore selection until roomId is ready
-    if (!roomId) {
-        return;
-    }
-    
-    if (indexPath.section == 0) {
+    if (indexPath.section == roomSectionIndex) {
         switch (indexPath.row) {
             case 0:
                 [self performSegueWithIdentifier:@"showSampleRoomViewController" sender:self];
@@ -166,8 +185,10 @@
                 [self performSegueWithIdentifier:@"showSampleJSQMessagesViewController" sender:self];
                 break;
         }
-    } else {
+    } else if (indexPath.section == roomMembersSectionIndex) {
         [self performSegueWithIdentifier:@"showSampleRoomMembersViewController" sender:self];
+    } else if (indexPath.section == authenticationSectionIndex) {
+        [self performSegueWithIdentifier:@"showAuthenticationViewController" sender:self];
     }
 }
 
@@ -175,7 +196,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
 
-    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"]) {
+    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mxSession) {
         MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)segue.destinationViewController;
         sampleRecentListViewController.delegate = self;
 
@@ -185,12 +206,13 @@
     else if ([segue.identifier isEqualToString:@"showSampleRoomViewController"]) {
         MXKSampleRoomViewController *sampleRoomViewController = (MXKSampleRoomViewController *)segue.destinationViewController;
 
-        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:roomId create:YES];
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
+        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
 
         // As the sample plays with several kinds of room data source, make sure we reuse one with the right type
         if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKRoomDataSource.class]) {
             [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:YES];
-             roomDataSource = [roomDataSourceManager roomDataSourceForRoom:roomId create:YES];
+             roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
         }
 
         [sampleRoomViewController displayRoom:roomDataSource];
@@ -198,7 +220,8 @@
     else if ([segue.identifier isEqualToString:@"showSampleJSQMessagesViewController"]) {
         MXKSampleJSQMessagesViewController *sampleRoomViewController = (MXKSampleJSQMessagesViewController *)segue.destinationViewController;
 
-        MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:roomId create:NO];
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
+        MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
 
         // As the sample plays with several kind of room data source, make sure we reuse one with the right type
         if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKSampleJSQRoomDataSource.class]) {
@@ -207,7 +230,7 @@
         }
 
         if (!roomDataSource) {
-            roomDataSource = [[MXKSampleJSQRoomDataSource alloc] initWithRoomId:roomId andMatrixSession:self.mxSession];
+            roomDataSource = [[MXKSampleJSQRoomDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
             [roomDataSourceManager addRoomDataSource:roomDataSource];
         }
 
@@ -217,16 +240,26 @@
         MXKSampleRoomMembersViewController *sampleRoomMemberListViewController = (MXKSampleRoomMembersViewController *)segue.destinationViewController;
         sampleRoomMemberListViewController.delegate = self;
         
-        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:roomId andMatrixSession:self.mxSession];
+        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
         [sampleRoomMemberListViewController displayList:listDataSource];
+    }
+    else if ([segue.identifier isEqualToString:@"showAuthenticationViewController"]) {
+        MXKAuthenticationViewController *sampleAuthViewController = (MXKAuthenticationViewController *)segue.destinationViewController;
+        sampleAuthViewController.delegate = self;
+        sampleAuthViewController.defaultHomeServerUrl = @"https://matrix.org";
+        sampleAuthViewController.defaultIdentityServerUrl = @"https://matrix.org";
     }
 }
 
 #pragma mark - MXKRecentListViewControllerDelegate
-- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)aRoomId {
+- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)roomId {
 
-    // Change the current room id and come back to the main page
-    self.roomId = aRoomId;
+    // Update the selected room and go back to the main page
+    selectedRoom = [self.mxSession roomWithRoomId:roomId];
+    _selectedRoomDisplayName.text = selectedRoom.state.displayname;
+    
+    [self.tableView reloadData];
+    
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
@@ -234,18 +267,20 @@
 
 - (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(NSString*)memberId {
     // TODO
-    NSLog(@"member (%@) has been selected", memberId);
+    NSLog(@"Member (%@) has been selected", memberId);
 }
 
-#pragma mark -
-- (void)setRoomId:(NSString *)inRoomId {
-    roomId = inRoomId;
-    MXRoom *room = [self.mxSession roomWithRoomId:roomId];
-    _selectedRoomDisplayName.text = room.state.displayname;
-}
+#pragma mark - 
 
-- (NSString*)roomId {
-    return roomId;
+- (void)authenticationViewController:(MXKAuthenticationViewController *)authenticationViewController didLogWithUserId:(NSString*)userId {
+    NSLog(@"New account (%@) has been added", userId);
+    
+    if (!self.mxSession) {
+        [self launchMatrixSession];
+    }
+    
+    // Go back to the main page
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end
