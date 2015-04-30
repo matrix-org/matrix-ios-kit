@@ -63,7 +63,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 }
 
 - (void)render:(MXKCellData *)cellData {
-    
+    [self originalRender:cellData];
+}
+
+- (void)originalRender:(MXKCellData *)cellData {
+
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
 
@@ -240,7 +244,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 }
 
 + (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth {
-    
+    return [self originalHeightForCellData:cellData withMaximumWidth:maxWidth];
+}
+
++ (CGFloat)originalHeightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
+
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     

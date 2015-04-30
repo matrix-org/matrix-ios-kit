@@ -113,4 +113,22 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  */
 + (MXKRoomBubbleTableViewCell*)cellWithOriginalXib;
 
+/**
+ The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering render:] not
+ overidden by a class child.
+
+ @param cellData the data object to render.
+ */
+- (void)originalRender:(MXKCellData*)cellData;
+
+/**
+ The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering 
+ originalHeightForCellData: withMaximumWidth:] not overidden by a class child.
+
+ @param cellData the data object to render.
+ @param maxWidth the maximum available width.
+ @return the cell height
+ */
++ (CGFloat)originalHeightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth;
+
 @end
