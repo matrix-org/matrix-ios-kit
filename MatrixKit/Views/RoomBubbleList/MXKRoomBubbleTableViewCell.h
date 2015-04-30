@@ -104,4 +104,13 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict;
 
+#pragma mark - Original Xib values
+
+/**
+ Get an original instance of the `MXKRoomBubbleTableViewCell` child class.
+
+ @return an instance of the child class caller which has the original Xib values.
+ */
++ (MXKRoomBubbleTableViewCell*)cellWithOriginalXib;
+
 @end

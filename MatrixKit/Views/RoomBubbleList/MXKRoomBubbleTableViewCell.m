@@ -29,9 +29,6 @@ NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 
-#pragma mark - UI Constant definitions
-#define MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN -10
-
 @implementation MXKRoomBubbleTableViewCell
 @synthesize delegate, bubbleData;
 
@@ -76,14 +73,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         self.attachmentView.mediaFolder = bubbleData.roomId;
         
-        // Check whether the previous message has been sent by the same user.
-        // The user's picture and name are displayed only for the first message.
+
         // Handle sender's picture and adjust view's constraints
-        if (bubbleData.isSameSenderAsPreviousBubble) {
-            self.pictureView.hidden = YES;
-            self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-        } else {
             self.pictureView.hidden = NO;
             self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
             self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
@@ -97,7 +88,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
             self.pictureView.clipsToBounds = YES;
             self.pictureView.backgroundColor = [UIColor redColor];
-        }
 
         // Listen to avatar tap
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
@@ -265,18 +255,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     } else {
         rowHeight += self.cellWithOriginalXib.attachViewTopConstraint.constant ;
     }
-    
-    // Check whether the previous message has been sent by the same user.
-    // The user's picture and name are displayed only for the first message.
-    if (bubbleData.isSameSenderAsPreviousBubble) {
-        // Reduce top margin -> row height reduction
-        rowHeight += MXKROOMBUBBLETABLEVIEWCELL_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-    } else {
-        // We consider a minimun cell height in order to display correctly user's picture
-        if (rowHeight < self.cellWithOriginalXib.frame.size.height) {
-            rowHeight = self.cellWithOriginalXib.frame.size.height;
-        }
-    }
+
     return rowHeight;
 }
 
@@ -424,11 +403,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
  */
 static NSMutableDictionary *childClasses;
 
-/**
- Get an original instance of the `MXKRoomBubbleTableViewCell` child class.
- 
- @return an instance of the child class caller which has the original Xib values.
- */
 + (MXKRoomBubbleTableViewCell*)cellWithOriginalXib {
     MXKRoomBubbleTableViewCell *cellWithOriginalXib;
 
