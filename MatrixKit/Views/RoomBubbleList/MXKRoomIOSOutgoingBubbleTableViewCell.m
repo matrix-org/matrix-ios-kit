@@ -30,18 +30,20 @@
     self = nibViews.firstObject;
 
     // Create the strechable background bubble
-    UIImage *rightBubbleImage = [UIImage imageNamed:@"bubble_ios_messages_right"];
-    rightBubbleImage = [MXKTools paintImage:rightBubbleImage
-                                  withColor:[MXKTools colorWithRGBValue:OUTGOING_BUBBLE_COLOR]];
-
-    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(17, 22, 17, 27);
-    self.bubbleImageView.image = [rightBubbleImage resizableImageWithCapInsets:edgeInsets];;
+    self.bubbleImageView.image = self.class.bubbleImage;
     
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+}
+
 - (void)render:(MXKCellData *)cellData {
     [super originalRender:cellData];
+
+    // Reset values
+    self.bubbleImageView.hidden = NO;
 
     // Customise the data precomputed by the legacy classes
     // Replace black color in texts by the white color expected for outgoing messages.
@@ -70,6 +72,16 @@
     if (self.bubbleImageViewWidthConstraint.constant < 46) {
         self.bubbleImageViewWidthConstraint.constant = 46;
     }
+
+    // Mask the image with the bubble
+    if (self.bubbleData.dataType != MXKRoomBubbleCellDataTypeText) {
+        self.bubbleImageView.hidden = YES;
+
+        UIImageView *rightBubbleImageView = [[UIImageView alloc] initWithImage:self.class.bubbleImage];
+        rightBubbleImageView.frame = CGRectMake(0, 0, self.bubbleImageViewWidthConstraint.constant, self.bubbleData.contentSize.height + self.attachViewTopConstraint.constant - 4);
+
+        self.attachmentView.layer.mask = rightBubbleImageView.layer;
+    }
 }
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
@@ -81,6 +93,21 @@
     }
 
     return rowHeight;
+}
+
+/**
+ Create the strechable background bubble.
+ 
+ @return the bubble image. 
+ */
++ (UIImage *)bubbleImage {
+
+    UIImage *rightBubbleImage = [UIImage imageNamed:@"bubble_ios_messages_right"];
+    rightBubbleImage = [MXKTools paintImage:rightBubbleImage
+                                  withColor:[MXKTools colorWithRGBValue:OUTGOING_BUBBLE_COLOR]];
+
+    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(17, 22, 17, 27);
+    return [rightBubbleImage resizableImageWithCapInsets:edgeInsets];
 }
 
 @end
