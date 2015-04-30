@@ -22,7 +22,7 @@
                         </constraints>
                     </imageView>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="text message" translatesAutoresizingMaskIntoConstraints="NO" id="tgO-Rv-C7R">
-                        <rect key="frame" x="76" y="3" width="495" height="36"/>
+                        <rect key="frame" x="74" y="3" width="495" height="36"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -46,7 +46,7 @@
                         <rect key="frame" x="486" y="19" width="20" height="20"/>
                     </activityIndicatorView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LVJ-Av-zVs" userLabel="showHideDateTime">
-                        <rect key="frame" x="0.0" y="0.0" width="76" height="39"/>
+                        <rect key="frame" x="0.0" y="0.0" width="74" height="39"/>
                         <state key="normal">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
@@ -55,7 +55,7 @@
                         </connections>
                     </button>
                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a51-cR-7FE" userLabel="DateTimeLabelContainer">
-                        <rect key="frame" x="8" y="10" width="68" height="29"/>
+                        <rect key="frame" x="8" y="10" width="66" height="29"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </view>
                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apW-hM-veR" userLabel="ProgressView">
@@ -106,14 +106,14 @@
                     <constraint firstItem="a51-cR-7FE" firstAttribute="top" secondItem="fCg-ju-gnG" secondAttribute="top" constant="10" id="fQv-07-Pgx"/>
                     <constraint firstItem="SIW-l4-PfI" firstAttribute="centerY" secondItem="ZC1-hT-7fs" secondAttribute="centerY" id="ffI-vh-SW3"/>
                     <constraint firstAttribute="bottom" secondItem="Ktd-ms-tAu" secondAttribute="bottom" constant="2" id="haQ-G8-eZD"/>
-                    <constraint firstItem="tgO-Rv-C7R" firstAttribute="leading" secondItem="fCg-ju-gnG" secondAttribute="leading" constant="76" id="hwr-aa-TB4"/>
+                    <constraint firstItem="tgO-Rv-C7R" firstAttribute="leading" secondItem="fCg-ju-gnG" secondAttribute="leading" constant="74" id="hwr-aa-TB4"/>
                     <constraint firstItem="SIW-l4-PfI" firstAttribute="centerX" secondItem="ZC1-hT-7fs" secondAttribute="centerX" id="jah-TA-P0P"/>
                     <constraint firstItem="Ktd-ms-tAu" firstAttribute="top" secondItem="fCg-ju-gnG" secondAttribute="top" constant="2" id="ltB-ic-svk"/>
                     <constraint firstItem="LVJ-Av-zVs" firstAttribute="top" secondItem="fCg-ju-gnG" secondAttribute="top" id="pYO-hi-P72"/>
                     <constraint firstItem="SIW-l4-PfI" firstAttribute="centerY" secondItem="Mqf-7a-bsm" secondAttribute="centerY" id="sKJ-ny-LjM"/>
                     <constraint firstAttribute="bottom" secondItem="a51-cR-7FE" secondAttribute="bottom" id="viZ-Sx-3RW"/>
                     <constraint firstItem="apW-hM-veR" firstAttribute="centerY" secondItem="SIW-l4-PfI" secondAttribute="centerY" id="wmh-x1-U32"/>
-                    <constraint firstAttribute="trailing" secondItem="tgO-Rv-C7R" secondAttribute="trailing" constant="29" id="xYz-lp-c7K"/>
+                    <constraint firstAttribute="trailing" secondItem="tgO-Rv-C7R" secondAttribute="trailing" constant="31" id="xYz-lp-c7K"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

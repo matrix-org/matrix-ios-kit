@@ -65,6 +65,11 @@
 
     // Update the bubble width to include the text view
     self.bubbleImageViewWidthConstraint.constant = self.bubbleData.contentSize.width + 17;
+
+    // Limit bubble width
+    if (self.bubbleImageViewWidthConstraint.constant < 46) {
+        self.bubbleImageViewWidthConstraint.constant = 46;
+    }
 }
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
