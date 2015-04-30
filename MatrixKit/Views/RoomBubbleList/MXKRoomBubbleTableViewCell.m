@@ -76,7 +76,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // set the media folders
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         self.attachmentView.mediaFolder = bubbleData.roomId;
-        
 
         // Handle sender's picture and adjust view's constraints
         self.pictureView.hidden = NO;
