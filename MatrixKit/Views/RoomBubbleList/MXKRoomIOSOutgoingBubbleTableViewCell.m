@@ -40,15 +40,6 @@
     return self;
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    // ensure that the text is still aligned to the left side of the screen
-    // even during animation while enlarging/reducing the viewcontroller (with UISplitViewController)
-    CGFloat leftInset = self.bubbleData.maxTextViewWidth -  self.bubbleData.contentSize.width + 10;
-    self.messageTextView.contentInset = UIEdgeInsetsMake(0, leftInset, 0, -leftInset);
-}
-
 - (void)render:(MXKCellData *)cellData {
     [super originalRender:cellData];
 
@@ -82,6 +73,10 @@
     // Use the xib height as the minimal height
     if (rowHeight < self.cellWithOriginalXib.frame.size.height) {
         rowHeight = self.cellWithOriginalXib.frame.size.height;
+    }
+
+    if (rowHeight == self.cellWithOriginalXib.frame.size.height) {
+        rowHeight = 36;
     }
 
     return rowHeight;
