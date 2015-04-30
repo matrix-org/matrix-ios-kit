@@ -75,10 +75,6 @@
         rowHeight = self.cellWithOriginalXib.frame.size.height;
     }
 
-    if (rowHeight == self.cellWithOriginalXib.frame.size.height) {
-        rowHeight = 36;
-    }
-
     return rowHeight;
 }
 
