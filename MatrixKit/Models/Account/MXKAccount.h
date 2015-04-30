@@ -80,4 +80,30 @@
  */
 - (void)resume;
 
+#pragma mark - Push notification listeners
+/**
+ Register a listener to push notifications for the account's session.
+ 
+ The listener will be called when a push rule matches a live event.
+ Note: only one listener is supported. Potential existing listener is removed.
+ 
+ You may use `[MXCAccount updateNotificationListenerForRoomId:]` to disable/enable all notifications from a specific room.
+ 
+ @param listenerBlock the block that will be called once a live event matches a push rule.
+ */
+- (void)listenToNotifications:(MXOnNotification)onNotification;
+
+/**
+ Unregister the listener.
+ */
+- (void)removeNotificationListener;
+
+/**
+ Update the listener to ignore or restore notifications from a specific room.
+ 
+ @param roomID the id of the concerned room.
+ @param isIgnored YES to disable notifications from the specified room. NO to restore them.
+ */
+- (void)updateNotificationListenerForRoomId:(NSString*)roomID ignore:(BOOL)isIgnored;
+
 @end

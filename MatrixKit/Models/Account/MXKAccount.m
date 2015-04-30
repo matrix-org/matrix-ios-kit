@@ -16,6 +16,8 @@
 
 #import "MXKAccount.h"
 
+#import "MXKRoomDataSourceManager.h"
+
 @interface MXKAccount () {
     
     // We will notify user only once on session failure
@@ -29,6 +31,15 @@
 
     // Handle user's settings change
     id userUpdateListener;
+    
+    // Used for logging application start up
+    NSDate *openSessionStartDate;
+    
+    // Event notifications listener
+    id notificationCenterListener;
+    
+    // Internal list of ignored rooms
+    NSMutableArray* ignoredRooms;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -145,6 +156,8 @@
     // Close potential session
     [self closeSession];
     
+    openSessionStartDate = [NSDate date];
+    
     // Instantiate new session
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
     
@@ -161,6 +174,8 @@
 }
 
 - (void)closeSession {
+    
+    [self removeNotificationListener];
     
     if (reachabilityObserver) {
         [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
@@ -237,6 +252,57 @@
     }
 }
 
+#pragma mark - Push notification listeners
+
+- (void)listenToNotifications:(MXOnNotification)onNotification {
+    
+    // Check conditions required to add notification listener
+    if (!mxSession || !onNotification) {
+        return;
+    }
+    
+    // Remove existing listener (if any)
+    [self removeNotificationListener];
+    
+    // Register on notification center
+    notificationCenterListener = [self.mxSession.notificationCenter listenToNotifications:^(MXEvent *event, MXRoomState *roomState, MXPushRule *rule) {
+        
+        // Apply first the event filter defined in the related room data source
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:mxSession];
+        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:event.roomId create:NO];
+        if (!roomDataSource || [roomDataSource.eventsFilterForMessages indexOfObject:event.type] == NSNotFound) {
+            // Ignore
+            return;
+        }
+        
+        // Check conditions to report this notification
+        if ([ignoredRooms indexOfObject:event.roomId] == NSNotFound) {
+            onNotification(event, roomState, rule);
+        }
+    }];
+}
+
+- (void)removeNotificationListener {
+    
+    if (notificationCenterListener) {
+        [self.mxSession.notificationCenter removeListener:notificationCenterListener];
+        notificationCenterListener = nil;
+    }
+    ignoredRooms = nil;
+}
+
+- (void)updateNotificationListenerForRoomId:(NSString*)roomID ignore:(BOOL)isIgnored {
+    
+    if (isIgnored) {
+        if (!ignoredRooms) {
+            ignoredRooms = [[NSMutableArray alloc] init];
+        }
+        [ignoredRooms addObject:roomID];
+    } else if (ignoredRooms) {
+        [ignoredRooms removeObject:roomID];
+    }
+}
+
 #pragma mark -
 
 - (void)launchInitialServerSync {
@@ -256,6 +322,8 @@
     
     // Launch mxSession
     [mxSession start:^{
+        NSLog(@"[MXKAccount] The session is ready. Matrix SDK session has been started in %0.fms.", [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
+        
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
         
         // Register listener to update user's information
