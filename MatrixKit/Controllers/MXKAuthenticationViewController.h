@@ -63,9 +63,29 @@
 @property (nonatomic) NSString *defaultHomeServerUrl;
 
 /**
+ The text field used to fill the home server url.
+ */
+@property (weak, nonatomic, readonly) UITextField *homeServerTextField;
+
+/**
+ The label associated to home server url text field.
+ */
+@property (weak, nonatomic, readonly) UILabel *homeServerInfoLabel;
+
+/**
  The default identity server url (nil by default).
  */
 @property (nonatomic) NSString *defaultIdentityServerUrl;
+
+/**
+ The text field used to fill the identity server url.
+ */
+@property (weak, nonatomic, readonly) UITextField *identityServerTextField;
+
+/**
+ The label associated to identity server url text field.
+ */
+@property (weak, nonatomic, readonly) UILabel *identityServerInfoLabel;
 
 /**
  The delegate for the view controller.
