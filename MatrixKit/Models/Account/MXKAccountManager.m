@@ -113,6 +113,12 @@ static MXKAccountManager *sharedAccountManager = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account.mxCredentials.userId userInfo:nil];
 }
 
+- (void)logout {
+    while (mxAccounts.lastObject) {
+        [self removeAccount:mxAccounts.lastObject];
+    }
+}
+
 #pragma mark -
 
 - (NSArray *)accounts {

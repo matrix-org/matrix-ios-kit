@@ -69,4 +69,9 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  */
 - (void)removeAccount:(MXKAccount*)account;
 
+/**
+ Log out all the existing accounts
+ */
+- (void)logout;
+
 @end

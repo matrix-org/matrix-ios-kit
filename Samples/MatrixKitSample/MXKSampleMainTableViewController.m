@@ -23,6 +23,10 @@
 #import <MatrixSDK/MXFileStore.h>
 
 @interface MXKSampleMainTableViewController () {
+    /**
+     Observer matrix sessions to handle new opened session
+     */
+    id matrixSessionStateObserver;
     
     /**
      The current selected room.
@@ -47,6 +51,21 @@
     self.tableView.tableHeaderView.hidden = YES;
     self.tableView.allowsSelection = YES;
     [self.tableView reloadData];
+    
+    // Register matrix session state observer in order to handle new opened session
+    matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        MXSession *mxSession = (MXSession*)notif.object;
+        
+        // Check whether the concerned session is a new one
+        if (mxSession.state == MXSessionStateInitialised) {
+            // report created matrix session
+            self.mxSession = mxSession;
+            
+            self.tableView.tableHeaderView.hidden = NO;
+            [self.tableView reloadData];
+        }
+    }];
     
     // Check whether some accounts are availables
     if ([[MXKAccountManager sharedManager] accounts].count) {
@@ -88,23 +107,7 @@
     
     // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
     MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-    [account createSessionWithStore:mxFileStore success:^{
-        
-        // report created matrix session
-        self.mxSession = account.mxSession;
-        
-        self.tableView.tableHeaderView.hidden = NO;
-        [self.tableView reloadData];
-        
-        // Complete the session registration
-        [account startSession:^{
-            NSLog(@"Matrix session successfully started (%@)", account.mxCredentials.userId);
-        } failure:^(NSError *error) {
-            NSAssert(false, @"Start matrix session should not fail. Error: %@", error);
-        }];
-    } failure:^(NSError *error) {
-        NSAssert(false, @"Create matrix session should not fail. Error: %@", error);
-    }];
+    [account openSessionWithStore:mxFileStore];
 }
 
 

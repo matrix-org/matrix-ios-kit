@@ -17,8 +17,16 @@
 #import "MXKAccount.h"
 
 @interface MXKAccount () {
-    id<MXStore> mxStore;
     
+    // We will notify user only once on session failure
+    BOOL notifyOpenSessionFailure;
+    
+    // The timer used to postpone server sync on failure
+    NSTimer* initialServerSyncTimer;
+    
+    // Reachability observer
+    id reachabilityObserver;
+
     // Handle user's settings change
     id userUpdateListener;
 }
@@ -34,6 +42,8 @@
 - (instancetype)initWithCredentials:(MXCredentials*)credentials {
     
     if (self = [super init]) {
+        notifyOpenSessionFailure = YES;
+        
         // Report credentials and alloc REST client.
         mxCredentials = credentials;
         mxRestClient = [[MXRestClient alloc] initWithCredentials:credentials];
@@ -55,6 +65,8 @@
 #pragma mark - NSCoding
 
 - (id)initWithCoder:(NSCoder *)coder {
+    
+    notifyOpenSessionFailure = YES;
     
     NSString *homeServerURL = [coder decodeObjectForKey:@"homeserverurl"];
     NSString *userId = [coder decodeObjectForKey:@"userid"];
@@ -122,10 +134,10 @@
 
 #pragma mark -
 
--(void)createSessionWithStore:(id<MXStore>)store success:(void (^)())onStoreDataReady failure:(void (^)(NSError *))failure {
+-(void)openSessionWithStore:(id<MXStore>)store {
     
     // Sanity check
-    if (!mxCredentials) {
+    if (!mxCredentials || !mxRestClient) {
         NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
         return;
     }
@@ -133,34 +145,108 @@
     // Close potential session
     [self closeSession];
     
-    if (mxRestClient) {
-        
-        mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
-        
-        __weak typeof(self) weakSelf = self;
-        [mxSession setStore:store success:^() {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->mxStore = store;
+    // Instantiate new session
+    mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
+    
+    __weak typeof(self) weakSelf = self;
+    [mxSession setStore:store success:^{
+        // Complete session registration by launching live stream
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        [strongSelf launchInitialServerSync];
+    } failure:^(NSError *error) {
+        // This cannot happen. Loading of MXFileStore cannot fail.
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        strongSelf->mxSession = nil;
+    }];
+}
+
+- (void)closeSession {
+    
+    if (reachabilityObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
+        reachabilityObserver = nil;
+    }
+    
+    [initialServerSyncTimer invalidate];
+    initialServerSyncTimer = nil;
+    
+    if (userUpdateListener) {
+        [mxSession.myUser removeListener:userUpdateListener];
+        userUpdateListener = nil;
+    }
+    
+    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
+//    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
+    
+    [mxSession close];
+    mxSession = nil;
+    
+    notifyOpenSessionFailure = YES;
+}
+
+- (void)pauseInBackgroundTask {
+    
+    if (mxSession && mxSession.state == MXSessionStateRunning) {
+        _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
+            _bgTask = UIBackgroundTaskInvalid;
             
-            if (onStoreDataReady) {
-                onStoreDataReady ();
-            }
-            
-        }failure:^(NSError *error) {
-            // This cannot happen. Loading of MXFileStore cannot fail.
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->mxSession = nil;
-            
-            if (failure) {
-                failure (error);
-            }
+            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)_bgTask);
         }];
+        
+        NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX starts", (unsigned long)_bgTask);
+        // Pause SDK
+        [mxSession pause];
+        
+        // Update user presence
+        __weak typeof(self) weakSelf = self;
+        [self setUserPresence:MXPresenceUnavailable andStatusMessage:nil completion:^{
+            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX ends", (unsigned long)weakSelf.bgTask);
+            [[UIApplication sharedApplication] endBackgroundTask:weakSelf.bgTask];
+            weakSelf.bgTask = UIBackgroundTaskInvalid;
+            NSLog(@"[MXKAccount] >>>>> background pause task finished");
+        }];
+    }
+    else {
+        // Cancel pending actions
+        [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
+        reachabilityObserver = nil;
+        [initialServerSyncTimer invalidate];
+        initialServerSyncTimer = nil;
     }
 }
 
-- (void)startSession:(void (^)())onServerSyncDone failure:(void (^)(NSError *))failure {
-    
+- (void)resume {
+    if (mxSession) {
+        if (mxSession.state == MXSessionStatePaused) {
+            // Resume SDK and update user presence
+            [mxSession resume:^{
+                [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
+            }];
+        } else if (mxSession.state == MXSessionStateStoreDataReady) {
+            // The session initialisation was uncompleted, we try to complete it here.
+            [self launchInitialServerSync];
+        }
+        
+        if (_bgTask) {
+            // Cancel background task
+            [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
+            _bgTask = UIBackgroundTaskInvalid;
+            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
+        }
+    }
+}
+
+#pragma mark -
+
+- (void)launchInitialServerSync {
     // Complete the session registration when store data is ready.
+    
+    // Cancel potential reachability observer and pending action
+    [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
+    reachabilityObserver = nil;
+    [initialServerSyncTimer invalidate];
+    initialServerSyncTimer = nil;
     
     // Sanity check
     if (!mxSession || mxSession.state != MXSessionStateStoreDataReady) {
@@ -170,7 +256,6 @@
     
     // Launch mxSession
     [mxSession start:^{
-        
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
         
         // Register listener to update user's information
@@ -198,75 +283,33 @@
             }
         }];
         
-        if (onServerSyncDone) {
-            onServerSyncDone ();
-        }
     } failure:^(NSError *error) {
-        NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
+        NSLog(@"[MatrixHandler] Initial Sync failed: %@", error);
+        if (notifyOpenSessionFailure) {
+            //Alert user only once
+            notifyOpenSessionFailure = NO;
+            // TODO GFO Alert user
+//            [[AppDelegate theDelegate] showErrorAsAlert:error];
+        }
         
-        if (failure) {
-            failure (error);
+        // Check network reachability
+        if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNotConnectedToInternet) {
+            // Add observer to launch a new attempt according to reachability.
+            reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+                NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
+                if (statusItem) {
+                    AFNetworkReachabilityStatus reachabilityStatus = statusItem.integerValue;
+                    if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN) {
+                        // New attempt
+                        [self launchInitialServerSync];
+                    }
+                }
+            }];
+        } else {
+            // Postpone a new attempt in 10 sec
+            initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
         }
     }];
-}
-
-- (void)closeSession {
-    
-    if (userUpdateListener) {
-        [mxSession.myUser removeListener:userUpdateListener];
-        userUpdateListener = nil;
-    }
-    
-    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
-//    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
-    
-    [mxSession close];
-    mxSession = nil;
-}
-
-#pragma mark -
-
-- (void)pauseInBackgroundTask {
-    
-    if (mxSession && mxSession.state == MXSessionStateRunning) {
-        _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
-            _bgTask = UIBackgroundTaskInvalid;
-            
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)_bgTask);
-        }];
-        
-        NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX starts", (unsigned long)_bgTask);
-        // Pause SDK
-        [mxSession pause];
-        
-        // Update user presence
-        __weak typeof(self) weakSelf = self;
-        [self setUserPresence:MXPresenceUnavailable andStatusMessage:nil completion:^{
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX ends", (unsigned long)weakSelf.bgTask);
-            [[UIApplication sharedApplication] endBackgroundTask:weakSelf.bgTask];
-            weakSelf.bgTask = UIBackgroundTaskInvalid;
-            NSLog(@"[MXKAccount] >>>>> background pause task finished");
-        }];
-    }
-}
-
-- (void)resume {
-    if (mxSession) {
-        if (mxSession.state == MXSessionStatePaused) {
-            // Resume SDK and update user presence
-            [mxSession resume:^{
-                [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-            }];
-        }
-        
-        if (_bgTask) {
-            // Cancel background task
-            [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
-            _bgTask = UIBackgroundTaskInvalid;
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
-        }
-    }
 }
 
 @end

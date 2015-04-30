@@ -55,23 +55,15 @@
 - (instancetype)initWithCredentials:(MXCredentials*)credentials;
 
 /**
- Create a matrix session with the account's credentials based on the provided store.
+ Create a matrix session based on the provided store.
+ When store data is ready, the live stream is automatically launched by synchronising the session with the server.
+ 
+ In case of failure during server sync, the method is reiterated until the data is up-to-date with the server.
+ This loop is stopped if you call [MXCAccount closeSession], it is suspended if you call [MXCAccount pauseInBackgroundTask].
  
  @param store the store to use for the session.
- @param onStoreDataReady A block object called when data have been loaded from the `store`.
- Note the data may not be up-to-date. You need to call [MXKAccount startSession:] to ensure the sync with
- the home server.
- @param failure A block object called when the operation fails.
  */
--(void)createSessionWithStore:(id<MXStore>)store success:(void (^)())onStoreDataReady failure:(void (^)(NSError *))failure;
-
-/**
- Complete the session registration when store data is ready, by launching live stream.
- 
- @param onServerSyncDone A block object called when the data is up-to-date with the server.
- @param failure A block object called when the operation fails.
- */
-- (void)startSession:(void (^)())onServerSyncDone failure:(void (^)(NSError *))failure;
+-(void)openSessionWithStore:(id<MXStore>)store;
 
 /**
  Close the matrix session.
