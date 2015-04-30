@@ -126,7 +126,9 @@
                 <outlet property="dateTimeLabelContainer" destination="a51-cR-7FE" id="wrR-cU-DVm"/>
                 <outlet property="dateTimeLabelContainerTopConstraint" destination="fQv-07-Pgx" id="82c-KH-Wop"/>
                 <outlet property="messageTextView" destination="tgO-Rv-C7R" id="LZ5-hQ-AbQ"/>
+                <outlet property="msgTextViewLeadingConstraint" destination="hwr-aa-TB4" id="A1E-ap-Ug6"/>
                 <outlet property="msgTextViewTopConstraint" destination="8Sy-eu-tYs" id="7yx-oJ-KBP"/>
+                <outlet property="msgTextViewTrailingConstraint" destination="xYz-lp-c7K" id="hc2-Cg-is4"/>
                 <outlet property="playIconView" destination="ZC1-hT-7fs" id="zeH-8B-gxw"/>
                 <outlet property="progressChartView" destination="Oec-kb-Tsz" id="uoq-6v-6Tm"/>
                 <outlet property="progressView" destination="apW-hM-veR" id="Iy8-ca-hMi"/>

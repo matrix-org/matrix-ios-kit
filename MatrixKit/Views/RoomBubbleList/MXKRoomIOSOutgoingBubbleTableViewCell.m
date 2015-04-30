@@ -50,7 +50,7 @@
 }
 
 - (void)render:(MXKCellData *)cellData {
-    [super render:cellData];
+    [super originalRender:cellData];
 
     // Customise the data precomputed by the legacy classes
     // Replace black color in texts by the white color expected for outgoing messages.
@@ -74,6 +74,17 @@
 
     // Update the bubble width to include the text view
     self.bubbleImageViewWidthConstraint.constant = self.bubbleData.contentSize.width + 17;
+}
+
++ (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
+    CGFloat rowHeight = [super originalHeightForCellData:cellData withMaximumWidth:maxWidth];
+
+    // Use the xib height as the minimal height
+    if (rowHeight < self.cellWithOriginalXib.frame.size.height) {
+        rowHeight = self.cellWithOriginalXib.frame.size.height;
+    }
+
+    return rowHeight;
 }
 
 @end
