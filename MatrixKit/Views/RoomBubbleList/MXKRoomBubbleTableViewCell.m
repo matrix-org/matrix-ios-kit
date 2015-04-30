@@ -79,19 +79,19 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         
 
         // Handle sender's picture and adjust view's constraints
-            self.pictureView.hidden = NO;
-            self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
-            self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
-            // Handle user's picture
-            NSString *avatarThumbURL = nil;
-            if (bubbleData.senderAvatarUrl) {
-                // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
-            }
-            [self.pictureView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
-            [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
-            self.pictureView.clipsToBounds = YES;
-            self.pictureView.backgroundColor = [UIColor redColor];
+        self.pictureView.hidden = NO;
+        self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        // Handle user's picture
+        NSString *avatarThumbURL = nil;
+        if (bubbleData.senderAvatarUrl) {
+            // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+            avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
+        }
+        [self.pictureView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
+        [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
+        self.pictureView.clipsToBounds = YES;
+        self.pictureView.backgroundColor = [UIColor redColor];
 
         // Listen to avatar tap
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
