@@ -181,6 +181,26 @@
     return [UIColor colorWithRed:((float)((argbValue & 0xFF0000) >> 16))/255.0 green:((float)((argbValue & 0xFF00) >> 8))/255.0 blue:((float)(argbValue & 0xFF))/255.0 alpha:((float)((argbValue & 0xFF000000) >> 24))/255.0];
 }
 
++ (NSUInteger)rgbValueWithColor:(UIColor*)color {
+    CGFloat red, green, blue, alpha;
+    
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    
+    NSUInteger rgbValue = ((int)(red * 255) << 16) + ((int)(green * 255) << 8) + (blue * 255);
+    
+    return rgbValue;
+}
+
++ (NSUInteger)argbValueWithColor:(UIColor*)color {
+    CGFloat red, green, blue, alpha;
+    
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    
+    NSUInteger argbValue = ((int)(alpha * 255) << 24) + ((int)(red * 255) << 16) + ((int)(green * 255) << 8) + (blue * 255);
+    
+    return argbValue;
+}
+
 #pragma mark - Image
 
 + (UIImage*)forceImageOrientationUp:(UIImage*)imageSrc {

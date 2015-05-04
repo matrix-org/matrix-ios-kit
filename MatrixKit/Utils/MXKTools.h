@@ -74,6 +74,22 @@
  */
 + (UIColor*)colorWithARGBValue:(NSUInteger)argbValue;
 
+/**
+ Return an hexadecimal color value from UIColor
+ 
+ @param the UIColor
+ @return rgbValue the color expressed in hexa (0xRRGGBB)
+ */
++ (NSUInteger)rgbValueWithColor:(UIColor*)color;
+
+/**
+ Return an hexadecimal color value with transparency from UIColor
+ 
+ @param the UIColor
+ @return argbValue the color expressed in hexa (0xAARRGGBB)
+ */
++ (NSUInteger)argbValueWithColor:(UIColor*)color;
+
 #pragma mark - Image processing
 
 /**

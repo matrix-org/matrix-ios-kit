@@ -25,6 +25,9 @@
  */
 @interface MXKAppSettings : NSObject
 
+
+#pragma mark - Notifications
+
 /**
  Enable In-App notifications based on Remote notifications rules.
  
@@ -32,6 +35,9 @@
  Return NO if no value is defined.
  */
 @property (nonatomic) BOOL enableInAppNotifications;
+
+
+#pragma mark - Room display
 
 /**
  Display all received events in room history (Only recognized events are displayed, presently `custom` events are ignored).
@@ -57,6 +63,9 @@
  */
 @property (nonatomic) BOOL showUnsupportedEventsInRoomHistory;
 
+
+#pragma mark - Room members
+
 /**
  Sort room members by considering their presence.
  Set NO to sort members in alphabetic order.
@@ -74,6 +83,9 @@
  */
 @property (nonatomic) BOOL showLeftMembersInRoomMemberList;
 
+
+#pragma mark - Contacts
+
 /**
  Return YES if the user allows the local contacts sync.
  
@@ -89,6 +101,36 @@
  Return the SIM card information (if any) if no default value is defined.
  */
 @property (nonatomic) NSString* phonebookCountryCode;
+
+
+#pragma mark - Matrix users
+
+/**
+ Color associated to online matrix users.
+ 
+ This color value is defined in shared settings object with the key: `presenceColorForOnlineUser`.
+ The default color is `[UIColor greenColor]`.
+ */
+@property (nonatomic) UIColor *presenceColorForOnlineUser;
+
+/**
+ Color associated to unavailable matrix users.
+ 
+ This color value is defined in shared settings object with the key: `presenceColorForUnavailableUser`.
+ The default color is `[UIColor yellowColor]`.
+ */
+@property (nonatomic) UIColor *presenceColorForUnavailableUser;
+
+/**
+ Color associated to offline matrix users.
+ 
+ This color value is defined in shared settings object with the key: `presenceColorForOfflineUser`.
+ The default color is `[UIColor redColor]`.
+ */
+@property (nonatomic) UIColor *presenceColorForOfflineUser;
+
+
+#pragma mark - Class methods
 
 /**
  Return the shared application settings object. These settings are retrieved/stored in the shared defaults object (`[NSUserDefaults standardUserDefaults]`).

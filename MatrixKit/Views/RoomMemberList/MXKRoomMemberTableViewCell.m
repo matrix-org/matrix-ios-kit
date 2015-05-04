@@ -236,11 +236,11 @@
 - (UIColor*)presenceRingColor:(MXPresence)presence {
     switch (presence) {
         case MXPresenceOnline:
-            return [UIColor colorWithRed:0.2 green:0.9 blue:0.2 alpha:1.0];
+            return [[MXKAppSettings standardAppSettings] presenceColorForOnlineUser];
         case MXPresenceUnavailable:
-            return [UIColor colorWithRed:0.9 green:0.9 blue:0.0 alpha:1.0];
+            return [[MXKAppSettings standardAppSettings] presenceColorForUnavailableUser];
         case MXPresenceOffline:
-            return [UIColor colorWithRed:0.9 green:0.2 blue:0.2 alpha:1.0];
+            return [[MXKAppSettings standardAppSettings] presenceColorForOfflineUser];
         case MXPresenceUnknown:
         case MXPresenceFreeForChat:
         case MXPresenceHidden:

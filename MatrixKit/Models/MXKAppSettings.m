@@ -16,6 +16,8 @@
 
 #import "MXKAppSettings.h"
 
+#import "MXKTools.h"
+
 
 // get ISO country name
 #import <CoreTelephony/CTCarrier.h>
@@ -28,6 +30,7 @@ static MXKAppSettings *standardAppSettings = nil;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, phonebookCountryCode;
+@synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 
 + (MXKAppSettings *)standardAppSettings {
     @synchronized(self) {
@@ -48,6 +51,10 @@ static MXKAppSettings *standardAppSettings = nil;
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"sortRoomMembersUsingLastSeenTime"];
         }
         sortRoomMembersUsingLastSeenTime = YES;
+        
+        presenceColorForOnlineUser = [UIColor greenColor];
+        presenceColorForUnavailableUser = [UIColor yellowColor];
+        presenceColorForOfflineUser = [UIColor redColor];
     }
     return self;
 }
@@ -70,6 +77,11 @@ static MXKAppSettings *standardAppSettings = nil;
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncLocalContacts"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phonebookCountryCode"];
+        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOnlineUser"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForUnavailableUser"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOfflineUser"];
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
     } else {
         enableInAppNotifications = NO;
@@ -83,6 +95,10 @@ static MXKAppSettings *standardAppSettings = nil;
         
         syncLocalContacts = NO;
         phonebookCountryCode = nil;
+        
+        presenceColorForOnlineUser = [UIColor greenColor];
+        presenceColorForUnavailableUser = [UIColor yellowColor];
+        presenceColorForOfflineUser = [UIColor redColor];
     }
 }
 
@@ -104,7 +120,7 @@ static MXKAppSettings *standardAppSettings = nil;
     }
 }
 
-#pragma mark -
+#pragma mark - Room display
 
 - (BOOL)showAllEventsInRoomHistory {
     if (self == [MXKAppSettings standardAppSettings]) {
@@ -154,7 +170,7 @@ static MXKAppSettings *standardAppSettings = nil;
     }
 }
 
-#pragma mark -
+#pragma mark - Room members
 
 - (BOOL)sortRoomMembersUsingLastSeenTime {
     if (self == [MXKAppSettings standardAppSettings]) {
@@ -188,7 +204,7 @@ static MXKAppSettings *standardAppSettings = nil;
     }
 }
 
-#pragma mark -
+#pragma mark - Contacts
 
 - (BOOL)syncLocalContacts {
     if (self == [MXKAppSettings standardAppSettings]) {
@@ -236,6 +252,92 @@ static MXKAppSettings *standardAppSettings = nil;
         [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"phonebookCountryCode"];
     } else {
         phonebookCountryCode = stringValue;
+    }
+}
+
+#pragma mark - Matrix users
+
+- (UIColor*)presenceColorForOnlineUser {
+    UIColor *color = presenceColorForOnlineUser;
+    
+    if (self == [MXKAppSettings standardAppSettings]) {
+        NSNumber *rgbValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"presenceColorForOnlineUser"];
+        if (rgbValue) {
+            color = [MXKTools colorWithRGBValue:[rgbValue unsignedIntegerValue]];
+        } else {
+            color = [UIColor greenColor];
+        }
+    }
+    
+    return color;
+}
+
+- (void)setPresenceColorForOnlineUser:(UIColor*)color {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        if (color) {
+            NSUInteger rgbValue = [MXKTools rgbValueWithColor:color];
+            [[NSUserDefaults standardUserDefaults] setInteger:rgbValue forKey:@"presenceColorForOnlineUser"];
+        } else {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOnlineUser"];
+        }
+    } else {
+        presenceColorForOnlineUser = color ? color : [UIColor greenColor];
+    }
+}
+
+- (UIColor*)presenceColorForUnavailableUser {
+    UIColor *color = presenceColorForUnavailableUser;
+    
+    if (self == [MXKAppSettings standardAppSettings]) {
+        NSNumber *rgbValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"presenceColorForUnavailableUser"];
+        if (rgbValue) {
+            color = [MXKTools colorWithRGBValue:[rgbValue unsignedIntegerValue]];
+        } else {
+            color = [UIColor yellowColor];
+        }
+    }
+    
+    return color;
+}
+
+- (void)setPresenceColorForUnavailableUser:(UIColor*)color {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        if (color) {
+            NSUInteger rgbValue = [MXKTools rgbValueWithColor:color];
+            [[NSUserDefaults standardUserDefaults] setInteger:rgbValue forKey:@"presenceColorForUnavailableUser"];
+        } else {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForUnavailableUser"];
+        }
+    } else {
+        presenceColorForUnavailableUser = color ? color : [UIColor yellowColor];
+    }
+}
+
+- (UIColor*)presenceColorForOfflineUser {
+    UIColor *color = presenceColorForOfflineUser;
+    
+    if (self == [MXKAppSettings standardAppSettings]) {
+        NSNumber *rgbValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"presenceColorForOfflineUser"];
+        if (rgbValue) {
+            color = [MXKTools colorWithRGBValue:[rgbValue unsignedIntegerValue]];
+        } else {
+            color = [UIColor redColor];
+        }
+    }
+    
+    return color;
+}
+
+- (void)setPresenceColorForOfflineUser:(UIColor *)color {
+    if (self == [MXKAppSettings standardAppSettings]) {
+        if (color) {
+            NSUInteger rgbValue = [MXKTools rgbValueWithColor:color];
+            [[NSUserDefaults standardUserDefaults] setInteger:rgbValue forKey:@"presenceColorForOfflineUser"];
+        } else {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOfflineUser"];
+        }
+    } else {
+        presenceColorForOfflineUser = color ? color : [UIColor redColor];
     }
 }
 
