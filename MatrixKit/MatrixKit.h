@@ -43,6 +43,8 @@
 
 #import "MXKAccountManager.h"
 
+#import "MXK3PID.h"
+
 /**
  The Matrix iOS Kit version.
  */

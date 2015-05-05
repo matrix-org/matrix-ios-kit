@@ -33,6 +33,7 @@
 		F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */; };
 		F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */ = {isa = PBXBuildFile; fileRef = F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */; };
 		F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00C252A1ADBC60300065077 /* MXKTableViewController.m */; };
+		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
 		F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */; };
 		F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */; };
 		F05FB1781AD5129500DC0647 /* MXKRoomMemberCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1741AD5129500DC0647 /* MXKRoomMemberCellData.m */; };
@@ -157,6 +158,8 @@
 		F00C25281ADBC3C100065077 /* MXKViewControllerHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKViewControllerHandling.h; sourceTree = "<group>"; };
 		F00C25291ADBC60300065077 /* MXKTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKTableViewController.h; sourceTree = "<group>"; };
 		F00C252A1ADBC60300065077 /* MXKTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTableViewController.m; sourceTree = "<group>"; };
+		F01267481AF8A9440067D962 /* MXK3PID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXK3PID.h; sourceTree = "<group>"; };
+		F01267491AF8A9440067D962 /* MXK3PID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXK3PID.m; sourceTree = "<group>"; };
 		F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomViewController.xib; sourceTree = "<group>"; };
 		F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomMemberListViewController.h; sourceTree = "<group>"; };
 		F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomMemberListViewController.m; sourceTree = "<group>"; };
@@ -369,6 +372,8 @@
 				F07E18031ABC2EDA00DE3766 /* Room */,
 				32CEE2251AB1EC9B00F7C74D /* RoomList */,
 				F05FB1721AD5129500DC0647 /* RoomMemberList */,
+				F01267481AF8A9440067D962 /* MXK3PID.h */,
+				F01267491AF8A9440067D962 /* MXK3PID.m */,
 				F0EA4CB21ADD6E98007197D2 /* MXKAppSettings.h */,
 				F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */,
 				328AC48D1AA86E110044A6FB /* MXKDataSource.h */,
@@ -820,6 +825,7 @@
 				F094D15E1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m in Sources */,
 				328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */,
 				F05FB1811AD6643900DC0647 /* MXKRoomMemberTableViewCell.m in Sources */,
+				F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */,
 				F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */,
 				F09E288F1AC1FEDA00C51E44 /* MXKPieChartView.m in Sources */,
 				F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */,
