@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-#import <UIKit/UIKit.h>
+#import <MatrixSDK/MatrixSDK.h>
 
 /**
  `MXKAppSettings` represents the application settings. Most of them are used to handle matrix session data.
