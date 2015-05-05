@@ -897,7 +897,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             frame = self.view.frame;
         }
 
-        [roomDataSource paginateBackMessagesToFillRect:frame success:nil failure:nil];
+        isBackPaginationInProgress = YES;
+        [self startActivityIndicator];
+        [roomDataSource paginateBackMessagesToFillRect:frame
+                                               success:^{
+                                                   // Reload table
+                                                   isBackPaginationInProgress = NO;
+                                                   [self reloadBubblesTable];
+                                                   [self stopActivityIndicator];
+                                               }
+                                               failure:^(NSError *error) {
+                                                   // Reload table
+                                                   isBackPaginationInProgress = NO;
+                                                   [self reloadBubblesTable];
+                                                   [self stopActivityIndicator];
+                                               }];
     });
 }
 
