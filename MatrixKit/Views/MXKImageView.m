@@ -329,8 +329,8 @@
             tabBarFrame = tabBarController.tabBar.frame;
         }
         else {
-            // TODO GFO: Handle the case where there is no tab bar!
-            NSLog(@"Warning MXKImageView: Buttons display is not presently supported in app without tabbar");
+            // Define a default tabBar frame
+            tabBarFrame = CGRectMake(0, 0, self.frame.size.width, 44);
         }
     }
 
@@ -369,12 +369,12 @@
                 rightButton = [self addbuttonWithTitle:rightButtonTitle];
             }
 
-            // in fullscreen, display both buttons above the view
-            if (_fullScreen) {
+            // in fullscreen, display both buttons above the view (do the same if there is no tab bar)
+            if (_fullScreen || tabBarController == nil) {
                 bottomBarView.backgroundColor = [UIColor blackColor];
                 [self addSubview:bottomBarView];
             }
-            else if (tabBarController){
+            else {
                 // default tabbar background color
                 CGFloat base = 248.0 / 255.0f;
                 bottomBarView.backgroundColor = [UIColor colorWithRed:base green:base blue:base alpha:1.0];
@@ -382,7 +382,6 @@
                 // Display them over the tabbar
                 [tabBarController.tabBar addSubview:bottomBarView];
             }
-            // TODO GFO: else ...
         }
         
         if (_fullScreen) {
