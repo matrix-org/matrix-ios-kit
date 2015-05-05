@@ -81,27 +81,37 @@
     
     [super viewWillAppear:animated];
     
-    [self refreshUIBarButtons];
-    
-    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    // Check whether the user still belongs to the room's members.
+    if (self.dataSource && [self.mxSession roomWithRoomId:self.dataSource.roomId]) {
         
-        // Check whether the user will leave the room related to the displayed member list
-        if (notif.object == self.mxSession) {
-            NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-            if (roomId && [roomId isEqualToString:self.dataSource.roomId]) {
-                // We remove the current view controller.
-                [self withdrawViewControllerAnimated:YES completion:nil];
+        [self refreshUIBarButtons];
+        
+        // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+        kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            // Check whether the user will leave the room related to the displayed member list
+            if (notif.object == self.mxSession) {
+                NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
+                if (roomId && [roomId isEqualToString:self.dataSource.roomId]) {
+                    // We remove the current view controller.
+                    [self withdrawViewControllerAnimated:YES completion:nil];
+                }
             }
-        }
-    }];
+        }];
+    } else {
+        // We remove the current view controller.
+        [self withdrawViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     
     [super viewWillDisappear:animated];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
+    if (kMXSessionWillLeaveRoomNotificationObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
+        kMXSessionWillLeaveRoomNotificationObserver = nil;
+    }
     
     // Leave potential search session
     if (roomMembersSearchBar) {

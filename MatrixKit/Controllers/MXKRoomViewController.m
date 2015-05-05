@@ -185,19 +185,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
-    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-        
-        // Check whether the user will leave the current room
-        if (notif.object == self.mxSession) {
-            NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-            if (roomId && [roomId isEqualToString:roomDataSource.roomId]) {
-                // Update view controller appearance
-                [self leaveRoomOnEvent:notif.userInfo[kMXSessionNotificationEventKey]];
-            }
-        }
-    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -221,11 +208,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    
-    if (kMXSessionWillLeaveRoomNotificationObserver) {
-        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
-        kMXSessionWillLeaveRoomNotificationObserver = nil;
-    }
 }
 
 - (void)dealloc {
@@ -290,6 +272,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
     [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
     [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+    
+    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether the user will leave the current room
+        if (notif.object == self.mxSession) {
+            NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
+            if (roomId && [roomId isEqualToString:roomDataSource.roomId]) {
+                // Update view controller appearance
+                [self leaveRoomOnEvent:notif.userInfo[kMXSessionNotificationEventKey]];
+            }
+        }
+    }];
 }
 
 - (void)onRoomDataSourceReady {
@@ -446,11 +441,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [self dismissTemporarySubViews];
     
-    MXKEventFormatterError error;
-    NSString *reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.room.state error:&error];
-    if ((error != MXKEventFormatterErrorNone)) {
+    NSString *reason = nil;
+    if (event) {
+        MXKEventFormatterError error;
+        reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.room.state error:&error];
+        if (error != MXKEventFormatterErrorNone) {
+            reason = nil;
+        }
+    }
+    
+    if (!reason.length) {
         reason = @"You left the room";
     }
+    
     
     _bubblesTableView.dataSource = nil;
     _bubblesTableView.delegate = nil;
