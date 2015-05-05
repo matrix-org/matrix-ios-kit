@@ -29,12 +29,13 @@
 
 @end
 
+static NSMutableDictionary *_roomDataSourceManagers = nil;
+
 @implementation MXKRoomDataSourceManager
 
 + (MXKRoomDataSourceManager *)sharedManagerForMatrixSession:(MXSession *)mxSession {
 
     // Manage a pool of managers: one per Matrix session
-    static NSMutableDictionary *_roomDataSourceManagers = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _roomDataSourceManagers = [NSMutableDictionary dictionary];
@@ -57,6 +58,20 @@
     return roomDataSourceManager;
 }
 
++ (void)removeSharedManagerForMatrixSession:(MXSession*)mxSession {
+    
+    // Compute the id for this mxSession object: its pointer address as a string
+    NSString *mxSessionId = [NSString stringWithFormat:@"%p", mxSession];
+    
+    @synchronized(_roomDataSourceManagers) {
+        MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
+        if (roomDataSourceManager) {
+            [roomDataSourceManager reset];
+            [_roomDataSourceManagers removeObjectForKey:mxSessionId];
+        }
+    }
+}
+
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession {
 
     self = [super init];
@@ -71,7 +86,7 @@
 }
 
 - (void)dealloc {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
 }
 
 - (void)reset {
