@@ -53,6 +53,11 @@
 
 - (void)destroy {
     
+    state = MXKDataSourceStateUnknown;
+    if (_delegate && [_delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
+        [_delegate dataSource:self didStateChange:state];
+    }
+    
     _mxSession = nil;
     _delegate = nil;
 
@@ -61,7 +66,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     cellDataMap = nil;
     cellViewMap = nil;
-    state = MXKDataSourceStateUnknown;
 }
 
 #pragma mark - MXSessionStateDidChangeNotification
