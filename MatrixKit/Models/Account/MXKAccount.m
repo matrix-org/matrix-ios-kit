@@ -352,7 +352,7 @@
         }];
         
     } failure:^(NSError *error) {
-        NSLog(@"[MatrixHandler] Initial Sync failed: %@", error);
+        NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
         if (notifyOpenSessionFailure) {
             //Alert user only once
             notifyOpenSessionFailure = NO;
