@@ -30,20 +30,26 @@ PODS:
   - MatrixSDK (0.4.0):
     - AFNetworking (~> 2.5.2)
     - Mantle (~> 1.5)
+  - OpenWebRTC (0.3.1)
+  - OpenWebRTC-SDK (0.1.1):
+    - OpenWebRTC
 
 DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.0.0)
-  - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
+  - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `voip`)
+  - OpenWebRTC-SDK (from `../openwebrtc-ios-sdk/OpenWebRTC-SDK.podspec`)
 
 EXTERNAL SOURCES:
   MatrixSDK:
-    :branch: develop
+    :branch: voip
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
+  OpenWebRTC-SDK:
+    :path: ../openwebrtc-ios-sdk/OpenWebRTC-SDK.podspec
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: f6adbf3bd4c0835e0a412c13786d51d9ec3e8d89
+    :commit: eeeae6d8f2ed7bccf9a2bc59fb43326bedc59d6a
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
@@ -53,5 +59,7 @@ SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   Mantle: 60acd0cd363e27d945bda0a6b8e90577112d28f3
   MatrixSDK: 1645c94a7c7657e91e890c9c09d10094f79b7b92
+  OpenWebRTC: 85be1caf6dc45b11106eacba93de61e3e52b1cf8
+  OpenWebRTC-SDK: fd66e49ab80e88ed1e55231ac875a4976dc3ba74
 
-COCOAPODS: 0.36.3
+COCOAPODS: 0.36.4
