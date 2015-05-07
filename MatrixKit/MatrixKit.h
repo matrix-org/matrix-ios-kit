@@ -30,6 +30,7 @@
 #import "MXKRoomViewController.h"
 #import "MXKRecentListViewController.h"
 #import "MXKRoomMemberListViewController.h"
+#import "MXKCallViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 
