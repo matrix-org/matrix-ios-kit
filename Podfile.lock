@@ -21,7 +21,7 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - HPGrowingTextView (1.1)
-  - JSQMessagesViewController (7.0.0):
+  - JSQMessagesViewController (7.0.2):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - Mantle (1.5.4):
@@ -43,13 +43,13 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: f6adbf3bd4c0835e0a412c13786d51d9ec3e8d89
+    :commit: 8c849351c7540d2cf4da07e9f99d6adbf6ba31ac
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
   AFNetworking: e1d86c2a96bb5d2e7408da36149806706ee122fe
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
-  JSQMessagesViewController: 9fd7e9ac96e9fc91f2deca86928e2cc916aeebaa
+  JSQMessagesViewController: bb6649691182b1899dc52b42266ad69efc473510
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   Mantle: 60acd0cd363e27d945bda0a6b8e90577112d28f3
   MatrixSDK: 1645c94a7c7657e91e890c9c09d10094f79b7b92
