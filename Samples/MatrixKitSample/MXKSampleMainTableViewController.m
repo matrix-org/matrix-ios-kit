@@ -29,6 +29,11 @@
     id matrixSessionStateObserver;
     
     /**
+     Observer used to handle call
+     */
+    id callObserver;
+    
+    /**
      The current selected room.
      */
     MXRoom *selectedRoom;
@@ -65,6 +70,17 @@
             self.tableView.tableHeaderView.hidden = NO;
             [self.tableView reloadData];
         }
+    }];
+    
+    // Register call observer in order to handle new opened session
+    callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        MXCall *mxCall = (MXCall*)notif.object;
+        
+        MXKCallViewController *callViewController = [MXKCallViewController callViewController:mxCall];
+        
+        UINavigationController *navigationController = self.navigationController;
+        [navigationController.topViewController presentViewController:callViewController animated:YES completion:nil];
     }];
     
     // Check whether some accounts are availables

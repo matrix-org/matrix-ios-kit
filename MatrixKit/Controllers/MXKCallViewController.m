@@ -280,7 +280,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateEnded: {
             self.isRinging = NO;
             callStartTime = nil;
-            self.callStatusLabel.text = nil;
+            self.callStatusLabel.text = @"Call Ended";
             
             // Auto dismiss after few seconds
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
