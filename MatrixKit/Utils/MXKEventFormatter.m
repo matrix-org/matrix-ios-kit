@@ -154,7 +154,7 @@
     
     // Prepare display name for concerned users
     NSString *senderDisplayName;
-    if ([event.userId isEqualToString:mxSession.myUser.userId]) {
+    if (!event.isEmote && [event.userId isEqualToString:mxSession.myUser.userId]) {
         senderDisplayName = @"You";
     } else {
         senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.userId;
