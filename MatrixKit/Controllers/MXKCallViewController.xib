@@ -93,7 +93,7 @@
                                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" image="voip_mute.png"/>
+                                    <state key="selected" image="icon_mute.png"/>
                                     <state key="highlighted">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
@@ -270,6 +270,5 @@
         <image name="icon_backtoapp.png" width="40" height="28"/>
         <image name="icon_mute.png" width="70" height="68"/>
         <image name="icon_speaker.png" width="70" height="68"/>
-        <image name="voip_mute.png" width="720" height="256"/>
     </resources>
 </document>
