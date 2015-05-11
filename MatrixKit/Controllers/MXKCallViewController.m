@@ -380,13 +380,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             hideOverlayTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(hideOverlay:) userInfo:nil repeats:NO];
         }
     } else {
-        overlayContainerView.hidden = NO;
+        overlayContainerView.hidden = YES;
     }
 }
 
 - (void)toggleOverlay {
     
-    [self showOverlayContainer:!overlayContainerView.isHidden];
+    [self showOverlayContainer:overlayContainerView.isHidden];
 }
 
 - (void)hideOverlay:(NSTimer*)theTimer
