@@ -29,9 +29,25 @@
     id matrixSessionStateObserver;
     
     /**
+     Observer used to handle call
+     */
+    id callObserver;
+    
+    /**
      The current selected room.
      */
     MXRoom *selectedRoom;
+    
+    /**
+     The current call view controller (if any).
+     */
+    MXKCallViewController *presentedCallViewController;
+    
+    /**
+     Call status window displayed when user goes back to app during a call.
+     */
+    UIWindow* callStatusBarWindow;
+    UIButton* callStatusBarButton;
     
     /**
      Current index of sections
@@ -65,6 +81,21 @@
             self.tableView.tableHeaderView.hidden = NO;
             [self.tableView reloadData];
         }
+    }];
+    
+    // Register call observer in order to handle new opened session
+    callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        MXCall *mxCall = (MXCall*)notif.object;
+        
+        presentedCallViewController = [MXKCallViewController callViewController:mxCall];
+        presentedCallViewController.delegate = self;
+        
+        UINavigationController *navigationController = self.navigationController;
+        [navigationController.topViewController presentViewController:presentedCallViewController animated:YES completion:nil];
+        
+        // Hide system status bar
+        [UIApplication sharedApplication].statusBarHidden = YES;
     }];
     
     // Check whether some accounts are availables
@@ -273,7 +304,7 @@
     NSLog(@"Member (%@) has been selected", memberId);
 }
 
-#pragma mark - 
+#pragma mark - MXKAuthenticationViewControllerDelegate
 
 - (void)authenticationViewController:(MXKAuthenticationViewController *)authenticationViewController didLogWithUserId:(NSString*)userId {
     NSLog(@"New account (%@) has been added", userId);
@@ -284,6 +315,111 @@
     
     // Go back to the main page
     [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+#pragma mark - MXKCallViewControllerDelegate
+
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController {
+    
+    BOOL callIsEnded = (callViewController.mxCall.state == MXCallStateEnded);
+    NSLog(@"Call view controller must be dismissed (%d)", callIsEnded);
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (!callIsEnded) {
+            [self addCallStatusBar];
+        }
+    }];
+    
+    if (callIsEnded) {
+        [self removeCallStatusBar];
+        
+        // Restore system status bar
+        [UIApplication sharedApplication].statusBarHidden = NO;
+        
+        // Release properly
+        presentedCallViewController.mxCall.delegate = nil;
+        presentedCallViewController.delegate = nil;
+        presentedCallViewController = nil;
+    }
+}
+
+#pragma mark - Call status handling
+
+- (void)addCallStatusBar {
+    
+    // Add a call status bar
+    CGSize topBarSize = CGSizeMake(self.view.frame.size.width, 44);
+    
+    callStatusBarWindow = [[UIWindow alloc] initWithFrame:CGRectMake(0,0, topBarSize.width,topBarSize.height)];
+    callStatusBarWindow.windowLevel = UIWindowLevelStatusBar;
+    
+    // Create statusBarButton
+    callStatusBarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    callStatusBarButton.frame = CGRectMake(0, 0, topBarSize.width,topBarSize.height);
+    NSString *btnTitle = @"Return to call";
+    
+    [callStatusBarButton setTitle:btnTitle forState:UIControlStateNormal];
+    [callStatusBarButton setTitle:btnTitle forState:UIControlStateHighlighted];
+    callStatusBarButton.titleLabel.textColor = [UIColor whiteColor];
+    
+    [callStatusBarButton setBackgroundColor:[UIColor blueColor]];
+    [callStatusBarButton addTarget:self action:@selector(returnToCallView) forControlEvents:UIControlEventTouchUpInside];
+    
+    // Place button into the new window
+    [callStatusBarWindow addSubview:callStatusBarButton];
+    
+    callStatusBarWindow.hidden = NO;
+    [self statusBarDidChangeFrame];
+    
+    // We need to listen to the system status bar size change events to refresh the root controller frame.
+    // Else the navigation bar position will be wrong.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(statusBarDidChangeFrame)
+                                                 name:UIApplicationDidChangeStatusBarFrameNotification
+                                               object:nil];
+}
+
+- (void)removeCallStatusBar {
+    
+    if (callStatusBarWindow) {
+        
+        // Hide & destroy it
+        callStatusBarWindow.hidden = YES;
+        [self statusBarDidChangeFrame];
+        [callStatusBarButton removeFromSuperview];
+        callStatusBarButton = nil;
+        callStatusBarWindow = nil;
+        
+        // No more need to listen to system status bar changes
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+    }
+}
+
+- (void)returnToCallView {
+    
+    [self removeCallStatusBar];
+    
+    UINavigationController *navigationController = self.navigationController;
+    [navigationController.topViewController presentViewController:presentedCallViewController animated:YES completion:nil];
+}
+
+- (void)statusBarDidChangeFrame {
+    
+    UIApplication *app = [UIApplication sharedApplication];
+    UIViewController *rootController = app.keyWindow.rootViewController;
+    
+    // Refresh the root view controller frame
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    if (callStatusBarWindow) {
+        // Substract the height of call status bar from the frame.
+        CGFloat callBarStatusHeight = callStatusBarWindow.frame.size.height;
+        
+        CGFloat delta = callBarStatusHeight - frame.origin.y;
+        frame.origin.y = callBarStatusHeight;
+        frame.size.height -= delta;
+    }
+    rootController.view.frame = frame;
+    [rootController.view setNeedsLayout];
 }
 
 @end

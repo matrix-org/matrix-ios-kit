@@ -23,6 +23,11 @@ pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :br
 
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.0.0'
+
+# There is no pod for OpenWebRTC-SDK. Use the master branch from github
+# As of 2015/05/06, it works
+pod 'OpenWebRTC-SDK', :git => 'https://github.com/EricssonResearch/openwebrtc-ios-sdk.git', :branch => 'master'
+
 end
 
 target "MatrixKitSample" do

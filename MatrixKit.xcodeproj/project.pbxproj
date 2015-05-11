@@ -34,6 +34,19 @@
 		F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */ = {isa = PBXBuildFile; fileRef = F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */; };
 		F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00C252A1ADBC60300065077 /* MXKTableViewController.m */; };
 		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
+		F01C7DF11AFB6BEA00FC2F59 /* icon_backtoapp.png in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DEB1AFB6BEA00FC2F59 /* icon_backtoapp.png */; };
+		F01C7DF21AFB6BEA00FC2F59 /* icon_backtoapp@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DEC1AFB6BEA00FC2F59 /* icon_backtoapp@2x.png */; };
+		F01C7DF31AFB6BEA00FC2F59 /* icon_mute.png in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DED1AFB6BEA00FC2F59 /* icon_mute.png */; };
+		F01C7DF41AFB6BEA00FC2F59 /* icon_mute@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DEE1AFB6BEA00FC2F59 /* icon_mute@2x.png */; };
+		F01C7DF51AFB6BEA00FC2F59 /* icon_speaker.png in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DEF1AFB6BEA00FC2F59 /* icon_speaker.png */; };
+		F01C7DF61AFB6BEA00FC2F59 /* icon_speaker@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DF01AFB6BEA00FC2F59 /* icon_speaker@2x.png */; };
+		F01C7DFA1AFB6BF900FC2F59 /* MXKCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */; };
+		F01C7DFB1AFB6BF900FC2F59 /* MXKCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */; };
+		F01C7E021AFB983300FC2F59 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DFD1AFB983300FC2F59 /* busy.mp3 */; };
+		F01C7E031AFB983300FC2F59 /* callend.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DFE1AFB983300FC2F59 /* callend.mp3 */; };
+		F01C7E041AFB983300FC2F59 /* message.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DFF1AFB983300FC2F59 /* message.mp3 */; };
+		F01C7E051AFB983300FC2F59 /* ring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F01C7E001AFB983300FC2F59 /* ring.mp3 */; };
+		F01C7E061AFB983300FC2F59 /* ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F01C7E011AFB983300FC2F59 /* ringback.mp3 */; };
 		F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */; };
 		F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */; };
 		F05FB1781AD5129500DC0647 /* MXKRoomMemberCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1741AD5129500DC0647 /* MXKRoomMemberCellData.m */; };
@@ -160,6 +173,20 @@
 		F00C252A1ADBC60300065077 /* MXKTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTableViewController.m; sourceTree = "<group>"; };
 		F01267481AF8A9440067D962 /* MXK3PID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXK3PID.h; sourceTree = "<group>"; };
 		F01267491AF8A9440067D962 /* MXK3PID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXK3PID.m; sourceTree = "<group>"; };
+		F01C7DEB1AFB6BEA00FC2F59 /* icon_backtoapp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_backtoapp.png; sourceTree = "<group>"; };
+		F01C7DEC1AFB6BEA00FC2F59 /* icon_backtoapp@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_backtoapp@2x.png"; sourceTree = "<group>"; };
+		F01C7DED1AFB6BEA00FC2F59 /* icon_mute.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_mute.png; sourceTree = "<group>"; };
+		F01C7DEE1AFB6BEA00FC2F59 /* icon_mute@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_mute@2x.png"; sourceTree = "<group>"; };
+		F01C7DEF1AFB6BEA00FC2F59 /* icon_speaker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_speaker.png; sourceTree = "<group>"; };
+		F01C7DF01AFB6BEA00FC2F59 /* icon_speaker@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_speaker@2x.png"; sourceTree = "<group>"; };
+		F01C7DF71AFB6BF900FC2F59 /* MXKCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCallViewController.h; sourceTree = "<group>"; };
+		F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKCallViewController.m; sourceTree = "<group>"; };
+		F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKCallViewController.xib; sourceTree = "<group>"; };
+		F01C7DFD1AFB983300FC2F59 /* busy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = busy.mp3; sourceTree = "<group>"; };
+		F01C7DFE1AFB983300FC2F59 /* callend.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = callend.mp3; sourceTree = "<group>"; };
+		F01C7DFF1AFB983300FC2F59 /* message.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = message.mp3; sourceTree = "<group>"; };
+		F01C7E001AFB983300FC2F59 /* ring.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ring.mp3; sourceTree = "<group>"; };
+		F01C7E011AFB983300FC2F59 /* ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ringback.mp3; sourceTree = "<group>"; };
 		F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomViewController.xib; sourceTree = "<group>"; };
 		F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomMemberListViewController.h; sourceTree = "<group>"; };
 		F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomMemberListViewController.m; sourceTree = "<group>"; };
@@ -349,6 +376,9 @@
 				F06E767E1AF0FEB100980E5A /* MXKAuthenticationViewController.h */,
 				F06E767F1AF0FEB100980E5A /* MXKAuthenticationViewController.m */,
 				F06E76801AF0FEB100980E5A /* MXKAuthenticationViewController.xib */,
+				F01C7DF71AFB6BF900FC2F59 /* MXKCallViewController.h */,
+				F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */,
+				F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */,
 				32CEE2201AB1E37600F7C74D /* MXKRecentListViewController.h */,
 				32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */,
 				F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */,
@@ -485,6 +515,18 @@
 			path = RoomInputToolbar;
 			sourceTree = "<group>";
 		};
+		F01C7DFC1AFB983300FC2F59 /* sounds */ = {
+			isa = PBXGroup;
+			children = (
+				F01C7DFD1AFB983300FC2F59 /* busy.mp3 */,
+				F01C7DFE1AFB983300FC2F59 /* callend.mp3 */,
+				F01C7DFF1AFB983300FC2F59 /* message.mp3 */,
+				F01C7E001AFB983300FC2F59 /* ring.mp3 */,
+				F01C7E011AFB983300FC2F59 /* ringback.mp3 */,
+			);
+			path = sounds;
+			sourceTree = "<group>";
+		};
 		F05FB1721AD5129500DC0647 /* RoomMemberList */ = {
 			isa = PBXGroup;
 			children = (
@@ -567,6 +609,13 @@
 		F09E28921AC2007000C51E44 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F01C7DFC1AFB983300FC2F59 /* sounds */,
+				F01C7DEB1AFB6BEA00FC2F59 /* icon_backtoapp.png */,
+				F01C7DEC1AFB6BEA00FC2F59 /* icon_backtoapp@2x.png */,
+				F01C7DED1AFB6BEA00FC2F59 /* icon_mute.png */,
+				F01C7DEE1AFB6BEA00FC2F59 /* icon_mute@2x.png */,
+				F01C7DEF1AFB6BEA00FC2F59 /* icon_speaker.png */,
+				F01C7DF01AFB6BEA00FC2F59 /* icon_speaker@2x.png */,
 				321313C01AEFB52900A9B035 /* bubble_ios_messages_right.png */,
 				321313C11AEFB52900A9B035 /* bubble_ios_messages_right@2x.png */,
 				F09E28931AC2007000C51E44 /* default-profile.png */,
@@ -714,15 +763,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				F07D74AE1AC5A36B00D83B98 /* MXKEventDetailsView.xib in Resources */,
+				F01C7DFB1AFB6BF900FC2F59 /* MXKCallViewController.xib in Resources */,
 				F09E28A11AC2007000C51E44 /* icon_users@2x.png in Resources */,
 				F06E76961AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.xib in Resources */,
 				F09E289E1AC2007000C51E44 /* icon_search.png in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				F0CE56E91AA8BB5E003BE77A /* Info.plist in Resources */,
 				F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */,
+				F01C7DF61AFB6BEA00FC2F59 /* icon_speaker@2x.png in Resources */,
 				F09E289F1AC2007000C51E44 /* icon_search@2x.png in Resources */,
 				F06E76821AF0FEB100980E5A /* MXKAuthenticationViewController.xib in Resources */,
+				F01C7DF31AFB6BEA00FC2F59 /* icon_mute.png in Resources */,
 				327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */,
+				F01C7DF41AFB6BEA00FC2F59 /* icon_mute@2x.png in Resources */,
 				F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */,
 				321313C41AEFB52900A9B035 /* bubble_ios_messages_right@2x.png in Resources */,
 				F09E289D1AC2007000C51E44 /* icon_keyboard@2x.png in Resources */,
@@ -733,13 +786,21 @@
 				F0CE56E81AA8BB5E003BE77A /* Images.xcassets in Resources */,
 				F09E28A01AC2007000C51E44 /* icon_users.png in Resources */,
 				F05FB1821AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib in Resources */,
+				F01C7DF51AFB6BEA00FC2F59 /* icon_speaker.png in Resources */,
+				F01C7E041AFB983300FC2F59 /* message.mp3 in Resources */,
 				F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */,
 				F06E76981AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.xib in Resources */,
 				F09E289C1AC2007000C51E44 /* icon_keyboard.png in Resources */,
+				F01C7E031AFB983300FC2F59 /* callend.mp3 in Resources */,
 				321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */,
 				F06E767D1AF0FE9500980E5A /* logoHighRes.png in Resources */,
 				F09E289B1AC2007000C51E44 /* default-profile.png in Resources */,
+				F01C7E021AFB983300FC2F59 /* busy.mp3 in Resources */,
+				F01C7DF11AFB6BEA00FC2F59 /* icon_backtoapp.png in Resources */,
 				F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */,
+				F01C7E051AFB983300FC2F59 /* ring.mp3 in Resources */,
+				F01C7DF21AFB6BEA00FC2F59 /* icon_backtoapp@2x.png in Resources */,
+				F01C7E061AFB983300FC2F59 /* ringback.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,6 +864,7 @@
 				F07E18171ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m in Sources */,
 				F05FB17C1AD5131300DC0647 /* MXKRoomMemberListDataSource.m in Sources */,
 				F0EA4CB41ADD6E98007197D2 /* MXKAppSettings.m in Sources */,
+				F01C7DFA1AFB6BF900FC2F59 /* MXKCallViewController.m in Sources */,
 				F0F148C31AB31237005F5D4A /* MXKMediaManager.m in Sources */,
 				321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */,
 				329CF77B1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m in Sources */,
