@@ -27,8 +27,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @interface MXKCallViewController () {
     
-    NSDate *callStartTime;
-    
     AVAudioPlayer *audioPlayer;
     
     NSTimer *vibrateTimer;
@@ -86,6 +84,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     self.peer = _peer;
     
     updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTimeStatusLabel) userInfo:nil repeats:YES];
+    
+    // TODO: handle speaker and mute options
+    speakerButton.hidden = YES;
+    muteButton.hidden = YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -111,6 +113,17 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerWillAppearNotification object:nil];
     
     [self showOverlayContainer:YES];
+    
+    if (mxCall) {
+        // Refresh call status
+        [self call:mxCall stateDidChange:mxCall.state reason:nil];
+    }
+    
+    if (_delegate) {
+        backToAppButton.hidden = NO;
+    } else {
+        backToAppButton.hidden = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -159,6 +172,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         if (call.isVideoCall) {
             localPreviewActivityView.hidden = NO;
             remotePreviewContainerView.hidden = NO;
+            
+            call.selfVideoView = localPreviewActivityView;
+            call.remoteVideoView = remotePreviewContainerView;
         }
         else {
             localPreviewActivityView.hidden = YES;
@@ -229,6 +245,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
+- (void)setDelegate:(id<MXKCallViewControllerDelegate>)delegate {
+    _delegate = delegate;
+    
+    if (_delegate) {
+        backToAppButton.hidden = NO;
+    } else {
+        backToAppButton.hidden = YES;
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)onButtonPressed:(id)sender {
@@ -242,7 +268,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     } else if (sender == speakerButton) {
         // TODO
     } else if (sender == backToAppButton) {
-        // TODO
+        if (_delegate) {
+            // Dismiss the view controller whereas the call is still running
+            [_delegate dismissCallViewController:self];
+        }
     }
 }
 
@@ -253,7 +282,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     switch (state) {
         case MXCallStateFledgling:
             self.isRinging = NO;
-            self.callStatusLabel.text = nil;
+            callStatusLabel.text = nil;
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
@@ -263,29 +292,30 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateInviteSent:
         case MXCallStateRinging:
             self.isRinging = YES;
-            self.callStatusLabel.text = @"Calling";
+            callStatusLabel.text = @"Calling";
             break;
         case MXCallStateCreateAnswer:
         case MXCallStateConnecting:
             self.isRinging = NO;
-            self.callStatusLabel.text = @"Call Connecting";
+            callStatusLabel.text = @"Call Connecting";
             break;
         case MXCallStateConnected:
             self.isRinging = NO;
-            if (!callStartTime) {
-                callStartTime = [[NSDate alloc] init];
-            }
             [self updateTimeStatusLabel];
             break;
         case MXCallStateEnded: {
             self.isRinging = NO;
-            callStartTime = nil;
-            self.callStatusLabel.text = @"Call Ended";
+            callStatusLabel.text = @"Call Ended";
             
-            // Auto dismiss after few seconds
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self dismissViewControllerAnimated:YES completion:nil];
-            });
+            if (_delegate) {
+                [_delegate dismissCallViewController:self];
+            } else {
+                // Auto dismiss after few seconds
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                });
+            }
+            
             break;
         }
         default:
@@ -331,11 +361,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 - (void)updateTimeStatusLabel {
     
     if (mxCall.state == MXCallStateConnected) {
-        NSTimeInterval interval = -[callStartTime timeIntervalSinceNow];
-        NSUInteger int_interval = (NSUInteger)interval;
-        NSUInteger secs = int_interval % 60;
-        NSUInteger mins = (int_interval - secs) / 60;
-        self.callStatusLabel.text = [NSString stringWithFormat:@"%02tu:%02tu", mins, secs];
+        NSUInteger duration = mxCall.duration / 1000;
+        NSUInteger secs = duration % 60;
+        NSUInteger mins = (duration - secs) / 60;
+        callStatusLabel.text = [NSString stringWithFormat:@"%02tu:%02tu", mins, secs];
     }
 }
 

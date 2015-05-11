@@ -21,6 +21,22 @@
 
 #import "MXKImageView.h"
 
+@class MXKCallViewController;
+
+/**
+ Delegate for `MXKCallViewController` object
+ */
+@protocol MXKCallViewControllerDelegate <NSObject>
+
+/**
+ Tells the delegate to dismiss the call view controller.
+ This callback is called when the user wants to go back into the app during a call or when the call is ended.
+ The delegate should check the state of the associated call to know the actual reason.
+ */
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController;
+
+@end
+
 extern NSString *const kMXKCallViewControllerWillAppearNotification;
 extern NSString *const kMXKCallViewControllerAppearedNotification;
 extern NSString *const kMXKCallViewControllerWillDisappearNotification;
@@ -57,6 +73,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (nonatomic, readonly) UIWindow* backToAppStatusWindow;
 
 @property (nonatomic, readonly) MXCall *mxCall;
+
+/**
+ The delegate.
+ */
+@property (nonatomic, weak) id<MXKCallViewControllerDelegate> delegate;
 
 #pragma mark - Class methods
 

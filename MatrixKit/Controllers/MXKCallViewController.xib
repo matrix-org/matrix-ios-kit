@@ -98,7 +98,7 @@
                             </constraints>
                         </view>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nff-fB-sTq" userLabel="BackToApp">
-                            <rect key="frame" x="10" y="10" width="80" height="50"/>
+                            <rect key="frame" x="5" y="15" width="80" height="50"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="50" id="U4K-iA-Ca2"/>
@@ -235,14 +235,14 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="nk9-Un-LVP" firstAttribute="leading" secondItem="JAR-tn-sGN" secondAttribute="leading" id="9wq-Y2-kZa"/>
-                        <constraint firstItem="nff-fB-sTq" firstAttribute="top" secondItem="JAR-tn-sGN" secondAttribute="top" constant="10" id="C4F-59-09O"/>
+                        <constraint firstItem="nff-fB-sTq" firstAttribute="top" secondItem="JAR-tn-sGN" secondAttribute="top" constant="15" id="C4F-59-09O"/>
                         <constraint firstItem="W2P-Hy-nV2" firstAttribute="leading" secondItem="JAR-tn-sGN" secondAttribute="leading" id="Dow-OM-vNZ"/>
                         <constraint firstItem="4h9-hF-BH8" firstAttribute="leading" secondItem="JAR-tn-sGN" secondAttribute="leading" id="Foo-x4-bMq"/>
                         <constraint firstItem="nk9-Un-LVP" firstAttribute="top" secondItem="W2P-Hy-nV2" secondAttribute="bottom" constant="30" id="NRK-rN-4S3"/>
                         <constraint firstAttribute="trailing" secondItem="W2P-Hy-nV2" secondAttribute="trailing" id="hPw-CT-hcl"/>
                         <constraint firstAttribute="trailing" secondItem="4h9-hF-BH8" secondAttribute="trailing" id="hi7-v3-bw5"/>
                         <constraint firstAttribute="bottom" secondItem="4h9-hF-BH8" secondAttribute="bottom" constant="15" id="hkd-BJ-xRf"/>
-                        <constraint firstItem="nff-fB-sTq" firstAttribute="leading" secondItem="JAR-tn-sGN" secondAttribute="leading" constant="10" id="ubP-7v-uDn"/>
+                        <constraint firstItem="nff-fB-sTq" firstAttribute="leading" secondItem="JAR-tn-sGN" secondAttribute="leading" constant="5" id="ubP-7v-uDn"/>
                         <constraint firstAttribute="trailing" secondItem="nk9-Un-LVP" secondAttribute="trailing" id="yES-yI-i3m"/>
                         <constraint firstItem="W2P-Hy-nV2" firstAttribute="top" secondItem="JAR-tn-sGN" secondAttribute="top" constant="40" id="yj4-Vr-mIA"/>
                     </constraints>
@@ -265,7 +265,6 @@
                 <constraint firstItem="JAR-tn-sGN" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="pei-Ab-VHX"/>
                 <constraint firstAttribute="trailing" secondItem="Tjb-57-yB1" secondAttribute="trailing" id="rXn-dm-69F"/>
             </constraints>
-            <nil key="simulatedStatusBarMetrics"/>
         </view>
     </objects>
     <resources>
