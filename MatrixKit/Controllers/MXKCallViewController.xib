@@ -81,7 +81,7 @@
                             </connections>
                         </button>
                         <view opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nk9-Un-LVP" userLabel="Call Control Container View">
-                            <rect key="frame" x="0.0" y="250" width="600" height="60"/>
+                            <rect key="frame" x="0.0" y="260" width="600" height="60"/>
                             <subviews>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxP-zM-kfT" userLabel="Mute">
                                     <rect key="frame" x="15" y="0.0" width="270" height="60"/>
@@ -194,16 +194,16 @@
                             </constraints>
                         </view>
                         <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W2P-Hy-nV2" userLabel="Call Container View">
-                            <rect key="frame" x="0.0" y="40" width="600" height="180"/>
+                            <rect key="frame" x="0.0" y="40" width="600" height="190"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Name" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="IW8-8P-mS3" userLabel="Caller Name Label">
-                                    <rect key="frame" x="0.0" y="130" width="600" height="32"/>
+                                    <rect key="frame" x="0.0" y="134" width="600" height="32"/>
                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="27"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Ringing" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="29y-MK-OWH" userLabel="Call Satus Label">
-                                    <rect key="frame" x="0.0" y="162" width="600" height="15"/>
+                                    <rect key="frame" x="0.0" y="171" width="600" height="15"/>
                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
@@ -219,14 +219,13 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
-                                <constraint firstAttribute="bottom" secondItem="ImL-3N-2CJ" secondAttribute="bottom" constant="51" id="5aZ-P4-49U"/>
                                 <constraint firstItem="ImL-3N-2CJ" firstAttribute="top" secondItem="W2P-Hy-nV2" secondAttribute="top" constant="25" id="LYw-15-z57"/>
                                 <constraint firstAttribute="trailing" secondItem="IW8-8P-mS3" secondAttribute="trailing" id="PsD-gD-a0S"/>
                                 <constraint firstAttribute="trailing" secondItem="29y-MK-OWH" secondAttribute="trailing" id="Uo1-tj-IFA"/>
                                 <constraint firstAttribute="centerX" secondItem="ImL-3N-2CJ" secondAttribute="centerX" id="XTc-Dz-fC7"/>
-                                <constraint firstAttribute="height" constant="180" id="ZLw-UO-oa4"/>
-                                <constraint firstItem="IW8-8P-mS3" firstAttribute="bottom" secondItem="29y-MK-OWH" secondAttribute="top" id="af8-pz-JKx"/>
-                                <constraint firstItem="IW8-8P-mS3" firstAttribute="top" secondItem="ImL-3N-2CJ" secondAttribute="bottom" constant="1" id="b1K-8G-BZc"/>
+                                <constraint firstAttribute="height" constant="190" id="ZLw-UO-oa4"/>
+                                <constraint firstItem="29y-MK-OWH" firstAttribute="top" secondItem="IW8-8P-mS3" secondAttribute="bottom" constant="5" id="af8-pz-JKx"/>
+                                <constraint firstItem="IW8-8P-mS3" firstAttribute="top" secondItem="ImL-3N-2CJ" secondAttribute="bottom" constant="5" id="b1K-8G-BZc"/>
                                 <constraint firstItem="29y-MK-OWH" firstAttribute="leading" secondItem="W2P-Hy-nV2" secondAttribute="leading" id="cOy-mL-qOS"/>
                                 <constraint firstItem="IW8-8P-mS3" firstAttribute="leading" secondItem="W2P-Hy-nV2" secondAttribute="leading" id="peb-77-Gi5"/>
                             </constraints>
