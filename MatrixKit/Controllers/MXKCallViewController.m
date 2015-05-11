@@ -88,6 +88,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     // TODO: handle speaker and mute options
     speakerButton.hidden = YES;
     muteButton.hidden = YES;
+
+    // Refresh call information
+    self.mxCall = mxCall;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -163,21 +166,37 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (call.room) {
         self.mxSession = call.room.mxSession;
         
-        self.peer = [self.mxSession userWithUserId:call.callerId];
+        // Handle peer here
+        if (call.isIncoming) {
+            self.peer = [self.mxSession userWithUserId:call.callerId];
+        } else {
+            // Only one-to-one room are supported.
+            // TODO: Handle conference call
+            NSArray *members = call.room.state.members;
+            if (members.count == 2) {
+                for (MXUser *member in members) {
+                    if (![member.userId isEqualToString:call.callerId]) {
+                        self.peer = member;
+                        break;
+                    }
+                }
+            }
+        }
+        
         
         // Observe call state change
         call.delegate = self;
         [self call:call stateDidChange:call.state reason:nil];
         
         if (call.isVideoCall) {
-            localPreviewActivityView.hidden = NO;
+            localPreviewContainerView.hidden = NO;
             remotePreviewContainerView.hidden = NO;
             
-            call.selfVideoView = localPreviewActivityView;
+            call.selfVideoView = localPreviewContainerView;
             call.remoteVideoView = remotePreviewContainerView;
         }
         else {
-            localPreviewActivityView.hidden = YES;
+            localPreviewContainerView.hidden = YES;
             remotePreviewContainerView.hidden = YES;
         }
     }
@@ -279,6 +298,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)call:(MXCall *)call stateDidChange:(MXCallState)state reason:(MXEvent *)event {
     
+    // Set default configuration of bottom bar
+    endCallButton.hidden = NO;
+    rejectCallButton.hidden = YES;
+    answerCallButton.hidden = YES;
+    
+    [localPreviewActivityView stopAnimating];
+    
     switch (state) {
         case MXCallStateFledgling:
             self.isRinging = NO;
@@ -290,9 +316,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             break;
         case MXCallStateCreateOffer:
         case MXCallStateInviteSent:
-        case MXCallStateRinging:
             self.isRinging = YES;
             callStatusLabel.text = @"Calling";
+            break;
+        case MXCallStateRinging:
+            self.isRinging = YES;
+            if (call.isVideoCall) {
+                callStatusLabel.text = @"Incoming Video Call";
+            } else {
+                callStatusLabel.text = @"Incoming Voice Call";
+            }
+            // Update bottom bar
+            endCallButton.hidden = YES;
+            rejectCallButton.hidden = NO;
+            answerCallButton.hidden = NO;
             break;
         case MXCallStateCreateAnswer:
         case MXCallStateConnecting:

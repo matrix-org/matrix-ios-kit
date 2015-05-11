@@ -92,10 +92,10 @@
         presentedCallViewController.delegate = self;
         
         UINavigationController *navigationController = self.navigationController;
-        [navigationController.topViewController presentViewController:presentedCallViewController animated:YES completion:^{
-            // Hide system status bar
-            [UIApplication sharedApplication].statusBarHidden = YES;
-        }];
+        [navigationController.topViewController presentViewController:presentedCallViewController animated:YES completion:nil];
+        
+        // Hide system status bar
+        [UIApplication sharedApplication].statusBarHidden = YES;
     }];
     
     // Check whether some accounts are availables
@@ -327,14 +327,14 @@
     [self dismissViewControllerAnimated:YES completion:^{
         if (!callIsEnded) {
             [self addCallStatusBar];
-        } else {
-            // Restore system status bar
-            [UIApplication sharedApplication].statusBarHidden = NO;
         }
     }];
     
     if (callIsEnded) {
         [self removeCallStatusBar];
+        
+        // Restore system status bar
+        [UIApplication sharedApplication].statusBarHidden = NO;
         
         // Release properly
         presentedCallViewController.mxCall.delegate = nil;
