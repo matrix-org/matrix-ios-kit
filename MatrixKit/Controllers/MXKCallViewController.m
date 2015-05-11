@@ -154,7 +154,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // Observe call state change
         call.delegate = self;
-        [self call:call stateDidChange:call.state];
+        [self call:call stateDidChange:call.state reason:nil];
         
         if (call.isVideoCall) {
             localPreviewActivityView.hidden = NO;
@@ -248,7 +248,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - MXCallDelegate
 
-- (void)call:(MXCall *)call stateDidChange:(MXCallState)state {
+- (void)call:(MXCall *)call stateDidChange:(MXCallState)state reason:(MXEvent *)event {
     
     switch (state) {
         case MXCallStateFledgling:
