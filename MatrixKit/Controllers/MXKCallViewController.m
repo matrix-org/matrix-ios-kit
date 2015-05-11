@@ -344,6 +344,21 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = NO;
             callStatusLabel.text = @"Call Ended";
             
+            if (audioPlayer) {
+                [audioPlayer stop];
+            }
+            
+            NSError* error = nil;
+            NSURL *audioUrl;
+            audioUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"callend" ofType:@"mp3"]];
+            audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
+            if (error) {
+                NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
+            }
+            
+            audioPlayer.numberOfLoops = 0;
+            [audioPlayer play];
+            
             if (_delegate) {
                 [_delegate dismissCallViewController:self];
             } else {
