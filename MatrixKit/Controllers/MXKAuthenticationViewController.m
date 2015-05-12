@@ -23,6 +23,8 @@
 
 #import "MXKAccountManager.h"
 
+NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
+
 @interface MXKAuthenticationViewController () {
     /**
      The matrix REST client used to make matrix API requests.
@@ -487,11 +489,11 @@
                                                }];
                 } else {
                     // FIXME
-                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:nil code:0 userInfo:@{@"error": @"Not supported yet"}]];
+                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
                 }
             } else {
                 // FIXME
-                [self onFailureDuringAuthRequest:[NSError errorWithDomain:nil code:0 userInfo:@{@"error": @"Not supported yet"}]];
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
             }
         }
     } else if (sender == _authSwitchButton){

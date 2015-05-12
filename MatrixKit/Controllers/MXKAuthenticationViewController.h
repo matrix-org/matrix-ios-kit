@@ -21,6 +21,8 @@
 #import "MXKAuthInputsView.h"
 #import "MXKRegistrationWebView.h"
 
+extern NSString *const MXKAuthErrorDomain;
+
 @class MXKAuthenticationViewController;
 
 /**
