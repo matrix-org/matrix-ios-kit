@@ -87,7 +87,7 @@
     callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         // Ignore the call if a call is already in progress
-        if (currentCallViewController) {
+        if (!currentCallViewController) {
             MXCall *mxCall = (MXCall*)notif.object;
             
             currentCallViewController = [MXKCallViewController callViewController:mxCall];
