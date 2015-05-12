@@ -359,6 +359,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = NO;
             [self updateTimeStatusLabel];
             break;
+        case MXCallStateInviteExpired:
+            // MXCallStateInviteExpired state is sent as an notification
+            // MXCall will move quickly to the MXCallStateEnded state
+            callStatusLabel.text = @"Call Invite Expired";
+            break;
         case MXCallStateEnded: {
             self.isRinging = NO;
             callStatusLabel.text = @"Call Ended";
