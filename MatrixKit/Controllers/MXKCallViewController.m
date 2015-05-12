@@ -221,6 +221,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (peer) {
         // Display caller info
         callerNameLabel.text = [peer displayname];
+        if (!callerNameLabel.text.length) {
+            callerNameLabel.text = peer.userId;
+        }
         
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
         NSString *avatarThumbURL = [self.mxSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
