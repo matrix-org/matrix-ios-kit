@@ -41,7 +41,7 @@
     /**
      The current call view controller (if any).
      */
-    MXKCallViewController *presentedCallViewController;
+    MXKCallViewController *currentCallViewController;
     
     /**
      Call status window displayed when user goes back to app during a call.
@@ -86,16 +86,21 @@
     // Register call observer in order to handle new opened session
     callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
-        MXCall *mxCall = (MXCall*)notif.object;
-        
-        presentedCallViewController = [MXKCallViewController callViewController:mxCall];
-        presentedCallViewController.delegate = self;
-        
-        UINavigationController *navigationController = self.navigationController;
-        [navigationController.topViewController presentViewController:presentedCallViewController animated:YES completion:nil];
-        
-        // Hide system status bar
-        [UIApplication sharedApplication].statusBarHidden = YES;
+        // Ignore the call if a call is already in progress
+        if (currentCallViewController) {
+            MXCall *mxCall = (MXCall*)notif.object;
+            
+            currentCallViewController = [MXKCallViewController callViewController:mxCall];
+            currentCallViewController.delegate = self;
+            
+            UINavigationController *navigationController = self.navigationController;
+            [navigationController.topViewController presentViewController:currentCallViewController animated:YES completion:^{
+                currentCallViewController.isPresented = YES;
+            }];
+            
+            // Hide system status bar
+            [UIApplication sharedApplication].statusBarHidden = YES;
+        }
     }];
     
     // Check whether some accounts are availables
@@ -105,10 +110,6 @@
         // Ask for a matrix account first
         [self performSegueWithIdentifier:@"showAuthenticationViewController" sender:self];
     }
-
-    // Test code for directly opening a VC
-    //roomId = @"!vfFxDRtZSSdspfTSEr:matrix.org";
-    //[self performSegueWithIdentifier:@"showSampleRoomViewController" sender:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -140,6 +141,20 @@
     MXFileStore *mxFileStore = [[MXFileStore alloc] init];
     [account openSessionWithStore:mxFileStore];
 }
+
+// Test code for directly opening a Room VC
+//- (void)didMatrixSessionStateChange {
+//    
+//    [super didMatrixSessionStateChange];
+//    
+//    if (self.mxSession.state == MXKDataSourceStateReady) {
+//        // Test code for directly opening a VC
+//        NSString *roomId = @"!xxx";
+//        selectedRoom = [self.mxSession roomWithRoomId:roomId];
+//        [self performSegueWithIdentifier:@"showSampleRoomViewController" sender:self];
+//    }
+//    
+//}
 
 
 #pragma mark - Table View Data Source
@@ -321,25 +336,38 @@
 
 - (void)dismissCallViewController:(MXKCallViewController *)callViewController {
     
-    BOOL callIsEnded = (callViewController.mxCall.state == MXCallStateEnded);
-    NSLog(@"Call view controller must be dismissed (%d)", callIsEnded);
-    
-    [self dismissViewControllerAnimated:YES completion:^{
-        if (!callIsEnded) {
-            [self addCallStatusBar];
+    if (callViewController == currentCallViewController) {
+        
+        if (callViewController.isPresented) {
+            BOOL callIsEnded = (callViewController.mxCall.state == MXCallStateEnded);
+            NSLog(@"Call view controller must be dismissed (%d)", callIsEnded);
+            
+            [callViewController dismissViewControllerAnimated:YES completion:^{
+                callViewController.isPresented = NO;
+                
+                if (!callIsEnded) {
+                    [self addCallStatusBar];
+                }
+            }];
+            
+            if (callIsEnded) {
+                [self removeCallStatusBar];
+                
+                // Restore system status bar
+                [UIApplication sharedApplication].statusBarHidden = NO;
+                
+                // Release properly
+                currentCallViewController.mxCall.delegate = nil;
+                currentCallViewController.delegate = nil;
+                currentCallViewController = nil;
+            }
+        } else {
+            // Here the presentation of the call view controller is in progress
+            // Postpone the dismiss
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self dismissCallViewController:callViewController];
+            });
         }
-    }];
-    
-    if (callIsEnded) {
-        [self removeCallStatusBar];
-        
-        // Restore system status bar
-        [UIApplication sharedApplication].statusBarHidden = NO;
-        
-        // Release properly
-        presentedCallViewController.mxCall.delegate = nil;
-        presentedCallViewController.delegate = nil;
-        presentedCallViewController = nil;
     }
 }
 
@@ -400,7 +428,9 @@
     [self removeCallStatusBar];
     
     UINavigationController *navigationController = self.navigationController;
-    [navigationController.topViewController presentViewController:presentedCallViewController animated:YES completion:nil];
+    [navigationController.topViewController presentViewController:currentCallViewController animated:YES completion:^{
+        currentCallViewController.isPresented = YES;
+    }];
 }
 
 - (void)statusBarDidChangeFrame {

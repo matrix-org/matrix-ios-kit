@@ -157,6 +157,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerDisappearedNotification object:nil];
 }
 
+- (void)dismiss {
+    
+    if (_delegate) {
+        [_delegate dismissCallViewController:self];
+    } else {
+        // Auto dismiss after few seconds
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self dismissViewControllerAnimated:YES completion:nil];
+        });
+    }
+}
+
 #pragma mark - Properties
 
 - (void)setMxCall:(MXCall *)call {
@@ -281,7 +293,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (sender == answerCallButton) {
         [mxCall answer];
     } else if (sender == rejectCallButton || sender == endCallButton) {
-        [mxCall hangup];
+        if (mxCall.state != MXCallStateEnded) {
+            [mxCall hangup];
+        } else {
+            [self dismiss];
+        }
     } else if (sender == muteButton) {
         // TODO
     } else if (sender == speakerButton) {
@@ -359,14 +375,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             audioPlayer.numberOfLoops = 0;
             [audioPlayer play];
             
-            if (_delegate) {
-                [_delegate dismissCallViewController:self];
-            } else {
-                // Auto dismiss after few seconds
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                });
-            }
+            [self dismiss];
             
             break;
         }

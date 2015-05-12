@@ -75,6 +75,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (nonatomic, readonly) MXCall *mxCall;
 
 /**
+ YES when the presentation of the view controller is complete.
+ */
+@property (nonatomic) BOOL isPresented;
+
+/**
  The delegate.
  */
 @property (nonatomic, weak) id<MXKCallViewControllerDelegate> delegate;
