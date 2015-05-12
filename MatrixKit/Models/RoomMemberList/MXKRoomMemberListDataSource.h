@@ -28,7 +28,7 @@
 extern NSString *const kMXKRoomMemberCellIdentifier;
 
 /**
- The data source for `MXKRoomMembersViewController`.
+ The data source for `MXKRoomMemberListViewController`.
  */
 @interface MXKRoomMemberListDataSource : MXKDataSource <UITableViewDataSource> {
 

@@ -21,14 +21,47 @@
 
 #import "MXKCellRendering.h"
 
+#import "MXUser.h"
+
 /**
- `MXKRoomMemberTableViewCell` instances display a room in the context of the recents list.
+ `MXKRoomMemberTableViewCell` instances display a user in the context of the room member list.
  */
-@interface MXKRoomMemberTableViewCell : UITableViewCell <MXKCellRendering>
+@interface MXKRoomMemberTableViewCell : UITableViewCell <MXKCellRendering> {
+
+@protected
+    /**
+     Timer used to update presence information
+     */
+    NSTimer* presenceTimer;
+    
+    /**
+     */
+    MXSession *mxSession;
+    
+    /**
+     */
+    NSString *memberId;
+}
 
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UILabel *userLabel;
 @property (weak, nonatomic) IBOutlet UIView *powerContainer;
 @property (weak, nonatomic) IBOutlet UIImageView *typingBadge;
+
+/**
+ Describe matrix user's presence by taking into account his presence and his last activity date.
+ 
+ @param user a matrix user.
+ @return a string which described user's presence.
+ */
+- (NSString*)getLastPresenceText:(MXUser*)user;
+
+/**
+ Get the color code related to a specific presence.
+ 
+ @param presence
+ @return color defined for the provided presence (nil if no color is defined).
+ */
+- (UIColor*)presenceColor:(MXPresence)presence;
 
 @end

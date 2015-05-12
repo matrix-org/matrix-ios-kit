@@ -14,25 +14,11 @@
  limitations under the License.
  */
 
-#import "MXKSampleRoomMembersViewController.h"
+#import "MatrixKit.h"
 
-@interface MXKSampleRoomMembersViewController ()
-
-@end
-
-@implementation MXKSampleRoomMembersViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    // Turn off optional navigation bar items
-    self.enableMemberInvitation = NO;
-    self.enableMemberSearch = NO;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+/**
+ `MXKSampleRoomMemberTableViewCell` instances display a room member.
+ */
+@interface MXKSampleRoomMemberTableViewCell : MXKRoomMemberTableViewCell
 
 @end

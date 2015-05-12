@@ -8,7 +8,7 @@
         <!--SampleRoomViewController-->
         <scene sceneID="Thv-pf-Y4Q">
             <objects>
-                <viewController id="XgL-bX-RPC" userLabel="SampleRoomViewController" customClass="MXKSampleRoomViewController" sceneMemberID="viewController">
+                <viewController id="XgL-bX-RPC" userLabel="SampleRoomViewController" customClass="MXKRoomViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ljq-dh-3mb"/>
                         <viewControllerLayoutGuide type="bottom" id="2Xp-md-gUg"/>
@@ -76,7 +76,15 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pHi-Cd-dr1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-850" y="-570"/>
+            <point key="canvasLocation" x="-190" y="-570"/>
+        </scene>
+        <!--Room Member List View Controller-->
+        <scene sceneID="xB0-2j-NkM">
+            <objects>
+                <tableViewController id="Wgg-iS-db1" customClass="MXKRoomMemberListViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9dj-xn-UZM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-858" y="-570"/>
         </scene>
         <!--Authentication View Controller-->
         <scene sceneID="peW-WS-Ln9">
@@ -111,7 +119,7 @@
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please select a room" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dk3-ey-9cK" userLabel="room title">
                                     <rect key="frame" x="8" y="11" width="159" height="21"/>
                                     <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
-                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I8v-5h-rrZ">
@@ -127,7 +135,7 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstItem="I8v-5h-rrZ" firstAttribute="top" secondItem="g7F-zA-9eD" secondAttribute="top" constant="6" id="D31-MI-BPR"/>
                                 <constraint firstAttribute="trailing" secondItem="I8v-5h-rrZ" secondAttribute="trailing" constant="8" id="Ubd-fv-hwR"/>
@@ -139,15 +147,30 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SampleMainTableViewCell" textLabel="kKE-Ks-Tkj" style="IBUITableViewCellStyleDefault" id="LDf-Nb-Cy6">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="mainTableViewCellSampleVC" textLabel="kKE-Ks-Tkj" style="IBUITableViewCellStyleDefault" id="LDf-Nb-Cy6">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LDf-Nb-Cy6" id="LAe-MX-BrZ">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kKE-Ks-Tkj">
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="mainTableViewCellAction" textLabel="8WO-Fx-GSE" style="IBUITableViewCellStyleDefault" id="bQb-CH-pka">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bQb-CH-pka" id="Z5z-LM-nJJ">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Action" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8WO-Fx-GSE">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                            <color key="textColor" red="0.22481874389132883" green="0.40248149657007426" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -163,10 +186,11 @@
                     <connections>
                         <outlet property="selectedRoomDisplayName" destination="dk3-ey-9cK" id="5Eh-OY-HYM"/>
                         <outlet property="tableView" destination="a3F-qI-Vdh" id="VyL-gx-Ge0"/>
-                        <segue destination="XgL-bX-RPC" kind="show" identifier="showSampleRoomViewController" id="xhv-fW-ZTq"/>
+                        <segue destination="XgL-bX-RPC" kind="show" identifier="showMXKRoomViewController" id="xhv-fW-ZTq"/>
                         <segue destination="aaK-R6-eRn" kind="show" identifier="showSampleJSQMessagesViewController" id="mwb-xA-dOT"/>
                         <segue destination="QAG-34-oEa" kind="show" identifier="showSampleRoomMembersViewController" id="f7u-wO-NGI"/>
-                        <segue destination="hza-rL-vB2" kind="show" identifier="showAuthenticationViewController" id="HSp-bf-C1Q"/>
+                        <segue destination="hza-rL-vB2" kind="show" identifier="showMXKAuthenticationViewController" id="HSp-bf-C1Q"/>
+                        <segue destination="Wgg-iS-db1" kind="show" identifier="showMXKRoomMemberListViewController" id="NPB-63-INS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -25,12 +25,8 @@
 @interface MXKRoomMemberTableViewCell () {
     
     NSRange lastSeenRange;
-    NSTimer* lastSeenTimer;
     
     MXKPieChartView* pieChartView;
-    
-    MXSession *mxSession;
-    NSString *memberId;
 }
 
 @end
@@ -58,9 +54,9 @@
     
     MXKRoomMemberCellData *memberCellData = (MXKRoomMemberCellData*)cellData;
     if (memberCellData) {
-        if (lastSeenTimer) {
-            [lastSeenTimer invalidate];
-            lastSeenTimer = nil;
+        if (presenceTimer) {
+            [presenceTimer invalidate];
+            presenceTimer = nil;
         }
         
         mxSession = memberCellData.mxSession;
@@ -115,12 +111,12 @@
                 MXUser *user = [mxSession userWithUserId:memberId];
                 // existing user ?
                 if (user) {
-                    thumbnailBorderColor = [self presenceRingColor:user.presence];
+                    thumbnailBorderColor = [self presenceColor:user.presence];
                     presenceText = [self getLastPresenceText:user];
                     if (presenceText) {
                         // Trigger a timer to update last seen information
                         lastSeenRange = NSMakeRange(self.userLabel.text.length + 2, presenceText.length);
-                        lastSeenTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
+                        presenceTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
                     }
                 }
             }
@@ -164,9 +160,9 @@
 }
 
 - (void)didEndDisplay {
-    if (lastSeenTimer) {
-        [lastSeenTimer invalidate];
-        lastSeenTimer = nil;
+    if (presenceTimer) {
+        [presenceTimer invalidate];
+        presenceTimer = nil;
     }
 }
 
@@ -231,9 +227,7 @@
     pieChartView.progress = progress;
 }
 
-// return the presence ring color
-// nil means there is no ring to display
-- (UIColor*)presenceRingColor:(MXPresence)presence {
+- (UIColor*)presenceColor:(MXPresence)presence {
     switch (presence) {
         case MXPresenceOnline:
             return [[MXKAppSettings standardAppSettings] presenceColorForOnlineUser];
@@ -250,8 +244,8 @@
 }
 
 - (void)updateLastSeen {
-    [lastSeenTimer invalidate];
-    lastSeenTimer = nil;
+    [presenceTimer invalidate];
+    presenceTimer = nil;
     
     // Get the user that corresponds to this member
     MXUser *user = [mxSession userWithUserId:memberId];
@@ -264,7 +258,7 @@
             [attributedText replaceCharactersInRange:lastSeenRange withString:presenceText];
             // Trigger a timer to update last seen information
             lastSeenRange.length = presenceText.length;
-            lastSeenTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
+            presenceTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
         } else {
             // remove presence info
             lastSeenRange.location -= 1;

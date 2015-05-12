@@ -42,6 +42,8 @@
 #import "MXKRoomBubbleCellData.h"
 #import "MXKRoomBubbleMergingMessagesCellData.h"
 
+#import "MXKRoomMemberTableViewCell.h"
+
 #import "MXKAccountManager.h"
 
 #import "MXK3PID.h"

@@ -95,6 +95,8 @@
 		F0CE56EA1AA8BB5E003BE77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E01AA8BB5E003BE77A /* main.m */; };
 		F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E21AA8BB5E003BE77A /* MXKSampleMainTableViewController.m */; };
 		F0CE56EC1AA8BB5E003BE77A /* MXKSampleRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */; };
+		F0DB1AC51B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F0DB1AC31B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m */; };
+		F0DB1AC61B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */; };
 		F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */; };
 		F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB01ADD6E5D007197D2 /* MXKAlert.m */; };
 		F0EA4CB41ADD6E98007197D2 /* MXKAppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */; };
@@ -262,6 +264,9 @@
 		F0CE56E21AA8BB5E003BE77A /* MXKSampleMainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleMainTableViewController.m; sourceTree = "<group>"; };
 		F0CE56E31AA8BB5E003BE77A /* MXKSampleRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomViewController.h; sourceTree = "<group>"; };
 		F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomViewController.m; sourceTree = "<group>"; };
+		F0DB1AC21B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomMemberTableViewCell.h; sourceTree = "<group>"; };
+		F0DB1AC31B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomMemberTableViewCell.m; sourceTree = "<group>"; };
+		F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKSampleRoomMemberTableViewCell.xib; sourceTree = "<group>"; };
 		F0E0CE691AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomMembersViewController.h; sourceTree = "<group>"; };
 		F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomMembersViewController.m; sourceTree = "<group>"; };
 		F0EA4CAF1ADD6E5D007197D2 /* MXKAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAlert.h; sourceTree = "<group>"; };
@@ -635,6 +640,7 @@
 			isa = PBXGroup;
 			children = (
 				F0F148A01AB08F48005F5D4A /* Models */,
+				F0DB1AC11B025D9400A3FA54 /* Views */,
 				F0CE56D81AA8BB5E003BE77A /* AppDelegate.h */,
 				F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */,
 				F0CE56DA1AA8BB5E003BE77A /* LaunchScreen.xib */,
@@ -654,6 +660,16 @@
 				F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */,
 			);
 			path = MatrixKitSample;
+			sourceTree = "<group>";
+		};
+		F0DB1AC11B025D9400A3FA54 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F0DB1AC21B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.h */,
+				F0DB1AC31B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m */,
+				F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		F0F148A01AB08F48005F5D4A /* Models */ = {
@@ -793,6 +809,7 @@
 				F09E289C1AC2007000C51E44 /* icon_keyboard.png in Resources */,
 				F01C7E031AFB983300FC2F59 /* callend.mp3 in Resources */,
 				321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */,
+				F0DB1AC61B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib in Resources */,
 				F06E767D1AF0FE9500980E5A /* logoHighRes.png in Resources */,
 				F09E289B1AC2007000C51E44 /* default-profile.png in Resources */,
 				F01C7E021AFB983300FC2F59 /* busy.mp3 in Resources */,
@@ -880,6 +897,7 @@
 				F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */,
 				F094EC671ABAC380006B8CE3 /* MXKViewController.m in Sources */,
 				F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */,
+				F0DB1AC51B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m in Sources */,
 				F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */,
 				328AC48F1AA86E110044A6FB /* MXKDataSource.m in Sources */,
 				F06E76951AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.m in Sources */,

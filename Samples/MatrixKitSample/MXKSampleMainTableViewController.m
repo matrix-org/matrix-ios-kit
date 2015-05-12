@@ -16,9 +16,11 @@
 
 #import "MXKSampleMainTableViewController.h"
 #import "MXKSampleRecentsViewController.h"
-#import "MXKSampleRoomViewController.h"
+//#import "MXKSampleRoomViewController.h"
 #import "MXKSampleJSQMessagesViewController.h"
 #import "MXKSampleRoomMembersViewController.h"
+
+#import "MXKSampleRoomMemberTableViewCell.h"
 
 #import <MatrixSDK/MXFileStore.h>
 
@@ -108,7 +110,7 @@
         [self launchMatrixSession];
     } else {
         // Ask for a matrix account first
-        [self performSegueWithIdentifier:@"showAuthenticationViewController" sender:self];
+        [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
     }
 }
 
@@ -142,6 +144,31 @@
     [account openSessionWithStore:mxFileStore];
 }
 
+- (void)logout {
+    
+    // Clear cache
+    [MXKMediaManager clearCache];
+    
+    // Reset all stored room data
+    NSArray *mxAccounts = [MXKAccountManager sharedManager].accounts;
+    for (MXKAccount *account in mxAccounts) {
+        if (account.mxSession) {
+            [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:account.mxSession];
+        }
+    }
+    
+    // Logout all matrix account
+    [[MXKAccountManager sharedManager] logout];
+    
+    // Reset
+    self.mxSession = nil;
+    selectedRoom = nil;
+    _selectedRoomDisplayName.text = nil;
+    
+    // Return in Authentication screen
+    [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
+}
+
 // Test code for directly opening a Room VC
 //- (void)didMatrixSessionStateChange {
 //    
@@ -151,11 +178,10 @@
 //        // Test code for directly opening a VC
 //        NSString *roomId = @"!xxx";
 //        selectedRoom = [self.mxSession roomWithRoomId:roomId];
-//        [self performSegueWithIdentifier:@"showSampleRoomViewController" sender:self];
+//        [self performSegueWithIdentifier:@"showMXKRoomViewController" sender:self];
 //    }
 //    
 //}
-
 
 #pragma mark - Table View Data Source
 
@@ -178,43 +204,60 @@
     if (section == roomSectionIndex) {
         return 2;
     } else if (section == roomMembersSectionIndex) {
-        return 1;
+        return 2;
     } else if (section == authenticationSectionIndex) {
-        return 1;
+        return 2;
     }
     return 0;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == roomSectionIndex) {
-        return @"Room samples:";
+        return @"Rooms:";
     } else if (section == roomMembersSectionIndex) {
-        return @"Room members samples:";
+        return @"Room members:";
     } else if (section == authenticationSectionIndex) {
-        return @"Authentication samples:";
+        return @"Authentication:";
     }
     return nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SampleMainTableViewCell" forIndexPath:indexPath];
+    UITableViewCell *cell;
 
     if (indexPath.section == roomSectionIndex) {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
         switch (indexPath.row) {
             case 0:
-                cell.textLabel.text = @"Default implementation";
+                cell.textLabel.text = @"MXKRoomViewController";
                 break;
             case 1:
-                cell.textLabel.text = @"Demo based on JSQMessagesViewController lib";
+                cell.textLabel.text = @"Sample based on JSQMessagesViewController lib";
                 break;
         }
     } else if (indexPath.section == roomMembersSectionIndex) {
-        cell.textLabel.text = @"Default implementation";
+        cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+        switch (indexPath.row) {
+            case 0:
+                cell.textLabel.text = @"MXKRoomMemberListViewController";
+                break;
+            case 1:
+                cell.textLabel.text = @"Sample with customized Table View Cell";
+                break;
+        }
     } else if (indexPath.section == authenticationSectionIndex) {
-        cell.textLabel.text = @"Default implementation";
+        switch (indexPath.row) {
+            case 0:
+                cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+                cell.textLabel.text = @"MXKAuthenticationViewController";
+                break;
+            case 1:
+                cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellAction" forIndexPath:indexPath];
+                cell.textLabel.text = @"Logout";
+                break;
+        }
+        
     }
-    
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     return cell;
 }
@@ -228,16 +271,30 @@
     if (indexPath.section == roomSectionIndex) {
         switch (indexPath.row) {
             case 0:
-                [self performSegueWithIdentifier:@"showSampleRoomViewController" sender:self];
+                [self performSegueWithIdentifier:@"showMXKRoomViewController" sender:self];
                 break;
             case 1:
                 [self performSegueWithIdentifier:@"showSampleJSQMessagesViewController" sender:self];
                 break;
         }
     } else if (indexPath.section == roomMembersSectionIndex) {
-        [self performSegueWithIdentifier:@"showSampleRoomMembersViewController" sender:self];
+        switch (indexPath.row) {
+            case 0:
+                [self performSegueWithIdentifier:@"showMXKRoomMemberListViewController" sender:self];
+                break;
+            case 1:
+                [self performSegueWithIdentifier:@"showSampleRoomMembersViewController" sender:self];
+                break;
+        }
     } else if (indexPath.section == authenticationSectionIndex) {
-        [self performSegueWithIdentifier:@"showAuthenticationViewController" sender:self];
+        switch (indexPath.row) {
+            case 0:
+                [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
+                break;
+            case 1:
+                [self logout];
+                break;
+        }
     }
 }
 
@@ -252,8 +309,8 @@
         MXKRecentListDataSource *listDataSource = [[MXKRecentListDataSource alloc] initWithMatrixSession:self.mxSession];
         [sampleRecentListViewController displayList:listDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showSampleRoomViewController"]) {
-        MXKSampleRoomViewController *sampleRoomViewController = (MXKSampleRoomViewController *)segue.destinationViewController;
+    else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"]) {
+        MXKRoomViewController *roomViewController = (MXKRoomViewController *)segue.destinationViewController;
 
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
@@ -264,7 +321,7 @@
              roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
         }
 
-        [sampleRoomViewController displayRoom:roomDataSource];
+        [roomViewController displayRoom:roomDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showSampleJSQMessagesViewController"]) {
         MXKSampleJSQMessagesViewController *sampleRoomViewController = (MXKSampleJSQMessagesViewController *)segue.destinationViewController;
@@ -285,14 +342,25 @@
 
         [sampleRoomViewController displayRoom:roomDataSource];
     }
+    else if ([segue.identifier isEqualToString:@"showMXKRoomMemberListViewController"]) {
+        MXKRoomMemberListViewController *roomMemberListViewController = (MXKRoomMemberListViewController *)segue.destinationViewController;
+        roomMemberListViewController.delegate = self;
+        
+        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
+        [roomMemberListViewController displayList:listDataSource];
+    }
     else if ([segue.identifier isEqualToString:@"showSampleRoomMembersViewController"]) {
         MXKSampleRoomMembersViewController *sampleRoomMemberListViewController = (MXKSampleRoomMembersViewController *)segue.destinationViewController;
         sampleRoomMemberListViewController.delegate = self;
         
         MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
+        
+        // Replace default table view cell with customized cell: `MXKSampleRoomMemberTableViewCell`
+        [listDataSource registerCellViewClass:MXKSampleRoomMemberTableViewCell.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
+        
         [sampleRoomMemberListViewController displayList:listDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showAuthenticationViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showMXKAuthenticationViewController"]) {
         MXKAuthenticationViewController *sampleAuthViewController = (MXKAuthenticationViewController *)segue.destinationViewController;
         sampleAuthViewController.delegate = self;
         sampleAuthViewController.defaultHomeServerUrl = @"https://matrix.org";
