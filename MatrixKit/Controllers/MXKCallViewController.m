@@ -36,17 +36,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     Boolean isMovingLocalPreview;
     Boolean isSelectingLocalPreview;
     
-    
     CGPoint startNewLocalMove;
 }
+
+@property (nonatomic) MXCall *mxCall;
 
 @property (nonatomic) MXUser *peer;
 
 @property (nonatomic, assign) Boolean isRinging;
 @property (nonatomic, assign) Boolean isSpeakerPhone;
 @property (nonatomic, assign) Boolean isMuted;
-
-@property (nonatomic) MXCall *mxCall;
 
 @end
 
@@ -98,16 +97,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    if (audioPlayer) {
-        [audioPlayer stop];
-        audioPlayer = nil;
-    }
-    
-    [vibrateTimer invalidate];
-    [hideOverlayTimer invalidate];
-    [updateStatusTimer invalidate];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -169,13 +158,30 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
+#pragma mark - override MXKViewController
+
+- (void)destroy {
+    
+    self.peer = nil;
+    
+    self.mxCall = nil;
+    
+    _delegate = nil;
+    
+    self.isRinging = NO;
+    audioPlayer = nil;
+    
+    [hideOverlayTimer invalidate];
+    [updateStatusTimer invalidate];
+    
+    [super destroy];
+}
+
 #pragma mark - Properties
 
 - (void)setMxCall:(MXCall *)call {
     
-    mxCall = call;
-    
-    if (call.room) {
+    if (call && call.room) {
         self.mxSession = call.room.mxSession;
         
         // Handle peer here
@@ -211,7 +217,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             localPreviewContainerView.hidden = YES;
             remotePreviewContainerView.hidden = YES;
         }
+    } else {
+        mxCall.delegate = nil;
+        mxCall.selfVideoView = nil;
+        mxCall.remoteVideoView = nil;
     }
+    
+    mxCall = call;
 }
 
 - (void)setPeer:(MXUser *)peer {

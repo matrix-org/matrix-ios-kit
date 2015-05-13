@@ -444,8 +444,7 @@
                 [UIApplication sharedApplication].statusBarHidden = NO;
                 
                 // Release properly
-                currentCallViewController.mxCall.delegate = nil;
-                currentCallViewController.delegate = nil;
+                [currentCallViewController destroy];
                 currentCallViewController = nil;
             }
         } else {
