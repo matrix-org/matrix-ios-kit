@@ -86,7 +86,10 @@
 
 - (void)setMxSession:(MXSession *)session {
     // Remove potential session observer
-    [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
+    if (mxkViewControllerSessionStateObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
+        mxkViewControllerSessionStateObserver = nil;
+    }
     
     if (session) {
         // Register session state observer
