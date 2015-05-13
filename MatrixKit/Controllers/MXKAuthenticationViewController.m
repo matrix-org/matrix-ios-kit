@@ -149,14 +149,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 }
 
 - (void)dealloc {
-    supportedFlows = nil;
-    if (mxCurrentOperation){
-        [mxCurrentOperation cancel];
-        mxCurrentOperation = nil;
-    }
     
-    [mxRestClient close];
-    mxRestClient = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -192,6 +185,22 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
+}
+
+#pragma mark - override MXKViewController
+
+- (void)destroy {
+    
+    supportedFlows = nil;
+    if (mxCurrentOperation){
+        [mxCurrentOperation cancel];
+        mxCurrentOperation = nil;
+    }
+    
+    [mxRestClient close];
+    mxRestClient = nil;
+    
+    [super destroy];
 }
 
 #pragma mark -
