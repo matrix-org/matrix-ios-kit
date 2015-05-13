@@ -52,6 +52,11 @@
     UIButton* callStatusBarButton;
     
     /**
+     Keep reference on the current view controller to release it correctly
+     */
+    id destinationViewController;
+    
+    /**
      Current index of sections
      */
     NSInteger roomSectionIndex;
@@ -124,6 +129,17 @@
         if (roomDataSource) {
             [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:NO];
         }
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if (destinationViewController) {
+        if ([destinationViewController respondsToSelector:@selector(destroy)]) {
+            [destinationViewController destroy];
+        }
+        destinationViewController = nil;
     }
 }
 
@@ -301,16 +317,19 @@
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    // Keep ref on destinationViewController
+    destinationViewController = segue.destinationViewController;
 
     if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mxSession) {
-        MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)segue.destinationViewController;
+        MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)destinationViewController;
         sampleRecentListViewController.delegate = self;
 
         MXKRecentListDataSource *listDataSource = [[MXKRecentListDataSource alloc] initWithMatrixSession:self.mxSession];
         [sampleRecentListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"]) {
-        MXKRoomViewController *roomViewController = (MXKRoomViewController *)segue.destinationViewController;
+        MXKRoomViewController *roomViewController = (MXKRoomViewController *)destinationViewController;
 
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
@@ -324,7 +343,7 @@
         [roomViewController displayRoom:roomDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showSampleJSQMessagesViewController"]) {
-        MXKSampleJSQMessagesViewController *sampleRoomViewController = (MXKSampleJSQMessagesViewController *)segue.destinationViewController;
+        MXKSampleJSQMessagesViewController *sampleRoomViewController = (MXKSampleJSQMessagesViewController *)destinationViewController;
 
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
@@ -343,14 +362,14 @@
         [sampleRoomViewController displayRoom:roomDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKRoomMemberListViewController"]) {
-        MXKRoomMemberListViewController *roomMemberListViewController = (MXKRoomMemberListViewController *)segue.destinationViewController;
+        MXKRoomMemberListViewController *roomMemberListViewController = (MXKRoomMemberListViewController *)destinationViewController;
         roomMemberListViewController.delegate = self;
         
         MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
         [roomMemberListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showSampleRoomMembersViewController"]) {
-        MXKSampleRoomMembersViewController *sampleRoomMemberListViewController = (MXKSampleRoomMembersViewController *)segue.destinationViewController;
+        MXKSampleRoomMembersViewController *sampleRoomMemberListViewController = (MXKSampleRoomMembersViewController *)destinationViewController;
         sampleRoomMemberListViewController.delegate = self;
         
         MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
@@ -361,7 +380,7 @@
         [sampleRoomMemberListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKAuthenticationViewController"]) {
-        MXKAuthenticationViewController *sampleAuthViewController = (MXKAuthenticationViewController *)segue.destinationViewController;
+        MXKAuthenticationViewController *sampleAuthViewController = (MXKAuthenticationViewController *)destinationViewController;
         sampleAuthViewController.delegate = self;
         sampleAuthViewController.defaultHomeServerUrl = @"https://matrix.org";
         sampleAuthViewController.defaultIdentityServerUrl = @"https://matrix.org";

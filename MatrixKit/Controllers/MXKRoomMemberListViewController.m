@@ -120,6 +120,18 @@
 }
 
 - (void)dealloc {
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - override MXKTableViewController
+
+- (void)destroy {
+    
     self.tableView.dataSource = nil;
     self.tableView.delegate = nil;
     self.tableView = nil;
@@ -133,12 +145,10 @@
     roomMembersSearchBar = nil;
     searchBarButton = nil;
     addBarButton = nil;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-
-    // Dispose of any resources that can be recreated.
+    
+    _delegate = nil;
+    
+    [super destroy];
 }
 
 #pragma mark - Internal methods

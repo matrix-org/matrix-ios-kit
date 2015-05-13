@@ -64,7 +64,11 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
+    if (mxkTableViewControllerSessionStateObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
+        mxkTableViewControllerSessionStateObserver = nil;
+    }
+    
     [activityIndicator stopAnimating];
     
     if (self.rageShakeManager) {
@@ -85,7 +89,11 @@
 
 - (void)setMxSession:(MXSession *)session {
     // Remove potential session observer
-    [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
+    if (mxkTableViewControllerSessionStateObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
+        mxkTableViewControllerSessionStateObserver = nil;
+    }
+    
     
     if (session) {
         // Register session state observer
@@ -173,6 +181,18 @@
         // Suppose here the view controller has been presented modally. We dismiss it
         [self dismissViewControllerAnimated:animated completion:completion];
     }
+}
+
+- (void)destroy {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    if (mxkTableViewControllerSessionStateObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:mxkTableViewControllerSessionStateObserver];
+        mxkTableViewControllerSessionStateObserver = nil;
+    }
+    
+    self.mxSession = nil;
 }
 
 #pragma mark - activity indicator

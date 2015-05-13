@@ -76,6 +76,11 @@
 - (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion;
 
 /**
+ Dispose of any resources, and remove event observers.
+ */
+- (void)destroy;
+
+/**
  Bring the activity indicator to the front and start it.
  */
 - (void)startActivityIndicator;
@@ -84,7 +89,6 @@
  Stop the activity indicator if all conditions are satisfied.
  */
 - (void)stopActivityIndicator;
-
 
 @end
 

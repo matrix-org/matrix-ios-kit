@@ -176,6 +176,13 @@
     }
 }
 
+- (void)destroy {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    self.mxSession = nil;
+}
+
 #pragma mark - activity indicator
 
 - (void)startActivityIndicator {

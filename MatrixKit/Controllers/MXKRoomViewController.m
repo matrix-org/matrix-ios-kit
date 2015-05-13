@@ -478,8 +478,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
     }
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     [self dismissTemporarySubViews];
     
     _bubblesTableView.dataSource = nil;
@@ -488,8 +486,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
     roomDataSource.delegate = nil;
     roomDataSource = nil;
-    
-    self.mxSession = nil;
     
     if (inputToolbarView) {
         inputToolbarView.delegate = nil;
@@ -503,6 +499,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [joinRoomRequest cancel];
         joinRoomRequest = nil;
     }
+    
+    [super destroy];
 }
 
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass {
