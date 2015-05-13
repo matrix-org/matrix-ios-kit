@@ -248,13 +248,39 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-- (void)updateMessageTextViewFrame {
-    if (!keyboardView) {
-        // Compute the visible area (tableview + toolbar)
-        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardView.frame.size.height;
-        // Deduce max height of the message text input by considering the minimum height of the table view.
-        inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
+#pragma mark - override MXKViewController
+
+- (void)destroy {
+    
+    if (kMXSessionWillLeaveRoomNotificationObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
+        kMXSessionWillLeaveRoomNotificationObserver = nil;
     }
+    
+    [self dismissTemporarySubViews];
+    
+    _bubblesTableView.dataSource = nil;
+    _bubblesTableView.delegate = nil;
+    _bubblesTableView = nil;
+    
+    roomDataSource.delegate = nil;
+    roomDataSource = nil;
+    
+    if (inputToolbarView) {
+        inputToolbarView.delegate = nil;
+        [inputToolbarView removeFromSuperview];
+        inputToolbarView = nil;
+    }
+    
+    [typingTimer invalidate];
+    typingTimer = nil;
+    
+    if (joinRoomRequest) {
+        [joinRoomRequest cancel];
+        joinRoomRequest = nil;
+    }
+    
+    [super destroy];
 }
 
 #pragma mark -
@@ -285,6 +311,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
         }
     }];
+}
+
+- (void)updateMessageTextViewFrame {
+    if (!keyboardView) {
+        // Compute the visible area (tableview + toolbar)
+        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardView.frame.size.height;
+        // Deduce max height of the message text input by considering the minimum height of the table view.
+        inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
+    }
 }
 
 - (void)onRoomDataSourceReady {
@@ -470,37 +505,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView reloadData];
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
-}
-
-- (void)destroy {
-    
-    if (kMXSessionWillLeaveRoomNotificationObserver) {
-        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
-    }
-    
-    [self dismissTemporarySubViews];
-    
-    _bubblesTableView.dataSource = nil;
-    _bubblesTableView.delegate = nil;
-    _bubblesTableView = nil;
-
-    roomDataSource.delegate = nil;
-    roomDataSource = nil;
-    
-    if (inputToolbarView) {
-        inputToolbarView.delegate = nil;
-        [inputToolbarView removeFromSuperview];
-    }
-    
-    [typingTimer invalidate];
-    typingTimer = nil;
-
-    if (joinRoomRequest) {
-        [joinRoomRequest cancel];
-        joinRoomRequest = nil;
-    }
-    
-    [super destroy];
 }
 
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass {
@@ -1480,6 +1484,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFailNotification object:nil];
 
     if (highResImageView) {
+        for (UIGestureRecognizer *gestureRecognizer in highResImageView.gestureRecognizers) {
+            [highResImageView removeGestureRecognizer:gestureRecognizer];
+        }
         [highResImageView removeFromSuperview];
         highResImageView = nil;
     }
