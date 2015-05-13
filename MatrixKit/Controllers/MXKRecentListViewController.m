@@ -41,10 +41,7 @@
 }
 
 - (void)dealloc {
-    self.tableView.dataSource = nil;
-    self.tableView.delegate = nil;
-    self.tableView = nil;
-    dataSource = nil;
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,6 +49,24 @@
 
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - override MXKTableViewController
+
+- (void)destroy {
+    
+    self.tableView.dataSource = nil;
+    self.tableView.delegate = nil;
+    self.tableView = nil;
+    
+    dataSource.delegate = nil;
+    dataSource = nil;
+    
+    _delegate = nil;
+    
+    [super destroy];
+}
+
+#pragma mark -
 
 - (void)configureView {
 
