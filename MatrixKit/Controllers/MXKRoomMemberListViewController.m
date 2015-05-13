@@ -135,6 +135,7 @@
     self.tableView.dataSource = nil;
     self.tableView.delegate = nil;
     self.tableView = nil;
+    dataSource.delegate = nil;
     dataSource = nil;
     
     if (currentAlert) {
