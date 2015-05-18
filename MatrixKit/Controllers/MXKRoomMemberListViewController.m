@@ -16,6 +16,8 @@
 
 #import "MXKRoomMemberListViewController.h"
 
+#import "MXKRoomMemberTableViewCell.h" // imported here to provide 'updateActivityInfo' definition.
+
 #import "MXKAlert.h"
 
 @interface MXKRoomMemberListViewController () {
