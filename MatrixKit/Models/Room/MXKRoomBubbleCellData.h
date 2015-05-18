@@ -44,6 +44,11 @@ typedef enum : NSUInteger {
     
 @protected
     /**
+     The data source owner of this instance.
+     */
+    MXKRoomDataSource *roomDataSource;
+    
+    /**
      Array of bubble components. Each bubble is supposed to have at least one component.
      */
     NSMutableArray *bubbleComponents;

@@ -54,6 +54,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 - (void)dealloc {
     // remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    delegate = nil;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

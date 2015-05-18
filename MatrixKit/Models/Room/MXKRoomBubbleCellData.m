@@ -24,12 +24,6 @@
 #import "MXKTools.h"
 #import "MXKMediaManager.h"
 
-@interface MXKRoomBubbleCellData () {
-
-    MXKRoomDataSource *roomDataSource;
-}
-@end
-
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isSameSenderAsPreviousBubble, date, isIncoming, isAttachment;
 @synthesize attributedTextMessage;
@@ -90,6 +84,8 @@
 }
 
 - (void)dealloc {
+    
+    roomDataSource = nil;
     bubbleComponents = nil;
 }
 

@@ -17,11 +17,6 @@
 #import "MXKRoomBubbleMergingMessagesCellData.h"
 
 @interface MXKRoomBubbleMergingMessagesCellData () {
-
-    /**
-     The data source owner of this instance.
-     */
-    MXKRoomDataSource *roomDataSource;
     
     /**
      YES if position of each component must be refreshed
@@ -43,10 +38,6 @@ static NSAttributedString *messageSeparator = nil;
         roomDataSource = inRoomDataSource;
     }
     return self;
-}
-
-- (void)dealloc {
-    roomDataSource = nil;
 }
 
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState {
