@@ -26,6 +26,11 @@
     MXKRoomMemberListDataSource *dataSource;
     
     /**
+     Timer used to update members presence
+     */
+    NSTimer* presenceUpdateTimer;
+    
+    /**
      Optional bar buttons
      */
     UIBarButtonItem *searchBarButton;
@@ -132,6 +137,11 @@
 
 - (void)destroy {
     
+    if (presenceUpdateTimer) {
+        [presenceUpdateTimer invalidate];
+        presenceUpdateTimer = nil;
+    }
+    
     self.tableView.dataSource = nil;
     self.tableView.delegate = nil;
     self.tableView = nil;
@@ -170,11 +180,22 @@
 }
 
 - (void)scrollToTop {
+    
     // stop any scrolling effect
     [UIView setAnimationsEnabled:NO];
     // before scrolling to the tableview top
     self.tableView.contentOffset = CGPointMake(-self.tableView.contentInset.left, -self.tableView.contentInset.top);
     [UIView setAnimationsEnabled:YES];
+}
+
+- (void)updateMembersActivityInfo {
+    
+    for (id memberCell in self.tableView.visibleCells) {
+        
+        if ([memberCell respondsToSelector:@selector(updateActivityInfo)]) {
+            [memberCell updateActivityInfo];
+        }
+    }
 }
 
 #pragma mark - UIBarButton handling
@@ -232,6 +253,12 @@
 
 #pragma mark - MXKDataSourceDelegate
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
+    
+    if (presenceUpdateTimer) {
+        [presenceUpdateTimer invalidate];
+        presenceUpdateTimer = nil;
+    }
+    
     // For now, do a simple full reload
     [self.tableView reloadData];
     
@@ -239,6 +266,9 @@
         [self scrollToTop];
         shouldScrollToTopOnRefresh = NO;
     }
+    
+    // Place a timer to update members's activity information
+    presenceUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateMembersActivityInfo) userInfo:self repeats:YES];
 }
 
 #pragma mark - UITableView delegate
@@ -266,6 +296,14 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     return roomMembersSearchBar;
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
+    
+    // Release here resources, and restore reusable cells
+    if ([cell respondsToSelector:@selector(didEndDisplay)]) {
+        [(id<MXKCellRendering>)cell didEndDisplay];
+    }
 }
 
 #pragma mark - UISearchBarDelegate

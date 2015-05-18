@@ -30,17 +30,17 @@
 
 @protected
     /**
-     Timer used to update presence information
-     */
-    NSTimer* presenceTimer;
-    
-    /**
      */
     MXSession *mxSession;
     
     /**
      */
     NSString *memberId;
+    
+    /**
+     YES when last activity time is displayed and must be refreshed regularly.
+     */
+    BOOL shouldUpdateActivityInfo;
 }
 
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
@@ -49,12 +49,16 @@
 @property (weak, nonatomic) IBOutlet UIImageView *typingBadge;
 
 /**
- Describe matrix user's presence by taking into account his presence and his last activity date.
- 
- @param user a matrix user.
- @return a string which described user's presence.
+ Update last activity information if any.
  */
-- (NSString*)getLastPresenceText:(MXUser*)user;
+- (void)updateActivityInfo;
+
+/**
+ Stringify the last activity date/time of the member.
+ 
+ @return a string which described the last activity time of the member.
+ */
+- (NSString*)lastActiveTime;
 
 /**
  Get the color code related to a specific presence.

@@ -80,7 +80,7 @@
     [super setView:view];
     
     // Keep the activity indicator (if any)
-    if (activityIndicator) {
+    if (view && activityIndicator) {
         [self.view addSubview:activityIndicator];
     }
 }

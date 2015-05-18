@@ -121,4 +121,12 @@
     }
 }
 
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
+    
+    // Release here resources, and restore reusable cells
+    if ([cell respondsToSelector:@selector(didEndDisplay)]) {
+        [(id<MXKCellRendering>)cell didEndDisplay];
+    }
+}
+
 @end

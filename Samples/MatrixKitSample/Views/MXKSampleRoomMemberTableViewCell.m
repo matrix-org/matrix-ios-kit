@@ -46,10 +46,6 @@
     
     MXKRoomMemberCellData *memberCellData = (MXKRoomMemberCellData*)cellData;
     if (memberCellData) {
-        if (presenceTimer) {
-            [presenceTimer invalidate];
-            presenceTimer = nil;
-        }
         
         mxSession = memberCellData.mxSession;
         memberId = memberCellData.roomMember.userId;
@@ -99,11 +95,8 @@
                 // existing user ?
                 if (user) {
                     presenceColor = [self presenceColor:user.presence];
-                    presenceText = [self getLastPresenceText:user];
-                    if (presenceText) {
-                        // Trigger a timer to update last seen information
-                        presenceTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
-                    }
+                    presenceText = [self lastActiveTime];
+                    shouldUpdateActivityInfo = YES;
                 }
             }
         }
@@ -148,22 +141,11 @@
     }
 }
 
-- (void)updateLastSeen {
+- (void)updateActivityInfo {
     
-    [presenceTimer invalidate];
-    presenceTimer = nil;
-    
-    // Get the user that corresponds to this member
-    MXUser *user = [mxSession userWithUserId:memberId];
-    
-    NSString *presenceText = nil;
-    
-    // existing user ?
-    if (user) {
-        presenceText = [self getLastPresenceText:user];
+    if (shouldUpdateActivityInfo) {
+        self.presenceLabel.text = [self lastActiveTime];
     }
-    
-    self.presenceLabel.text = presenceText;
 }
 
 @end

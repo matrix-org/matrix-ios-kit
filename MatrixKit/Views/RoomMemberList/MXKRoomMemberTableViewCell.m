@@ -54,10 +54,6 @@
     
     MXKRoomMemberCellData *memberCellData = (MXKRoomMemberCellData*)cellData;
     if (memberCellData) {
-        if (presenceTimer) {
-            [presenceTimer invalidate];
-            presenceTimer = nil;
-        }
         
         mxSession = memberCellData.mxSession;
         memberId = memberCellData.roomMember.userId;
@@ -112,12 +108,10 @@
                 // existing user ?
                 if (user) {
                     thumbnailBorderColor = [self presenceColor:user.presence];
-                    presenceText = [self getLastPresenceText:user];
-                    if (presenceText) {
-                        // Trigger a timer to update last seen information
-                        lastSeenRange = NSMakeRange(self.userLabel.text.length + 2, presenceText.length);
-                        presenceTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
-                    }
+                    presenceText = [self lastActiveTime];
+                    // Keep last seen range to update it
+                    lastSeenRange = NSMakeRange(self.userLabel.text.length + 2, presenceText.length);
+                    shouldUpdateActivityInfo = (presenceText.length != 0);
                 }
             }
         }
@@ -159,53 +153,51 @@
     }
 }
 
-- (void)didEndDisplay {
-    if (presenceTimer) {
-        [presenceTimer invalidate];
-        presenceTimer = nil;
-    }
-}
-
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
 
     // The height is fixed
     return 50;
 }
 
-- (NSString*)getLastPresenceText:(MXUser*)user {
-    NSString* presenceText = nil;
+- (NSString*)lastActiveTime {
+    NSString* lastActiveTime = nil;
     
-    // Prepare last active ago string
-    NSUInteger lastActiveAgoInSec = user.lastActiveAgo / 1000;
-    if (lastActiveAgoInSec < 60) {
-        presenceText = [NSString stringWithFormat:@"%lus", (unsigned long)lastActiveAgoInSec];
-    } else if (lastActiveAgoInSec < 3600) {
-        presenceText = [NSString stringWithFormat:@"%lum", (unsigned long)(lastActiveAgoInSec / 60)];
-    } else if (lastActiveAgoInSec < 86400) {
-        presenceText = [NSString stringWithFormat:@"%luh", (unsigned long)(lastActiveAgoInSec / 3600)];
-    } else {
-        presenceText = [NSString stringWithFormat:@"%lud", (unsigned long)(lastActiveAgoInSec / 86400)];
+    // Get the user that corresponds to this member
+    MXUser *user = [mxSession userWithUserId:memberId];
+    if (user) {
+        // Prepare last active ago string
+        NSUInteger lastActiveAgoInSec = user.lastActiveAgo / 1000;
+        if (lastActiveAgoInSec < 60) {
+            lastActiveTime = [NSString stringWithFormat:@"%lus", (unsigned long)lastActiveAgoInSec];
+        } else if (lastActiveAgoInSec < 3600) {
+            lastActiveTime = [NSString stringWithFormat:@"%lum", (unsigned long)(lastActiveAgoInSec / 60)];
+        } else if (lastActiveAgoInSec < 86400) {
+            lastActiveTime = [NSString stringWithFormat:@"%luh", (unsigned long)(lastActiveAgoInSec / 3600)];
+        } else {
+            lastActiveTime = [NSString stringWithFormat:@"%lud", (unsigned long)(lastActiveAgoInSec / 86400)];
+        }
+        
+        // Check presence
+        switch (user.presence) {
+            case MXPresenceOffline: {
+                lastActiveTime = @"offline";
+                break;
+            }
+            case MXPresenceHidden:
+            case MXPresenceUnknown:
+            case MXPresenceFreeForChat: {
+                lastActiveTime = nil;
+                break;
+            }
+            case MXPresenceOnline:
+            case MXPresenceUnavailable:
+            default:
+                break;
+        }
+
     }
     
-    // Check presence
-    switch (user.presence) {
-        case MXPresenceOffline: {
-            presenceText = @"offline";
-            break;
-        }
-        case MXPresenceHidden:
-        case MXPresenceUnknown:
-        case MXPresenceFreeForChat: {
-            presenceText = nil;
-            break;
-        }
-        case MXPresenceOnline:
-        case MXPresenceUnavailable:
-        default:
-            break;
-    }
-    
-    return presenceText;
+    return lastActiveTime;
 }
 
 - (void)setPowerContainerValue:(CGFloat)progress {
@@ -243,28 +235,29 @@
     }
 }
 
-- (void)updateLastSeen {
-    [presenceTimer invalidate];
-    presenceTimer = nil;
+- (void)updateActivityInfo {
     
-    // Get the user that corresponds to this member
-    MXUser *user = [mxSession userWithUserId:memberId];
-    
-    // existing user ?
-    if (user) {
-        NSString *presenceText = [self getLastPresenceText:user];
+    // Check whether update is required.
+    if (shouldUpdateActivityInfo) {
+        
+        NSString *lastSeen = [self lastActiveTime];
         NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:self.userLabel.attributedText];
-        if (presenceText.length) {
-            [attributedText replaceCharactersInRange:lastSeenRange withString:presenceText];
-            // Trigger a timer to update last seen information
-            lastSeenRange.length = presenceText.length;
-            presenceTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateLastSeen) userInfo:self repeats:NO];
+        if (lastSeen.length) {
+            
+            [attributedText replaceCharactersInRange:lastSeenRange withString:lastSeen];
+            
+            // Update last seen range
+            lastSeenRange.length = lastSeen.length;
         } else {
+            
             // remove presence info
             lastSeenRange.location -= 1;
             lastSeenRange.length += 2;
             [attributedText deleteCharactersInRange:lastSeenRange];
+            
+            shouldUpdateActivityInfo = NO;
         }
+        
         [self.userLabel setAttributedText:attributedText];
     }
 }
