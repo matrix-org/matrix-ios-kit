@@ -42,7 +42,6 @@ limitations under the License.
  */
 @interface MXKRecentListViewController : MXKTableViewController <MXKDataSourceDelegate>
 
-
 /**
  The current data source associated to the view controller.
  */
@@ -54,7 +53,10 @@ limitations under the License.
 @property (nonatomic) id<MXKRecentListViewControllerDelegate> delegate;
 
 /**
- Display the recent list.
+ Display the recents described in the provided data source.
+ 
+ Note: The provided data source will replace the current data source if any. The caller
+ should dispose properly this data source if it is not used anymore.
 
  @param listDataSource the data source providing the recents list.
  */

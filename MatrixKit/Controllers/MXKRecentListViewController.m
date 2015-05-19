@@ -88,6 +88,11 @@
 #pragma mark -
 - (void)displayList:(MXKRecentListDataSource *)listDataSource {
 
+    // Cancel registration on existing dataSource if any
+    if (dataSource) {
+        dataSource.delegate = nil;
+    }
+    
     dataSource = listDataSource;
     dataSource.delegate = self;
     
