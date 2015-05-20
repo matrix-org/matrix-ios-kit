@@ -45,6 +45,7 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
+#import "MXKTableViewCell.h"
 
 #import "MXKAccountManager.h"
 

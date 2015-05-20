@@ -25,6 +25,7 @@
 #import <MatrixSDK/MXFileStore.h>
 
 NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentifier";
+NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifier";
 
 @interface MXKSampleMainTableViewController () {
     /**
@@ -276,13 +277,13 @@ NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentif
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     if (section == accountSectionIndex) {
-        return [[MXKAccountManager sharedManager] accounts].count;
+        return [[MXKAccountManager sharedManager] accounts].count + 1; // Add one cell in this section to logout all accounts
     } else if (section == roomSectionIndex) {
         return 2;
     } else if (section == roomMembersSectionIndex) {
         return 2;
     } else if (section == authenticationSectionIndex) {
-        return 2;
+        return 1;
     }
     
     return 0;
@@ -316,6 +317,16 @@ NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentif
             
             accountCell.mxAccount = [accounts objectAtIndex:indexPath.row];
             cell = accountCell;
+        } else {
+            MXKTableViewCellWithButton *logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleLogoutCellIdentifier];
+            if (!logoutBtnCell) {
+                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleLogoutCellIdentifier];
+            }
+            [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateNormal];
+            [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateHighlighted];
+            [logoutBtnCell.mxkButton addTarget:self action:@selector(logout) forControlEvents:UIControlEventTouchUpInside];
+            
+            cell = logoutBtnCell;
         }
     } else if (indexPath.section == roomSectionIndex) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
@@ -342,10 +353,6 @@ NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentif
             case 0:
                 cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
                 cell.textLabel.text = @"MXKAuthenticationViewController";
-                break;
-            case 1:
-                cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellAction" forIndexPath:indexPath];
-                cell.textLabel.text = @"Logout";
                 break;
         }
     }
@@ -388,9 +395,6 @@ NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentif
         switch (indexPath.row) {
             case 0:
                 [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
-                break;
-            case 1:
-                [self logout];
                 break;
         }
     }

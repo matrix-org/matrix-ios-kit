@@ -319,6 +319,7 @@
 		F0CF98FA1B0CDF6100EAE373 /* MXKTableViewCellWithButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKTableViewCellWithButton.h; sourceTree = "<group>"; };
 		F0CF98FB1B0CDF6100EAE373 /* MXKTableViewCellWithButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTableViewCellWithButton.m; sourceTree = "<group>"; };
 		F0CF98FC1B0CDF6100EAE373 /* MXKTableViewCellWithButton.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKTableViewCellWithButton.xib; sourceTree = "<group>"; };
+		F0CF98FF1B0CEAB900EAE373 /* MXKTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKTableViewCell.h; sourceTree = "<group>"; };
 		F0DB1AC21B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomMemberTableViewCell.h; sourceTree = "<group>"; };
 		F0DB1AC31B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomMemberTableViewCell.m; sourceTree = "<group>"; };
 		F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKSampleRoomMemberTableViewCell.xib; sourceTree = "<group>"; };
@@ -725,6 +726,7 @@
 		F0CF98CB1B0B7FDC00EAE373 /* MXKTableViewCell */ = {
 			isa = PBXGroup;
 			children = (
+				F0CF98FF1B0CEAB900EAE373 /* MXKTableViewCell.h */,
 				F0CF98FA1B0CDF6100EAE373 /* MXKTableViewCellWithButton.h */,
 				F0CF98FB1B0CDF6100EAE373 /* MXKTableViewCellWithButton.m */,
 				F0CF98FC1B0CDF6100EAE373 /* MXKTableViewCellWithButton.xib */,
