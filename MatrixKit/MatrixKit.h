@@ -31,6 +31,7 @@
 #import "MXKRecentListViewController.h"
 #import "MXKRoomMemberListViewController.h"
 #import "MXKCallViewController.h"
+#import "MXKAccountDetailsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 
@@ -43,6 +44,7 @@
 #import "MXKRoomBubbleMergingMessagesCellData.h"
 
 #import "MXKRoomMemberTableViewCell.h"
+#import "MXKAccountTableViewCell.h"
 
 #import "MXKAccountManager.h"
 

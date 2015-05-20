@@ -24,6 +24,8 @@
 
 #import <MatrixSDK/MXFileStore.h>
 
+NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentifier";
+
 @interface MXKSampleMainTableViewController () {
     /**
      Observer matrix sessions to handle new opened session
@@ -39,6 +41,11 @@
      The current selected room.
      */
     MXRoom *selectedRoom;
+    
+    /**
+     The current selected account.
+     */
+    MXKAccount *selectedAccount;
     
     /**
      The current call view controller (if any).
@@ -59,6 +66,7 @@
     /**
      Current index of sections
      */
+    NSInteger accountSectionIndex;
     NSInteger roomSectionIndex;
     NSInteger roomMembersSectionIndex;
     NSInteger authenticationSectionIndex;
@@ -110,6 +118,49 @@
         }
     }];
     
+    // Add observer to handle new account
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        NSString *userId = notif.object;
+        if (userId) {
+            // Start matrix session for this new account
+            MXKAccount *mxAccount = [[MXKAccountManager sharedManager] accountForUserId:userId];
+            if (mxAccount) {
+                // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
+                MXFileStore *mxFileStore = [[MXFileStore alloc] init];
+                [mxAccount openSessionWithStore:mxFileStore];
+            }
+        }
+        
+        // Refresh table to add this new account
+        [self.tableView reloadData];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidRemoveAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        NSString *userId = notif.object;
+        if (userId) {
+            // Check whether details of this account was displayed
+            if ([destinationViewController isKindOfClass:[MXKAccountDetailsViewController class]]) {
+                MXKAccountDetailsViewController *accountDetailsViewController = (MXKAccountDetailsViewController*)destinationViewController;
+                if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:userId]) {
+                    // pop the account details view controller
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                }
+            }
+        }
+        
+        // Refresh table to remove this account
+        [self.tableView reloadData];
+    }];
+    
+    // Add observer to update accounts section
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Refresh table to remove this account
+        [self.tableView reloadData];
+    }];
+    
     // Check whether some accounts are availables
     if ([[MXKAccountManager sharedManager] accounts].count) {
         [self launchMatrixSession];
@@ -150,14 +201,16 @@
 
 - (void)launchMatrixSession {
     
-    // Launch a matrix session only for the first one (TODO launch a session for each account).
+    // Launch a matrix session for all existing accounts.
     
     NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
-    MXKAccount *account = [accounts firstObject];
     
     // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
     MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-    [account openSessionWithStore:mxFileStore];
+    
+    for (MXKAccount *account in accounts) {
+        [account openSessionWithStore:mxFileStore];
+    }
 }
 
 - (void)logout {
@@ -204,7 +257,11 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSInteger count = 0;
     
-    roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = -1;
+    accountSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = -1;
+    
+    if ([[MXKAccountManager sharedManager] accounts].count) {
+        accountSectionIndex = count++;
+    }
     
     if (selectedRoom) {
         roomSectionIndex = count++;
@@ -217,31 +274,50 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == roomSectionIndex) {
+    
+    if (section == accountSectionIndex) {
+        return [[MXKAccountManager sharedManager] accounts].count;
+    } else if (section == roomSectionIndex) {
         return 2;
     } else if (section == roomMembersSectionIndex) {
         return 2;
     } else if (section == authenticationSectionIndex) {
         return 2;
     }
+    
     return 0;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == roomSectionIndex) {
+    
+    if (section == accountSectionIndex) {
+        return @"Accounts:";
+    } else if (section == roomSectionIndex) {
         return @"Rooms:";
     } else if (section == roomMembersSectionIndex) {
         return @"Room members:";
     } else if (section == authenticationSectionIndex) {
         return @"Authentication:";
     }
+    
     return nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell;
-
-    if (indexPath.section == roomSectionIndex) {
+    
+    if (indexPath.section == accountSectionIndex) {
+        NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
+        if (indexPath.row < accounts.count) {
+            MXKAccountTableViewCell *accountCell = [[MXKAccountTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleAccountCellIdentifier];
+            if (!accountCell) {
+                accountCell = [[MXKAccountTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleAccountCellIdentifier];
+            }
+            
+            accountCell.mxAccount = [accounts objectAtIndex:indexPath.row];
+            cell = accountCell;
+        }
+    } else if (indexPath.section == roomSectionIndex) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
         switch (indexPath.row) {
             case 0:
@@ -272,7 +348,6 @@
                 cell.textLabel.text = @"Logout";
                 break;
         }
-        
     }
     
     return cell;
@@ -284,7 +359,14 @@
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (indexPath.section == roomSectionIndex) {
+    if (indexPath.section == accountSectionIndex) {
+        NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
+        if (indexPath.row < accounts.count) {
+            selectedAccount = [accounts objectAtIndex:indexPath.row];
+            
+            [self performSegueWithIdentifier:@"showMXKAccountDetailsViewController" sender:self];
+        }
+    } else if (indexPath.section == roomSectionIndex) {
         switch (indexPath.row) {
             case 0:
                 [self performSegueWithIdentifier:@"showMXKRoomViewController" sender:self];
@@ -380,10 +462,14 @@
         [sampleRoomMemberListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKAuthenticationViewController"]) {
-        MXKAuthenticationViewController *sampleAuthViewController = (MXKAuthenticationViewController *)destinationViewController;
-        sampleAuthViewController.delegate = self;
-        sampleAuthViewController.defaultHomeServerUrl = @"https://matrix.org";
-        sampleAuthViewController.defaultIdentityServerUrl = @"https://matrix.org";
+        MXKAuthenticationViewController *authViewController = (MXKAuthenticationViewController *)destinationViewController;
+        authViewController.delegate = self;
+        authViewController.defaultHomeServerUrl = @"https://matrix.org";
+        authViewController.defaultIdentityServerUrl = @"https://matrix.org";
+    }
+    else if ([segue.identifier isEqualToString:@"showMXKAccountDetailsViewController"]) {
+        MXKAccountDetailsViewController *accountViewController = (MXKAccountDetailsViewController *)destinationViewController;
+        accountViewController.mxAccount = selectedAccount;
     }
 }
 
@@ -410,11 +496,7 @@
 
 - (void)authenticationViewController:(MXKAuthenticationViewController *)authenticationViewController didLogWithUserId:(NSString*)userId {
     NSLog(@"New account (%@) has been added", userId);
-    
-    if (!self.mxSession) {
-        [self launchMatrixSession];
-    }
-    
+
     // Go back to the main page
     [self.navigationController popToRootViewControllerAnimated:YES];
 }

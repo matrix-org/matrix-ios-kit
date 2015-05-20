@@ -60,12 +60,4 @@
  */
 - (NSString*)lastActiveTime;
 
-/**
- Get the color code related to a specific presence.
- 
- @param presence
- @return color defined for the provided presence (nil if no color is defined).
- */
-- (UIColor*)presenceColor:(MXPresence)presence;
-
 @end

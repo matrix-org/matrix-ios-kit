@@ -18,6 +18,10 @@
 
 #import "MXKRoomDataSourceManager.h"
 
+NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
+
+NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
+
 @interface MXKAccount () {
     
     // We will notify user only once on session failure
@@ -28,6 +32,9 @@
     
     // Reachability observer
     id reachabilityObserver;
+    
+    // Session state observer
+    id sessionStateObserver;
 
     // Handle user's settings change
     id userUpdateListener;
@@ -49,6 +56,22 @@
 @implementation MXKAccount
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
+
++ (UIColor*)presenceColor:(MXPresence)presence {
+    switch (presence) {
+        case MXPresenceOnline:
+            return [[MXKAppSettings standardAppSettings] presenceColorForOnlineUser];
+        case MXPresenceUnavailable:
+            return [[MXKAppSettings standardAppSettings] presenceColorForUnavailableUser];
+        case MXPresenceOffline:
+            return [[MXKAppSettings standardAppSettings] presenceColorForOfflineUser];
+        case MXPresenceUnknown:
+        case MXPresenceFreeForChat:
+        case MXPresenceHidden:
+        default:
+            return nil;
+    }
+}
 
 - (instancetype)initWithCredentials:(MXCredentials*)credentials {
     
@@ -109,7 +132,7 @@
     }
 }
 
-#pragma mark -
+#pragma mark - Properties
 
 - (void)setIdentityServerURL:(NSString *)identityServerURL {
     
@@ -124,7 +147,39 @@
     }
 }
 
-#pragma mark - Matrix user's presence
+- (NSString*)userDisplayName {
+    if (mxSession) {
+        return mxSession.myUser.displayname;
+    }
+    return nil;
+}
+
+- (NSString*)userAvatarUrl {
+    if (mxSession) {
+        return mxSession.myUser.avatarUrl;
+    }
+    return nil;
+}
+
+#pragma mark - Matrix user's profile
+
+- (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure {
+    
+    if (mxSession && mxSession.myUser) {
+        [mxSession.myUser setDisplayName:displayname success:success failure:failure];
+    } else if (failure) {
+        failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+    }
+}
+
+- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure {
+    
+    if (mxSession && mxSession.myUser) {
+        [mxSession.myUser setAvatarUrl:avatarUrl success:success failure:failure];
+    } else if (failure) {
+        failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+    }
+}
 
 - (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion {
     
@@ -161,6 +216,15 @@
     // Instantiate new session
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
     
+    // Register session state observer
+    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether the concerned session is the associated one
+        if (notif.object == mxSession) {
+            [self onMatrixSessionStateChange];
+        }
+    }];
+    
     __weak typeof(self) weakSelf = self;
     [mxSession setStore:store success:^{
         // Complete session registration by launching live stream
@@ -170,6 +234,9 @@
         // This cannot happen. Loading of MXFileStore cannot fail.
         __strong __typeof(weakSelf)strongSelf = weakSelf;
         strongSelf->mxSession = nil;
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
+        strongSelf->sessionStateObserver = nil;
     }];
 }
 
@@ -180,6 +247,11 @@
     if (reachabilityObserver) {
         [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
         reachabilityObserver = nil;
+    }
+    
+    if (sessionStateObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
+        sessionStateObserver = nil;
     }
     
     [initialServerSyncTimer invalidate];
@@ -326,31 +398,6 @@
         
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
         
-        // Register listener to update user's information
-        userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event) {
-            // Consider only events related to user's presence
-            if (event.eventType == MXEventTypePresence) {
-                MXPresence presence = [MXTools presence:event.content[@"presence"]];
-                if (userPresence != presence) {
-                    // Handle user presence on multiple devices (keep the more pertinent)
-                    if (userPresence == MXPresenceOnline) {
-                        if (presence == MXPresenceUnavailable || presence == MXPresenceOffline) {
-                            // Force the local presence to overwrite the user presence on server side
-                            [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
-                            return;
-                        }
-                    } else if (userPresence == MXPresenceUnavailable) {
-                        if (presence == MXPresenceOffline) {
-                            // Force the local presence to overwrite the user presence on server side
-                            [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
-                            return;
-                        }
-                    }
-                    userPresence = presence;
-                }
-            }
-        }];
-        
     } failure:^(NSError *error) {
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
         if (notifyOpenSessionFailure) {
@@ -378,6 +425,64 @@
             initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
         }
     }];
+}
+
+- (void)onMatrixSessionStateChange {
+    
+    if (mxSession.state == MXSessionStateRunning) {
+        
+        // Check whether the session was not already running
+        if (!userUpdateListener) {
+            
+            // Register listener to user's information change
+            userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event) {
+                
+                // Consider events related to user's presence
+                if (event.eventType == MXEventTypePresence) {
+                    MXPresence presence = [MXTools presence:event.content[@"presence"]];
+                    if (userPresence != presence) {
+                        // Handle user presence on multiple devices (keep the more pertinent)
+                        if (userPresence == MXPresenceOnline) {
+                            if (presence == MXPresenceUnavailable || presence == MXPresenceOffline) {
+                                // Force the local presence to overwrite the user presence on server side
+                                [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
+                                return;
+                            }
+                        } else if (userPresence == MXPresenceUnavailable) {
+                            if (presence == MXPresenceOffline) {
+                                // Force the local presence to overwrite the user presence on server side
+                                [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
+                                return;
+                            }
+                        }
+                        userPresence = presence;
+                    }
+                }
+                
+                // Here displayname or other information have been updated, post update notification.
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
+            }];
+            
+            // User information are just up-to-date (`mxSession` is running), post update notification.
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
+        }
+        
+    } else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateSyncInProgress) {
+        
+        // Remove listener (if any), this action is required to handle correctly matrix sdk handler reload (see clear cache)
+        if (userUpdateListener) {
+            
+            [mxSession.myUser removeListener:userUpdateListener];
+            userUpdateListener = nil;
+            
+        } else {
+            
+            // Here the initial server sync is in progress. The session is not running yet, but some user's information are available (from local storage).
+            // We post update notification to let observer take into account this user's information even if they may not be up-to-date.
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
+
+        }
+    }
 }
 
 @end

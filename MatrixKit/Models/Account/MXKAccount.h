@@ -17,6 +17,12 @@
 #import <MatrixSDK/MatrixSDK.h>
 
 /**
+ Posted when account user information (display name, picture, presence) has been updated.
+ The notification object is the matrix user id of the updated account.
+ */
+extern NSString *const kMXKAccountUserInfoDidChangeNotification;
+
+/**
  `MXKAccount` object contains the credentials of a logged matrix user. It is used to handle matrix
  session and presence for this user.
  */
@@ -38,14 +44,35 @@
 @property (nonatomic, readonly) MXRestClient *mxRestClient;
 
 /**
- The matrix session (nil by default).
+ The matrix session opened with the account (nil by default).
  */
 @property (nonatomic, readonly) MXSession *mxSession;
 
 /**
- The matrix user's presence.
+ The account user's display name (nil by default, available if matrix session `mxSession` is opened).
+ The notification `kMXKAccountUserInfoDidChangeNotification` is posted in case of change of this property.
+ */
+@property (nonatomic, readonly) NSString *userDisplayName;
+
+/**
+ The account user's avatar url (nil by default, available if matrix session `mxSession` is opened).
+ The notification `kMXKAccountUserInfoDidChangeNotification` is posted in case of change of this property.
+ */
+@property (nonatomic, readonly) NSString *userAvatarUrl;
+
+/**
+ The account user's presence (`MXPresenceUnknown` by default, available if matrix session `mxSession` is opened).
+ The notification `kMXKAccountUserInfoDidChangeNotification` is posted in case of change of this property.      
  */
 @property (nonatomic, readonly) MXPresence userPresence;
+
+/**
+ Get the color code related to a specific presence.
+ 
+ @param presence
+ @return color defined for the provided presence (nil if no color is defined).
+ */
++ (UIColor*)presenceColor:(MXPresence)presence;
 
 /**
  Init `MXKAccount` instance with credentials.
@@ -79,6 +106,27 @@
  Resume the current matrix session.
  */
 - (void)resume;
+
+/**
+ Set the display name of the account user.
+ 
+ @param displayname the new display name.
+ 
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure;
+
+/**
+ Set the avatar url of the account user.
+ 
+ @param avatarUrl the new avatar url.
+ 
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure;
+
 
 #pragma mark - Push notification listeners
 /**

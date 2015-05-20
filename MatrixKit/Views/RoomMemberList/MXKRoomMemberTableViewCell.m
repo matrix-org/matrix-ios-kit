@@ -21,6 +21,7 @@
 #import "MXKRoomMemberListDataSource.h"
 
 #import "MXKMediaManager.h"
+#import "MXKAccount.h"
 
 @interface MXKRoomMemberTableViewCell () {
     
@@ -107,7 +108,7 @@
                 MXUser *user = [mxSession userWithUserId:memberId];
                 // existing user ?
                 if (user) {
-                    thumbnailBorderColor = [self presenceColor:user.presence];
+                    thumbnailBorderColor = [MXKAccount presenceColor:user.presence];
                     presenceText = [self lastActiveTime];
                     // Keep last seen range to update it
                     lastSeenRange = NSMakeRange(self.userLabel.text.length + 2, presenceText.length);
@@ -217,22 +218,6 @@
     }
     
     pieChartView.progress = progress;
-}
-
-- (UIColor*)presenceColor:(MXPresence)presence {
-    switch (presence) {
-        case MXPresenceOnline:
-            return [[MXKAppSettings standardAppSettings] presenceColorForOnlineUser];
-        case MXPresenceUnavailable:
-            return [[MXKAppSettings standardAppSettings] presenceColorForUnavailableUser];
-        case MXPresenceOffline:
-            return [[MXKAppSettings standardAppSettings] presenceColorForOfflineUser];
-        case MXPresenceUnknown:
-        case MXPresenceFreeForChat:
-        case MXPresenceHidden:
-        default:
-            return nil;
-    }
 }
 
 - (void)updateActivityInfo {
