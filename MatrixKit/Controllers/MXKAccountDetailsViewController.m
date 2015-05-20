@@ -23,12 +23,9 @@
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
 
-#import "MXKTableViewCellWithTextFieldAndButton.h"
-#import "MXKTableViewCellWithLabelTextFieldAndButton.h"
-#import "MXKTableViewCellWithTextView.h"
-#import "MXKTableViewCellWithButton.h"
+#import "MXKTableViewCell.h"
 
-NSString* const kConfigurationFormatText = @"Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
+NSString* const kMXKAccountDetailsConfigurationFormatText = @"Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
 NSString *const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
 NSString *const kMXKAccountDetailsSubmittedEmailCellId = @"kMXKAccountDetailsSubmittedEmailCellId";
@@ -57,6 +54,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     // Local changes
     BOOL isAvatarUpdated;
     BOOL isSavingInProgress;
+    blockMXKAccountDetailsViewController_onReadyToLeave onReadyToLeaveHandler;
     
     // account user's profile observer
     id accountUserInfoObserver;
@@ -228,6 +226,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                 // Discard changes
                 self.userDisplayName.text = currentDisplayName;
                 [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                
                 // Ready to leave
                 if (handler) {
                     handler();
@@ -235,16 +234,18 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             }];
             [alert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 [alertsArray removeObject:alert];
-                // Start saving
+                
+                // Start saving (Report handler to leave at the end).
+                onReadyToLeaveHandler = handler;
                 [self saveUserInfo];
-                // Ready to leave
-                if (handler) {
-                    handler();
-                }
             }];
             [alert showInViewController:self];
         });
         
+        return NO;
+    } else if (isSavingInProgress) {
+        // Report handler to leave at the end of saving
+        onReadyToLeaveHandler = handler;
         return NO;
     }
     return YES;
@@ -317,6 +318,8 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     self.mxSession = nil;
     
     logoutBtnCell = nil;
+    
+    onReadyToLeaveHandler = nil;
 }
 
 - (void)destroy {
@@ -425,6 +428,12 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     // Backup is complete
     isSavingInProgress = NO;
     [self stopProfileActivityIndicator];
+    
+    // Ready to leave
+    if (onReadyToLeaveHandler) {
+        onReadyToLeaveHandler();
+        onReadyToLeaveHandler = nil;
+    }
 }
 
 - (void)handleErrorDuringPictureSaving:(NSError*)error {
@@ -512,7 +521,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     NSString *displayname = self.userDisplayName.text;
     BOOL isDisplayNameUpdated = ((displayname.length || currentDisplayName.length) && [displayname isEqualToString:currentDisplayName] == NO);
     
-    saveUserInfoButton.enabled = isDisplayNameUpdated || isAvatarUpdated;
+    saveUserInfoButton.enabled = (isDisplayNameUpdated || isAvatarUpdated) && !isSavingInProgress;
 }
 
 - (void)onMediaDownloadEnd:(NSNotification *)notif {
@@ -697,7 +706,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         if (indexPath.row == 0) {
             UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
             textView.font = [UIFont systemFontOfSize:14];
-            textView.text = [NSString stringWithFormat:kConfigurationFormatText, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            textView.text = [NSString stringWithFormat:kMXKAccountDetailsConfigurationFormatText, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
             CGSize contentSize = [textView sizeThatFits:textView.frame.size];
             return contentSize.height + 1;
         }
@@ -793,7 +802,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                 configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsConfigurationCellId];
             }
             
-            configCell.mxkTextView.text = [NSString stringWithFormat:kConfigurationFormatText, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            configCell.mxkTextView.text = [NSString stringWithFormat:kMXKAccountDetailsConfigurationFormatText, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
             cell = configCell;
         } else {
             logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsLogoutButtonCellId];

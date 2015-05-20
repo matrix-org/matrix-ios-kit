@@ -64,10 +64,16 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
 + (instancetype)accountDetailsViewController;
 
 /**
+ Action registered on `UIControlEventTouchUpInside` for some buttons.
  */
 - (IBAction)onButtonPressed:(id)sender;
 
 /**
+ Prompt user to save potential changes before leaving the view controller.
+ 
+ @param handler A block object called when the changes have been saved or discarded.
+ 
+ @return YES if no change is observed. NO when the user is prompted.
  */
 - (BOOL)shouldLeave:(blockMXKAccountDetailsViewController_onReadyToLeave)handler;
 
