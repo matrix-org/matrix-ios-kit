@@ -126,9 +126,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 }
 
 - (void)dealloc {
-    
-    [self reset];
-    
     alertsArray = nil;
 }
 
@@ -324,10 +321,18 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (void)destroy {
     
-    // Reset account to dispose all resources
-    self.mxAccount = nil;
-    
-    [super destroy];
+    if (isSavingInProgress) {
+        __weak typeof(self) weakSelf = self;
+        onReadyToLeaveHandler = ^() {
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            [strongSelf destroy];
+        };
+    } else {
+        // Reset account to dispose all resources (Discard here potentials changes)
+        self.mxAccount = nil;
+        
+        [super destroy];
+    }
 }
 
 - (void)saveUserInfo {
