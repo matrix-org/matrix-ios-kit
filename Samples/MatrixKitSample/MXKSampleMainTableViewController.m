@@ -164,7 +164,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     
     // Check whether some accounts are availables
     if ([[MXKAccountManager sharedManager] accounts].count) {
-        [self launchMatrixSession];
+        [self launchMatrixSessions];
     } else {
         // Ask for a matrix account first
         [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
@@ -200,7 +200,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     // Dispose of any resources that can be recreated.
 }
 
-- (void)launchMatrixSession {
+- (void)launchMatrixSessions {
     
     // Launch a matrix session for all existing accounts.
     
@@ -410,8 +410,15 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mxSession) {
         MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)destinationViewController;
         sampleRecentListViewController.delegate = self;
-
-        MXKRecentListDataSource *listDataSource = [[MXKRecentListDataSource alloc] initWithMatrixSession:self.mxSession];
+        
+        // Prepare listDataSource
+        MXKRecentListDataSource *listDataSource = [[MXKRecentListDataSource alloc] init];
+        NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
+        for (MXKAccount *account in accounts) {
+            if (account.mxSession) {
+                [listDataSource addMatrixSession:account.mxSession];
+            }
+        }
         [sampleRecentListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"]) {

@@ -36,14 +36,23 @@
 @synthesize state;
 
 #pragma mark - Life cycle
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        state = MXKDataSourceStateUnknown;
+        cellDataMap = [NSMutableDictionary dictionary];
+        cellViewMap = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession {
 
-    self = [super init];
+    self = [self init];
     if (self) {
         _mxSession = matrixSession;
         state = MXKDataSourceStatePreparing;
-        cellDataMap = [NSMutableDictionary dictionary];
-        cellViewMap = [NSMutableDictionary dictionary];
 
         // Listen to MXSession state changes
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:kMXSessionStateDidChangeNotification object:nil];

@@ -16,278 +16,274 @@
 
 #import "MXKRecentListDataSource.h"
 
-#import "MXKRecentCellData.h"
 #import "MXKRecentTableViewCell.h"
 
-#import "MXKRoomDataSourceManager.h"
-
-#pragma mark - Constant definitions
-NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
-
-
 @interface MXKRecentListDataSource () {
-
-    MXKRoomDataSourceManager *roomDataSourceManager;
+    
+    /**
+     Array of `MXSession` instances.
+     */
+    NSMutableArray *mxSessionArray;
+    
+    /**
+     Array of `MXKSessionRecentsDataSource` instances (one by matrix session).
+     */
+    NSMutableArray *recentsDataSourceArray;
 }
 
 @end
 
 @implementation MXKRecentListDataSource
 
-- (instancetype)initWithMatrixSession:(MXSession *)matrixSession {
-    self = [super initWithMatrixSession:matrixSession];
+- (instancetype)init {
+    self = [super init];
     if (self) {
-
-        roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
-
-        cellDataArray = [NSMutableArray array];
-        filteredCellDataArray = nil;
-
+        mxSessionArray = [NSMutableArray array];
+        recentsDataSourceArray = [NSMutableArray array];
+        
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
         [self registerCellViewClass:MXKRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
-
-        // Set default MXEvent -> NSString formatter
-        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
-        _eventFormatter.isForSubtitle = YES;
-
-        [self didMXSessionStateChange];
-
-        // Listen to MXRoomDataSource
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
     }
     return self;
 }
 
+- (instancetype)initWithMatrixSession:(MXSession *)matrixSession {
+    
+    self = [self init];
+    if (self) {
+        [self addMatrixSession:matrixSession];
+    }
+    return self;
+}
+
+
+- (void)addMatrixSession:(MXSession *)matrixSession {
+    
+    MXKSessionRecentsDataSource *recentsDataSource = [[MXKSessionRecentsDataSource alloc] initWithMatrixSession:matrixSession];
+    
+    if (recentsDataSource) {
+        [mxSessionArray addObject:matrixSession];
+        
+        recentsDataSource.delegate = self;
+        [recentsDataSourceArray addObject:recentsDataSource];
+    }
+}
+
+- (void)removeMatrixSession:(MXSession*)matrixSession {
+    
+    for (NSUInteger index = 0; index < mxSessionArray.count; index++) {
+        MXSession *mxSession = [mxSessionArray objectAtIndex:index];
+        if ([mxSession isEqual:matrixSession]) {
+            MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:index];
+            [recentsDataSource destroy];
+            
+            [recentsDataSourceArray removeObjectAtIndex:index];
+            [mxSessionArray removeObjectAtIndex:index];
+            
+            [self.delegate dataSource:self didCellChange:nil];
+            
+            break;
+        }
+    }
+}
+
+#pragma mark - MXKDataSource overridden
+
+- (MXSession*)mxSession {
+    
+    // TODO: This property is not well adapted in case of multi-sessions
+    // We consider by default the first added session as the main one...
+    if (mxSessionArray.count) {
+        return [mxSessionArray firstObject];
+    }
+    return nil;
+}
+
+- (MXKDataSourceState)state {
+    
+    // Presently only a global state is available.
+    // TODO: state of each internal recents data source should be public.
+    
+    MXKDataSourceState currentState = MXKDataSourceStateUnknown;
+    MXKSessionRecentsDataSource *dataSource;
+    
+    if (recentsDataSourceArray.count) {
+        
+        dataSource = [recentsDataSourceArray firstObject];
+        currentState = dataSource.state;
+        
+        // Deduce the current state according to the internal data sources
+        for (NSUInteger index = 1; index < recentsDataSourceArray.count; index++) {
+            dataSource = [recentsDataSourceArray objectAtIndex:index];
+            
+            switch (dataSource.state) {
+                case MXKDataSourceStateUnknown:
+                    break;
+                case MXKDataSourceStatePreparing:
+                    currentState = MXKDataSourceStatePreparing;
+                    break;
+                case MXKDataSourceStateFailed:
+                    if (currentState == MXKDataSourceStateUnknown) {
+                        currentState = MXKDataSourceStateFailed;
+                    }
+                    break;
+                case MXKDataSourceStateReady:
+                    if (currentState == MXKDataSourceStateUnknown || currentState == MXKDataSourceStateFailed) {
+                        currentState = MXKDataSourceStateReady;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+    }
+        
+    return currentState;
+}
+
+- (void)registerCellDataClass:(Class)cellDataClass forCellIdentifier:(NSString *)identifier {
+    
+    [super registerCellDataClass:cellDataClass forCellIdentifier:identifier];
+    
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        [recentsDataSource registerCellDataClass:cellDataClass forCellIdentifier:identifier];
+    }
+}
+
+- (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier {
+    
+    [super registerCellViewClass:cellViewClass forCellIdentifier:identifier];
+    
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        [recentsDataSource registerCellViewClass:cellViewClass forCellIdentifier:identifier];
+    }
+}
+
 - (void)destroy {
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
-
-    cellDataArray = nil;
-    filteredCellDataArray = nil;
-    
-    _eventFormatter = nil;
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        [recentsDataSource destroy];
+    }
+    recentsDataSourceArray = nil;
     
     [super destroy];
 }
 
-- (void)didMXSessionStateChange {
-    if (MXSessionStateStoreDataReady <= self.mxSession.state && (0 == cellDataArray.count)) {
-        [self loadData];
-    }
+#pragma mark -
+
+- (NSArray*)mxSessionArray {
+    return [NSArray arrayWithArray:mxSessionArray];
 }
 
 - (NSUInteger)unreadCount {
 
     NSUInteger unreadCount = 0;
 
-    // Sum unreadCount of all current cells
-    // Use numberOfRowsInSection methods so that we take benefit of the filtering
-    for (NSUInteger i = 0; i < [self tableView:nil numberOfRowsInSection:0]; i++) {
-
-        id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
-        unreadCount += cellData.unreadCount;
+    // Sum unreadCount of all current data sources
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        unreadCount += recentsDataSource.unreadCount;
     }
     return unreadCount;
 }
 
 - (void)searchWithPatterns:(NSArray*)patternsList {
-    if (patternsList.count) {
-        if (filteredCellDataArray) {
-            [filteredCellDataArray removeAllObjects];
-        } else {
-            filteredCellDataArray = [NSMutableArray arrayWithCapacity:cellDataArray.count];
-        }
-        
-        for (id<MXKRecentCellDataStoring> cellData in cellDataArray) {
-            for (NSString* pattern in patternsList) {
-                if ([[cellData.roomDataSource.room.state displayname] rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound) {
-                    [filteredCellDataArray addObject:cellData];
-                    break;
-                }
-            }
-        }
-    } else {
-        filteredCellDataArray = nil;
-    }
     
-    [self.delegate dataSource:self didCellChange:nil];
-}
-
-- (id<MXKRecentCellDataStoring>)cellDataAtIndex:(NSInteger)index {
-
-    if (filteredCellDataArray) {
-        return filteredCellDataArray[index];
-    }
-    return cellDataArray[index];
-}
-
-- (CGFloat)cellHeightAtIndex:(NSInteger)index {
-
-    id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:index];
-
-    Class<MXKCellRendering> class = [self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier];
-    return [class heightForCellData:cellData withMaximumWidth:0];
-}
-
-
-#pragma mark - Events processing
-- (void)loadData {
-
-    // Reset the table
-    [cellDataArray removeAllObjects];
-
-    // Retrieve the MXKCellData class to manage the data
-    Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-    NSAssert([class conformsToProtocol:@protocol(MXKRecentCellDataStoring)], @"MXKRecentListDataSource only manages MXKCellData that conforms to MXKRecentCellDataStoring protocol");
-
-    for (MXRoom *room in self.mxSession.rooms) {
-
-        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
-
-        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
-        if (cellData) {
-            [cellDataArray addObject:cellData];
-        }
-    }
-
-    // Update here data source state if it is not already ready
-    if (state != MXKDataSourceStateReady) {
-        state = MXKDataSourceStateReady;
-        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
-            [self.delegate dataSource:self didStateChange:state];
-        }
-    }
-    [self sortCellData];
-
-    // Listen to MXSession rooms count changes
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
-
-}
-
-- (void)didRoomInformationChanged:(NSNotification *)notif {
-
-    MXKRoomDataSource *roomDataSource = notif.object;
-    if (roomDataSource.mxSession == self.mxSession) {
-
-        // Retrieve the corresponding cell data
-        id<MXKRecentCellDataStoring> theRoomData;
-        for (id<MXKRecentCellDataStoring> roomData in cellDataArray) {
-            if (roomData.roomDataSource == roomDataSource) {
-                theRoomData = roomData;
-                break;
-            }
-        }
-
-        // And update it
-        if (theRoomData) {
-            [theRoomData update];
-            [self sortCellData];
-        }
-        else {
-            NSLog(@"[MXKRecentListDataSource] didRoomLastMessageChanged: Cannot find the changed room data source");
-        }
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        [recentsDataSource searchWithPatterns:patternsList];
     }
 }
 
-- (void)didMXSessionHaveNewRoom:(NSNotification *)notif {
-    MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession) {
-        NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
+- (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath *)indexPath {
 
-        // Add the room if there is not yet a cell for it
-        id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
-        if (nil == roomData) {
-
-            NSLog(@"MXKRecentListDataSource] Add newly joined room: %@", roomId);
-
-            // Retrieve the MXKCellData class to manage the data
-            Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-
-            MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:roomId create:YES];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
-            if (cellData) {
-
-                [cellDataArray addObject:cellData];
-                [self sortCellData];
-            }
-        }
+    if (indexPath.section < recentsDataSourceArray.count) {
+        MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:indexPath.section];
+        
+        return [recentsDataSource cellDataAtIndex:indexPath.row];
     }
+    return nil;
 }
 
-- (void)didMXSessionDidLeaveRoom:(NSNotification *)notif {
+- (CGFloat)cellHeightAtIndexPath:(NSIndexPath *)indexPath {
 
-    MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession) {
-
-        NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-        id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
-
-        if (roomData) {
-
-            NSLog(@"MXKRecentListDataSource] Remove left room: %@", roomId);
-
-            [cellDataArray removeObject:roomData];
-            [self sortCellData];
-        }
+    if (indexPath.section < recentsDataSourceArray.count) {
+        MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:indexPath.section];
+        
+        return [recentsDataSource cellHeightAtIndex:indexPath.row];
     }
-}
-
-// Order cells
-- (void)sortCellData {
-
-    // Order them by origin_server_ts
-    [cellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2) {
-        NSComparisonResult result = NSOrderedAscending;
-        if (cellData2.lastEvent.originServerTs > cellData1.lastEvent.originServerTs) {
-            result = NSOrderedDescending;
-        } else if (cellData2.lastEvent.originServerTs == cellData1.lastEvent.originServerTs) {
-            result = NSOrderedSame;
-        }
-        return result;
-    }];
-
-    // And inform the delegate about the update
-    [self.delegate dataSource:self didCellChange:nil];
-}
-
-
-// Find the cell data that stores information about the given room id
-- (id<MXKRecentCellDataStoring>)cellDataWithRoomId:(NSString*)roomId {
-
-    id<MXKRecentCellDataStoring> theRoomData;
-    for (id<MXKRecentCellDataStoring> roomData in cellDataArray) {
-        if ([roomData.roomDataSource.roomId isEqualToString:roomId]) {
-            theRoomData = roomData;
-            break;
-        }
-    }
-    return theRoomData;
+    return 0;
 }
 
 
 #pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    NSInteger count = 0;
+    
+    for (MXKSessionRecentsDataSource *dataSource in recentsDataSourceArray) {
+        if (dataSource.state == MXKDataSourceStateReady) {
+            count ++;
+        }
+    }
+    return count;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    if (filteredCellDataArray) {
-        return filteredCellDataArray.count;
+    if (section < recentsDataSourceArray.count) {
+        MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
+        
+        return recentsDataSource.numberOfCells;
     }
-    return cellDataArray.count;
+    
+    return 0;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    
+    NSString *title = nil;
+    
+    if (mxSessionArray.count > 1 && section < mxSessionArray.count) {
+        MXSession *mxSession = [mxSessionArray objectAtIndex:section];
+        
+        title = mxSession.myUser.displayname;
+        if (!title.length) {
+            title = mxSession.myUser.userId;
+        }
+    }
+    
+    return title;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    id<MXKRecentCellDataStoring> roomData = [self cellDataAtIndex:indexPath.row];
+    if (indexPath.section < recentsDataSourceArray.count) {
+        MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:indexPath.section];
+        
+        id<MXKRecentCellDataStoring> roomData = [recentsDataSource cellDataAtIndex:indexPath.row];
+        
+        MXKRecentTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRecentCellIdentifier forIndexPath:indexPath];
+        
+        // Make the bubble display the data
+        [cell render:roomData];
+        
+        return cell;
+    }
+    return nil;
+}
 
-    MXKRecentTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRecentCellIdentifier forIndexPath:indexPath];
+#pragma mark - MXKDataSourceDelegate
 
-    // Make the bubble display the data
-    [cell render:roomData];
+- (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes {
+    [self.delegate dataSource:self didCellChange:changes];
+}
 
-    return cell;
+- (void)dataSource:(MXKDataSource*)dataSource didStateChange:(MXKDataSourceState)state {
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
+        [self.delegate dataSource:self didStateChange:self.state];
+    }
 }
 
 @end

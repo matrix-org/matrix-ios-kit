@@ -394,7 +394,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Launch mxSession
     [mxSession start:^{
-        NSLog(@"[MXKAccount] The session is ready. Matrix SDK session has been started in %0.fms.", [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
+        NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
         

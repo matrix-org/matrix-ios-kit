@@ -114,13 +114,13 @@
 #pragma mark - UITableView delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    return [dataSource cellHeightAtIndex:indexPath.row];
+    return [dataSource cellHeightAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
     if (_delegate) {
-        id<MXKRecentCellDataStoring> cellData = [dataSource cellDataAtIndex:indexPath.row];
+        id<MXKRecentCellDataStoring> cellData = [dataSource cellDataAtIndexPath:indexPath];
 
         [_delegate recentListViewController:self didSelectRoom:cellData.roomDataSource.room.state.roomId];
     }

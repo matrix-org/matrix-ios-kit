@@ -14,83 +14,58 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
-#import <MatrixSDK/MatrixSDK.h>
-
-#import "MXKDataSource.h"
-#import "MXKRecentCellData.h"
-#import "MXKEventFormatter.h"
+#import "MXKSessionRecentsDataSource.h"
 
 /**
- Identifier to use for cells that display a room is the recents list.
+ The recents data source for `MXKRecentsViewController`. This data source handles one or more matrix sessions.
  */
-extern NSString *const kMXKRecentCellIdentifier;
+@interface MXKRecentListDataSource : MXKDataSource <UITableViewDataSource, MXKDataSourceDelegate>
 
 /**
- The data source for `MXKRecentsViewController`.
+ List of associated matrix sessions.
  */
-@interface MXKRecentListDataSource : MXKDataSource <UITableViewDataSource> {
-
-@protected
-
-    /**
-     The data for the cells served by `MXKRecentsDataSource`.
-     */
-    NSMutableArray *cellDataArray;
-    
-    /**
-     The filtered recents: sub-list of `cellDataArray` defined by `searchWithPatterns:` call.
-     */
-    NSMutableArray *filteredCellDataArray;
-}
+@property (nonatomic, readonly) NSArray* mxSessions;
 
 /**
  The total count of unread messages.
  */
 @property (nonatomic, readonly) NSUInteger unreadCount;
 
-
-#pragma mark - Configuration
-
 /**
- The events to display texts formatter.
- `MXKRoomCellDataStoring` instances can use it to format text.
- */
-@property (nonatomic) MXKEventFormatter *eventFormatter;
-
-
-#pragma mark - Life cycle
-/**
- Initialise the data source to serve recents rooms data.
+ Add recents data from a matrix session.
  
- @param mxSession the Matrix to retrieve contextual data.
- @return the newly created instance.
+ @param mxSession the Matrix session to retrieve contextual data.
  */
-- (instancetype)initWithMatrixSession:(MXSession*)mxSession;
+- (void)addMatrixSession:(MXSession*)mxSession;
+
+/**
+ Remove recents data related to a matrix session.
+ 
+ @param mxSession the session to remove.
+ */
+- (void)removeMatrixSession:(MXSession*)mxSession;
 
 /**
  Filter the current recents list according to the provided patterns.
- When patterns are not empty, the search result is stored in `filteredCellDataArray`,
- this array provides then data for the cells served by `MXKRecentsDataSource`.
  
  @param patternsList the list of patterns (`NSString` instances) to match with. Set nil to cancel search.
  */
 - (void)searchWithPatterns:(NSArray*)patternsList;
 
 /**
- Get the data for the cell at the given index.
+ Get the data for the cell at the given index path.
 
- @param index the index of the cell in the array
+ @param indexPath the index of the cell in the array
  @return the cell data
  */
-- (id<MXKRecentCellDataStoring>)cellDataAtIndex:(NSInteger)index;
+- (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath*)indexPath;
 
 /**
- Get height of the cell at the given index.
+ Get height of the cell at the given index path.
 
- @param index the index of the cell in the array
+ @param indexPath the index of the cell in the array
  @return the cell height
  */
-- (CGFloat)cellHeightAtIndex:(NSInteger)index;
+- (CGFloat)cellHeightAtIndexPath:(NSIndexPath*)indexPath;
 
 @end

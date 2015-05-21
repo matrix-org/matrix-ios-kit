@@ -18,7 +18,7 @@
 
 #import "MXKRecentCellDataStoring.h"
 
-#import "MXKRecentListDataSource.h"
+#import "MXKSessionRecentsDataSource.h"
 
 @implementation MXKRecentTableViewCell
 

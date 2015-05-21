@@ -21,11 +21,11 @@
 
 #import "MXKRoomDataSource.h"
 
-@class MXKRecentListDataSource;
+@class MXKSessionRecentsDataSource;
 
 /**
  `MXKRecentCellDataStoring` defines a protocol a class must conform in order to store recent cell data
- managed by `MXKRecentListDataSource`.
+ managed by `MXKSessionRecentsDataSource`.
  */
 @protocol MXKRecentCellDataStoring <NSObject>
 
@@ -53,13 +53,13 @@
  Create a new `MXKCellData` object for a new recent cell.
 
  @param roomDataSource the `MXKRoomDataSource` object that has data about the room.
- @param recentListDataSource the `MXKRecentListDataSource` object that will use this instance.
+ @param recentListDataSource the `MXKSessionRecentsDataSource` object that will use this instance.
  @return the newly created instance.
  */
-- (instancetype)initWithRoomDataSource:(MXKRoomDataSource*)roomDataSource andRecentListDataSource:(MXKRecentListDataSource*)recentListDataSource;
+- (instancetype)initWithRoomDataSource:(MXKRoomDataSource*)roomDataSource andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
 
 /**
- The `MXKRecentListDataSource` object calls this method when it detects a change in the room.
+ The `MXKSessionRecentsDataSource` object calls this method when it detects a change in the room.
  */
 - (void)update;
 

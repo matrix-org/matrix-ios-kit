@@ -17,11 +17,11 @@
 #import "MXKRecentCellData.h"
 
 #import "MXKRoomDataSource.h"
-#import "MXKRecentListDataSource.h"
+#import "MXKSessionRecentsDataSource.h"
 
 @interface MXKRecentCellData () {
 
-    MXKRecentListDataSource *recentListDataSource;
+    MXKSessionRecentsDataSource *recentsDataSource;
 
     // Keep reference on last event (used in case of redaction)
     MXEvent *lastEvent;
@@ -32,12 +32,12 @@
 @implementation MXKRecentCellData
 @synthesize roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
-- (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKRecentListDataSource *)recentListDataSource2 {
+- (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKSessionRecentsDataSource *)recentsDataSource2 {
 
     self = [self init];
     if (self) {
         roomDataSource = roomDataSource2;
-        recentListDataSource = recentListDataSource2;
+        recentsDataSource = recentsDataSource2;
 
         [self update];
     }
@@ -48,11 +48,11 @@
 
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
-    lastEventDate = [recentListDataSource.eventFormatter dateStringForEvent:lastEvent];
+    lastEventDate = [recentsDataSource.eventFormatter dateStringForEvent:lastEvent];
 
     // Compute the text message
     MXKEventFormatterError error;
-    lastEventTextMessage = [recentListDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+    lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
 
     // Manage error
     if (error != MXKEventFormatterErrorNone) {
@@ -80,7 +80,7 @@
     }
 
     // Compute the attribute text message
-    NSDictionary *attributes = [recentListDataSource.eventFormatter stringAttributesForEvent:lastEvent];
+    NSDictionary *attributes = [recentsDataSource.eventFormatter stringAttributesForEvent:lastEvent];
     if (attributes) {
         lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage attributes:attributes];
     } else {
