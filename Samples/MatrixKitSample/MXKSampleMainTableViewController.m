@@ -492,10 +492,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 }
 
 #pragma mark - MXKRecentListViewControllerDelegate
-- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)roomId {
+- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)roomId inMatrixSession:(MXSession *)matrixSession {
 
     // Update the selected room and go back to the main page
-    selectedRoom = [self.mxSession roomWithRoomId:roomId];
+    selectedRoom = [matrixSession roomWithRoomId:roomId];
     _selectedRoomDisplayName.text = selectedRoom.state.displayname;
     
     [self.tableView reloadData];

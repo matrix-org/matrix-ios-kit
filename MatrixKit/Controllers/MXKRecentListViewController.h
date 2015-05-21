@@ -31,8 +31,9 @@ limitations under the License.
 
  @param recentListViewController the `MXKRecentListViewController` instance.
  @param roomId the id of the selected room.
+ @param mxSession the matrix session in which the room is defined.
  */
-- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString*)roomId;
+- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString*)roomId inMatrixSession:(MXSession*)mxSession;
 
 @end
 
