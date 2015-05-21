@@ -715,27 +715,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     return 44;
 }
 
-- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 30;
-}
-- (CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return 1;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UILabel *sectionHeader = [[UILabel alloc] initWithFrame:[tableView rectForHeaderInSection:section]];
-    sectionHeader.font = [UIFont boldSystemFontOfSize:16];
-    sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-    
-    if (section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX) {
-        sectionHeader.text = @" Linked emails";
-    } else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX) {
-        sectionHeader.text = @" Configuration";
-    }
-    
-    return sectionHeader;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = nil;
     
@@ -821,6 +800,27 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 }
 
 #pragma mark - UITableView delegate
+
+- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 30;
+}
+- (CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 1;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UILabel *sectionHeader = [[UILabel alloc] initWithFrame:[tableView rectForHeaderInSection:section]];
+    sectionHeader.font = [UIFont boldSystemFontOfSize:16];
+    sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+    
+    if (section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX) {
+        sectionHeader.text = @" Linked emails";
+    } else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX) {
+        sectionHeader.text = @" Configuration";
+    }
+    
+    return sectionHeader;
+}
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.tableView == aTableView) {
