@@ -114,6 +114,8 @@ static MXKAccountManager *sharedAccountManager = nil;
 }
 
 - (void)logout {
+    
+    // Logout all existing accounts
     while (mxAccounts.lastObject) {
         [self removeAccount:mxAccounts.lastObject];
     }
