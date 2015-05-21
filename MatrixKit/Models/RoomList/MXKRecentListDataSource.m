@@ -63,6 +63,11 @@
     MXKSessionRecentsDataSource *recentsDataSource = [[MXKSessionRecentsDataSource alloc] initWithMatrixSession:matrixSession];
     
     if (recentsDataSource) {
+        
+        // Set the actual data and view classes
+        [self registerCellDataClass:[self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
+        [self registerCellViewClass:[self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
+        
         [mxSessionArray addObject:matrixSession];
         
         recentsDataSource.delegate = self;
