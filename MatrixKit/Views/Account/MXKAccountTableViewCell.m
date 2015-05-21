@@ -35,6 +35,9 @@
     if (mxAccount.mxSession) {
         
         _accountDisplayName.text = mxAccount.userDisplayName;
+        if (!_accountDisplayName.text.length) {
+            _accountDisplayName.text = mxAccount.mxCredentials.userId;
+        }
         
         // User thumbnail
         NSString *thumbnailURL = nil;
@@ -52,9 +55,7 @@
         _accountPicture.image = [UIImage imageNamed:@"default-profile"];
     }
     
-    // Round image view
-    [_accountPicture.layer setCornerRadius:_accountPicture.frame.size.width / 2];
-    _accountPicture.clipsToBounds = YES;
+    
     
     if (presenceColor) {
         _accountPicture.layer.borderWidth = 2;
@@ -62,6 +63,15 @@
     } else {
         _accountPicture.layer.borderWidth = 0;
     }
+}
+
+- (void)layoutSubviews {
+    
+    [super layoutSubviews];
+    
+    // Round image view
+    [_accountPicture.layer setCornerRadius:_accountPicture.frame.size.width / 2];
+    _accountPicture.clipsToBounds = YES;
 }
 
 @end
