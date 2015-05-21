@@ -220,6 +220,29 @@
     return 0;
 }
 
+- (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)matrixSession {
+    
+    // Look for the right data source
+    for (NSInteger section = 0; section < mxSessionArray.count; section++) {
+        MXSession *mxSession = [mxSessionArray objectAtIndex:section];
+        if ([mxSession isEqual:matrixSession]) {
+            
+            MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
+            
+            // Look for the cell
+            for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++) {
+                id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
+                if ([roomId isEqualToString:recentCellData.roomDataSource.roomId]) {
+                    
+                    // Got it
+                    return [NSIndexPath indexPathForRow:index inSection:section];
+                }
+            }
+        }
+    }
+    return nil;
+}
+
 
 #pragma mark - UITableViewDataSource
 
@@ -281,6 +304,7 @@
 #pragma mark - MXKDataSourceDelegate
 
 - (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes {
+    
     [self.delegate dataSource:self didCellChange:changes];
 }
 

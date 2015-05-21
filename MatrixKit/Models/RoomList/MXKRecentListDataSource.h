@@ -55,17 +55,25 @@
 /**
  Get the data for the cell at the given index path.
 
- @param indexPath the index of the cell in the array
+ @param indexPath the index of the cell
  @return the cell data
  */
 - (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath*)indexPath;
 
 /**
- Get height of the cell at the given index path.
+ Get the height of the cell at the given index path.
 
- @param indexPath the index of the cell in the array
+ @param indexPath the index of the cell
  @return the cell height
  */
 - (CGFloat)cellHeightAtIndexPath:(NSIndexPath*)indexPath;
 
+/**
+ Get the index path of the cell related to the provided roomId and session.
+ 
+ @param roomId the room identifier.
+ @param mxSession the matrix session in which the room should be available.
+ @return indexPath the index of the cell (nil if not found).
+ */
+- (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 @end
