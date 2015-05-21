@@ -79,7 +79,7 @@
     
     for (NSUInteger index = 0; index < mxSessionArray.count; index++) {
         MXSession *mxSession = [mxSessionArray objectAtIndex:index];
-        if ([mxSession isEqual:matrixSession]) {
+        if (mxSession == matrixSession) {
             MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:index];
             [recentsDataSource destroy];
             
@@ -178,7 +178,7 @@
 
 #pragma mark -
 
-- (NSArray*)mxSessionArray {
+- (NSArray*)mxSessions {
     return [NSArray arrayWithArray:mxSessionArray];
 }
 
@@ -225,7 +225,7 @@
     // Look for the right data source
     for (NSInteger section = 0; section < mxSessionArray.count; section++) {
         MXSession *mxSession = [mxSessionArray objectAtIndex:section];
-        if ([mxSession isEqual:matrixSession]) {
+        if (mxSession == matrixSession) {
             
             MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
             
