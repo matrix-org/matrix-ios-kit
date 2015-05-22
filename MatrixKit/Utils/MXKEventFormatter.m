@@ -124,13 +124,9 @@
             
             NSString *redactorId = event.redactedBecause[@"user_id"];
             NSString *redactedBy;
-            if ([redactorId isEqualToString:mxSession.myUser.userId]) {
-                redactedBy = @"you";
-            } else {
-                // Consider live room state to resolve redactor name if no roomState is provided
-                MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
-                redactedBy = [aRoomState memberName:redactorId];
-            }
+            // Consider live room state to resolve redactor name if no roomState is provided
+            MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
+            redactedBy = [aRoomState memberName:redactorId];
             
             NSString *redactedReason = (event.redactedBecause[@"content"])[@"reason"];
             if (redactedReason.length) {
@@ -154,19 +150,10 @@
     
     // Prepare display name for concerned users
     NSString *senderDisplayName;
-    if (!event.isEmote && [event.userId isEqualToString:mxSession.myUser.userId]) {
-        senderDisplayName = @"You";
-    } else {
-        senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.userId;
-    }
-    
+    senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.userId;
     NSString *targetDisplayName = nil;
     if (event.stateKey) {
-        if ([event.stateKey isEqualToString:mxSession.myUser.userId]) {
-            targetDisplayName = @"you";
-        } else {
-            targetDisplayName = roomState ? [roomState memberName:event.stateKey] : event.stateKey;
-        }
+        targetDisplayName = roomState ? [roomState memberName:event.stateKey] : event.stateKey;
     }
 
     switch (event.eventType) {
