@@ -135,7 +135,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - override MXKTableViewController
+#pragma mark - Override MXKTableViewController
 
 - (void)destroy {
     

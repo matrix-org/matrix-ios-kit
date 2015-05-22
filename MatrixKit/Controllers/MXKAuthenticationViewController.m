@@ -53,6 +53,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 }
 
 @property (strong, nonatomic) IBOutlet UIScrollView *authenticationScrollView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authScrollViewBottomConstraint;
+
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentViewHeightConstraint;
 
@@ -108,6 +110,26 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
+    // Adjust bottom constraint of the scroll view in order to take into account potential tabBar
+    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
+        [NSLayoutConstraint deactivateConstraints:@[_authScrollViewBottomConstraint]];
+    } else {
+        [self.view removeConstraint:_authScrollViewBottomConstraint];
+    }
+    
+    _authScrollViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
+                                                                              attribute:NSLayoutAttributeTop
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:self.authenticationScrollView
+                                                                              attribute:NSLayoutAttributeBottom
+                                                                             multiplier:1.0f
+                                                                               constant:0.0f];
+    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)]) {
+        [NSLayoutConstraint activateConstraints:@[_authScrollViewBottomConstraint]];
+    } else {
+        [self.view addConstraint:_authScrollViewBottomConstraint];
+    }
+    
     // Force contentView in full width
     NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
                                                                       attribute:NSLayoutAttributeLeading
@@ -126,6 +148,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                                                       multiplier:1.0
                                                                         constant:0];
     [self.view addConstraint:rightConstraint];
+    
+    [self.view setNeedsUpdateConstraints];
     
     _authenticationScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
@@ -163,10 +187,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Update supported authentication flow
     self.authType = _authType;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTextFieldChange:) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
@@ -182,12 +202,29 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
 }
 
-#pragma mark - override MXKViewController
+#pragma mark - Override MXKViewController
+
+- (void)onKeyboardShowAnimationComplete {
+    // Report the keyboard view in order to track keyboard frame changes
+    // TODO define inputAccessoryView for each text input
+    // and report the inputAccessoryView.superview of the firstResponder in self.keyboardView.
+}
+
+- (void)setKeyboardHeight:(CGFloat)keyboardHeight {
+    // Deduce the bottom inset for the scroll view (Don't forget the potential tabBar)
+    CGFloat scrollViewInsetBottom = keyboardHeight - self.bottomLayoutGuide.length;
+    // Check whether the keyboard is over the tabBar
+    if (scrollViewInsetBottom < 0) {
+        scrollViewInsetBottom = 0;
+    }
+    
+    UIEdgeInsets insets = self.authenticationScrollView.contentInset;
+    insets.bottom = scrollViewInsetBottom;
+    self.authenticationScrollView.contentInset = insets;
+}
 
 - (void)destroy {
     
@@ -565,22 +602,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 }
 
 #pragma mark - Keyboard handling
-
-- (void)onKeyboardWillShow:(NSNotification *)notif {
-    NSValue *rectVal = notif.userInfo[UIKeyboardFrameEndUserInfoKey];
-    CGRect endRect = rectVal.CGRectValue;
-    
-    UIEdgeInsets insets = self.authenticationScrollView.contentInset;
-    // Handle portrait/landscape mode
-    insets.bottom = (endRect.origin.y == 0) ? endRect.size.width : endRect.size.height;
-    self.authenticationScrollView.contentInset = insets;
-}
-
-- (void)onKeyboardWillHide:(NSNotification *)notif {
-    UIEdgeInsets insets = self.authenticationScrollView.contentInset;
-    insets.bottom = 0;
-    self.authenticationScrollView.contentInset = insets;
-}
 
 - (void)dismissKeyboard {
     // Hide the keyboard

@@ -249,8 +249,8 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSInteger count = 0;
     
-    for (MXKSessionRecentsDataSource *dataSource in recentsDataSourceArray) {
-        if (dataSource.state == MXKDataSourceStateReady) {
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        if (recentsDataSource.state == MXKDataSourceStateReady && recentsDataSource.numberOfCells) {
             count ++;
         }
     }

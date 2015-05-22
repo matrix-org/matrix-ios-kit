@@ -118,6 +118,7 @@
 		F0CF98FD1B0CDF6100EAE373 /* MXKTableViewCellWithButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CF98FB1B0CDF6100EAE373 /* MXKTableViewCellWithButton.m */; };
 		F0CF98FE1B0CDF6100EAE373 /* MXKTableViewCellWithButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CF98FC1B0CDF6100EAE373 /* MXKTableViewCellWithButton.xib */; };
 		F0CF99021B0D1D4B00EAE373 /* MXKRecentListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CF99011B0D1D4B00EAE373 /* MXKRecentListDataSource.m */; };
+		F0CF99041B0F1A0B00EAE373 /* MXKRecentListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CF99031B0F1A0B00EAE373 /* MXKRecentListViewController.xib */; };
 		F0DB1AC51B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F0DB1AC31B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m */; };
 		F0DB1AC61B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */; };
 		F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */; };
@@ -323,6 +324,7 @@
 		F0CF98FF1B0CEAB900EAE373 /* MXKTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKTableViewCell.h; sourceTree = "<group>"; };
 		F0CF99001B0D1D4B00EAE373 /* MXKRecentListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentListDataSource.h; sourceTree = "<group>"; };
 		F0CF99011B0D1D4B00EAE373 /* MXKRecentListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRecentListDataSource.m; sourceTree = "<group>"; };
+		F0CF99031B0F1A0B00EAE373 /* MXKRecentListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRecentListViewController.xib; sourceTree = "<group>"; };
 		F0DB1AC21B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomMemberTableViewCell.h; sourceTree = "<group>"; };
 		F0DB1AC31B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomMemberTableViewCell.m; sourceTree = "<group>"; };
 		F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKSampleRoomMemberTableViewCell.xib; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 				F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */,
 				32CEE2201AB1E37600F7C74D /* MXKRecentListViewController.h */,
 				32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */,
+				F0CF99031B0F1A0B00EAE373 /* MXKRecentListViewController.xib */,
 				F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */,
 				F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */,
 				3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */,
@@ -901,6 +904,7 @@
 				F01C7DF61AFB6BEA00FC2F59 /* icon_speaker@2x.png in Resources */,
 				F09E289F1AC2007000C51E44 /* icon_search@2x.png in Resources */,
 				F06E76821AF0FEB100980E5A /* MXKAuthenticationViewController.xib in Resources */,
+				F0CF99041B0F1A0B00EAE373 /* MXKRecentListViewController.xib in Resources */,
 				F01C7DF31AFB6BEA00FC2F59 /* icon_mute.png in Resources */,
 				327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */,
 				F01C7DF41AFB6BEA00FC2F59 /* icon_mute@2x.png in Resources */,

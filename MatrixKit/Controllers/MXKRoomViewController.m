@@ -50,11 +50,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKAlert *currentAlert;
     
     /**
-     The keyboard view set when keyboard display animation is complete. This field is nil when keyboard is dismissed.
-     */
-    UIView *keyboardView;
-    
-    /**
      Boolean value used to scroll to bottom the bubble history at first display.
      */
     BOOL shouldScrollToBottomOnTableRefresh;
@@ -142,28 +137,29 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (!_bubblesTableView) {
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
-        
-        // Adjust bottom constraint of the input toolbar container in order to take into account potential tabBar
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
-            [NSLayoutConstraint deactivateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
-        } else {
-            [self.view removeConstraint:_roomInputToolbarContainerBottomConstraint];
-        }
-        
-        _roomInputToolbarContainerBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
-                                                                                  attribute:NSLayoutAttributeTop
-                                                                                  relatedBy:NSLayoutRelationEqual
-                                                                                     toItem:self.roomInputToolbarContainer
-                                                                                  attribute:NSLayoutAttributeBottom
-                                                                                 multiplier:1.0f
-                                                                                   constant:0.0f];
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)]) {
-            [NSLayoutConstraint activateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
-        } else {
-            [self.view addConstraint:_roomInputToolbarContainerBottomConstraint];
-        }
-        [self.view setNeedsUpdateConstraints];
     }
+    
+    // Adjust bottom constraint of the input toolbar container in order to take into account potential tabBar
+    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
+        [NSLayoutConstraint deactivateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
+    } else {
+        [self.view removeConstraint:_roomInputToolbarContainerBottomConstraint];
+    }
+    
+    _roomInputToolbarContainerBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
+                                                                              attribute:NSLayoutAttributeTop
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:self.roomInputToolbarContainer
+                                                                              attribute:NSLayoutAttributeBottom
+                                                                             multiplier:1.0f
+                                                                               constant:0.0f];
+    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)]) {
+        [NSLayoutConstraint activateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
+    } else {
+        [self.view addConstraint:_roomInputToolbarContainerBottomConstraint];
+    }
+    [self.view setNeedsUpdateConstraints];
+    
     // Hide bubbles table by default in order to hide initial scrolling to the bottom
     _bubblesTableView.hidden = YES;
     
@@ -177,14 +173,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (roomDataSource) {
         [self configureView];
     }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    
-    [super viewWillAppear:animated];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -202,14 +190,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    
-    [super viewWillDisappear:animated];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-}
-
 - (void)dealloc {
 }
 
@@ -223,7 +203,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (!keyboardView) {
+        if (!self.keyboardView) {
             [self updateMessageTextViewFrame];
         }
         // Cell width will be updated, force table refresh to take into account changes of message components
@@ -243,12 +223,46 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     
-    if (!keyboardView) {
+    if (!self.keyboardView) {
         [self updateMessageTextViewFrame];
     }
 }
 
-#pragma mark - override MXKViewController
+#pragma mark - Override MXKViewController
+
+- (void)onKeyboardShowAnimationComplete {
+    // Report the keyboard view in order to track keyboard frame changes
+    self.keyboardView = inputToolbarView.inputAccessoryView.superview;
+}
+
+- (void)setKeyboardHeight:(CGFloat)keyboardHeight {
+    
+    // Scroll the tableview content when a new keyboard is presented.
+    if (!super.keyboardHeight) {
+        [self scrollBubblesTableViewToBottomAnimated:NO];
+    }
+    
+    // Deduce the bottom constraint for the input toolbar view (Don't forget the potential tabBar)
+    CGFloat inputToolbarViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
+    // Check whether the keyboard is over the tabBar
+    if (inputToolbarViewBottomConst < 0) {
+        inputToolbarViewBottomConst = 0;
+    }
+    
+    // Update constraints
+    _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
+    _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant;
+    
+    // Force layout immediately to take into account new constraint
+    [self.view layoutIfNeeded];
+    
+    // Compute the visible area (tableview + toolbar) at the end of animation
+    CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardHeight;
+    // Deduce max height of the message text input by considering the minimum height of the table view.
+    inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
+    
+    super.keyboardHeight = keyboardHeight;
+}
 
 - (void)destroy {
     
@@ -314,9 +328,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)updateMessageTextViewFrame {
-    if (!keyboardView) {
+    if (!self.keyboardView) {
         // Compute the visible area (tableview + toolbar)
-        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardView.frame.size.height;
+        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - self.keyboardView.frame.size.height;
         // Deduce max height of the message text input by considering the minimum height of the table view.
         inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     }
@@ -412,12 +426,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         _bubblesTableView.tableHeaderView = nil;
     }
     
-    if (keyboardView) {
-        // Remove keyboard view observers
-        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
-        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
-        keyboardView = nil;
-    }
+    // Dispose potential keyboard view
+    self.keyboardView = nil;
 }
 
 #pragma mark - Public API
@@ -515,12 +525,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (inputToolbarView) {
         inputToolbarView.delegate = nil;
         
-        if (keyboardView) {
-            // Remove keyboard view observers
-            [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
-            [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
-            keyboardView = nil;
-        }
+        // Dispose potential keyboard view
+        self.keyboardView = nil;
         
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
             [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
@@ -760,128 +766,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Leave super decide
     [super stopActivityIndicator];
-}
-
-#pragma mark - Keyboard handling
-
-- (void)onKeyboardWillShow:(NSNotification *)notif {
-    
-    // Get the keyboard size
-    NSValue *rectVal = notif.userInfo[UIKeyboardFrameEndUserInfoKey];
-    CGRect endRect = rectVal.CGRectValue;
-    
-    // IOS 8 triggers some unexpected keyboard events
-    if ((endRect.size.height == 0) || (endRect.size.width == 0)) {
-        return;
-    }
-    
-    // Check screen orientation
-    CGFloat keyboardHeight = (endRect.origin.y == 0) ? endRect.size.width : endRect.size.height;
-    
-    // Compute the new bottom constraint for the input toolbar view (Don't forget potential tabBar)
-    CGFloat inputToolbarViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
-    
-    // Compute the visible area (tableview + toolbar) at the end of animation
-    CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardHeight;
-    // Deduce max height of the message text input by considering the minimum height of the table view.
-    CGFloat maxTextHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
-    
-    // Get the animation info
-    NSNumber *curveValue = [[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
-    UIViewAnimationCurve animationCurve = curveValue.intValue;
-    
-    // The duration is ignored but it is better to define it
-    double animationDuration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    
-    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
-        
-        // Apply new constant
-        _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
-        _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant;
-        
-        // Force layout immediately to take into account new constraint
-        [self.view layoutIfNeeded];
-        
-        // Update the text input frame
-        inputToolbarView.maxHeight = maxTextHeight;
-        
-        // Scroll the tableview content
-        [self scrollBubblesTableViewToBottomAnimated:NO];
-    } completion:^(BOOL finished) {
-        
-        // Check whether the keyboard is still visible at the end of animation
-        keyboardView = inputToolbarView.inputAccessoryView.superview;
-        if (keyboardView) {
-            // Add observers to detect keyboard drag down
-            [keyboardView addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:0 context:nil];
-            [keyboardView addObserver:self forKeyPath:NSStringFromSelector(@selector(center)) options:0 context:nil];
-            
-            // Remove UIKeyboardWillShowNotification observer to ignore this notification until keyboard is dismissed.
-            // Note: UIKeyboardWillShowNotification may be triggered several times before keyboard is dismissed,
-            // because the keyboard height is updated (switch to a Chinese keyboard for example).
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-        }
-    }];
-}
-
-- (void)onKeyboardWillHide:(NSNotification *)notif {
-    
-    // Update keyboard view observer
-    if (keyboardView) {
-        // Restore UIKeyboardWillShowNotification observer
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-        
-        // Remove keyboard view observers
-        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
-        [keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
-        keyboardView = nil;
-    }
-    
-    // Get the animation info
-    NSNumber *curveValue = [[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
-    UIViewAnimationCurve animationCurve = curveValue.intValue;
-    
-    // the duration is ignored but it is better to define it
-    double animationDuration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    
-    // animate the keyboard closing
-    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
-        _roomInputToolbarContainerBottomConstraint.constant = 0;
-        _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerHeightConstraint.constant;
-        [_roomInputToolbarContainer setNeedsUpdateConstraints];
-    } completion:^(BOOL finished) {
-    }];
-}
-
-#pragma mark - KVO
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ((object == keyboardView) && ([keyPath isEqualToString:NSStringFromSelector(@selector(frame))] || [keyPath isEqualToString:NSStringFromSelector(@selector(center))])) {
-        // Check whether the keyboard is still visible
-        if (inputToolbarView.inputAccessoryView.superview) {
-            // The keyboard view has been modified (Maybe the user drag it down), we update the input toolbar bottom constraint to adjust layout.
-            
-            // Compute keyboard height
-            CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-            // on IOS 8, the screen size is oriented
-            if ((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                screenSize = CGSizeMake(screenSize.height, screenSize.width);
-            }
-            CGFloat keyboardHeight = screenSize.height - keyboardView.frame.origin.y;
-            
-            // Deduce the bottom constraint for the input toolbar view (Don't forget the potential tabBar)
-            CGFloat inputToolbarViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
-            // Check whether the keyboard is over the tabBar
-            if (inputToolbarViewBottomConst < 0) {
-                inputToolbarViewBottomConst = 0;
-            }
-            
-            // Update toolbar constraint
-            _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
-            _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant;
-            [_roomInputToolbarContainer setNeedsUpdateConstraints];
-        }
-    }
 }
 
 #pragma mark - Back pagination

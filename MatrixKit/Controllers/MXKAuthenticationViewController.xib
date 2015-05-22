@@ -10,6 +10,7 @@
             <connections>
                 <outlet property="authInputContainerViewHeightConstraint" destination="e04-1Y-4gZ" id="5qa-cu-M8v"/>
                 <outlet property="authInputsContainerView" destination="xWb-IJ-v7F" id="DEo-Ji-wPT"/>
+                <outlet property="authScrollViewBottomConstraint" destination="g7o-eO-7Yr" id="kVv-Xp-aTT"/>
                 <outlet property="authSwitchButton" destination="FNe-kn-VlD" id="EhA-sr-kiZ"/>
                 <outlet property="authenticationActivityIndicator" destination="30E-gm-z6O" id="DDw-QJ-ND8"/>
                 <outlet property="authenticationScrollView" destination="OHV-KQ-Ww0" id="gyc-zq-fA1"/>

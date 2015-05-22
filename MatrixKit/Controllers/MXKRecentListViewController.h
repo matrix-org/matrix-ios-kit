@@ -16,7 +16,7 @@ limitations under the License.
 
 #import <UIKit/UIKit.h>
 
-#import "MXKTableViewController.h"
+#import "MXKViewController.h"
 #import "MXKRecentListDataSource.h"
 
 @class MXKRecentListViewController;
@@ -41,7 +41,13 @@ limitations under the License.
 /**
  This view controller displays a room list.
  */
-@interface MXKRecentListViewController : MXKTableViewController <MXKDataSourceDelegate>
+@interface MXKRecentListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate, UISearchBarDelegate>
+
+@property (weak, nonatomic) IBOutlet UISearchBar *recentsSearchBar;
+@property (weak, nonatomic) IBOutlet UITableView *recentsTableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *recentsSearchBarTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *recentsSearchBarHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *recentsTableViewBottomConstraint;
 
 /**
  The current data source associated to the view controller.

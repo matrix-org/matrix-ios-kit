@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="P8X-dO-YH1">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <scenes>
+        <!--Sample Recents View Controller-->
+        <scene sceneID="6r9-d3-cv0">
+            <objects>
+                <viewController id="YbK-3w-mDu" customClass="MXKSampleRecentsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Tog-oL-liB"/>
+                        <viewControllerLayoutGuide type="bottom" id="u3h-AL-g0w"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4Dg-Op-2kE">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="crX-Dd-MGC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-858" y="-2042"/>
+        </scene>
         <!--RoomViewController-->
         <scene sceneID="Thv-pf-Y4Q">
             <objects>
@@ -41,24 +58,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Re-v2-3pC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-190" y="-1310"/>
-        </scene>
-        <!--Sample Recents View Controller-->
-        <scene sceneID="TAe-cT-fQU">
-            <objects>
-                <tableViewController id="xYP-xv-2cb" customClass="MXKSampleRecentsViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Lkt-Ok-qiD">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="dataSource" destination="xYP-xv-2cb" id="oh2-7m-9IS"/>
-                            <outlet property="delegate" destination="xYP-xv-2cb" id="OXA-ET-6Bt"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Myg-fM-iMh" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-850" y="-2072"/>
         </scene>
         <!--Sample Room Members View Controller-->
         <scene sceneID="wke-Om-3we">
@@ -139,7 +138,7 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <segue destination="xYP-xv-2cb" kind="show" identifier="showSampleRecentsViewController" id="lFv-iu-VuN"/>
+                                        <segue destination="YbK-3w-mDu" kind="show" identifier="showSampleRecentsViewController" id="Y6Z-lf-5du"/>
                                     </connections>
                                 </button>
                             </subviews>

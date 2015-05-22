@@ -57,12 +57,18 @@
         [self.rageShakeManager cancel:self];
     }
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
     // Update UI according to mxSession state, and add observer (if need)
     self.mxSession = mxSession;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
     [activityIndicator stopAnimating];
@@ -222,5 +228,99 @@
     return (self.rageShakeManager != nil);
 }
 
+#pragma mark - Keyboard handling
+
+- (void)onKeyboardShowAnimationComplete {
+    // Do nothing here - `MXKViewController-inherited` instance must override this method.
+}
+
+- (void)setKeyboardView:(UIView *)keyboardView {
+    
+    // Remove previous keyboardView if any
+    if (_keyboardView) {
+        // Restore UIKeyboardWillShowNotification observer
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+        
+        // Remove keyboard view observers
+        [_keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
+        [_keyboardView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
+        
+        _keyboardView = nil;
+    }
+    
+    if (keyboardView) {
+        // Add observers to detect keyboard drag down
+        [keyboardView addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:0 context:nil];
+        [keyboardView addObserver:self forKeyPath:NSStringFromSelector(@selector(center)) options:0 context:nil];
+        
+        // Remove UIKeyboardWillShowNotification observer to ignore this notification until keyboard is dismissed.
+        // Note: UIKeyboardWillShowNotification may be triggered several times before keyboard is dismissed,
+        // because the keyboard height is updated (switch to a Chinese keyboard for example).
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+        
+        _keyboardView = keyboardView;
+    }
+}
+
+- (void)onKeyboardWillShow:(NSNotification *)notif {
+    
+    // Get the keyboard size
+    NSValue *rectVal = notif.userInfo[UIKeyboardFrameEndUserInfoKey];
+    CGRect endRect = rectVal.CGRectValue;
+    
+    // IOS 8 triggers some unexpected keyboard events
+    if ((endRect.size.height == 0) || (endRect.size.width == 0)) {
+        return;
+    }
+    
+    // Get the animation info
+    NSNumber *curveValue = [[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+    UIViewAnimationCurve animationCurve = curveValue.intValue;
+    // The duration is ignored but it is better to define it
+    double animationDuration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    // Apply keyboard animation
+    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
+        // Set the new keyboard height by checking screen orientation
+        self.keyboardHeight = (endRect.origin.y == 0) ? endRect.size.width : endRect.size.height;
+    } completion:^(BOOL finished) {
+        [self onKeyboardShowAnimationComplete];
+    }];
+}
+
+- (void)onKeyboardWillHide:(NSNotification *)notif {
+    
+    // Remove keyboard view
+    self.keyboardView = nil;
+    
+    // Get the animation info
+    NSNumber *curveValue = [[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+    UIViewAnimationCurve animationCurve = curveValue.intValue;
+    // the duration is ignored but it is better to define it
+    double animationDuration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    // Apply keyboard animation
+    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
+        self.keyboardHeight = 0;
+    } completion:^(BOOL finished) {
+    }];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ((object == _keyboardView) && ([keyPath isEqualToString:NSStringFromSelector(@selector(frame))] || [keyPath isEqualToString:NSStringFromSelector(@selector(center))])) {
+        
+        // The keyboard view has been modified (Maybe the user drag it down), we update the input toolbar bottom constraint to adjust layout.
+        
+        // Compute keyboard height
+        CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+        // on IOS 8, the screen size is oriented
+        if ((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            screenSize = CGSizeMake(screenSize.height, screenSize.width);
+        }
+        self.keyboardHeight = screenSize.height - _keyboardView.frame.origin.y;
+    }
+}
 
 @end
