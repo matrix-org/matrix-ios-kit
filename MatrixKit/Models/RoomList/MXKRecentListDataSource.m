@@ -219,15 +219,19 @@
             sectionTitle = recentsDataSource.mxSession.myUser.userId;
         }
         
+        if (recentsDataSource.unreadCount) {
+            sectionTitle = [NSString stringWithFormat:@"%@ (%tu)", sectionTitle, recentsDataSource.unreadCount];
+        }
+        
         sectionHeader = [[UIView alloc] initWithFrame:frame];
         sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
         
         // Add shrink button
         UIButton *shrinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
         CGRect frame = shrinkButton.frame;
-        frame.size.width = frame.size.height = sectionHeader.frame.size.height - 10;
+        frame.size.width = frame.size.height = sectionHeader.frame.size.height - 6;
         frame.origin.x = sectionHeader.frame.size.width - frame.size.width - 5;
-        frame.origin.y = 5;
+        frame.origin.y = 3;
         shrinkButton.frame = frame;
         shrinkButton.contentMode = UIViewContentModeScaleAspectFit;
         if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound) {
