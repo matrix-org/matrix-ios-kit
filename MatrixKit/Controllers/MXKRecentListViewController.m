@@ -298,6 +298,20 @@
     return [dataSource cellHeightAtIndexPath:indexPath];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    // Section header is required only in case of multi sessions
+    if (self.dataSource.mxSessions.count > 1) {
+        return 40;
+    }
+    return 0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    
+    // Let dataSource provide the section header.
+    return [dataSource viewForHeaderInSection:section withFrame:[tableView rectForHeaderInSection:section]];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
     if (_delegate) {

@@ -88,6 +88,10 @@
 		F09E28A01AC2007000C51E44 /* icon_users.png in Resources */ = {isa = PBXBuildFile; fileRef = F09E28981AC2007000C51E44 /* icon_users.png */; };
 		F09E28A11AC2007000C51E44 /* icon_users@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F09E28991AC2007000C51E44 /* icon_users@2x.png */; };
 		F09E28A21AC2007000C51E44 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = F09E289A1AC2007000C51E44 /* play.png */; };
+		F0B0ECB91B135780005EB20D /* disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB51B135780005EB20D /* disclosure.png */; };
+		F0B0ECBA1B135780005EB20D /* disclosure@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB61B135780005EB20D /* disclosure@2x.png */; };
+		F0B0ECBB1B135780005EB20D /* shrink.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB71B135780005EB20D /* shrink.png */; };
+		F0B0ECBC1B135780005EB20D /* shrink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB81B135780005EB20D /* shrink@2x.png */; };
 		F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */; };
 		F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DA1AA8BB5E003BE77A /* LaunchScreen.xib */; };
 		F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DC1AA8BB5E003BE77A /* Main.storyboard */; };
@@ -279,6 +283,10 @@
 		F09E28981AC2007000C51E44 /* icon_users.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_users.png; sourceTree = "<group>"; };
 		F09E28991AC2007000C51E44 /* icon_users@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_users@2x.png"; sourceTree = "<group>"; };
 		F09E289A1AC2007000C51E44 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
+		F0B0ECB51B135780005EB20D /* disclosure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = disclosure.png; sourceTree = "<group>"; };
+		F0B0ECB61B135780005EB20D /* disclosure@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "disclosure@2x.png"; sourceTree = "<group>"; };
+		F0B0ECB71B135780005EB20D /* shrink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shrink.png; sourceTree = "<group>"; };
+		F0B0ECB81B135780005EB20D /* shrink@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shrink@2x.png"; sourceTree = "<group>"; };
 		F0CE56D81AA8BB5E003BE77A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F0CE56DB1AA8BB5E003BE77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -684,6 +692,10 @@
 			isa = PBXGroup;
 			children = (
 				F01C7DFC1AFB983300FC2F59 /* sounds */,
+				F0B0ECB51B135780005EB20D /* disclosure.png */,
+				F0B0ECB61B135780005EB20D /* disclosure@2x.png */,
+				F0B0ECB71B135780005EB20D /* shrink.png */,
+				F0B0ECB81B135780005EB20D /* shrink@2x.png */,
 				F01C7DEB1AFB6BEA00FC2F59 /* icon_backtoapp.png */,
 				F01C7DEC1AFB6BEA00FC2F59 /* icon_backtoapp@2x.png */,
 				F01C7DED1AFB6BEA00FC2F59 /* icon_mute.png */,
@@ -901,6 +913,7 @@
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				F0CE56E91AA8BB5E003BE77A /* Info.plist in Resources */,
 				F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */,
+				F0B0ECBB1B135780005EB20D /* shrink.png in Resources */,
 				F01C7DF61AFB6BEA00FC2F59 /* icon_speaker@2x.png in Resources */,
 				F09E289F1AC2007000C51E44 /* icon_search@2x.png in Resources */,
 				F06E76821AF0FEB100980E5A /* MXKAuthenticationViewController.xib in Resources */,
@@ -914,6 +927,7 @@
 				321313C41AEFB52900A9B035 /* bubble_ios_messages_right@2x.png in Resources */,
 				F0CF98F11B0B886000EAE373 /* MXKTableViewCellWithTextFieldAndButton.xib in Resources */,
 				F0CF98EB1B0B874A00EAE373 /* MXKTableViewCellWithLabelAndTextField.xib in Resources */,
+				F0B0ECB91B135780005EB20D /* disclosure.png in Resources */,
 				F09E289D1AC2007000C51E44 /* icon_keyboard@2x.png in Resources */,
 				321313C31AEFB52900A9B035 /* bubble_ios_messages_right.png in Resources */,
 				F09E28911AC1FF3000C51E44 /* MXKRoomOutgoingBubbleTableViewCell.xib in Resources */,
@@ -923,6 +937,7 @@
 				F09E28A01AC2007000C51E44 /* icon_users.png in Resources */,
 				F05FB1821AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib in Resources */,
 				F01C7DF51AFB6BEA00FC2F59 /* icon_speaker.png in Resources */,
+				F0B0ECBC1B135780005EB20D /* shrink@2x.png in Resources */,
 				F01C7E041AFB983300FC2F59 /* message.mp3 in Resources */,
 				F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */,
 				F0CF98E51B0B842700EAE373 /* MXKTableViewCellWithLabelAndSlider.xib in Resources */,
@@ -944,6 +959,7 @@
 				F01C7E051AFB983300FC2F59 /* ring.mp3 in Resources */,
 				F01C7DF21AFB6BEA00FC2F59 /* icon_backtoapp@2x.png in Resources */,
 				F01C7E061AFB983300FC2F59 /* ringback.mp3 in Resources */,
+				F0B0ECBA1B135780005EB20D /* disclosure@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

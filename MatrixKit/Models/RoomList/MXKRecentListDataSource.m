@@ -29,6 +29,11 @@
      Array of `MXKSessionRecentsDataSource` instances (one by matrix session).
      */
     NSMutableArray *recentsDataSourceArray;
+    
+    /**
+     Array of shrinked sources.
+     */
+    NSMutableArray *shrinkedRecentsDataSourceArray;
 }
 
 @end
@@ -40,6 +45,7 @@
     if (self) {
         mxSessionArray = [NSMutableArray array];
         recentsDataSourceArray = [NSMutableArray array];
+        shrinkedRecentsDataSourceArray = [NSMutableArray array];
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
@@ -172,6 +178,8 @@
         [recentsDataSource destroy];
     }
     recentsDataSourceArray = nil;
+    shrinkedRecentsDataSourceArray = nil;
+    mxSessionArray = nil;
     
     [super destroy];
 }
@@ -198,6 +206,56 @@
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
         [recentsDataSource searchWithPatterns:patternsList];
     }
+}
+
+- (UIView *)viewForHeaderInSection:(NSInteger)section withFrame:(CGRect)frame {
+    UIView *sectionHeader = nil;
+    
+    if (recentsDataSourceArray.count > 1 && section < recentsDataSourceArray.count) {
+        MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
+        
+        NSString* sectionTitle = recentsDataSource.mxSession.myUser.displayname;
+        if (!sectionTitle.length) {
+            sectionTitle = recentsDataSource.mxSession.myUser.userId;
+        }
+        
+        sectionHeader = [[UIView alloc] initWithFrame:frame];
+        sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+        
+        // Add shrink button
+        UIButton *shrinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        CGRect frame = shrinkButton.frame;
+        frame.size.width = frame.size.height = sectionHeader.frame.size.height - 10;
+        frame.origin.x = sectionHeader.frame.size.width - frame.size.width - 5;
+        frame.origin.y = 5;
+        shrinkButton.frame = frame;
+        shrinkButton.contentMode = UIViewContentModeScaleAspectFit;
+        if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound) {
+            [shrinkButton setImage:[UIImage imageNamed:@"disclosure"] forState:UIControlStateNormal];
+            [shrinkButton setImage:[UIImage imageNamed:@"disclosure"] forState:UIControlStateHighlighted];
+        } else {
+            [shrinkButton setImage:[UIImage imageNamed:@"shrink"] forState:UIControlStateNormal];
+            [shrinkButton setImage:[UIImage imageNamed:@"shrink"] forState:UIControlStateHighlighted];
+        }
+        [shrinkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        shrinkButton.tag = section;
+        [sectionHeader addSubview:shrinkButton];
+        sectionHeader.userInteractionEnabled = YES;
+        
+        // Add label
+        frame = sectionHeader.frame;
+        frame.origin.x = 5;
+        frame.origin.y = 5;
+        frame.size.width = shrinkButton.frame.origin.x - 10;
+        frame.size.height -= 10;
+        UILabel *headerLabel = [[UILabel alloc] initWithFrame:frame];
+        headerLabel.font = [UIFont boldSystemFontOfSize:16];
+        headerLabel.backgroundColor = [UIColor clearColor];
+        headerLabel.text = sectionTitle;
+        [sectionHeader addSubview:headerLabel];
+    }
+
+    return sectionHeader;
 }
 
 - (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath *)indexPath {
@@ -243,7 +301,6 @@
     return nil;
 }
 
-
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -262,27 +319,30 @@
     if (section < recentsDataSourceArray.count) {
         MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
         
-        return recentsDataSource.numberOfCells;
+        // Check whether the source is shrinked
+        if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound) {
+            return recentsDataSource.numberOfCells;
+        }
     }
     
     return 0;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    
-    NSString *title = nil;
-    
-    if (mxSessionArray.count > 1 && section < mxSessionArray.count) {
-        MXSession *mxSession = [mxSessionArray objectAtIndex:section];
-        
-        title = mxSession.myUser.displayname;
-        if (!title.length) {
-            title = mxSession.myUser.userId;
-        }
-    }
-    
-    return title;
-}
+//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+//    
+//    NSString *title = nil;
+//    
+//    if (mxSessionArray.count > 1 && section < mxSessionArray.count) {
+//        MXSession *mxSession = [mxSessionArray objectAtIndex:section];
+//        
+//        title = mxSession.myUser.displayname;
+//        if (!title.length) {
+//            title = mxSession.myUser.userId;
+//        }
+//    }
+//    
+//    return title;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -312,6 +372,30 @@
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)]) {
         [self.delegate dataSource:self didStateChange:self.state];
+    }
+}
+
+#pragma mark - Action
+
+- (IBAction)onButtonPressed:(id)sender {
+    if ([sender isKindOfClass:[UIButton class]]) {
+        UIButton *shrinkButton = (UIButton*)sender;
+        
+        if (shrinkButton.tag < recentsDataSourceArray.count) {
+            MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:shrinkButton.tag];
+            
+            NSUInteger index = [shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource];
+            if (index != NSNotFound) {
+                // Disclose the
+                [shrinkedRecentsDataSourceArray removeObjectAtIndex:index];
+            } else {
+                // Shrink the recents from this session
+                [shrinkedRecentsDataSourceArray addObject:recentsDataSource];
+            }
+            
+            // Notify delegate
+            [self.delegate dataSource:self didCellChange:nil];
+        }
     }
 }
 

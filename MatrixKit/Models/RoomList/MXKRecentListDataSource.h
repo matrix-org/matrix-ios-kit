@@ -53,6 +53,15 @@
 - (void)searchWithPatterns:(NSArray*)patternsList;
 
 /**
+ Get the section header view.
+ 
+ @param section the section  index
+ @param frame the drawing area for the header of the specified section.
+ @return the section header.
+ */
+- (UIView *)viewForHeaderInSection:(NSInteger)section withFrame:(CGRect)frame;
+
+/**
  Get the data for the cell at the given index path.
 
  @param indexPath the index of the cell
@@ -76,4 +85,5 @@
  @return indexPath the index of the cell (nil if not found).
  */
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
+
 @end
