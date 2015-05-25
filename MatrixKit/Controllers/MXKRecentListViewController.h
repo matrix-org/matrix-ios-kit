@@ -60,6 +60,12 @@ limitations under the License.
 @property (nonatomic) id<MXKRecentListViewControllerDelegate> delegate;
 
 /**
+ Enable the search in recents list according to the room display name (YES by default).
+ Set NO this property to disable this option and hide the related bar button.
+ */
+@property (nonatomic) BOOL enableSearch;
+
+/**
  Display the recents described in the provided data source.
  
  Note: The provided data source will replace the current data source if any. The caller

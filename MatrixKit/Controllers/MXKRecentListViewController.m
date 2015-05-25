@@ -24,8 +24,9 @@
     MXKRecentListDataSource *dataSource;
     
     /**
-     Search bar handling
+     Search handling
      */
+    UIBarButtonItem *searchButton;
     BOOL searchBarShouldEndEditing;
 }
 
@@ -104,8 +105,7 @@
     [self.view setNeedsUpdateConstraints];
     
     // Add search option in navigation bar
-    UIBarButtonItem *searchButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
-    self.navigationItem.rightBarButtonItems = @[searchButton];
+    self.enableSearch = YES;
     
     // Add an accessory view to the search bar in order to retrieve keyboard view.
     self.recentsSearchBar.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -127,6 +127,8 @@
 
 - (void)dealloc {
     self.recentsSearchBar.inputAccessoryView = nil;
+
+    searchButton = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -228,6 +230,23 @@
 }
 
 #pragma mark -
+
+- (void)setEnableSearch:(BOOL)enableSearch {
+    if (enableSearch) {
+        if (!searchButton) {
+            searchButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
+        }
+        
+        // Add it in right bar items
+        NSArray *rightBarButtonItems = self.navigationItem.rightBarButtonItems;
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:searchButton] : @[searchButton];
+    } else {
+        NSMutableArray *rightBarButtonItems = [NSMutableArray arrayWithArray: self.navigationItem.rightBarButtonItems];
+        [rightBarButtonItems removeObject:searchButton];
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    }
+}
+
 - (void)displayList:(MXKRecentListDataSource *)listDataSource {
 
     // Cancel registration on existing dataSource if any
