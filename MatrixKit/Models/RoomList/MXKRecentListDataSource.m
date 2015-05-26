@@ -225,29 +225,35 @@
         
         // Add shrink button
         UIButton *shrinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        CGRect frame = shrinkButton.frame;
-        frame.size.width = frame.size.height = sectionHeader.frame.size.height - 6;
-        frame.origin.x = sectionHeader.frame.size.width - frame.size.width - 5;
-        frame.origin.y = 3;
+        CGRect frame = sectionHeader.frame;
+        frame.origin.x = frame.origin.y = 0;
         shrinkButton.frame = frame;
-        shrinkButton.contentMode = UIViewContentModeScaleAspectFit;
-        if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound) {
-            [shrinkButton setImage:[UIImage imageNamed:@"disclosure"] forState:UIControlStateNormal];
-            [shrinkButton setImage:[UIImage imageNamed:@"disclosure"] forState:UIControlStateHighlighted];
-        } else {
-            [shrinkButton setImage:[UIImage imageNamed:@"shrink"] forState:UIControlStateNormal];
-            [shrinkButton setImage:[UIImage imageNamed:@"shrink"] forState:UIControlStateHighlighted];
-        }
+        shrinkButton.backgroundColor = [UIColor clearColor];
         [shrinkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         shrinkButton.tag = section;
         [sectionHeader addSubview:shrinkButton];
         sectionHeader.userInteractionEnabled = YES;
         
+        // Add shrink icon
+        UIImage *chevron;
+        if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound) {
+            chevron = [UIImage imageNamed:@"disclosure"];
+        } else {
+            chevron =[UIImage imageNamed:@"shrink"];
+        }
+        UIImageView *chevronView = [[UIImageView alloc] initWithImage:chevron];
+        chevronView.contentMode = UIViewContentModeCenter;
+        frame = chevronView.frame;
+        frame.origin.x = sectionHeader.frame.size.width - frame.size.width - 8;
+        frame.origin.y = (sectionHeader.frame.size.height - frame.size.height) / 2;
+        chevronView.frame = frame;
+        [sectionHeader addSubview:chevronView];
+        
         // Add label
         frame = sectionHeader.frame;
         frame.origin.x = 5;
         frame.origin.y = 5;
-        frame.size.width = shrinkButton.frame.origin.x - 10;
+        frame.size.width = chevronView.frame.origin.x - 10;
         frame.size.height -= 10;
         UILabel *headerLabel = [[UILabel alloc] initWithFrame:frame];
         headerLabel.font = [UIFont boldSystemFontOfSize:16];

@@ -301,7 +301,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     // Section header is required only in case of multi sessions
     if (self.dataSource.mxSessions.count > 1) {
-        return 40;
+        return 35;
     }
     return 0;
 }
