@@ -257,7 +257,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
     // Scroll the tableview content when a new keyboard is presented.
-    if (!super.keyboardHeight) {
+    if (!super.keyboardHeight && keyboardHeight) {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
     
