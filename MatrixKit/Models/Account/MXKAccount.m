@@ -89,7 +89,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)dealloc {
     
-    [self closeSession];
+    [self closeSession:NO];
     mxSession = nil;
     
     [mxRestClient close];
@@ -216,8 +216,8 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         return;
     }
     
-    // Close potential session
-    [self closeSession];
+    // Close potential session (keep associated store).
+    [self closeSession:NO];
     
     openSessionStartDate = [NSDate date];
     
@@ -248,7 +248,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }];
 }
 
-- (void)closeSession {
+- (void)closeSession:(BOOL)clearStore {
     
     [self removeNotificationListener];
     
@@ -274,6 +274,11 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
     
     [mxSession close];
+    
+    if (clearStore) {
+        [mxSession.store deleteAllData];
+    }
+    
     mxSession = nil;
     
     notifyOpenSessionFailure = YES;

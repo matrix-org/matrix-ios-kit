@@ -91,7 +91,7 @@ extern NSString *const kMXKAccountUserInfoDidChangeNotification;
  When store data is ready, the live stream is automatically launched by synchronising the session with the server.
  
  In case of failure during server sync, the method is reiterated until the data is up-to-date with the server.
- This loop is stopped if you call [MXCAccount closeSession], it is suspended if you call [MXCAccount pauseInBackgroundTask].
+ This loop is stopped if you call [MXCAccount closeSession:], it is suspended if you call [MXCAccount pauseInBackgroundTask].
  
  @param store the store to use for the session.
  */
@@ -99,8 +99,10 @@ extern NSString *const kMXKAccountUserInfoDidChangeNotification;
 
 /**
  Close the matrix session.
+ 
+ @param clearStore set YES to delete all store data.
  */
--(void)closeSession;
+-(void)closeSession:(BOOL)clearStore;
 
 /**
  Pause the current matrix session.

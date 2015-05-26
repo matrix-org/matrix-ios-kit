@@ -104,8 +104,9 @@ static MXKAccountManager *sharedAccountManager = nil;
 - (void)removeAccount:(MXKAccount*)account {
     
     NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
-    
-    [account closeSession];
+
+    // Close session and clear associated store.
+    [account closeSession:YES];
     
     [mxAccounts removeObject:account];
     [self saveAccounts];
