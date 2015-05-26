@@ -237,11 +237,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)setKeyboardHeight:(CGFloat)keyboardHeight {
     
-    // Scroll the tableview content when a new keyboard is presented.
-    if (!super.keyboardHeight) {
-        [self scrollBubblesTableViewToBottomAnimated:NO];
-    }
-    
     // Deduce the bottom constraint for the input toolbar view (Don't forget the potential tabBar)
     CGFloat inputToolbarViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
     // Check whether the keyboard is over the tabBar
@@ -260,6 +255,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardHeight;
     // Deduce max height of the message text input by considering the minimum height of the table view.
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
+    
+    // Scroll the tableview content when a new keyboard is presented.
+    if (!super.keyboardHeight) {
+        [self scrollBubblesTableViewToBottomAnimated:NO];
+    }
     
     super.keyboardHeight = keyboardHeight;
 }
@@ -994,7 +994,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (shouldScrollToBottom) {
         // Scroll to the bottom
-        [self scrollBubblesTableViewToBottomAnimated:NO];
+        [self scrollBubblesTableViewToBottomAnimated:YES];
         shouldScrollToBottomOnTableRefresh = NO;
     }
 }
