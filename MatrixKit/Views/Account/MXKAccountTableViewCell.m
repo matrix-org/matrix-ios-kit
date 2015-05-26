@@ -34,10 +34,7 @@
     
     if (mxAccount.mxSession) {
         
-        _accountDisplayName.text = mxAccount.userDisplayName;
-        if (!_accountDisplayName.text.length) {
-            _accountDisplayName.text = mxAccount.mxCredentials.userId;
-        }
+        _accountDisplayName.text = mxAccount.fullDisplayName;
         
         // User thumbnail
         NSString *thumbnailURL = nil;

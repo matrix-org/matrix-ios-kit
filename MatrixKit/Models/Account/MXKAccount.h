@@ -61,6 +61,11 @@ extern NSString *const kMXKAccountUserInfoDidChangeNotification;
 @property (nonatomic, readonly) NSString *userAvatarUrl;
 
 /**
+ The account display name based on user id and user displayname (if any).
+ */
+@property (nonatomic, readonly) NSString *fullDisplayName;
+
+/**
  The account user's presence (`MXPresenceUnknown` by default, available if matrix session `mxSession` is opened).
  The notification `kMXKAccountUserInfoDidChangeNotification` is posted in case of change of this property.      
  */

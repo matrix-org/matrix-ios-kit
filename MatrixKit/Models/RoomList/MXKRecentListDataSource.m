@@ -214,10 +214,7 @@
     if (recentsDataSourceArray.count > 1 && section < recentsDataSourceArray.count) {
         MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
         
-        NSString* sectionTitle = recentsDataSource.mxSession.myUser.displayname;
-        if (!sectionTitle.length) {
-            sectionTitle = recentsDataSource.mxSession.myUser.userId;
-        }
+        NSString* sectionTitle = recentsDataSource.mxSession.myUser.userId;
         
         if (recentsDataSource.unreadCount) {
             sectionTitle = [NSString stringWithFormat:@"%@ (%tu)", sectionTitle, recentsDataSource.unreadCount];

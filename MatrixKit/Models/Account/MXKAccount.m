@@ -161,6 +161,14 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     return nil;
 }
 
+- (NSString*)fullDisplayName {
+    if (self.userDisplayName.length) {
+        return [NSString stringWithFormat:@"%@ (%@)", self.userDisplayName, mxCredentials.userId];
+    } else {
+        return mxCredentials.userId;
+    }
+}
+
 #pragma mark - Matrix user's profile
 
 - (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure {
