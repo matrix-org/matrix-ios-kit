@@ -1178,6 +1178,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert {
+    [self dismissKeyboard];
     [alert showInViewController:self];
 }
 
