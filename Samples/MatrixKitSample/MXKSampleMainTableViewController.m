@@ -206,10 +206,9 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     
     NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
     
-    // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
-    MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-    
     for (MXKAccount *account in accounts) {
+        // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
+        MXFileStore *mxFileStore = [[MXFileStore alloc] init];
         [account openSessionWithStore:mxFileStore];
     }
 }
