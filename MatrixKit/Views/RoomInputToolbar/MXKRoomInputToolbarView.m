@@ -60,6 +60,15 @@
     return nil;
 }
 
++ (instancetype)roomInputToolbarView {
+    if ([[self class] nib]) {
+        return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+    } else
+    {
+        return [[self alloc] init];
+    }
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {

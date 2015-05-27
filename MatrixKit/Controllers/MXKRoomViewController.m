@@ -631,12 +631,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [inputToolbarView destroy];
     }
 
-    if ([roomInputToolbarViewClass nib]) {
-        inputToolbarView = [[roomInputToolbarViewClass nib] instantiateWithOwner:nil options:nil].firstObject;
-    } else
-    {
-        inputToolbarView = [[roomInputToolbarViewClass alloc] init];
-    }
+    inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
     
     inputToolbarView.delegate = self;
     

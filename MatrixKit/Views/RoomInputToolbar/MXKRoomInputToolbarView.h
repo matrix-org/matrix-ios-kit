@@ -128,6 +128,14 @@
 + (UINib *)nib;
 
 /**
+ Creates and returns a new `MXKRoomInputToolbarView-inherited` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ @return An initialized `MXKRoomInputToolbarView-inherited` object if successful, `nil` otherwise.
+ */
++ (instancetype)roomInputToolbarView;
+
+/**
  The delegate notified when inputs are ready.
  */
 @property (nonatomic) id<MXKRoomInputToolbarViewDelegate> delegate;
