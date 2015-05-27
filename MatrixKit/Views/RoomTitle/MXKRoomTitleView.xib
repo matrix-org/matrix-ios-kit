@@ -12,7 +12,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Room Name" textAlignment="center" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="hag-WW-XxJ">
-                    <rect key="frame" x="0.0" y="2" width="600" height="21"/>
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="21"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <textInputTraits key="textInputTraits" returnKeyType="next"/>
@@ -25,7 +25,7 @@
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="hag-WW-XxJ" secondAttribute="trailing" id="LaZ-Yg-BjR"/>
                 <constraint firstItem="hag-WW-XxJ" firstAttribute="leading" secondItem="Wek-LA-v7p" secondAttribute="leading" id="MyD-YH-Cln"/>
-                <constraint firstItem="hag-WW-XxJ" firstAttribute="top" secondItem="Wek-LA-v7p" secondAttribute="top" constant="2" id="c4c-HK-oti"/>
+                <constraint firstItem="hag-WW-XxJ" firstAttribute="top" secondItem="Wek-LA-v7p" secondAttribute="top" id="c4c-HK-oti"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>

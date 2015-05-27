@@ -25,7 +25,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setRoomTitleViewClass:MXKRoomTitleView.class];
+//    [self setRoomTitleViewClass:MXKRoomTitleView.class];
+    [self setRoomTitleViewClass:MXKRoomTitleViewWithTopic.class];
     
     // Replace the default input toolbar view with the one based on `HPGrowingTextView`.
     [self setRoomInputToolbarViewClass:MXKRoomInputToolbarViewWithHPGrowingText.class];

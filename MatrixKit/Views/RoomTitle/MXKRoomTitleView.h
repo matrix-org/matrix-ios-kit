@@ -52,11 +52,6 @@
      */
     MXKAlert *currentAlert;
     
-    /**
-     Room messages listener
-     */
-    id roomListener;
-    
 }
 
 @property (weak, nonatomic) IBOutlet UITextField *displayNameTextField;
@@ -96,5 +91,10 @@
  Force title view refresh.
  */
 - (void)refreshDisplay;
+
+/**
+ Dispose view resources and listener.
+ */
+- (void)destroy;
 
 @end

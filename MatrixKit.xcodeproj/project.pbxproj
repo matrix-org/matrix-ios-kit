@@ -94,6 +94,8 @@
 		F0B0ECBC1B135780005EB20D /* shrink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB81B135780005EB20D /* shrink@2x.png */; };
 		F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B0ECC31B14B16C005EB20D /* MXKRoomTitleView.m */; };
 		F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */; };
+		F0B0ECD61B15C745005EB20D /* MXKRoomTitleViewWithTopic.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B0ECD41B15C745005EB20D /* MXKRoomTitleViewWithTopic.m */; };
+		F0B0ECD71B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECD51B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib */; };
 		F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */; };
 		F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DA1AA8BB5E003BE77A /* LaunchScreen.xib */; };
 		F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DC1AA8BB5E003BE77A /* Main.storyboard */; };
@@ -292,6 +294,9 @@
 		F0B0ECC21B14B16C005EB20D /* MXKRoomTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomTitleView.h; sourceTree = "<group>"; };
 		F0B0ECC31B14B16C005EB20D /* MXKRoomTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomTitleView.m; sourceTree = "<group>"; };
 		F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomTitleView.xib; sourceTree = "<group>"; };
+		F0B0ECD31B15C745005EB20D /* MXKRoomTitleViewWithTopic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomTitleViewWithTopic.h; sourceTree = "<group>"; };
+		F0B0ECD41B15C745005EB20D /* MXKRoomTitleViewWithTopic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomTitleViewWithTopic.m; sourceTree = "<group>"; };
+		F0B0ECD51B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomTitleViewWithTopic.xib; sourceTree = "<group>"; };
 		F0CE56D81AA8BB5E003BE77A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F0CE56DB1AA8BB5E003BE77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -729,6 +734,9 @@
 				F0B0ECC21B14B16C005EB20D /* MXKRoomTitleView.h */,
 				F0B0ECC31B14B16C005EB20D /* MXKRoomTitleView.m */,
 				F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */,
+				F0B0ECD31B15C745005EB20D /* MXKRoomTitleViewWithTopic.h */,
+				F0B0ECD41B15C745005EB20D /* MXKRoomTitleViewWithTopic.m */,
+				F0B0ECD51B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib */,
 			);
 			path = RoomTitle;
 			sourceTree = "<group>";
@@ -961,6 +969,7 @@
 				F0CF98ED1B0B87D200EAE373 /* MXKTableViewCellWithLabelTextFieldAndButton.xib in Resources */,
 				F0CF98F31B0B889C00EAE373 /* MXKTableViewCellWithTextView.xib in Resources */,
 				F0CF98E71B0B869800EAE373 /* MXKTableViewCellWithLabelAndSubLabel.xib in Resources */,
+				F0B0ECD71B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib in Resources */,
 				F06E76981AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.xib in Resources */,
 				F09E289C1AC2007000C51E44 /* icon_keyboard.png in Resources */,
 				F01C7E031AFB983300FC2F59 /* callend.mp3 in Resources */,
@@ -1097,6 +1106,7 @@
 				F07E18141ABC563900DE3766 /* MXEvent+MatrixKit.m in Sources */,
 				3219CBC01AA6FB470027D7E2 /* MXKRoomViewController.m in Sources */,
 				F0CE56EA1AA8BB5E003BE77A /* main.m in Sources */,
+				F0B0ECD61B15C745005EB20D /* MXKRoomTitleViewWithTopic.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

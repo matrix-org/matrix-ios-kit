@@ -17,6 +17,9 @@
 #import "MXKRoomTitleView.h"
 
 @interface MXKRoomTitleView () {
+    
+    id roomListener;
+    
     UIView *displayNameInputAccessoryView;
 }
 @end
@@ -38,27 +41,18 @@
     displayNameInputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     self.displayNameTextField.inputAccessoryView = displayNameInputAccessoryView;
     
+    self.displayNameTextField.enabled = NO;
     self.displayNameTextField.returnKeyType = UIReturnKeyDone;
 }
 
 - (instancetype)init {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomTitleView class]] loadNibNamed:NSStringFromClass([MXKRoomTitleView class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    
-    return self;
+    return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
 }
 
 - (void)dealloc {
-    
     displayNameInputAccessoryView = nil;
-    
-    if (roomListener && _mxRoom) {
-        [_mxRoom removeListener:roomListener];
-        roomListener = nil;
-    }
-    _mxRoom = nil;
+
+    [self destroy];
 }
 
 - (void)refreshDisplay {
@@ -70,6 +64,18 @@
         self.displayNameTextField.enabled = NO;
     }
 }
+
+- (void)destroy {
+    self.delegate = nil;
+    self.mxRoom = nil;
+}
+
+- (void)dismissKeyboard {
+    // Hide the keyboard
+    [self.displayNameTextField resignFirstResponder];
+}
+
+#pragma mark -
 
 - (void)setMxRoom:(MXRoom *)mxRoom {
     // Check whether the room is actually changed
@@ -113,11 +119,6 @@
         return self.displayNameTextField.inputAccessoryView;
     }
     return nil;
-}
-
-- (void)dismissKeyboard {
-    // Hide the keyboard
-    [self.displayNameTextField resignFirstResponder];
 }
 
 #pragma mark - UITextField delegate

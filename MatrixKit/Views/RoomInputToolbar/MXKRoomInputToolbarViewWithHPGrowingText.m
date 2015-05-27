@@ -97,11 +97,17 @@
 }
 
 - (void)dealloc {
+    [self destroy];
+}
+
+- (void)destroy {
     if (growingTextView) {
         growingTextView.delegate = nil;
         [growingTextView removeFromSuperview];
         growingTextView = nil;
     }
+    
+    [super destroy];
 }
 
 - (void)setMaxHeight:(CGFloat)maxHeight {

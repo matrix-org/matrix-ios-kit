@@ -48,6 +48,7 @@
 #import "MXKTableViewCell.h"
 
 #import "MXKRoomTitleView.h"
+#import "MXKRoomTitleViewWithTopic.h"
 
 #import "MXKAccountManager.h"
 

@@ -282,14 +282,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     roomDataSource = nil;
     
     if (titleView) {
-        titleView.delegate = nil;
         [titleView removeFromSuperview];
+        [titleView destroy];
         titleView = nil;
     }
     
     if (inputToolbarView) {
-        inputToolbarView.delegate = nil;
         [inputToolbarView removeFromSuperview];
+        [inputToolbarView destroy];
         inputToolbarView = nil;
     }
     
@@ -559,14 +559,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Remove potential title view
     if (titleView) {
-        titleView.delegate = nil;
-        
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
             [NSLayoutConstraint deactivateConstraints:titleView.constraints];
         } else {
             [_roomTitleViewContainer removeConstraints:titleView.constraints];
         }
         [titleView removeFromSuperview];
+        [titleView destroy];
     }
     
     titleView = [[roomTitleViewClass alloc] init];
@@ -619,14 +618,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Remove potential toolbar
     if (inputToolbarView) {
-        inputToolbarView.delegate = nil;
-        
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
             [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
         } else {
             [_roomInputToolbarContainer removeConstraints:inputToolbarView.constraints];
         }
         [inputToolbarView removeFromSuperview];
+        [inputToolbarView destroy];
     }
 
     if ([roomInputToolbarViewClass nib]) {

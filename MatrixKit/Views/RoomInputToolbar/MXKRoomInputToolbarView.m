@@ -117,17 +117,7 @@
 - (void)dealloc {
     inputAccessoryView = nil;
     
-    [self dismissImageValidationView];
-    
-    if (currentAlert) {
-        [currentAlert dismiss:NO];
-        currentAlert = nil;
-    }
-    
-    if (mediaPicker) {
-        [self dismissMediaPicker];
-        mediaPicker = nil;
-    }
+    [self destroy];
 }
 
 - (IBAction)onTouchUpInside:(UIButton*)button {
@@ -238,6 +228,22 @@
 }
 
 - (void)dismissKeyboard {
+}
+
+- (void)destroy {
+    [self dismissImageValidationView];
+    
+    if (currentAlert) {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
+    if (mediaPicker) {
+        [self dismissMediaPicker];
+        mediaPicker = nil;
+    }
+    
+    self.delegate = nil;
 }
 
 #pragma mark - UIImagePickerControllerDelegate

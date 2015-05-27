@@ -196,4 +196,9 @@
  */
 - (void)dismissKeyboard;
 
+/**
+ Dispose any resources and listener.
+ */
+- (void)destroy;
+
 @end
