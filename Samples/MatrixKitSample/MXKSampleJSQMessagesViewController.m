@@ -51,6 +51,14 @@
 }
 
 - (void)dealloc {
+    // Remove potential key value observers on cell avatar view
+    NSArray *array = self.collectionView.visibleCells;
+    for (JSQMessagesCollectionViewCell *cell in array) {
+        if (!cell.avatarImageView.image) {
+            [cell.avatarImageView removeObserver:self forKeyPath:@"image"];
+        }
+    }
+    
     roomDataSource = nil;
     
     outgoingBubbleImageData = nil;
@@ -144,7 +152,7 @@
 }
 
 #pragma mark - KVO
-- (void) observeValueForKeyPath:(NSString *)path ofObject:(id) object change:(NSDictionary *) change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)path ofObject:(id) object change:(NSDictionary *) change context:(void *)context {
 
     // Check changes on cell.avatarImageView.image (registered by [self cellForItemAtIndexPath:])
     if ([path isEqualToString:@"image"]) {
@@ -362,6 +370,8 @@
         avatarUrl = roomMember.avatarUrl ;
     }
 
+    // Reset existing image if any
+    cell.avatarImageView.image = nil;
     // As the "square" image will be set asynchronously, register an observer on it in order to make it circular at runtime
     [cell.avatarImageView addObserver:self
                            forKeyPath:@"image"
@@ -377,6 +387,19 @@
 }
 
 #pragma mark - JSQMessages collection view flow layout delegate
+
+- (void)collectionView:(JSQMessagesCollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if ([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]) {
+        JSQMessagesCollectionViewCell *jsqCell = (JSQMessagesCollectionViewCell*)cell;
+        
+        // Remove potential key value observer on cell avatar view
+        if (!jsqCell.avatarImageView.image) {
+            [jsqCell.avatarImageView removeObserver:self forKeyPath:@"image"];
+        }
+    }
+    
+}
 
 #pragma mark - Adjusting cell label heights
 
