@@ -54,73 +54,32 @@
 @synthesize messageComposerContainer, inputAccessoryView;
 
 + (UINib *)nib {
-    // By default, no nib is available. MXKRoomInputToolbarView-inherited classes are added programmatically.
-    // You may define a specific xib file (like `MXKRoomInputToolbarViewWithSimpleTextView`) to handle a
-    // MXKRoomInputToolbarView-inherited class from interface builder.
-    return nil;
+    return [UINib nibWithNibName:NSStringFromClass([MXKRoomInputToolbarView class])
+                          bundle:[NSBundle bundleForClass:[MXKRoomInputToolbarView class]]];
 }
 
 + (instancetype)roomInputToolbarView {
     if ([[self class] nib]) {
         return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
-    } else
-    {
+    } else {
         return [[self alloc] init];
     }
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        [[NSBundle bundleForClass:[MXKRoomInputToolbarView class]] loadNibNamed:NSStringFromClass([MXKRoomInputToolbarView class])
-                                                                          owner:self
-                                                                        options:nil];
-        
-        // Adjust background view display in full-size
-        [_backgroundView setTranslatesAutoresizingMaskIntoConstraints: NO];
-        [self addSubview:_backgroundView];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self
-                                                         attribute:NSLayoutAttributeBottom
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:_backgroundView
-                                                         attribute:NSLayoutAttributeBottom
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self
-                                                         attribute:NSLayoutAttributeTop
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:_backgroundView
-                                                         attribute:NSLayoutAttributeTop
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self
-                                                         attribute:NSLayoutAttributeLeading
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:_backgroundView
-                                                         attribute:NSLayoutAttributeLeading
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self
-                                                         attribute:NSLayoutAttributeTrailing
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:_backgroundView
-                                                         attribute:NSLayoutAttributeTrailing
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
-        
-        // Finalize setup
-        [self setTranslatesAutoresizingMaskIntoConstraints: NO];
-        
-        // Reset default container background color
-        self.messageComposerContainer.backgroundColor = [UIColor clearColor];
-        
-        // Set default toolbar background color
-        self.backgroundView.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-        
-        // Disable send button
-        self.rightInputToolbarButton.enabled = NO;
-    }
-    return self;
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    
+    // Finalize setup
+    [self setTranslatesAutoresizingMaskIntoConstraints: NO];
+    
+    // Reset default container background color
+    messageComposerContainer.backgroundColor = [UIColor clearColor];
+    
+    // Set default toolbar background color
+    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+    
+    // Disable send button
+    self.rightInputToolbarButton.enabled = NO;
 }
 
 - (void)dealloc {

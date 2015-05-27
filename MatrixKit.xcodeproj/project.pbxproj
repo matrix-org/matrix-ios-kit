@@ -96,6 +96,7 @@
 		F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */; };
 		F0B0ECD61B15C745005EB20D /* MXKRoomTitleViewWithTopic.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B0ECD41B15C745005EB20D /* MXKRoomTitleViewWithTopic.m */; };
 		F0B0ECD71B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECD51B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib */; };
+		F0B0ECDD1B16219C005EB20D /* MXKRoomInputToolbarViewWithHPGrowingText.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECDC1B16219C005EB20D /* MXKRoomInputToolbarViewWithHPGrowingText.xib */; };
 		F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */; };
 		F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DA1AA8BB5E003BE77A /* LaunchScreen.xib */; };
 		F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DC1AA8BB5E003BE77A /* Main.storyboard */; };
@@ -297,6 +298,7 @@
 		F0B0ECD31B15C745005EB20D /* MXKRoomTitleViewWithTopic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomTitleViewWithTopic.h; sourceTree = "<group>"; };
 		F0B0ECD41B15C745005EB20D /* MXKRoomTitleViewWithTopic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomTitleViewWithTopic.m; sourceTree = "<group>"; };
 		F0B0ECD51B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomTitleViewWithTopic.xib; sourceTree = "<group>"; };
+		F0B0ECDC1B16219C005EB20D /* MXKRoomInputToolbarViewWithHPGrowingText.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomInputToolbarViewWithHPGrowingText.xib; sourceTree = "<group>"; };
 		F0CE56D81AA8BB5E003BE77A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F0CE56DB1AA8BB5E003BE77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -601,6 +603,7 @@
 				F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */,
 				F00BB4481AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.h */,
 				F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */,
+				F0B0ECDC1B16219C005EB20D /* MXKRoomInputToolbarViewWithHPGrowingText.xib */,
 				F094D15B1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.h */,
 				F094D15C1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m */,
 				F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */,
@@ -966,6 +969,7 @@
 				F01C7E041AFB983300FC2F59 /* message.mp3 in Resources */,
 				F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */,
 				F0CF98E51B0B842700EAE373 /* MXKTableViewCellWithLabelAndSlider.xib in Resources */,
+				F0B0ECDD1B16219C005EB20D /* MXKRoomInputToolbarViewWithHPGrowingText.xib in Resources */,
 				F0CF98ED1B0B87D200EAE373 /* MXKTableViewCellWithLabelTextFieldAndButton.xib in Resources */,
 				F0CF98F31B0B889C00EAE373 /* MXKTableViewCellWithTextView.xib in Resources */,
 				F0CF98E71B0B869800EAE373 /* MXKTableViewCellWithLabelAndSubLabel.xib in Resources */,

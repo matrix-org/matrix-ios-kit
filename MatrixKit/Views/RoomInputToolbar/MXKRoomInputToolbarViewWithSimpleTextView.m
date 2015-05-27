@@ -26,18 +26,8 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    [self setTranslatesAutoresizingMaskIntoConstraints: NO];
-    
-    // Reset default container background color
-    messageComposerContainer.backgroundColor = [UIColor clearColor];
-    
     // Set default message composer background color
     self.messageComposerTextView.backgroundColor = [UIColor whiteColor];
-    // Set default toolbar background color
-    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-    
-    // Disable send button
-    self.rightInputToolbarButton.enabled = NO;
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
     inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];

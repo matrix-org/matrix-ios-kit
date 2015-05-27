@@ -17,83 +17,53 @@
 #import "MXKRoomInputToolbarViewWithHPGrowingText.h"
 
 @interface MXKRoomInputToolbarViewWithHPGrowingText() {
-    // The growing text view used as text composer
-    HPGrowingTextView *growingTextView;
     
     // HPGrowingTextView triggers growingTextViewDidChange event when it recomposes itself
     // Save the last edited text to prevent unexpected typing events
     NSString* lastEditedText;
 }
 
+/**
+ Message composer defined in `messageComposerContainer`.
+ */
+@property (weak, nonatomic) IBOutlet HPGrowingTextView *growingTextView;
+
 @end
 
 @implementation MXKRoomInputToolbarViewWithHPGrowingText
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Customize here toolbar buttons
-        
-        // Add customized message composer based on HPGrowingTextView use
-        growingTextView = [[HPGrowingTextView alloc] init];
-        growingTextView.delegate = self;
-        
-        [growingTextView setTranslatesAutoresizingMaskIntoConstraints: NO];
-        
-        // Add an accessory view to the text view in order to retrieve keyboard view.
-        inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
-        growingTextView.internalTextView.inputAccessoryView = self.inputAccessoryView;
-        
-        // set text input font
-        growingTextView.font = [UIFont systemFontOfSize:14];
-        
-        // draw a rounded border around the textView
-        growingTextView.layer.cornerRadius = 5;
-        growingTextView.layer.borderWidth = 1;
-        growingTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
-        growingTextView.clipsToBounds = YES;
-        growingTextView.backgroundColor = [UIColor whiteColor];
-        
-        // on IOS 8, the growing textview animation could trigger weird UI animations
-        // indeed, the messages tableView can be refreshed while its height is updated (e.g. when setting a message)
-        growingTextView.animateHeightChange = NO;
-        
-        // Add the text composer by setting its edge constraints compare to the container.
-        [messageComposerContainer addSubview:growingTextView];
-        [messageComposerContainer addConstraint:[NSLayoutConstraint constraintWithItem:messageComposerContainer
-                                                                             attribute:NSLayoutAttributeBottom
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:growingTextView
-                                                                             attribute:NSLayoutAttributeBottom
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-        [messageComposerContainer addConstraint:[NSLayoutConstraint constraintWithItem:messageComposerContainer
-                                                                             attribute:NSLayoutAttributeTop
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:growingTextView
-                                                                             attribute:NSLayoutAttributeTop
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-        [messageComposerContainer addConstraint:[NSLayoutConstraint constraintWithItem:messageComposerContainer
-                                                                             attribute:NSLayoutAttributeLeading
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:growingTextView
-                                                                             attribute:NSLayoutAttributeLeading
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-        [messageComposerContainer addConstraint:[NSLayoutConstraint constraintWithItem:messageComposerContainer
-                                                                             attribute:NSLayoutAttributeTrailing
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:growingTextView
-                                                                             attribute:NSLayoutAttributeTrailing
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-        [messageComposerContainer setNeedsUpdateConstraints];
-        
-        lastEditedText = nil;
-    }
++ (UINib *)nib {
+    return [UINib nibWithNibName:NSStringFromClass([MXKRoomInputToolbarViewWithHPGrowingText class])
+                          bundle:[NSBundle bundleForClass:[MXKRoomInputToolbarViewWithHPGrowingText class]]];
+}
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
     
-    return self;
+    // Handle message composer based on HPGrowingTextView use
+    _growingTextView.delegate = self;
+    
+    [_growingTextView setTranslatesAutoresizingMaskIntoConstraints: NO];
+    
+    // Add an accessory view to the text view in order to retrieve keyboard view.
+    inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+    _growingTextView.internalTextView.inputAccessoryView = self.inputAccessoryView;
+    
+    // set text input font
+    _growingTextView.font = [UIFont systemFontOfSize:14];
+    
+    // draw a rounded border around the textView
+    _growingTextView.layer.cornerRadius = 5;
+    _growingTextView.layer.borderWidth = 1;
+    _growingTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    _growingTextView.clipsToBounds = YES;
+    _growingTextView.backgroundColor = [UIColor whiteColor];
+    
+    // on IOS 8, the growing textview animation could trigger weird UI animations
+    // indeed, the messages tableView can be refreshed while its height is updated (e.g. when setting a message)
+    _growingTextView.animateHeightChange = NO;
+    
+    lastEditedText = nil;
 }
 
 - (void)dealloc {
@@ -101,36 +71,34 @@
 }
 
 - (void)destroy {
-    if (growingTextView) {
-        growingTextView.delegate = nil;
-        [growingTextView removeFromSuperview];
-        growingTextView = nil;
+    if (_growingTextView) {
+        _growingTextView.delegate = nil;
     }
     
     [super destroy];
 }
 
 - (void)setMaxHeight:(CGFloat)maxHeight {
-    growingTextView.maxHeight = maxHeight - (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
-    [growingTextView refreshHeight];
+    _growingTextView.maxHeight = maxHeight - (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
+    [_growingTextView refreshHeight];
 }
 
 - (NSString*)textMessage {
-    return growingTextView.text;
+    return _growingTextView.text;
 }
 
 - (void)setTextMessage:(NSString *)textMessage {
-    growingTextView.text = textMessage;
+    _growingTextView.text = textMessage;
     self.rightInputToolbarButton.enabled = textMessage.length;
 }
 
 - (void)setPlaceholder:(NSString *)inPlaceholder {
     [super setPlaceholder:inPlaceholder];
-    growingTextView.placeholder = inPlaceholder;
+    _growingTextView.placeholder = inPlaceholder;
 }
 
 - (void)dismissKeyboard {
-    [growingTextView resignFirstResponder];
+    [_growingTextView resignFirstResponder];
 }
 
 #pragma mark - HPGrowingTextView delegate
@@ -144,7 +112,7 @@
 
 - (void)growingTextViewDidChange:(HPGrowingTextView *)sender {
     
-    NSString *msg = growingTextView.text;
+    NSString *msg = _growingTextView.text;
     
     // HPGrowingTextView triggers growingTextViewDidChange event when it recomposes itself.
     // Save the last edited text to prevent unexpected typing events

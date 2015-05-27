@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MXKRoomInputToolbarView">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MXKRoomInputToolbarViewWithHPGrowingText">
             <rect key="frame" x="0.0" y="0.0" width="600" height="41"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -20,7 +20,7 @@
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="onTouchUpInside:" destination="iN0-l3-epB" eventType="touchUpInside" id="WbU-WH-gwL"/>
+                        <action selector="onTouchUpInside:" destination="iN0-l3-epB" eventType="touchUpInside" id="jVG-We-DmS"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Owf-M8-qJi" userLabel="right Button">
@@ -32,15 +32,27 @@
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="onTouchUpInside:" destination="iN0-l3-epB" eventType="touchUpInside" id="Cxg-BO-TfK"/>
+                        <action selector="onTouchUpInside:" destination="iN0-l3-epB" eventType="touchUpInside" id="jed-Mz-rxe"/>
                     </connections>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QWp-NV-uh5" userLabel="Message Composer Container">
                     <rect key="frame" x="51" y="4" width="497" height="33"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pkf-YH-tco" customClass="HPGrowingTextView">
+                            <rect key="frame" x="0.0" y="0.0" width="497" height="33"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                    </subviews>
                     <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="pkf-YH-tco" secondAttribute="bottom" id="L3A-Oo-Ml2"/>
+                        <constraint firstItem="pkf-YH-tco" firstAttribute="top" secondItem="QWp-NV-uh5" secondAttribute="top" id="VPn-k0-0vc"/>
+                        <constraint firstItem="pkf-YH-tco" firstAttribute="leading" secondItem="QWp-NV-uh5" secondAttribute="leading" id="mXj-f3-DcT"/>
+                        <constraint firstAttribute="trailing" secondItem="pkf-YH-tco" secondAttribute="trailing" id="n4K-Do-gHr"/>
+                    </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="0.89720269880796732" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="Owf-M8-qJi" secondAttribute="trailing" constant="4" id="2M8-Gu-0f6"/>
                 <constraint firstItem="QWp-NV-uh5" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="4" id="570-8j-VYY"/>
@@ -58,11 +70,12 @@
             <nil key="simulatedBottomBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
-                <outlet property="leftInputToolbarButton" destination="Hga-l8-Wua" id="jaa-D6-e6X"/>
-                <outlet property="messageComposerContainer" destination="QWp-NV-uh5" id="APR-B5-ogC"/>
-                <outlet property="messageComposerContainerBottomConstraint" destination="9Ya-0H-03W" id="dFh-N3-eDb"/>
-                <outlet property="messageComposerContainerTopConstraint" destination="570-8j-VYY" id="dbB-W8-bro"/>
-                <outlet property="rightInputToolbarButton" destination="Owf-M8-qJi" id="UQH-fw-chf"/>
+                <outlet property="growingTextView" destination="pkf-YH-tco" id="VeP-WI-6Xh"/>
+                <outlet property="leftInputToolbarButton" destination="Hga-l8-Wua" id="zbm-3b-hoY"/>
+                <outlet property="messageComposerContainer" destination="QWp-NV-uh5" id="7EX-Un-ZIe"/>
+                <outlet property="messageComposerContainerBottomConstraint" destination="9Ya-0H-03W" id="226-iu-6tU"/>
+                <outlet property="messageComposerContainerTopConstraint" destination="570-8j-VYY" id="VKv-Qh-PCs"/>
+                <outlet property="rightInputToolbarButton" destination="Owf-M8-qJi" id="seO-ly-Bgg"/>
             </connections>
         </view>
     </objects>
