@@ -47,6 +47,8 @@
 #import "MXKAccountTableViewCell.h"
 #import "MXKTableViewCell.h"
 
+#import "MXKRoomTitleView.h"
+
 #import "MXKAccountManager.h"
 
 #import "MXK3PID.h"

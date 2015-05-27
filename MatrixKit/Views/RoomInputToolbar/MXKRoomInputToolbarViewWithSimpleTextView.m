@@ -40,7 +40,7 @@
     self.rightInputToolbarButton.enabled = NO;
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
-    self.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+    inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     self.messageComposerTextView.inputAccessoryView = self.inputAccessoryView;
 }
 

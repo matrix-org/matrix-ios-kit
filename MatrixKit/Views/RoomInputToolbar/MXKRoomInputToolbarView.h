@@ -114,6 +114,9 @@
      The message composer container view. Your own message composer may be added inside this container.
      */
     UIView *messageComposerContainer;
+    
+@protected
+    UIView *inputAccessoryView;
 }
 
 /**
@@ -186,7 +189,7 @@
  actually used to retrieve the keyboard view. Indeed the keyboard view is the superview of
  the accessory view when the message composer become the first responder.
  */
-@property UIView *inputAccessoryView;
+@property (readonly) UIView *inputAccessoryView;
 
 /**
  Force dismiss keyboard.

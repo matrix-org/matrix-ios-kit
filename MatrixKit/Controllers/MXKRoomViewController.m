@@ -103,16 +103,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSString *selectedVideoCachePath;
 }
 
-@property (nonatomic) IBOutlet UITableView *bubblesTableView;
-@property (nonatomic) IBOutlet UIView *roomInputToolbarContainer;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerBottomConstraint;
-
 @end
 
 @implementation MXKRoomViewController
-@synthesize roomDataSource, inputToolbarView;
+@synthesize roomDataSource, titleView, inputToolbarView;
 
 #pragma mark - Class methods
 
@@ -231,8 +225,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - Override MXKViewController
 
 - (void)onKeyboardShowAnimationComplete {
+    // Check first if the first responder belongs to title view
+    UIView *keyboardView = titleView.firstResponderInputAccessoryView.superview;
+    if (!keyboardView) {
+        // Check whether the first responder is the input tool bar text composer
+        keyboardView = inputToolbarView.inputAccessoryView.superview;
+    }
+    
     // Report the keyboard view in order to track keyboard frame changes
-    self.keyboardView = inputToolbarView.inputAccessoryView.superview;
+    self.keyboardView = keyboardView;
 }
 
 - (void)setKeyboardHeight:(CGFloat)keyboardHeight {
@@ -279,6 +280,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     roomDataSource.delegate = nil;
     roomDataSource = nil;
+    
+    if (titleView) {
+        titleView.delegate = nil;
+        [titleView removeFromSuperview];
+        titleView = nil;
+    }
     
     if (inputToolbarView) {
         inputToolbarView.delegate = nil;
@@ -463,23 +470,45 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (roomDataSource && roomDataSource.state == MXKDataSourceStateReady) {
         [self stopActivityIndicator];
         
+        if (titleView) {
+            titleView.mxRoom = roomDataSource.room;
+            titleView.editable = YES;
+            titleView.hidden = NO;
+        } else {
+            // set default title
+            self.navigationItem.title = roomDataSource.room.state.displayname;
+        }
+        
         // Show input tool bar
         inputToolbarView.hidden = NO;
-        
-        self.navigationItem.title = roomDataSource.room.state.displayname;
     }
     else {
-        inputToolbarView.hidden = YES;
-        
         // Update the title except if the room has just been left
         if (!_leftRoomReasonLabel) {
             if (roomDataSource && roomDataSource.state == MXKDataSourceStatePreparing) {
-                self.navigationItem.title = roomDataSource.room.state.displayname;
+                if (titleView) {
+                    titleView.mxRoom = roomDataSource.room;
+                    titleView.hidden = (!titleView.mxRoom);
+                } else {
+                    self.navigationItem.title = roomDataSource.room.state.displayname;
+                }
             } else  {
-                self.navigationItem.title = nil;
+                if (titleView) {
+                    titleView.mxRoom = nil;
+                    titleView.hidden = NO;
+                } else {
+                    self.navigationItem.title = nil;
+                }
             }
         }
+        titleView.editable = NO;
+        
+        // Hide input tool bar
+        inputToolbarView.hidden = YES;
     }
+    
+    // Finalize room title refresh
+    [titleView refreshDisplay];
 }
 
 - (void)leaveRoomOnEvent:(MXEvent*)event {
@@ -517,16 +546,80 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
+- (void)setRoomTitleViewClass:(Class)roomTitleViewClass {
+    // Sanity check: accept only MXKRoomTitleView classes or sub-classes
+    NSParameterAssert([roomTitleViewClass isSubclassOfClass:MXKRoomTitleView.class]);
+    
+    if (!_roomTitleViewContainer) {
+        NSLog(@"[MXKRoomVC] Set roomTitleViewClass failed: container is missing");
+        return;
+    }
+    
+    [self dismissKeyboard];
+    
+    // Remove potential title view
+    if (titleView) {
+        titleView.delegate = nil;
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
+            [NSLayoutConstraint deactivateConstraints:titleView.constraints];
+        } else {
+            [_roomTitleViewContainer removeConstraints:titleView.constraints];
+        }
+        [titleView removeFromSuperview];
+    }
+    
+    titleView = [[roomTitleViewClass alloc] init];
+    
+    titleView.delegate = self;
+    
+    // Add the title view and define edge constraints
+    [_roomTitleViewContainer addSubview:titleView];
+    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                           attribute:NSLayoutAttributeBottom
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:titleView
+                                                                           attribute:NSLayoutAttributeBottom
+                                                                          multiplier:1.0f
+                                                                            constant:0.0f]];
+    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                           attribute:NSLayoutAttributeTop
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:titleView
+                                                                           attribute:NSLayoutAttributeTop
+                                                                          multiplier:1.0f
+                                                                            constant:0.0f]];
+    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                           attribute:NSLayoutAttributeLeading
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:titleView
+                                                                           attribute:NSLayoutAttributeLeading
+                                                                          multiplier:1.0f
+                                                                            constant:0.0f]];
+    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                           attribute:NSLayoutAttributeTrailing
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:titleView
+                                                                           attribute:NSLayoutAttributeTrailing
+                                                                          multiplier:1.0f
+                                                                            constant:0.0f]];
+    [_roomTitleViewContainer setNeedsUpdateConstraints];
+}
+
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass {
     // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
     NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
     
+    if (!_roomInputToolbarContainer) {
+        NSLog(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
+        return;
+    }
+    
+    [self dismissKeyboard];
+    
     // Remove potential toolbar
     if (inputToolbarView) {
         inputToolbarView.delegate = nil;
-        
-        // Dispose potential keyboard view
-        self.keyboardView = nil;
         
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
             [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
@@ -746,6 +839,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 - (void)dismissKeyboard {
+    [titleView dismissKeyboard];
     [inputToolbarView dismissKeyboard];
 }
 
@@ -1118,6 +1212,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Consider this callback to reset scrolling to bottom flag
     isScrollingToBottom = NO;
+}
+
+#pragma mark - MXKRoomTitleViewDelegate
+
+- (void)roomTitleView:(MXKRoomTitleView*)titleView presentMXKAlert:(MXKAlert*)alert {
+    [self dismissKeyboard];
+    [alert showInViewController:self];
+}
+
+- (void)roomTitleView:(MXKRoomTitleView*)titleView isSaving:(BOOL)saving {
+    if (saving) {
+        [self startActivityIndicator];
+    } else {
+        [self stopActivityIndicator];
+    }
 }
 
 #pragma mark - MXKRoomInputToolbarViewDelegate

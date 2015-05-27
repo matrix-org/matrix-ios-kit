@@ -41,7 +41,7 @@
         [growingTextView setTranslatesAutoresizingMaskIntoConstraints: NO];
         
         // Add an accessory view to the text view in order to retrieve keyboard view.
-        self.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+        inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
         growingTextView.internalTextView.inputAccessoryView = self.inputAccessoryView;
         
         // set text input font

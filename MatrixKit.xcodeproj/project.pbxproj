@@ -92,6 +92,8 @@
 		F0B0ECBA1B135780005EB20D /* disclosure@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB61B135780005EB20D /* disclosure@2x.png */; };
 		F0B0ECBB1B135780005EB20D /* shrink.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB71B135780005EB20D /* shrink.png */; };
 		F0B0ECBC1B135780005EB20D /* shrink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECB81B135780005EB20D /* shrink@2x.png */; };
+		F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B0ECC31B14B16C005EB20D /* MXKRoomTitleView.m */; };
+		F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */; };
 		F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */; };
 		F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DA1AA8BB5E003BE77A /* LaunchScreen.xib */; };
 		F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DC1AA8BB5E003BE77A /* Main.storyboard */; };
@@ -287,6 +289,9 @@
 		F0B0ECB61B135780005EB20D /* disclosure@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "disclosure@2x.png"; sourceTree = "<group>"; };
 		F0B0ECB71B135780005EB20D /* shrink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shrink.png; sourceTree = "<group>"; };
 		F0B0ECB81B135780005EB20D /* shrink@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shrink@2x.png"; sourceTree = "<group>"; };
+		F0B0ECC21B14B16C005EB20D /* MXKRoomTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomTitleView.h; sourceTree = "<group>"; };
+		F0B0ECC31B14B16C005EB20D /* MXKRoomTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomTitleView.m; sourceTree = "<group>"; };
+		F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomTitleView.xib; sourceTree = "<group>"; };
 		F0CE56D81AA8BB5E003BE77A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F0CE56D91AA8BB5E003BE77A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F0CE56DB1AA8BB5E003BE77A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -502,6 +507,7 @@
 				F00BB4471AB840B300AE388E /* RoomInputToolbar */,
 				32CEE22D1AB1EE0900F7C74D /* RoomList */,
 				F05FB17D1AD6643900DC0647 /* RoomMemberList */,
+				F0B0ECC11B14B16C005EB20D /* RoomTitle */,
 				F0EA4CAF1ADD6E5D007197D2 /* MXKAlert.h */,
 				F0EA4CB01ADD6E5D007197D2 /* MXKAlert.m */,
 				328AC4901AA8AF5B0044A6FB /* MXKCellRendering.h */,
@@ -717,6 +723,16 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		F0B0ECC11B14B16C005EB20D /* RoomTitle */ = {
+			isa = PBXGroup;
+			children = (
+				F0B0ECC21B14B16C005EB20D /* MXKRoomTitleView.h */,
+				F0B0ECC31B14B16C005EB20D /* MXKRoomTitleView.m */,
+				F0B0ECC81B14B6BB005EB20D /* MXKRoomTitleView.xib */,
+			);
+			path = RoomTitle;
+			sourceTree = "<group>";
+		};
 		F0CE56D71AA8BB5E003BE77A /* MatrixKitSample */ = {
 			isa = PBXGroup;
 			children = (
@@ -928,6 +944,7 @@
 				F0CF98F11B0B886000EAE373 /* MXKTableViewCellWithTextFieldAndButton.xib in Resources */,
 				F0CF98EB1B0B874A00EAE373 /* MXKTableViewCellWithLabelAndTextField.xib in Resources */,
 				F0B0ECB91B135780005EB20D /* disclosure.png in Resources */,
+				F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */,
 				F09E289D1AC2007000C51E44 /* icon_keyboard@2x.png in Resources */,
 				321313C31AEFB52900A9B035 /* bubble_ios_messages_right.png in Resources */,
 				F09E28911AC1FF3000C51E44 /* MXKRoomOutgoingBubbleTableViewCell.xib in Resources */,
@@ -1045,6 +1062,7 @@
 				F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */,
 				F094EC671ABAC380006B8CE3 /* MXKViewController.m in Sources */,
 				F0CF98E31B0B7FDC00EAE373 /* MXKTableViewCellWithTextView.m in Sources */,
+				F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */,
 				F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */,
 				F0DB1AC51B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m in Sources */,
 				F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */,

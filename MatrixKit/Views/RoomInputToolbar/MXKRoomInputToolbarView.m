@@ -51,7 +51,7 @@
 @end
 
 @implementation MXKRoomInputToolbarView
-@synthesize messageComposerContainer;
+@synthesize messageComposerContainer, inputAccessoryView;
 
 + (UINib *)nib {
     // By default, no nib is available. MXKRoomInputToolbarView-inherited classes are added programmatically.
@@ -115,7 +115,7 @@
 }
 
 - (void)dealloc {
-    self.inputAccessoryView = nil;
+    inputAccessoryView = nil;
     
     [self dismissImageValidationView];
     

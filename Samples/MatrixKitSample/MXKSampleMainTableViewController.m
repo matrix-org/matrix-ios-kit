@@ -16,7 +16,7 @@
 
 #import "MXKSampleMainTableViewController.h"
 #import "MXKSampleRecentsViewController.h"
-//#import "MXKSampleRoomViewController.h"
+#import "MXKSampleRoomViewController.h"
 #import "MXKSampleJSQMessagesViewController.h"
 #import "MXKSampleRoomMembersViewController.h"
 
@@ -279,7 +279,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     if (section == accountSectionIndex) {
         return [[MXKAccountManager sharedManager] accounts].count + 1; // Add one cell in this section to logout all accounts
     } else if (section == roomSectionIndex) {
-        return 2;
+        return 3;
     } else if (section == roomMembersSectionIndex) {
         return 2;
     } else if (section == authenticationSectionIndex) {
@@ -335,6 +335,9 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 cell.textLabel.text = @"MXKRoomViewController";
                 break;
             case 1:
+                cell.textLabel.text = @"Sample with editable title and growing text input";
+                break;
+            case 2:
                 cell.textLabel.text = @"Sample based on JSQMessagesViewController lib";
                 break;
         }
@@ -386,6 +389,9 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 [self performSegueWithIdentifier:@"showMXKRoomViewController" sender:self];
                 break;
             case 1:
+                [self performSegueWithIdentifier:@"showSampleRoomViewController" sender:self];
+                break;
+            case 2:
                 [self performSegueWithIdentifier:@"showSampleJSQMessagesViewController" sender:self];
                 break;
         }
@@ -428,7 +434,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         }
         [sampleRecentListViewController displayList:listDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"] || [segue.identifier isEqualToString:@"showSampleRoomViewController"]) {
         MXKRoomViewController *roomViewController = (MXKRoomViewController *)destinationViewController;
 
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
