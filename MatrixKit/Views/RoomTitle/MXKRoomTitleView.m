@@ -43,9 +43,10 @@
     
     self.displayNameTextField.enabled = NO;
     self.displayNameTextField.returnKeyType = UIReturnKeyDone;
+    self.displayNameTextField.hidden = YES;
 }
 
-- (instancetype)init {
++ (instancetype)roomTitleView {
     return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
 }
 
@@ -63,6 +64,7 @@
         self.displayNameTextField.text = @"Please select a room";
         self.displayNameTextField.enabled = NO;
     }
+    self.displayNameTextField.hidden = NO;
 }
 
 - (void)destroy {

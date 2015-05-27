@@ -169,6 +169,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    // Finalize view controller appearance
+    [self updateViewControllerAppearanceOnRoomDataSourceState];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
@@ -177,11 +184,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
     if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0]) {
         [self reloadBubblesTable];
-    }
-    
-    // Finalize view controller appearance
+    }    
     _bubblesTableView.hidden = NO;
-    [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
 - (void)dealloc {
@@ -568,7 +572,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [titleView destroy];
     }
     
-    titleView = [[roomTitleViewClass alloc] init];
+    titleView = [roomTitleViewClass roomTitleView];
     
     titleView.delegate = self;
     

@@ -70,6 +70,14 @@
 + (UINib *)nib;
 
 /**
+ Creates and returns a new `MXKRoomTitleView-inherited` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ @return An initialized `MXKRoomTitleView-inherited` object if successful, `nil` otherwise.
+ */
++ (instancetype)roomTitleView;
+
+/**
  The delegate notified when inputs are ready.
  */
 @property (nonatomic) id<MXKRoomTitleViewDelegate> delegate;

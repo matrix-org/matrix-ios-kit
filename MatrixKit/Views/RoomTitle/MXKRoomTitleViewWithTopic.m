@@ -48,6 +48,7 @@
     self.displayNameTextField.returnKeyType = UIReturnKeyNext;
     self.topicTextField.enabled = NO;
     self.topicTextField.returnKeyType = UIReturnKeyDone;
+    self.hiddenTopic = YES;
 }
 
 - (void)dealloc {
