@@ -157,6 +157,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Hide bubbles table by default in order to hide initial scrolling to the bottom
     _bubblesTableView.hidden = YES;
     
+    // Ensure that the titleView will be scaled when it will be required
+    // during a screen rotation for example.
+    _roomTitleViewContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
     // Set default input toolbar view
     [self setRoomInputToolbarViewClass:MXKRoomInputToolbarViewWithSimpleTextView.class];
     
