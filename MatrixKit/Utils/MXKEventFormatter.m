@@ -441,6 +441,15 @@
             displayText = [NSString stringWithFormat:@"%@ redacted an event (id: %@)", senderDisplayName, eventId];
             break;
         }
+        case MXEventTypeCallInvite: {
+            // outgoing call?
+            if ([event.userId isEqualToString:mxSession.myUser.userId]) {
+                displayText = @"Outgoing Call";
+            } else {
+                displayText = @"Incoming Call";
+            }
+            break;
+        }
 
         default:
             *error = MXKEventFormatterErrorUnknownEventType;
@@ -512,7 +521,7 @@
             break;
     }
     
-    if (event.isState) {
+    if (event.isState || event.eventType == MXEventTypeCallInvite) {
         font = [UIFont italicSystemFontOfSize:14];
     } else {
         font = [UIFont systemFontOfSize:14];
@@ -537,7 +546,7 @@
     event.eventId = eventId;
     event.type = kMXEventTypeStringRoomMessage;
     event.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-    event.userId = mxSession.matrixRestClient.credentials.userId;
+    event.userId = mxSession.myUser.userId;
     event.content = content;
 
     return event;

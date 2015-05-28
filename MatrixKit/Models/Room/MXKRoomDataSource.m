@@ -125,7 +125,8 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                                              kMXEventTypeStringRoomAliases,
                                              kMXEventTypeStringRoomMessage,
                                              kMXEventTypeStringRoomMessageFeedback,
-                                             kMXEventTypeStringRoomRedaction
+                                             kMXEventTypeStringRoomRedaction,
+                                             kMXEventTypeStringCallInvite
                                              ];
         }
         else {
@@ -134,7 +135,8 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                                              kMXEventTypeStringRoomName,
                                              kMXEventTypeStringRoomTopic,
                                              kMXEventTypeStringRoomMember,
-                                             kMXEventTypeStringRoomMessage
+                                             kMXEventTypeStringRoomMessage,
+                                             kMXEventTypeStringCallInvite
                                              ];
         }
 
