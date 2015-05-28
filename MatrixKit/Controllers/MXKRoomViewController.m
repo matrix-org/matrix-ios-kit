@@ -350,7 +350,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         // Check whether the user will leave the current room
-        if (notif.object == self.mxSession) {
+        if (notif.object == self.mainSession) {
             NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
             if (roomId && [roomId isEqualToString:roomDataSource.roomId]) {
                 // Update view controller appearance
@@ -467,12 +467,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)displayRoom:(MXKRoomDataSource *)dataSource {
     
+    if (roomDataSource) {
+        roomDataSource = nil;
+        [self removeMatrixSession:self.mainSession];
+    }
+    
     if (dataSource) {
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
         
         // Report the matrix session at view controller level to update UI according to session state
-        self.mxSession = roomDataSource.mxSession;
+        [self addMatrixSession:roomDataSource.mxSession];
         
         if (_bubblesTableView) {
             [self configureView];
@@ -482,9 +487,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         if (roomDataSource.state == MXKDataSourceStateReady) {
             [self onRoomDataSourceReady];
         }
-    } else {
-        roomDataSource = nil;
-        self.mxSession = nil;
     }
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];

@@ -17,12 +17,15 @@
 #import "MXKViewController.h"
 
 @interface MXKViewController () {
-    id mxkViewControllerSessionStateObserver;
+    /**
+     Array of `MXSession` instances.
+     */
+    NSMutableArray *mxSessionArray;
 }
 @end
 
 @implementation MXKViewController
-@synthesize mxSession;
+@synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
 
 - (void)viewDidLoad {
@@ -41,6 +44,8 @@
     
     activityIndicator.center = self.view.center;
     [self.view addSubview:activityIndicator];
+    
+    mxSessionArray = [NSMutableArray array];
 }
 
 - (void)dealloc {
@@ -61,7 +66,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
     // Update UI according to mxSession state, and add observer (if need)
-    self.mxSession = mxSession;
+    if (mxSessionArray.count) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionStateDidChange:) name:kMXSessionStateDidChangeNotification object:nil];
+    }
+    [self onMatrixSessionChange];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -70,7 +78,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
+    
     [activityIndicator stopAnimating];
     
     if (self.rageShakeManager) {
@@ -90,77 +99,53 @@
 
 #pragma mark -
 
-- (void)setMxSession:(MXSession *)session {
-    // Remove potential session observer
-    if (mxkViewControllerSessionStateObserver) {
-        [[NSNotificationCenter defaultCenter] removeObserver:mxkViewControllerSessionStateObserver];
-        mxkViewControllerSessionStateObserver = nil;
+- (void)addMatrixSession:(MXSession*)mxSession {
+    if (!mxSession) {
+        return;
     }
     
-    if (session) {
-        // Register session state observer
-        mxkViewControllerSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            // Check whether the concerned session is the associated one
-            if (notif.object == mxSession) {
-                [self didMatrixSessionStateChange];
-            }
-        }];
+    if (!mxSessionArray.count) {
+        [mxSessionArray addObject:mxSession];
+        
+        // Add matrix sessions observer on first added session
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionStateDidChange:) name:kMXSessionStateDidChangeNotification object:nil];
+    } else if ([mxSessionArray indexOfObject:mxSession] == NSNotFound) {
+        [mxSessionArray addObject:mxSession];
     }
-    
-    mxSession = session;
     
     // Force update
-    [self didMatrixSessionStateChange];
+    [self onMatrixSessionChange];
 }
 
-- (void)didMatrixSessionStateChange {
-    // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
-    UINavigationController *mainNavigationController = nil;
-    if (self.splitViewController) {
-        mainNavigationController = self.navigationController;
-        UIViewController *parentViewController = self.parentViewController;
-        while (parentViewController) {
-            if (parentViewController.navigationController) {
-                mainNavigationController = parentViewController.navigationController;
-                parentViewController = parentViewController.parentViewController;
-            } else {
-                break;
-            }
+- (void)removeMatrixSession:(MXSession*)mxSession {
+    if (!mxSession) {
+        return;
+    }
+    
+    NSUInteger index = [mxSessionArray indexOfObject:mxSession];
+    if (index != NSNotFound) {
+        [mxSessionArray removeObjectAtIndex:index];
+        
+        if (!mxSessionArray.count) {
+            // Remove matrix sessions observer
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
         }
     }
     
-    if (mxSession) {
-        // The navigation bar tintColor depends on matrix homeserver reachability status
-        if (mxSession.state == MXSessionStateHomeserverNotReachable) {
-            self.navigationController.navigationBar.barTintColor = [UIColor redColor];
-            if (mainNavigationController) {
-                mainNavigationController.navigationBar.barTintColor = [UIColor redColor];
-            }
-        } else {
-            // Restore default tintColor
-            self.navigationController.navigationBar.barTintColor = nil;
-            if (mainNavigationController) {
-                mainNavigationController.navigationBar.barTintColor = nil;
-            }
-        }
-        
-        // Run activity indicator if need
-        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised) {
-            [self startActivityIndicator];
-        } else {
-            [self stopActivityIndicator];
-        }
-    } else {
-        // Hide potential activity indicator
-        [self stopActivityIndicator];
-        
-        // Restore default tintColor
-        self.navigationController.navigationBar.barTintColor = nil;
-        if (mainNavigationController) {
-            mainNavigationController.navigationBar.barTintColor = nil;
-        }
+    // Force update
+    [self onMatrixSessionChange];
+}
+
+- (NSArray*)mxSessions {
+    return [NSArray arrayWithArray:mxSessionArray];
+}
+
+- (MXSession*)mainSession {
+    // We consider the first added session as the main one.
+    if (mxSessionArray.count) {
+        return [mxSessionArray firstObject];
     }
+    return nil;
 }
 
 #pragma mark -
@@ -189,10 +174,84 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    self.mxSession = nil;
+    mxSessionArray = nil;
 }
 
-#pragma mark - activity indicator
+#pragma mark - Sessions handling
+
+- (void)onMatrixSessionStateDidChange:(NSNotification *)notif {
+    MXSession *mxSession = notif.object;
+    
+    if ([mxSessionArray indexOfObject:mxSession] != NSNotFound) {
+        [self onMatrixSessionChange];
+    }
+}
+
+- (void)onMatrixSessionChange {
+    // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
+    UINavigationController *mainNavigationController = nil;
+    if (self.splitViewController) {
+        mainNavigationController = self.navigationController;
+        UIViewController *parentViewController = self.parentViewController;
+        while (parentViewController) {
+            if (parentViewController.navigationController) {
+                mainNavigationController = parentViewController.navigationController;
+                parentViewController = parentViewController.parentViewController;
+            } else {
+                break;
+            }
+        }
+    }
+    
+    if (mxSessionArray.count) {
+        // The navigation bar tintColor depends on matrix homeserver reachability status
+        UIColor *barTintColor = nil; //default tintColor
+        BOOL allHomeserverNotReachable = YES;
+        BOOL isActivityInProgress = NO;
+        
+        for (MXSession *mxSession in mxSessionArray) {
+            if (mxSession.state == MXSessionStateHomeserverNotReachable) {
+                barTintColor = [UIColor orangeColor];
+            } else {
+                allHomeserverNotReachable = NO;
+                
+                if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised) {
+                    isActivityInProgress = YES;
+                }
+            }
+        }
+        
+        if (allHomeserverNotReachable) {
+            self.navigationController.navigationBar.barTintColor = [UIColor redColor];
+            if (mainNavigationController) {
+                mainNavigationController.navigationBar.barTintColor = [UIColor redColor];
+            }
+        } else {
+            self.navigationController.navigationBar.barTintColor = barTintColor;
+            if (mainNavigationController) {
+                mainNavigationController.navigationBar.barTintColor = barTintColor;
+            }
+        }
+        
+        // Run activity indicator if need
+        if (isActivityInProgress) {
+            [self startActivityIndicator];
+        } else {
+            [self stopActivityIndicator];
+        }
+    } else {
+        // Hide potential activity indicator
+        [self stopActivityIndicator];
+        
+        // Restore default tintColor
+        self.navigationController.navigationBar.barTintColor = nil;
+        if (mainNavigationController) {
+            mainNavigationController.navigationBar.barTintColor = nil;
+        }
+    }
+}
+
+#pragma mark - Activity indicator
 
 - (void)startActivityIndicator {
     [self.view bringSubviewToFront:activityIndicator];
@@ -201,7 +260,13 @@
 
 - (void)stopActivityIndicator {
     // Check whether all conditions are satisfied before stopping loading wheel
-    if (!mxSession || (mxSession.state != MXSessionStateSyncInProgress && mxSession.state != MXSessionStateInitialised)) {
+    BOOL isActivityInProgress = NO;
+    for (MXSession *mxSession in mxSessionArray) {
+        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised) {
+            isActivityInProgress = YES;
+        }
+    }
+    if (!isActivityInProgress) {
         [activityIndicator stopAnimating];
     }
 }

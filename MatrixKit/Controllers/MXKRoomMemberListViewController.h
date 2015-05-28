@@ -38,7 +38,7 @@
 
 
 /**
- This view controller displays members of a room.
+ This view controller displays members of a room. Only one matrix session is handled by this view controller.
  */
 @interface MXKRoomMemberListViewController : MXKTableViewController <MXKDataSourceDelegate, UISearchBarDelegate>
 

@@ -141,10 +141,10 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 #pragma mark - override
 
-- (void)didMatrixSessionStateChange {
-    [super didMatrixSessionStateChange];
+- (void)onMatrixSessionChange {
+    [super onMatrixSessionChange];
     
-    if (self.mxSession.state != MXSessionStateRunning) {
+    if (self.mainSession.state != MXSessionStateRunning) {
         userPictureButton.enabled = NO;
         userDisplayName.enabled = NO;
     } else if (!isSavingInProgress) {
@@ -165,7 +165,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     if (account) {
         
         // Report matrix account session
-        self.mxSession = account.mxSession;
+        [self addMatrixSession:account.mxSession];
         
         // Set current user's information and add observers
         [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
@@ -312,7 +312,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     submittedEmailCell = nil;
     emailTokenCell = nil;
     
-    self.mxSession = nil;
+    [self removeMatrixSession:self.mainSession];
     
     logoutBtnCell = nil;
     
@@ -397,7 +397,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             UIImage *updatedPicture = [MXKTools forceImageOrientationUp:[self.userPictureButton imageForState:UIControlStateNormal]];
             
             // Upload picture
-            MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1.0];
+            MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mainSession initialRange:0 andRange:1.0];
             [uploader uploadData:UIImageJPEGRepresentation(updatedPicture, 0.5) mimeType:@"image/jpeg" success:^(NSString *url) {
                 // Store uploaded picture url and trigger picture saving
                 uploadedPictureURL = url;
@@ -483,7 +483,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         currentPictureURL = [avatar_url isEqual:[NSNull null]] ? nil : avatar_url;
         if (currentPictureURL) {
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            currentPictureThumbURL = [self.mxSession.matrixRestClient urlOfContentThumbnail:currentPictureURL toFitViewSize:self.userPictureButton.frame.size withMethod:MXThumbnailingMethodCrop];
+            currentPictureThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:currentPictureURL toFitViewSize:self.userPictureButton.frame.size withMethod:MXThumbnailingMethodCrop];
             NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:currentPictureThumbURL inFolder:kMXKMediaManagerAvatarThumbnailFolder];
             
             // Check whether the image download is in progress
@@ -590,7 +590,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         }
         
         submittedEmailCell.mxkButton.enabled = NO;
-        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mxSession.matrixRestClient success:^{
+        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient success:^{
             // Reset email field
             submittedEmailCell.mxkTextField.text = nil;
             [self.tableView reloadData];

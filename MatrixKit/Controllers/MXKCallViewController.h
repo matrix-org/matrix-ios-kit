@@ -43,6 +43,9 @@ extern NSString *const kMXKCallViewControllerWillDisappearNotification;
 extern NSString *const kMXKCallViewControllerDisappearedNotification;
 extern NSString *const kMXKCallViewControllerBackToAppNotification;
 
+/**
+ 'MXKCallViewController' instance displays a call. Only one matrix session is supported by this view controller.
+ */
 @interface MXKCallViewController : MXKViewController <MXCallDelegate> {
 }
 

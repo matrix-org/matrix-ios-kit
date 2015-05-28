@@ -252,13 +252,22 @@
     // Cancel registration on existing dataSource if any
     if (dataSource) {
         dataSource.delegate = nil;
+        
+        // Remove associated matrix sessions
+        NSArray *mxSessions = self.mxSessions;
+        for (MXSession *mxSession in mxSessions) {
+            [self removeMatrixSession:mxSession];
+        }
     }
     
     dataSource = listDataSource;
     dataSource.delegate = self;
     
-    // Report the matrix session at view controller level to update UI according to session state
-    self.mxSession = dataSource.mxSession;
+    // Report all matrix sessions at view controller level to update UI according to sessions state
+    NSArray *mxSessions = listDataSource.mxSessions;
+    for (MXSession *mxSession in mxSessions) {
+        [self addMatrixSession:mxSession];
+    }
 
     if (self.recentsTableView) {
         [self configureView];

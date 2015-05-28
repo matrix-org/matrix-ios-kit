@@ -89,7 +89,7 @@
     [super viewWillAppear:animated];
     
     // Check whether the user still belongs to the room's members.
-    if (self.dataSource && [self.mxSession roomWithRoomId:self.dataSource.roomId]) {
+    if (self.dataSource && [self.mainSession roomWithRoomId:self.dataSource.roomId]) {
         
         [self refreshUIBarButtons];
         
@@ -97,7 +97,7 @@
         kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             // Check whether the user will leave the room related to the displayed member list
-            if (notif.object == self.mxSession) {
+            if (notif.object == self.mainSession) {
                 NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
                 if (roomId && [roomId isEqualToString:self.dataSource.roomId]) {
                     // We remove the current view controller.
@@ -219,8 +219,8 @@
     
     if (showInvitationOption && dataSource) {
         // Check conditions to be able to invite someone
-        MXRoom *mxRoom = [self.mxSession roomWithRoomId:dataSource.roomId];
-        NSUInteger oneSelfPowerLevel = [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxSession.myUser.userId];
+        MXRoom *mxRoom = [self.mainSession roomWithRoomId:dataSource.roomId];
+        NSUInteger oneSelfPowerLevel = [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
         if (oneSelfPowerLevel < [mxRoom.state.powerLevels invite]) {
             showInvitationOption = NO;
         }
@@ -241,12 +241,18 @@
 
 #pragma mark -
 - (void)displayList:(MXKRoomMemberListDataSource *)listDataSource {
+    
+    if (dataSource) {
+        dataSource.delegate = nil;
+        dataSource = nil;
+        [self removeMatrixSession:self.mainSession];
+    }
 
     dataSource = listDataSource;
     dataSource.delegate = self;
     
     // Report the matrix session at view controller level to update UI according to session state
-    self.mxSession = dataSource.mxSession;
+    [self addMatrixSession:dataSource.mxSession];
 
     if (self.tableView) {
         [self configureView];
@@ -393,7 +399,7 @@
         self->currentAlert = nil;
         
         if (userId.length) {
-            MXRoom *mxRoom = [self.mxSession roomWithRoomId:self.dataSource.roomId];
+            MXRoom *mxRoom = [self.mainSession roomWithRoomId:self.dataSource.roomId];
             if (mxRoom) {
                 [mxRoom inviteUser:userId success:^{
                 } failure:^(NSError *error) {

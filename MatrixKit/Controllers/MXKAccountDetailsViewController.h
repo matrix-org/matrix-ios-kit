@@ -26,6 +26,7 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
 
 /**
  MXKAccountDetailsViewController instance may be used to display/edit the details of a matrix account.
+ Only one matrix session is handled by this view controller.
  */
 @interface MXKAccountDetailsViewController : MXKTableViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 

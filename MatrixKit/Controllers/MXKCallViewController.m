@@ -181,12 +181,23 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)setMxCall:(MXCall *)call {
     
+    // Remove previous call (if any)
+    if (mxCall) {
+        mxCall.delegate = nil;
+        mxCall.selfVideoView = nil;
+        mxCall.remoteVideoView = nil;
+        [self removeMatrixSession:self.mainSession];
+    }
+    
+    
     if (call && call.room) {
-        self.mxSession = call.room.mxSession;
+        MXSession *mxSession = mxCall.room.mxSession;
+        
+        [self addMatrixSession:mxSession];
         
         // Handle peer here
         if (call.isIncoming) {
-            self.peer = [self.mxSession userWithUserId:call.callerId];
+            self.peer = [mxSession userWithUserId:call.callerId];
         } else {
             // Only one-to-one room are supported.
             // TODO: Handle conference call
@@ -218,9 +229,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             remotePreviewContainerView.hidden = YES;
         }
     } else {
-        mxCall.delegate = nil;
-        mxCall.selfVideoView = nil;
-        mxCall.remoteVideoView = nil;
+        
     }
     
     mxCall = call;
@@ -238,7 +247,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        NSString *avatarThumbURL = [self.mxSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
+        NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
         callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         [callerImageView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
         [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];

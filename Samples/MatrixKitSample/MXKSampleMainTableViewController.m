@@ -92,7 +92,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         // Check whether the concerned session is a new one
         if (mxSession.state == MXSessionStateInitialised) {
             // report created matrix session
-            self.mxSession = mxSession;
+            [self addMatrixSession:mxSession];
             
             self.tableView.tableHeaderView.hidden = NO;
             [self.tableView reloadData];
@@ -230,7 +230,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     [[MXKAccountManager sharedManager] logout];
     
     // Reset
-    self.mxSession = nil;
+    NSArray *mxSessions = self.mxSessions;
+    for (MXSession *mxSession in mxSessions) {
+        [self removeMatrixSession:mxSession];
+    }
     selectedRoom = nil;
     _selectedRoomDisplayName.text = nil;
     
@@ -419,7 +422,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     // Keep ref on destinationViewController
     destinationViewController = segue.destinationViewController;
 
-    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mxSession) {
+    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mainSession) {
         MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)destinationViewController;
         sampleRecentListViewController.delegate = self;
         
