@@ -44,8 +44,6 @@
     
     activityIndicator.center = self.view.center;
     [self.view addSubview:activityIndicator];
-    
-    mxSessionArray = [NSMutableArray array];
 }
 
 - (void)dealloc {
@@ -102,6 +100,10 @@
 - (void)addMatrixSession:(MXSession*)mxSession {
     if (!mxSession) {
         return;
+    }
+    
+    if (!mxSessionArray) {
+        mxSessionArray = [NSMutableArray array];
     }
     
     if (!mxSessionArray.count) {
