@@ -161,6 +161,24 @@ typedef enum : NSUInteger {
 - (void)dataSource:(MXKDataSource*)dataSource didStateChange:(MXKDataSourceState)state;
 
 /**
+ Relevant only for data source which support multi-sessions.
+ Tells the delegate that a matrix session has been added.
+ 
+ @param dataSource the involved data source.
+ @param the new added session.
+ */
+- (void)dataSource:(MXKDataSource*)dataSource didAddMatrixSession:(MXSession*)mxSession;
+
+/**
+ Relevant only for data source which support multi-sessions.
+ Tells the delegate that a matrix session has been removed.
+ 
+ @param dataSource the involved data source.
+ @param the removed session.
+ */
+- (void)dataSource:(MXKDataSource*)dataSource didRemoveMatrixSession:(MXSession*)mxSession;
+
+/**
  Tells the delegate when a user action is observed inside a cell.
  
  @see `MXKCellRenderingDelegate` for more details.

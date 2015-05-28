@@ -78,6 +78,10 @@
         
         recentsDataSource.delegate = self;
         [recentsDataSourceArray addObject:recentsDataSource];
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didAddMatrixSession:)]) {
+            [self.delegate dataSource:self didAddMatrixSession:matrixSession];
+        }
     }
 }
 
@@ -94,6 +98,10 @@
             
             [self.delegate dataSource:self didCellChange:nil];
             
+            if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didRemoveMatrixSession:)]) {
+                [self.delegate dataSource:self didRemoveMatrixSession:matrixSession];
+            }
+            
             break;
         }
     }
@@ -102,6 +110,10 @@
 #pragma mark - MXKDataSource overridden
 
 - (MXSession*)mxSession {
+    
+    if (mxSessionArray.count > 1) {
+        NSLog(@"[MXKRecentListDataSource] CAUTION: mxSession property is not relevant in case of multi-sessions (%tu)", mxSessionArray.count);
+    }
     
     // TODO: This property is not well adapted in case of multi-sessions
     // We consider by default the first added session as the main one...

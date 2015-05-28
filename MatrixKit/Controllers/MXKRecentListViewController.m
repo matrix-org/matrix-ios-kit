@@ -300,6 +300,14 @@
     [self.recentsTableView reloadData];
 }
 
+- (void)dataSource:(MXKDataSource *)dataSource didAddMatrixSession:(MXSession *)mxSession {
+    [self addMatrixSession:mxSession];
+}
+
+- (void)dataSource:(MXKDataSource *)dataSource didRemoveMatrixSession:(MXSession *)mxSession {
+    [self removeMatrixSession:mxSession];
+}
+
 
 #pragma mark - UITableView delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
