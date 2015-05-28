@@ -167,6 +167,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
     
+    // Save progress text input
+    _saveProgressTextInput = YES;
+    
     // Check whether a room source has been defined
     if (roomDataSource) {
         [self configureView];
@@ -190,6 +193,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [self reloadBubblesTable];
     }    
     _bubblesTableView.hidden = NO;
+    
+    if (_saveProgressTextInput && roomDataSource) {
+        // Retrieve the potential message partially typed during last room display.
+        // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
+        inputToolbarView.textMessage = roomDataSource.partialTextMessage;
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    if (_saveProgressTextInput && roomDataSource) {
+        // Store the potential message partially typed in text input
+        roomDataSource.partialTextMessage = inputToolbarView.textMessage;
+    }
 }
 
 - (void)dealloc {

@@ -51,6 +51,13 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic, readonly) MXKRoomInputToolbarView* inputToolbarView;
 
 /**
+ Enable/disable saving of the current typed text in message composer when view disappears.
+ The message composer is prefilled with this text when the room is opened again.
+ This property value is YES by default.
+ */
+@property BOOL saveProgressTextInput;
+
+/**
  This object is defined when the displayed room is left. It is added into the bubbles table header.
  This label is used to display the reason why the room has been left.
  */
