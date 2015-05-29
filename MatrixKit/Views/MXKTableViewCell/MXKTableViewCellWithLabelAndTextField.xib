@@ -31,6 +31,9 @@
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                        <connections>
+                            <outlet property="delegate" destination="5Je-1y-foH" id="Nie-b5-gB9"/>
+                        </connections>
                     </textField>
                 </subviews>
                 <constraints>

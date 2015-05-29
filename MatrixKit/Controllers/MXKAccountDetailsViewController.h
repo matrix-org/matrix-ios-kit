@@ -70,6 +70,11 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
 - (IBAction)onButtonPressed:(id)sender;
 
 /**
+ Action registered to handle text field edition
+ */
+- (IBAction)textFieldEditingChanged:(id)sender;
+
+/**
  Prompt user to save potential changes before leaving the view controller.
  
  @param handler A block object called when the changes have been saved or discarded.

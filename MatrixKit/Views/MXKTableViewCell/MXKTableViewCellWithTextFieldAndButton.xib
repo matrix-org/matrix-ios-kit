@@ -17,6 +17,10 @@
                         <rect key="frame" x="8" y="7" width="527" height="30"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                        <connections>
+                            <action selector="textFieldEditingChanged:" destination="20U-7H-xmi" eventType="editingChanged" id="XUA-5O-AC8"/>
+                            <outlet property="delegate" destination="20U-7H-xmi" id="IIR-M2-klm"/>
+                        </connections>
                     </textField>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ycy-33-7Zq">
                         <rect key="frame" x="543" y="7" width="49" height="30"/>

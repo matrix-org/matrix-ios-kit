@@ -667,13 +667,9 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     return YES;
 }
 
-- (IBAction)textFieldDidChange:(id)sender {
+- (IBAction)textFieldEditingChanged:(id)sender {
     if (sender == userDisplayName) {
         [self updateSaveUserInfoButtonStatus];
-    } else if (sender == submittedEmailCell.mxkTextField) {
-        submittedEmailCell.mxkButton.enabled = (submittedEmailCell.mxkTextField.text.length != 0);
-    } else if (sender == emailTokenCell.mxkTextField) {
-        emailTokenCell.mxkButton.enabled = (emailTokenCell.mxkTextField.text.length != 0);
     }
 }
 

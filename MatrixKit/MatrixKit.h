@@ -35,6 +35,8 @@
 
 #import "MXKAuthenticationViewController.h"
 
+#import "MXKRoomCreationView.h"
+
 #import "MXKRoomInputToolbarView.h"
 #import "MXKRoomInputToolbarViewWithHPGrowingText.h"
 

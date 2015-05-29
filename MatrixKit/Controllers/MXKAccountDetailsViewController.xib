@@ -44,7 +44,7 @@
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" returnKeyType="done"/>
                         <connections>
-                            <action selector="textFieldDidChange:" destination="-1" eventType="editingChanged" id="ZrY-im-hbM"/>
+                            <action selector="textFieldEditingChanged:" destination="-1" eventType="editingChanged" id="ZaU-yY-z8l"/>
                             <outlet property="delegate" destination="-1" id="sGO-pB-sxI"/>
                         </connections>
                     </textField>

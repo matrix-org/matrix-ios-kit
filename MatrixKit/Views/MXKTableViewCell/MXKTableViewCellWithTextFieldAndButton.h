@@ -16,7 +16,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MXKTableViewCellWithTextFieldAndButton : UITableViewCell
+@interface MXKTableViewCellWithTextFieldAndButton : UITableViewCell <UITextFieldDelegate>
+
 @property (strong, nonatomic) IBOutlet UITextField *mxkTextField;
 @property (strong, nonatomic) IBOutlet UIButton *mxkButton;
+
+- (IBAction)textFieldEditingChanged:(id)sender;
 @end

@@ -72,6 +72,8 @@
 		F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E180C1ABC2EDA00DE3766 /* MXKRoomDataSource.m */; };
 		F07E18141ABC563900DE3766 /* MXEvent+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18131ABC563900DE3766 /* MXEvent+MatrixKit.m */; };
 		F07E18171ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18161ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m */; };
+		F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0868E0B1B18FC01004CBE80 /* MXKRoomCreationView.m */; };
+		F0868E0E1B18FC01004CBE80 /* MXKRoomCreationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0868E0C1B18FC01004CBE80 /* MXKRoomCreationView.xib */; };
 		F094D15E1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = F094D15C1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m */; };
 		F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */; };
 		F094EC671ABAC380006B8CE3 /* MXKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F094EC661ABAC380006B8CE3 /* MXKViewController.m */; };
@@ -267,6 +269,9 @@
 		F07E18131ABC563900DE3766 /* MXEvent+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MXEvent+MatrixKit.m"; sourceTree = "<group>"; };
 		F07E18151ABC8B8B00DE3766 /* MXKRoomBubbleComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleComponent.h; sourceTree = "<group>"; };
 		F07E18161ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleComponent.m; sourceTree = "<group>"; };
+		F0868E0A1B18FC01004CBE80 /* MXKRoomCreationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomCreationView.h; sourceTree = "<group>"; };
+		F0868E0B1B18FC01004CBE80 /* MXKRoomCreationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomCreationView.m; sourceTree = "<group>"; };
+		F0868E0C1B18FC01004CBE80 /* MXKRoomCreationView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomCreationView.xib; sourceTree = "<group>"; };
 		F094D15B1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarViewWithSimpleTextView.h; sourceTree = "<group>"; };
 		F094D15C1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomInputToolbarViewWithSimpleTextView.m; sourceTree = "<group>"; };
 		F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomInputToolbarViewWithSimpleTextView.xib; sourceTree = "<group>"; };
@@ -525,6 +530,9 @@
 				F09E288B1AC1FEDA00C51E44 /* MXKImageView.m */,
 				F09E288C1AC1FEDA00C51E44 /* MXKPieChartView.h */,
 				F09E288D1AC1FEDA00C51E44 /* MXKPieChartView.m */,
+				F0868E0A1B18FC01004CBE80 /* MXKRoomCreationView.h */,
+				F0868E0B1B18FC01004CBE80 /* MXKRoomCreationView.m */,
+				F0868E0C1B18FC01004CBE80 /* MXKRoomCreationView.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -956,6 +964,7 @@
 				F0CF98EB1B0B874A00EAE373 /* MXKTableViewCellWithLabelAndTextField.xib in Resources */,
 				F0B0ECB91B135780005EB20D /* disclosure.png in Resources */,
 				F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */,
+				F0868E0E1B18FC01004CBE80 /* MXKRoomCreationView.xib in Resources */,
 				F09E289D1AC2007000C51E44 /* icon_keyboard@2x.png in Resources */,
 				321313C31AEFB52900A9B035 /* bubble_ios_messages_right.png in Resources */,
 				F09E28911AC1FF3000C51E44 /* MXKRoomOutgoingBubbleTableViewCell.xib in Resources */,
@@ -1045,6 +1054,7 @@
 				F06E76811AF0FEB100980E5A /* MXKAuthenticationViewController.m in Sources */,
 				F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */,
 				3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */,
+				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
 				32CEE2331AB1F5CB00F7C74D /* MXKSampleRecentsViewController.m in Sources */,
 				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.m in Sources */,
 				F0CF98F81B0C6EA000EAE373 /* MXKAccountTableViewCell.m in Sources */,

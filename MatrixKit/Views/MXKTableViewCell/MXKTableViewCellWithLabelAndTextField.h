@@ -16,7 +16,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MXKTableViewCellWithLabelAndTextField : UITableViewCell
+@interface MXKTableViewCellWithLabelAndTextField : UITableViewCell <UITextFieldDelegate>
+
 @property (strong, nonatomic) IBOutlet UILabel *mxkLabel;
 @property (strong, nonatomic) IBOutlet UITextField *mxkTextField;
+
 @end

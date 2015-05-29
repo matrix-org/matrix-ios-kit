@@ -26,5 +26,19 @@
     return self;
 }
 
+#pragma mark - UITextField delegate
+
+- (BOOL)textFieldShouldReturn:(UITextField*)textField {
+    // "Done" key has been pressed
+    [self.mxkTextField resignFirstResponder];
+    return YES;
+}
+
+#pragma mark - Action
+
+- (IBAction)textFieldEditingChanged:(id)sender {
+    self.mxkButton.enabled = (self.mxkTextField.text.length != 0);
+}
+
 
 @end
