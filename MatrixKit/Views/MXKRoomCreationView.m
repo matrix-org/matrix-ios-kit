@@ -27,17 +27,6 @@
 
 @implementation MXKRoomCreationView
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomCreationView class]] loadNibNamed:NSStringFromClass([MXKRoomCreationView class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    if (self) {
-        
-    }
-    return self;
-}
-
 + (UINib *)nib {
     return [UINib nibWithNibName:NSStringFromClass([MXKRoomCreationView class])
                           bundle:[NSBundle bundleForClass:[MXKRoomCreationView class]]];
@@ -54,12 +43,64 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
+    // Add observer to keep align text fields
+    [_roomNameLabel  addObserver:self forKeyPath:@"text" options:0 context:nil];
+    [_roomAliasLabel  addObserver:self forKeyPath:@"text" options:0 context:nil];
+    [_participantsLabel  addObserver:self forKeyPath:@"text" options:0 context:nil];
+    [self alignTextFields];
+    
     // Finalize setup
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
 }
 
 - (void)dealloc {
     [self destroy];
+}
+
+- (void)setRoomNameFieldHidden:(BOOL)roomNameFieldHidden {
+    _roomNameFieldHidden = _roomNameTextField.hidden = _roomNameLabel.hidden = roomNameFieldHidden;
+
+    if (roomNameFieldHidden) {
+        _roomAliasFieldTopConstraint.constant -= _roomNameTextField.frame.size.height + 8;
+        _participantsFieldTopConstraint.constant -= _roomNameTextField.frame.size.height + 8;
+        _createRoomBtnTopConstraint.constant -= _roomNameTextField.frame.size.height + 8;
+    } else {
+        _roomAliasFieldTopConstraint.constant += _roomNameTextField.frame.size.height + 8;
+        _participantsFieldTopConstraint.constant += _roomNameTextField.frame.size.height + 8;
+        _createRoomBtnTopConstraint.constant += _roomNameTextField.frame.size.height + 8;
+    }
+    
+    [self alignTextFields];
+}
+
+- (void)setRoomAliasFieldHidden:(BOOL)roomAliasFieldHidden {
+    _roomAliasFieldHidden = _roomAliasTextField.hidden = _roomAliasLabel.hidden = roomAliasFieldHidden;
+    
+    if (roomAliasFieldHidden) {
+        _participantsFieldTopConstraint.constant -= _roomAliasTextField.frame.size.height + 8;
+        _createRoomBtnTopConstraint.constant -= _roomAliasTextField.frame.size.height + 8;
+    } else {
+        _participantsFieldTopConstraint.constant += _roomAliasTextField.frame.size.height + 8;
+        _createRoomBtnTopConstraint.constant += _roomAliasTextField.frame.size.height + 8;
+    }
+    
+    [self alignTextFields];
+}
+
+- (void)setParticipantsFieldHidden:(BOOL)participantsFieldHidden {
+    _participantsFieldHidden = _participantsTextField.hidden = _participantsLabel.hidden = participantsFieldHidden;
+    
+    if (participantsFieldHidden) {
+        _createRoomBtnTopConstraint.constant -= _participantsTextField.frame.size.height + 8;
+    } else {
+        _createRoomBtnTopConstraint.constant += _participantsTextField.frame.size.height + 8;
+    }
+    
+    [self alignTextFields];
+}
+
+- (CGFloat)actualFrameHeight {
+    return (_createRoomBtnTopConstraint.constant + _createRoomBtn.frame.size.height + 8);
 }
 
 - (void)setMxSessions:(NSArray *)mxSessions {
@@ -95,9 +136,38 @@
 
 - (void)destroy {
     self.mxSessions = nil;
+    
+    // Remove observers
+    [_roomNameLabel  removeObserver:self forKeyPath:@"text"];
+    [_roomAliasLabel  removeObserver:self forKeyPath:@"text"];
+    [_participantsLabel  removeObserver:self forKeyPath:@"text"];
+}
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    // UIView will be "transparent" for touch events if we return NO
+    return YES;
 }
 
 #pragma mark - Internal methods
+
+- (void)alignTextFields {
+    CGFloat maxLabelLenght = 0;
+    
+    if (!_roomNameLabel.hidden) {
+        maxLabelLenght = _roomNameLabel.frame.size.width;
+    }
+    if (!_roomAliasLabel.hidden && maxLabelLenght < _roomAliasLabel.frame.size.width) {
+        maxLabelLenght = _roomAliasLabel.frame.size.width;
+    }
+    if (!_participantsLabel.hidden && maxLabelLenght < _participantsLabel.frame.size.width) {
+        maxLabelLenght = _participantsLabel.frame.size.width;
+    }
+    
+    // Update textField left constraint by adding marging
+    _textFieldLeftConstraint.constant = maxLabelLenght + (2 * 8);
+    
+    [self layoutIfNeeded];
+}
 
 - (NSString*)alias {
     
@@ -348,6 +418,17 @@
                                 }];
         }
     }];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    // Check whether one label has been updated
+    if ([@"text" isEqualToString:keyPath] && (object == _roomNameLabel || object == _roomAliasLabel || object == _participantsLabel)) {
+        // Update left constraint of the text fields
+        [object sizeToFit];
+        [self alignTextFields];
+    }
 }
 
 @end

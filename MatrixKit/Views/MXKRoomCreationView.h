@@ -67,6 +67,29 @@
 @property (nonatomic) id<MXKRoomCreationViewDelegate> delegate;
 
 /**
+ Hide room name field (NO by default).
+ Set YES this property to disable room name edition and hide the related items.
+ */
+@property (nonatomic, getter=isRoomNameFieldHidden) BOOL roomNameFieldHidden;
+
+/**
+ Hide room alias field (NO by default).
+ Set YES this property to disable room alias edition and hide the related items.
+ */
+@property (nonatomic, getter=isRoomAliasFieldHidden) BOOL roomAliasFieldHidden;
+
+/**
+ Hide room participants field (NO by default).
+ Set YES this property to disable room participants edition and hide the related items.
+ */
+@property (nonatomic, getter=isParticipantsFieldHidden) BOOL participantsFieldHidden;
+
+/**
+ The view height which takes into account potential hidden fields
+ */
+@property (nonatomic) CGFloat actualFrameHeight;
+
+/**
  */
 @property (nonatomic) NSArray* mxSessions;
 
@@ -82,7 +105,11 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *roomVisibilityControl;
 @property (weak, nonatomic) IBOutlet UIButton *createRoomBtn;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomNameFieldTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomAliasFieldTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *participantsFieldTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textFieldLeftConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *createRoomBtnTopConstraint;
 
 /**
  Action registered to handle text field editing change (UIControlEventEditingChanged).
