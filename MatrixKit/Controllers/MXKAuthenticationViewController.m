@@ -675,6 +675,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _registrationFallbackContentView.hidden = NO;
     
     [_registrationFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
+
+        // Workaround: HS does not return the right URL. Use the one we used to make the request
+        credentials.homeServer = mxRestClient.homeserver;
+
         // Report the new account in accounts manager
         MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
         account.identityServerURL = _identityServerTextField.text;
