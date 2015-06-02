@@ -70,12 +70,12 @@
 - (void)removeMatrixSession:(MXSession*)mxSession;
 
 /**
- This method is called on the following matrix session change:
+ This method is called on the following matrix session changes:
  - a new session is added.
- - an associated session is removed.
+ - a session is removed.
  - the state of an associated session changed (according to `MXSessionStateDidChangeNotification`).
  
- This method is called to refresh the display when the view controller will appear.
+ This method is called to refresh the display when the view controller will appear too.
  
  By default view controller appearance is updated according to the state of associated sessions:
  - starts activity indicator as soon as at least one session state is `MXSessionStateInitialised` or `MXSessionStateSyncInProgress`.

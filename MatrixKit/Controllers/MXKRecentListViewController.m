@@ -167,7 +167,7 @@
     }
 }
 
-#pragma mark - Override MXKTableViewController
+#pragma mark - Override MXKViewController
 
 - (void)onKeyboardShowAnimationComplete {
     // Report the keyboard view in order to track keyboard frame changes
@@ -390,6 +390,8 @@
     self.recentsSearchBar.hidden = YES;
     self.recentsSearchBarHeightConstraint.constant = 0;
     [self.view setNeedsUpdateConstraints];
+    
+    self.recentsSearchBar.text = nil;
     
     // Refresh display
     [self.dataSource searchWithPatterns:nil];
