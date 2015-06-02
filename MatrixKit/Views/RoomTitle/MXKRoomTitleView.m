@@ -19,12 +19,11 @@
 @interface MXKRoomTitleView () {
     
     id roomListener;
-    
-    UIView *displayNameInputAccessoryView;
 }
 @end
 
 @implementation MXKRoomTitleView
+@synthesize inputAccessoryView;
 
 + (UINib *)nib {
     return [UINib nibWithNibName:NSStringFromClass([MXKRoomTitleView class])
@@ -38,8 +37,8 @@
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
-    displayNameInputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.displayNameTextField.inputAccessoryView = displayNameInputAccessoryView;
+    inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.displayNameTextField.inputAccessoryView = inputAccessoryView;
     
     self.displayNameTextField.enabled = NO;
     self.displayNameTextField.returnKeyType = UIReturnKeyDone;
@@ -51,7 +50,7 @@
 }
 
 - (void)dealloc {
-    displayNameInputAccessoryView = nil;
+    inputAccessoryView = nil;
 
     [self destroy];
 }
@@ -114,13 +113,6 @@
 
 - (BOOL)isEditing {
     return self.displayNameTextField.isEditing;
-}
-
-- (UIView*)firstResponderInputAccessoryView {
-    if ([self.displayNameTextField isFirstResponder]) {
-        return self.displayNameTextField.inputAccessoryView;
-    }
-    return nil;
 }
 
 #pragma mark - UITextField delegate

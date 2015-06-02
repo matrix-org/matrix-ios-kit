@@ -26,6 +26,7 @@
 @end
 
 @implementation MXKRoomCreationView
+@synthesize inputAccessoryView;
 
 + (UINib *)nib {
     return [UINib nibWithNibName:NSStringFromClass([MXKRoomCreationView class])
@@ -51,10 +52,18 @@
     
     // Finalize setup
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
+    
+    // Add an accessory view to the text views in order to retrieve keyboard view.
+    inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+    _roomNameTextField.inputAccessoryView = inputAccessoryView;
+    _roomAliasTextField.inputAccessoryView = inputAccessoryView;
+    _participantsTextField.inputAccessoryView = inputAccessoryView;
 }
 
 - (void)dealloc {
     [self destroy];
+    
+    inputAccessoryView = nil;
 }
 
 - (void)setRoomNameFieldHidden:(BOOL)roomNameFieldHidden {
@@ -173,7 +182,7 @@
     
     // Extract alias name from alias text field
     NSString *alias = _roomAliasTextField.text;
-    if (alias.length > 1) {
+    if (alias.length) {
         // Remove '#' character
         alias = [alias substringFromIndex:1];
         

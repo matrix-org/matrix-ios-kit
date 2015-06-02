@@ -26,8 +26,6 @@
     
     // do not start the topic animation asap
     NSTimer * animationTimer;
-    
-    UIView *topicInputAccessoryView;
 }
 @end
 
@@ -42,8 +40,7 @@
     [super awakeFromNib];
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
-    topicInputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.topicTextField.inputAccessoryView = topicInputAccessoryView;
+    self.topicTextField.inputAccessoryView = inputAccessoryView;
     
     self.displayNameTextField.returnKeyType = UIReturnKeyNext;
     self.topicTextField.enabled = NO;
@@ -52,8 +49,6 @@
 }
 
 - (void)dealloc {
-    
-    topicInputAccessoryView = nil;
     [self destroy];
 }
 
@@ -133,13 +128,6 @@
 
 - (BOOL)isEditing {
     return (super.isEditing || self.topicTextField.isEditing);
-}
-
-- (UIView*)firstResponderInputAccessoryView {
-    if ([self.topicTextField isFirstResponder]) {
-        return self.topicTextField.inputAccessoryView;
-    }
-    return super.firstResponderInputAccessoryView;
 }
 
 #pragma mark -

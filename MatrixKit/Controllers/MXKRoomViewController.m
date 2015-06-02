@@ -252,7 +252,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)onKeyboardShowAnimationComplete {
     // Check first if the first responder belongs to title view
-    UIView *keyboardView = titleView.firstResponderInputAccessoryView.superview;
+    UIView *keyboardView = titleView.inputAccessoryView.superview;
     if (!keyboardView) {
         // Check whether the first responder is the input tool bar text composer
         keyboardView = inputToolbarView.inputAccessoryView.superview;

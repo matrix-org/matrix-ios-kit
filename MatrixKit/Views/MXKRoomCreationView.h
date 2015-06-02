@@ -43,7 +43,10 @@
  MXKRoomCreationView instance is a cell dedicated to room creation.
  Add this view in your app to offer room creation option.
  */
-@interface MXKRoomCreationView : UIView <UITextFieldDelegate>
+@interface MXKRoomCreationView : UIView <UITextFieldDelegate> {
+@protected
+    UIView *inputAccessoryView;
+}
 
 /**
  *  Returns the `UINib` object initialized for the tool bar view.
@@ -92,6 +95,13 @@
 /**
  */
 @property (nonatomic) NSArray* mxSessions;
+
+/**
+ The custom accessory view associated to all text field of this 'MXKRoomCreationView' instance.
+ This view is actually used to retrieve the keyboard view. Indeed the keyboard view is the superview of
+ this accessory view when a text field become the first responder.
+ */
+@property (readonly) UIView *inputAccessoryView;
 
 /**
  UI items

@@ -52,6 +52,10 @@
      */
     MXKAlert *currentAlert;
     
+    /**
+     Test fields input accessory.
+     */
+    UIView *inputAccessoryView;
 }
 
 @property (weak, nonatomic) IBOutlet UITextField *displayNameTextField;
@@ -83,12 +87,11 @@
 @property (nonatomic) id<MXKRoomTitleViewDelegate> delegate;
 
 /**
- The custom accessory view associated with the first responder item (if any).
+ The custom accessory view associated to all text field of this 'MXKRoomTitleView' instance.
  This view is actually used to retrieve the keyboard view. Indeed the keyboard view is the superview of
- this accessory view.
- Nil if the first responder does not belong to 'MXKRoomTitleView' instance.
+ this accessory view when a text field become the first responder.
  */
-@property (readonly) UIView *firstResponderInputAccessoryView;
+@property (readonly) UIView *inputAccessoryView;
 
 /**
  Dismiss keyboard.

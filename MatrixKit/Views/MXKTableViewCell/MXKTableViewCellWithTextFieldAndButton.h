@@ -16,10 +16,20 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MXKTableViewCellWithTextFieldAndButton : UITableViewCell <UITextFieldDelegate>
+@interface MXKTableViewCellWithTextFieldAndButton : UITableViewCell <UITextFieldDelegate> {
+@protected
+    UIView *inputAccessoryView;
+}
 
 @property (strong, nonatomic) IBOutlet UITextField *mxkTextField;
 @property (strong, nonatomic) IBOutlet UIButton *mxkButton;
+
+/**
+ The custom accessory view associated with the text field. This view is
+ actually used to retrieve the keyboard view. Indeed the keyboard view is the superview of
+ the accessory view when the text field become the first responder.
+ */
+@property (readonly) UIView *inputAccessoryView;
 
 - (IBAction)textFieldEditingChanged:(id)sender;
 @end

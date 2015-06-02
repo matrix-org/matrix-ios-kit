@@ -17,13 +17,23 @@
 #import "MXKTableViewCellWithLabelAndTextField.h"
 
 @implementation MXKTableViewCellWithLabelAndTextField
+@synthesize inputAccessoryView;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithLabelAndTextField class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithLabelAndTextField class])
                                                                                                      owner:nil
                                                                                                    options:nil];
     self = nibViews.firstObject;
+    
+    // Add an accessory view to the text view in order to retrieve keyboard view.
+    inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+    _mxkTextField.inputAccessoryView = inputAccessoryView;
+    
     return self;
+}
+
+- (void)dealloc {
+    inputAccessoryView = nil;
 }
 
 #pragma mark - UITextField delegate
