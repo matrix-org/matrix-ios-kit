@@ -260,6 +260,7 @@
         frame.origin.y = (sectionHeader.frame.size.height - frame.size.height) / 2;
         chevronView.frame = frame;
         [sectionHeader addSubview:chevronView];
+        chevronView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin);
         
         // Add label
         frame = sectionHeader.frame;
