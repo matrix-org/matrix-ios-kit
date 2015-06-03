@@ -26,7 +26,11 @@ pod 'JSQMessagesViewController', '~> 7.0.0'
 
 # There is no pod for OpenWebRTC-SDK. Use the master branch from github
 # As of 2015/05/06, it works
-pod 'OpenWebRTC-SDK', :git => 'https://github.com/EricssonResearch/openwebrtc-ios-sdk.git', :branch => 'master'
+#pod 'OpenWebRTC-SDK', :git => 'https://github.com/EricssonResearch/openwebrtc-ios-sdk.git', :branch => 'master'
+
+# Matrix.org fork of 'OpenWebRTC-SDK'
+#pod 'OpenWebRTC-SDK', :path => '../openwebrtc-ios-sdk-mx/OpenWebRTC-SDK.podspec'
+pod 'OpenWebRTC-SDK', :git => 'https://github.com/matrix-org/openwebrtc-ios-sdk.git', :branch => 'cvo_support'
 
 end
 
