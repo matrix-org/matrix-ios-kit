@@ -187,6 +187,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         mxCall.selfVideoView = nil;
         mxCall.remoteVideoView = nil;
         [self removeMatrixSession:self.mainSession];
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
     }
     
     
@@ -223,6 +224,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             call.selfVideoView = localPreviewContainerView;
             call.remoteVideoView = remotePreviewContainerView;
+            [self applyDeviceOrientation:YES];
+
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(deviceOrientationDidChange)
+                                                         name:UIDeviceOrientationDidChangeNotification
+                                                       object:nil];
         }
         else {
             localPreviewContainerView.hidden = YES;
@@ -520,6 +527,29 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (isSelectingLocalPreview) {
         isMovingLocalPreview = YES;
         self.localPreviewContainerView.center = point;
+    }
+}
+
+#pragma mark - UIDeviceOrientationDidChangeNotification
+
+- (void)deviceOrientationDidChange {
+
+    [self applyDeviceOrientation:NO];
+}
+
+- (void)applyDeviceOrientation:(BOOL)forcePortrait {
+
+    if (mxCall) {
+
+        UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+
+        // Set the camera orientation according to the orientation supported by the app
+        if (UIDeviceOrientationPortrait == deviceOrientation || UIDeviceOrientationLandscapeLeft == deviceOrientation || UIDeviceOrientationLandscapeRight == deviceOrientation) {
+            mxCall.videoOrientation = deviceOrientation;
+        }
+        else if (forcePortrait) {
+            mxCall.videoOrientation = UIDeviceOrientationPortrait;
+        }
     }
 }
 
