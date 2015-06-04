@@ -25,7 +25,8 @@
 
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
-@interface MXKAuthenticationViewController () {
+@interface MXKAuthenticationViewController ()
+{
     /**
      The matrix REST client used to make matrix API requests.
      */
@@ -100,33 +101,41 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark -
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
     // Check whether the view controller has been pushed via storyboard
-    if (!_authenticationScrollView) {
+    if (!_authenticationScrollView)
+    {
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
     // Adjust bottom constraint of the scroll view in order to take into account potential tabBar
-    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
+    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+    {
         [NSLayoutConstraint deactivateConstraints:@[_authScrollViewBottomConstraint]];
-    } else {
+    }
+    else
+    {
         [self.view removeConstraint:_authScrollViewBottomConstraint];
     }
     
     _authScrollViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
-                                                                              attribute:NSLayoutAttributeTop
-                                                                              relatedBy:NSLayoutRelationEqual
-                                                                                 toItem:self.authenticationScrollView
-                                                                              attribute:NSLayoutAttributeBottom
-                                                                             multiplier:1.0f
-                                                                               constant:0.0f];
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)]) {
+                                                                   attribute:NSLayoutAttributeTop
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.authenticationScrollView
+                                                                   attribute:NSLayoutAttributeBottom
+                                                                  multiplier:1.0f
+                                                                    constant:0.0f];
+    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+    {
         [NSLayoutConstraint activateConstraints:@[_authScrollViewBottomConstraint]];
-    } else {
+    }
+    else
+    {
         [self.view addConstraint:_authScrollViewBottomConstraint];
     }
     
@@ -161,9 +170,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _identityServerTextField.text = _defaultIdentityServerUrl;
     
     // Create here REST client
-    if (_homeServerTextField.text.length) {
+    if (_homeServerTextField.text.length)
+    {
         mxRestClient = [[MXRestClient alloc] initWithHomeServer:_homeServerTextField.text];
-        if (_identityServerTextField.text.length) {
+        if (_identityServerTextField.text.length)
+        {
             [mxRestClient setIdentityServer:_identityServerTextField.text];
         }
     }
@@ -172,16 +183,19 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _authType = MXKAuthenticationTypeLogin;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     // Update supported authentication flow
@@ -190,13 +204,15 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTextFieldChange:) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     
     [self dismissKeyboard];
-
+    
     // close any opened alert
-    if (alert) {
+    if (alert)
+    {
         [alert dismiss:NO];
         alert = nil;
     }
@@ -207,17 +223,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - Override MXKViewController
 
-- (void)onKeyboardShowAnimationComplete {
+- (void)onKeyboardShowAnimationComplete
+{
     // Report the keyboard view in order to track keyboard frame changes
     // TODO define inputAccessoryView for each text input
     // and report the inputAccessoryView.superview of the firstResponder in self.keyboardView.
 }
 
-- (void)setKeyboardHeight:(CGFloat)keyboardHeight {
+- (void)setKeyboardHeight:(CGFloat)keyboardHeight
+{
     // Deduce the bottom inset for the scroll view (Don't forget the potential tabBar)
     CGFloat scrollViewInsetBottom = keyboardHeight - self.bottomLayoutGuide.length;
     // Check whether the keyboard is over the tabBar
-    if (scrollViewInsetBottom < 0) {
+    if (scrollViewInsetBottom < 0)
+    {
         scrollViewInsetBottom = 0;
     }
     
@@ -226,7 +245,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     self.authenticationScrollView.contentInset = insets;
 }
 
-- (void)destroy {
+- (void)destroy
+{
     
     supportedFlows = nil;
     if (mxCurrentOperation){
@@ -242,27 +262,36 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark -
 
-+ (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType {
-    if (authType == MXKAuthenticationTypeLogin) {
++ (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
+{
+    if (authType == MXKAuthenticationTypeLogin)
+    {
         if ([flowType isEqualToString:kMXLoginFlowTypePassword]
-            /*|| [flowType isEqualToString:kMXLoginFlowTypeEmailCode]*/) {
+            /*|| [flowType isEqualToString:kMXLoginFlowTypeEmailCode]*/)
+        {
             return YES;
         }
-    } else { // AuthenticationTypeRegister
+    }
+    else
+    { // AuthenticationTypeRegister
         // No registration flow is supported yet
     }
     
     return NO;
 }
 
-- (void)setAuthType:(MXKAuthenticationType)authType {
-    if (authType == MXKAuthenticationTypeLogin) {
+- (void)setAuthType:(MXKAuthenticationType)authType
+{
+    if (authType == MXKAuthenticationTypeLogin)
+    {
         _createAccountLabel.hidden = YES;
         [_submitButton setTitle:@"Login" forState:UIControlStateNormal];
         [_submitButton setTitle:@"Login" forState:UIControlStateHighlighted];
         [_authSwitchButton setTitle:@"Create account" forState:UIControlStateNormal];
         [_authSwitchButton setTitle:@"Create account" forState:UIControlStateHighlighted];
-    } else {
+    }
+    else
+    {
         _createAccountLabel.hidden = NO;
         [_submitButton setTitle:@"Sign up" forState:UIControlStateNormal];
         [_submitButton setTitle:@"Sign up" forState:UIControlStateHighlighted];
@@ -276,7 +305,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self refreshSupportedAuthFlow];
 }
 
-- (void)setSelectedFlow:(MXLoginFlow *)selectedFlow {
+- (void)setSelectedFlow:(MXLoginFlow *)selectedFlow
+{
     // Hide views which depend on auth flow
     _submitButton.hidden = YES;
     _noFlowLabel.hidden = YES;
@@ -288,13 +318,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     
     // Create the right auth inputs view
-    if ([selectedFlow.type isEqualToString:kMXLoginFlowTypePassword]) {
+    if ([selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
+    {
         currentAuthInputsView = [MXKAuthInputsPasswordBasedView authInputsView];
-    } else if ([selectedFlow.type isEqualToString:kMXLoginFlowTypeEmailCode]) {
+    }
+    else if ([selectedFlow.type isEqualToString:kMXLoginFlowTypeEmailCode])
+    {
         currentAuthInputsView = [MXKAuthInputsEmailCodeBasedView authInputsView];
     }
     
-    if (currentAuthInputsView) {
+    if (currentAuthInputsView)
+    {
         
         [_authInputsContainerView addSubview:currentAuthInputsView];
         
@@ -305,27 +339,29 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         _authInputContainerViewHeightConstraint.constant = currentAuthInputsView.actualHeight;
         
         [_authInputsContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_authInputsContainerView
-                                                         attribute:NSLayoutAttributeTop
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:currentAuthInputsView
-                                                         attribute:NSLayoutAttributeTop
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
+                                                                             attribute:NSLayoutAttributeTop
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:currentAuthInputsView
+                                                                             attribute:NSLayoutAttributeTop
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f]];
         [_authInputsContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_authInputsContainerView
-                                                         attribute:NSLayoutAttributeLeading
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:currentAuthInputsView
-                                                         attribute:NSLayoutAttributeLeading
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:currentAuthInputsView
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f]];
         [_authInputsContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_authInputsContainerView
-                                                         attribute:NSLayoutAttributeTrailing
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:currentAuthInputsView
-                                                         attribute:NSLayoutAttributeTrailing
-                                                        multiplier:1.0f
-                                                          constant:0.0f]];
-    } else {
+                                                                             attribute:NSLayoutAttributeTrailing
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:currentAuthInputsView
+                                                                             attribute:NSLayoutAttributeTrailing
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f]];
+    }
+    else
+    {
         // No input fields are displayed
         _authInputContainerViewHeightConstraint.constant = 80;
     }
@@ -338,10 +374,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _selectedFlow = selectedFlow;
 }
 
-- (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl {
+- (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl
+{
     _defaultHomeServerUrl = defaultHomeServerUrl;
     
-    if (!_homeServerTextField.text.length) {
+    if (!_homeServerTextField.text.length)
+    {
         _homeServerTextField.text = _defaultHomeServerUrl;
         
         // Update UI
@@ -349,10 +387,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)setDefaultIdentityServerUrl:(NSString *)defaultIdentityServerUrl {
+- (void)setDefaultIdentityServerUrl:(NSString *)defaultIdentityServerUrl
+{
     _defaultIdentityServerUrl = defaultIdentityServerUrl;
     
-    if (!_identityServerTextField.text.length) {
+    if (!_identityServerTextField.text.length)
+    {
         _identityServerTextField.text = _defaultIdentityServerUrl;
         
         // Update UI
@@ -360,7 +400,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)setUserInteractionEnabled:(BOOL)isEnabled {
+- (void)setUserInteractionEnabled:(BOOL)isEnabled
+{
     _submitButton.enabled = (isEnabled && currentAuthInputsView.areAllRequiredFieldsFilled);
     _authSwitchButton.enabled = isEnabled;
     
@@ -368,7 +409,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _identityServerTextField.enabled = isEnabled;
 }
 
-- (void)refreshSupportedAuthFlow {
+- (void)refreshSupportedAuthFlow
+{
     
     // Remove reachability observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
@@ -377,23 +419,27 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [mxCurrentOperation cancel];
     mxCurrentOperation = nil;
     
-    if (mxRestClient) {
+    if (mxRestClient)
+    {
         [_authenticationActivityIndicator startAnimating];
         self.selectedFlow = nil;
-        if (_authType == MXKAuthenticationTypeLogin) {
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
             mxCurrentOperation = [mxRestClient getLoginFlow:^(NSArray *flows) {
-                [self handleHomeServerFlows:flows];
-            } failure:^(NSError *error) {
-                NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
-                [self onFailureDuringMXOperation:error];
-            }];
-        } else {
-//        mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSArray *flows) {
-//            [self handleHomeServerFlows:flows];
-//        } failure:^(NSError *error) {
-//            NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
-//            [self onFailureDuringMXOperation:error];
-//        }];
+                                      [self handleHomeServerFlows:flows];
+                                  } failure:^(NSError *error) {
+                                      NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
+                                      [self onFailureDuringMXOperation:error];
+                                  }];
+        }
+        else
+        {
+            //        mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSArray *flows){
+            //            [self handleHomeServerFlows:flows];
+            //        } failure:^(NSError *error){
+            //            NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
+            //            [self onFailureDuringMXOperation:error];
+            //        }];
             
             // Currently no registration flow are supported, we switch directly to the fallback page
             [self showRegistrationFallBackView:[mxRestClient registerFallback]];
@@ -401,40 +447,52 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)handleHomeServerFlows:(NSArray *)flows {
+- (void)handleHomeServerFlows:(NSArray *)flows
+{
     [_authenticationActivityIndicator stopAnimating];
     
     [supportedFlows removeAllObjects];
-    for (MXLoginFlow* flow in flows) {
-        if ([MXKAuthenticationViewController isImplementedFlowType:flow.type forAuthType:_authType]) {
+    for (MXLoginFlow* flow in flows)
+    {
+        if ([MXKAuthenticationViewController isImplementedFlowType:flow.type forAuthType:_authType])
+        {
             // Check here all stages
             BOOL isSupported = YES;
-            if (flow.stages.count) {
-                for (NSString *stage in flow.stages) {
-                    if ([MXKAuthenticationViewController isImplementedFlowType:stage forAuthType:_authType] == NO) {
+            if (flow.stages.count)
+            {
+                for (NSString *stage in flow.stages)
+                {
+                    if ([MXKAuthenticationViewController isImplementedFlowType:stage forAuthType:_authType] == NO)
+                    {
                         isSupported = NO;
                         break;
                     }
                 }
             }
             
-            if (isSupported) {
+            if (isSupported)
+            {
                 [supportedFlows addObject:flow];
             }
         }
     }
     
-    if (supportedFlows.count) {
+    if (supportedFlows.count)
+    {
         // FIXME display supported flows
         // Currently we select the first one
         self.selectedFlow = [supportedFlows firstObject];
     }
     
-    if (!_selectedFlow) {
+    if (!_selectedFlow)
+    {
         // Notify user that no flow is supported
-        if (_authType == MXKAuthenticationTypeLogin) {
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
             _noFlowLabel.text = @"Currently we do not support Login flows defined by this Home Server.";
-        } else {
+        }
+        else
+        {
             _noFlowLabel.text = @"Registration is not currently supported.";
         }
         NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
@@ -444,10 +502,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)onFailureDuringMXOperation:(NSError*)error {
+- (void)onFailureDuringMXOperation:(NSError*)error
+{
     mxCurrentOperation = nil;
     
-    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorCancelled) {
+    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorCancelled)
+    {
         // Ignore this error
         return;
     }
@@ -457,30 +517,37 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Alert user
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
     if (!title)
+        
     {
         title = @"Error";
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
     alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {}];
+    alert.cancelButtonIndex = [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                               {}];
     [alert showInViewController:self];
     
     // Display failure reason
     _noFlowLabel.hidden = NO;
     _noFlowLabel.text = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-    if (!_noFlowLabel.text.length) {
+    if (!_noFlowLabel.text.length)
+    {
         _noFlowLabel.text = @"We failed to retrieve authentication information from this Home Server";
     }
     _retryButton.hidden = NO;
     
     // Handle specific error code here
-    if ([error.domain isEqualToString:NSURLErrorDomain]) {
+    if ([error.domain isEqualToString:NSURLErrorDomain])
+    {
         // Check network reachability
-        if (error.code == NSURLErrorNotConnectedToInternet) {
+        if (error.code == NSURLErrorNotConnectedToInternet)
+        {
             // Add reachability observer in order to launch a new request when network will be available
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onReachabilityStatusChange:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
-        } else if (error.code == kCFURLErrorTimedOut)  {
+        }
+        else if (error.code == kCFURLErrorTimedOut)
+        {
             // Send a new request in 2 sec
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self refreshSupportedAuthFlow];
@@ -489,75 +556,98 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)onReachabilityStatusChange:(NSNotification *)notif {
+- (void)onReachabilityStatusChange:(NSNotification *)notif
+{
     AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];
     AFNetworkReachabilityStatus status = reachabilityManager.networkReachabilityStatus;
     
-    if (status == AFNetworkReachabilityStatusReachableViaWiFi || status == AFNetworkReachabilityStatusReachableViaWWAN) {
+    if (status == AFNetworkReachabilityStatusReachableViaWiFi || status == AFNetworkReachabilityStatusReachableViaWWAN)
+    {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self refreshSupportedAuthFlow];
         });
-    } else if (status == AFNetworkReachabilityStatusNotReachable) {
+    }
+    else if (status == AFNetworkReachabilityStatusNotReachable)
+    {
         _noFlowLabel.text = @"Please check your network connectivity";
     }
 }
 
-- (IBAction)onButtonPressed:(id)sender {
+- (IBAction)onButtonPressed:(id)sender
+{
     [self dismissKeyboard];
     
-    if (sender == _submitButton) {
-        if (mxRestClient) {
+    if (sender == _submitButton)
+    {
+        if (mxRestClient)
+        {
             // Disable user interaction to prevent multiple requests
             [self setUserInteractionEnabled:NO];
             [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
             [_authenticationActivityIndicator startAnimating];
             
-            if (_authType == MXKAuthenticationTypeLogin) {
-                if ([_selectedFlow.type isEqualToString:kMXLoginFlowTypePassword]) {
+            if (_authType == MXKAuthenticationTypeLogin)
+            {
+                if ([_selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
+                {
                     MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)currentAuthInputsView;
                     
                     [mxRestClient loginWithUser:authInputsView.userLoginTextField.text andPassword:authInputsView.passWordTextField.text
-                                               success:^(MXCredentials *credentials){
-                                                   [_authenticationActivityIndicator stopAnimating];
-                                                   
-                                                   // Report the new account in accounts manager
-                                                   MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-                                                   account.identityServerURL = _identityServerTextField.text;
-                                                   
-                                                   [[MXKAccountManager sharedManager] addAccount:account];
-                                                   
-                                                   if (_delegate) {
-                                                       [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-                                                   }
-                                               }
-                                               failure:^(NSError *error){
-                                                   [self onFailureDuringAuthRequest:error];
-                                               }];
-                } else {
+                                        success:^(MXCredentials *credentials){
+                                            [_authenticationActivityIndicator stopAnimating];
+                                            
+                                            // Report the new account in accounts manager
+                                            MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+                                            account.identityServerURL = _identityServerTextField.text;
+                                            
+                                            [[MXKAccountManager sharedManager] addAccount:account];
+                                            
+                                            if (_delegate)
+                                            {
+                                                [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+                                            }
+                                        }
+                                        failure:^(NSError *error){
+                                            [self onFailureDuringAuthRequest:error];
+                                        }];
+                }
+                else
+                {
                     // FIXME
                     [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
                 }
-            } else {
+            }
+            else
+            {
                 // FIXME
                 [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
             }
         }
-    } else if (sender == _authSwitchButton){
-        if (_authType == MXKAuthenticationTypeLogin) {
+    }
+    else if (sender == _authSwitchButton){
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
             self.authType = MXKAuthenticationTypeRegister;
-        } else {
+        }
+        else
+        {
             self.authType = MXKAuthenticationTypeLogin;
         }
-    } else if (sender == _retryButton) {
+    }
+    else if (sender == _retryButton)
+    {
         [self refreshSupportedAuthFlow];
-    } else if (sender == _cancelRegistrationFallbackButton) {
+    }
+    else if (sender == _cancelRegistrationFallbackButton)
+    {
         // Hide fallback webview
         [self hideRegistrationFallbackView];
         self.authType = MXKAuthenticationTypeLogin;
     }
 }
 
-- (void)onFailureDuringAuthRequest:(NSError *)error {
+- (void)onFailureDuringAuthRequest:(NSError *)error
+{
     [_authenticationActivityIndicator stopAnimating];
     [self setUserInteractionEnabled:YES];
     
@@ -568,28 +658,47 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     NSDictionary* dict = error.userInfo;
     
     // detect if it is a Matrix SDK issue
-    if (dict) {
+    if (dict)
+    {
         NSString* localizedError = [dict valueForKey:@"error"];
         NSString* errCode = [dict valueForKey:@"errcode"];
         
-        if (errCode) {
-            if ([errCode isEqualToString:@"M_FORBIDDEN"]) {
+        if (errCode)
+        {
+            if ([errCode isEqualToString:@"M_FORBIDDEN"])
+            {
                 message = @"Invalid username/password";
-            } else if (localizedError.length > 0) {
+            }
+            else if (localizedError.length > 0)
+            {
                 message = localizedError;
-            } else if ([errCode isEqualToString:@"M_UNKNOWN_TOKEN"]) {
+            }
+            else if ([errCode isEqualToString:@"M_UNKNOWN_TOKEN"])
+            {
                 message = @"The access token specified was not recognised";
-            } else if ([errCode isEqualToString:@"M_BAD_JSON"]) {
+            }
+            else if ([errCode isEqualToString:@"M_BAD_JSON"])
+            {
                 message = @"Malformed JSON";
-            } else if ([errCode isEqualToString:@"M_NOT_JSON"]) {
+            }
+            else if ([errCode isEqualToString:@"M_NOT_JSON"])
+            {
                 message = @"Did not contain valid JSON";
-            } else if ([errCode isEqualToString:@"M_LIMIT_EXCEEDED"]) {
+            }
+            else if ([errCode isEqualToString:@"M_LIMIT_EXCEEDED"])
+            {
                 message = @"Too many requests have been sent";
-            } else if ([errCode isEqualToString:@"M_USER_IN_USE"]) {
+            }
+            else if ([errCode isEqualToString:@"M_USER_IN_USE"])
+            {
                 message = @"This user name is already used";
-            } else if ([errCode isEqualToString:@"M_LOGIN_EMAIL_URL_NOT_YET"]) {
+            }
+            else if ([errCode isEqualToString:@"M_LOGIN_EMAIL_URL_NOT_YET"])
+            {
                 message = @"The email link which has not been clicked yet";
-            } else {
+            }
+            else
+            {
                 message = errCode;
             }
         }
@@ -597,13 +706,15 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     //Alert user
     alert = [[MXKAlert alloc] initWithTitle:@"Login Failed" message:message style:MXKAlertStyleAlert];
-    [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {}];
+    [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
+     {}];
     [alert showInViewController:self];
 }
 
 #pragma mark - Keyboard handling
 
-- (void)dismissKeyboard {
+- (void)dismissKeyboard
+{
     // Hide the keyboard
     [currentAuthInputsView dismissKeyboard];
     [_homeServerTextField resignFirstResponder];
@@ -612,25 +723,33 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - UITextField delegate
 
-- (void)onTextFieldChange:(NSNotification *)notif {
+- (void)onTextFieldChange:(NSNotification *)notif
+{
     
     _submitButton.enabled = currentAuthInputsView.areAllRequiredFieldsFilled;
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField {
-    if (textField == _homeServerTextField) {
-        if (!textField.text.length) {
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (textField == _homeServerTextField)
+    {
+        if (!textField.text.length)
+        {
             // Force refresh with default value
             textField.text = _defaultHomeServerUrl;
         }
         
         // Refresh REST client
-        if (textField.text.length) {
+        if (textField.text.length)
+        {
             mxRestClient = [[MXRestClient alloc] initWithHomeServer:textField.text];
-            if (_identityServerTextField.text.length) {
+            if (_identityServerTextField.text.length)
+            {
                 [mxRestClient setIdentityServer:_identityServerTextField.text];
             }
-        } else {
+        }
+        else
+        {
             [mxRestClient close];
             mxRestClient = nil;
         }
@@ -638,21 +757,26 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Refresh UI
         [self refreshSupportedAuthFlow];
     }
-    else if (textField == _identityServerTextField) {
-        if (!textField.text.length) {
+    else if (textField == _identityServerTextField)
+    {
+        if (!textField.text.length)
+        {
             // Force refresh with default value
             textField.text = _defaultIdentityServerUrl;
         }
         
         // Update REST client
-        if (mxRestClient) {
+        if (mxRestClient)
+        {
             [mxRestClient setIdentityServer:textField.text];
         }
     }
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
-    if (textField.returnKeyType == UIReturnKeyDone) {
+- (BOOL)textFieldShouldReturn:(UITextField*)textField
+{
+    if (textField.returnKeyType == UIReturnKeyDone)
+    {
         // "Done" key has been pressed
         [textField resignFirstResponder];
     }
@@ -661,8 +785,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - AuthInputsViewDelegate delegate
 
-- (void)authInputsDoneKeyHasBeenPressed:(MXKAuthInputsView *)authInputsView {
-    if (_submitButton.isEnabled) {
+- (void)authInputsDoneKeyHasBeenPressed:(MXKAuthInputsView *)authInputsView
+{
+    if (_submitButton.isEnabled)
+    {
         // Launch authentication now
         [self onButtonPressed:_submitButton];
     }
@@ -670,28 +796,31 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - Registration Fallback
 
-- (void)showRegistrationFallBackView:(NSString*)fallbackPage {
+- (void)showRegistrationFallBackView:(NSString*)fallbackPage
+{
     _authenticationScrollView.hidden = YES;
     _registrationFallbackContentView.hidden = NO;
     
     [_registrationFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
-
-        // Workaround: HS does not return the right URL. Use the one we used to make the request
-        credentials.homeServer = mxRestClient.homeserver;
-
-        // Report the new account in accounts manager
-        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-        account.identityServerURL = _identityServerTextField.text;
-        
-        [[MXKAccountManager sharedManager] addAccount:account];
-        
-        if (_delegate) {
-            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-        }
-    }];
+         
+         // Workaround: HS does not return the right URL. Use the one we used to make the request
+         credentials.homeServer = mxRestClient.homeserver;
+         
+         // Report the new account in accounts manager
+         MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+         account.identityServerURL = _identityServerTextField.text;
+         
+         [[MXKAccountManager sharedManager] addAccount:account];
+         
+         if (_delegate)
+         {
+             [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+         }
+     }];
 }
 
-- (void)hideRegistrationFallbackView {
+- (void)hideRegistrationFallbackView
+{
     [_registrationFallbackWebView stopLoading];
     _authenticationScrollView.hidden = NO;
     _registrationFallbackContentView.hidden = YES;

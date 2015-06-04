@@ -19,19 +19,23 @@
 @implementation MXKAuthInputsEmailCodeBasedView
 @dynamic displayNameTextField;
 
-+ (UINib *)nib {
++ (UINib *)nib
+{
     return [UINib nibWithNibName:NSStringFromClass([MXKAuthInputsEmailCodeBasedView class])
                           bundle:[NSBundle bundleForClass:[MXKAuthInputsEmailCodeBasedView class]]];
 }
 
-- (CGFloat)actualHeight {
-    if (self.authType == MXKAuthenticationTypeLogin) {
+- (CGFloat)actualHeight
+{
+    if (self.authType == MXKAuthenticationTypeLogin)
+    {
         return self.displayNameTextField.frame.origin.y;
     }
     return super.actualHeight;
 }
 
-- (BOOL)areAllRequiredFieldsFilled {
+- (BOOL)areAllRequiredFieldsFilled
+{
     BOOL ret = [super areAllRequiredFieldsFilled];
     
     // Check required fields //FIXME what are required fields in this authentication flow?
@@ -39,28 +43,34 @@
     return ret;
 }
 
-- (void)setAuthType:(MXKAuthenticationType)authType {
+- (void)setAuthType:(MXKAuthenticationType)authType
+{
     // Set initial layout
     self.userLoginTextField.hidden = NO;
     self.promptEmailTokenLabel.hidden = YES;
     
-    if (authType == MXKAuthenticationTypeLogin) {
+    if (authType == MXKAuthenticationTypeLogin)
+    {
         self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
-    } else {
+    }
+    else
+    {
         self.emailAndTokenTextField.returnKeyType = UIReturnKeyNext;
     }
     
     super.authType = authType;
 }
 
-- (void)dismissKeyboard {
+- (void)dismissKeyboard
+{
     [self.userLoginTextField resignFirstResponder];
     [self.emailAndTokenTextField resignFirstResponder];
     
     [super dismissKeyboard];
 }
 
-- (void)nextStep {
+- (void)nextStep
+{
     // Consider here the email token has been requested with success
     [super nextStep];
     
@@ -71,20 +81,28 @@
 
 #pragma mark UITextField delegate
 
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
-    if (textField.returnKeyType == UIReturnKeyDone) {
+- (BOOL)textFieldShouldReturn:(UITextField*)textField
+{
+    if (textField.returnKeyType == UIReturnKeyDone)
+    {
         // "Done" key has been pressed
         [textField resignFirstResponder];
         
-        if (self.delegate && [self.delegate respondsToSelector:@selector(authInputsDoneKeyHasBeenPressed:)]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(authInputsDoneKeyHasBeenPressed:)])
+        {
             // Launch authentication now
             [self.delegate authInputsDoneKeyHasBeenPressed:self];
         }
-    } else {
+    }
+    else
+    {
         //"Next" key has been pressed
-        if (textField == self.userLoginTextField) {
+        if (textField == self.userLoginTextField)
+        {
             [self.emailAndTokenTextField becomeFirstResponder];
-        } else if (textField == self.emailAndTokenTextField) {
+        }
+        else if (textField == self.emailAndTokenTextField)
+        {
             [self.displayNameTextField becomeFirstResponder];
         }
     }

@@ -18,7 +18,8 @@
 
 @implementation MXKTableViewCellWithPicker
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithPicker class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithPicker class])
                                                                                                      owner:nil
                                                                                                    options:nil];

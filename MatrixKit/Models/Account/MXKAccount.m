@@ -22,7 +22,8 @@ NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfo
 
 NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
-@interface MXKAccount () {
+@interface MXKAccount ()
+{
     
     // We will notify user only once on session failure
     BOOL notifyOpenSessionFailure;
@@ -35,7 +36,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Session state observer
     id sessionStateObserver;
-
+    
     // Handle user's settings change
     id userUpdateListener;
     
@@ -57,8 +58,10 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
 
-+ (UIColor*)presenceColor:(MXPresence)presence {
-    switch (presence) {
++ (UIColor*)presenceColor:(MXPresence)presence
+{
+    switch (presence)
+    {
         case MXPresenceOnline:
             return [[MXKAppSettings standardAppSettings] presenceColorForOnlineUser];
         case MXPresenceUnavailable:
@@ -73,9 +76,11 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
 }
 
-- (instancetype)initWithCredentials:(MXCredentials*)credentials {
+- (instancetype)initWithCredentials:(MXCredentials*)credentials
+{
     
-    if (self = [super init]) {
+    if (self = [super init])
+    {
         notifyOpenSessionFailure = YES;
         
         // Report credentials and alloc REST client.
@@ -87,7 +92,8 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     
     [self closeSession:NO];
     mxSession = nil;
@@ -98,7 +104,8 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 #pragma mark - NSCoding
 
-- (id)initWithCoder:(NSCoder *)coder {
+- (id)initWithCoder:(NSCoder *)coder
+{
     
     notifyOpenSessionFailure = YES;
     
@@ -114,93 +121,120 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     userPresence = MXPresenceUnknown;
     
-    if ([coder decodeObjectForKey:@"identityserverurl"]) {
+    if ([coder decodeObjectForKey:@"identityserverurl"])
+    {
         self.identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
     }
     
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder {
+- (void)encodeWithCoder:(NSCoder *)coder
+{
     
     [coder encodeObject:mxCredentials.homeServer forKey:@"homeserverurl"];
     [coder encodeObject:mxCredentials.userId forKey:@"userid"];
     [coder encodeObject:mxCredentials.accessToken forKey:@"accesstoken"];
     
-    if (self.identityServerURL) {
+    if (self.identityServerURL)
+    {
         [coder encodeObject:self.identityServerURL forKey:@"identityserverurl"];
     }
 }
 
 #pragma mark - Properties
 
-- (void)setIdentityServerURL:(NSString *)identityServerURL {
+- (void)setIdentityServerURL:(NSString *)identityServerURL
+{
     
-    if (identityServerURL.length) {
+    if (identityServerURL.length)
+    {
         _identityServerURL = identityServerURL;
         // Update the current restClient
         [mxRestClient setIdentityServer:identityServerURL];
-    } else {
+    }
+    else
+    {
         _identityServerURL = nil;
         // By default, use the same address for the identity server
         [mxRestClient setIdentityServer:mxCredentials.homeServer];
     }
 }
 
-- (NSString*)userDisplayName {
-    if (mxSession) {
+- (NSString*)userDisplayName
+{
+    if (mxSession)
+    {
         return mxSession.myUser.displayname;
     }
     return nil;
 }
 
-- (NSString*)userAvatarUrl {
-    if (mxSession) {
+- (NSString*)userAvatarUrl
+{
+    if (mxSession)
+    {
         return mxSession.myUser.avatarUrl;
     }
     return nil;
 }
 
-- (NSString*)fullDisplayName {
-    if (self.userDisplayName.length) {
+- (NSString*)fullDisplayName
+{
+    if (self.userDisplayName.length)
+    {
         return [NSString stringWithFormat:@"%@ (%@)", self.userDisplayName, mxCredentials.userId];
-    } else {
+    }
+    else
+    {
         return mxCredentials.userId;
     }
 }
 
 #pragma mark - Matrix user's profile
 
-- (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure {
+- (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure
+{
     
-    if (mxSession && mxSession.myUser) {
+    if (mxSession && mxSession.myUser)
+    {
         [mxSession.myUser setDisplayName:displayname success:success failure:failure];
-    } else if (failure) {
+    }
+    else if (failure)
+    {
         failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
     }
 }
 
-- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure {
+- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure
+{
     
-    if (mxSession && mxSession.myUser) {
+    if (mxSession && mxSession.myUser)
+    {
         [mxSession.myUser setAvatarUrl:avatarUrl success:success failure:failure];
-    } else if (failure) {
+    }
+    else if (failure)
+    {
         failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
     }
 }
 
-- (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion {
+- (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion
+{
     
     userPresence = presence;
     
-    if (mxSession) {
+    if (mxSession)
+    {
         // Update user presence on server side
         [mxSession.myUser setPresence:userPresence andStatusMessage:statusMessage success:^{
             NSLog(@"[MXKAccount] %@: set user presence (%lu) succeeded", mxCredentials.userId, (unsigned long)userPresence);
-            if (completion) {
+            if (completion)
+            {
                 completion();
             }
-        } failure:^(NSError *error) {
+        } failure:^(NSError *error)
+        {
             NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
         }];
     }
@@ -208,10 +242,12 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 #pragma mark -
 
--(void)openSessionWithStore:(id<MXStore>)store {
+-(void)openSessionWithStore:(id<MXStore>)store
+{
     
     // Sanity check
-    if (!mxCredentials || !mxRestClient) {
+    if (!mxCredentials || !mxRestClient)
+    {
         NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
         return;
     }
@@ -225,10 +261,12 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
     
     // Register session state observer
-    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+    {
         
         // Check whether the concerned session is the associated one
-        if (notif.object == mxSession) {
+        if (notif.object == mxSession)
+        {
             [self onMatrixSessionStateChange];
         }
     }];
@@ -238,7 +276,8 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         // Complete session registration by launching live stream
         __strong __typeof(weakSelf)strongSelf = weakSelf;
         [strongSelf launchInitialServerSync];
-    } failure:^(NSError *error) {
+    } failure:^(NSError *error)
+    {
         // This cannot happen. Loading of MXFileStore cannot fail.
         __strong __typeof(weakSelf)strongSelf = weakSelf;
         strongSelf->mxSession = nil;
@@ -248,16 +287,19 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }];
 }
 
-- (void)closeSession:(BOOL)clearStore {
+- (void)closeSession:(BOOL)clearStore
+{
     
     [self removeNotificationListener];
     
-    if (reachabilityObserver) {
+    if (reachabilityObserver)
+    {
         [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
         reachabilityObserver = nil;
     }
     
-    if (sessionStateObserver) {
+    if (sessionStateObserver)
+    {
         [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
         sessionStateObserver = nil;
     }
@@ -265,17 +307,19 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     [initialServerSyncTimer invalidate];
     initialServerSyncTimer = nil;
     
-    if (userUpdateListener) {
+    if (userUpdateListener)
+    {
         [mxSession.myUser removeListener:userUpdateListener];
         userUpdateListener = nil;
     }
     
     //FIXME uncomment this line when presence will be handled correctly on multiple devices.
-//    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
+    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
     
     [mxSession close];
     
-    if (clearStore) {
+    if (clearStore)
+    {
         [mxSession.store deleteAllData];
     }
     
@@ -284,9 +328,11 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     notifyOpenSessionFailure = YES;
 }
 
-- (void)pauseInBackgroundTask {
+- (void)pauseInBackgroundTask
+{
     
-    if (mxSession && mxSession.state == MXSessionStateRunning) {
+    if (mxSession && mxSession.state == MXSessionStateRunning)
+    {
         _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
             _bgTask = UIBackgroundTaskInvalid;
@@ -307,7 +353,8 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
             NSLog(@"[MXKAccount] >>>>> background pause task finished");
         }];
     }
-    else {
+    else
+    {
         // Cancel pending actions
         [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
         reachabilityObserver = nil;
@@ -316,19 +363,25 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
 }
 
-- (void)resume {
-    if (mxSession) {
-        if (mxSession.state == MXSessionStatePaused) {
+- (void)resume
+{
+    if (mxSession)
+    {
+        if (mxSession.state == MXSessionStatePaused)
+        {
             // Resume SDK and update user presence
             [mxSession resume:^{
                 [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
             }];
-        } else if (mxSession.state == MXSessionStateStoreDataReady) {
+        }
+        else if (mxSession.state == MXSessionStateStoreDataReady)
+        {
             // The session initialisation was uncompleted, we try to complete it here.
             [self launchInitialServerSync];
         }
         
-        if (_bgTask) {
+        if (_bgTask)
+        {
             // Cancel background task
             [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
             _bgTask = UIBackgroundTaskInvalid;
@@ -339,10 +392,12 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 #pragma mark - Push notification listeners
 
-- (void)listenToNotifications:(MXOnNotification)onNotification {
+- (void)listenToNotifications:(MXOnNotification)onNotification
+{
     
     // Check conditions required to add notification listener
-    if (!mxSession || !onNotification) {
+    if (!mxSession || !onNotification)
+    {
         return;
     }
     
@@ -350,47 +405,58 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     [self removeNotificationListener];
     
     // Register on notification center
-    notificationCenterListener = [self.mxSession.notificationCenter listenToNotifications:^(MXEvent *event, MXRoomState *roomState, MXPushRule *rule) {
+    notificationCenterListener = [self.mxSession.notificationCenter listenToNotifications:^(MXEvent *event, MXRoomState *roomState, MXPushRule *rule)
+    {
         
         // Apply first the event filter defined in the related room data source
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:event.roomId create:NO];
-        if (!roomDataSource || [roomDataSource.eventsFilterForMessages indexOfObject:event.type] == NSNotFound) {
+        if (!roomDataSource || [roomDataSource.eventsFilterForMessages indexOfObject:event.type] == NSNotFound)
+        {
             // Ignore
             return;
         }
         
         // Check conditions to report this notification
-        if ([ignoredRooms indexOfObject:event.roomId] == NSNotFound) {
+        if ([ignoredRooms indexOfObject:event.roomId] == NSNotFound)
+        {
             onNotification(event, roomState, rule);
         }
     }];
 }
 
-- (void)removeNotificationListener {
+- (void)removeNotificationListener
+{
     
-    if (notificationCenterListener) {
+    if (notificationCenterListener)
+    {
         [self.mxSession.notificationCenter removeListener:notificationCenterListener];
         notificationCenterListener = nil;
     }
     ignoredRooms = nil;
 }
 
-- (void)updateNotificationListenerForRoomId:(NSString*)roomID ignore:(BOOL)isIgnored {
+- (void)updateNotificationListenerForRoomId:(NSString*)roomID ignore:(BOOL)isIgnored
+{
     
-    if (isIgnored) {
-        if (!ignoredRooms) {
+    if (isIgnored)
+    {
+        if (!ignoredRooms)
+        {
             ignoredRooms = [[NSMutableArray alloc] init];
         }
         [ignoredRooms addObject:roomID];
-    } else if (ignoredRooms) {
+    }
+    else if (ignoredRooms)
+    {
         [ignoredRooms removeObject:roomID];
     }
 }
 
 #pragma mark -
 
-- (void)launchInitialServerSync {
+- (void)launchInitialServerSync
+{
     // Complete the session registration when store data is ready.
     
     // Cancel potential reachability observer and pending action
@@ -400,7 +466,8 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     initialServerSyncTimer = nil;
     
     // Sanity check
-    if (!mxSession || mxSession.state != MXSessionStateStoreDataReady) {
+    if (!mxSession || mxSession.state != MXSessionStateStoreDataReady)
+    {
         NSLog(@"[MXKAccount] Initial server sync is applicable only when store data is ready to complete session initialisation");
         return;
     }
@@ -411,58 +478,77 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
         
-    } failure:^(NSError *error) {
+    } failure:^(NSError *error)
+    {
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
-        if (notifyOpenSessionFailure) {
+        if (notifyOpenSessionFailure)
+        {
             //Alert user only once
             notifyOpenSessionFailure = NO;
             // TODO GFO Alert user
-//            [[AppDelegate theDelegate] showErrorAsAlert:error];
+            //            [[AppDelegate theDelegate] showErrorAsAlert:error];
         }
         
         // Check network reachability
-        if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNotConnectedToInternet) {
+        if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNotConnectedToInternet)
+        {
             // Add observer to launch a new attempt according to reachability.
-            reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note)
+            {
                 NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
-                if (statusItem) {
+                if (statusItem)
+                {
                     AFNetworkReachabilityStatus reachabilityStatus = statusItem.integerValue;
-                    if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN) {
+                    if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN)
+                    {
                         // New attempt
                         [self launchInitialServerSync];
                     }
                 }
             }];
-        } else {
+        }
+        else
+        {
             // Postpone a new attempt in 10 sec
             initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
         }
     }];
 }
 
-- (void)onMatrixSessionStateChange {
+- (void)onMatrixSessionStateChange
+{
     
-    if (mxSession.state == MXSessionStateRunning) {
+    if (mxSession.state == MXSessionStateRunning)
+    {
         
         // Check whether the session was not already running
-        if (!userUpdateListener) {
+        if (!userUpdateListener)
+        {
             
             // Register listener to user's information change
-            userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event) {
+            userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event)
+            {
                 
                 // Consider events related to user's presence
-                if (event.eventType == MXEventTypePresence) {
+                if (event.eventType == MXEventTypePresence)
+                {
                     MXPresence presence = [MXTools presence:event.content[@"presence"]];
-                    if (userPresence != presence) {
+                    if (userPresence != presence)
+                    {
                         // Handle user presence on multiple devices (keep the more pertinent)
-                        if (userPresence == MXPresenceOnline) {
-                            if (presence == MXPresenceUnavailable || presence == MXPresenceOffline) {
+                        if (userPresence == MXPresenceOnline)
+                        {
+                            if (presence == MXPresenceUnavailable || presence == MXPresenceOffline)
+                            {
                                 // Force the local presence to overwrite the user presence on server side
                                 [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
                                 return;
                             }
-                        } else if (userPresence == MXPresenceUnavailable) {
-                            if (presence == MXPresenceOffline) {
+                        }
+                        else if (userPresence == MXPresenceUnavailable)
+                        {
+                            if (presence == MXPresenceOffline)
+                            {
                                 // Force the local presence to overwrite the user presence on server side
                                 [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
                                 return;
@@ -480,20 +566,25 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
         }
         
-    } else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateSyncInProgress) {
+    }
+    else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateSyncInProgress)
+    {
         
         // Remove listener (if any), this action is required to handle correctly matrix sdk handler reload (see clear cache)
-        if (userUpdateListener) {
+        if (userUpdateListener)
+        {
             
             [mxSession.myUser removeListener:userUpdateListener];
             userUpdateListener = nil;
             
-        } else {
+        }
+        else
+        {
             
             // Here the initial server sync is in progress. The session is not running yet, but some user's information are available (from local storage).
             // We post update notification to let observer take into account this user's information even if they may not be up-to-date.
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
-
+            
         }
     }
 }

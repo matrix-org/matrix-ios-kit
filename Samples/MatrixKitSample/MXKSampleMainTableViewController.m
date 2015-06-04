@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,8 @@
 NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentifier";
 NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifier";
 
-@interface MXKSampleMainTableViewController () {
+@interface MXKSampleMainTableViewController ()
+{
     /**
      Observer matrix sessions to handle new opened session
      */
@@ -77,20 +78,23 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 @implementation MXKSampleMainTableViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-
+    
     self.tableView.tableHeaderView.hidden = YES;
     self.tableView.allowsSelection = YES;
     [self.tableView reloadData];
     
     // Register matrix session state observer in order to handle new opened session
-    matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+    {
         
         MXSession *mxSession = (MXSession*)notif.object;
         
         // Check whether the concerned session is a new one
-        if (mxSession.state == MXSessionStateInitialised) {
+        if (mxSession.state == MXSessionStateInitialised)
+        {
             // report created matrix session
             [self addMatrixSession:mxSession];
             
@@ -100,10 +104,12 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }];
     
     // Register call observer in order to handle new opened session
-    callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+    {
         
         // Ignore the call if a call is already in progress
-        if (!currentCallViewController) {
+        if (!currentCallViewController)
+        {
             MXCall *mxCall = (MXCall*)notif.object;
             
             currentCallViewController = [MXKCallViewController callViewController:mxCall];
@@ -120,13 +126,16 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }];
     
     // Add observer to handle new account
-    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+    {
         
         NSString *userId = notif.object;
-        if (userId) {
+        if (userId)
+        {
             // Start matrix session for this new account
             MXKAccount *mxAccount = [[MXKAccountManager sharedManager] accountForUserId:userId];
-            if (mxAccount) {
+            if (mxAccount)
+            {
                 // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
                 MXFileStore *mxFileStore = [[MXFileStore alloc] init];
                 [mxAccount openSessionWithStore:mxFileStore];
@@ -137,14 +146,18 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         [self.tableView reloadData];
     }];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidRemoveAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidRemoveAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+    {
         
         NSString *userId = notif.object;
-        if (userId) {
+        if (userId)
+        {
             // Check whether details of this account was displayed
-            if ([destinationViewController isKindOfClass:[MXKAccountDetailsViewController class]]) {
+            if ([destinationViewController isKindOfClass:[MXKAccountDetailsViewController class]])
+            {
                 MXKAccountDetailsViewController *accountDetailsViewController = (MXKAccountDetailsViewController*)destinationViewController;
-                if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:userId]) {
+                if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:userId])
+                {
                     // pop the account details view controller
                     [self.navigationController popToRootViewControllerAnimated:YES];
                 }
@@ -156,72 +169,88 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }];
     
     // Add observer to update accounts section
-    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+    {
         
         // Refresh table to remove this account
         [self.tableView reloadData];
     }];
     
     // Check whether some accounts are availables
-    if ([[MXKAccountManager sharedManager] accounts].count) {
+    if ([[MXKAccountManager sharedManager] accounts].count)
+    {
         [self launchMatrixSessions];
-    } else {
+    }
+    else
+    {
         // Ask for a matrix account first
         [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
-    if (selectedRoom) {
+    if (selectedRoom)
+    {
         // Let the manager release the previous room data source
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
-        if (roomDataSource) {
+        if (roomDataSource)
+        {
             [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:NO];
         }
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
-    if (destinationViewController) {
-        if ([destinationViewController respondsToSelector:@selector(destroy)]) {
+    if (destinationViewController)
+    {
+        if ([destinationViewController respondsToSelector:@selector(destroy)])
+        {
             [destinationViewController destroy];
         }
         destinationViewController = nil;
     }
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (void)launchMatrixSessions {
+- (void)launchMatrixSessions
+{
     
     // Launch a matrix session for all existing accounts.
     
     NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
     
-    for (MXKAccount *account in accounts) {
+    for (MXKAccount *account in accounts)
+    {
         // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
         MXFileStore *mxFileStore = [[MXFileStore alloc] init];
         [account openSessionWithStore:mxFileStore];
     }
 }
 
-- (void)logout {
+- (void)logout
+{
     
     // Clear cache
     [MXKMediaManager clearCache];
     
     // Reset all stored room data
     NSArray *mxAccounts = [MXKAccountManager sharedManager].accounts;
-    for (MXKAccount *account in mxAccounts) {
-        if (account.mxSession) {
+    for (MXKAccount *account in mxAccounts)
+    {
+        if (account.mxSession)
+        {
             [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:account.mxSession];
         }
     }
@@ -231,7 +260,8 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     
     // Reset
     NSArray *mxSessions = self.mxSessions;
-    for (MXSession *mxSession in mxSessions) {
+    for (MXSession *mxSession in mxSessions)
+    {
         [self removeMatrixSession:mxSession];
     }
     selectedRoom = nil;
@@ -242,31 +272,34 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 }
 
 // Test code for directly opening a Room VC
-//- (void)didMatrixSessionStateChange {
-//    
+//- (void)didMatrixSessionStateChange{
+//
 //    [super didMatrixSessionStateChange];
-//    
-//    if (self.mxSession.state == MXKDataSourceStateReady) {
+//
+//    if (self.mxSession.state == MXKDataSourceStateReady){
 //        // Test code for directly opening a VC
 //        NSString *roomId = @"!xxx";
 //        selectedRoom = [self.mxSession roomWithRoomId:roomId];
 //        [self performSegueWithIdentifier:@"showMXKRoomViewController" sender:self];
 //    }
-//    
+//
 //}
 
 #pragma mark - Table View Data Source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     NSInteger count = 0;
     
     accountSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = -1;
     
-    if ([[MXKAccountManager sharedManager] accounts].count) {
+    if ([[MXKAccountManager sharedManager] accounts].count)
+    {
         accountSectionIndex = count++;
     }
     
-    if (selectedRoom) {
+    if (selectedRoom)
+    {
         roomSectionIndex = count++;
         roomMembersSectionIndex = count++;
     }
@@ -276,52 +309,75 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     return count;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     
-    if (section == accountSectionIndex) {
+    if (section == accountSectionIndex)
+    {
         return [[MXKAccountManager sharedManager] accounts].count + 1; // Add one cell in this section to logout all accounts
-    } else if (section == roomSectionIndex) {
+    }
+    else if (section == roomSectionIndex)
+    {
         return 3;
-    } else if (section == roomMembersSectionIndex) {
+    }
+    else if (section == roomMembersSectionIndex)
+    {
         return 2;
-    } else if (section == authenticationSectionIndex) {
+    }
+    else if (section == authenticationSectionIndex)
+    {
         return 1;
     }
     
     return 0;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     
-    if (section == accountSectionIndex) {
+    if (section == accountSectionIndex)
+    {
         return @"Accounts:";
-    } else if (section == roomSectionIndex) {
+    }
+    else if (section == roomSectionIndex)
+    {
         return @"Rooms:";
-    } else if (section == roomMembersSectionIndex) {
+    }
+    else if (section == roomMembersSectionIndex)
+    {
         return @"Room members:";
-    } else if (section == authenticationSectionIndex) {
+    }
+    else if (section == authenticationSectionIndex)
+    {
         return @"Authentication:";
     }
     
     return nil;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     UITableViewCell *cell;
     
-    if (indexPath.section == accountSectionIndex) {
+    if (indexPath.section == accountSectionIndex)
+    {
         NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
-        if (indexPath.row < accounts.count) {
+        if (indexPath.row < accounts.count)
+        {
             MXKAccountTableViewCell *accountCell = [[MXKAccountTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleAccountCellIdentifier];
-            if (!accountCell) {
+            if (!accountCell)
+            {
                 accountCell = [[MXKAccountTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleAccountCellIdentifier];
             }
             
             accountCell.mxAccount = [accounts objectAtIndex:indexPath.row];
             cell = accountCell;
-        } else {
+        }
+        else
+        {
             MXKTableViewCellWithButton *logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleLogoutCellIdentifier];
-            if (!logoutBtnCell) {
+            if (!logoutBtnCell)
+            {
                 logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleLogoutCellIdentifier];
             }
             [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateNormal];
@@ -330,9 +386,12 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
             
             cell = logoutBtnCell;
         }
-    } else if (indexPath.section == roomSectionIndex) {
+    }
+    else if (indexPath.section == roomSectionIndex)
+    {
         cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
-        switch (indexPath.row) {
+        switch (indexPath.row)
+        {
             case 0:
                 cell.textLabel.text = @"MXKRoomViewController";
                 break;
@@ -343,9 +402,12 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 cell.textLabel.text = @"Sample based on JSQMessagesViewController lib";
                 break;
         }
-    } else if (indexPath.section == roomMembersSectionIndex) {
+    }
+    else if (indexPath.section == roomMembersSectionIndex)
+    {
         cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
-        switch (indexPath.row) {
+        switch (indexPath.row)
+        {
             case 0:
                 cell.textLabel.text = @"MXKRoomMemberListViewController";
                 break;
@@ -353,8 +415,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 cell.textLabel.text = @"Sample with customized Table View Cell";
                 break;
         }
-    } else if (indexPath.section == authenticationSectionIndex) {
-        switch (indexPath.row) {
+    }
+    else if (indexPath.section == authenticationSectionIndex)
+    {
+        switch (indexPath.row)
+        {
             case 0:
                 cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
                 cell.textLabel.text = @"MXKAuthenticationViewController";
@@ -367,26 +432,34 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 #pragma mark - Table view delegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == accountSectionIndex) {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == accountSectionIndex)
+    {
         return 50;
     }
     return 44;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (indexPath.section == accountSectionIndex) {
+    if (indexPath.section == accountSectionIndex)
+    {
         NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
-        if (indexPath.row < accounts.count) {
+        if (indexPath.row < accounts.count)
+        {
             selectedAccount = [accounts objectAtIndex:indexPath.row];
             
             [self performSegueWithIdentifier:@"showMXKAccountDetailsViewController" sender:self];
         }
-    } else if (indexPath.section == roomSectionIndex) {
-        switch (indexPath.row) {
+    }
+    else if (indexPath.section == roomSectionIndex)
+    {
+        switch (indexPath.row)
+        {
             case 0:
                 [self performSegueWithIdentifier:@"showMXKRoomViewController" sender:self];
                 break;
@@ -397,8 +470,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 [self performSegueWithIdentifier:@"showSampleJSQMessagesViewController" sender:self];
                 break;
         }
-    } else if (indexPath.section == roomMembersSectionIndex) {
-        switch (indexPath.row) {
+    }
+    else if (indexPath.section == roomMembersSectionIndex)
+    {
+        switch (indexPath.row)
+        {
             case 0:
                 [self performSegueWithIdentifier:@"showMXKRoomMemberListViewController" sender:self];
                 break;
@@ -406,8 +482,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 [self performSegueWithIdentifier:@"showSampleRoomMembersViewController" sender:self];
                 break;
         }
-    } else if (indexPath.section == authenticationSectionIndex) {
-        switch (indexPath.row) {
+    }
+    else if (indexPath.section == authenticationSectionIndex)
+    {
+        switch (indexPath.row)
+        {
             case 0:
                 [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
                 break;
@@ -417,66 +496,77 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 #pragma mark - Segues
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
     
     // Keep ref on destinationViewController
     destinationViewController = segue.destinationViewController;
-
-    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mainSession) {
+    
+    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mainSession)
+    {
         MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)destinationViewController;
         sampleRecentListViewController.delegate = self;
         
         // Prepare listDataSource
         MXKRecentListDataSource *listDataSource = [[MXKRecentListDataSource alloc] init];
         NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
-        for (MXKAccount *account in accounts) {
-            if (account.mxSession) {
+        for (MXKAccount *account in accounts)
+        {
+            if (account.mxSession)
+            {
                 [listDataSource addMatrixSession:account.mxSession];
             }
         }
         [sampleRecentListViewController displayList:listDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"] || [segue.identifier isEqualToString:@"showSampleRoomViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"] || [segue.identifier isEqualToString:@"showSampleRoomViewController"])
+    {
         MXKRoomViewController *roomViewController = (MXKRoomViewController *)destinationViewController;
-
+        
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
-
+        
         // As the sample plays with several kinds of room data source, make sure we reuse one with the right type
-        if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKRoomDataSource.class]) {
+        if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKRoomDataSource.class])
+        {
             [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:YES];
-             roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
+            roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
         }
-
+        
         [roomViewController displayRoom:roomDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showSampleJSQMessagesViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showSampleJSQMessagesViewController"])
+    {
         MXKSampleJSQMessagesViewController *sampleRoomViewController = (MXKSampleJSQMessagesViewController *)destinationViewController;
-
+        
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
-
+        
         // As the sample plays with several kind of room data source, make sure we reuse one with the right type
-        if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKSampleJSQRoomDataSource.class]) {
+        if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKSampleJSQRoomDataSource.class])
+        {
             [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:YES];
             roomDataSource = nil;
         }
-
-        if (!roomDataSource) {
+        
+        if (!roomDataSource)
+        {
             roomDataSource = [[MXKSampleJSQRoomDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
             [roomDataSourceManager addRoomDataSource:roomDataSource];
         }
-
+        
         [sampleRoomViewController displayRoom:roomDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showMXKRoomMemberListViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showMXKRoomMemberListViewController"])
+    {
         MXKRoomMemberListViewController *roomMemberListViewController = (MXKRoomMemberListViewController *)destinationViewController;
         roomMemberListViewController.delegate = self;
         
         MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
         [roomMemberListViewController displayList:listDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showSampleRoomMembersViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showSampleRoomMembersViewController"])
+    {
         MXKSampleRoomMembersViewController *sampleRoomMemberListViewController = (MXKSampleRoomMembersViewController *)destinationViewController;
         sampleRoomMemberListViewController.delegate = self;
         
@@ -487,21 +577,24 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         
         [sampleRoomMemberListViewController displayList:listDataSource];
     }
-    else if ([segue.identifier isEqualToString:@"showMXKAuthenticationViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showMXKAuthenticationViewController"])
+    {
         MXKAuthenticationViewController *authViewController = (MXKAuthenticationViewController *)destinationViewController;
         authViewController.delegate = self;
         authViewController.defaultHomeServerUrl = @"https://matrix.org";
         authViewController.defaultIdentityServerUrl = @"https://matrix.org";
     }
-    else if ([segue.identifier isEqualToString:@"showMXKAccountDetailsViewController"]) {
+    else if ([segue.identifier isEqualToString:@"showMXKAccountDetailsViewController"])
+    {
         MXKAccountDetailsViewController *accountViewController = (MXKAccountDetailsViewController *)destinationViewController;
         accountViewController.mxAccount = selectedAccount;
     }
 }
 
 #pragma mark - MXKRecentListViewControllerDelegate
-- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)roomId inMatrixSession:(MXSession *)matrixSession {
-
+- (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)roomId inMatrixSession:(MXSession *)matrixSession
+{
+    
     // Update the selected room and go back to the main page
     selectedRoom = [matrixSession roomWithRoomId:roomId];
     _selectedRoomDisplayName.text = selectedRoom.state.displayname;
@@ -513,39 +606,46 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 #pragma  mark - MXKRoomMemberListViewControllerDelegate
 
-- (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(NSString*)memberId {
+- (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(NSString*)memberId
+{
     // TODO
     NSLog(@"Member (%@) has been selected", memberId);
 }
 
 #pragma mark - MXKAuthenticationViewControllerDelegate
 
-- (void)authenticationViewController:(MXKAuthenticationViewController *)authenticationViewController didLogWithUserId:(NSString*)userId {
+- (void)authenticationViewController:(MXKAuthenticationViewController *)authenticationViewController didLogWithUserId:(NSString*)userId
+{
     NSLog(@"New account (%@) has been added", userId);
-
+    
     // Go back to the main page
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark - MXKCallViewControllerDelegate
 
-- (void)dismissCallViewController:(MXKCallViewController *)callViewController {
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController
+{
     
-    if (callViewController == currentCallViewController) {
+    if (callViewController == currentCallViewController)
+    {
         
-        if (callViewController.isPresented) {
+        if (callViewController.isPresented)
+        {
             BOOL callIsEnded = (callViewController.mxCall.state == MXCallStateEnded);
             NSLog(@"Call view controller must be dismissed (%d)", callIsEnded);
             
             [callViewController dismissViewControllerAnimated:YES completion:^{
                 callViewController.isPresented = NO;
                 
-                if (!callIsEnded) {
+                if (!callIsEnded)
+                {
                     [self addCallStatusBar];
                 }
             }];
             
-            if (callIsEnded) {
+            if (callIsEnded)
+            {
                 [self removeCallStatusBar];
                 
                 // Restore system status bar
@@ -555,7 +655,9 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 [currentCallViewController destroy];
                 currentCallViewController = nil;
             }
-        } else {
+        }
+        else
+        {
             // Here the presentation of the call view controller is in progress
             // Postpone the dismiss
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -567,7 +669,8 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 #pragma mark - Call status handling
 
-- (void)addCallStatusBar {
+- (void)addCallStatusBar
+{
     
     // Add a call status bar
     CGSize topBarSize = CGSizeMake(self.view.frame.size.width, 44);
@@ -601,9 +704,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                                                object:nil];
 }
 
-- (void)removeCallStatusBar {
+- (void)removeCallStatusBar
+{
     
-    if (callStatusBarWindow) {
+    if (callStatusBarWindow)
+    {
         
         // Hide & destroy it
         callStatusBarWindow.hidden = YES;
@@ -617,7 +722,8 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }
 }
 
-- (void)returnToCallView {
+- (void)returnToCallView
+{
     
     [self removeCallStatusBar];
     
@@ -627,14 +733,16 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }];
 }
 
-- (void)statusBarDidChangeFrame {
+- (void)statusBarDidChangeFrame
+{
     
     UIApplication *app = [UIApplication sharedApplication];
     UIViewController *rootController = app.keyWindow.rootViewController;
     
     // Refresh the root view controller frame
     CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    if (callStatusBarWindow) {
+    if (callStatusBarWindow)
+    {
         // Substract the height of call status bar from the frame.
         CGFloat callBarStatusHeight = callStatusBarWindow.frame.size.height;
         

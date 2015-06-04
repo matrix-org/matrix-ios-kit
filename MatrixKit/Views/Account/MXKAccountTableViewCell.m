@@ -20,25 +20,29 @@
 
 @implementation MXKAccountTableViewCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKAccountTableViewCell class]] loadNibNamed:NSStringFromClass([MXKAccountTableViewCell class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
+                                                                                          owner:nil
+                                                                                        options:nil];
     self = nibViews.firstObject;
     return self;
 }
 
-- (void)setMxAccount:(MXKAccount *)mxAccount {
+- (void)setMxAccount:(MXKAccount *)mxAccount
+{
     
     UIColor *presenceColor = nil;
     
-    if (mxAccount.mxSession) {
+    if (mxAccount.mxSession)
+    {
         
         _accountDisplayName.text = mxAccount.fullDisplayName;
         
         // User thumbnail
         NSString *thumbnailURL = nil;
-        if (mxAccount.userAvatarUrl) {
+        if (mxAccount.userAvatarUrl)
+        {
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             thumbnailURL = [mxAccount.mxSession.matrixRestClient urlOfContentThumbnail:mxAccount.userAvatarUrl toFitViewSize:_accountPicture.frame.size withMethod:MXThumbnailingMethodCrop];
         }
@@ -46,23 +50,29 @@
         [_accountPicture setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
         
         presenceColor = [MXKAccount presenceColor:mxAccount.userPresence];
-
-    } else {
+        
+    }
+    else
+    {
         _accountDisplayName.text = nil;
         _accountPicture.image = [UIImage imageNamed:@"default-profile"];
     }
     
     
     
-    if (presenceColor) {
+    if (presenceColor)
+    {
         _accountPicture.layer.borderWidth = 2;
         _accountPicture.layer.borderColor = presenceColor.CGColor;
-    } else {
+    }
+    else
+    {
         _accountPicture.layer.borderWidth = 0;
     }
 }
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
     
     [super layoutSubviews];
     

@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,8 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 static MXKAccountManager *sharedAccountManager = nil;
 
-@interface MXKAccountManager() {
+@interface MXKAccountManager()
+{
     /**
      The list of accounts. Each value is a `MXKAccount` instance.
      */
@@ -32,65 +33,83 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 @implementation MXKAccountManager
 
-+ (MXKAccountManager *)sharedManager {
++ (MXKAccountManager *)sharedManager
+{
     
-    @synchronized(self) {
-        if(sharedAccountManager == nil) {
+    @synchronized(self)
+    {
+        if(sharedAccountManager == nil)
+        {
             sharedAccountManager = [[super allocWithZone:NULL] init];
         }
     }
     return sharedAccountManager;
 }
 
-- (instancetype)init {
-
+- (instancetype)init
+{
+    
     self = [super init];
-    if (self) {
+    if (self)
+    {
         [self loadAccounts];
     }
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     
     mxAccounts = nil;
 }
 
-- (void)saveAccounts {
+- (void)saveAccounts
+{
     
-    if (mxAccounts.count) {
+    if (mxAccounts.count)
+    {
         NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
         
         [[NSUserDefaults standardUserDefaults] setObject:accountData forKey:@"accounts"];
-    } else {
+    }
+    else
+    {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)loadAccounts {
+- (void)loadAccounts
+{
     
     NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
-    if (accountData) {
+    if (accountData)
+    {
         mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
-    } else {
+    }
+    else
+    {
         mxAccounts = [NSMutableArray array];
     }
 }
 
 #pragma mark -
 
-- (MXKAccount *)accountForUserId:(NSString *)userId {
-
-    for (MXKAccount *account in mxAccounts) {
-        if ([account.mxCredentials.userId isEqualToString:userId]) {
+- (MXKAccount *)accountForUserId:(NSString *)userId
+{
+    
+    for (MXKAccount *account in mxAccounts)
+    {
+        if ([account.mxCredentials.userId isEqualToString:userId])
+        {
             return account;
         }
     }
     return nil;
 }
 
-- (void)addAccount:(MXKAccount *)account {
+- (void)addAccount:(MXKAccount *)account
+{
     
     NSLog(@"[MXKAccountManager] login (%@)", account.mxCredentials.userId);
     
@@ -101,10 +120,11 @@ static MXKAccountManager *sharedAccountManager = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account.mxCredentials.userId userInfo:nil];
 }
 
-- (void)removeAccount:(MXKAccount*)account {
+- (void)removeAccount:(MXKAccount*)account
+{
     
     NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
-
+    
     // Close session and clear associated store.
     [account closeSession:YES];
     
@@ -114,17 +134,20 @@ static MXKAccountManager *sharedAccountManager = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account.mxCredentials.userId userInfo:nil];
 }
 
-- (void)logout {
+- (void)logout
+{
     
     // Logout all existing accounts
-    while (mxAccounts.lastObject) {
+    while (mxAccounts.lastObject)
+    {
         [self removeAccount:mxAccounts.lastObject];
     }
 }
 
 #pragma mark -
 
-- (NSArray *)accounts {
+- (NSArray *)accounts
+{
     return [mxAccounts copy];
 }
 

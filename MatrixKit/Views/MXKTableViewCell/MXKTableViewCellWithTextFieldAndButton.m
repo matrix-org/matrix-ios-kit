@@ -19,7 +19,8 @@
 @implementation MXKTableViewCellWithTextFieldAndButton
 @synthesize inputAccessoryView;
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithTextFieldAndButton class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithTextFieldAndButton class])
                                                                                                      owner:nil
                                                                                                    options:nil];
@@ -32,13 +33,15 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     inputAccessoryView = nil;
 }
 
 #pragma mark - UITextField delegate
 
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
+- (BOOL)textFieldShouldReturn:(UITextField*)textField
+{
     // "Done" key has been pressed
     [self.mxkTextField resignFirstResponder];
     return YES;
@@ -46,7 +49,8 @@
 
 #pragma mark - Action
 
-- (IBAction)textFieldEditingChanged:(id)sender {
+- (IBAction)textFieldEditingChanged:(id)sender
+{
     self.mxkButton.enabled = (self.mxkTextField.text.length != 0);
 }
 

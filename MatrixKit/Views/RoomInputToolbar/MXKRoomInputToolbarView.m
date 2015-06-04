@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,8 @@
 
 #import "MXKImageView.h"
 
-@interface MXKRoomInputToolbarView() {
+@interface MXKRoomInputToolbarView()
+{
     /**
      Alert used to list options.
      */
@@ -53,20 +54,26 @@
 @implementation MXKRoomInputToolbarView
 @synthesize messageComposerContainer, inputAccessoryView;
 
-+ (UINib *)nib {
++ (UINib *)nib
+{
     return [UINib nibWithNibName:NSStringFromClass([MXKRoomInputToolbarView class])
                           bundle:[NSBundle bundleForClass:[MXKRoomInputToolbarView class]]];
 }
 
-+ (instancetype)roomInputToolbarView {
-    if ([[self class] nib]) {
++ (instancetype)roomInputToolbarView
+{
+    if ([[self class] nib])
+    {
         return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
-    } else {
+    }
+    else
+    {
         return [[self alloc] init];
     }
 }
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
     
     // Finalize setup
@@ -82,24 +89,29 @@
     self.rightInputToolbarButton.enabled = NO;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     inputAccessoryView = nil;
     
     [self destroy];
 }
 
-- (IBAction)onTouchUpInside:(UIButton*)button {
-    if (button == self.leftInputToolbarButton) {
+- (IBAction)onTouchUpInside:(UIButton*)button
+{
+    if (button == self.leftInputToolbarButton)
+    {
         // Option button has been pressed
         // List available options
         __weak typeof(self) weakSelf = self;
         
         // Check whether media attachment is supported
-        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)]) {
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)])
+        {
             
             currentAlert = [[MXKAlert alloc] initWithTitle:@"Select an action:" message:nil style:MXKAlertStyleActionSheet];
             
-            [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
                 
@@ -112,7 +124,8 @@
                 [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
             }];
             
-            [currentAlert addActionWithTitle:@"Take Photo/Video" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:@"Take Photo/Video" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
                 
@@ -124,51 +137,64 @@
                 strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
                 [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
             }];
-        } else {
+        }
+        else
+        {
             NSLog(@"[MXKRoomInputToolbarView] Attach media is not supported");
         }
         
         // Check whether user invitation is supported
-        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:inviteMatrixUser:)]) {
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:inviteMatrixUser:)])
+        {
             
-            if (!currentAlert) {
+            if (!currentAlert)
+            {
                 currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             }
             
-            [currentAlert addActionWithTitle:@"Invite matrix User" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:@"Invite matrix User" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Ask for userId to invite
                 strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
-                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                 }];
                 
-                [strongSelf->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                [strongSelf->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
+                {
                     textField.secureTextEntry = NO;
                     textField.placeholder = @"ex: @bob:homeserver";
                 }];
-                [strongSelf->currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [strongSelf->currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                {
                     UITextField *textField = [alert textFieldAtIndex:0];
                     NSString *userId = textField.text;
                     
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    if (userId.length) {
+                    if (userId.length)
+                    {
                         [strongSelf.delegate roomInputToolbarView:strongSelf inviteMatrixUser:userId];
                     }
                 }];
                 
                 [strongSelf.delegate roomInputToolbarView:strongSelf presentMXKAlert:strongSelf->currentAlert];
             }];
-        } else {
+        }
+        else
+        {
             NSLog(@"[MXKRoomInputToolbarView] Invitation is not supported");
         }
         
-        if (currentAlert) {
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+        if (currentAlert)
+        {
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
             }];
@@ -176,10 +202,14 @@
             currentAlert.sourceView = button;
             
             [self.delegate roomInputToolbarView:self presentMXKAlert:currentAlert];
-        } else {
+        }
+        else
+        {
             NSLog(@"[MXKRoomInputToolbarView] No option is supported");
         }
-    } else if (button == self.rightInputToolbarButton) {
+    }
+    else if (button == self.rightInputToolbarButton)
+    {
         
         NSString *message = self.textMessage;
         
@@ -187,29 +217,35 @@
         self.textMessage = nil;
         
         // Send button has been pressed
-        if (message.length && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendTextMessage:)]) {
+        if (message.length && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendTextMessage:)])
+        {
             [self.delegate roomInputToolbarView:self sendTextMessage:message];
         }
     }
 }
 
-- (void)setPlaceholder:(NSString *)inPlaceholder {
-
+- (void)setPlaceholder:(NSString *)inPlaceholder
+{
+    
     _placeholder = inPlaceholder;
 }
 
-- (void)dismissKeyboard {
+- (void)dismissKeyboard
+{
 }
 
-- (void)destroy {
+- (void)destroy
+{
     [self dismissImageValidationView];
     
-    if (currentAlert) {
+    if (currentAlert)
+    {
         [currentAlert dismiss:NO];
         currentAlert = nil;
     }
     
-    if (mediaPicker) {
+    if (mediaPicker)
+    {
         [self dismissMediaPicker];
         mediaPicker = nil;
     }
@@ -219,9 +255,11 @@
 
 #pragma mark - UIImagePickerControllerDelegate
 
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
+    if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
+    {
         
         /*
          NSData *dataOfGif = [NSData dataWithContentsOfFile: [info objectForKey:UIImagePickerControllerReferenceURL]];
@@ -229,7 +267,8 @@
          NSLog(@"%d", dataOfGif.length);
          
          ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-         [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL] resultBlock:^(ALAsset *asset) {
+         [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL] resultBlock:^(ALAsset *asset)
+         {
          
          NSLog(@"%@", asset.defaultRepresentation.metadata);
          
@@ -241,21 +280,27 @@
          NSLog(@"%d", dataOfGif.length);
          ;
          
-         } failureBlock:^(NSError *error) {
+         } failureBlock:^(NSError *error)
+         {
          
          }];
          
          */
-
-        if (![self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)]) {
+        
+        if (![self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
+        {
             NSLog(@"[MXKRoomInputToolbarView] Attach image is not supported");
-        } else {
+        }
+        else
+        {
             UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-            if (selectedImage) {
+            if (selectedImage)
+            {
                 
                 // media picker does not offer a preview
                 // so add a preview to let the user validates his selection
-                if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+                if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+                {
                     
                     __weak typeof(self) weakSelf = self;
                     
@@ -263,7 +308,8 @@
                     imageValidationView.stretchable = YES;
                     
                     // the user validates the image
-                    [imageValidationView setRightButtonTitle:@"OK" handler:^(MXKImageView* imageView, NSString* buttonTitle) {
+                    [imageValidationView setRightButtonTitle:@"OK" handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                    {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
                         // Dismiss the image view
@@ -273,7 +319,8 @@
                     }];
                     
                     // the user wants to use an other image
-                    [imageValidationView setLeftButtonTitle:@"Cancel" handler:^(MXKImageView* imageView, NSString* buttonTitle) {
+                    [imageValidationView setLeftButtonTitle:@"Cancel" handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                    {
                         
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
@@ -291,19 +338,25 @@
                     
                     imageValidationView.image = selectedImage;
                     [imageValidationView showFullScreen];
-                } else {
+                }
+                else
+                {
                     // Send the selected image
                     [self.delegate roomInputToolbarView:self sendImage:selectedImage];
                 }
             }
         }
-    } else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
+    }
+    else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
+    {
         NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
         // Check the selected video, and ignore multiple calls (observed when user pressed several time Choose button)
-        if (selectedVideo && !tmpVideoPlayer) {
+        if (selectedVideo && !tmpVideoPlayer)
+        {
             // Create video thumbnail
             tmpVideoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:selectedVideo];
-            if (tmpVideoPlayer) {
+            if (tmpVideoPlayer)
+            {
                 [tmpVideoPlayer setShouldAutoplay:NO];
                 [[NSNotificationCenter defaultCenter] addObserver:self
                                                          selector:@selector(moviePlayerThumbnailImageRequestDidFinishNotification:)
@@ -319,12 +372,15 @@
     [self dismissMediaPicker];
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
     [self dismissMediaPicker];
 }
 
-- (void)dismissImageValidationView {
-    if (imageValidationView) {
+- (void)dismissImageValidationView
+{
+    if (imageValidationView)
+    {
         [imageValidationView dismissSelection];
         [imageValidationView removeFromSuperview];
         imageValidationView = nil;
@@ -333,27 +389,33 @@
 
 #pragma mark - Media Picker handling
 
-- (void)dismissMediaPicker {
+- (void)dismissMediaPicker
+{
     mediaPicker.delegate = nil;
     
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissMediaPicker:)]) {
+    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissMediaPicker:)])
+    {
         [self.delegate roomInputToolbarView:self dismissMediaPicker:mediaPicker];
     }
 }
 
-- (void)moviePlayerThumbnailImageRequestDidFinishNotification:(NSNotification *)notification {
+- (void)moviePlayerThumbnailImageRequestDidFinishNotification:(NSNotification *)notification
+{
     // Finalize video attachment
     UIImage* videoThumbnail = [[notification userInfo] objectForKey:MPMoviePlayerThumbnailImageKey];
     NSURL* selectedVideo = [tmpVideoPlayer contentURL];
     [tmpVideoPlayer stop];
     tmpVideoPlayer = nil;
-
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)]) {
+    
+    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
+    {
         [self.delegate roomInputToolbarView:self sendVideo:selectedVideo withThumbnail:videoThumbnail];
-    } else {
+    }
+    else
+    {
         NSLog(@"[MXKRoomInputToolbarView] Attach video is not supported");
     }
-
+    
     [self dismissMediaPicker];
 }
 

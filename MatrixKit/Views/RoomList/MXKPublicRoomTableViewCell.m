@@ -18,20 +18,25 @@
 
 @implementation MXKPublicRoomTableViewCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKPublicRoomTableViewCell class]] loadNibNamed:NSStringFromClass([MXKPublicRoomTableViewCell class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
+                                                                                             owner:nil
+                                                                                           options:nil];
     self = nibViews.firstObject;
     return self;
 }
 
-- (void)render:(MXPublicRoom*)publicRoom {
+- (void)render:(MXPublicRoom*)publicRoom
+{
     // Check whether this public room has topic
-    if (publicRoom.topic) {
+    if (publicRoom.topic)
+    {
         _roomTopic.hidden = NO;
         _roomTopic.text = publicRoom.topic;
-    } else {
+    }
+    else
+    {
         _roomTopic.hidden = YES;
     }
     
@@ -39,22 +44,31 @@
     _roomDisplayName.text = [publicRoom displayname];
     
     // Set member count
-    if (publicRoom.numJoinedMembers > 1) {
+    if (publicRoom.numJoinedMembers > 1)
+    {
         _memberCount.text = [NSString stringWithFormat:@"%lu users", (unsigned long)publicRoom.numJoinedMembers];
-    } else if (publicRoom.numJoinedMembers == 1) {
+    }
+    else if (publicRoom.numJoinedMembers == 1)
+    {
         _memberCount.text = @"1 user";
-    } else {
+    }
+    else
+    {
         _memberCount.text = nil;
     }
 }
 
-- (void)setFocused:(BOOL)focused {
+- (void)setFocused:(BOOL)focused
+{
     // Highlight?
-    if (focused) {
+    if (focused)
+    {
         _roomDisplayName.font = [UIFont boldSystemFontOfSize:20];
         _roomTopic.font = [UIFont boldSystemFontOfSize:17];
         self.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:0.9 alpha:1.0];
-    } else {
+    }
+    else
+    {
         _roomDisplayName.font = [UIFont systemFontOfSize:19];
         _roomTopic.font = [UIFont systemFontOfSize:16];
         self.backgroundColor = [UIColor clearColor];

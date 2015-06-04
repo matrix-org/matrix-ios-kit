@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,9 @@
 
 #import "JSQMessagesMediaViewBubbleImageMasker.h"
 
-@interface MXKSampleJSQMessageMediaData () {
-
+@interface MXKSampleJSQMessageMediaData ()
+{
+    
     MXKRoomBubbleCellData *cellData;
 }
 
@@ -29,47 +30,53 @@
 
 @implementation MXKSampleJSQMessageMediaData
 
-- (instancetype)initWithCellData:(MXKRoomBubbleCellData *)cellData2 {
-
+- (instancetype)initWithCellData:(MXKRoomBubbleCellData *)cellData2
+{
+    
     self = [super init];
-    if (self) {
-
+    if (self)
+    {
+        
         cellData = cellData2;
     }
     return self;
 }
 
-- (UIView *)mediaView {
-
+- (UIView *)mediaView
+{
+    
     // MXKImageView will automatically download and cache the media thumbnail
     MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(0, 0, cellData.contentSize.width, cellData.contentSize.height)];
     [imageView setImageURL:cellData.thumbnailURL withImageOrientation:cellData.thumbnailOrientation andPreviewImage:nil];
-
+    
     // Use transparent color while downloading the media
     imageView.backgroundColor = [UIColor clearColor];
-
+    
     // Put the image view into a JSQMessages bubble
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.clipsToBounds = YES;
     [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView isOutgoing:!cellData.isIncoming];
-
+    
     return imageView;
 }
 
-- (CGSize)mediaViewDisplaySize {
-
+- (CGSize)mediaViewDisplaySize
+{
+    
     // Return the thumbnail size
     return cellData.contentSize;
 }
 
-- (UIView *)mediaPlaceholderView {
-
+- (UIView *)mediaPlaceholderView
+{
+    
     // The MXKImageView returned by [self mediaView] is supposed to do the job
     return nil;
 }
 
-- (NSUInteger)mediaHash {
-
+- (NSUInteger)mediaHash
+{
+    
     return self.mediaHash;
 }
 

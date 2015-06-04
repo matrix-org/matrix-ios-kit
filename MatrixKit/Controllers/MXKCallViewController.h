@@ -46,7 +46,8 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 /**
  'MXKCallViewController' instance displays a call. Only one matrix session is supported by this view controller.
  */
-@interface MXKCallViewController : MXKViewController <MXCallDelegate> {
+@interface MXKCallViewController : MXKViewController <MXCallDelegate>
+{
 }
 
 @property (weak, nonatomic, readonly) IBOutlet MXKImageView *backgroundImageView;

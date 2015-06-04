@@ -16,7 +16,8 @@
 
 #import "MXKRoomTitleViewWithTopic.h"
 
-@interface MXKRoomTitleViewWithTopic () {
+@interface MXKRoomTitleViewWithTopic ()
+{
     id roomTopicListener;
     
     // the topic can be animated if it is longer than the screen size
@@ -31,12 +32,14 @@
 
 @implementation MXKRoomTitleViewWithTopic
 
-+ (UINib *)nib {
++ (UINib *)nib
+{
     return [UINib nibWithNibName:NSStringFromClass([MXKRoomTitleViewWithTopic class])
                           bundle:[NSBundle bundleForClass:[MXKRoomTitleViewWithTopic class]]];
 }
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
@@ -48,32 +51,39 @@
     self.hiddenTopic = YES;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [self destroy];
 }
 
-- (void)refreshDisplay {
+- (void)refreshDisplay
+{
     
     [super refreshDisplay];
     
-    if (self.mxRoom) {
+    if (self.mxRoom)
+    {
         // replace empty string by nil : avoid having the placeholder when there is no topic
         self.topicTextField.text = (self.mxRoom.state.topic) ? self.mxRoom.state.topic : nil;
-    } else {
+    }
+    else
+    {
         self.topicTextField.text = nil;
     }
     
     self.hiddenTopic = (!self.topicTextField.text.length);
 }
 
-- (void)destroy {
+- (void)destroy
+{
     // stop any animation
     [self stopTopicAnimation];
     
     [super destroy];
 }
 
-- (void)dismissKeyboard {
+- (void)dismissKeyboard
+{
     // Hide the keyboard
     [self.topicTextField resignFirstResponder];
     
@@ -85,63 +95,78 @@
 
 #pragma mark -
 
-- (void)setMxRoom:(MXRoom *)mxRoom {
+- (void)setMxRoom:(MXRoom *)mxRoom
+{
     // Check whether the room is actually changed
-    if (self.mxRoom != mxRoom) {
+    if (self.mxRoom != mxRoom)
+    {
         // Remove potential listener
-        if (roomTopicListener && self.mxRoom) {
+        if (roomTopicListener && self.mxRoom)
+        {
             [self.mxRoom removeListener:roomTopicListener];
             roomTopicListener = nil;
         }
         
-        if (mxRoom) {
+        if (mxRoom)
+        {
             // Register a listener to handle messages related to room name
             roomTopicListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic]
-                                                          onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
-                                                              // Consider only live events
-                                                              if (direction == MXEventDirectionForwards) {
-                                                                  [self refreshDisplay];
-                                                              }
-                                                          }];
+                                                      onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+            {
+                // Consider only live events
+                if (direction == MXEventDirectionForwards)
+                {
+                    [self refreshDisplay];
+                }
+            }];
         }
     }
     
     super.mxRoom = mxRoom;
 }
 
-- (void)setEditable:(BOOL)editable {
+- (void)setEditable:(BOOL)editable
+{
     self.topicTextField.enabled = editable;
     
     super.editable = editable;
 }
 
-- (void)setHiddenTopic:(BOOL)hiddenTopic {
+- (void)setHiddenTopic:(BOOL)hiddenTopic
+{
     [self stopTopicAnimation];
-    if (hiddenTopic) {
+    if (hiddenTopic)
+    {
         self.topicTextField.hidden = YES;
         self.displayNameTextFieldTopConstraint.constant = 10;
-    } else {
+    }
+    else
+    {
         self.topicTextField.hidden = NO;
         self.displayNameTextFieldTopConstraint.constant = 0;
     }
 }
 
-- (BOOL)isEditing {
+- (BOOL)isEditing
+{
     return (super.isEditing || self.topicTextField.isEditing);
 }
 
 #pragma mark -
 
 // start with delay
-- (void)startTopicAnimation {
+- (void)startTopicAnimation
+{
     // stop any pending timer
-    if (animationTimer) {
+    if (animationTimer)
+    {
         [animationTimer invalidate];
         animationTimer = nil;
     }
     
     // already animated the topic
-    if (scrollView) {
+    if (scrollView)
+    {
         return;
     }
     
@@ -149,7 +174,8 @@
     UIFont* font = self.topicTextField.font;
     
     // see font description
-    if (!font) {
+    if (!font)
+    {
         font = [UIFont systemFontOfSize:12];
     }
     
@@ -158,12 +184,13 @@
     CGSize stringSize = CGSizeMake(CGFLOAT_MAX, self.topicTextField.frame.size.height);
     
     stringSize  = [self.topicTextField.text boundingRectWithSize:stringSize
-                                                 options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
-                                              attributes:attributes
-                                                 context:nil].size;
+                                                         options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                                                      attributes:attributes
+                                                         context:nil].size;
     
     // does not need to animate the text
-    if (stringSize.width < self.topicTextField.frame.size.width) {
+    if (stringSize.width < self.topicTextField.frame.size.width)
+    {
         return;
     }
     
@@ -178,7 +205,7 @@
     CGRect topicTextFieldFrame = self.topicTextField.frame;
     topicTextFieldFrame.origin = CGPointZero;
     label.frame = topicTextFieldFrame;
-
+    
     self.topicTextField.hidden = YES;
     [scrollView addSubview:label];
     [self insertSubview:scrollView belowSubview:topicTextFieldMaskView];
@@ -189,34 +216,38 @@
     // offset
     CGPoint offset = scrollView.contentOffset;
     offset.x = label.frame.size.width - scrollView.frame.size.width;
-
+    
     // duration (magic computation to give more time if the text is longer)
     CGFloat duration  = label.frame.size.width / scrollView.frame.size.width * 3;
-
+    
     // animate the topic once to display its full content
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionAutoreverse | UIViewAnimationOptionCurveLinear animations:^{
         [scrollView setContentOffset:offset animated:NO];
-    } completion:^(BOOL finished) {
+    } completion:^(BOOL finished)
+    {
         [self stopTopicAnimation];
     }];
 }
 
-- (BOOL)stopTopicAnimation {
+- (BOOL)stopTopicAnimation
+{
     // stop running timers
-    if (animationTimer) {
+    if (animationTimer)
+    {
         [animationTimer invalidate];
         animationTimer = nil;
     }
     
     // if there is an animation is progress
-    if (scrollView) {
+    if (scrollView)
+    {
         self.topicTextField.hidden = NO;
         
         [scrollView.layer removeAllAnimations];
         [scrollView removeFromSuperview];
         scrollView = nil;
         label = nil;
-    
+        
         [self addSubview:self.topicTextField];
         
         // must be done to be able to restart the animation
@@ -229,7 +260,8 @@
     return NO;
 }
 
-- (void)editTopic {
+- (void)editTopic
+{
     [self stopTopicAnimation];
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -237,13 +269,15 @@
     });
 }
 
-- (void)layoutSubviews {
-
+- (void)layoutSubviews
+{
+    
     // add a mask to trap the tap events
     // it is faster (and simpliest) than subclassing the scrollview or the textField
     // any other gesture could also be trapped here
-    if (!topicTextFieldMaskView) {
-         topicTextFieldMaskView = [[UIView alloc]  initWithFrame:self.topicTextField.frame];
+    if (!topicTextFieldMaskView)
+    {
+        topicTextFieldMaskView = [[UIView alloc]  initWithFrame:self.topicTextField.frame];
         topicTextFieldMaskView.backgroundColor = [UIColor clearColor];
         [self addSubview:topicTextFieldMaskView];
         
@@ -264,31 +298,38 @@
     [super layoutSubviews];
 }
 
-- (void)setFrame:(CGRect)frame {
+- (void)setFrame:(CGRect)frame
+{
     // mother class call
     [super setFrame:frame];
     
     // stop any running animation if the frame is updated (screen rotation for example)
-    if (!CGRectEqualToRect(CGRectIntegral(frame), CGRectIntegral(self.frame))) {
+    if (!CGRectEqualToRect(CGRectIntegral(frame), CGRectIntegral(self.frame)))
+    {
         // stop any running application
         [self stopTopicAnimation];
     }
-
+    
     // update the mask frame
-    if (self.topicTextField.hidden) {
+    if (self.topicTextField.hidden)
+    {
         topicTextFieldMaskView.frame = CGRectZero;
-    } else {
+    }
+    else
+    {
         topicTextFieldMaskView.frame = self.topicTextField.frame;
     }
     
     // topicTextField switches becomes the first responder or it is not anymore the first responder
-    if (self.topicTextField.isFirstResponder != (topicTextFieldMaskView.hidden)) {
+    if (self.topicTextField.isFirstResponder != (topicTextFieldMaskView.hidden))
+    {
         topicTextFieldMaskView.hidden = self.topicTextField.isFirstResponder;
         
         // move topicTextFieldMaskView to the foreground
         // when topicTextField has been the first responder, it lets a view over topicTextFieldMaskView
         // so restore the expected Z order
-        if (!topicTextFieldMaskView.hidden) {
+        if (!topicTextFieldMaskView.hidden)
+        {
             [self bringSubviewToFront:topicTextFieldMaskView];
         }
     }
@@ -296,52 +337,67 @@
 
 #pragma mark - UITextField delegate
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
     NSString *alertMsg = nil;
     
-    if (textField == self.displayNameTextField) {
+    if (textField == self.displayNameTextField)
+    {
         // Check whether the user has enough power to rename the room
         MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
         NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName]) {
+        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
+        {
             // Only the room name is edited here, update the text field with the room name
             textField.text = self.mxRoom.state.name;
             textField.backgroundColor = [UIColor whiteColor];
-        } else {
+        }
+        else
+        {
             alertMsg = @"You are not authorized to edit this room name";
         }
         
         // Check whether the user is allowed to change room topic
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic]) {
+        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
+        {
             // Show topic text field even if the current value is nil
             self.hiddenTopic = NO;
-            if (alertMsg) {
+            if (alertMsg)
+            {
                 // Here the user can only update the room topic, switch on room topic field (without displaying alert)
                 alertMsg = nil;
                 [self.topicTextField becomeFirstResponder];
                 return NO;
             }
         }
-    } else if (textField == self.topicTextField) {
+    }
+    else if (textField == self.topicTextField)
+    {
         // Check whether the user has enough power to edit room topic
         MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
         NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic]) {
+        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
+        {
             textField.backgroundColor = [UIColor whiteColor];
             [self stopTopicAnimation];
-        } else {
+        }
+        else
+        {
             alertMsg = @"You are not authorized to edit this room topic";
         }
     }
     
-    if (alertMsg) {
+    if (alertMsg)
+    {
         // Alert user
         __weak typeof(self) weakSelf = self;
-        if (currentAlert) {
+        if (currentAlert)
+        {
             [currentAlert dismiss:NO];
         }
         currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             strongSelf->currentAlert = nil;
         }];
@@ -351,27 +407,34 @@
     return YES;
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField {
-    if (textField == self.topicTextField) {
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (textField == self.topicTextField)
+    {
         textField.backgroundColor = [UIColor clearColor];
         
         NSString *topic = textField.text;
-        if ((topic.length || self.mxRoom.state.topic.length) && [topic isEqualToString:self.mxRoom.state.topic] == NO) {
-            if ([self.delegate respondsToSelector:@selector(roomTitleView:isSaving:)]) {
+        if ((topic.length || self.mxRoom.state.topic.length) && [topic isEqualToString:self.mxRoom.state.topic] == NO)
+        {
+            if ([self.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+            {
                 [self.delegate roomTitleView:self isSaving:YES];
             }
             __weak typeof(self) weakSelf = self;
             [self.mxRoom setTopic:topic success:^{
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
-                if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)]) {
+                if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+                {
                     [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
                 }
                 
                 // Hide topic field if empty
                 strongSelf.hiddenTopic = !textField.text.length;
-            } failure:^(NSError *error) {
+            } failure:^(NSError *error)
+            {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
-                if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)]) {
+                if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+                {
                     [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
                 }
                 
@@ -382,23 +445,31 @@
                 
                 NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed: %@", error);
                 // TODO GFO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
             }];
-        } else {
+        }
+        else
+        {
             // Hide topic field if empty
             self.hiddenTopic = !topic.length;
         }
-    } else {
+    }
+    else
+    {
         // Let super handle displayName text field
         [super textFieldDidEndEditing:textField];
     }
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField*) textField {
-    if (textField == self.displayNameTextField) {
+- (BOOL)textFieldShouldReturn:(UITextField*) textField
+{
+    if (textField == self.displayNameTextField)
+    {
         // "Next" key has been pressed
         [self.topicTextField becomeFirstResponder];
-    } else {
+    }
+    else
+    {
         // "Done" key has been pressed
         [textField resignFirstResponder];
     }

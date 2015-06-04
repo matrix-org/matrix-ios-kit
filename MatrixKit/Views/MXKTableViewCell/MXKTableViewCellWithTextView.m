@@ -18,7 +18,8 @@
 
 @implementation MXKTableViewCellWithTextView
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithTextView class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithTextView class])
                                                                                                      owner:nil
                                                                                                    options:nil];

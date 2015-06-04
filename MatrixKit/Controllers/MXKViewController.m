@@ -16,7 +16,8 @@
 
 #import "MXKViewController.h"
 
-@interface MXKViewController () {
+@interface MXKViewController ()
+{
     /**
      Array of `MXSession` instances.
      */
@@ -28,7 +29,8 @@
 @synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     // Add default activity indicator
@@ -46,17 +48,21 @@
     [self.view addSubview:activityIndicator];
 }
 
-- (void)dealloc {
-    if (activityIndicator) {
+- (void)dealloc
+{
+    if (activityIndicator)
+    {
         [activityIndicator removeFromSuperview];
         activityIndicator = nil;
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
-    if (self.rageShakeManager) {
+    if (self.rageShakeManager)
+    {
         [self.rageShakeManager cancel:self];
     }
     
@@ -64,13 +70,15 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
     // Update UI according to mxSession state, and add observer (if need)
-    if (mxSessionArray.count) {
+    if (mxSessionArray.count)
+    {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionStateDidChange:) name:kMXSessionStateDidChangeNotification object:nil];
     }
     [self onMatrixSessionChange];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
@@ -80,16 +88,19 @@
     
     [activityIndicator stopAnimating];
     
-    if (self.rageShakeManager) {
+    if (self.rageShakeManager)
+    {
         [self.rageShakeManager cancel:self];
     }
 }
 
-- (void)setView:(UIView *)view {
+- (void)setView:(UIView *)view
+{
     [super setView:view];
     
     // Keep the activity indicator (if any)
-    if (activityIndicator) {
+    if (activityIndicator)
+    {
         activityIndicator.center = self.view.center;
         [self.view addSubview:activityIndicator];
     }
@@ -97,21 +108,27 @@
 
 #pragma mark -
 
-- (void)addMatrixSession:(MXSession*)mxSession {
-    if (!mxSession) {
+- (void)addMatrixSession:(MXSession*)mxSession
+{
+    if (!mxSession)
+    {
         return;
     }
     
-    if (!mxSessionArray) {
+    if (!mxSessionArray)
+    {
         mxSessionArray = [NSMutableArray array];
     }
     
-    if (!mxSessionArray.count) {
+    if (!mxSessionArray.count)
+    {
         [mxSessionArray addObject:mxSession];
         
         // Add matrix sessions observer on first added session
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionStateDidChange:) name:kMXSessionStateDidChangeNotification object:nil];
-    } else if ([mxSessionArray indexOfObject:mxSession] == NSNotFound) {
+    }
+    else if ([mxSessionArray indexOfObject:mxSession] == NSNotFound)
+    {
         [mxSessionArray addObject:mxSession];
     }
     
@@ -119,16 +136,20 @@
     [self onMatrixSessionChange];
 }
 
-- (void)removeMatrixSession:(MXSession*)mxSession {
-    if (!mxSession) {
+- (void)removeMatrixSession:(MXSession*)mxSession
+{
+    if (!mxSession)
+    {
         return;
     }
     
     NSUInteger index = [mxSessionArray indexOfObject:mxSession];
-    if (index != NSNotFound) {
+    if (index != NSNotFound)
+    {
         [mxSessionArray removeObjectAtIndex:index];
         
-        if (!mxSessionArray.count) {
+        if (!mxSessionArray.count)
+        {
             // Remove matrix sessions observer
             [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
         }
@@ -138,13 +159,16 @@
     [self onMatrixSessionChange];
 }
 
-- (NSArray*)mxSessions {
+- (NSArray*)mxSessions
+{
     return [NSArray arrayWithArray:mxSessionArray];
 }
 
-- (MXSession*)mainSession {
+- (MXSession*)mainSession
+{
     // We consider the first added session as the main one.
-    if (mxSessionArray.count) {
+    if (mxSessionArray.count)
+    {
         return [mxSessionArray firstObject];
     }
     return nil;
@@ -152,27 +176,34 @@
 
 #pragma mark -
 
-- (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion {
+- (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion
+{
     
     // Check whether the view controller is embedded inside a navigation controller.
-    if (self.navigationController) {
+    if (self.navigationController)
+    {
         // We pop the view controller (except if it is the root view controller).
         NSUInteger index = [self.navigationController.viewControllers indexOfObject:self];
-        if (index != NSNotFound && index > 0) {
+        if (index != NSNotFound && index > 0)
+        {
             UIViewController *previousViewController = [self.navigationController.viewControllers objectAtIndex:(index - 1)];
             
             [self.navigationController popToViewController:previousViewController animated:animated];
-            if (completion) {
+            if (completion)
+            {
                 completion();
             }
         }
-    } else {
+    }
+    else
+    {
         // Suppose here the view controller has been presented modally. We dismiss it
         [self dismissViewControllerAnimated:animated completion:completion];
     }
 }
 
-- (void)destroy {
+- (void)destroy
+{
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
@@ -181,73 +212,98 @@
 
 #pragma mark - Sessions handling
 
-- (void)onMatrixSessionStateDidChange:(NSNotification *)notif {
+- (void)onMatrixSessionStateDidChange:(NSNotification *)notif
+{
     MXSession *mxSession = notif.object;
     
-    if ([mxSessionArray indexOfObject:mxSession] != NSNotFound) {
+    if ([mxSessionArray indexOfObject:mxSession] != NSNotFound)
+    {
         [self onMatrixSessionChange];
     }
 }
 
-- (void)onMatrixSessionChange {
+- (void)onMatrixSessionChange
+{
     // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
     UINavigationController *mainNavigationController = nil;
-    if (self.splitViewController) {
+    if (self.splitViewController)
+    {
         mainNavigationController = self.navigationController;
         UIViewController *parentViewController = self.parentViewController;
-        while (parentViewController) {
-            if (parentViewController.navigationController) {
+        while (parentViewController)
+        {
+            if (parentViewController.navigationController)
+            {
                 mainNavigationController = parentViewController.navigationController;
                 parentViewController = parentViewController.parentViewController;
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
     }
     
-    if (mxSessionArray.count) {
+    if (mxSessionArray.count)
+    {
         // The navigation bar tintColor depends on matrix homeserver reachability status
         UIColor *barTintColor = nil; //default tintColor
         BOOL allHomeserverNotReachable = YES;
         BOOL isActivityInProgress = NO;
         
-        for (MXSession *mxSession in mxSessionArray) {
-            if (mxSession.state == MXSessionStateHomeserverNotReachable) {
+        for (MXSession *mxSession in mxSessionArray)
+        {
+            if (mxSession.state == MXSessionStateHomeserverNotReachable)
+            {
                 barTintColor = [UIColor orangeColor];
-            } else {
+            }
+            else
+            {
                 allHomeserverNotReachable = NO;
                 
-                if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised) {
+                if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
+                {
                     isActivityInProgress = YES;
                 }
             }
         }
         
-        if (allHomeserverNotReachable) {
+        if (allHomeserverNotReachable)
+        {
             self.navigationController.navigationBar.barTintColor = [UIColor redColor];
-            if (mainNavigationController) {
+            if (mainNavigationController)
+            {
                 mainNavigationController.navigationBar.barTintColor = [UIColor redColor];
             }
-        } else {
+        }
+        else
+        {
             self.navigationController.navigationBar.barTintColor = barTintColor;
-            if (mainNavigationController) {
+            if (mainNavigationController)
+            {
                 mainNavigationController.navigationBar.barTintColor = barTintColor;
             }
         }
         
         // Run activity indicator if need
-        if (isActivityInProgress) {
+        if (isActivityInProgress)
+        {
             [self startActivityIndicator];
-        } else {
+        }
+        else
+        {
             [self stopActivityIndicator];
         }
-    } else {
+    }
+    else
+    {
         // Hide potential activity indicator
         [self stopActivityIndicator];
         
         // Restore default tintColor
         self.navigationController.navigationBar.barTintColor = nil;
-        if (mainNavigationController) {
+        if (mainNavigationController)
+        {
             mainNavigationController.navigationBar.barTintColor = nil;
         }
     }
@@ -255,56 +311,69 @@
 
 #pragma mark - Activity indicator
 
-- (void)startActivityIndicator {
+- (void)startActivityIndicator
+{
     [self.view bringSubviewToFront:activityIndicator];
     [activityIndicator startAnimating];
 }
 
-- (void)stopActivityIndicator {
+- (void)stopActivityIndicator
+{
     // Check whether all conditions are satisfied before stopping loading wheel
     BOOL isActivityInProgress = NO;
-    for (MXSession *mxSession in mxSessionArray) {
-        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised) {
+    for (MXSession *mxSession in mxSessionArray)
+    {
+        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
+        {
             isActivityInProgress = YES;
         }
     }
-    if (!isActivityInProgress) {
+    if (!isActivityInProgress)
+    {
         [activityIndicator stopAnimating];
     }
 }
 
 #pragma mark - Shake handling
 
-- (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-    if (motion == UIEventSubtypeMotionShake && self.rageShakeManager) {
+- (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    if (motion == UIEventSubtypeMotionShake && self.rageShakeManager)
+    {
         [self.rageShakeManager startShaking:self];
     }
 }
 
-- (void)motionCancelled:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+- (void)motionCancelled:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
     [self motionEnded:motion withEvent:event];
 }
 
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-    if (self.rageShakeManager) {
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    if (self.rageShakeManager)
+    {
         [self.rageShakeManager stopShaking:self];
     }
 }
 
-- (BOOL)canBecomeFirstResponder {
+- (BOOL)canBecomeFirstResponder
+{
     return (self.rageShakeManager != nil);
 }
 
 #pragma mark - Keyboard handling
 
-- (void)onKeyboardShowAnimationComplete {
+- (void)onKeyboardShowAnimationComplete
+{
     // Do nothing here - `MXKViewController-inherited` instance must override this method.
 }
 
-- (void)setKeyboardView:(UIView *)keyboardView {
-    
+- (void)setKeyboardView:(UIView *)keyboardView
+{  
     // Remove previous keyboardView if any
-    if (_keyboardView) {
+    if (_keyboardView)
+    {
         // Restore UIKeyboardWillShowNotification observer
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
         
@@ -315,7 +384,8 @@
         _keyboardView = nil;
     }
     
-    if (keyboardView) {
+    if (keyboardView)
+    {
         // Add observers to detect keyboard drag down
         [keyboardView addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:0 context:nil];
         [keyboardView addObserver:self forKeyPath:NSStringFromSelector(@selector(center)) options:0 context:nil];
@@ -329,14 +399,15 @@
     }
 }
 
-- (void)onKeyboardWillShow:(NSNotification *)notif {
-    
+- (void)onKeyboardWillShow:(NSNotification *)notif
+{
     // Get the keyboard size
     NSValue *rectVal = notif.userInfo[UIKeyboardFrameEndUserInfoKey];
     CGRect endRect = rectVal.CGRectValue;
     
     // IOS 8 triggers some unexpected keyboard events
-    if ((endRect.size.height == 0) || (endRect.size.width == 0)) {
+    if ((endRect.size.height == 0) || (endRect.size.width == 0))
+    {
         return;
     }
     
@@ -350,12 +421,14 @@
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
         // Set the new keyboard height by checking screen orientation
         self.keyboardHeight = (endRect.origin.y == 0) ? endRect.size.width : endRect.size.height;
-    } completion:^(BOOL finished) {
+    } completion:^(BOOL finished)
+    {
         [self onKeyboardShowAnimationComplete];
     }];
 }
 
-- (void)onKeyboardWillHide:(NSNotification *)notif {
+- (void)onKeyboardWillHide:(NSNotification *)notif
+{
     
     // Remove keyboard view
     self.keyboardView = nil;
@@ -369,21 +442,25 @@
     // Apply keyboard animation
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
         self.keyboardHeight = 0;
-    } completion:^(BOOL finished) {
+    } completion:^(BOOL finished)
+    {
     }];
 }
 
 #pragma mark - KVO
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ((object == _keyboardView) && ([keyPath isEqualToString:NSStringFromSelector(@selector(frame))] || [keyPath isEqualToString:NSStringFromSelector(@selector(center))])) {
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ((object == _keyboardView) && ([keyPath isEqualToString:NSStringFromSelector(@selector(frame))] || [keyPath isEqualToString:NSStringFromSelector(@selector(center))]))
+    {
         
         // The keyboard view has been modified (Maybe the user drag it down), we update the input toolbar bottom constraint to adjust layout.
         
         // Compute keyboard height
         CGSize screenSize = [[UIScreen mainScreen] bounds].size;
         // on IOS 8, the screen size is oriented
-        if ((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        if ((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+        {
             screenSize = CGSizeMake(screenSize.height, screenSize.width);
         }
         self.keyboardHeight = screenSize.height - _keyboardView.frame.origin.y;

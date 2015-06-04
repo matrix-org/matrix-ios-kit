@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,60 +32,70 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 @implementation MXKRoomBubbleTableViewCell
 @synthesize delegate, bubbleData;
 
-+ (UINib *)nib {
++ (UINib *)nib
+{
     // By default, no nib is available.
     return nil;
 }
 
-+ (instancetype)roomBubbleTableViewCell {
-
++ (instancetype)roomBubbleTableViewCell
+{
+    
     // Check whether a xib is defined
-    if ([[self class] nib]) {
+    if ([[self class] nib])
+    {
         return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     }
-
+    
     return [[[self class] alloc] init];
 }
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     // Initialization code
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     // remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     delegate = nil;
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
     [super setSelected:selected animated:animated];
-
+    
     // Configure the view for the selected state
 }
 
-- (void)render:(MXKCellData *)cellData {
+- (void)render:(MXKCellData *)cellData
+{
     [self originalRender:cellData];
 }
 
-- (void)originalRender:(MXKCellData *)cellData {
-
+- (void)originalRender:(MXKCellData *)cellData
+{
+    
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
-
+    
     bubbleData = (MXKRoomBubbleCellData*)cellData;
-    if (bubbleData) {
+    if (bubbleData)
+    {
         // set the media folders
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         self.attachmentView.mediaFolder = bubbleData.roomId;
-
+        
         // Handle sender's picture and adjust view's constraints
         self.pictureView.hidden = NO;
         self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
         self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
         // Handle user's picture
         NSString *avatarThumbURL = nil;
-        if (bubbleData.senderAvatarUrl) {
+        if (bubbleData.senderAvatarUrl)
+        {
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
@@ -93,7 +103,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
         self.pictureView.clipsToBounds = YES;
         self.pictureView.backgroundColor = [UIColor redColor];
-
+        
         // Listen to avatar tap
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
         [tapGesture setNumberOfTouchesRequired:1];
@@ -101,11 +111,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [tapGesture setDelegate:self];
         [self.pictureView addGestureRecognizer:tapGesture];
         self.pictureView.userInteractionEnabled = YES;
-
+        
         // Adjust top constraint constant for dateTime labels container, and hide it by default
-        if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText) {
+        if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+        {
             self.dateTimeLabelContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
-        } else {
+        }
+        else
+        {
             self.dateTimeLabelContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
         }
         self.dateTimeLabelContainer.hidden = YES;
@@ -113,7 +126,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Set message content
         bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
-        if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText) {
+        if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText)
+        {
             self.messageTextView.hidden = YES;
             self.attachmentView.hidden = NO;
             
@@ -124,27 +138,32 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.attachmentView.frame = frame;
             
             NSString *url = bubbleData.thumbnailURL;
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo) {
+            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
+            {
                 self.playIconView.hidden = NO;
-            } else {
+            }
+            else
+            {
                 self.playIconView.hidden = YES;
             }
             UIImage *preview = nil;
-            if (bubbleData.previewURL) {
+            if (bubbleData.previewURL)
+            {
                 NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.previewURL inFolder:self.attachmentView.mediaFolder];
                 preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
             }
             [self.attachmentView setImageURL:url withImageOrientation:bubbleData.thumbnailOrientation andPreviewImage:preview];
             
-            if (url && bubbleData.attachmentURL && bubbleData.attachmentInfo) {
-
+            if (url && bubbleData.attachmentURL && bubbleData.attachmentInfo)
+            {
+                
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
                 [tap setNumberOfTouchesRequired:1];
                 [tap setNumberOfTapsRequired:1];
                 [tap setDelegate:self];
                 [self.attachmentView addGestureRecognizer:tap];
-
+                
                 // Store attachment content description used in showAttachmentView:
                 self.attachmentView.mediaInfo = @{
                                                   @"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType],
@@ -152,9 +171,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                                                   @"info" : bubbleData.attachmentInfo
                                                   };
             }
-
+            
             [self startProgressUI];
-
+            
             // Adjust Attachment width constant
             self.attachViewWidthConstraint.constant = contentSize.width;
             
@@ -164,11 +183,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // Add another long gesture recognizer on progressView to cancel the current operation (Note: only the download can be cancelled).
             longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
             [self.progressView addGestureRecognizer:longPress];
-        } else {
+        }
+        else
+        {
             self.attachmentView.hidden = YES;
             self.playIconView.hidden = YES;
             self.messageTextView.hidden = NO;
-            if (!bubbleData.isIncoming) {
+            if (!bubbleData.isIncoming)
+            {
                 // Adjust horizontal position for outgoing messages (text is left aligned, but the textView should be right aligned)
                 CGFloat leftInset = bubbleData.maxTextViewWidth - contentSize.width;
                 self.messageTextView.contentInset = UIEdgeInsetsMake(0, leftInset, 0, -leftInset);
@@ -181,17 +203,23 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         }
         
         // Handle timestamp display
-        if (bubbleData.showBubbleDateTime) {
+        if (bubbleData.showBubbleDateTime)
+        {
             // Add datetime label for each component
             self.dateTimeLabelContainer.hidden = NO;
             [bubbleData prepareBubbleComponentsPosition];
-            for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents) {
-                if (component.date && (component.event.mxkState != MXKEventStateSendingFailed)) {
+            for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+            {
+                if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
+                {
                     UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 20)];
                     dateTimeLabel.text = [bubbleData.eventFormatter.dateFormatter stringFromDate:component.date];
-                    if (bubbleData.isIncoming) {
+                    if (bubbleData.isIncoming)
+                    {
                         dateTimeLabel.textAlignment = NSTextAlignmentRight;
-                    } else {
+                    }
+                    else
+                    {
                         dateTimeLabel.textAlignment = NSTextAlignmentLeft;
                     }
                     dateTimeLabel.textColor = [UIColor lightGrayColor];
@@ -230,9 +258,12 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                                                                                         attribute:NSLayoutAttributeNotAnAttribute
                                                                                        multiplier:1.0
                                                                                          constant:20];
-                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)]) {
+                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+                    {
                         [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
-                    } else {
+                    }
+                    else
+                    {
                         [self.dateTimeLabelContainer addConstraint:leftConstraint];
                         [self.dateTimeLabelContainer addConstraint:rightConstraint];
                         [self.dateTimeLabelContainer addConstraint:topConstraint];
@@ -244,12 +275,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     }
 }
 
-+ (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth {
++ (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth
+{
     return [self originalHeightForCellData:cellData withMaximumWidth:maxWidth];
 }
 
-+ (CGFloat)originalHeightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
-
++ (CGFloat)originalHeightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
+{
+    
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
@@ -259,30 +292,40 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
-    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText) {
+    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+    {
         rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
-    } else {
+    }
+    else
+    {
         rowHeight += self.cellWithOriginalXib.attachViewTopConstraint.constant ;
     }
-
+    
     return rowHeight;
 }
 
-- (void)didEndDisplay {
+- (void)didEndDisplay
+{
     bubbleData = nil;
     
     // Remove all gesture recognizer
-    while (self.attachmentView.gestureRecognizers.count) {
+    while (self.attachmentView.gestureRecognizers.count)
+    {
         [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
     }
     // Remove potential dateTime (or unsent) label(s)
-    if (self.dateTimeLabelContainer.subviews.count > 0) {
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)]) {
+    if (self.dateTimeLabelContainer.subviews.count > 0)
+    {
+        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+        {
             [NSLayoutConstraint deactivateConstraints:self.dateTimeLabelContainer.constraints];
-        } else {
+        }
+        else
+        {
             [self.dateTimeLabelContainer removeConstraints:self.dateTimeLabelContainer.constraints];
         }
-        for (UIView *view in self.dateTimeLabelContainer.subviews) {
+        for (UIView *view in self.dateTimeLabelContainer.subviews)
+        {
             [view removeFromSuperview];
         }
     }
@@ -290,14 +333,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     [self stopProgressUI];
     
     // Remove long tap gesture on the progressView
-    while (self.progressView.gestureRecognizers.count) {
+    while (self.progressView.gestureRecognizers.count)
+    {
         [self.progressView removeGestureRecognizer:self.progressView.gestureRecognizers[0]];
     }
     
     delegate = nil;
 }
 
-- (void)updateProgressUI:(NSDictionary*)statisticsDict {
+- (void)updateProgressUI:(NSDictionary*)statisticsDict
+{
     self.progressView.hidden = NO;
     
     NSString* downloadRate = [statisticsDict valueForKey:kMXKMediaLoaderProgressRateKey];
@@ -306,15 +351,18 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     NSMutableString* text = [[NSMutableString alloc] init];
     
-    if (progressString) {
+    if (progressString)
+    {
         [text appendString:progressString];
     }
     
-    if (downloadRate) {
+    if (downloadRate)
+    {
         [text appendFormat:@"\n%@", downloadRate];
     }
     
-    if (remaingTime) {
+    if (remaingTime)
+    {
         [text appendFormat:@"\n%@", remaingTime];
     }
     
@@ -322,32 +370,40 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     NSNumber* progressNumber = [statisticsDict valueForKey:kMXKMediaLoaderProgressValueKey];
     
-    if (progressNumber) {
+    if (progressNumber)
+    {
         self.progressChartView.progress = progressNumber.floatValue;
     }
 }
 
-- (void)onMediaDownloadProgress:(NSNotification *)notif {
+- (void)onMediaDownloadProgress:(NSNotification *)notif
+{
     // sanity check
-    if ([notif.object isKindOfClass:[NSString class]]) {
+    if ([notif.object isKindOfClass:[NSString class]])
+    {
         NSString* url = notif.object;
         
-        if ([url isEqualToString:bubbleData.attachmentURL]) {
+        if ([url isEqualToString:bubbleData.attachmentURL])
+        {
             [self updateProgressUI:notif.userInfo];
         }
     }
 }
 
-- (void)onMediaDownloadEnd:(NSNotification *)notif {
+- (void)onMediaDownloadEnd:(NSNotification *)notif
+{
     // sanity check
-    if ([notif.object isKindOfClass:[NSString class]]) {
+    if ([notif.object isKindOfClass:[NSString class]])
+    {
         NSString* url = notif.object;
         
-        if ([url isEqualToString:bubbleData.attachmentURL]) {
+        if ([url isEqualToString:bubbleData.attachmentURL])
+        {
             [self stopProgressUI];
             
             // the job is really over
-            if ([notif.name isEqualToString:kMXKMediaDownloadDidFinishNotification]) {
+            if ([notif.name isEqualToString:kMXKMediaDownloadDidFinishNotification])
+            {
                 // remove any pending observers
                 [[NSNotificationCenter defaultCenter] removeObserver:self];
             }
@@ -355,7 +411,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     }
 }
 
-- (void)startProgressUI {
+- (void)startProgressUI
+{
     
     BOOL isHidden = YES;
     
@@ -363,14 +420,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // there is an attachment URL
-    if (bubbleData.attachmentURL) {
+    if (bubbleData.attachmentURL)
+    {
         
         // check if there is a download in progress
         MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachmentCacheFilePath];
         
         NSDictionary *dict = loader.statisticsDict;
         
-        if (dict) {
+        if (dict)
+        {
             isHidden = NO;
             
             // defines the text to display
@@ -386,17 +445,20 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     self.progressView.hidden = isHidden;
 }
 
-- (void)stopProgressUI {
+- (void)stopProgressUI
+{
     self.progressView.hidden = YES;
     
     // do not remove the observer here
     // the download could restart without recomposing the cell
 }
 
-- (void)cancelDownload {
+- (void)cancelDownload
+{
     // get the linked media loader
     MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachmentCacheFilePath];
-    if (loader) {
+    if (loader)
+    {
         [loader cancel];
     }
     
@@ -412,19 +474,23 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
  */
 static NSMutableDictionary *childClasses;
 
-+ (MXKRoomBubbleTableViewCell*)cellWithOriginalXib {
++ (MXKRoomBubbleTableViewCell*)cellWithOriginalXib
+{
     MXKRoomBubbleTableViewCell *cellWithOriginalXib;
-
-    @synchronized(self) {
-        if(childClasses == nil) {
+    
+    @synchronized(self)
+    {
+        if(childClasses == nil)
+        {
             childClasses = [NSMutableDictionary dictionary];
         }
-
+        
         // To save memory, use only one original instance per child class
         cellWithOriginalXib = childClasses[NSStringFromClass(self.class)];
-        if (nil == cellWithOriginalXib) {
+        if (nil == cellWithOriginalXib)
+        {
             cellWithOriginalXib = [self roomBubbleTableViewCell];
-
+            
             childClasses[NSStringFromClass(self.class)] = cellWithOriginalXib;
         }
     }
@@ -432,51 +498,67 @@ static NSMutableDictionary *childClasses;
 }
 
 #pragma mark - User actions
-- (IBAction)onAvatarTap:(UITapGestureRecognizer*)sender {
-    if (delegate) {
+- (IBAction)onAvatarTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAvatarView userInfo:@{kMXKRoomBubbleCellUserIdKey: bubbleData.senderId}];
     }
 }
 
-- (IBAction)onAttachmentTap:(UITapGestureRecognizer*)sender {
-    if (delegate) {
+- (IBAction)onAttachmentTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
     }
 }
 
-- (IBAction)showHideDateTime:(id)sender {
-    if (delegate) {
+- (IBAction)showHideDateTime:(id)sender
+{
+    if (delegate)
+    {
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnDateTimeContainer userInfo:nil];
     }
 }
 
-- (IBAction)onLongPressGesture:(UILongPressGestureRecognizer*)longPressGestureRecognizer {
-    if (longPressGestureRecognizer.state == UIGestureRecognizerStateBegan && delegate) {
+- (IBAction)onLongPressGesture:(UILongPressGestureRecognizer*)longPressGestureRecognizer
+{
+    if (longPressGestureRecognizer.state == UIGestureRecognizerStateBegan && delegate)
+    {
         UIView* view = longPressGestureRecognizer.view;
         
         // Check the view on which long press has been detected
-        if (view == self.progressView) {
+        if (view == self.progressView)
+        {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnProgressView userInfo:nil];
         }
-        else if (view == self.messageTextView || view == self.attachmentView) {
+        else if (view == self.messageTextView || view == self.attachmentView)
+        {
             MXEvent *selectedEvent = nil;
-            if (bubbleData.bubbleComponents.count == 1) {
+            if (bubbleData.bubbleComponents.count == 1)
+            {
                 MXKRoomBubbleComponent *component = [bubbleData.bubbleComponents firstObject];
                 selectedEvent = component.event;
-            } else if (bubbleData.bubbleComponents.count) {
+            }
+            else if (bubbleData.bubbleComponents.count)
+            {
                 // Here the selected view is a textView (attachment has no more than one component)
                 
                 // Look for the selected component
                 CGPoint longPressPoint = [longPressGestureRecognizer locationInView:view];
-                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents) {
-                    if (longPressPoint.y < component.position.y) {
+                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+                {
+                    if (longPressPoint.y < component.position.y)
+                    {
                         break;
                     }
                     selectedEvent = component.event;
                 }
             }
             
-            if (selectedEvent) {
+            if (selectedEvent)
+            {
                 [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnEvent userInfo:@{kMXKRoomBubbleCellEventKey:selectedEvent}];
             }
         }

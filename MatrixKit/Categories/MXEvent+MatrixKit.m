@@ -19,26 +19,33 @@
 
 @implementation MXEvent (MatrixKit)
 
-- (MXKEventState)mxkState {
+- (MXKEventState)mxkState
+{
     NSNumber *associatedState = objc_getAssociatedObject(self, @selector(state));
-    if (associatedState) {
+    if (associatedState)
+    {
         return [associatedState unsignedIntegerValue];
     }
     return MXKEventStateDefault;
 }
 
-- (void)setMxkState:(MXKEventState)state {
+- (void)setMxkState:(MXKEventState)state
+{
     objc_setAssociatedObject(self, @selector(state), [NSNumber numberWithUnsignedInteger:state], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)isRedactedEvent {
+- (BOOL)isRedactedEvent
+{
     return (self.redactedBecause != nil);
 }
 
-- (BOOL)isEmote {
-    if (self.eventType == MXEventTypeRoomMessage) {
+- (BOOL)isEmote
+{
+    if (self.eventType == MXEventTypeRoomMessage)
+    {
         NSString *msgtype = self.content[@"msgtype"];
-        if ([msgtype isEqualToString:kMXMessageTypeEmote]) {
+        if ([msgtype isEqualToString:kMXMessageTypeEmote])
+        {
             return YES;
         }
     }
@@ -47,12 +54,13 @@
 
 
 #pragma mark - NSCopying
-- (id)copyWithZone:(NSZone *)zone {
-
+- (id)copyWithZone:(NSZone *)zone
+{
+    
     // Make mxkState survive after a copy
     MXEvent *eventCopy = [super copyWithZone:zone];
     [eventCopy setMxkState:self.mxkState];
-
+    
     return eventCopy;
 }
 

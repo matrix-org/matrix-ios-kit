@@ -38,9 +38,11 @@ NSString *const kUploadIdPrefix = @"upload-";
 
 @synthesize statisticsDict;
 
-- (void)cancel {
+- (void)cancel
+{
     // Cancel potential connection
-    if (downloadConnection) {
+    if (downloadConnection)
+    {
         NSLog(@"[MXKMediaLoader] Media download has been cancelled (%@)", mediaURL);
         if (onError){
             onError(nil);
@@ -55,13 +57,15 @@ NSString *const kUploadIdPrefix = @"upload-";
         downloadConnection = nil;
         downloadData = nil;
     }
-    else {
-        if (operation.operation.executing) {
+    else
+    {
+        if (operation.operation.executing)
+        {
             NSLog(@"[MXKMediaLoader] Media upload has been cancelled (%@)", mediaURL);
             [operation cancel];
             operation = nil;
         }
-
+        
         // Reset blocks
         onSuccess = nil;
         onError = nil;
@@ -69,7 +73,8 @@ NSString *const kUploadIdPrefix = @"upload-";
     statisticsDict = nil;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [self cancel];
     
     mxSession = nil;
@@ -80,7 +85,8 @@ NSString *const kUploadIdPrefix = @"upload-";
 - (void)downloadMediaFromURL:(NSString *)url
            andSaveAtFilePath:(NSString *)filePath
                      success:(blockMXKMediaLoader_onSuccess)success
-                     failure:(blockMXKMediaLoader_onError)failure {
+                     failure:(blockMXKMediaLoader_onError)failure
+{
     
     // Report provided params
     mediaURL = url;
@@ -98,16 +104,19 @@ NSString *const kUploadIdPrefix = @"upload-";
     downloadConnection = [[NSURLConnection alloc] initWithRequest:[NSURLRequest requestWithURL:nsURL] delegate:self];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
     expectedSize = response.expectedContentLength;
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
     NSLog(@"[MXKMediaLoader] Failed to download media (%@): %@", mediaURL, error);
     // send the latest known upload info
     [self progressCheckTimeout:nil];
     statisticsDict = nil;
-    if (onError) {
+    if (onError)
+    {
         onError (error);
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaDownloadDidFailNotification
@@ -115,34 +124,38 @@ NSString *const kUploadIdPrefix = @"upload-";
                                                       userInfo:@{kMXKMediaLoaderErrorKey:error}];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
     // Append data
     [downloadData appendData:data];
     
-    if (expectedSize > 0) {
+    if (expectedSize > 0)
+    {
         float progressValue = ((float)downloadData.length) /  ((float)expectedSize);
-        if (progressValue > 1) {
+        if (progressValue > 1)
+        {
             // Should never happen
             progressValue = 1.0;
         }
         
-        CFAbsoluteTime currentTime = CFAbsoluteTimeGetCurrent();        
+        CFAbsoluteTime currentTime = CFAbsoluteTimeGetCurrent();
         CGFloat meanRate = downloadData.length / (currentTime - downloadStartTime)/ 1024.0;
         CGFloat dataRemainingTime = 0;
         
-        if (0 != meanRate) {
+        if (0 != meanRate)
+        {
             dataRemainingTime = ((expectedSize - downloadData.length) / 1024.0) / meanRate;
         }
         
         statsStartTime = currentTime;
-
+        
         // build the user info dictionary
         NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
         [dict setValue:[NSNumber numberWithFloat:progressValue] forKey:kMXKMediaLoaderProgressValueKey];
         
         NSString* progressString = [NSString stringWithFormat:@"%@ / %@", [NSByteCountFormatter stringFromByteCount:downloadData.length countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:expectedSize countStyle:NSByteCountFormatterCountStyleFile]];
         [dict setValue:progressString forKey:kMXKMediaLoaderProgressStringKey];
-                
+        
         [dict setValue:[MXKTools formatSecondsInterval:dataRemainingTime] forKey:kMXKMediaLoaderProgressRemaingTimeKey];
         
         NSString* downloadRateStr = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:meanRate * 1024 countStyle:NSByteCountFormatterCountStyleFile]];
@@ -156,35 +169,43 @@ NSString *const kUploadIdPrefix = @"upload-";
         progressCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(progressCheckTimeout:) userInfo:self repeats:NO];
         
         // trigger the event only each 0.1s to avoid send to many events
-        if ((lastProgressEventTimeStamp == -1) || ((currentTime - lastProgressEventTimeStamp) > 0.1)) {
+        if ((lastProgressEventTimeStamp == -1) || ((currentTime - lastProgressEventTimeStamp) > 0.1))
+        {
             lastProgressEventTimeStamp = currentTime;
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaDownloadProgressNotification object:mediaURL userInfo:statisticsDict];
         }
     }
 }
 
-- (IBAction)progressCheckTimeout:(id)sender {
+- (IBAction)progressCheckTimeout:(id)sender
+{
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaDownloadProgressNotification object:mediaURL userInfo:statisticsDict];
     [progressCheckTimer invalidate];
     progressCheckTimer = nil;
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
     // send the latest known upload info
     [self progressCheckTimeout:nil];
     statisticsDict = nil;
     
-    if (downloadData.length) {
+    if (downloadData.length)
+    {
         // Cache the downloaded data
-        if ([MXKMediaManager writeMediaData:downloadData toFilePath:outputFilePath]) {
+        if ([MXKMediaManager writeMediaData:downloadData toFilePath:outputFilePath])
+        {
             // Call registered block
-            if (onSuccess) {
+            if (onSuccess)
+            {
                 onSuccess(outputFilePath);
             }
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaDownloadDidFinishNotification
                                                                 object:mediaURL
                                                               userInfo:@{kMXKMediaLoaderFilePathKey: outputFilePath}];
-        } else {
+        }
+        else
+        {
             NSLog(@"[MXKMediaLoader] Failed to write file: %@", mediaURL);
             if (onError){
                 onError(nil);
@@ -193,7 +214,9 @@ NSString *const kUploadIdPrefix = @"upload-";
                                                                 object:mediaURL
                                                               userInfo:nil];
         }
-    } else {
+    }
+    else
+    {
         NSLog(@"[MXKMediaLoader] Failed to download media: %@", mediaURL);
         if (onError){
             onError(nil);
@@ -209,11 +232,13 @@ NSString *const kUploadIdPrefix = @"upload-";
 
 #pragma mark - Upload
 
-- (id)initForUploadWithMatrixSession:(MXSession*)matrixSession initialRange:(CGFloat)anInitialRange andRange:(CGFloat)aRange {
-    if (self = [super init]) {
+- (id)initForUploadWithMatrixSession:(MXSession*)matrixSession initialRange:(CGFloat)anInitialRange andRange:(CGFloat)aRange
+{
+    if (self = [super init])
+    {
         // Create a unique upload Id
         _uploadId = [NSString stringWithFormat:@"%@%@", kUploadIdPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
-
+        
         mxSession = matrixSession;
         initialRange = anInitialRange;
         range = aRange;
@@ -221,35 +246,43 @@ NSString *const kUploadIdPrefix = @"upload-";
     return self;
 }
 
-- (void)uploadData:(NSData *)data mimeType:(NSString *)mimeType success:(blockMXKMediaLoader_onSuccess)success failure:(blockMXKMediaLoader_onError)failure {
+- (void)uploadData:(NSData *)data mimeType:(NSString *)mimeType success:(blockMXKMediaLoader_onSuccess)success failure:(blockMXKMediaLoader_onError)failure
+{
     statsStartTime = CFAbsoluteTimeGetCurrent();
     
     operation = [mxSession.matrixRestClient uploadContent:data
                                                  mimeType:mimeType
                                                   timeout:30
-                                                  success:^(NSString *url) {
-                                                      if (success) {
-                                                          success(url);
-                                                      }
-                                                      [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFinishNotification
-                                                                                                          object:_uploadId
-                                                                                                        userInfo:nil];
-                                                  } failure:^(NSError *error) {
-                                                      if (failure) {
-                                                          failure (error);
-                                                      }
-                                                      [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFailNotification
-                                                                                                          object:_uploadId
-                                                                                                        userInfo:@{kMXKMediaLoaderErrorKey:error}];
-                                                  } uploadProgress:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-                                                      [self updateUploadProgressWithBytesWritten:bytesWritten totalBytesWritten:totalBytesWritten andTotalBytesExpectedToWrite:totalBytesExpectedToWrite];
-                                                  }];
+                                                  success:^(NSString *url)
+    {
+        if (success)
+        {
+            success(url);
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFinishNotification
+                                                            object:_uploadId
+                                                          userInfo:nil];
+    } failure:^(NSError *error)
+    {
+        if (failure)
+        {
+            failure (error);
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFailNotification
+                                                            object:_uploadId
+                                                          userInfo:@{kMXKMediaLoaderErrorKey:error}];
+    } uploadProgress:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite)
+    {
+        [self updateUploadProgressWithBytesWritten:bytesWritten totalBytesWritten:totalBytesWritten andTotalBytesExpectedToWrite:totalBytesExpectedToWrite];
+    }];
     
 }
 
-- (void)updateUploadProgressWithBytesWritten:(NSUInteger)bytesWritten totalBytesWritten:(long long)totalBytesWritten andTotalBytesExpectedToWrite:(long long)totalBytesExpectedToWrite {
+- (void)updateUploadProgressWithBytesWritten:(NSUInteger)bytesWritten totalBytesWritten:(long long)totalBytesWritten andTotalBytesExpectedToWrite:(long long)totalBytesExpectedToWrite
+{
     CFAbsoluteTime currentTime = CFAbsoluteTimeGetCurrent();
-    if (!statisticsDict) {
+    if (!statisticsDict)
+    {
         statisticsDict = [[NSMutableDictionary alloc] init];
     }
     
@@ -257,15 +290,19 @@ NSString *const kUploadIdPrefix = @"upload-";
     [statisticsDict setValue:[NSNumber numberWithFloat:progressValue] forKey:kMXKMediaLoaderProgressValueKey];
     
     CGFloat dataRate = 0;
-    if (currentTime != statsStartTime) {
+    if (currentTime != statsStartTime)
+    {
         dataRate = bytesWritten / 1024.0 / (currentTime - statsStartTime);
-    } else {
+    }
+    else
+    {
         dataRate = bytesWritten / 1024.0 / 0.001;
     }
     statsStartTime = currentTime;
     
     CGFloat dataRemainingTime = 0;
-    if (0 != dataRate) {
+    if (0 != dataRate)
+    {
         dataRemainingTime = (totalBytesExpectedToWrite - totalBytesWritten)/ 1024.0 / dataRate;
     }
     
