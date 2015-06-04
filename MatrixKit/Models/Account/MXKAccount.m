@@ -418,7 +418,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         }
         
         // Check conditions to report this notification
-        if ([ignoredRooms indexOfObject:event.roomId] == NSNotFound)
+        if (nil == ignoredRooms || [ignoredRooms indexOfObject:event.roomId] == NSNotFound)
         {
             onNotification(event, roomState, rule);
         }
