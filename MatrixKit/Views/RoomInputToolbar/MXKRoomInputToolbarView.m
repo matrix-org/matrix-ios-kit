@@ -180,13 +180,16 @@
             NSLog(@"[MXKRoomInputToolbarView] No option is supported");
         }
     } else if (button == self.rightInputToolbarButton) {
-        // Send button has been pressed
-        if (self.textMessage.length && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendTextMessage:)]) {
-            [self.delegate roomInputToolbarView:self sendTextMessage:self.textMessage];
-        }
+        
+        NSString *message = self.textMessage;
         
         // Reset message
         self.textMessage = nil;
+        
+        // Send button has been pressed
+        if (message.length && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendTextMessage:)]) {
+            [self.delegate roomInputToolbarView:self sendTextMessage:message];
+        }
     }
 }
 
