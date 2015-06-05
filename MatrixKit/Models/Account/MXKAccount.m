@@ -78,7 +78,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (instancetype)initWithCredentials:(MXCredentials*)credentials
 {
-    
     if (self = [super init])
     {
         notifyOpenSessionFailure = YES;
@@ -94,7 +93,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)dealloc
 {
-    
     [self closeSession:NO];
     mxSession = nil;
     
@@ -106,7 +104,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    
     notifyOpenSessionFailure = YES;
     
     NSString *homeServerURL = [coder decodeObjectForKey:@"homeserverurl"];
@@ -146,7 +143,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)setIdentityServerURL:(NSString *)identityServerURL
 {
-    
     if (identityServerURL.length)
     {
         _identityServerURL = identityServerURL;
@@ -195,7 +191,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    
     if (mxSession && mxSession.myUser)
     {
         [mxSession.myUser setDisplayName:displayname success:success failure:failure];
@@ -208,7 +203,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    
     if (mxSession && mxSession.myUser)
     {
         [mxSession.myUser setAvatarUrl:avatarUrl success:success failure:failure];
@@ -221,7 +215,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion
 {
-    
     userPresence = presence;
     
     if (mxSession)
@@ -244,7 +237,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 -(void)openSessionWithStore:(id<MXStore>)store
 {
-    
     // Sanity check
     if (!mxCredentials || !mxRestClient)
     {
@@ -289,7 +281,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)closeSession:(BOOL)clearStore
 {
-    
     [self removeNotificationListener];
     
     if (reachabilityObserver)
@@ -330,7 +321,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)pauseInBackgroundTask
 {
-    
     if (mxSession && mxSession.state == MXSessionStateRunning)
     {
         _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -394,7 +384,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)listenToNotifications:(MXOnNotification)onNotification
 {
-    
     // Check conditions required to add notification listener
     if (!mxSession || !onNotification)
     {
@@ -427,7 +416,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)removeNotificationListener
 {
-    
     if (notificationCenterListener)
     {
         [self.mxSession.notificationCenter removeListener:notificationCenterListener];
@@ -438,7 +426,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)updateNotificationListenerForRoomId:(NSString*)roomID ignore:(BOOL)isIgnored
 {
-    
     if (isIgnored)
     {
         if (!ignoredRooms)
@@ -517,7 +504,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)onMatrixSessionStateChange
 {
-    
     if (mxSession.state == MXSessionStateRunning)
     {
         

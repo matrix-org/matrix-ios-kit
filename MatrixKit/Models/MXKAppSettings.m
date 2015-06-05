@@ -72,7 +72,6 @@ static MXKAppSettings *standardAppSettings = nil;
 
 - (void)reset
 {
-    
     if (self == [MXKAppSettings standardAppSettings])
     {
         // Flush shared user defaults
