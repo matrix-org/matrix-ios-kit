@@ -22,7 +22,6 @@
 
 - (instancetype)initWithRoomId:(NSString *)roomId andMatrixSession:(MXSession *)session
 {
-    
     self = [super initWithRoomId:roomId andMatrixSession:session];
     if (self)
     {
@@ -34,7 +33,6 @@
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     id<JSQMessageData> messageData;
     @synchronized(bubbles)
     {
@@ -45,7 +43,6 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    
     NSInteger count;
     @synchronized(bubbles)
     {

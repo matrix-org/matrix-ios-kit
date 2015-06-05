@@ -44,8 +44,8 @@
 /**
  'MXKRoomTitleView' instance displays editable room display name.
  */
-@interface MXKRoomTitleView : UIView <UITextFieldDelegate> {
-    
+@interface MXKRoomTitleView : UIView <UITextFieldDelegate>
+{
 @protected
     /**
      Potential alert.

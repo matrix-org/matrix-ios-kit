@@ -18,7 +18,6 @@
 
 @interface MXKRoomBubbleMergingMessagesCellData ()
 {
-    
     /**
      YES if position of each component must be refreshed
      */
@@ -82,7 +81,6 @@ static NSAttributedString *messageSeparator = nil;
 
 - (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData
 {
-    
     if ([self hasSameSenderAsBubbleCellData:bubbleCellData])
     {
         

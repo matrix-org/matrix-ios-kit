@@ -58,7 +58,6 @@
 
 - (void)refreshDisplay
 {
-    
     [super refreshDisplay];
     
     if (self.mxRoom)
@@ -271,7 +270,6 @@
 
 - (void)layoutSubviews
 {
-    
     // add a mask to trap the tap events
     // it is faster (and simpliest) than subclassing the scrollview or the textField
     // any other gesture could also be trapped here

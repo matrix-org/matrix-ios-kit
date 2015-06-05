@@ -61,7 +61,6 @@
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
-    
     CGFloat rowHeight = [super heightForCellData:cellData withMaximumWidth:maxWidth];
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;

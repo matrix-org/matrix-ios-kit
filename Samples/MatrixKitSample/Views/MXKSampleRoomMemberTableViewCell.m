@@ -29,7 +29,6 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKSampleRoomMemberTableViewCell class]] loadNibNamed:NSStringFromClass([MXKSampleRoomMemberTableViewCell class])
                                                                                                    owner:nil
                                                                                                  options:nil];
@@ -42,7 +41,6 @@
 
 - (void)render:(MXKCellData *)cellData
 {
-    
     // Sanity check: accept only object of MXKRoomMemberCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomMemberCellData class]]);
     
@@ -147,7 +145,6 @@
 
 - (UIColor*)presenceColor:(MXPresence)presence
 {
-    
     switch (presence)
     {
         case MXPresenceOnline:
@@ -166,7 +163,6 @@
 
 - (void)updateActivityInfo
 {
-    
     if (shouldUpdateActivityInfo)
     {
         self.presenceLabel.text = [self lastActiveTime];

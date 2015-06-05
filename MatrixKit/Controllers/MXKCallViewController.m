@@ -27,7 +27,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @interface MXKCallViewController ()
 {
-    
     AVAudioPlayer *audioPlayer;
     
     NSTimer *vibrateTimer;
@@ -107,7 +106,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerWillAppearNotification object:nil];
     
@@ -131,7 +129,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    
     [super viewDidAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerAppearedNotification object:nil];
     
@@ -148,21 +145,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerWillDisappearNotification object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-    
     [super viewDidDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerDisappearedNotification object:nil];
 }
 
 - (void)dismiss
 {
-    
     if (_delegate)
     {
         [_delegate dismissCallViewController:self];
@@ -180,7 +174,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)destroy
 {
-    
     self.peer = nil;
     
     self.mxCall = nil;
@@ -200,7 +193,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)setMxCall:(MXCall *)call
 {
-    
     // Remove previous call (if any)
     if (mxCall)
     {

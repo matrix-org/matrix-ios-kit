@@ -41,7 +41,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 @interface MXKRoomDataSource ()
 {
-    
     /**
      Current back pagination request (if any)
      */
@@ -152,7 +151,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)reset
 {
-    
     if (backPaginationRequest)
     {
         [backPaginationRequest cancel];
@@ -197,7 +195,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)reload
 {
-    
     //    NSLog(@"[MXKRoomDataSource] Reload %p - room id: %@", self, _roomId);
     
     state = MXKDataSourceStatePreparing;
@@ -218,7 +215,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)destroy
 {
-    
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
     [self reset];
@@ -236,7 +232,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)didMXSessionStateChange
 {
-    
     if (MXSessionStateStoreDataReady <= self.mxSession.state)
     {
         
@@ -285,7 +280,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (MXEvent *)lastMessage
 {
-    
     MXEvent *lastMessage;
     
     id<MXKRoomBubbleCellDataStoring> lastBubbleData = bubbles.lastObject;
@@ -303,7 +297,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages
 {
-    
     // Remove the previous live listener
     if (liveEventsListener)
     {
@@ -431,7 +424,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)listenTypingNotifications
 {
-    
     // Remove the previous live listener
     if (typingNotifListener)
     {
@@ -483,7 +475,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 #pragma mark - Public methods
 - (id<MXKRoomBubbleCellDataStoring>)cellDataAtIndex:(NSInteger)index
 {
-    
     id<MXKRoomBubbleCellDataStoring> bubbleData;
     @synchronized(bubbles)
     {
@@ -494,7 +485,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 -(id<MXKRoomBubbleCellDataStoring>)cellDataOfEventWithEventId:(NSString *)eventId
 {
-    
     id<MXKRoomBubbleCellDataStoring> bubbleData;
     @synchronized(eventIdToBubbleMap)
     {
@@ -544,7 +534,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 #pragma mark - Pagination
 - (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    
     // Check current state
     if (state != MXKDataSourceStateReady)
     {
@@ -602,7 +591,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)paginateBackMessagesToFillRect:(CGRect)rect success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    
     // Get the total height of cells already loaded in memory
     CGFloat minMessageHeight = CGFLOAT_MAX;
     CGFloat bubblesTotalHeight = 0;
@@ -670,7 +658,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 #pragma mark - Sending
 - (void)sendTextMessage:(NSString *)text success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    
     MXMessageType msgType = kMXMessageTypeText;
     
     // Check whether the message is an emote
@@ -693,7 +680,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)sendImage:(UIImage *)image success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    
     // Make sure the uploaded image orientation is up
     image = [MXKTools forceImageOrientationUp:image];
     
@@ -783,7 +769,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)sendVideo:(NSURL *)videoLocalURL withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    
     NSData *videoThumbnailData = UIImageJPEGRepresentation(videoThumbnail, 0.8);
     
     // Use the uploader id as fake URL for this image data
@@ -929,7 +914,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)sendMessageOfType:(MXMessageType)msgType content:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    
     // Build the local echo
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent];
     
@@ -962,7 +946,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)resendEventWithEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    
     MXEvent *event = [self eventWithEventId:eventId];
     
     NSLog(@"[MXKRoomDataSource] resendEventWithEventId. Event: %@", event);
@@ -1027,7 +1010,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 #pragma mark - Events management
 - (MXEvent *)eventWithEventId:(NSString *)eventId
 {
-    
     MXEvent *theEvent;
     
     // First, retrieve the cell data hosting the event
@@ -1052,7 +1034,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)removeEventWithEventId:(NSString *)eventId
 {
-    
     // First, retrieve the cell data hosting the event
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
     if (bubbleData)
@@ -1085,13 +1066,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 #pragma mark - Private methods
 - (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent
 {
-    
     return [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateSending];
 }
 
 - (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent withState:(MXKEventState)eventState
 {
-    
     // Make the data source digest this fake local echo message
     MXEvent *localEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:nil andContent:msgContent];
     localEcho.mxkState = eventState;
@@ -1107,7 +1086,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)updateLocalEcho:(MXEvent*)localEcho
 {
-    
     // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
     @synchronized (bubbleData)
@@ -1127,7 +1105,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)replaceLocalEcho:(MXEvent*)localEcho withEvent:(MXEvent*)event
 {
-    
     // Remove the event from the pending local echo list
     [self removePendingLocalEcho:localEcho];
     
@@ -1170,7 +1147,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
 {
-    
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
     {
@@ -1192,7 +1168,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (void)didMXRoomInitialSynced:(NSNotification *)notif
 {
-    
     // Refresh the room data source when the room has been initialSync'ed
     MXSession *mxSession = notif.object;
     if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[kMXSessionNotificationRoomIdKey]])
@@ -1217,7 +1192,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
  */
 - (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXEventDirection)direction
 {
-    
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
     
     @synchronized(eventsToProcess)
@@ -1233,7 +1207,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
  */
 - (void)processQueuedEvents:(void (^)())onComplete
 {
-    
     // Do the processing on the processing queue
     dispatch_async(processingQueue, ^{
         
@@ -1419,7 +1392,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
     // The view controller is going to display all messages
     // Automatically reset the counters
     _unreadCount = 0;
@@ -1438,7 +1410,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataAtIndex:indexPath.row];
     
     // The cell to use depends if this is a message from the user or not
@@ -1502,7 +1473,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
  */
 - (void)addPendingLocalEcho:(MXEvent*)localEcho
 {
-    
     [pendingLocalEchoes addObject:localEcho];
 }
 
@@ -1515,7 +1485,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
  */
 - (void)removePendingLocalEcho:(MXEvent*)localEcho
 {
-    
     [pendingLocalEchoes removeObject:localEcho];
 }
 
@@ -1527,7 +1496,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
  */
 - (MXEvent*)pendingLocalEchoRelatedToEvent:(MXEvent*)event
 {
-    
     // Note: event is supposed here to be an outgoing event received from event stream.
     // This method returns a pending event (if any) whose content matches with received event content.
     NSString *msgtype = event.content[@"msgtype"];

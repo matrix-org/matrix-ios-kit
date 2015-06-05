@@ -126,7 +126,6 @@
 #pragma mark - Events to strings conversion methods
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
 {
-    
     // Check we can output the error
     NSParameterAssert(error);
     
@@ -641,7 +640,6 @@
 
 - (NSDictionary*)stringAttributesForEvent:(MXEvent*)event
 {
-    
     UIColor *textColor;
     UIFont *font;
     
@@ -686,7 +684,6 @@
 #pragma mark - Fake event objects creation
 - (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content
 {
-    
     if (!eventId)
     {
         eventId = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -707,14 +704,12 @@
 #pragma mark - Timestamp formatting
 - (NSString*)dateStringForTimestamp:(uint64_t)timestamp
 {
-    
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
     return [_dateFormatter stringFromDate:date];
 }
 
 - (NSString*)dateStringForEvent:(MXEvent *)event
 {
-    
     return [self dateStringForTimestamp:event.originServerTs];
 }
 

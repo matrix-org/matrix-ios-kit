@@ -22,7 +22,6 @@
 
 @interface MXKRoomMemberListViewController ()
 {
-    
     /**
      The data source providing UITableViewCells
      */
@@ -89,7 +88,6 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    
     [super viewWillAppear:animated];
     
     // Check whether the user still belongs to the room's members.
@@ -123,7 +121,6 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    
     [super viewWillDisappear:animated];
     
     if (kMXSessionWillLeaveRoomNotificationObserver)
@@ -154,7 +151,6 @@
 
 - (void)destroy
 {
-    
     if (presenceUpdateTimer)
     {
         [presenceUpdateTimer invalidate];
@@ -186,7 +182,6 @@
 
 - (void)configureView
 {
-    
     self.tableView.delegate = self;
     
     // Set up table data source
@@ -205,7 +200,6 @@
 
 - (void)scrollToTop
 {
-    
     // stop any scrolling effect
     [UIView setAnimationsEnabled:NO];
     // before scrolling to the tableview top
@@ -215,7 +209,6 @@
 
 - (void)updateMembersActivityInfo
 {
-    
     for (id memberCell in self.tableView.visibleCells)
     {
         
@@ -243,7 +236,6 @@
 
 - (void)refreshUIBarButtons
 {
-    
     BOOL showInvitationOption = _enableMemberInvitation;
     
     if (showInvitationOption && dataSource)
@@ -281,7 +273,6 @@
 #pragma mark -
 - (void)displayList:(MXKRoomMemberListDataSource *)listDataSource
 {
-    
     if (dataSource)
     {
         dataSource.delegate = nil;
@@ -304,7 +295,6 @@
 #pragma mark - MXKDataSourceDelegate
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    
     if (presenceUpdateTimer)
     {
         [presenceUpdateTimer invalidate];
@@ -327,13 +317,11 @@
 #pragma mark - UITableView delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     return [dataSource cellHeightAtIndex:indexPath.row];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if (_delegate)
     {
         id<MXKRoomMemberCellDataStoring> cellData = [dataSource cellDataAtIndex:indexPath.row];
@@ -359,7 +347,6 @@
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     // Release here resources, and restore reusable cells
     if ([cell respondsToSelector:@selector(didEndDisplay)])
     {
@@ -382,7 +369,6 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    
     // Apply filter
     shouldScrollToTopOnRefresh = YES;
     if (searchText.length)
@@ -404,7 +390,6 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    
     // Leave search
     searchBarShouldEndEditing = YES;
     [searchBar resignFirstResponder];

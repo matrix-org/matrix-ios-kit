@@ -196,7 +196,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    
     [super viewDidAppear:animated];
     
     // Refresh bubbles table if data are available.
@@ -289,7 +288,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)setKeyboardHeight:(CGFloat)keyboardHeight
 {
-    
     // Deduce the bottom constraint for the input toolbar view (Don't forget the potential tabBar)
     CGFloat inputToolbarViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
     // Check whether the keyboard is over the tabBar
@@ -321,7 +319,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)destroy
 {
-    
     if (kMXSessionWillLeaveRoomNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
@@ -367,7 +364,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)configureView
 {
-    
     [self dismissTemporarySubViews];
     
     // Set up table delegates
@@ -410,7 +406,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)onRoomDataSourceReady
 {
-    
     // If the user is only invited, auto-join the room
     if (roomDataSource.room.state.membership == MXMembershipInvite)
     {
@@ -455,7 +450,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (BOOL)isBubblesTableScrollViewAtTheBottom
 {
-    
     // Check whether the most recent message is visible.
     // Compute the max vertical position visible according to contentOffset
     CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
@@ -469,7 +463,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated
 {
-    
     if (_bubblesTableView.contentSize.height)
     {
         CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom;
@@ -490,7 +483,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dismissTemporarySubViews
 {
-    
     [self dismissKeyboard];
     
     [self hideAttachmentView];
@@ -522,7 +514,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)displayRoom:(MXKRoomDataSource *)dataSource
 {
-    
     if (roomDataSource)
     {
         roomDataSource = nil;
@@ -554,7 +545,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)updateViewControllerAppearanceOnRoomDataSourceState
 {
-    
     // Update UI by considering dataSource state
     if (roomDataSource && roomDataSource.state == MXKDataSourceStateReady)
     {
@@ -617,7 +607,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)leaveRoomOnEvent:(MXEvent*)event
 {
-    
     [self dismissTemporarySubViews];
     
     NSString *reason = nil;
@@ -786,7 +775,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (BOOL)isIRCStyleCommand:(NSString*)string
 {
-    
     // Check whether the provided text may be an IRC-style command
     if ([string hasPrefix:@"/"] == NO || [string hasPrefix:@"//"] == YES)
     {
@@ -1022,7 +1010,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)stopActivityIndicator
 {
-    
     // Keep the loading wheel displayed while we are joining the room
     if (joinRoomRequest)
     {
@@ -1044,7 +1031,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)triggerInitialBackPagination
 {
-    
     // Trigger back pagination to fill all the screen
     // This is currently done with best effort depending on views already loaded
     // Delay the call, provide a better chance to get the true self.bubblesTableView.frame.
@@ -1081,7 +1067,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)triggerBackPagination
 {
-    
     // Paginate only if possible
     if (NO == roomDataSource.room.canPaginate)
     {
@@ -1170,7 +1155,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)sendTextMessage:(NSString*)msgTxt
 {
-    
     // Let the datasource send it and manage the local echo
     [roomDataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error)
     {
@@ -1237,7 +1221,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)promptUserToResendEvent:(NSString *)eventId
 {
-    
     MXEvent *event = [roomDataSource eventWithEventId:eventId];
     
     NSLog(@"[MXKRoomViewController] promptUserToResendEvent: %@", event);
@@ -1299,7 +1282,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 #pragma mark - MXKDataSourceDelegate
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    
     if (isBackPaginationInProgress)
     {
         // table will be updated at the end of pagination.
@@ -1311,7 +1293,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state
 {
-    
     [self updateViewControllerAppearanceOnRoomDataSourceState];
     
     if (state == MXKDataSourceStateReady)
@@ -1322,7 +1303,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dataSource:(MXKDataSource *)dataSource didRecognizeAction:(NSString *)actionIdentifier inCell:(id<MXKCellRendering>)cell userInfo:(NSDictionary *)userInfo
 {
-    
     NSLog(@"Gesture %@ has been recognized in %@. UserInfo: %@", actionIdentifier, cell, userInfo);
     
     if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
@@ -1404,20 +1384,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     // Dismiss keyboard when user taps on messages table view content
     [self dismissKeyboard];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     // Release here resources, and restore reusable cells
     if ([cell respondsToSelector:@selector(didEndDisplay)])
     {
@@ -1427,7 +1404,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-    
     // Detect vertical bounce at the top of the tableview to trigger pagination
     if (scrollView == _bubblesTableView)
     {
@@ -1441,7 +1417,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    
     // Consider this callback to reset scrolling to bottom flag
     isScrollingToBottom = NO;
 }
@@ -1470,7 +1445,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {
-    
     if (typing)
     {
         // Reset potential placeholder (used in case of wrong command usage)
@@ -1501,7 +1475,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendTextMessage:(NSString*)textMessage
 {
-    
     // Handle potential IRC commands in typed string
     if ([self isIRCStyleCommand:textMessage] == NO)
     {
@@ -1512,7 +1485,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(UIImage*)image
 {
-    
     // Let the datasource send it and manage the local echo
     [roomDataSource sendImage:image success:nil failure:^(NSError *error)
     {
@@ -1524,7 +1496,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail
 {
-    
     // Let the datasource send it and manage the local echo
     [roomDataSource sendVideo:videoLocalURL withThumbnail:videoThumbnail success:nil failure:^(NSError *error)
     {
@@ -1542,14 +1513,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMediaPicker:(UIImagePickerController*)mediaPicker
 {
-    
     [self dismissKeyboard];
     [self presentViewController:mediaPicker animated:YES completion:nil];
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissMediaPicker:(UIImagePickerController*)mediaPicker
 {
-    
     if (self.presentedViewController == mediaPicker)
     {
         [self dismissViewControllerAnimated:NO completion:nil];
@@ -1645,7 +1614,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)showAttachmentView:(MXKImageView *)attachment
 {
-    
     [self dismissKeyboard];
     
     // Retrieve attachment information
@@ -1762,7 +1730,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)hideAttachmentView
 {
-    
     selectedVideoURL = nil;
     selectedVideoCachePath = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:nil];

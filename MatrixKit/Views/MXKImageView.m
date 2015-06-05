@@ -57,7 +57,6 @@
 
 - (id)initWithFrame:(CGRect)frame
 {
-    
     self = [super initWithFrame:frame];
     
     if (self)
@@ -205,7 +204,6 @@
 
 - (void)showFullScreen
 {
-    
     _fullScreen = YES;
     
     [self initLayout];
@@ -338,7 +336,6 @@
 
 - (void)layoutSubviews
 {
-    
     // call upper layer
     [super layoutSubviews];
     
@@ -585,7 +582,6 @@
 
 - (void)updateProgressUI:(NSDictionary*)downloadStatsDict
 {
-    
     // Sanity check: updateProgressUI may be called while there is no stats available
     // This happens when the download failed at the very beginning.
     if (nil == downloadStatsDict)

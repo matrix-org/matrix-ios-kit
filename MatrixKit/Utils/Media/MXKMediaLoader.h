@@ -80,8 +80,8 @@ typedef void (^blockMXKMediaLoader_onError) (NSError *error);
 /**
  `MXKMediaLoader` defines a class to download/upload media. It provides progress information during the operation.
  */
-@interface MXKMediaLoader : NSObject <NSURLConnectionDataDelegate> {
-    
+@interface MXKMediaLoader : NSObject <NSURLConnectionDataDelegate>
+{    
     blockMXKMediaLoader_onSuccess onSuccess;
     blockMXKMediaLoader_onError onError;
     

@@ -43,14 +43,12 @@
 
 - (void)setTextMessage:(NSString *)textMessage
 {
-    
     _messageComposerTextView.text = textMessage;
     self.rightInputToolbarButton.enabled = textMessage.length;
 }
 
 - (void)dismissKeyboard
 {
-    
     if (_messageComposerTextView)
     {
         [_messageComposerTextView resignFirstResponder];
@@ -61,7 +59,6 @@
 
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
-    
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:isTyping:)])
     {
         [self.delegate roomInputToolbarView:self isTyping:NO];
@@ -70,7 +67,6 @@
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    
     NSString *msg = textView.text;
     
     if (msg.length)
@@ -93,7 +89,6 @@
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    
     // Hanlde here `Done` key pressed
     if([text isEqualToString:@"\n"])
     {

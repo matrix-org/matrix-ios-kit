@@ -22,7 +22,6 @@
 
 @interface MXKSampleJSQMessageMediaData ()
 {
-    
     MXKRoomBubbleCellData *cellData;
 }
 
@@ -32,7 +31,6 @@
 
 - (instancetype)initWithCellData:(MXKRoomBubbleCellData *)cellData2
 {
-    
     self = [super init];
     if (self)
     {
@@ -44,7 +42,6 @@
 
 - (UIView *)mediaView
 {
-    
     // MXKImageView will automatically download and cache the media thumbnail
     MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(0, 0, cellData.contentSize.width, cellData.contentSize.height)];
     [imageView setImageURL:cellData.thumbnailURL withImageOrientation:cellData.thumbnailOrientation andPreviewImage:nil];
@@ -62,21 +59,18 @@
 
 - (CGSize)mediaViewDisplaySize
 {
-    
     // Return the thumbnail size
     return cellData.contentSize;
 }
 
 - (UIView *)mediaPlaceholderView
 {
-    
     // The MXKImageView returned by [self mediaView] is supposed to do the job
     return nil;
 }
 
 - (NSUInteger)mediaHash
 {
-    
     return self.mediaHash;
 }
 

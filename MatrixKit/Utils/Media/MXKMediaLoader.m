@@ -87,7 +87,6 @@ NSString *const kUploadIdPrefix = @"upload-";
                      success:(blockMXKMediaLoader_onSuccess)success
                      failure:(blockMXKMediaLoader_onError)failure
 {
-    
     // Report provided params
     mediaURL = url;
     outputFilePath = filePath;

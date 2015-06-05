@@ -25,7 +25,6 @@
 
 @interface MXKRoomMemberTableViewCell ()
 {
-    
     NSRange lastSeenRange;
     
     MXKPieChartView* pieChartView;
@@ -43,7 +42,6 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomMemberTableViewCell class]] loadNibNamed:NSStringFromClass([MXKRoomMemberTableViewCell class])
                                                                                              owner:nil
                                                                                            options:nil];
@@ -53,7 +51,6 @@
 
 - (void)render:(MXKCellData *)cellData
 {
-    
     // Sanity check: accept only object of MXKRoomMemberCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomMemberCellData class]]);
     
@@ -178,7 +175,6 @@
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
-    
     // The height is fixed
     return 50;
 }
@@ -260,7 +256,6 @@
 
 - (void)updateActivityInfo
 {
-    
     // Check whether update is required.
     if (shouldUpdateActivityInfo)
     {

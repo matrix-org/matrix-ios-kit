@@ -26,7 +26,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 @interface MXKSessionRecentsDataSource ()
 {
-    
     MXKRoomDataSourceManager *roomDataSourceManager;
 }
 
@@ -63,7 +62,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (void)destroy
 {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
@@ -88,7 +86,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (NSInteger)numberOfCells
 {
-    
     if (filteredCellDataArray)
     {
         return filteredCellDataArray.count;
@@ -98,7 +95,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (NSUInteger)unreadCount
 {
-    
     NSUInteger unreadCount = 0;
     
     // Sum unreadCount of all current cells
@@ -147,7 +143,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (id<MXKRecentCellDataStoring>)cellDataAtIndex:(NSInteger)index
 {
-    
     if (filteredCellDataArray)
     {
         return filteredCellDataArray[index];
@@ -157,7 +152,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index
 {
-    
     id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:index];
     
     Class<MXKCellRendering> class = [self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier];
@@ -168,7 +162,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 #pragma mark - Events processing
 - (void)loadData
 {
-    
     // Reset the table
     [cellDataArray removeAllObjects];
     
@@ -207,7 +200,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (void)didRoomInformationChanged:(NSNotification *)notif
 {
-    
     MXKRoomDataSource *roomDataSource = notif.object;
     if (roomDataSource.mxSession == self.mxSession)
     {
@@ -267,7 +259,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (void)didMXSessionDidLeaveRoom:(NSNotification *)notif
 {
-    
     MXSession *mxSession = notif.object;
     if (mxSession == self.mxSession)
     {
@@ -289,7 +280,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 // Order cells
 - (void)sortCellData
 {
-    
     // Order them by origin_server_ts
     [cellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2)
     {
@@ -313,7 +303,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 // Find the cell data that stores information about the given room id
 - (id<MXKRecentCellDataStoring>)cellDataWithRoomId:(NSString*)roomId
 {
-    
     id<MXKRecentCellDataStoring> theRoomData;
     for (id<MXKRecentCellDataStoring> roomData in cellDataArray)
     {

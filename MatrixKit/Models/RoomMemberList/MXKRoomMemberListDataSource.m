@@ -25,7 +25,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 @interface MXKRoomMemberListDataSource ()
 {
-    
     /**
      The room in which members are listed.
      */
@@ -91,7 +90,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)didMXSessionStateChange
 {
-    
     if (MXSessionStateStoreDataReady <= self.mxSession.state)
     {
         
@@ -177,7 +175,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (id<MXKRoomMemberCellDataStoring>)cellDataAtIndex:(NSInteger)index
 {
-    
     if (filteredCellDataArray)
     {
         return filteredCellDataArray[index];
@@ -187,7 +184,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index
 {
-    
     id<MXKRoomMemberCellDataStoring> cellData = [self cellDataAtIndex:index];
     
     Class<MXKCellRendering> class = [self cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier];
@@ -198,7 +194,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)loadData
 {
-    
     NSArray* membersList = [mxRoom.state members];
     
     if (!_settings.showLeftMembersInRoomMemberList)
@@ -336,7 +331,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 }
 
 - (void)listenMembersEvents{
-    
     // Remove the previous live listener
     if (membersListener)
     {
@@ -374,7 +368,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)listenTypingNotifications
 {
-    
     // Remove the previous live listener
     if (typingNotifListener)
     {
@@ -420,7 +413,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
     if (filteredCellDataArray)
     {
         return filteredCellDataArray.count;
@@ -430,7 +422,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     id<MXKRoomMemberCellDataStoring> roomData = [self cellDataAtIndex:indexPath.row];
     
     MXKRoomMemberTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRoomMemberCellIdentifier forIndexPath:indexPath];

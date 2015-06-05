@@ -58,7 +58,6 @@
 // return an array of files attributes
 + (NSArray*)listAttributesFiles:(NSString *)folderPath
 {
-    
     NSArray *contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:folderPath error:nil];
     NSEnumerator *contentsEnumurator = [contents objectEnumerator];
     
@@ -110,7 +109,6 @@
 // largeFilesFirst: move the largest file to the list head (large > 100KB). It can be combined isTimeSorted
 + (NSArray*)listFiles:(NSString *)folderPath timeSorted:(BOOL)isTimeSorted largeFilesFirst:(BOOL)largeFilesFirst
 {
-    
     NSArray* attFilesList = [MXKTools listAttributesFiles:folderPath];
     
     if (attFilesList.count > 0)
@@ -207,7 +205,6 @@
 
 + (UIColor *)colorWithRGBValue:(NSUInteger)rgbValue
 {
-    
     return [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0];
 }
 
@@ -306,7 +303,6 @@
 
 + (UIImage*)paintImage:(UIImage*)image withColor:(UIColor*)color
 {
-    
     UIImage *newImage;
     
     const CGFloat *colorComponents = CGColorGetComponents(color.CGColor);
@@ -361,7 +357,6 @@
                   success:(void(^)(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs))success
                   failure:(void(^)())failure
 {
-    
     NSParameterAssert(success);
     NSParameterAssert(failure);
     

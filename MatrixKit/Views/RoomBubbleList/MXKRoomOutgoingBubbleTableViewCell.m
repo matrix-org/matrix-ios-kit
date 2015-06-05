@@ -108,7 +108,6 @@
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
-    
     CGFloat rowHeight = [super heightForCellData:cellData withMaximumWidth:maxWidth];
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
@@ -208,7 +207,6 @@
 
 - (IBAction)onResendToggle:(id)sender
 {
-    
     if ([sender isKindOfClass:[UIButton class]] && self.delegate)
     {
         

@@ -111,7 +111,6 @@
  */
 + (UIImage *)bubbleImage
 {
-    
     UIImage *rightBubbleImage = [UIImage imageNamed:@"bubble_ios_messages_right"];
     rightBubbleImage = [MXKTools paintImage:rightBubbleImage
                                   withColor:[MXKTools colorWithRGBValue:OUTGOING_BUBBLE_COLOR]];

@@ -169,7 +169,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (void)setMxAccount:(MXKAccount *)account
 {
-    
     // Remove observer and existing data
     [self reset];
     
@@ -234,7 +233,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (BOOL)shouldLeave:(blockMXKAccountDetailsViewController_onReadyToLeave)handler
 {
-    
     // Check whether some local changes have not been saved
     if (saveUserInfoButton.enabled)
     {
@@ -307,7 +305,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (void)reset
 {
-    
     [self dismissMediaPicker];
     
     // Remove observers
@@ -357,7 +354,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (void)destroy
 {
-    
     if (isSavingInProgress)
     {
         __weak typeof(self) weakSelf = self;
@@ -378,7 +374,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (void)saveUserInfo
 {
-    
     [self startProfileActivityIndicator];
     isSavingInProgress = YES;
     

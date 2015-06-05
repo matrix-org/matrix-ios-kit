@@ -270,7 +270,6 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    
     // sanity check
     // the user could have forgotten to set the cancel button index
     if (buttonIndex < actions.count)

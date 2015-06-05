@@ -178,7 +178,6 @@
 
 - (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion
 {
-    
     // Check whether the view controller is embedded inside a navigation controller.
     if (self.navigationController)
     {
@@ -204,7 +203,6 @@
 
 - (void)destroy
 {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     mxSessionArray = nil;
@@ -429,7 +427,6 @@
 
 - (void)onKeyboardWillHide:(NSNotification *)notif
 {
-    
     // Remove keyboard view
     self.keyboardView = nil;
     

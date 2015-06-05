@@ -52,7 +52,6 @@
 
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession
 {
-    
     self = [self init];
     if (self)
     {
@@ -67,7 +66,6 @@
 
 - (void)destroy
 {
-    
     state = MXKDataSourceStateUnknown;
     if (_delegate && [_delegate respondsToSelector:@selector(dataSource:didStateChange:)])
     {
@@ -87,7 +85,6 @@
 #pragma mark - MXSessionStateDidChangeNotification
 - (void)didMXSessionStateChange:(NSNotification *)notif
 {
-    
     // Check this is our Matrix session that has changed
     if (notif.object == _mxSession)
     {
@@ -97,7 +94,6 @@
 
 - (void)didMXSessionStateChange
 {
-    
     // The inherited class is highly invited to override this method for its business logic
 }
 
@@ -105,7 +101,6 @@
 #pragma mark - MXKCellData classes
 - (void)registerCellDataClass:(Class)cellDataClass forCellIdentifier:(NSString *)identifier
 {
-    
     // Sanity check: accept only MXKCellData classes or sub-classes
     NSParameterAssert([cellDataClass isSubclassOfClass:MXKCellData.class]);
     
@@ -114,7 +109,6 @@
 
 - (Class)cellDataClassForCellIdentifier:(NSString *)identifier
 {
-    
     return cellDataMap[identifier];
 }
 
@@ -122,13 +116,11 @@
 #pragma mark - MXKCellRendering classes
 - (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier
 {
-    
     cellViewMap[identifier] = cellViewClass;
 }
 
 - (Class<MXKCellRendering>)cellViewClassForCellIdentifier:(NSString *)identifier
 {
-    
     return cellViewMap[identifier];
 }
 
@@ -136,7 +128,6 @@
 #pragma mark - MXKCellRenderingDelegate
 - (void)cell:(id<MXKCellRendering>)cell didRecognizeAction:(NSString*)actionIdentifier userInfo:(NSDictionary *)userInfo
 {
-    
     // The data source simply relays the information to its delegate
     if (_delegate && [_delegate respondsToSelector:@selector(dataSource:didRecognizeAction:inCell:userInfo:)])
     {
@@ -152,7 +143,6 @@
  */
 - (void)cancelAllRequests
 {
-    
     NSLog(@"[MXKDataSource] cancelAllRequests: TODO");
 }
 

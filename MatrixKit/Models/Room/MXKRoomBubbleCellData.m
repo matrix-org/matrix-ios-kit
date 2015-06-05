@@ -98,14 +98,12 @@
 
 - (void)dealloc
 {
-    
     roomDataSource = nil;
     bubbleComponents = nil;
 }
 
 - (NSUInteger)updateEvent:(NSString *)eventId withEvent:(MXEvent *)event
 {
-    
     // Retrieve the component storing the event and update it
     for (NSUInteger index = 0; index < bubbleComponents.count; index++)
     {
@@ -160,7 +158,6 @@
 
 - (NSUInteger)removeEvent:(NSString *)eventId
 {
-    
     for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
     {
         
@@ -180,7 +177,6 @@
 
 - (BOOL)hasSameSenderAsBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData
 {
-    
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([bubbleCellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
@@ -299,7 +295,6 @@
 
 - (void)handleVideoMessage:(MXEvent*)event
 {
-    
     _dataType = MXKRoomBubbleCellDataTypeVideo;
     
     // Retrieve content url/info

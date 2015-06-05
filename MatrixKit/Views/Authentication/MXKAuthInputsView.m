@@ -26,7 +26,6 @@
 
 + (instancetype)authInputsView
 {
-    
     // Check whether a xib is defined
     if ([[self class] nib])
     {

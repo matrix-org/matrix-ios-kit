@@ -217,7 +217,6 @@
 
 - (NSString*)alias
 {
-    
     // Extract alias name from alias text field
     NSString *alias = _roomAliasTextField.text;
     if (alias.length)
@@ -258,7 +257,6 @@
 
 - (NSArray*)participantsList
 {
-    
     NSMutableArray *participants = [NSMutableArray array];
     
     if (_participantsTextField.text.length)
@@ -352,7 +350,6 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    
     if (textField == _participantsTextField)
     {
         if (textField.text.length == 0)
@@ -371,7 +368,6 @@
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-    
     if (textField == _roomAliasTextField)
     {
         if (homeServerSuffixArray.count == 1)
@@ -401,7 +397,6 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    
     // Auto complete participant IDs
     if (textField == _participantsTextField)
     {
@@ -465,7 +460,6 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField*) textField
 {
-    
     // "Done" key has been pressed
     [textField resignFirstResponder];
     return YES;
@@ -475,7 +469,6 @@
 
 - (IBAction)onButtonPressed:(id)sender
 {
-    
     [self dismissKeyboard];
     
     // Handle multi-sessions here

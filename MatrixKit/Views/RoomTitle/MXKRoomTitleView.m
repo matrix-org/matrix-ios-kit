@@ -18,7 +18,6 @@
 
 @interface MXKRoomTitleView ()
 {
-    
     id roomListener;
 }
 @end

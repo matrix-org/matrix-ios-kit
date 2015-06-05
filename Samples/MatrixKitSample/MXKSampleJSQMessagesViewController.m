@@ -84,7 +84,6 @@
 
 - (void)configureView
 {
-    
     // Create message bubble images objects.
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
     outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
@@ -156,7 +155,6 @@
 #pragma mark - MXSessionStateDidChangeNotification
 - (void)didMXSessionStateChange:(NSNotification *)notif
 {
-    
     // Check this is our Matrix session that has changed
     if (notif.object == roomDataSource.mxSession)
     {
@@ -173,7 +171,6 @@
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)path ofObject:(id) object change:(NSDictionary *) change context:(void *)context
 {
-    
     // Check changes on cell.avatarImageView.image (registered by [self cellForItemAtIndexPath:])
     if ([path isEqualToString:@"image"])
     {
@@ -235,13 +232,11 @@
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     return [roomDataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
 }
 
 - (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     /**
      *  You may return nil here if you do not want bubbles.
      *  In this case, you should set the background color of your collection view cell's textView.
@@ -259,7 +254,6 @@
 
 - (id<JSQMessageAvatarImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView avatarImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     /**
      *  Return `nil` here if you do not want avatars.
      *  If you do return `nil`, be sure to do the following in `viewDidLoad`:
@@ -304,7 +298,6 @@
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     /**
      *  This logic should be consistent with what you return from `heightForCellTopLabelAtIndexPath:`
      *  The other label text delegate methods should follow a similar pattern.
@@ -322,7 +315,6 @@
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     id<JSQMessageData> messageData = [self collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     
     /**
@@ -352,7 +344,6 @@
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     return nil;
 }
 
@@ -360,13 +351,11 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    
     return [roomDataSource collectionView:collectionView numberOfItemsInSection:section];
 }
 
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     /**
      *  Override point for customizing cells
      */
@@ -433,7 +422,6 @@
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if ([cell isKindOfClass:[JSQMessagesCollectionViewCell class]])
     {
         JSQMessagesCollectionViewCell *jsqCell = (JSQMessagesCollectionViewCell*)cell;
@@ -553,7 +541,6 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
     {

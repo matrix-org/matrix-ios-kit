@@ -20,7 +20,6 @@
 
 @interface MXKRoomMemberCellData ()
 {
-    
     MXKRoomMemberListDataSource *roomMemberListDataSource;
 }
 
@@ -32,7 +31,6 @@
 
 - (instancetype)initWithRoomMember:(MXRoomMember*)member roomState:(MXRoomState*)roomState andRoomMemberListDataSource:(MXKRoomMemberListDataSource*)memberListDataSource
 {
-    
     self = [self init];
     if (self)
     {

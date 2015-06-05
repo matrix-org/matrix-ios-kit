@@ -21,7 +21,6 @@
 
 @interface MXKRecentCellData ()
 {
-    
     MXKSessionRecentsDataSource *recentsDataSource;
     
     // Keep reference on last event (used in case of redaction)
@@ -35,7 +34,6 @@
 
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKSessionRecentsDataSource *)recentsDataSource2
 {
-    
     self = [self init];
     if (self)
     {
@@ -49,7 +47,6 @@
 
 - (void)update
 {
-    
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
     lastEventDate = [recentsDataSource.eventFormatter dateStringForEvent:lastEvent];

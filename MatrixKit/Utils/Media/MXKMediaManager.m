@@ -311,7 +311,6 @@ static NSMutableDictionary* uploadTableById = nil;
 
 + (void)reduceCacheSizeToInsert:(NSUInteger)sizeInBytes
 {
-    
     if (([MXKMediaManager cacheSize] + sizeInBytes) > [MXKMediaManager maxAllowedCacheSize])
     {
         
@@ -400,7 +399,6 @@ static NSMutableDictionary* uploadTableById = nil;
 
 + (NSInteger)currentMaxCacheSize
 {
-    
     NSInteger res = [[NSUserDefaults standardUserDefaults] integerForKey:@"maxMediaCacheSize"];
     if (res == 0)
     {
@@ -423,7 +421,6 @@ static NSMutableDictionary* uploadTableById = nil;
 
 + (NSInteger)maxAllowedCacheSize
 {
-    
     NSInteger res = [[NSUserDefaults standardUserDefaults] integerForKey:@"maxAllowedMediaCacheSize"];
     if (res == 0)
     {

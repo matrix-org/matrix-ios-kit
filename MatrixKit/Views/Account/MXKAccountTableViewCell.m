@@ -31,7 +31,6 @@
 
 - (void)setMxAccount:(MXKAccount *)mxAccount
 {
-    
     UIColor *presenceColor = nil;
     
     if (mxAccount.mxSession)
@@ -73,7 +72,6 @@
 
 - (void)layoutSubviews
 {
-    
     [super layoutSubviews];
     
     // Round image view

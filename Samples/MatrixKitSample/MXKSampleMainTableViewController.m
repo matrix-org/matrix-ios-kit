@@ -226,7 +226,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)launchMatrixSessions
 {
-    
     // Launch a matrix session for all existing accounts.
     
     NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
@@ -241,7 +240,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)logout
 {
-    
     // Clear cache
     [MXKMediaManager clearCache];
     
@@ -311,7 +309,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
     if (section == accountSectionIndex)
     {
         return [[MXKAccountManager sharedManager] accounts].count + 1; // Add one cell in this section to logout all accounts
@@ -334,7 +331,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    
     if (section == accountSectionIndex)
     {
         return @"Accounts:";
@@ -443,7 +439,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (indexPath.section == accountSectionIndex)
@@ -498,7 +493,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    
     // Keep ref on destinationViewController
     destinationViewController = segue.destinationViewController;
     
@@ -594,7 +588,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 #pragma mark - MXKRecentListViewControllerDelegate
 - (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString *)roomId inMatrixSession:(MXSession *)matrixSession
 {
-    
     // Update the selected room and go back to the main page
     selectedRoom = [matrixSession roomWithRoomId:roomId];
     _selectedRoomDisplayName.text = selectedRoom.state.displayname;
@@ -626,7 +619,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)dismissCallViewController:(MXKCallViewController *)callViewController
 {
-    
     if (callViewController == currentCallViewController)
     {
         
@@ -671,7 +663,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)addCallStatusBar
 {
-    
     // Add a call status bar
     CGSize topBarSize = CGSizeMake(self.view.frame.size.width, 44);
     
@@ -706,7 +697,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)removeCallStatusBar
 {
-    
     if (callStatusBarWindow)
     {
         
@@ -724,7 +714,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)returnToCallView
 {
-    
     [self removeCallStatusBar];
     
     UINavigationController *navigationController = self.navigationController;
@@ -735,7 +724,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)statusBarDidChangeFrame
 {
-    
     UIApplication *app = [UIApplication sharedApplication];
     UIViewController *rootController = app.keyWindow.rootViewController;
     

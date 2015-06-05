@@ -20,7 +20,6 @@
 
 @interface MXKRecentListDataSource ()
 {
-    
     /**
      Array of `MXSession` instances.
      */
@@ -59,7 +58,6 @@
 
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession
 {
-    
     self = [self init];
     if (self)
     {
@@ -71,7 +69,6 @@
 
 - (void)addMatrixSession:(MXSession *)matrixSession
 {
-    
     MXKSessionRecentsDataSource *recentsDataSource = [[MXKSessionRecentsDataSource alloc] initWithMatrixSession:matrixSession];
     
     if (recentsDataSource)
@@ -95,7 +92,6 @@
 
 - (void)removeMatrixSession:(MXSession*)matrixSession
 {
-    
     for (NSUInteger index = 0; index < mxSessionArray.count; index++)
     {
         MXSession *mxSession = [mxSessionArray objectAtIndex:index];
@@ -123,7 +119,6 @@
 
 - (MXSession*)mxSession
 {
-    
     if (mxSessionArray.count > 1)
     {
         NSLog(@"[MXKRecentListDataSource] CAUTION: mxSession property is not relevant in case of multi-sessions (%tu)", mxSessionArray.count);
@@ -140,7 +135,6 @@
 
 - (MXKDataSourceState)state
 {
-    
     // Presently only a global state is available.
     // TODO: state of each internal recents data source should be public.
     
@@ -189,7 +183,6 @@
 
 - (void)registerCellDataClass:(Class)cellDataClass forCellIdentifier:(NSString *)identifier
 {
-    
     [super registerCellDataClass:cellDataClass forCellIdentifier:identifier];
     
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
@@ -200,7 +193,6 @@
 
 - (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier
 {
-    
     [super registerCellViewClass:cellViewClass forCellIdentifier:identifier];
     
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
@@ -211,7 +203,6 @@
 
 - (void)destroy
 {
-    
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
     {
         [recentsDataSource destroy];
@@ -232,7 +223,6 @@
 
 - (NSUInteger)unreadCount
 {
-    
     NSUInteger unreadCount = 0;
     
     // Sum unreadCount of all current data sources
@@ -245,7 +235,6 @@
 
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
-    
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
     {
         [recentsDataSource searchWithPatterns:patternsList];
@@ -318,7 +307,6 @@
 
 - (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if (indexPath.section < recentsDataSourceArray.count)
     {
         MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:indexPath.section];
@@ -330,7 +318,6 @@
 
 - (CGFloat)cellHeightAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if (indexPath.section < recentsDataSourceArray.count)
     {
         MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:indexPath.section];
@@ -342,7 +329,6 @@
 
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)matrixSession
 {
-    
     // Look for the right data source
     for (NSInteger section = 0; section < mxSessionArray.count; section++)
     {
@@ -386,7 +372,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
     if (section < recentsDataSourceArray.count)
     {
         MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
@@ -419,7 +404,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if (indexPath.section < recentsDataSourceArray.count)
     {
         MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:indexPath.section];
@@ -440,13 +424,11 @@
 
 - (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes
 {
-    
     [self.delegate dataSource:self didCellChange:changes];
 }
 
 - (void)dataSource:(MXKDataSource*)dataSource didStateChange:(MXKDataSourceState)state
 {
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
     {
         [self.delegate dataSource:self didStateChange:self.state];

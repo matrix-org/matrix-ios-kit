@@ -33,7 +33,6 @@
 
 - (void)setProgress:(CGFloat)progress
 {
-    
     _progress = progress;
     
     // no power level -> hide the pie

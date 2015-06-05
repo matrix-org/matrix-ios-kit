@@ -185,7 +185,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)dealloc
 {
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -247,7 +246,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)destroy
 {
-    
     supportedFlows = nil;
     if (mxCurrentOperation){
         [mxCurrentOperation cancel];
@@ -411,7 +409,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)refreshSupportedAuthFlow
 {
-    
     // Remove reachability observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
     
@@ -725,7 +722,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)onTextFieldChange:(NSNotification *)notif
 {
-    
     _submitButton.enabled = currentAuthInputsView.areAllRequiredFieldsFilled;
 }
 

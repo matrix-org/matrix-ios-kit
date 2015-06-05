@@ -24,7 +24,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 @interface MXKAccount ()
 {
-    
     // We will notify user only once on session failure
     BOOL notifyOpenSessionFailure;
     
@@ -128,7 +127,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    
     [coder encodeObject:mxCredentials.homeServer forKey:@"homeserverurl"];
     [coder encodeObject:mxCredentials.userId forKey:@"userid"];
     [coder encodeObject:mxCredentials.accessToken forKey:@"accesstoken"];

@@ -171,7 +171,6 @@
 
 - (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion
 {
-    
     // Check whether the view controller is embedded inside a navigation controller.
     if (self.navigationController)
     {
@@ -197,7 +196,6 @@
 
 - (void)destroy
 {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     mxSessionArray = nil;
@@ -306,7 +304,6 @@
 
 - (void)startActivityIndicator
 {
-    
     // Keep centering the loading wheel
     CGPoint center = self.view.center;
     center.y -= self.tableView.contentInset.top;

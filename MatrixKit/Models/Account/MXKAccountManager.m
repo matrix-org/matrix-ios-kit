@@ -35,7 +35,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 + (MXKAccountManager *)sharedManager
 {
-    
     @synchronized(self)
     {
         if(sharedAccountManager == nil)
@@ -48,7 +47,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (instancetype)init
 {
-    
     self = [super init];
     if (self)
     {
@@ -59,13 +57,11 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (void)dealloc
 {
-    
     mxAccounts = nil;
 }
 
 - (void)saveAccounts
 {
-    
     if (mxAccounts.count)
     {
         NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
@@ -81,7 +77,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (void)loadAccounts
 {
-    
     NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
     if (accountData)
     {
@@ -97,7 +92,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (MXKAccount *)accountForUserId:(NSString *)userId
 {
-    
     for (MXKAccount *account in mxAccounts)
     {
         if ([account.mxCredentials.userId isEqualToString:userId])
@@ -110,7 +104,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (void)addAccount:(MXKAccount *)account
 {
-    
     NSLog(@"[MXKAccountManager] login (%@)", account.mxCredentials.userId);
     
     [mxAccounts addObject:account];
@@ -122,7 +115,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (void)removeAccount:(MXKAccount*)account
 {
-    
     NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
     
     // Close session and clear associated store.
@@ -136,7 +128,6 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (void)logout
 {
-    
     // Logout all existing accounts
     while (mxAccounts.lastObject)
     {

@@ -51,8 +51,8 @@ typedef enum : NSUInteger {
 /**
  `MXKDataSource` is the base class for data sources managed by MatrixKit.
  */
-@interface MXKDataSource : NSObject <MXKCellRenderingDelegate> {
-    
+@interface MXKDataSource : NSObject <MXKCellRenderingDelegate>
+{
 @protected
     MXKDataSourceState state;
 }

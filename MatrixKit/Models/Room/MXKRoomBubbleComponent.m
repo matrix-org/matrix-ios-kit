@@ -81,7 +81,6 @@
 
 - (void)updateWithEvent:(MXEvent*)event
 {
-    
     // Report the new event
     _event = event;
     

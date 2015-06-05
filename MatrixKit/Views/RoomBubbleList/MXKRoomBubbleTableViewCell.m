@@ -40,7 +40,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 + (instancetype)roomBubbleTableViewCell
 {
-    
     // Check whether a xib is defined
     if ([[self class] nib])
     {
@@ -77,7 +76,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)originalRender:(MXKCellData *)cellData
 {
-    
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
@@ -282,7 +280,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 + (CGFloat)originalHeightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
-    
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
@@ -413,7 +410,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)startProgressUI
 {
-    
     BOOL isHidden = YES;
     
     // remove any pending observers

@@ -18,7 +18,6 @@
 
 @interface MXKRecentListViewController ()
 {
-    
     /**
      The data source providing UITableViewCells
      */
@@ -194,7 +193,6 @@
 
 - (void)setKeyboardHeight:(CGFloat)keyboardHeight
 {
-    
     // Deduce the bottom constraint for the table view (Don't forget the potential tabBar)
     CGFloat tableViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
     // Check whether the keyboard is over the tabBar
@@ -212,7 +210,6 @@
 
 - (void)destroy
 {
-    
     // Remove view observers
     [self.recentsSearchBar removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
     [self.recentsSearchBar removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
@@ -235,7 +232,6 @@
 
 - (void)configureView
 {
-    
     self.recentsTableView.delegate = self;
     
     // Set up table data source
@@ -280,7 +276,6 @@
 
 - (void)displayList:(MXKRecentListDataSource *)listDataSource
 {
-    
     // Cancel registration on existing dataSource if any
     if (dataSource)
     {
@@ -356,7 +351,6 @@
 #pragma mark - UITableView delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     return [dataSource cellHeightAtIndexPath:indexPath];
 }
 
@@ -372,14 +366,12 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    
     // Let dataSource provide the section header.
     return [dataSource viewForHeaderInSection:section withFrame:[tableView rectForHeaderInSection:section]];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if (_delegate)
     {
         id<MXKRecentCellDataStoring> cellData = [dataSource cellDataAtIndexPath:indexPath];
@@ -399,7 +391,6 @@
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     // Release here resources, and restore reusable cells
     if ([cell respondsToSelector:@selector(didEndDisplay)])
     {
@@ -422,7 +413,6 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    
     // Apply filter
     if (searchText.length)
     {
@@ -443,7 +433,6 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    
     // Leave search
     searchBarShouldEndEditing = YES;
     [searchBar resignFirstResponder];

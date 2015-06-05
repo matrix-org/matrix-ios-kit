@@ -226,7 +226,6 @@
 
 - (void)setPlaceholder:(NSString *)inPlaceholder
 {
-    
     _placeholder = inPlaceholder;
 }
 

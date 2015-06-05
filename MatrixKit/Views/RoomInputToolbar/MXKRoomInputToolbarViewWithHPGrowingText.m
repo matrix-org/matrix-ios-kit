@@ -18,7 +18,6 @@
 
 @interface MXKRoomInputToolbarViewWithHPGrowingText()
 {
-    
     // HPGrowingTextView triggers growingTextViewDidChange event when it recomposes itself
     // Save the last edited text to prevent unexpected typing events
     NSString* lastEditedText;
@@ -116,7 +115,6 @@
 
 - (void)growingTextViewDidEndEditing:(HPGrowingTextView *)sender
 {
-    
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:isTyping:)])
     {
         [self.delegate roomInputToolbarView:self isTyping:NO];
@@ -125,7 +123,6 @@
 
 - (void)growingTextViewDidChange:(HPGrowingTextView *)sender
 {
-    
     NSString *msg = _growingTextView.text;
     
     // HPGrowingTextView triggers growingTextViewDidChange event when it recomposes itself.

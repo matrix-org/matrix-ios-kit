@@ -18,7 +18,6 @@
 
 @interface MXKRoomDataSourceManager()
 {
-    
     MXSession *mxSession;
     
     /**
@@ -36,7 +35,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 + (MXKRoomDataSourceManager *)sharedManagerForMatrixSession:(MXSession *)mxSession
 {
-    
     // Manage a pool of managers: one per Matrix session
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -64,7 +62,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 + (void)removeSharedManagerForMatrixSession:(MXSession*)mxSession
 {
-    
     // Compute the id for this mxSession object: its pointer address as a string
     NSString *mxSessionId = [NSString stringWithFormat:@"%p", mxSession];
     
@@ -81,7 +78,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession
 {
-    
     self = [super init];
     if (self)
     {
@@ -111,7 +107,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 - (MXKRoomDataSource *)roomDataSourceForRoom:(NSString *)roomId create:(BOOL)create
 {
-    
     // If not available yet, create the room data source
     MXKRoomDataSource *roomDataSource = roomDataSources[roomId];
     if (!roomDataSource && create)
@@ -129,7 +124,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 - (void)closeRoomDataSource:(MXKRoomDataSource *)roomDataSource forceClose:(BOOL)forceRelease
 {
-    
     // The close consists in no more sending actions to the currrent view controller, the room data source delegate
     // According to the policy, it is interesting to keep the room data source in life: it can keep managing echo messages
     // in background for instance
@@ -164,7 +158,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 - (void)didMXSessionDidLeaveRoom:(NSNotification *)notif
 {
-    
     if (mxSession == notif.object)
     {
         

@@ -40,8 +40,8 @@ typedef enum : NSUInteger {
  This is the basic implementation which considers only one component (event) by bubble.
  `MXKRoomBubbleMergingMessagesCellData` extends this class to merge consecutive messages from the same sender into one bubble.
  */
-@interface MXKRoomBubbleCellData : MXKCellData <MXKRoomBubbleCellDataStoring> {
-    
+@interface MXKRoomBubbleCellData : MXKCellData <MXKRoomBubbleCellDataStoring>
+{
 @protected
     /**
      The data source owner of this instance.

@@ -28,7 +28,6 @@
 
 - (void)render:(MXKCellData *)cellData
 {
-    
     id<MXKRoomBubbleCellDataStoring> bubbleData = (id<MXKRoomBubbleCellDataStoring>)cellData;
     if (bubbleData)
     {
