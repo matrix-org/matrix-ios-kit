@@ -53,7 +53,6 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     NSArray* collationTitles;
 }
 
-@property (strong, nonatomic) MXKAlert *allowContactSyncAlert;
 @end
 
 @implementation MXKContactListViewController
