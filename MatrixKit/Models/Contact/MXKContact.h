@@ -20,6 +20,9 @@
 
 #import "MXKCellData.h"
 
+#import "MXKEmail.h"
+#import "MXKPhoneNumber.h"
+
 /**
  Posted when the contact thumbnail is updated.
  The notification object is a contact Id.

@@ -16,12 +16,6 @@
 
 #import "MXKContactListViewController.h"
 
-// contacts management
-#import "MXKContactManager.h"
-#import "MXKContact.h"
-
-#import "MXKContactTableCell.h"
-
 #import "MXKAlert.h"
 
 #import "MXKSectionedContacts.h"
@@ -534,13 +528,6 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
             [self.tableView reloadData];
         }
     }
-}
-
-#pragma mark MFMessageComposeViewControllerDelegate
-
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark Search management

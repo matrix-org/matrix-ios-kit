@@ -24,6 +24,7 @@ PODS:
   - JSQMessagesViewController (7.0.2):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
+  - libPhoneNumber-iOS (0.7.6)
   - Mantle (1.5.4):
     - Mantle/extobjc (= 1.5.4)
   - Mantle/extobjc (1.5.4)
@@ -37,6 +38,7 @@ PODS:
 DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.0.0)
+  - libPhoneNumber-iOS (~> 0.7.6)
   - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
   - OpenWebRTC-SDK (from `https://github.com/matrix-org/openwebrtc-ios-sdk.git`, branch
     `cvo_support`)
@@ -51,10 +53,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: 910b189d2112861ca0e9e3693cbe620357203af3
+    :commit: 0f374cfa70024d8ee64469d1aecf4c76d0d38585
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
   OpenWebRTC-SDK:
-    :commit: 4767a26bbbc3517515615b14933dc50e80471004
+    :commit: 2e2fd572c22f73f1d6c42bf37697b33dd2af3cda
     :git: https://github.com/matrix-org/openwebrtc-ios-sdk.git
 
 SPEC CHECKSUMS:
@@ -62,6 +64,7 @@ SPEC CHECKSUMS:
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: bb6649691182b1899dc52b42266ad69efc473510
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
+  libPhoneNumber-iOS: fb90c5e0d100923b61f0db81de56daefbb67b103
   Mantle: 60acd0cd363e27d945bda0a6b8e90577112d28f3
   MatrixSDK: 1645c94a7c7657e91e890c9c09d10094f79b7b92
   OpenWebRTC: 85be1caf6dc45b11106eacba93de61e3e52b1cf8

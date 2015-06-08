@@ -16,12 +16,11 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-// SMS
-#import <MessageUI/MessageUI.h>
-#import <MessageUI/MFMessageComposeViewController.h>
-
 #import "MXKTableViewController.h"
-#import "MXKCellRendering.h"
+
+#import "MXKContactManager.h"
+#import "MXKContact.h"
+#import "MXKContactTableCell.h"
 
 @class MXKContactListViewController;
 
@@ -52,7 +51,7 @@
  'MXKContactListViewController' instance displays constact list.
  This view controller support multi sessions by collecting all matrix users (only one occurrence is kept by user).
  */
-@interface MXKContactListViewController : MXKTableViewController <UINavigationControllerDelegate, MFMessageComposeViewControllerDelegate, UISearchBarDelegate, UIGestureRecognizerDelegate, MXKCellRenderingDelegate>
+@interface MXKContactListViewController : MXKTableViewController <UINavigationControllerDelegate, UISearchBarDelegate, UIGestureRecognizerDelegate, MXKCellRenderingDelegate>
 
 /**
  The segmented control used to handle separatly matrix users and local contacts.
@@ -97,6 +96,11 @@
  @return An initialized `MXKContactListViewController` object if successful, `nil` otherwise.
  */
 + (instancetype)contactListViewController;
+
+/**
+ Force reset of the displayed contact list.
+ */
+- (void)reset;
 
 /**
  The action registered on 'value changed' event of the 'UISegmentedControl' contactControls.
