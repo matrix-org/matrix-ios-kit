@@ -310,6 +310,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
     }
+    
     // Remove potential dateTime (or unsent) label(s)
     if (self.dateTimeLabelContainer.subviews.count > 0)
     {

@@ -131,6 +131,14 @@
             </objects>
             <point key="canvasLocation" x="-858" y="214"/>
         </scene>
+        <!--Contact List View Controller-->
+        <scene sceneID="S8r-Lm-tzf">
+            <objects>
+                <tableViewController id="PaO-MN-amw" customClass="MXKContactListViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u3j-Tu-jdo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-858" y="936"/>
+        </scene>
         <!--MatrixKit Samples-->
         <scene sceneID="HuU-tB-Z5y">
             <objects>
@@ -218,6 +226,7 @@
                         <segue destination="Wgg-iS-db1" kind="show" identifier="showMXKRoomMemberListViewController" id="NPB-63-INS"/>
                         <segue destination="AJD-Wn-nDw" kind="show" identifier="showMXKAccountDetailsViewController" id="e6q-tj-0Hv"/>
                         <segue destination="ZPO-Jz-T86" kind="show" identifier="showSampleRoomViewController" id="Yx7-ap-F4B"/>
+                        <segue destination="PaO-MN-amw" kind="show" identifier="showMXKContactListViewController" id="5Yg-2p-fIt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>

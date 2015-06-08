@@ -72,6 +72,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     NSInteger roomSectionIndex;
     NSInteger roomMembersSectionIndex;
     NSInteger authenticationSectionIndex;
+    NSInteger contactSectionIndex;
 }
 
 @end
@@ -86,7 +87,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     self.tableView.allowsSelection = YES;
     [self.tableView reloadData];
     
-    // Register matrix session state observer in order to handle new opened session
+    // Register matrix session state observer
     matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
     {
         
@@ -95,11 +96,23 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         // Check whether the concerned session is a new one
         if (mxSession.state == MXSessionStateInitialised)
         {
-            // report created matrix session
+            // Report created matrix session
             [self addMatrixSession:mxSession];
+            [[MXKContactManager sharedManager] addMatrixSession:mxSession];
             
             self.tableView.tableHeaderView.hidden = NO;
             [self.tableView reloadData];
+        }
+        else if (mxSession.state == MXSessionStateClosed)
+        {
+            [self removeMatrixSession:mxSession];
+            [[MXKContactManager sharedManager] removeMatrixSession:mxSession];
+            
+            if (!self.mxSessions.count) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self logout];
+                });
+            }
         }
     }];
     
@@ -265,6 +278,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     selectedRoom = nil;
     _selectedRoomDisplayName.text = nil;
     
+    // Update display
+    self.tableView.tableHeaderView.hidden = YES;
+    self.selectedRoomDisplayName.text = @"Please select a room";
+    [self.tableView reloadData];
+    
     // Return in Authentication screen
     [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
 }
@@ -289,7 +307,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 {
     NSInteger count = 0;
     
-    accountSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = -1;
+    accountSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = contactSectionIndex = -1;
     
     if ([[MXKAccountManager sharedManager] accounts].count)
     {
@@ -303,6 +321,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }
     
     authenticationSectionIndex = count++;
+    contactSectionIndex = count++;
     
     return count;
 }
@@ -322,6 +341,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         return 2;
     }
     else if (section == authenticationSectionIndex)
+    {
+        return 1;
+    }
+    else if (section == contactSectionIndex)
     {
         return 1;
     }
@@ -346,6 +369,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     else if (section == authenticationSectionIndex)
     {
         return @"Authentication:";
+    }
+    else if (section == contactSectionIndex)
+    {
+        return @"Contacts:";
     }
     
     return nil;
@@ -422,6 +449,16 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 break;
         }
     }
+    else if (indexPath.section == contactSectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+                cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+                cell.textLabel.text = @"MXKContactListViewController";
+                break;
+        }
+    }
     
     return cell;
 }
@@ -484,6 +521,15 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         {
             case 0:
                 [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
+                break;
+        }
+    }
+    else if (indexPath.section == contactSectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+                [self performSegueWithIdentifier:@"showMXKContactListViewController" sender:self];
                 break;
         }
     }
@@ -578,6 +624,19 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         authViewController.defaultHomeServerUrl = @"https://matrix.org";
         authViewController.defaultIdentityServerUrl = @"https://matrix.org";
     }
+    else if ([segue.identifier isEqualToString:@"showMXKContactListViewController"])
+    {
+        MXKContactListViewController *contactsController = (MXKContactListViewController *)destinationViewController;
+        NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
+        for (MXKAccount *account in accounts)
+        {
+            if (account.mxSession)
+            {
+                [contactsController addMatrixSession:account.mxSession];
+            }
+        }
+        contactsController.delegate = self;
+    }
     else if ([segue.identifier isEqualToString:@"showMXKAccountDetailsViewController"])
     {
         MXKAccountDetailsViewController *accountViewController = (MXKAccountDetailsViewController *)destinationViewController;
@@ -657,6 +716,19 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
             });
         }
     }
+}
+
+#pragma mark - MXKContactListViewControllerDelegate
+
+- (void)contactListViewController:(MXKContactListViewController *)contactListViewController didSelectContact:(NSString *)contactId
+{
+    // TODO GFO: MXKContact *selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
+    NSLog(@"    -> %@ has been selected", contactId);
+}
+
+- (void)contactListViewController:(MXKContactListViewController *)contactListViewController didTapContactThumbnail:(NSString *)contactId
+{
+    NSLog(@"    -> Avatar of %@ has been tapped", contactId);
 }
 
 #pragma mark - Call status handling

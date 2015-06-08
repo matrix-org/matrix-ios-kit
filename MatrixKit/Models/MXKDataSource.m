@@ -131,7 +131,6 @@
     // The data source simply relays the information to its delegate
     if (_delegate && [_delegate respondsToSelector:@selector(dataSource:didRecognizeAction:inCell:userInfo:)])
     {
-        
         [_delegate dataSource:self didRecognizeAction:actionIdentifier inCell:cell userInfo:userInfo];
     }
 }

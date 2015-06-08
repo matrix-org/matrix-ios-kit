@@ -32,6 +32,7 @@
 #import "MXKRoomMemberListViewController.h"
 #import "MXKCallViewController.h"
 #import "MXKAccountDetailsViewController.h"
+#import "MXKContactListViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 
@@ -55,6 +56,8 @@
 #import "MXKRoomTitleViewWithTopic.h"
 
 #import "MXKAccountManager.h"
+
+#import "MXKContactManager.h"
 
 #import "MXK3PID.h"
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKContactListViewController">
+            <connections>
+                <outlet property="contactsControls" destination="75L-rc-grT" id="ocP-jP-5yq"/>
+                <outlet property="view" destination="bSe-Sh-aQf" id="4es-L5-nel"/>
+            </connections>
+        </placeholder>
+        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="bSe-Sh-aQf">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <view key="tableHeaderView" contentMode="scaleToFill" id="jGj-32-rtx">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <segmentedControl opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="75L-rc-grT">
+                        <rect key="frame" x="194" y="8" width="211" height="29"/>
+                        <segments>
+                            <segment title="Matrix Users"/>
+                            <segment title="Local Contacts"/>
+                        </segments>
+                        <connections>
+                            <action selector="onSegmentValueChange:" destination="-1" eventType="valueChanged" id="hSC-ZI-SSu"/>
+                        </connections>
+                    </segmentedControl>
+                </subviews>
+                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                <constraints>
+                    <constraint firstItem="75L-rc-grT" firstAttribute="top" secondItem="jGj-32-rtx" secondAttribute="top" constant="8" id="KTm-E6-bIU"/>
+                    <constraint firstAttribute="centerX" secondItem="75L-rc-grT" secondAttribute="centerX" id="chL-eY-CYt"/>
+                </constraints>
+            </view>
+            <connections>
+                <outlet property="dataSource" destination="-1" id="nhc-tM-1py"/>
+                <outlet property="delegate" destination="-1" id="9uq-Pc-RpB"/>
+            </connections>
+        </tableView>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+    </objects>
+</document>

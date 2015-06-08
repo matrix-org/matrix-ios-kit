@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,14 +14,19 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKSectionedContacts.h"
 
-#import "MatrixKit.h"
+@implementation MXKSectionedContacts
 
-@interface MXKSampleMainTableViewController : MXKViewController <UITableViewDataSource, UITableViewDelegate, MXKRecentListViewControllerDelegate, MXKRoomMemberListViewControllerDelegate, MXKAuthenticationViewControllerDelegate, MXKCallViewControllerDelegate, MXKContactListViewControllerDelegate>
+@synthesize contactsCount, sectionTitles, sectionedContacts;
 
-@property (nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UILabel *selectedRoomDisplayName;
+-(id)initWithContacts:(NSArray *)inSectionedContacts andTitles:(NSArray *)titles andCount:(int)count {
+    if (self = [super init]) {
+        contactsCount = count;
+        sectionedContacts = inSectionedContacts;
+        sectionTitles = titles;
+    }
+    return self;
+}
 
 @end
-

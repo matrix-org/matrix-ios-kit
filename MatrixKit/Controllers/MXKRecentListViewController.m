@@ -43,7 +43,7 @@
                           bundle:[NSBundle bundleForClass:[MXKRecentListViewController class]]];
 }
 
-+ (instancetype)roomViewController
++ (instancetype)recentListViewController
 {
     return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRecentListViewController class])
                                           bundle:[NSBundle bundleForClass:[MXKRecentListViewController class]]];

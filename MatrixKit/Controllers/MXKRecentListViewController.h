@@ -65,6 +65,28 @@ limitations under the License.
  */
 @property (nonatomic) BOOL enableSearch;
 
+#pragma mark - Class methods
+
+/**
+ Returns the `UINib` object initialized for a `MXKRecentListViewController`.
+ 
+ @return The initialized `UINib` object or `nil` if there were errors during initialization
+ or the nib file could not be located.
+ 
+ @discussion You may override this method to provide a customized nib. If you do,
+ you should also override `recentListViewController` to return your
+ view controller loaded from your custom nib.
+ */
++ (UINib *)nib;
+
+/**
+ Creates and returns a new `MXKRecentListViewController` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ @return An initialized `MXKRecentListViewController` object if successful, `nil` otherwise.
+ */
++ (instancetype)recentListViewController;
+
 /**
  Display the recents described in the provided data source.
  
