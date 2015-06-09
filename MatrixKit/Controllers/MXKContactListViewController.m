@@ -183,7 +183,7 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     }
 }
 
-#pragma mark - UITableView delegate
+#pragma mark - UITableView dataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -223,25 +223,6 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
         return [[sectionedContacts.sectionedContacts objectAtIndex:section] count];
     }
     return 0;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
-    
-    MXKContact* contact = nil;
-    
-    if (indexPath.section < sectionedContacts.sectionedContacts.count)
-    {
-        NSArray *thisSection = [sectionedContacts.sectionedContacts objectAtIndex:indexPath.section];
-        
-        if (indexPath.row < thisSection.count)
-        {
-            contact = [thisSection objectAtIndex:indexPath.row];
-        }
-    }
-    
-    return [((Class<MXKCellRendering>)_contactTableViewCellClass) heightForCellData:contact withMaximumWidth:tableView.frame.size.width];
 }
 
 - (NSString *)tableView:(UITableView *)aTableView titleForHeaderInSection:(NSInteger)section
@@ -299,6 +280,51 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     return section;
 }
 
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:kMXKContactTableViewCellIdentifier forIndexPath:indexPath];
+    
+    MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
+    
+    MXKContact* contact = nil;
+    
+    if (indexPath.section < sectionedContacts.sectionedContacts.count)
+    {
+        NSArray *thisSection = [sectionedContacts.sectionedContacts objectAtIndex:indexPath.section];
+        
+        if (indexPath.row < thisSection.count)
+        {
+            contact = [thisSection objectAtIndex:indexPath.row];
+        }
+    }
+    
+    [cell render:contact];
+    cell.delegate = self;
+    
+    return cell;
+}
+
+#pragma mark - UITableView delegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
+    
+    MXKContact* contact = nil;
+    
+    if (indexPath.section < sectionedContacts.sectionedContacts.count)
+    {
+        NSArray *thisSection = [sectionedContacts.sectionedContacts objectAtIndex:indexPath.section];
+        
+        if (indexPath.row < thisSection.count)
+        {
+            contact = [thisSection objectAtIndex:indexPath.row];
+        }
+    }
+    
+    return [((Class<MXKCellRendering>)_contactTableViewCellClass) heightForCellData:contact withMaximumWidth:tableView.frame.size.width];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     // In case of search, the section titles are hidden and the search bar is displayed in first section header.
@@ -322,30 +348,6 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
         return contactsSearchBar;
     }
     return nil;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:kMXKContactTableViewCellIdentifier forIndexPath:indexPath];
-    
-    MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
-    
-    MXKContact* contact = nil;
-    
-    if (indexPath.section < sectionedContacts.sectionedContacts.count)
-    {
-        NSArray *thisSection = [sectionedContacts.sectionedContacts objectAtIndex:indexPath.section];
-        
-        if (indexPath.row < thisSection.count)
-        {
-            contact = [thisSection objectAtIndex:indexPath.row];
-        }
-    }
-    
-    [cell render:contact];
-    cell.delegate = self;
-    
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
