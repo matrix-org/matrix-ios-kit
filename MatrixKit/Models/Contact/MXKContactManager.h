@@ -22,16 +22,22 @@
 #import "MXKContact.h"
 
 /**
- Posted when the contact list is loaded and updated.
+ Posted when the matrix contact list is loaded or updated.
  The notification object is nil.
  */
-extern NSString *const kMXKContactManagerDidUpdateContactsNotification;
+extern NSString *const kMXKContactManagerDidUpdateMatrixContactsNotification;
 
 /**
- Posted when contact matrix ids is updated.
- The notification object is a contact Id or nil when all contacts are concerned.
+ Posted when the local contact list is loaded and updated.
+ The notification object is nil.
  */
-extern NSString *const kMXKContactManagerDidUpdateContactMatrixIDsNotification;
+extern NSString *const kMXKContactManagerDidUpdateLocalContactsNotification;
+
+/**
+ Posted when local contact matrix ids is updated.
+ The notification object is a contact Id or nil when all local contacts are concerned.
+ */
+extern NSString *const kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification;
 
 /**
  Posted when the presence of a matrix user linked at least to one contact has changed.
@@ -41,7 +47,7 @@ extern NSString *const kMXKContactManagerMatrixUserPresenceChangeNotification;
 extern NSString *const kMXKContactManagerMatrixPresenceKey;
 
 /**
- Posted when all phonenumbers have been internationalized.
+ Posted when all phonenumbers of local contacts have been internationalized.
  The notification object is nil.
  */
 extern NSString *const kMXKContactManagerDidInternationalizeNotification;
@@ -49,7 +55,7 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
 /**
  This manager handles 2 kinds of contact list:
  - The local contacts retrieved from the device phonebook.
- - The matrix users retrieved from the matrix one-to-one rooms.
+ - The matrix contacts retrieved from the matrix one-to-one rooms.
  
  Note: The local contacts handling depends on the 'syncLocalContacts' and 'phonebookCountryCode' properties
  of the shared application settings object '[MXKAppSettings standardAppSettings]'.
@@ -62,7 +68,7 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
 + (MXKContactManager*)sharedManager;
 
 /**
- The identity server URL used to link matrix ids to the contacts according to their 3PIDs (email, phone number...).
+ The identity server URL used to link matrix ids to the local contacts according to their 3PIDs (email, phone number...).
  This property is nil by default.
  
  If this property is not set whereas some matrix sessions are added, the identity server of the first available matrix session is used.
@@ -75,25 +81,30 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
 @property (nonatomic, readonly) NSArray *mxSessions;
 
 /**
- The current contact list (nil by default until the device contacts are loaded).
+ The current list of the local contacts (nil by default until the contacts are loaded).
  */
-@property (nonatomic, readonly) NSArray *contacts;
+@property (nonatomic, readonly) NSArray *localContacts;
 
 /**
- No by default. Set YES to update matrix ids for all the contacts in only one request when contact are loaded and an identity server is available.
+ The current list of the contacts extracted from matrix data (nil by default until the contacts are loaded).
  */
-@property (nonatomic) BOOL enableFullMatrixIdSyncOnContactsDidLoad;
+@property (nonatomic, readonly) NSArray *matrixContacts;
 
 /**
- Add/remove matrix session.
+ No by default. Set YES to update matrix ids for all the local contacts in only one request when device contacts are loaded and an identity server is available.
+ */
+@property (nonatomic) BOOL enableFullMatrixIdSyncOnLocalContactsDidLoad;
+
+/**
+ Add/remove matrix session. The matrix contact list is automatically updated (see kMXKContactManagerDidUpdateMatrixContactsNotification event).
  */
 - (void)addMatrixSession:(MXSession*)mxSession;
 - (void)removeMatrixSession:(MXSession*)mxSession;
 
 /**
- Load and refresh the contact list. See kMXKContactManagerDidUpdateContactsNotification posted when contact list is available.
+ Load and refresh the local contacts. Observe kMXKContactManagerDidUpdateLocalContactsNotification to know when local contacts are available.
  */
-- (void)loadContacts;
+- (void)loadLocalContacts;
 
 /**
  Delete contacts info
@@ -101,26 +112,34 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
 - (void)reset;
 
 /**
- Refresh matrix IDs for a specific contact. See kMXKContactManagerDidUpdateContactMatrixIDsNotification
+ Get contact by its identifier.
+ 
+ @param contactID the contact identifier.
+ @return the contact defined with the provided id.
+ */
+- (MXKContact*)contactWithContactID:(NSString*)contactID;
+
+/**
+ Refresh matrix IDs for a specific local contact. See kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification
  posted when update is done.
  
- @param contact the contact to refresh.
+ @param contact the local contact to refresh.
  */
-- (void)updateMatrixIDsForContact:(MXKContact*)contact;
+- (void)updateMatrixIDsForLocalContact:(MXKContact*)contact;
 
 /**
- Refresh matrix IDs for all listed contacts. See kMXKContactManagerDidUpdateContactMatrixIDsNotification
- posted when update for all contacts is done.
+ Refresh matrix IDs for all local contacts. See kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification
+ posted when update for all local contacts is done.
  */
-- (void)updateContactsMatrixIDs;
+- (void)updateMatrixIDsForAllLocalContacts;
 
 /**
- Sort the contacts in sectioned arrays to be displayable in a UITableview
+ Sort a contacts array in sectioned arrays to be displayable in a UITableview
  */
 - (MXKSectionedContacts*)getSectionedContacts:(NSArray*)contactList;
 
 /**
- Refresh the international phonenumber of the contacts (See kMXKContactManagerDidInternationalizeNotification).
+ Refresh the international phonenumber of the local contacts (See kMXKContactManagerDidInternationalizeNotification).
  
  @param countryCode
  */

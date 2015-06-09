@@ -722,13 +722,14 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 
 - (void)contactListViewController:(MXKContactListViewController *)contactListViewController didSelectContact:(NSString *)contactId
 {
-    // TODO GFO: MXKContact *selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
-    NSLog(@"    -> %@ has been selected", contactId);
+    MXKContact *selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
+    NSLog(@"    -> %@ has been selected", selectedContact.displayName);
 }
 
 - (void)contactListViewController:(MXKContactListViewController *)contactListViewController didTapContactThumbnail:(NSString *)contactId
 {
-    NSLog(@"    -> Avatar of %@ has been tapped", contactId);
+    MXKContact *selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
+    NSLog(@"    -> Avatar of %@ has been tapped", selectedContact.displayName);
 }
 
 #pragma mark - Call status handling

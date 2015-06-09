@@ -29,6 +29,9 @@
  */
 extern NSString *const kMXKContactThumbnailUpdateNotification;
 
+extern NSString *const kMXKContactLocalContactPrefixId;
+extern NSString *const kMXKContactMatrixContactPrefixId;
+
 @interface MXKContact : MXKCellData <NSCoding>
 
 /**
@@ -73,21 +76,21 @@ extern NSString *const kMXKContactThumbnailUpdateNotification;
 + (NSString*)contactID:(ABRecordRef)record;
 
 /**
- Create a contact from a local contact
+ Create a local contact from a device contact
  
- @param record local contact id
+ @param record device contact id
  @return MXKContact instance
  */
-- (id)initWithABRecord:(ABRecordRef)record;
+- (id)initLocalContactWithABRecord:(ABRecordRef)record;
 
 /**
- Create a contact with the dedicated info
+ Create a matrix contact with the dedicated info
  
  @param displayName
  @param matrixID
  @return MXKContact instance
  */
-- (id)initWithDisplayName:(NSString*)displayName matrixID:(NSString*)matrixID;
+- (id)initMatrixContactWithDisplayName:(NSString*)displayName andMatrixID:(NSString*)matrixID;
 
 /**
  The contact thumbnail with a prefered size.

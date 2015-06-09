@@ -21,24 +21,28 @@
 
 NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailUpdateNotification";
 
+NSString *const kMXKContactLocalContactPrefixId = @"Local_";
+NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
+
 @interface MXKContact()
 {
     UIImage* contactBookThumbnail;
     UIImage* matrixThumbnail;
     
-    // used when the contact is not defined in the contacts book
-    MXKContactField * dummyField;
+    // The matrix id of the contact (used when the contact is not defined in the contacts book)
+    MXKContactField *matrixIdField;
 }
 @end
 
 @implementation MXKContact
+@synthesize isMatrixContact;
 
 + (NSString*)contactID:(ABRecordRef)record
 {
-    return [NSString stringWithFormat:@"%d", ABRecordGetRecordID(record)];
+    return [NSString stringWithFormat:@"%@%d", kMXKContactLocalContactPrefixId, ABRecordGetRecordID(record)];
 }
 
-- (id)initWithABRecord:(ABRecordRef)record
+- (id)initLocalContactWithABRecord:(ABRecordRef)record
 {
     self = [super init];
     
@@ -57,7 +61,8 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
             _displayName = @"";
         }
         
-        dummyField = nil;
+        matrixIdField = nil;
+        isMatrixContact = NO;
         
         // extract the phone numbers and their related label
         ABMultiValueRef multi = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -201,16 +206,17 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
     return self;
 }
 
-- (id)initWithDisplayName:(NSString*)aDisplayName matrixID:(NSString*)matrixID
+- (id)initMatrixContactWithDisplayName:(NSString*)aDisplayName andMatrixID:(NSString*)matrixID
 {
     self = [super init];
     
     if (self)
     {
-        _contactID = [[NSUUID UUID] UUIDString];
+        _contactID = [NSString stringWithFormat:@"%@%@", kMXKContactMatrixContactPrefixId, [[NSUUID UUID] UUIDString]];
         
         // used when the contact is not defined in the contacts book
-        dummyField = [[MXKContactField alloc] initWithContactID:_contactID matrixID:matrixID];
+        matrixIdField = [[MXKContactField alloc] initWithContactID:_contactID matrixID:matrixID];
+        isMatrixContact = YES;
         
         // _displayName must not be nil
         // it is used to sort the contacts
@@ -291,18 +297,13 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
 
 #pragma mark - getter/setter
 
-- (BOOL)isMatrixContact
-{
-    return (nil != dummyField);
-}
-
 - (NSArray*)matrixIdentifiers
 {
     NSMutableArray* identifiers = [[NSMutableArray alloc] init];
     
-    if (dummyField)
+    if (matrixIdField)
     {
-        [identifiers addObject:dummyField.matrixID];
+        [identifiers addObject:matrixIdField.matrixID];
     }
     
     for(MXKEmail* email in _emailAddresses)
@@ -347,7 +348,7 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
     }
     else
     {
-        MXKContactField* firstField = dummyField;
+        MXKContactField* firstField = matrixIdField;
         if (firstField)
         {
             if (firstField.avatarImage)
@@ -400,6 +401,8 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
     _contactID = [coder decodeObjectForKey:@"contactID"];
     _displayName = [coder decodeObjectForKey:@"displayName"];
     
+    matrixIdField = [coder decodeObjectForKey:@"matrixIdField"];
+    
     _phoneNumbers = [coder decodeObjectForKey:@"phoneNumbers"];
     _emailAddresses = [coder decodeObjectForKey:@"emailAddresses"];
     
@@ -412,22 +415,19 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
     [coder encodeObject:_contactID forKey:@"contactID"];
     [coder encodeObject:_displayName forKey:@"displayName"];
     
-    if (_phoneNumbers)
+    if (matrixIdField)
+    {
+        [coder encodeObject:matrixIdField forKey:@"matrixIdField"];
+    }
+    
+    if (_phoneNumbers.count)
     {
         [coder encodeObject:_phoneNumbers forKey:@"phoneNumbers"];
     }
-    else
-    {
-        [coder setNilValueForKey:@"phoneNumbers"];
-    }
     
-    if (_emailAddresses)
+    if (_emailAddresses.count)
     {
         [coder encodeObject:_emailAddresses forKey:@"emailAddresses"];
-    }
-    else
-    {
-        [coder setNilValueForKey:@"emailAddresses"];
     }
 }
 

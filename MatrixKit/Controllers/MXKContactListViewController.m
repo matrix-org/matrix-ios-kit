@@ -32,15 +32,12 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     BOOL displayMatrixUsers;
     
     // screenshot of the local contacts
-    NSArray* localContacts;
+    NSArray* localContactsArray;
     MXKSectionedContacts* sectionedLocalContacts;
     
     // screenshot of the matrix users
-    NSMutableDictionary* matrixUserByMatrixID;
+    NSArray* matrixContactsArray;
     MXKSectionedContacts* sectionedMatrixContacts;
-    
-    // tap on thumbnail to display contact info
-    MXKContact* selectedContact;
     
     // Search
     UIBarButtonItem *searchButton;
@@ -91,10 +88,11 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     
     // global init
     displayMatrixUsers = (0 == self.contactsControls.selectedSegmentIndex);
-    matrixUserByMatrixID = [[NSMutableDictionary alloc] init];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateContactsNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateContactMatrixIDsNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateLocalContactsNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:nil];
     
     if (!_contactTableViewCellClass) {
         // Set default table view cell class
@@ -123,44 +121,6 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     // before scrolling to the tableview top
     self.tableView.contentOffset = CGPointMake(-self.tableView.contentInset.left, -self.tableView.contentInset.top);
     [UIView setAnimationsEnabled:YES];
-}
-
-// should be called when resetting the application
-// the contact manager warn there is a contacts list update
-// but the Matrix SDK handler has no more userID -> so assume there is a reset
-- (void)reset
-{
-    // Leave potential search session
-    if (contactsSearchBar)
-    {
-        [self searchBarCancelButtonClicked:contactsSearchBar];
-    }
-    
-    localContacts = nil;
-    sectionedLocalContacts = nil;
-    
-    matrixUserByMatrixID = [[NSMutableDictionary alloc] init];;
-    sectionedMatrixContacts = nil;
-    
-    [self.contactsControls setSelectedSegmentIndex:0];
-    [self.tableView reloadData];
-}
-
-- (void)refreshMatrixUsers
-{
-    if (displayMatrixUsers)
-    {
-        if (contactsSearchBar)
-        {
-            [self updateSectionedMatrixContacts];
-            latestSearchedPattern = nil;
-            [self searchBar:contactsSearchBar textDidChange:contactsSearchBar.text];
-        }
-        else
-        {
-            [self.tableView reloadData];
-        }
-    }
 }
 
 #pragma mark -
@@ -195,88 +155,31 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     }
 }
 
-#pragma mark - overridden MXKTableViewController methods
-
-- (void)onMatrixSessionChange
-{
-    [super onMatrixSessionChange];
-    
-    [self refreshMatrixUsers];
-}
-
 #pragma mark - UITableView delegate
 
-- (void)updateSectionedLocalContacts
+- (void)updateSectionedLocalContacts:(BOOL)force
 {
     [self stopActivityIndicator];
     
     MXKContactManager* sharedManager = [MXKContactManager sharedManager];
     
-    if (!localContacts)
+    if (force || !localContactsArray)
     {
-        localContacts = sharedManager.contacts;
-    }
-    
-    if (!sectionedLocalContacts)
-    {
-        sectionedLocalContacts = [sharedManager getSectionedContacts:sharedManager.contacts];
+        localContactsArray = sharedManager.localContacts;
+        sectionedLocalContacts = [sharedManager getSectionedContacts:localContactsArray];
     }
 }
 
-- (void)updateSectionedMatrixContacts
+- (void)updateSectionedMatrixContacts:(BOOL)force
 {
-    NSArray *mxSessions = self.mxSessions;
+    [self stopActivityIndicator];
     
-    // Check whether at least one session is available
-    if (!mxSessions.count)
+    MXKContactManager* sharedManager = [MXKContactManager sharedManager];
+    
+    if (force || !matrixContactsArray)
     {
-        [self startActivityIndicator];
-        sectionedMatrixContacts = nil;
-    }
-    else
-    {
-        [self stopActivityIndicator];
-        
-        NSArray* usersIDs = [self oneToOneRoomMemberIDs];
-        // return a MatrixIDs list of 1:1 room members
-        
-        // Update contact mapping
-        // Copy the current dictionary keys (avoid delete and create the same ones, it could save thumbnail downloads)
-        NSMutableArray* knownUserIDs = [[matrixUserByMatrixID allKeys] mutableCopy];
-        
-        for (MXSession *mxSession in mxSessions)
-        {
-            for(NSString* userID in usersIDs)
-            {
-                MXUser* user = [mxSession userWithUserId:userID];
-                if (user)
-                {
-                    // managed UserID
-                    [knownUserIDs removeObject:userID];
-                    
-                    MXKContact* contact = [matrixUserByMatrixID objectForKey:userID];
-                    
-                    // already defined
-                    if (contact)
-                    {
-                        contact.displayName = (user.displayname.length > 0) ? user.displayname : user.userId;
-                    }
-                    else
-                    {
-                        contact = [[MXKContact alloc] initWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) matrixID:user.userId];
-                        [matrixUserByMatrixID setValue:contact forKey:userID];
-                    }
-                }
-            }
-        }
-        
-        // some userIDs don't exist anymore
-        for (NSString* userID in knownUserIDs)
-        {
-            [matrixUserByMatrixID removeObjectForKey:userID];
-        }
-        
-        sectionedMatrixContacts = [[MXKContactManager sharedManager] getSectionedContacts:[matrixUserByMatrixID allValues]];
+        matrixContactsArray = sharedManager.matrixContacts;
+        sectionedMatrixContacts = [sharedManager getSectionedContacts:matrixContactsArray];
     }
 }
 
@@ -289,13 +192,13 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     }
     else if (displayMatrixUsers)
     {
-        [self updateSectionedMatrixContacts];
+        [self updateSectionedMatrixContacts:NO];
         return sectionedMatrixContacts.sectionedContacts.count;
         
     }
     else
     {
-        [self updateSectionedLocalContacts];
+        [self updateSectionedLocalContacts:NO];
         return sectionedLocalContacts.sectionedContacts.count;
     }
 }
@@ -474,31 +377,23 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
         return;
     }
     
-    localContacts = nil;
-    sectionedLocalContacts = nil;
-    
-    // there is an user id
-    if (self.mxSessions)
+    if ([notif.name isEqualToString:kMXKContactManagerDidUpdateMatrixContactsNotification])
     {
-        [self updateSectionedLocalContacts];
-        //
-        if (!displayMatrixUsers)
-        {
-            if (contactsSearchBar)
-            {
-                latestSearchedPattern = nil;
-                [self searchBar:contactsSearchBar textDidChange:contactsSearchBar.text];
-            }
-            else
-            {
-                [self.tableView reloadData];
-            }
-        }
+        [self updateSectionedMatrixContacts:YES];
     }
     else
     {
-        // the client could have been logged out
-        [self reset];
+        [self updateSectionedLocalContacts:YES];
+    }
+    
+    if (contactsSearchBar)
+    {
+        latestSearchedPattern = nil;
+        [self searchBar:contactsSearchBar textDidChange:contactsSearchBar.text];
+    }
+    else
+    {
+        [self.tableView reloadData];
     }
 }
 
@@ -512,11 +407,11 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
         {
             if (displayMatrixUsers)
             {
-                [self updateSectionedMatrixContacts];
+                [self updateSectionedMatrixContacts:NO];
             }
             else
             {
-                [self updateSectionedLocalContacts];
+                [self updateSectionedLocalContacts:NO];
             }
             
             latestSearchedPattern = nil;
@@ -550,7 +445,7 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
             
             // init the table content
             latestSearchedPattern = @"";
-            filteredContacts = [(displayMatrixUsers ? [matrixUserByMatrixID allValues] : localContacts) mutableCopy];
+            filteredContacts = [(displayMatrixUsers ? matrixContactsArray : localContactsArray) mutableCopy];
             sectionedFilteredContacts = [[MXKContactManager sharedManager] getSectionedContacts:filteredContacts];
             
             [self.tableView reloadData];
@@ -608,12 +503,11 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
         latestSearchedPattern = searchText;
         
         // contacts
-        NSArray* contacts = displayMatrixUsers ? [matrixUserByMatrixID allValues] : localContacts;
+        NSArray* contacts = displayMatrixUsers ? matrixContactsArray : localContactsArray;
         
         // Update filtered list
         if (searchText.length && contacts.count)
         {
-            
             filteredContacts = [[NSMutableArray alloc] init];
             
             NSArray* patterns = [self patternsFromText:searchText];
@@ -675,41 +569,6 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
             [self.delegate contactListViewController:self didTapContactThumbnail:userInfo[kMXKContactCellContactIdKey]];
         }
     }
-}
-
-#pragma mark - Matrix session handling
-
-// return a MatrixIDs list of 1:1 room members
-- (NSArray*)oneToOneRoomMemberIDs
-{
-    NSMutableArray* matrixIDs = [[NSMutableArray alloc] init];
-    
-    NSArray *mxSessions = self.mxSessions;
-    for (MXSession *mxSession in mxSessions)
-    {
-        for (MXRoom *mxRoom in mxSession.rooms)
-        {
-            NSArray* membersList = [mxRoom.state members];
-            
-            // keep only 1:1 chat
-            if ([mxRoom.state members].count <= 2)
-            {
-                for (MXRoomMember* member in membersList)
-                {
-                    // not myself
-                    if (![member.userId isEqualToString:mxSession.myUser.userId])
-                    {
-                        if ([matrixIDs indexOfObject:member.userId] == NSNotFound)
-                        {
-                            [matrixIDs addObject:member.userId];
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    return matrixIDs;
 }
 
 @end

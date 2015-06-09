@@ -55,6 +55,7 @@
 
 /**
  The segmented control used to handle separatly matrix users and local contacts.
+ User's actions are handled by [MXKContactListViewController onSegmentValueChange:].
  */
 @property (weak, nonatomic) IBOutlet UISegmentedControl* contactsControls;
 
@@ -96,11 +97,6 @@
  @return An initialized `MXKContactListViewController` object if successful, `nil` otherwise.
  */
 + (instancetype)contactListViewController;
-
-/**
- Force reset of the displayed contact list.
- */
-- (void)reset;
 
 /**
  The action registered on 'value changed' event of the 'UISegmentedControl' contactControls.

@@ -77,10 +77,10 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     self.thumbnailView.layer.borderWidth = 0;
     
     if (contact) {
-        // be warned when the matrix ID and the thumbnail is updated
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixIdUpdate:)  name:kMXKContactManagerDidUpdateContactMatrixIDsNotification object:nil];
+        // Be warned when the thumbnail is updated
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onThumbnailUpdate:) name:kMXKContactThumbnailUpdateNotification object:nil];
         
+        // Observe contact presence change
         mxPresenceObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKContactManagerMatrixUserPresenceChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             // get the matrix identifiers
@@ -96,19 +96,24 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
             }
         }];
         
-        // Refresh matrix info of the contact
-        [[MXKContactManager sharedManager] updateMatrixIDsForContact:contact];
+        if (!contact.isMatrixContact) {
+            // Be warned when the linked matrix IDs are updated
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixIdUpdate:)  name:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:nil];
+            
+            // Refresh matrix info of the contact
+            [[MXKContactManager sharedManager] updateMatrixIDsForLocalContact:contact];
+        }
         
         NSArray* matrixIDs = contact.matrixIdentifiers;
         
-        if (matrixIDs.count == 1)
+        if (matrixIDs.count)
         {
             self.contactDisplayNameLabel.hidden = YES;
             
             self.matrixDisplayNameLabel.hidden = NO;
             self.matrixDisplayNameLabel.text = contact.displayName;
             self.matrixIDLabel.hidden = NO;
-            self.matrixIDLabel.text = [ contact.matrixIdentifiers objectAtIndex:0];
+            self.matrixIDLabel.text = [matrixIDs firstObject];
         }
         else
         {
@@ -252,9 +257,9 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     // sanity check
     if ([notif.object isKindOfClass:[NSString class]])
     {
-        NSString* matrixID = notif.object;
+        NSString* contactID = notif.object;
         
-        if ([matrixID isEqualToString:contact.contactID])
+        if ([contactID isEqualToString:contact.contactID])
         {
             [self manageMatrixIcon];
         }
@@ -266,9 +271,9 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     // sanity check
     if ([notif.object isKindOfClass:[NSString class]])
     {
-        NSString* matrixID = notif.object;
+        NSString* contactID = notif.object;
         
-        if ([matrixID isEqualToString:contact.contactID])
+        if ([contactID isEqualToString:contact.contactID])
         {
             [self refreshContactThumbnail];
             self.matrixUserIconView.hidden = (0 == contact.matrixIdentifiers.count);
