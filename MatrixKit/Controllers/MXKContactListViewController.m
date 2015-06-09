@@ -155,7 +155,7 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     }
 }
 
-#pragma mark - UITableView delegate
+#pragma mark - Internals
 
 - (void)updateSectionedLocalContacts:(BOOL)force
 {
@@ -183,31 +183,46 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     }
 }
 
+#pragma mark - UITableView delegate
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    NSInteger sectionNb;
+    
     // search in progress
     if (contactsSearchBar)
     {
-        return sectionedFilteredContacts.sectionedContacts.count;
+        sectionNb = sectionedFilteredContacts.sectionedContacts.count;
+        if (!sectionNb)
+        {
+            // Keep at least one section to display the search bar
+            sectionNb = 1;
+        }
     }
     else if (displayMatrixUsers)
     {
         [self updateSectionedMatrixContacts:NO];
-        return sectionedMatrixContacts.sectionedContacts.count;
+        sectionNb = sectionedMatrixContacts.sectionedContacts.count;
         
     }
     else
     {
         [self updateSectionedLocalContacts:NO];
-        return sectionedLocalContacts.sectionedContacts.count;
+        sectionNb = sectionedLocalContacts.sectionedContacts.count;
     }
+    
+    return sectionNb;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
     
-    return [[sectionedContacts.sectionedContacts objectAtIndex:section] count];
+    if (section < sectionedContacts.sectionedContacts.count)
+    {
+        return [[sectionedContacts.sectionedContacts objectAtIndex:section] count];
+    }
+    return 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -237,16 +252,13 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
         return nil;
     }
     
-    MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
-    
-    if (sectionedContacts.sectionTitles.count <= section)
-    {
-        return nil;
-    }
-    else
+    MXKSectionedContacts* sectionedContacts = displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts;
+    if (section < sectionedContacts.sectionTitles.count)
     {
         return (NSString*)[sectionedContacts.sectionTitles objectAtIndex:section];
     }
+    
+    return nil;
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)aTableView
@@ -262,7 +274,7 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
 
 - (NSInteger)tableView:(UITableView *)aTableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
-    MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
+    MXKSectionedContacts* sectionedContacts = displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts;
     NSUInteger section = [sectionedContacts.sectionTitles indexOfObject:title];
     
     // undefined title -> jump to the first valid non empty section
