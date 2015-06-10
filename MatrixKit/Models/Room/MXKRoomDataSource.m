@@ -1231,13 +1231,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(eventsToProcessSnapshot)
         {
-            
             // Is there events to process?
             // The list can be empty because several calls of processQueuedEvents may be processed
             // in one pass in the processingQueue
             if (eventsToProcessSnapshot.count)
             {
-                
                 // Make a quick copy of changing data to avoid to lock it too long time
                 @synchronized(bubbles)
                 {
@@ -1246,21 +1244,17 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
-                    
                     // Check if we should bing this event
                     MXPushRule *rule = [self.mxSession.notificationCenter ruleMatchingEvent:queuedEvent.event];
                     if (rule)
                     {
-                        
                         // Check whether is there an highlight tweak on it
                         for (MXPushRuleAction *ruleAction in rule.actions)
                         {
                             if (ruleAction.actionType == MXPushRuleActionTypeSetTweak)
                             {
-                                
                                 if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"highlight"])
                                 {
-                                    
                                     // Check the highlight tweak "value"
                                     // If not present, highlight. Else check its value before highlighting
                                     if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
@@ -1286,7 +1280,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                     id<MXKRoomBubbleCellDataStoring> bubbleData;
                     if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
                     {
-                        
                         // Try to concatenate the event to the last or the oldest bubble?
                         if (queuedEvent.direction == MXEventDirectionBackwards)
                         {
@@ -1305,7 +1298,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                     
                     if (NO == eventManaged)
                     {
-                        
                         // The event has not been concatenated to an existing cell, create a new bubble for this event
                         bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
                         if (!bubbleData)
@@ -1330,8 +1322,8 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                         eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
                     }
                     
-                    // Count message sent by other users
-                    if (bubbleData.isIncoming)
+                    // Count unread messages
+                    if (bubbleData.isIncoming && queuedEvent.direction == MXEventDirectionForwards)
                     {
                         unreadCount++;
                     }
@@ -1344,7 +1336,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         // Check whether some events have been processed
         if (bubblesSnapshot)
         {
-            
             // Updated data can be displayed now
             // Synchronously wait for the end of the block execution to
             dispatch_sync(dispatch_get_main_queue(), ^{
