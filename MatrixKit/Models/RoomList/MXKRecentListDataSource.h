@@ -46,6 +46,11 @@
 - (void)removeMatrixSession:(MXSession*)mxSession;
 
 /**
+ Mark all messages as read
+ */
+- (void)markAllAsRead;
+
+/**
  Filter the current recents list according to the provided patterns.
  
  @param patternsList the list of patterns (`NSString` instances) to match with. Set nil to cancel search.

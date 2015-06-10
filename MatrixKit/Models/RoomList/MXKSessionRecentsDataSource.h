@@ -67,6 +67,11 @@ extern NSString *const kMXKRecentCellIdentifier;
 #pragma mark - Life cycle
 
 /**
+ Mark all messages as read
+ */
+- (void)markAllAsRead;
+
+/**
  Filter the current recents list according to the provided patterns.
  When patterns are not empty, the search result is stored in `filteredCellDataArray`,
  this array provides then data for the cells served by `MXKRecentsDataSource`.

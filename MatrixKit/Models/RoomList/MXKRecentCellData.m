@@ -112,7 +112,12 @@
 
 - (NSUInteger)unreadBingCount
 {
-    return (0 < roomDataSource.unreadBingCount);
+    return roomDataSource.unreadBingCount;
+}
+
+- (void)markAllAsRead
+{
+    [roomDataSource markAllAsRead];
 }
 
 @end

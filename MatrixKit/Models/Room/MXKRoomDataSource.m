@@ -149,6 +149,15 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     return self;
 }
 
+- (void)markAllAsRead
+{
+    _unreadCount = 0;
+    _unreadBingCount = 0;
+    
+    // Notify the unreadCount has changed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+}
+
 - (void)reset
 {
     if (backPaginationRequest)
@@ -1385,11 +1394,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 {
     // The view controller is going to display all messages
     // Automatically reset the counters
-    _unreadCount = 0;
-    _unreadBingCount = 0;
-    
-    // Notify the unreadCount has changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    [self markAllAsRead];
     
     NSInteger count;
     @synchronized(bubbles)

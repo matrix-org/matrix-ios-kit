@@ -233,6 +233,14 @@
     return unreadCount;
 }
 
+- (void)markAllAsRead
+{
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
+    {
+        [recentsDataSource markAllAsRead];
+    }
+}
+
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)

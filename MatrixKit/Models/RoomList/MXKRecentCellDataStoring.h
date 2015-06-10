@@ -63,6 +63,11 @@
  */
 - (void)update;
 
+/**
+ Mark all messages as read
+ */
+- (void)markAllAsRead;
+
 @optional
 /**
  The `lastEventTextMessage` with sets of attributes.

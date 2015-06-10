@@ -101,11 +101,20 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     // Use numberOfRowsInSection methods so that we take benefit of the filtering
     for (NSUInteger i = 0; i < self.numberOfCells; i++)
     {
-        
         id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
         unreadCount += cellData.unreadCount;
     }
     return unreadCount;
+}
+
+- (void)markAllAsRead
+{
+    // Clear unread count on all recent cells
+    for (NSUInteger i = 0; i < self.numberOfCells; i++)
+    {
+        id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
+        [cellData markAllAsRead];
+    }
 }
 
 - (void)searchWithPatterns:(NSArray*)patternsList
@@ -202,8 +211,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 {
     MXKRoomDataSource *roomDataSource = notif.object;
     if (roomDataSource.mxSession == self.mxSession)
-    {
-        
+    { 
         // Retrieve the corresponding cell data
         id<MXKRecentCellDataStoring> theRoomData;
         for (id<MXKRecentCellDataStoring> roomData in cellDataArray)
@@ -239,7 +247,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
         if (nil == roomData)
         {
-            
             NSLog(@"MXKSessionRecentsDataSource] Add newly joined room: %@", roomId);
             
             // Retrieve the MXKCellData class to manage the data
@@ -249,7 +256,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
             if (cellData)
             {
-                
                 [cellDataArray addObject:cellData];
                 [self sortCellData];
             }
@@ -262,13 +268,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     MXSession *mxSession = notif.object;
     if (mxSession == self.mxSession)
     {
-        
         NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
         id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
         
         if (roomData)
         {
-            
             NSLog(@"MXKSessionRecentsDataSource] Remove left room: %@", roomId);
             
             [cellDataArray removeObject:roomData];

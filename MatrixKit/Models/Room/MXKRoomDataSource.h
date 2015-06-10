@@ -146,6 +146,10 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  */
 - (instancetype)initWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
+/**
+ Mark all messages as read
+ */
+- (void)markAllAsRead;
 
 #pragma mark - Public methods
 /**
