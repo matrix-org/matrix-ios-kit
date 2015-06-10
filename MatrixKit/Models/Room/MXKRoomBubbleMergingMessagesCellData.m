@@ -137,6 +137,14 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark -
 
+- (void)setAttributedTextMessage:(NSAttributedString *)inAttributedTextMessage
+{
+    super.attributedTextMessage = inAttributedTextMessage;
+
+    // Position of each components should be computed again
+    shouldUpdateComponentsPosition = YES;
+}
+
 - (NSAttributedString*)attributedTextMessage
 {
     if (!attributedTextMessage.length && bubbleComponents.count)
@@ -211,9 +219,6 @@ static NSAttributedString *messageSeparator = nil;
     
     // Reset the current attributed string (This will reset rendering attributes).
     self.attributedTextMessage = nil;
-    
-    // Position of each components should be computed again
-    shouldUpdateComponentsPosition = YES;
 }
 
 @end

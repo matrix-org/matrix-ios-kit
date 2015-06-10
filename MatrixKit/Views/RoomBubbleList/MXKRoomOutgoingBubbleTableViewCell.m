@@ -44,7 +44,6 @@
     
     if (self.bubbleData)
     {
-        
         // Check whether the previous message has been sent by the same user.
         // The user's picture and name are displayed only for the first message.
         // Handle sender's picture and adjust view's constraints
@@ -89,12 +88,10 @@
         
         if (self.attachmentView)
         {
-            
             // Check if the image is uploading
             MXKRoomBubbleComponent *component = self.bubbleData.bubbleComponents.firstObject;
             if (MXKEventStateUploading == component.event.mxkState)
             {
-                
                 // Retrieve the uploadId embedded in the fake url
                 self.bubbleData.uploadId = component.event.content[@"url"];
                 
@@ -104,7 +101,6 @@
             }
             else
             {
-                
                 self.attachmentView.hideActivityIndicator = NO;
             }
         }
@@ -143,6 +139,8 @@
     
     // Hide potential loading wheel
     [self stopAnimating];
+    
+    self.dateTimeLabelContainer.userInteractionEnabled = NO;
 }
 
 -(void)startUploadAnimating

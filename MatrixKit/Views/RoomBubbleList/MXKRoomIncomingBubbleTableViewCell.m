@@ -36,7 +36,6 @@
     
     if (self.bubbleData)
     {
-        
         // Check whether the previous message has been sent by the same user.
         // The user's picture and name are displayed only for the first message.
         // Handle sender's picture and adjust view's constraints

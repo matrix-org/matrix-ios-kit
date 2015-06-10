@@ -125,14 +125,11 @@
     // received back by the events stream
     if (MXKRoomBubbleCellDataTypeImage == _dataType || MXKRoomBubbleCellDataTypeVideo == _dataType)
     {
-        
         NSString *msgtype =  event.content[@"msgtype"];
         if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] )
         {
-            
             if (NO == [_attachmentURL isEqualToString:event.content[@"url"]])
             {
-                
                 // Store the echo image as preview to prevent the cell from flashing
                 _previewURL = _attachmentURL;
                 
@@ -160,10 +157,8 @@
 {
     for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
     {
-        
         if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
         {
-            
             [bubbleComponents removeObject:roomBubbleComponent];
             
             // flush the current attributed string to force refresh
