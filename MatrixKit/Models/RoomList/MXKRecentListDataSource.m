@@ -337,29 +337,36 @@
 
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)matrixSession
 {
+    NSIndexPath *indexPath = nil;
+    
     // Look for the right data source
     for (NSInteger section = 0; section < mxSessionArray.count; section++)
     {
         MXSession *mxSession = [mxSessionArray objectAtIndex:section];
         if (mxSession == matrixSession)
         {
-            
             MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:section];
             
-            // Look for the cell
-            for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
+            // Check whether the source is not shrinked
+            if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
             {
-                id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                // Look for the cell
+                for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
                 {
-                    
-                    // Got it
-                    return [NSIndexPath indexPathForRow:index inSection:section];
+                    id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
+                    if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                    {
+                        // Got it
+                        indexPath = [NSIndexPath indexPathForRow:index inSection:section];
+                        break;
+                    }
                 }
             }
+            
+            break;
         }
     }
-    return nil;
+    return indexPath;
 }
 
 #pragma mark - UITableViewDataSource

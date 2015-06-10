@@ -87,7 +87,7 @@
  
  @param roomId the room identifier.
  @param mxSession the matrix session in which the room should be available.
- @return indexPath the index of the cell (nil if not found).
+ @return indexPath the index of the cell (nil if not found or if the related section is shrinked).
  */
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
