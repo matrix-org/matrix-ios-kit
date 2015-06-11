@@ -21,7 +21,7 @@
     /**
      The data source providing UITableViewCells
      */
-    MXKRecentListDataSource *dataSource;
+    MXKRecentsDataSource *dataSource;
     
     /**
      Search handling
@@ -274,7 +274,7 @@
     }
 }
 
-- (void)displayList:(MXKRecentListDataSource *)listDataSource
+- (void)displayList:(MXKRecentsDataSource *)listDataSource
 {
     // Cancel registration on existing dataSource if any
     if (dataSource)

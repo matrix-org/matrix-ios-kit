@@ -36,6 +36,8 @@
 
 #import "MXKAuthenticationViewController.h"
 
+#import "MXKInterleavedRecentsDataSource.h"
+
 #import "MXKRoomCreationView.h"
 
 #import "MXKRoomInputToolbarView.h"

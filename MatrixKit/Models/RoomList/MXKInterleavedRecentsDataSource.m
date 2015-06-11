@@ -1,0 +1,335 @@
+/*
+ Copyright 2015 OpenMarket Ltd
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+#import "MXKInterleavedRecentsDataSource.h"
+
+#import "MXKInterleavedRecentTableViewCell.h"
+
+#import "MXKTools.h"
+
+@interface MXKInterleavedRecentsDataSource ()
+{
+    /**
+     The data for the cells served by `MXKInterleavedRecentsDataSource`.
+     */
+    NSMutableArray *cellDataArray;
+}
+
+@end
+
+@implementation MXKInterleavedRecentsDataSource
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        cellDataArray = [NSMutableArray array];
+        
+        // Reset default view classes
+        [self registerCellViewClass:MXKInterleavedRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
+    }
+    return self;
+}
+
+#pragma mark - MXKDataSource overridden
+
+- (void)destroy
+{
+    cellDataArray = nil;
+    
+    [super destroy];
+}
+
+#pragma mark -
+
+- (UIView *)viewForHeaderInSection:(NSInteger)section withFrame:(CGRect)frame
+{
+    UIView *sectionHeader = nil;
+    
+    if (readyRecentsDataSourceArray.count > 1 && section == 0)
+    {
+        sectionHeader = [[UIView alloc] initWithFrame:frame];
+        sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+        CGFloat btnWidth = frame.size.width / readyRecentsDataSourceArray.count;
+        UIButton *previousShrinkButton;
+        
+        for (NSInteger index = 0; index < readyRecentsDataSourceArray.count; index++)
+        {
+            MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:index];
+            NSString* btnTitle = recentsDataSource.mxSession.myUser.userId;
+            
+            // Add shrink button
+            UIButton *shrinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            CGRect btnFrame = CGRectMake(index * btnWidth, 0, btnWidth, sectionHeader.frame.size.height);
+            shrinkButton.frame = btnFrame;
+            
+            NSUInteger hash = [btnTitle hash];
+            shrinkButton.backgroundColor = [MXKTools colorWithRGBValue:hash];
+            
+            [shrinkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            shrinkButton.tag = index;
+            [sectionHeader addSubview:shrinkButton];
+            sectionHeader.userInteractionEnabled = YES;
+            
+            // Set shrink button constraints
+            NSLayoutConstraint *leftConstraint;
+            NSLayoutConstraint *widthConstraint;
+            shrinkButton.translatesAutoresizingMaskIntoConstraints = NO;
+            if (!previousShrinkButton)
+            {
+                leftConstraint = [NSLayoutConstraint constraintWithItem:shrinkButton
+                                                              attribute:NSLayoutAttributeLeading
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:sectionHeader
+                                                              attribute:NSLayoutAttributeLeading
+                                                             multiplier:1
+                                                               constant:0];
+                widthConstraint = [NSLayoutConstraint constraintWithItem:shrinkButton
+                                                               attribute:NSLayoutAttributeWidth
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:sectionHeader
+                                                               attribute:NSLayoutAttributeWidth
+                                                              multiplier:(1.0 /readyRecentsDataSourceArray.count)
+                                                                constant:0];
+            }
+            else
+            {
+                leftConstraint = [NSLayoutConstraint constraintWithItem:shrinkButton
+                                                              attribute:NSLayoutAttributeLeading
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:previousShrinkButton
+                                                              attribute:NSLayoutAttributeTrailing
+                                                             multiplier:1
+                                                               constant:0];
+                widthConstraint = [NSLayoutConstraint constraintWithItem:shrinkButton
+                                                               attribute:NSLayoutAttributeWidth
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:previousShrinkButton
+                                                               attribute:NSLayoutAttributeWidth
+                                                              multiplier:1
+                                                                constant:0];
+            }
+            if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+            {
+                [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint]];
+            }
+            else
+            {
+                [sectionHeader addConstraint:leftConstraint];
+                [sectionHeader addConstraint:widthConstraint];
+                
+            }
+            previousShrinkButton = shrinkButton;
+            
+            // Add shrink icon
+            UIImage *chevron;
+            if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
+            {
+                chevron = [UIImage imageNamed:@"disclosure"];
+            }
+            else
+            {
+                chevron =[UIImage imageNamed:@"shrink"];
+            }
+            UIImageView *chevronView = [[UIImageView alloc] initWithImage:chevron];
+            chevronView.contentMode = UIViewContentModeCenter;
+            frame = chevronView.frame;
+            frame.origin.x = shrinkButton.frame.size.width - frame.size.width - 8;
+            frame.origin.y = (shrinkButton.frame.size.height - frame.size.height) / 2;
+            chevronView.frame = frame;
+            [shrinkButton addSubview:chevronView];
+            chevronView.autoresizingMask |= (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin);
+            
+            // Add label
+            frame = shrinkButton.frame;
+            frame.origin.x = 5;
+            frame.origin.y = 5;
+            frame.size.width = chevronView.frame.origin.x - 10;
+            frame.size.height -= 10;
+            UILabel *headerLabel = [[UILabel alloc] initWithFrame:frame];
+            headerLabel.font = [UIFont boldSystemFontOfSize:16];
+            headerLabel.backgroundColor = [UIColor clearColor];
+            headerLabel.text = btnTitle;
+            [shrinkButton addSubview:headerLabel];
+            headerLabel.autoresizingMask |= (UIViewAutoresizingFlexibleWidth);
+        }
+    }
+    
+    return sectionHeader;
+}
+
+- (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Only one section is handled by this data source
+    if (indexPath.section == 0 && indexPath.row < cellDataArray.count)
+    {
+        return cellDataArray[indexPath.row];
+    }
+    return nil;
+}
+
+- (CGFloat)cellHeightAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat height = 0;
+    
+    // Only one section is handled by this data source
+    if (indexPath.section == 0 && indexPath.row < cellDataArray.count)
+    {
+        id<MXKRecentCellDataStoring> recentCellData = cellDataArray[indexPath.row];
+        
+        // Select the right recent data source
+        MXKSessionRecentsDataSource *recentsDataSource = nil;
+        for (recentsDataSource in readyRecentsDataSourceArray)
+        {
+            if (recentsDataSource.mxSession == recentCellData.roomDataSource.mxSession)
+            {
+                break;
+            }
+        }
+        
+        if (recentsDataSource)
+        {
+            // Count the index of this cell data in original data source array
+            NSInteger rank = 0;
+            for (NSInteger index = 0; index < indexPath.row; index++)
+            {
+                id<MXKRecentCellDataStoring> cellData = cellDataArray[index];
+                if (cellData.roomDataSource == recentCellData.roomDataSource)
+                {
+                    rank++;
+                }
+            }
+            
+            height = [recentsDataSource cellHeightAtIndex:rank];
+        }
+    }
+    return height;
+}
+
+- (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)matrixSession
+{
+    NSIndexPath *indexPath = nil;
+    
+    // Look for the right data source
+    for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+    {
+        if (recentsDataSource.mxSession == matrixSession)
+        {
+            // Check whether the source is not shrinked
+            if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+            {
+                // Look for the cell
+                for (NSInteger index = 0; index < cellDataArray.count; index ++)
+                {
+                    id<MXKRecentCellDataStoring> recentCellData = cellDataArray[index];
+                    if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                    {
+                        // Got it
+                        indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+    return indexPath;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // Only one section is handled by this data source
+    return cellDataArray.count ? 1 : 0;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return cellDataArray.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    id<MXKRecentCellDataStoring> roomData = [self cellDataAtIndexPath:indexPath];
+    if (roomData)
+    {
+        MXKRecentTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRecentCellIdentifier forIndexPath:indexPath];
+        
+        // Make the bubble display the data
+        [cell render:roomData];
+        
+        return cell;
+    }
+    return nil;
+}
+
+#pragma mark - MXKDataSourceDelegate
+
+- (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes
+{
+    // Update cellData array, TODO take into account 'changes' parameter
+    
+    MXKSessionRecentsDataSource *updateRecentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
+    NSInteger numberOfUpdatedCells = 0;
+    // Check whether this dataSource is considered as ready
+    if ([readyRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound)
+    {
+        numberOfUpdatedCells = updateRecentsDataSource.numberOfCells;
+    }
+    
+    NSInteger currentCellIndex = 0;
+    NSInteger updatedCellIndex = 0;
+    id<MXKRecentCellDataStoring> updatedCellData = nil;
+    
+    if (numberOfUpdatedCells)
+    {
+        updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+    }
+    
+    // Review all cell data items of the current list
+    while (currentCellIndex < cellDataArray.count && updatedCellData)
+    {
+        id<MXKRecentCellDataStoring> currentCellData = cellDataArray[currentCellIndex];
+        
+        // Remove existing cell data of the updated data source
+        if (currentCellData.roomDataSource.mxSession == dataSource.mxSession)
+        {
+            [cellDataArray removeObjectAtIndex:currentCellIndex];
+        }
+        else
+        {
+            while (updatedCellData && (updatedCellData.lastEvent.originServerTs > currentCellData.lastEvent.originServerTs))
+            {
+                [cellDataArray insertObject:updatedCellData atIndex:currentCellIndex++];
+                updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+            }
+            
+            currentCellIndex++;
+        }
+    }
+    
+    while (updatedCellData)
+    {
+        [cellDataArray addObject:updatedCellData];
+        updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+    }
+    
+    [self.delegate dataSource:self didCellChange:changes];
+}
+
+@end

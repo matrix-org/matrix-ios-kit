@@ -14,12 +14,13 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKRecentsDataSource.h"
 
-#import "MatrixKit.h"
-
-@interface MXKSampleRecentsViewController : MXKRecentListViewController
-
+/**
+ 'MXKInterleavedRecentsDataSource' class inherits from 'MXKRecentsDataSource'.
+ 
+ It interleaves the recents in case of multiple sessions to display first the most recent room.
+ */
+@interface MXKInterleavedRecentsDataSource : MXKRecentsDataSource
 
 @end
-

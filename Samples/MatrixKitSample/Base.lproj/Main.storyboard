@@ -5,10 +5,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <scenes>
-        <!--Sample Recents View Controller-->
+        <!--Recent List View Controller-->
         <scene sceneID="6r9-d3-cv0">
             <objects>
-                <viewController id="YbK-3w-mDu" customClass="MXKSampleRecentsViewController" sceneMemberID="viewController">
+                <viewController id="YbK-3w-mDu" customClass="MXKRecentListViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Tog-oL-liB"/>
                         <viewControllerLayoutGuide type="bottom" id="u3h-AL-g0w"/>
@@ -166,7 +166,7 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <segue destination="YbK-3w-mDu" kind="show" identifier="showSampleRecentsViewController" id="Y6Z-lf-5du"/>
+                                        <segue destination="YbK-3w-mDu" kind="show" identifier="showMXKRecentListViewController" id="Y6Z-lf-5du"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -227,6 +227,8 @@
                         <segue destination="AJD-Wn-nDw" kind="show" identifier="showMXKAccountDetailsViewController" id="e6q-tj-0Hv"/>
                         <segue destination="ZPO-Jz-T86" kind="show" identifier="showSampleRoomViewController" id="Yx7-ap-F4B"/>
                         <segue destination="PaO-MN-amw" kind="show" identifier="showMXKContactListViewController" id="5Yg-2p-fIt"/>
+                        <segue destination="YbK-3w-mDu" kind="show" identifier="showMXKRecentListViewController" id="MBc-Hp-U9v"/>
+                        <segue destination="YbK-3w-mDu" kind="show" identifier="showInterleavedRecentsViewController" id="8a2-C4-GfS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -250,4 +252,7 @@
             <point key="canvasLocation" x="-2506" y="-570"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="8a2-C4-GfS"/>
+    </inferredMetricsTieBreakers>
 </document>

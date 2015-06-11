@@ -17,9 +17,24 @@
 #import "MXKSessionRecentsDataSource.h"
 
 /**
- The recents data source for `MXKRecentsViewController`. This data source handles one or more matrix sessions.
+ 'MXKRecentsDataSource' is a base class to handle recents from one or multiple matrix sessions.
+ A 'MXKRecentsDataSource' instance provides the recents data source for `MXKRecentListViewController`.
+ 
+ By default, the recents list of different sessions are handled into separate sections.
  */
-@interface MXKRecentListDataSource : MXKDataSource <UITableViewDataSource, MXKDataSourceDelegate>
+@interface MXKRecentsDataSource : MXKDataSource <UITableViewDataSource, MXKDataSourceDelegate>
+{
+@protected
+    /**
+     Array of `MXKSessionRecentsDataSource` instances. Only ready and non empty data source are listed here.
+     */
+    NSMutableArray *readyRecentsDataSourceArray;
+    
+    /**
+     Array of shrinked/hidden sources.
+     */
+    NSMutableArray *shrinkedRecentsDataSourceArray;
+}
 
 /**
  List of associated matrix sessions.
@@ -90,5 +105,10 @@
  @return indexPath the index of the cell (nil if not found or if the related section is shrinked).
  */
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
+
+/**
+ Action registered on buttons used to shrink/disclose recents sources.
+ */
+- (IBAction)onButtonPressed:(id)sender;
 
 @end

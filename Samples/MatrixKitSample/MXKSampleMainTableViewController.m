@@ -15,7 +15,6 @@
  */
 
 #import "MXKSampleMainTableViewController.h"
-#import "MXKSampleRecentsViewController.h"
 #import "MXKSampleRoomViewController.h"
 #import "MXKSampleJSQMessagesViewController.h"
 #import "MXKSampleRoomMembersViewController.h"
@@ -69,6 +68,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
      Current index of sections
      */
     NSInteger accountSectionIndex;
+    NSInteger recentsSectionIndex;
     NSInteger roomSectionIndex;
     NSInteger roomMembersSectionIndex;
     NSInteger authenticationSectionIndex;
@@ -307,11 +307,12 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 {
     NSInteger count = 0;
     
-    accountSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = contactSectionIndex = -1;
+    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = contactSectionIndex = -1;
     
     if ([[MXKAccountManager sharedManager] accounts].count)
     {
         accountSectionIndex = count++;
+        recentsSectionIndex = count++;
     }
     
     if (selectedRoom)
@@ -331,6 +332,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     if (section == accountSectionIndex)
     {
         return [[MXKAccountManager sharedManager] accounts].count + 1; // Add one cell in this section to logout all accounts
+    }
+    else if (section == recentsSectionIndex)
+    {
+        return ([[MXKAccountManager sharedManager] accounts].count > 1)? 2 : 1;
     }
     else if (section == roomSectionIndex)
     {
@@ -357,6 +362,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     if (section == accountSectionIndex)
     {
         return @"Accounts:";
+    }
+    else if (section == recentsSectionIndex)
+    {
+        return @"Recents:";
     }
     else if (section == roomSectionIndex)
     {
@@ -408,6 +417,19 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
             [logoutBtnCell.mxkButton addTarget:self action:@selector(logout) forControlEvents:UIControlEventTouchUpInside];
             
             cell = logoutBtnCell;
+        }
+    }
+    else if (indexPath.section == recentsSectionIndex)
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+        switch (indexPath.row)
+        {
+            case 0:
+                cell.textLabel.text = @"MXKRecentListViewController";
+                break;
+            case 1:
+                cell.textLabel.text = @"Interleaved Recents";
+                break;
         }
     }
     else if (indexPath.section == roomSectionIndex)
@@ -488,6 +510,18 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
             [self performSegueWithIdentifier:@"showMXKAccountDetailsViewController" sender:self];
         }
     }
+    else if (indexPath.section == recentsSectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+                [self performSegueWithIdentifier:@"showMXKRecentListViewController" sender:self];
+                break;
+            case 1:
+                [self performSegueWithIdentifier:@"showInterleavedRecentsViewController" sender:self];
+                break;
+        }
+    }
     else if (indexPath.section == roomSectionIndex)
     {
         switch (indexPath.row)
@@ -542,13 +576,13 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     // Keep ref on destinationViewController
     destinationViewController = segue.destinationViewController;
     
-    if ([segue.identifier isEqualToString:@"showSampleRecentsViewController"] && self.mainSession)
+    if ([segue.identifier isEqualToString:@"showMXKRecentListViewController"] && self.mainSession)
     {
-        MXKSampleRecentsViewController *sampleRecentListViewController = (MXKSampleRecentsViewController *)destinationViewController;
-        sampleRecentListViewController.delegate = self;
+        MXKRecentListViewController *recentListViewController = (MXKRecentListViewController *)destinationViewController;
+        recentListViewController.delegate = self;
         
         // Prepare listDataSource
-        MXKRecentListDataSource *listDataSource = [[MXKRecentListDataSource alloc] init];
+        MXKRecentsDataSource *listDataSource = [[MXKRecentsDataSource alloc] init];
         NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
         for (MXKAccount *account in accounts)
         {
@@ -557,7 +591,24 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
                 [listDataSource addMatrixSession:account.mxSession];
             }
         }
-        [sampleRecentListViewController displayList:listDataSource];
+        [recentListViewController displayList:listDataSource];
+    }
+    else if ([segue.identifier isEqualToString:@"showInterleavedRecentsViewController"] && self.mainSession)
+    {
+        MXKRecentListViewController *recentListViewController = (MXKRecentListViewController *)destinationViewController;
+        recentListViewController.delegate = self;
+        
+        // Prepare listDataSource
+        MXKInterleavedRecentsDataSource *listDataSource = [[MXKInterleavedRecentsDataSource alloc] init];
+        NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
+        for (MXKAccount *account in accounts)
+        {
+            if (account.mxSession)
+            {
+                [listDataSource addMatrixSession:account.mxSession];
+            }
+        }
+        [recentListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKRoomViewController"] || [segue.identifier isEqualToString:@"showSampleRoomViewController"])
     {

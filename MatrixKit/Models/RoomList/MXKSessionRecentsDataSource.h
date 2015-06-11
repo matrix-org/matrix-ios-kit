@@ -34,7 +34,7 @@ extern NSString *const kMXKRecentCellIdentifier;
 @protected
 
     /**
-     The data for the cells served by `MXKRecentsDataSource`.
+     The data for the cells served by `MXKSessionRecentsDataSource`.
      */
     NSMutableArray *cellDataArray;
     

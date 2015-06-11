@@ -154,9 +154,17 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 {
     if (filteredCellDataArray)
     {
-        return filteredCellDataArray[index];
+        if (index < filteredCellDataArray.count)
+        {
+            return filteredCellDataArray[index];
+        }
     }
-    return cellDataArray[index];
+    else if (index < cellDataArray.count)
+    {
+        return cellDataArray[index];
+    }
+    
+    return nil;
 }
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index

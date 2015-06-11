@@ -17,7 +17,7 @@ limitations under the License.
 #import <UIKit/UIKit.h>
 
 #import "MXKViewController.h"
-#import "MXKRecentListDataSource.h"
+#import "MXKRecentsDataSource.h"
 
 @class MXKRecentListViewController;
 
@@ -52,7 +52,7 @@ limitations under the License.
 /**
  The current data source associated to the view controller.
  */
-@property (nonatomic, readonly) MXKRecentListDataSource *dataSource;
+@property (nonatomic, readonly) MXKRecentsDataSource *dataSource;
 
 /**
  The delegate for the view controller.
@@ -90,11 +90,13 @@ limitations under the License.
 /**
  Display the recents described in the provided data source.
  
- Note: The provided data source will replace the current data source if any. The caller
+ Note1: The provided data source will replace the current data source if any. The caller
  should dispose properly this data source if it is not used anymore.
+ 
+ Note2: You may provide here a MXKInterleavedRecentsDataSource instance to display interleaved recents.
 
  @param listDataSource the data source providing the recents list.
  */
-- (void)displayList:(MXKRecentListDataSource*)listDataSource;
+- (void)displayList:(MXKRecentsDataSource*)listDataSource;
 
 @end
