@@ -37,8 +37,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 {
     self = [super initWithMatrixSession:matrixSession];
     if (self)
-    {
-        
+    {  
         roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
         
         cellDataArray = [NSMutableArray array];
@@ -188,7 +187,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     
     for (MXRoom *room in self.mxSession.rooms)
     {
-        
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
         
         id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
@@ -198,14 +196,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
     }
     
-    // Update here data source state if it is not already ready
-    if (state != MXKDataSourceStateReady)
+    // Update here data source state
+    state = MXKDataSourceStateReady;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
     {
-        state = MXKDataSourceStateReady;
-        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
-        {
-            [self.delegate dataSource:self didStateChange:state];
-        }
+        [self.delegate dataSource:self didStateChange:state];
     }
     [self sortCellData];
     

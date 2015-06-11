@@ -45,7 +45,7 @@
     return self;
 }
 
-#pragma mark - MXKDataSource overridden
+#pragma mark - Override MXKDataSource
 
 - (void)destroy
 {
@@ -54,7 +54,7 @@
     [super destroy];
 }
 
-#pragma mark -
+#pragma mark - Override MXKRecentsDataSource
 
 - (UIView *)viewForHeaderInSection:(NSInteger)section withFrame:(CGRect)frame
 {
@@ -76,9 +76,7 @@
             UIButton *shrinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
             CGRect btnFrame = CGRectMake(index * btnWidth, 0, btnWidth, sectionHeader.frame.size.height);
             shrinkButton.frame = btnFrame;
-            
-            NSUInteger hash = [btnTitle hash];
-            shrinkButton.backgroundColor = [MXKTools colorWithRGBValue:hash];
+            shrinkButton.backgroundColor = [UIColor clearColor];
             
             [shrinkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             shrinkButton.tag = index;
@@ -146,8 +144,17 @@
                 chevron =[UIImage imageNamed:@"shrink"];
             }
             UIImageView *chevronView = [[UIImageView alloc] initWithImage:chevron];
+            if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+            {
+                chevronView.backgroundColor = [MXKTools colorWithRGBValue:[btnTitle hash]];
+            }
+            else
+            {
+                chevronView.backgroundColor = [UIColor lightGrayColor];
+            }
             chevronView.contentMode = UIViewContentModeCenter;
             frame = chevronView.frame;
+            frame.size.width = frame.size.height = shrinkButton.frame.size.height - 10;
             frame.origin.x = shrinkButton.frame.size.width - frame.size.width - 8;
             frame.origin.y = (shrinkButton.frame.size.height - frame.size.height) / 2;
             chevronView.frame = frame;
@@ -254,8 +261,14 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Only one section is handled by this data source
-    return cellDataArray.count ? 1 : 0;
+    // Only one section is handled by this data source.
+    // CAUTION: Keep one section to display the section header when all data sources are shrinked.
+    if (cellDataArray.count || shrinkedRecentsDataSourceArray.count)
+    {
+        return 1;
+    }
+    
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -286,8 +299,8 @@
     
     MXKSessionRecentsDataSource *updateRecentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
     NSInteger numberOfUpdatedCells = 0;
-    // Check whether this dataSource is considered as ready
-    if ([readyRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound)
+    // Check whether this dataSource is used
+    if ([readyRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound && [shrinkedRecentsDataSourceArray indexOfObject:dataSource] == NSNotFound)
     {
         numberOfUpdatedCells = updateRecentsDataSource.numberOfCells;
     }
@@ -302,7 +315,7 @@
     }
     
     // Review all cell data items of the current list
-    while (currentCellIndex < cellDataArray.count && updatedCellData)
+    while (currentCellIndex < cellDataArray.count)
     {
         id<MXKRecentCellDataStoring> currentCellData = cellDataArray[currentCellIndex];
         

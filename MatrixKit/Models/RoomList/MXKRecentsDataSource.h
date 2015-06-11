@@ -42,6 +42,11 @@
 @property (nonatomic, readonly) NSArray* mxSessions;
 
 /**
+ The number of available recents data sources (This count may be different than mxSession.count because empty data sources are ignored).
+ */
+@property (nonatomic, readonly) NSUInteger recentsDataSourcesCount;
+
+/**
  The total count of unread messages.
  */
 @property (nonatomic, readonly) NSUInteger unreadCount;

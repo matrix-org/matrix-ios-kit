@@ -100,6 +100,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
             [self addMatrixSession:mxSession];
             [[MXKContactManager sharedManager] addMatrixSession:mxSession];
             
+            if (destinationViewController && [destinationViewController respondsToSelector:@selector(addMatrixSession:)])
+            {
+                [destinationViewController addMatrixSession:mxSession];
+            }
+            
             self.tableView.tableHeaderView.hidden = NO;
             [self.tableView reloadData];
         }
@@ -107,6 +112,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
         {
             [self removeMatrixSession:mxSession];
             [[MXKContactManager sharedManager] removeMatrixSession:mxSession];
+            
+            if (destinationViewController && [destinationViewController respondsToSelector:@selector(removeMatrixSession:)])
+            {
+                [destinationViewController removeMatrixSession:mxSession];
+            }
             
             if (!self.mxSessions.count) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -335,7 +345,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }
     else if (section == recentsSectionIndex)
     {
-        return ([[MXKAccountManager sharedManager] accounts].count > 1)? 2 : 1;
+        return 2;
     }
     else if (section == roomSectionIndex)
     {
@@ -576,7 +586,7 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     // Keep ref on destinationViewController
     destinationViewController = segue.destinationViewController;
     
-    if ([segue.identifier isEqualToString:@"showMXKRecentListViewController"] && self.mainSession)
+    if (([segue.identifier isEqualToString:@"showMXKRecentListViewController"] || [segue.identifier isEqualToString:@"showRoomSelector"]) && self.mainSession)
     {
         MXKRecentListViewController *recentListViewController = (MXKRecentListViewController *)destinationViewController;
         recentListViewController.delegate = self;

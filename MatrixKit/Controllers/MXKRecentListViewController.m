@@ -356,8 +356,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    // Section header is required only in case of multi sessions
-    if (self.dataSource.mxSessions.count > 1)
+    // Section header is required only when several recent lists are displayed.
+    if (self.dataSource.recentsDataSourcesCount > 1)
     {
         return 35;
     }

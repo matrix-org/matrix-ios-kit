@@ -109,7 +109,8 @@
             [recentsDataSourceArray removeObjectAtIndex:index];
             [mxSessionArray removeObjectAtIndex:index];
             
-            [self.delegate dataSource:self didCellChange:nil];
+            // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this removed data source.
+            [self dataSource:recentsDataSource didCellChange:nil];
             
             if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didRemoveMatrixSession:)])
             {
@@ -227,6 +228,11 @@
 - (NSArray*)mxSessions
 {
     return [NSArray arrayWithArray:mxSessionArray];
+}
+
+- (NSUInteger)recentsDataSourcesCount
+{
+    return readyRecentsDataSourceArray.count;
 }
 
 - (NSUInteger)unreadCount
@@ -442,8 +448,8 @@
             }
             else
             {
-                // Loop on internal 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this new added data source.
-                [self dataSource:dataSource didCellChange:nil];
+                // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this new added data source.
+                [self dataSource:recentsDataSource didCellChange:nil];
             }
         }
     }
@@ -451,8 +457,8 @@
     {
         [readyRecentsDataSourceArray removeObject:recentsDataSource];
         
-        // Loop on internal 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this removed data source.
-        [self dataSource:dataSource didCellChange:nil];
+        // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this removed data source.
+        [self dataSource:recentsDataSource didCellChange:nil];
     }
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
@@ -485,8 +491,8 @@
                 [shrinkedRecentsDataSourceArray addObject:recentsDataSource];
             }
             
-            // Notify delegate
-            [self.delegate dataSource:self didCellChange:nil];
+            // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle change on this data source.
+            [self dataSource:recentsDataSource didCellChange:nil];
         }
     }
 }
