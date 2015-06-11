@@ -23,9 +23,9 @@
 @interface MXKInterleavedRecentsDataSource ()
 {
     /**
-     The data for the cells served by `MXKInterleavedRecentsDataSource`.
+     The interleaved recents: cell data served by `MXKInterleavedRecentsDataSource`.
      */
-    NSMutableArray *cellDataArray;
+    NSMutableArray *interleavedCellDataArray;
 }
 
 @end
@@ -37,7 +37,7 @@
     self = [super init];
     if (self)
     {
-        cellDataArray = [NSMutableArray array];
+        interleavedCellDataArray = [NSMutableArray array];
         
         // Reset default view classes
         [self registerCellViewClass:MXKInterleavedRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
@@ -49,7 +49,7 @@
 
 - (void)destroy
 {
-    cellDataArray = nil;
+    interleavedCellDataArray = nil;
     
     [super destroy];
 }
@@ -181,12 +181,25 @@
 
 - (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath *)indexPath
 {
+    id<MXKRecentCellDataStoring> cellData = nil;
+    
     // Only one section is handled by this data source
-    if (indexPath.section == 0 && indexPath.row < cellDataArray.count)
+    if (indexPath.section == 0)
     {
-        return cellDataArray[indexPath.row];
+        // Consider first the case where there is only one data source (no interleaving).
+        if (readyRecentsDataSourceArray.count == 1)
+        {
+            MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+            cellData = [recentsDataSource cellDataAtIndex:indexPath.row];
+        }
+        // Else all the cells have been interleaved.
+        else if (indexPath.row < interleavedCellDataArray.count)
+        {
+            cellData = interleavedCellDataArray[indexPath.row];
+        }
     }
-    return nil;
+    
+    return cellData;
 }
 
 - (CGFloat)cellHeightAtIndexPath:(NSIndexPath *)indexPath
@@ -194,36 +207,47 @@
     CGFloat height = 0;
     
     // Only one section is handled by this data source
-    if (indexPath.section == 0 && indexPath.row < cellDataArray.count)
+    if (indexPath.section == 0)
     {
-        id<MXKRecentCellDataStoring> recentCellData = cellDataArray[indexPath.row];
-        
-        // Select the right recent data source
-        MXKSessionRecentsDataSource *recentsDataSource = nil;
-        for (recentsDataSource in readyRecentsDataSourceArray)
+        // Consider first the case where there is only one data source (no interleaving).
+        if (readyRecentsDataSourceArray.count == 1)
         {
-            if (recentsDataSource.mxSession == recentCellData.roomDataSource.mxSession)
-            {
-                break;
-            }
+            MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+            height = [recentsDataSource cellHeightAtIndex:indexPath.row];
         }
-        
-        if (recentsDataSource)
+        // Else all the cells have been interleaved.
+        else if (indexPath.row < interleavedCellDataArray.count)
         {
-            // Count the index of this cell data in original data source array
-            NSInteger rank = 0;
-            for (NSInteger index = 0; index < indexPath.row; index++)
+            id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[indexPath.row];
+            
+            // Select the right recent data source
+            MXKSessionRecentsDataSource *recentsDataSource = nil;
+            for (recentsDataSource in readyRecentsDataSourceArray)
             {
-                id<MXKRecentCellDataStoring> cellData = cellDataArray[index];
-                if (cellData.roomDataSource == recentCellData.roomDataSource)
+                if (recentsDataSource.mxSession == recentCellData.roomDataSource.mxSession)
                 {
-                    rank++;
+                    break;
                 }
             }
             
-            height = [recentsDataSource cellHeightAtIndex:rank];
+            if (recentsDataSource)
+            {
+                // Count the index of this cell data in original data source array
+                NSInteger rank = 0;
+                for (NSInteger index = 0; index < indexPath.row; index++)
+                {
+                    id<MXKRecentCellDataStoring> cellData = interleavedCellDataArray[index];
+                    if (cellData.roomDataSource == recentCellData.roomDataSource)
+                    {
+                        rank++;
+                    }
+                }
+                
+                height = [recentsDataSource cellHeightAtIndex:rank];
+            }
         }
     }
+    
     return height;
 }
 
@@ -231,29 +255,52 @@
 {
     NSIndexPath *indexPath = nil;
     
-    // Look for the right data source
-    for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+    // Consider first the case where there is only one data source (no interleaving).
+    if (readyRecentsDataSourceArray.count == 1)
     {
+        MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
         if (recentsDataSource.mxSession == matrixSession)
         {
-            // Check whether the source is not shrinked
-            if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+            // Look for the cell
+            for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
             {
-                // Look for the cell
-                for (NSInteger index = 0; index < cellDataArray.count; index ++)
+                id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
+                if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
                 {
-                    id<MXKRecentCellDataStoring> recentCellData = cellDataArray[index];
-                    if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
-                    {
-                        // Got it
-                        indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                        break;
-                    }
+                    // Got it
+                    indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                    break;
                 }
             }
-            break;
         }
     }
+    else
+    {
+        // Look for the right data source
+        for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+        {
+            if (recentsDataSource.mxSession == matrixSession)
+            {
+                // Check whether the source is not shrinked
+                if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+                {
+                    // Look for the cell
+                    for (NSInteger index = 0; index < interleavedCellDataArray.count; index ++)
+                    {
+                        id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[index];
+                        if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                        {
+                            // Got it
+                            indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+    
     return indexPath;
 }
 
@@ -262,18 +309,19 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Only one section is handled by this data source.
-    // CAUTION: Keep one section to display the section header when all data sources are shrinked.
-    if (cellDataArray.count || shrinkedRecentsDataSourceArray.count)
-    {
-        return 1;
-    }
-    
-    return 0;
+    return (readyRecentsDataSourceArray.count ? 1 : 0);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return cellDataArray.count;
+    // Consider first the case where there is only one data source (no interleaving).
+    if (readyRecentsDataSourceArray.count == 1)
+    {
+        MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+        return recentsDataSource.numberOfCells;
+    }
+    
+    return interleavedCellDataArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -286,6 +334,15 @@
         // Make the bubble display the data
         [cell render:roomData];
         
+        // Clear the user flag, if only one recents list is available
+        if (readyRecentsDataSourceArray.count == 1)
+        {
+            if ([cell isKindOfClass:[MXKInterleavedRecentTableViewCell class]])
+            {
+                ((MXKInterleavedRecentTableViewCell*)cell).userFlag.backgroundColor = [UIColor clearColor];
+            }
+        }
+        
         return cell;
     }
     return nil;
@@ -295,51 +352,80 @@
 
 - (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes
 {
-    // Update cellData array, TODO take into account 'changes' parameter
-    
-    MXKSessionRecentsDataSource *updateRecentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
-    NSInteger numberOfUpdatedCells = 0;
-    // Check whether this dataSource is used
-    if ([readyRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound && [shrinkedRecentsDataSourceArray indexOfObject:dataSource] == NSNotFound)
+    // Consider first the case where there is only one data source (no interleaving).
+    if (readyRecentsDataSourceArray.count == 1)
     {
-        numberOfUpdatedCells = updateRecentsDataSource.numberOfCells;
+        // Flush interleaved cells array, we will refer directly to the cell data of the unique data source.
+        [interleavedCellDataArray removeAllObjects];
     }
-    
-    NSInteger currentCellIndex = 0;
-    NSInteger updatedCellIndex = 0;
-    id<MXKRecentCellDataStoring> updatedCellData = nil;
-    
-    if (numberOfUpdatedCells)
+    else
     {
-        updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
-    }
-    
-    // Review all cell data items of the current list
-    while (currentCellIndex < cellDataArray.count)
-    {
-        id<MXKRecentCellDataStoring> currentCellData = cellDataArray[currentCellIndex];
-        
-        // Remove existing cell data of the updated data source
-        if (currentCellData.roomDataSource.mxSession == dataSource.mxSession)
+        // Handle here the specific case where a second source is just added.
+        // The empty interleaved cells array has to be prefilled with the cell data of the other source (except if this other source is shrinked).
+        if (!interleavedCellDataArray.count && readyRecentsDataSourceArray.count == 2)
         {
-            [cellDataArray removeObjectAtIndex:currentCellIndex];
-        }
-        else
-        {
-            while (updatedCellData && (updatedCellData.lastEvent.originServerTs > currentCellData.lastEvent.originServerTs))
+            // This is the first interleaving, look for the other source
+            MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+            if (recentsDataSource == dataSource)
             {
-                [cellDataArray insertObject:updatedCellData atIndex:currentCellIndex++];
-                updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+                recentsDataSource = readyRecentsDataSourceArray.lastObject;
             }
             
-            currentCellIndex++;
+            if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+            {
+                // Report all cell data
+                for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
+                {
+                    [interleavedCellDataArray addObject:[recentsDataSource cellDataAtIndex:index]];
+                }
+            }
         }
-    }
-    
-    while (updatedCellData)
-    {
-        [cellDataArray addObject:updatedCellData];
-        updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+        
+        // Update now interleaved cells array, TODO take into account 'changes' parameter
+        MXKSessionRecentsDataSource *updateRecentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
+        NSInteger numberOfUpdatedCells = 0;
+        // Check whether this dataSource is used
+        if ([readyRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound && [shrinkedRecentsDataSourceArray indexOfObject:dataSource] == NSNotFound)
+        {
+            numberOfUpdatedCells = updateRecentsDataSource.numberOfCells;
+        }
+        
+        NSInteger currentCellIndex = 0;
+        NSInteger updatedCellIndex = 0;
+        id<MXKRecentCellDataStoring> updatedCellData = nil;
+        
+        if (numberOfUpdatedCells)
+        {
+            updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+        }
+        
+        // Review all cell data items of the current list
+        while (currentCellIndex < interleavedCellDataArray.count)
+        {
+            id<MXKRecentCellDataStoring> currentCellData = interleavedCellDataArray[currentCellIndex];
+            
+            // Remove existing cell data of the updated data source
+            if (currentCellData.roomDataSource.mxSession == dataSource.mxSession)
+            {
+                [interleavedCellDataArray removeObjectAtIndex:currentCellIndex];
+            }
+            else
+            {
+                while (updatedCellData && (updatedCellData.lastEvent.originServerTs > currentCellData.lastEvent.originServerTs))
+                {
+                    [interleavedCellDataArray insertObject:updatedCellData atIndex:currentCellIndex++];
+                    updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+                }
+                
+                currentCellIndex++;
+            }
+        }
+        
+        while (updatedCellData)
+        {
+            [interleavedCellDataArray addObject:updatedCellData];
+            updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
+        }
     }
     
     [self.delegate dataSource:self didCellChange:changes];

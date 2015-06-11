@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <objects>
@@ -27,7 +26,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Oct 12 18:15" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="360-Go-RcG">
-                        <rect key="frame" x="505" y="8" width="72" height="15"/>
+                        <rect key="frame" x="518" y="8" width="72" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
@@ -47,7 +46,7 @@
                     <constraint firstAttribute="trailing" secondItem="HGL-DQ-ggW" secondAttribute="trailing" id="U7B-DW-Irn"/>
                     <constraint firstItem="dQt-mN-T6b" firstAttribute="leading" secondItem="aXz-IR-jj5" secondAttribute="leading" constant="8" id="UYQ-HG-YP1"/>
                     <constraint firstItem="360-Go-RcG" firstAttribute="top" secondItem="aXz-IR-jj5" secondAttribute="top" constant="8" id="XyO-tl-6SX"/>
-                    <constraint firstAttribute="trailing" secondItem="360-Go-RcG" secondAttribute="trailing" constant="23" id="YqC-WC-Wqe"/>
+                    <constraint firstAttribute="trailing" secondItem="360-Go-RcG" secondAttribute="trailing" constant="10" id="YqC-WC-Wqe"/>
                     <constraint firstAttribute="trailing" secondItem="Lg1-xQ-AGn" secondAttribute="trailing" constant="88" id="aHj-ir-ed8"/>
                     <constraint firstAttribute="bottom" secondItem="dQt-mN-T6b" secondAttribute="bottom" constant="9" id="sLb-Q4-AFW"/>
                     <constraint firstItem="Lg1-xQ-AGn" firstAttribute="top" secondItem="aXz-IR-jj5" secondAttribute="top" constant="8" id="uCT-KE-X09"/>
