@@ -18,7 +18,7 @@
 
 #import "MXKInterleavedRecentTableViewCell.h"
 
-#import "MXKTools.h"
+#import "MXKAccountManager.h"
 
 @interface MXKInterleavedRecentsDataSource ()
 {
@@ -146,7 +146,16 @@
             UIImageView *chevronView = [[UIImageView alloc] initWithImage:chevron];
             if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
             {
-                chevronView.backgroundColor = [MXKTools colorWithRGBValue:[btnTitle hash]];
+                // Display the tint color of the user
+                MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:recentsDataSource.mxSession.myUser.userId];
+                if (account)
+                {
+                    chevronView.backgroundColor = account.userTintColor;
+                }
+                else
+                {
+                    chevronView.backgroundColor = [UIColor clearColor];
+                }
             }
             else
             {

@@ -20,7 +20,7 @@
 
 #import "MXKSessionRecentsDataSource.h"
 
-#import "MXKTools.h"
+#import "MXKAccountManager.h"
 
 @implementation MXKInterleavedRecentTableViewCell
 
@@ -55,11 +55,19 @@
 {
     [super render:cellData];
     
+    // Highlight the room owner by using his tint color.
     id<MXKRecentCellDataStoring> roomCellData = (id<MXKRecentCellDataStoring>)cellData;
     if (roomCellData)
     {
-        NSUInteger hash = [roomCellData.roomDataSource.mxSession.myUser.userId hash];
-        _userFlag.backgroundColor = [MXKTools colorWithRGBValue:hash];
+        MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:roomCellData.roomDataSource.mxSession.myUser.userId];
+        if (account)
+        {
+            _userFlag.backgroundColor = account.userTintColor;
+        }
+        else
+        {
+            _userFlag.backgroundColor = [UIColor clearColor];
+        }
     }
 }
 

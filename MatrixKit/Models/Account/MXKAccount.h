@@ -72,6 +72,12 @@ extern NSString *const kMXKAccountUserInfoDidChangeNotification;
 @property (nonatomic, readonly) MXPresence userPresence;
 
 /**
+ The account user's tint color: a unique color fixed by the user id. This tint color may be used to highlight
+ rooms which belong to this account's user.
+ */
+@property (nonatomic, readonly) UIColor *userTintColor;
+
+/**
  Get the color code related to a specific presence.
  
  @param presence

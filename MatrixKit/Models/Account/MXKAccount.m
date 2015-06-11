@@ -18,6 +18,8 @@
 
 #import "MXKRoomDataSourceManager.h"
 
+#import "MXKTools.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 
 NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
@@ -56,6 +58,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 @implementation MXKAccount
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
+@synthesize userTintColor;
 
 + (UIColor*)presenceColor:(MXPresence)presence
 {
@@ -183,6 +186,16 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     {
         return mxCredentials.userId;
     }
+}
+
+- (UIColor*)userTintColor
+{
+    if (!userTintColor)
+    {
+        userTintColor = [MXKTools colorWithRGBValue:[mxCredentials.userId hash]];
+    }
+    
+    return userTintColor;
 }
 
 #pragma mark - Matrix user's profile
