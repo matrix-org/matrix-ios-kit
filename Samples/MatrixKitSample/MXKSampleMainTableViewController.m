@@ -24,7 +24,7 @@
 #import <MatrixSDK/MXFileStore.h>
 
 NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentifier";
-NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifier";
+NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifier";
 
 @interface MXKSampleMainTableViewController ()
 {
@@ -261,6 +261,12 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     }
 }
 
+- (void)login
+{
+    // Show authentication screen
+    [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
+}
+
 - (void)logout
 {
     // Clear cache
@@ -292,9 +298,6 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     self.tableView.tableHeaderView.hidden = YES;
     self.selectedRoomDisplayName.text = @"Please select a room";
     [self.tableView reloadData];
-    
-    // Return in Authentication screen
-    [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
 }
 
 // Test code for directly opening a Room VC
@@ -319,9 +322,10 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
     
     accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = contactSectionIndex = -1;
     
+    accountSectionIndex = count++;
+    
     if ([[MXKAccountManager sharedManager] accounts].count)
     {
-        accountSectionIndex = count++;
         recentsSectionIndex = count++;
     }
     
@@ -341,7 +345,11 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
 {
     if (section == accountSectionIndex)
     {
-        return [[MXKAccountManager sharedManager] accounts].count + 1; // Add one cell in this section to logout all accounts
+        if ([[MXKAccountManager sharedManager] accounts].count)
+        {
+            return [[MXKAccountManager sharedManager] accounts].count + 2; // Add 2 cells in this section to add actions: add account, logout all.
+        }
+        return 1; // Display only "Add account" action button.
     }
     else if (section == recentsSectionIndex)
     {
@@ -415,12 +423,25 @@ NSString *const kMXKSampleLogoutCellIdentifier = @"kMXKSampleLogoutCellIdentifie
             accountCell.mxAccount = [accounts objectAtIndex:indexPath.row];
             cell = accountCell;
         }
+        else if (indexPath.row == accounts.count)
+        {
+            MXKTableViewCellWithButton *addBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
+            if (!addBtnCell)
+            {
+                addBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
+            }
+            [addBtnCell.mxkButton setTitle:@"Add account" forState:UIControlStateNormal];
+            [addBtnCell.mxkButton setTitle:@"Add account" forState:UIControlStateHighlighted];
+            [addBtnCell.mxkButton addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
+            
+            cell = addBtnCell;
+        }
         else
         {
-            MXKTableViewCellWithButton *logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleLogoutCellIdentifier];
+            MXKTableViewCellWithButton *logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
             if (!logoutBtnCell)
             {
-                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleLogoutCellIdentifier];
+                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
             }
             [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateNormal];
             [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateHighlighted];
