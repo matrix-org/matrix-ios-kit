@@ -57,7 +57,6 @@
     MXKRoomMemberCellData *memberCellData = (MXKRoomMemberCellData*)cellData;
     if (memberCellData)
     {
-        
         mxSession = memberCellData.mxSession;
         memberId = memberCellData.roomMember.userId;
         
@@ -72,10 +71,6 @@
         }
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         [self.pictureView setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
-        
-        // Round image view
-        [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
-        self.pictureView.clipsToBounds = YES;
         
         // Shade invited users
         if (memberCellData.roomMember.membership == MXMembershipInvite)
@@ -283,6 +278,15 @@
         
         [self.userLabel setAttributedText:attributedText];
     }
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    // Round image view
+    [_pictureView.layer setCornerRadius:_pictureView.frame.size.width / 2];
+    _pictureView.clipsToBounds = YES;
 }
 
 @end

@@ -35,7 +35,6 @@
     
     if (mxAccount.mxSession)
     {
-        
         _accountDisplayName.text = mxAccount.fullDisplayName;
         
         // User thumbnail
@@ -56,8 +55,6 @@
         _accountDisplayName.text = nil;
         _accountPicture.image = [UIImage imageNamed:@"default-profile"];
     }
-    
-    
     
     if (presenceColor)
     {

@@ -113,6 +113,9 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     isAvatarUpdated = NO;
     isSavingInProgress = NO;
     
+    [userPictureButton.layer setCornerRadius:userPictureButton.frame.size.width / 2];
+    userPictureButton.clipsToBounds = YES;
+    
     // Force refresh
     self.mxAccount = _mxAccount;
 }
@@ -213,7 +216,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                                            // Update button management
                                            [self updateSaveUserInfoButtonStatus];
                                            
-                                           // TODO display user's presence
+                                           // Display user's presence
                                            UIColor *presenceColor = [MXKAccount presenceColor:_mxAccount.userPresence];
                                            if (presenceColor)
                                            {
@@ -433,10 +436,8 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     // Check whether avatar has been updated
     if (isAvatarUpdated)
     {
-        
         if (uploadedPictureURL == nil)
         {
-            
             // Retrieve the current picture and make sure its orientation is up
             UIImage *updatedPicture = [MXKTools forceImageOrientationUp:[self.userPictureButton imageForState:UIControlStateNormal]];
             
@@ -456,7 +457,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         }
         else
         {
-            
             __weak typeof(self) weakSelf = self;
             [_mxAccount setUserAvatarUrl:uploadedPictureURL
                                  success:^{
@@ -467,13 +467,12 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                                      // Loop to end saving
                                      [strongSelf saveUserInfo];
                                      
-                                 } failure:^(NSError *error)
-             {
-                 
-                 NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url: %@", error);
-                 __strong __typeof(weakSelf)strongSelf = weakSelf;
-                 [strongSelf handleErrorDuringPictureSaving:error];
-             }];
+                                 }
+                                 failure:^(NSError *error) {
+                                     NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url: %@", error);
+                                     __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                     [strongSelf handleErrorDuringPictureSaving:error];
+                                 }];
         }
         
         return;
