@@ -256,19 +256,19 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
 - (NSInteger)tableView:(UITableView *)aTableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
     MXKSectionedContacts* sectionedContacts = displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts;
-    NSUInteger section = [sectionedContacts.sectionTitles indexOfObject:title];
+    NSInteger section = [sectionedContacts.sectionTitles indexOfObject:title];
     
     // undefined title -> jump to the first valid non empty section
     if (NSNotFound == section)
     {
-        NSUInteger systemCollationIndex = [collationTitles indexOfObject:title];
+        NSInteger systemCollationIndex = [collationTitles indexOfObject:title];
         
         // find in the system collation
         if (NSNotFound != systemCollationIndex)
         {
             systemCollationIndex--;
             
-            while ((systemCollationIndex == 0) && (NSNotFound == section))
+            while ((systemCollationIndex >= 0) && (NSNotFound == section))
             {
                 NSString* systemTitle = [collationTitles objectAtIndex:systemCollationIndex];
                 section = [sectionedContacts.sectionTitles indexOfObject:systemTitle];
