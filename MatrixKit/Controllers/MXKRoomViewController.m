@@ -994,7 +994,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         else
         {
             NSLog(@"[MXKRoomVC] Unrecognised IRC-style command: %@", string);
-            inputToolbarView.placeholder = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
+//            inputToolbarView.placeholder = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
+            return NO;
         }
     }
     return YES;
