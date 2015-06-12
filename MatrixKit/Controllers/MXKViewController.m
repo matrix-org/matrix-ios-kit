@@ -203,6 +203,10 @@
 
 - (void)destroy
 {
+    // Remove properly keyboard view (remove related key observers)
+    self.keyboardView = nil;
+    
+    // Remove observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     mxSessionArray = nil;
