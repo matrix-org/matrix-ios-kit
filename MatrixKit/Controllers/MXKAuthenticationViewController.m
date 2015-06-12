@@ -593,15 +593,30 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                         success:^(MXCredentials *credentials){
                                             [_authenticationActivityIndicator stopAnimating];
                                             
-                                            // Report the new account in accounts manager
-                                            MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-                                            account.identityServerURL = _identityServerTextField.text;
-                                            
-                                            [[MXKAccountManager sharedManager] addAccount:account];
-                                            
-                                            if (_delegate)
+                                            // Sanity check: check whether the user is not already logged in with this id
+                                            if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
                                             {
-                                                [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+                                                //Alert user
+                                                __weak typeof(self) weakSelf = self;
+                                                alert = [[MXKAlert alloc] initWithTitle:@"Already logged in" message:nil style:MXKAlertStyleAlert];
+                                                [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+                                                    // We remove the authentication view controller.
+                                                    [weakSelf withdrawViewControllerAnimated:YES completion:nil];
+                                                }];
+                                                [alert showInViewController:self];
+                                            }
+                                            else
+                                            {
+                                                // Report the new account in account manager
+                                                MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+                                                account.identityServerURL = _identityServerTextField.text;
+                                                
+                                                [[MXKAccountManager sharedManager] addAccount:account];
+                                                
+                                                if (_delegate)
+                                                {
+                                                    [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+                                                }
                                             }
                                         }
                                         failure:^(NSError *error){
@@ -666,10 +681,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             {
                 message = @"Invalid username/password";
             }
-            else if (localizedError.length > 0)
-            {
-                message = localizedError;
-            }
             else if ([errCode isEqualToString:@"M_UNKNOWN_TOKEN"])
             {
                 message = @"The access token specified was not recognised";
@@ -698,6 +709,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             {
                 message = errCode;
             }
+        }
+        else if (localizedError.length > 0)
+        {
+            message = localizedError;
         }
     }
     
