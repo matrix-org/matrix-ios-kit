@@ -158,7 +158,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         userPictureButton.enabled = NO;
         userDisplayName.enabled = NO;
     }
-        else if (!isSavingInProgress)
+    else if (!isSavingInProgress)
     {
         userPictureButton.enabled = YES;
         userDisplayName.enabled = YES;
@@ -188,44 +188,44 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         
         // Add observer on user's information
         accountUserInfoObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-        {
-            
-            // Ignore any refresh when saving is in progress
-            if (isSavingInProgress)
-            {
-                return;
-            }
-            
-            NSString *accountUserId = notif.object;
-            
-            if ([accountUserId isEqualToString:_mxAccount.mxCredentials.userId])
-            {
-                
-                // Update displayName
-                if (![currentDisplayName isEqualToString:_mxAccount.userDisplayName])
-                {
-                    currentDisplayName = _mxAccount.userDisplayName;
-                    self.userDisplayName.text = _mxAccount.userDisplayName;
-                }
-                // Update user's avatar
-                [self updateUserPicture:_mxAccount.userAvatarUrl force:NO];
-                
-                // Update button management
-                [self updateSaveUserInfoButtonStatus];
-                
-                // TODO display user's presence
-                UIColor *presenceColor = [MXKAccount presenceColor:_mxAccount.userPresence];
-                if (presenceColor)
-                {
-                    userPictureButton.layer.borderWidth = 2;
-                    userPictureButton.layer.borderColor = presenceColor.CGColor;
-                }
-        else
-                {
-                    userPictureButton.layer.borderWidth = 0;
-                }
-            }
-        }];
+                                   {
+                                       
+                                       // Ignore any refresh when saving is in progress
+                                       if (isSavingInProgress)
+                                       {
+                                           return;
+                                       }
+                                       
+                                       NSString *accountUserId = notif.object;
+                                       
+                                       if ([accountUserId isEqualToString:_mxAccount.mxCredentials.userId])
+                                       {
+                                           
+                                           // Update displayName
+                                           if (![currentDisplayName isEqualToString:_mxAccount.userDisplayName])
+                                           {
+                                               currentDisplayName = _mxAccount.userDisplayName;
+                                               self.userDisplayName.text = _mxAccount.userDisplayName;
+                                           }
+                                           // Update user's avatar
+                                           [self updateUserPicture:_mxAccount.userAvatarUrl force:NO];
+                                           
+                                           // Update button management
+                                           [self updateSaveUserInfoButtonStatus];
+                                           
+                                           // TODO display user's presence
+                                           UIColor *presenceColor = [MXKAccount presenceColor:_mxAccount.userPresence];
+                                           if (presenceColor)
+                                           {
+                                               userPictureButton.layer.borderWidth = 2;
+                                               userPictureButton.layer.borderColor = presenceColor.CGColor;
+                                           }
+                                           else
+                                           {
+                                               userPictureButton.layer.borderWidth = 0;
+                                           }
+                                       }
+                                   }];
     }
     
     [self.tableView reloadData];
@@ -240,32 +240,32 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:@"Changes will be discarded"  style:MXKAlertStyleAlert];
             [alertsArray addObject:alert];
             alert.cancelButtonIndex = [alert addActionWithTitle:@"Discard" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                [alertsArray removeObject:alert];
-                // Discard changes
-                self.userDisplayName.text = currentDisplayName;
-                [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
-                
-                // Ready to leave
-                if (handler)
-                {
-                    handler();
-                }
-            }];
+                                       {
+                                           [alertsArray removeObject:alert];
+                                           // Discard changes
+                                           self.userDisplayName.text = currentDisplayName;
+                                           [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                                           
+                                           // Ready to leave
+                                           if (handler)
+                                           {
+                                               handler();
+                                           }
+                                       }];
             [alert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                [alertsArray removeObject:alert];
-                
-                // Start saving (Report handler to leave at the end).
-                onReadyToLeaveHandler = handler;
-                [self saveUserInfo];
-            }];
+             {
+                 [alertsArray removeObject:alert];
+                 
+                 // Start saving (Report handler to leave at the end).
+                 onReadyToLeaveHandler = handler;
+                 [self saveUserInfo];
+             }];
             [alert showInViewController:self];
         });
         
         return NO;
     }
-        else if (isSavingInProgress)
+    else if (isSavingInProgress)
     {
         // Report handler to leave at the end of saving
         onReadyToLeaveHandler = handler;
@@ -363,7 +363,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             [strongSelf destroy];
         };
     }
-        else
+    else
     {
         // Reset account to dispose all resources (Discard here potentials changes)
         self.mxAccount = nil;
@@ -394,38 +394,38 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             [strongSelf saveUserInfo];
             
         } failure:^(NSError *error)
-        {
-            
-            NSLog(@"[MXKAccountDetailsVC] Failed to set displayName: %@", error);
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            
-            //Alert user
-            NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
-            if (!title)
-            {
-                title = @"Display name change failed";
-            }
-            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-            
-            MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-            [strongSelf->alertsArray addObject:alert];
-            alert.cancelButtonIndex = [alert addActionWithTitle:@"Abort" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                [strongSelf->alertsArray removeObject:alert];
-                // Discard changes
-                strongSelf.userDisplayName.text = strongSelf->currentDisplayName;
-                [strongSelf updateUserPicture:strongSelf.mxAccount.userAvatarUrl force:YES];
-                // Loop to end saving
-                [strongSelf saveUserInfo];
-            }];
-            [alert addActionWithTitle:@"Retry" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                [strongSelf->alertsArray removeObject:alert];
-                // Loop to retry saving
-                [strongSelf saveUserInfo];
-            }];
-            [alert showInViewController:strongSelf];
-        }];
+         {
+             
+             NSLog(@"[MXKAccountDetailsVC] Failed to set displayName: %@", error);
+             __strong __typeof(weakSelf)strongSelf = weakSelf;
+             
+             //Alert user
+             NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
+             if (!title)
+             {
+                 title = @"Display name change failed";
+             }
+             NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+             
+             MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
+             [strongSelf->alertsArray addObject:alert];
+             alert.cancelButtonIndex = [alert addActionWithTitle:@"Abort" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                        {
+                                            [strongSelf->alertsArray removeObject:alert];
+                                            // Discard changes
+                                            strongSelf.userDisplayName.text = strongSelf->currentDisplayName;
+                                            [strongSelf updateUserPicture:strongSelf.mxAccount.userAvatarUrl force:YES];
+                                            // Loop to end saving
+                                            [strongSelf saveUserInfo];
+                                        }];
+             [alert addActionWithTitle:@"Retry" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+              {
+                  [strongSelf->alertsArray removeObject:alert];
+                  // Loop to retry saving
+                  [strongSelf saveUserInfo];
+              }];
+             [alert showInViewController:strongSelf];
+         }];
         
         return;
     }
@@ -443,15 +443,15 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             // Upload picture
             MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mainSession initialRange:0 andRange:1.0];
             [uploader uploadData:UIImageJPEGRepresentation(updatedPicture, 0.5) mimeType:@"image/jpeg" success:^(NSString *url)
-            {
-                // Store uploaded picture url and trigger picture saving
-                uploadedPictureURL = url;
-                [self saveUserInfo];
-            } failure:^(NSError *error)
-            {
-                NSLog(@"[MXKAccountDetailsVC] Failed to upload image: %@", error);
-                [self handleErrorDuringPictureSaving:error];
-            }];
+             {
+                 // Store uploaded picture url and trigger picture saving
+                 uploadedPictureURL = url;
+                 [self saveUserInfo];
+             } failure:^(NSError *error)
+             {
+                 NSLog(@"[MXKAccountDetailsVC] Failed to upload image: %@", error);
+                 [self handleErrorDuringPictureSaving:error];
+             }];
             
         }
         else
@@ -468,12 +468,12 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                                      [strongSelf saveUserInfo];
                                      
                                  } failure:^(NSError *error)
-            {
-                
-                NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url: %@", error);
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf handleErrorDuringPictureSaving:error];
-            }];
+             {
+                 
+                 NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url: %@", error);
+                 __strong __typeof(weakSelf)strongSelf = weakSelf;
+                 [strongSelf handleErrorDuringPictureSaving:error];
+             }];
         }
         
         return;
@@ -503,20 +503,20 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
     [alertsArray addObject:alert];
     alert.cancelButtonIndex = [alert addActionWithTitle:@"Abort" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-    {
-        [alertsArray removeObject:alert];
-        // Remove change
-        self.userDisplayName.text = currentDisplayName;
-        [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
-        // Loop to end saving
-        [self saveUserInfo];
-    }];
+                               {
+                                   [alertsArray removeObject:alert];
+                                   // Remove change
+                                   self.userDisplayName.text = currentDisplayName;
+                                   [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                                   // Loop to end saving
+                                   [self saveUserInfo];
+                               }];
     [alert addActionWithTitle:@"Retry" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-    {
-        [alertsArray removeObject:alert];
-        // Loop to retry saving
-        [self saveUserInfo];
-    }];
+     {
+         [alertsArray removeObject:alert];
+         // Loop to retry saving
+         [self saveUserInfo];
+     }];
     
     [alert showInViewController:self];
 }
@@ -552,7 +552,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
             }
-        else
+            else
             {
                 // Retrieve the image from cache
                 UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
@@ -560,7 +560,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
                 {
                     [self updateUserPictureButton:image];
                 }
-        else
+                else
                 {
                     // Cancel potential download in progress
                     if (imageLoader)
@@ -654,7 +654,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     {
         [self saveUserInfo];
     }
-        else if (sender == userPictureButton)
+    else if (sender == userPictureButton)
     {
         // Open picture gallery
         mediaPicker = [[UIImagePickerController alloc] init];
@@ -663,12 +663,12 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         mediaPicker.allowsEditing = NO;
         [self presentViewController:mediaPicker animated:YES completion:nil];
     }
-        else if (sender == logoutBtnCell.mxkButton)
+    else if (sender == logoutBtnCell.mxkButton)
     {
         [[MXKAccountManager sharedManager] removeAccount:_mxAccount];
         self.mxAccount = nil;
     }
-        else if (sender == submittedEmailCell.mxkButton)
+    else if (sender == submittedEmailCell.mxkButton)
     {
         if (!submittedEmail || ![submittedEmail.address isEqualToString:submittedEmailCell.mxkTextField.text])
         {
@@ -681,64 +681,64 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             submittedEmailCell.mxkTextField.text = nil;
             [self.tableView reloadData];
         } failure:^(NSError *error)
-        {
-            NSLog(@"[MXKAccountDetailsVC] Failed to request email token: %@", error);
-            //Alert user TODO GFO
-            //            [[AppDelegate theDelegate] showErrorAsAlert:error];
-            submittedEmailCell.mxkButton.enabled = YES;
-        }];
+         {
+             NSLog(@"[MXKAccountDetailsVC] Failed to request email token: %@", error);
+             //Alert user TODO GFO
+             //            [[AppDelegate theDelegate] showErrorAsAlert:error];
+             submittedEmailCell.mxkButton.enabled = YES;
+         }];
     }
-        else if (sender == emailTokenCell.mxkButton)
+    else if (sender == emailTokenCell.mxkButton)
     {
         emailTokenCell.mxkButton.enabled = NO;
         [submittedEmail validateWithToken:emailTokenCell.mxkTextField.text success:^(BOOL success)
-        {
-            if (success)
-            {
-                // The email has been "Authenticated"
-                // Link the email with user's account
-                [submittedEmail bindWithUserId:_mxAccount.mxCredentials.userId success:^{
-                    // Add new linked email
-                    if (!linkedEmails)
-                    {
-                        linkedEmails = [NSMutableArray array];
-                    }
-                    [linkedEmails addObject:submittedEmail.address];
-                    
-                    // Release pending email and refresh table to remove related cell
-                    submittedEmail = nil;
-                    [self.tableView reloadData];
-                } failure:^(NSError *error)
-                {
-                    NSLog(@"[MXKAccountDetailsVC] Failed to link email: %@", error);
-                    //Alert user TODO GFO
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                    
-                    // Release the pending email (even if it is Authenticated)
-                    submittedEmail = nil;
-                    [self.tableView reloadData];
-                }];
-            }
-        else
-            {
-                NSLog(@"[MXKAccountDetailsVC] Failed to link email");
-                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:@"Failed to link email"  style:MXKAlertStyleAlert];
-                [alertsArray addObject:alert];
-                alert.cancelButtonIndex = [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                {
-                    [alertsArray removeObject:alert];
-                }];
-                [alert showInViewController:self];
-                // Reset wrong token
-                emailTokenCell.mxkTextField.text = nil;
-            }
-        } failure:^(NSError *error)
-        {
-            NSLog(@"[MXKAccountDetailsVC] Failed to submit email token: %@", error);
-            //Alert user TODO GFO
-            //            [[AppDelegate theDelegate] showErrorAsAlert:error];
-            emailTokenCell.mxkButton.enabled = YES;
-        }];
+         {
+             if (success)
+             {
+                 // The email has been "Authenticated"
+                 // Link the email with user's account
+                 [submittedEmail bindWithUserId:_mxAccount.mxCredentials.userId success:^{
+                     // Add new linked email
+                     if (!linkedEmails)
+                     {
+                         linkedEmails = [NSMutableArray array];
+                     }
+                     [linkedEmails addObject:submittedEmail.address];
+                     
+                     // Release pending email and refresh table to remove related cell
+                     submittedEmail = nil;
+                     [self.tableView reloadData];
+                 } failure:^(NSError *error)
+                  {
+                      NSLog(@"[MXKAccountDetailsVC] Failed to link email: %@", error);
+                      //Alert user TODO GFO
+                      //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                      
+                      // Release the pending email (even if it is Authenticated)
+                      submittedEmail = nil;
+                      [self.tableView reloadData];
+                  }];
+             }
+             else
+             {
+                 NSLog(@"[MXKAccountDetailsVC] Failed to link email");
+                 MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:@"Failed to link email"  style:MXKAlertStyleAlert];
+                 [alertsArray addObject:alert];
+                 alert.cancelButtonIndex = [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                            {
+                                                [alertsArray removeObject:alert];
+                                            }];
+                 [alert showInViewController:self];
+                 // Reset wrong token
+                 emailTokenCell.mxkTextField.text = nil;
+             }
+         } failure:^(NSError *error)
+         {
+             NSLog(@"[MXKAccountDetailsVC] Failed to submit email token: %@", error);
+             //Alert user TODO GFO
+             //            [[AppDelegate theDelegate] showErrorAsAlert:error];
+             emailTokenCell.mxkButton.enabled = YES;
+         }];
     }
 }
 
@@ -752,11 +752,11 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         [userDisplayName resignFirstResponder];
         [self updateSaveUserInfoButtonStatus];
     }
-        else if ([submittedEmailCell.mxkTextField isFirstResponder])
+    else if ([submittedEmailCell.mxkTextField isFirstResponder])
     {
         [submittedEmailCell.mxkTextField resignFirstResponder];
     }
-        else if ([emailTokenCell.mxkTextField isFirstResponder])
+    else if ([emailTokenCell.mxkTextField isFirstResponder])
     {
         [emailTokenCell.mxkTextField resignFirstResponder];
     }
@@ -804,7 +804,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             emailTokenCell = nil;
         }
     }
-        else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
         count = 2;
     }
@@ -821,7 +821,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             return 70;
         }
     }
-        else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
         if (indexPath.row == 0)
         {
@@ -908,7 +908,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             cell = emailTokenCell;
         }
     }
-        else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
         
         if (indexPath.row == 0)
@@ -961,7 +961,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     {
         sectionHeader.text = @" Linked emails";
     }
-        else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
         sectionHeader.text = @" Configuration";
     }
