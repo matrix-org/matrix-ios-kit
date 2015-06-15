@@ -16,6 +16,8 @@
 
 #import "MXKSampleRoomMemberTableViewCell.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKSampleRoomMemberTableViewCell ()
 
 @property (weak, nonatomic) IBOutlet UILabel *presenceLabel;
@@ -33,10 +35,15 @@
                                                                                                    owner:nil
                                                                                                  options:nil];
     self = nibViews.firstObject;
+    return self;
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
     
     self.powerContainer.layer.borderWidth = 1;
     self.powerContainer.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    return self;
 }
 
 - (void)render:(MXKCellData *)cellData

@@ -27,12 +27,13 @@
                 <subviews>
                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q5C-z0-PFC" userLabel="PicturePickerButton">
                         <rect key="frame" x="10" y="10" width="75" height="75"/>
+                        <color key="backgroundColor" white="0.89720269880000003" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="Q5C-z0-PFC" secondAttribute="height" multiplier="1:1" id="UqW-Oi-9cT"/>
                             <constraint firstAttribute="width" constant="75" id="h4a-sn-FGX"/>
                             <constraint firstAttribute="height" constant="75" id="u5z-VM-exL"/>
                         </constraints>
-                        <state key="normal" image="default-profile.png">
+                        <state key="normal">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
                         <connections>
@@ -91,7 +92,4 @@
             </connections>
         </tableView>
     </objects>
-    <resources>
-        <image name="default-profile.png" width="160" height="160"/>
-    </resources>
 </document>

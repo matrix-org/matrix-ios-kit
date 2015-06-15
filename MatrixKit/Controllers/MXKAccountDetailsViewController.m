@@ -25,6 +25,8 @@
 
 #import "MXKTableViewCell.h"
 
+#import "NSBundle+MatrixKit.h"
+
 NSString* const kMXKAccountDetailsConfigurationFormatText = @"Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
 NSString *const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
@@ -107,6 +109,9 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
+    
+    self.userPictureButton.backgroundColor = [UIColor clearColor];
+    [self updateUserPictureButton:self.picturePlaceholder];
     
     alertsArray = [NSMutableArray array];
     
@@ -234,6 +239,11 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     [self.tableView reloadData];
 }
 
+- (UIImage*)picturePlaceholder
+{
+    return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
+}
+
 - (BOOL)shouldLeave:(blockMXKAccountDetailsViewController_onReadyToLeave)handler
 {
     // Check whether some local changes have not been saved
@@ -336,7 +346,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     currentPictureThumbURL = nil;
     uploadedPictureURL = nil;
     isAvatarUpdated = NO;
-    [self updateUserPictureButton:[UIImage imageNamed:@"default-profile"]];
+    [self updateUserPictureButton:self.picturePlaceholder];
     
     currentDisplayName = nil;
     self.userDisplayName.text = nil;
@@ -576,7 +586,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         else
         {
             // Set placeholder
-            [self updateUserPictureButton:[UIImage imageNamed:@"default-profile"]];
+            [self updateUserPictureButton:self.picturePlaceholder];
         }
     }
 }
@@ -616,7 +626,7 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             }
             if (image == nil)
             {
-                image = [UIImage imageNamed:@"default-profile"];
+                image = self.picturePlaceholder;
             }
             [self updateUserPictureButton:image];
             

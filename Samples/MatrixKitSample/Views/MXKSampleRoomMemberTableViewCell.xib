@@ -48,7 +48,7 @@
                             <constraint firstAttribute="width" constant="8" id="czx-9J-eUr"/>
                         </constraints>
                     </view>
-                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_keyboard.png" translatesAutoresizingMaskIntoConstraints="NO" id="YAu-wP-WnM" userLabel="typingBadge">
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YAu-wP-WnM" userLabel="typingBadge">
                         <rect key="frame" x="5" y="0.0" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="dFN-Im-pSS"/>
@@ -89,7 +89,4 @@
             </connections>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="icon_keyboard.png" width="20" height="20"/>
-    </resources>
 </document>

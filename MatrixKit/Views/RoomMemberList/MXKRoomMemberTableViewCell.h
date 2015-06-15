@@ -49,6 +49,11 @@
 @property (weak, nonatomic) IBOutlet UIImageView *typingBadge;
 
 /**
+ The default picture displayed when no picture is available.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
+
+/**
  Update last activity information if any.
  */
 - (void)updateActivityInfo;

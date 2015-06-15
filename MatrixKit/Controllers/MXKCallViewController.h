@@ -47,8 +47,6 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  'MXKCallViewController' instance displays a call. Only one matrix session is supported by this view controller.
  */
 @interface MXKCallViewController : MXKViewController <MXCallDelegate>
-{
-}
 
 @property (weak, nonatomic, readonly) IBOutlet MXKImageView *backgroundImageView;
 
@@ -74,8 +72,19 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 
 @property (weak, nonatomic, readonly) IBOutlet UIButton *backToAppButton;
 
+/**
+ The default picture displayed when no picture is available.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ The call status bar displayed on the top of the app during a call.
+ */
 @property (nonatomic, readonly) UIWindow* backToAppStatusWindow;
 
+/**
+ The current call
+ */
 @property (nonatomic, readonly) MXCall *mxCall;
 
 /**

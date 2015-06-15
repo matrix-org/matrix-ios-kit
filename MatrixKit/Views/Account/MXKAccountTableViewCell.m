@@ -18,6 +18,8 @@
 
 #import "MXKMediaManager.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @implementation MXKAccountTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -27,6 +29,13 @@
                                                                                         options:nil];
     self = nibViews.firstObject;
     return self;
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.accountPicture.backgroundColor = [UIColor clearColor];
 }
 
 - (void)setMxAccount:(MXKAccount *)mxAccount
@@ -45,7 +54,7 @@
             thumbnailURL = [mxAccount.mxSession.matrixRestClient urlOfContentThumbnail:mxAccount.userAvatarUrl toFitViewSize:_accountPicture.frame.size withMethod:MXThumbnailingMethodCrop];
         }
         _accountPicture.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-        [_accountPicture setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
+        [_accountPicture setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
         
         presenceColor = [MXKAccount presenceColor:mxAccount.userPresence];
         
@@ -53,7 +62,7 @@
     else
     {
         _accountDisplayName.text = nil;
-        _accountPicture.image = [UIImage imageNamed:@"default-profile"];
+        _accountPicture.image = self.picturePlaceholder;
     }
     
     if (presenceColor)
@@ -65,6 +74,11 @@
     {
         _accountPicture.layer.borderWidth = 0;
     }
+}
+
+- (UIImage*)picturePlaceholder
+{
+    return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
 
 - (void)layoutSubviews

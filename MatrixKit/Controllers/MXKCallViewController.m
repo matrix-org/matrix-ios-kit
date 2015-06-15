@@ -19,6 +19,8 @@
 
 #import "MXKMediaManager.h"
 
+#import "NSBundle+MatrixKit.h"
+
 NSString *const kMXKCallViewControllerWillAppearNotification = @"kMXKCallViewControllerWillAppearNotification";
 NSString *const kMXKCallViewControllerAppearedNotification = @"kMXKCallViewControllerAppearedNotification";
 NSString *const kMXKCallViewControllerWillDisappearNotification = @"kMXKCallViewControllerWillDisappearNotification";
@@ -90,6 +92,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     // TODO: handle speaker and mute options
     speakerButton.hidden = YES;
     muteButton.hidden = YES;
+    
+    self.callerImageView.backgroundColor = [UIColor clearColor];
+    self.backToAppButton.backgroundColor = [UIColor clearColor];
+    self.muteButton.backgroundColor = [UIColor clearColor];
+    self.speakerButton.backgroundColor = [UIColor clearColor];
+    
+    [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateNormal];
+    [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateHighlighted];
+    [self.muteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_mute"] forState:UIControlStateNormal];
+    [self.muteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_mute"] forState:UIControlStateSelected];
+    [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker"] forState:UIControlStateNormal];
+    [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker"] forState:UIControlStateSelected];
     
     // Refresh call information
     self.mxCall = mxCall;
@@ -191,6 +205,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - Properties
 
+- (UIImage*)picturePlaceholder
+{
+    return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
+}
+
 - (void)setMxCall:(MXCall *)call
 {
     // Remove previous call (if any)
@@ -278,7 +297,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
         NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
         callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-        [callerImageView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
+        [callerImageView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
         [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];
         callerImageView.clipsToBounds = YES;
         
@@ -287,7 +306,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     else
     {
         callerNameLabel.text = nil;
-        callerImageView.image = [UIImage imageNamed:@"default-profile"];
+        callerImageView.image = self.picturePlaceholder;
     }
 }
 
@@ -307,11 +326,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             NSURL *audioUrl;
             if (mxCall.isIncoming)
             {
-                audioUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"ring" ofType:@"mp3"]];
+                audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"ring"];
             }
             else
             {
-                audioUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"ringback" ofType:@"mp3"]];
+                audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"ringback"];
             }
             
             audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
@@ -460,7 +479,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             NSError* error = nil;
             NSURL *audioUrl;
-            audioUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"callend" ofType:@"mp3"]];
+            audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"callend"];
             audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
             if (error)
             {

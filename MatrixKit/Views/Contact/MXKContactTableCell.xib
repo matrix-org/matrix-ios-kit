@@ -14,7 +14,7 @@
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ChX-Tl-3Zt" id="SeD-4h-8Bk">
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="matrixUser.png" translatesAutoresizingMaskIntoConstraints="NO" id="BcH-3j-P0i">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BcH-3j-P0i">
                         <rect key="frame" x="576" y="17" width="16" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="6gE-wc-Ncb"/>
@@ -83,7 +83,4 @@
             </connections>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="matrixUser.png" width="16" height="16"/>
-    </resources>
 </document>

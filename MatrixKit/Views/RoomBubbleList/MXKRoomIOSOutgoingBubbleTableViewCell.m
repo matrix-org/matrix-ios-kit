@@ -19,6 +19,8 @@
 #import "MXEvent+MatrixKit.h"
 #import "MXKTools.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #define OUTGOING_BUBBLE_COLOR 0x00e34d
 
 @implementation MXKRoomIOSOutgoingBubbleTableViewCell
@@ -111,7 +113,8 @@
  */
 + (UIImage *)bubbleImage
 {
-    UIImage *rightBubbleImage = [UIImage imageNamed:@"bubble_ios_messages_right"];
+    UIImage *rightBubbleImage = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"bubble_ios_messages_right"];
+
     rightBubbleImage = [MXKTools paintImage:rightBubbleImage
                                   withColor:[MXKTools colorWithRGBValue:OUTGOING_BUBBLE_COLOR]];
     

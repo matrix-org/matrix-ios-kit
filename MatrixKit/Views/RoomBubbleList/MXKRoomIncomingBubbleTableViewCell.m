@@ -16,6 +16,8 @@
 
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #pragma mark - UI Constant definitions
 #define MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN -10
 
@@ -28,6 +30,13 @@
                                                                                                    options:nil];
     self = nibViews.firstObject;
     return self;
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.typingBadge.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_keyboard"];
 }
 
 - (void)render:(MXKCellData *)cellData

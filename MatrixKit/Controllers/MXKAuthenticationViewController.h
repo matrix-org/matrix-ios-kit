@@ -49,6 +49,35 @@ extern NSString *const MXKAuthErrorDomain;
  */
 @interface MXKAuthenticationViewController : MXKViewController <UITextFieldDelegate, MXKAuthInputsViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UIImageView *welcomeImageView;
+
+@property (strong, nonatomic) IBOutlet UIScrollView *authenticationScrollView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authScrollViewBottomConstraint;
+
+@property (weak, nonatomic) IBOutlet UIView *contentView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentViewHeightConstraint;
+
+@property (weak, nonatomic) IBOutlet UILabel *createAccountLabel;
+
+@property (weak, nonatomic) IBOutlet UIView *authInputsContainerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewHeightConstraint;
+
+@property (weak, nonatomic) IBOutlet UITextField *homeServerTextField;
+@property (weak, nonatomic) IBOutlet UILabel *homeServerInfoLabel;
+@property (weak, nonatomic) IBOutlet UITextField *identityServerTextField;
+@property (weak, nonatomic) IBOutlet UILabel *identityServerInfoLabel;
+
+@property (weak, nonatomic) IBOutlet UIButton *submitButton;
+@property (weak, nonatomic) IBOutlet UIButton *authSwitchButton;
+
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *authenticationActivityIndicator;
+@property (weak, nonatomic) IBOutlet UILabel *noFlowLabel;
+@property (weak, nonatomic) IBOutlet UIButton *retryButton;
+
+@property (weak, nonatomic) IBOutlet UIView *registrationFallbackContentView;
+@property (weak, nonatomic) IBOutlet MXKRegistrationWebView *registrationFallbackWebView;
+@property (weak, nonatomic) IBOutlet UIButton *cancelRegistrationFallbackButton;
+
 /**
  The current authentication type
  */
@@ -65,29 +94,9 @@ extern NSString *const MXKAuthErrorDomain;
 @property (nonatomic) NSString *defaultHomeServerUrl;
 
 /**
- The text field used to fill the home server url.
- */
-@property (weak, nonatomic, readonly) UITextField *homeServerTextField;
-
-/**
- The label associated to home server url text field.
- */
-@property (weak, nonatomic, readonly) UILabel *homeServerInfoLabel;
-
-/**
  The default identity server url (nil by default).
  */
 @property (nonatomic) NSString *defaultIdentityServerUrl;
-
-/**
- The text field used to fill the identity server url.
- */
-@property (weak, nonatomic, readonly) UITextField *identityServerTextField;
-
-/**
- The label associated to identity server url text field.
- */
-@property (weak, nonatomic, readonly) UILabel *identityServerInfoLabel;
 
 /**
  The delegate for the view controller.

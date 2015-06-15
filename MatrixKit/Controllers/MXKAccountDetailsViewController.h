@@ -35,6 +35,11 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
  */
 @property (nonatomic) MXKAccount *mxAccount;
 
+/**
+ The default account picture displayed when no picture is defined.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
+
 @property (nonatomic, readonly) IBOutlet UIButton *userPictureButton;
 @property (nonatomic, readonly) IBOutlet UITextField *userDisplayName;
 @property (nonatomic, readonly) IBOutlet UIButton *saveUserInfoButton;

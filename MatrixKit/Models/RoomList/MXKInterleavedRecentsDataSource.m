@@ -20,6 +20,8 @@
 
 #import "MXKAccountManager.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKInterleavedRecentsDataSource ()
 {
     /**
@@ -137,11 +139,11 @@
             UIImage *chevron;
             if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
             {
-                chevron = [UIImage imageNamed:@"disclosure"];
+                chevron = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"disclosure"];
             }
             else
             {
-                chevron =[UIImage imageNamed:@"shrink"];
+                chevron = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"shrink"];
             }
             UIImageView *chevronView = [[UIImageView alloc] initWithImage:chevron];
             if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)

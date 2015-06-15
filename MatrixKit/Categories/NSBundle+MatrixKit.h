@@ -16,26 +16,25 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXKImageView.h"
-#import "MXKAccount.h"
+/**
+ Define a `NSBundle` category at MatrixKit level to retrieve images and sounds from MatrixKit Assets bundle.
+ */
+@interface NSBundle (MatrixKit)
 
 /**
- MXKAccountTableViewCell instance is a table view cell used to display a matrix user.
+ Retrieve an image from MatrixKit Assets bundle.
+ 
+ @param name image file name without extension.
+ @return a UIImage instance (nil if the file does not exist).
  */
-@interface MXKAccountTableViewCell : UITableViewCell
++ (UIImage *)mxk_imageFromMXKAssetsBundleWithName:(NSString *)name;
 
 /**
- The displayed account
+ Retrieve an audio file url from MatrixKit Assets bundle.
+ 
+ @param name audio file name without extension.
+ @return a NSURL instance.
  */
-@property (nonatomic) MXKAccount* mxAccount;
-
-/**
- The default account picture displayed when no picture is defined.
- */
-@property (nonatomic) UIImage *picturePlaceholder;
-
-@property (strong, nonatomic) IBOutlet MXKImageView* accountPicture;
-
-@property (strong, nonatomic) IBOutlet UILabel* accountDisplayName;
++ (NSURL *)mxk_audioURLFromMXKAssetsBundleWithName:(NSString *)name;
 
 @end

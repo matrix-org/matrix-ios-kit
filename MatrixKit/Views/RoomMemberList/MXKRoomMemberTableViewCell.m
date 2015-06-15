@@ -23,6 +23,8 @@
 #import "MXKMediaManager.h"
 #import "MXKAccount.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKRoomMemberTableViewCell ()
 {
     NSRange lastSeenRange;
@@ -49,6 +51,20 @@
     return self;
 }
 
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.pictureView.backgroundColor = [UIColor clearColor];
+    
+    self.typingBadge.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_keyboard"];
+}
+
+- (UIImage*)picturePlaceholder
+{
+    return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
+}
+
 - (void)render:(MXKCellData *)cellData
 {
     // Sanity check: accept only object of MXKRoomMemberCellData classes or sub-classes
@@ -70,7 +86,7 @@
             thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-        [self.pictureView setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
+        [self.pictureView setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
         
         // Shade invited users
         if (memberCellData.roomMember.membership == MXMembershipInvite)

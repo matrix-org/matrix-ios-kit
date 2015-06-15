@@ -46,5 +46,10 @@ extern NSString *const kMXKContactCellContactIdKey;
 
 @property (strong, nonatomic) IBOutlet UIImageView *matrixUserIconView;
 
+/**
+ The default picture displayed when no picture is available.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
+
 @end
 

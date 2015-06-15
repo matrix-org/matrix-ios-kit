@@ -20,6 +20,8 @@
 #import "MXKAppSettings.h"
 #import "MXTools.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKContactCellTapOnThumbnailView = @"kMXKContactCellTapOnThumbnailView";
 
@@ -56,6 +58,19 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
                                                                                            options:nil];
     self = nibViews.firstObject;
     return self;
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.thumbnailView.backgroundColor = [UIColor clearColor];
+    self.matrixUserIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+}
+
+- (UIImage*)picturePlaceholder
+{
+    return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
 
 #pragma mark - MXKCellRendering
@@ -194,7 +209,7 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     
     if (!self.thumbnailView.image)
     {
-        self.thumbnailView.image = [UIImage imageNamed:@"default-profile"];
+        self.thumbnailView.image = self.picturePlaceholder;
     }
     
     // display the thumbnail in a circle

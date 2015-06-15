@@ -23,6 +23,8 @@
 
 #import "MXKAccountManager.h"
 
+#import "NSBundle+MatrixKit.h"
+
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 @interface MXKAuthenticationViewController ()
@@ -52,33 +54,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
      */
     MXKAlert *alert;
 }
-
-@property (strong, nonatomic) IBOutlet UIScrollView *authenticationScrollView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authScrollViewBottomConstraint;
-
-@property (weak, nonatomic) IBOutlet UIView *contentView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentViewHeightConstraint;
-
-@property (weak, nonatomic) IBOutlet UILabel *createAccountLabel;
-
-@property (weak, nonatomic) IBOutlet UIView *authInputsContainerView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewHeightConstraint;
-
-@property (weak, nonatomic) IBOutlet UITextField *homeServerTextField;
-@property (weak, nonatomic) IBOutlet UILabel *homeServerInfoLabel;
-@property (weak, nonatomic) IBOutlet UITextField *identityServerTextField;
-@property (weak, nonatomic) IBOutlet UILabel *identityServerInfoLabel;
-
-@property (weak, nonatomic) IBOutlet UIButton *submitButton;
-@property (weak, nonatomic) IBOutlet UIButton *authSwitchButton;
-
-@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *authenticationActivityIndicator;
-@property (weak, nonatomic) IBOutlet UILabel *noFlowLabel;
-@property (weak, nonatomic) IBOutlet UIButton *retryButton;
-
-@property (weak, nonatomic) IBOutlet UIView *registrationFallbackContentView;
-@property (weak, nonatomic) IBOutlet MXKRegistrationWebView *registrationFallbackWebView;
-@property (weak, nonatomic) IBOutlet UIButton *cancelRegistrationFallbackButton;
 
 @end
 
@@ -112,6 +87,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
+    
+    // Load welcome image from MatrixKit asset bundle
+    self.welcomeImageView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"logoHighRes"];
     
     // Adjust bottom constraint of the scroll view in order to take into account potential tabBar
     if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])

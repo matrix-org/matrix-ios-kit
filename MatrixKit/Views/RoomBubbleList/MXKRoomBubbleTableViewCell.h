@@ -84,6 +84,10 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  */
 @property (strong, nonatomic) MXKRoomBubbleCellData *bubbleData;
 
+/**
+ The default picture displayed when no picture is available.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
 
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;

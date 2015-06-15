@@ -16,6 +16,8 @@
 
 #import "MXKRoomBubbleTableViewCell.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
@@ -51,7 +53,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)awakeFromNib
 {
-    // Initialization code
+    [super awakeFromNib];
+    
+    self.pictureView.backgroundColor = [UIColor clearColor];
+    
+    self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
 }
 
 - (void)dealloc
@@ -60,6 +66,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     delegate = nil;
+}
+
+- (UIImage*)picturePlaceholder
+{
+    return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -97,7 +108,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
-        [self.pictureView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:[UIImage imageNamed:@"default-profile"]];
+        [self.pictureView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
         [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
         self.pictureView.clipsToBounds = YES;
         self.pictureView.backgroundColor = [UIColor redColor];
