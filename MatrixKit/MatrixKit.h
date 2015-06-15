@@ -31,8 +31,10 @@
 #import "MXKRecentListViewController.h"
 #import "MXKRoomMemberListViewController.h"
 #import "MXKCallViewController.h"
-#import "MXKAccountDetailsViewController.h"
 #import "MXKContactListViewController.h"
+#import "MXKAccountDetailsViewController.h"
+#import "MXKContactDetailsViewController.h"
+#import "MXKRoomMemberDetailsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 

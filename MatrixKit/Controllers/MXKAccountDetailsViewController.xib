@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKAccountDetailsViewController">
@@ -29,7 +28,6 @@
                         <rect key="frame" x="10" y="10" width="75" height="75"/>
                         <color key="backgroundColor" white="0.89720269880000003" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="width" secondItem="Q5C-z0-PFC" secondAttribute="height" multiplier="1:1" id="UqW-Oi-9cT"/>
                             <constraint firstAttribute="width" constant="75" id="h4a-sn-FGX"/>
                             <constraint firstAttribute="height" constant="75" id="u5z-VM-exL"/>
                         </constraints>
@@ -72,7 +70,6 @@
                     <constraint firstItem="wTJ-d6-8LB" firstAttribute="trailing" secondItem="Fcd-TW-6EN" secondAttribute="trailing" id="9NO-pb-D26"/>
                     <constraint firstAttribute="centerY" secondItem="VAZ-Vd-dbs" secondAttribute="centerY" id="DnG-yj-mD2"/>
                     <constraint firstAttribute="trailing" secondItem="wTJ-d6-8LB" secondAttribute="trailing" constant="10" id="Ecb-G3-SzG"/>
-                    <constraint firstItem="Q5C-z0-PFC" firstAttribute="width" secondItem="Q5C-z0-PFC" secondAttribute="height" multiplier="1:1" id="FT4-Yn-rMR"/>
                     <constraint firstItem="XNZ-KA-wLa" firstAttribute="top" secondItem="gTa-z3-gJI" secondAttribute="top" id="QMw-Un-h4D"/>
                     <constraint firstItem="Q5C-z0-PFC" firstAttribute="leading" secondItem="gTa-z3-gJI" secondAttribute="leading" constant="10" id="SBo-aU-k5D"/>
                     <constraint firstItem="Fcd-TW-6EN" firstAttribute="top" secondItem="wTJ-d6-8LB" secondAttribute="bottom" constant="20" id="SuW-K1-Ccy"/>

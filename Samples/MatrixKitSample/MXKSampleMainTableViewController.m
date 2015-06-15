@@ -44,9 +44,19 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     MXRoom *selectedRoom;
     
     /**
+     The current selected room member.
+     */
+    MXRoomMember *selectedRoomMember;
+    
+    /**
      The current selected account.
      */
     MXKAccount *selectedAccount;
+    
+    /**
+     The current selected contact
+     */
+    MXKContact *selectedContact;
     
     /**
      The current call view controller (if any).
@@ -724,6 +734,16 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         MXKAccountDetailsViewController *accountViewController = (MXKAccountDetailsViewController *)destinationViewController;
         accountViewController.mxAccount = selectedAccount;
     }
+    else if ([segue.identifier isEqualToString:@"showMXKRoomMemberDetailsViewController"])
+    {
+        MXKRoomMemberDetailsViewController *memberDetails = (MXKRoomMemberDetailsViewController*)destinationViewController;
+        [memberDetails displayRoomMember:selectedRoomMember withMatrixRoom:selectedRoom];
+    }
+    else if ([segue.identifier isEqualToString:@"showMXKContactDetailsViewController"])
+    {
+        MXKContactDetailsViewController *contactDetails = (MXKContactDetailsViewController*)destinationViewController;
+        contactDetails.contact = selectedContact;
+    }
 }
 
 #pragma mark - MXKRecentListViewControllerDelegate
@@ -740,10 +760,13 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
 
 #pragma  mark - MXKRoomMemberListViewControllerDelegate
 
-- (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(NSString*)memberId
+- (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(MXRoomMember*)member
 {
-    // TODO
-    NSLog(@"Member (%@) has been selected", memberId);
+    NSLog(@"Member (%@) has been selected", member.userId);
+    
+    selectedRoomMember = member;
+    
+    [self performSegueWithIdentifier:@"showMXKRoomMemberDetailsViewController" sender:self];
 }
 
 #pragma mark - MXKAuthenticationViewControllerDelegate
@@ -804,13 +827,15 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
 
 - (void)contactListViewController:(MXKContactListViewController *)contactListViewController didSelectContact:(NSString *)contactId
 {
-    MXKContact *selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
+    selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
     NSLog(@"    -> %@ has been selected", selectedContact.displayName);
+    
+    [self performSegueWithIdentifier:@"showMXKContactDetailsViewController" sender:self];
 }
 
 - (void)contactListViewController:(MXKContactListViewController *)contactListViewController didTapContactThumbnail:(NSString *)contactId
 {
-    MXKContact *selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
+    selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
     NSLog(@"    -> Avatar of %@ has been tapped", selectedContact.displayName);
 }
 

@@ -82,20 +82,18 @@
         <!--Sample Room Members View Controller-->
         <scene sceneID="wke-Om-3we">
             <objects>
-                <tableViewController id="QAG-34-oEa" customClass="MXKSampleRoomMembersViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="STL-du-v5j">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="dataSource" destination="QAG-34-oEa" id="4PK-yn-F5q"/>
-                            <outlet property="delegate" destination="QAG-34-oEa" id="0n4-a3-1M7"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
+                <tableViewController id="QAG-34-oEa" customClass="MXKSampleRoomMembersViewController" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pHi-Cd-dr1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-190" y="-570"/>
+        </scene>
+        <!--Room Member Details View Controller-->
+        <scene sceneID="YyP-Fs-6TY">
+            <objects>
+                <tableViewController id="UuX-gA-8uG" customClass="MXKRoomMemberDetailsViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MJd-o9-ofu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-190" y="236"/>
         </scene>
         <!--Room Member List View Controller-->
         <scene sceneID="xB0-2j-NkM">
@@ -121,7 +119,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0aS-bk-8U0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1606" y="608"/>
+            <point key="canvasLocation" x="-2230" y="264"/>
         </scene>
         <!--Account Details View Controller-->
         <scene sceneID="LOU-c7-JNY">
@@ -129,7 +127,7 @@
                 <tableViewController id="AJD-Wn-nDw" customClass="MXKAccountDetailsViewController" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kcF-fa-yai" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-858" y="214"/>
+            <point key="canvasLocation" x="-874" y="236"/>
         </scene>
         <!--Contact List View Controller-->
         <scene sceneID="S8r-Lm-tzf">
@@ -137,7 +135,15 @@
                 <tableViewController id="PaO-MN-amw" customClass="MXKContactListViewController" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u3j-Tu-jdo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-858" y="936"/>
+            <point key="canvasLocation" x="-1562" y="672"/>
+        </scene>
+        <!--Contact Details View Controller-->
+        <scene sceneID="2LL-Vg-PFG">
+            <objects>
+                <tableViewController id="uwp-lu-7Nl" customClass="MXKContactDetailsViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="v9F-tK-x36" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="522" y="236"/>
         </scene>
         <!--MatrixKit Samples-->
         <scene sceneID="HuU-tB-Z5y">
@@ -229,6 +235,8 @@
                         <segue destination="PaO-MN-amw" kind="show" identifier="showMXKContactListViewController" id="5Yg-2p-fIt"/>
                         <segue destination="YbK-3w-mDu" kind="show" identifier="showMXKRecentListViewController" id="MBc-Hp-U9v"/>
                         <segue destination="YbK-3w-mDu" kind="show" identifier="showInterleavedRecentsViewController" id="8a2-C4-GfS"/>
+                        <segue destination="UuX-gA-8uG" kind="show" identifier="showMXKRoomMemberDetailsViewController" id="qYZ-nn-TMh"/>
+                        <segue destination="uwp-lu-7Nl" kind="show" identifier="showMXKContactDetailsViewController" id="bbV-58-Cj4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>
