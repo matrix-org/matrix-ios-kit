@@ -114,7 +114,7 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 /**
  The following method is registered on `UIControlEventTouchUpInside` event for all displayed action buttons (see MXKRoomMemberDetailsAction).
  */
-- (IBAction)onActionButtonPressed:(UIButton*)actionBtn;
+- (IBAction)onActionButtonPressed:(id)sender;
 
 @end
 

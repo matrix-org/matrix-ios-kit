@@ -75,10 +75,12 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
 {
     [super viewDidLoad];
     
-    // remove the line separator color
-    self.tableView.separatorColor = [UIColor clearColor];
-    self.tableView.rowHeight = 44;
-    self.tableView.allowsSelection = NO;
+    // Check whether the view controller has been pushed via storyboard
+    if (!_memberThumbnailButton)
+    {
+        // Instantiate view controller objects
+        [[[self class] nib] instantiateWithOwner:self options:nil];
+    }
     
     buttonsTitles = [[NSMutableArray alloc] init];
     
