@@ -138,7 +138,8 @@ NSString *const kMXKContactDetailsLabelAndButtonCellId = @"kMXKContactDetailsLab
     if (row < matrixIDs.count)
     {
         cell.mxkLabel.text = [matrixIDs objectAtIndex:row];
-    } else
+    }
+    else
     {
         // should never happen
         cell.mxkLabel.text = @"";

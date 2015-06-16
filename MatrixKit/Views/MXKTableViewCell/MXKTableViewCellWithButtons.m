@@ -34,17 +34,19 @@
     _mxkButtonNumber = buttonNumber;
     buttonArray = [NSMutableArray arrayWithCapacity:buttonNumber];
     
-    CGFloat containerWidth = self.frame.size.width / buttonNumber;
+    CGFloat containerWidth = self.contentView.frame.size.width / buttonNumber;
     UIView *previousContainer = nil;
     NSLayoutConstraint *leftConstraint;
     NSLayoutConstraint *rightConstraint;
     NSLayoutConstraint *widthConstraint;
+    NSLayoutConstraint *topConstraint;
+    NSLayoutConstraint *bottomConstraint;
     
     for (NSInteger index = 0; index < buttonNumber; index++)
     {
-        UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectMake(index * containerWidth, 0, containerWidth, self.frame.size.height)];
+        UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectMake(index * containerWidth, 0, containerWidth, self.contentView.frame.size.height)];
         buttonContainer.backgroundColor = [UIColor clearColor];
-        [self addSubview:buttonContainer];
+        [self.contentView addSubview:buttonContainer];
         
         // Add container constraints
         buttonContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -53,14 +55,14 @@
             leftConstraint = [NSLayoutConstraint constraintWithItem:buttonContainer
                                                           attribute:NSLayoutAttributeLeading
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self
+                                                             toItem:self.contentView
                                                           attribute:NSLayoutAttributeLeading
                                                          multiplier:1
                                                            constant:0];
             widthConstraint = [NSLayoutConstraint constraintWithItem:buttonContainer
                                                            attribute:NSLayoutAttributeWidth
                                                            relatedBy:NSLayoutRelationEqual
-                                                              toItem:self
+                                                              toItem:self.contentView
                                                            attribute:NSLayoutAttributeWidth
                                                           multiplier:(1.0 / buttonNumber)
                                                             constant:0];
@@ -83,14 +85,32 @@
                                                             constant:0];
         }
         
+        topConstraint = [NSLayoutConstraint constraintWithItem:buttonContainer
+                                                        attribute:NSLayoutAttributeTop
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self.contentView
+                                                        attribute:NSLayoutAttributeTop
+                                                       multiplier:1
+                                                         constant:0];
+        
+        bottomConstraint = [NSLayoutConstraint constraintWithItem:buttonContainer
+                                                         attribute:NSLayoutAttributeBottom
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self.contentView
+                                                         attribute:NSLayoutAttributeBottom
+                                                        multiplier:1
+                                                          constant:0];
+        
         if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
         {
-            [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint]];
+            [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint, topConstraint, bottomConstraint]];
         }
         else
         {
-            [self addConstraint:leftConstraint];
-            [self addConstraint:widthConstraint];
+            [self.contentView addConstraint:leftConstraint];
+            [self.contentView addConstraint:widthConstraint];
+            [self.contentView addConstraint:topConstraint];
+            [self.contentView addConstraint:bottomConstraint];
             
         }
         previousContainer = buttonContainer;
@@ -118,14 +138,32 @@
                                                      multiplier:1
                                                        constant:-10];
         
+        topConstraint = [NSLayoutConstraint constraintWithItem:button
+                                                     attribute:NSLayoutAttributeTop
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:buttonContainer
+                                                     attribute:NSLayoutAttributeTop
+                                                    multiplier:1
+                                                      constant:8];
+        
+        bottomConstraint = [NSLayoutConstraint constraintWithItem:button
+                                                        attribute:NSLayoutAttributeBottom
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:buttonContainer
+                                                        attribute:NSLayoutAttributeBottom
+                                                       multiplier:1
+                                                         constant:-8];
+        
         if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
         {
-            [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint]];
+            [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, bottomConstraint]];
         }
         else
         {
             [buttonContainer addConstraint:leftConstraint];
             [buttonContainer addConstraint:rightConstraint];
+            [buttonContainer addConstraint:topConstraint];
+            [buttonContainer addConstraint:bottomConstraint];
         }
     }
 }

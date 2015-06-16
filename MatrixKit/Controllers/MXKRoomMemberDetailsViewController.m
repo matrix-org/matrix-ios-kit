@@ -159,6 +159,175 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
     // Do nothing by default
 }
 
+- (IBAction)onActionButtonPressed:(id)sender
+{
+    if ([sender isKindOfClass:[UIButton class]])
+    {
+        // already a pending action
+        if ([self hasPendingAction])
+        {
+            return;
+        }
+        
+        NSString* action = ((UIButton*)sender).titleLabel.text;
+        
+        if ([action isEqualToString:MXKRoomMemberDetailsActionLeave])
+        {
+            [self addPendingActionMask];
+            [self.mxRoom leave:^{
+                [self removePendingActionMask];
+                [self withdrawViewControllerAnimated:YES completion:nil];
+            } failure:^(NSError *error)
+             {
+                 [self removePendingActionMask];
+                 NSLog(@"[MXKMemberVC] Leave room %@ failed: %@", mxRoom.state.roomId, error);
+                 // TODO GFO Alert user
+                 //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+             }];
+            
+        }
+        else if ([action isEqualToString:MXKRoomMemberDetailsActionSetPowerLevel])
+        {
+            [self updateUserPowerLevel:_mxRoomMember];
+        }
+        else if ([action isEqualToString:MXKRoomMemberDetailsActionKick])
+        {
+            [self addPendingActionMask];
+            [mxRoom kickUser:_mxRoomMember.userId
+                      reason:nil
+                     success:^{
+                         [self removePendingActionMask];
+                         // Pop/Dismiss the current view controller if the left members are hidden
+                         if (![[MXKAppSettings standardAppSettings] showLeftMembersInRoomMemberList])
+                         {
+                             [self withdrawViewControllerAnimated:YES completion:nil];
+                         }
+                     }
+                     failure:^(NSError *error) {
+                         [self removePendingActionMask];
+                         NSLog(@"[MXKMemberVC] Kick %@ failed: %@", _mxRoomMember.userId, error);
+                         // TODO GFO Alert user
+                         //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                     }];
+        }
+        else if ([action isEqualToString:MXKRoomMemberDetailsActionBan])
+        {
+            [self addPendingActionMask];
+            [mxRoom banUser:_mxRoomMember.userId
+                     reason:nil
+                    success:^{
+                        [self removePendingActionMask];
+                    }
+                    failure:^(NSError *error)
+             {
+                 [self removePendingActionMask];
+                 NSLog(@"[MXKMemberVC] Ban %@ failed: %@", _mxRoomMember.userId, error);
+                 // TODO GFO Alert user
+                 //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+             }];
+        }
+        else if ([action isEqualToString:MXKRoomMemberDetailsActionInvite])
+        {
+            [self addPendingActionMask];
+            [mxRoom inviteUser:_mxRoomMember.userId
+                       success:^{
+                           [self removePendingActionMask];
+                       }
+                       failure:^(NSError *error)
+             {
+                 [self removePendingActionMask];
+                 NSLog(@"[MXKMemberVC] Invite %@ failed: %@", _mxRoomMember.userId, error);
+                 // TODO GFO Alert user
+                 //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+             }];
+        }
+        else if ([action isEqualToString:MXKRoomMemberDetailsActionUnban])
+        {
+            [self addPendingActionMask];
+            [mxRoom unbanUser:_mxRoomMember.userId
+                      success:^{
+                          [self removePendingActionMask];
+                      }
+                      failure:^(NSError *error)
+             {
+                 [self removePendingActionMask];
+                 NSLog(@"[MXKMemberVC] Unban %@ failed: %@", _mxRoomMember.userId, error);
+                 // TODO GFO Alert user
+                 //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+             }];
+            
+        }
+        else if ([action isEqualToString:MXKRoomMemberDetailsActionStartChat])
+        {
+            if (self.delegate)
+            {
+                [self addPendingActionMask];
+                
+                [self.delegate roomMemberDetailsViewController:self startOneToOneCommunication:MXKRoomMemberDetailsActionStartChat];
+                
+                [self removePendingActionMask];
+            }
+        }
+        else if (([action isEqualToString:MXKRoomMemberDetailsActionStartVoiceCall]) || ([action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall]))
+        {
+            if (self.delegate)
+            {
+                [self addPendingActionMask];
+                
+                [self.delegate roomMemberDetailsViewController:self startOneToOneCommunication:action];
+                
+                [self removePendingActionMask];
+            }
+            else
+            {
+                BOOL startVideoCall = [action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall];
+                
+                [self addPendingActionMask];
+                
+                MXRoom* oneToOneRoom = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
+                
+                // Place the call directly if the room exists
+                if (oneToOneRoom)
+                {
+                    [self.mainSession.callManager placeCallInRoom:oneToOneRoom.state.roomId withVideo:startVideoCall];
+                    [self removePendingActionMask];
+                } else
+                {
+                    // Create a new room
+                    [self.mainSession createRoom:nil
+                                      visibility:kMXRoomVisibilityPrivate
+                                       roomAlias:nil
+                                           topic:nil
+                                         success:^(MXRoom *room)
+                     {
+                         // Add the user
+                         [room inviteUser:_mxRoomMember.userId success:^{
+                             // Delay the call in order to be sure that the room is ready
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 [self.mainSession.callManager placeCallInRoom:room.state.roomId withVideo:startVideoCall];
+                                 [self removePendingActionMask];
+                             });
+                             
+                         } failure:^(NSError *error)
+                          {
+                              NSLog(@"[MXKMemberVC] %@ invitation failed (roomId: %@): %@", _mxRoomMember.userId, room.state.roomId, error);
+                              [self removePendingActionMask];
+                              // TODO GFO Alert user
+                              //                            [[AppDelegate theDelegate] showErrorAsAlert:error];
+                          }];
+                     } failure:^(NSError *error)
+                     {
+                         NSLog(@"[MXKMemberVC] Create room failed: %@", error);
+                         [self removePendingActionMask];
+                         // TODO GFO Alert user
+                         //                        [[AppDelegate theDelegate] showErrorAsAlert:error];
+                     }];
+                }
+            }
+        }
+    }
+}
+
 #pragma mark - Internals
 
 - (void)removeObservers
@@ -456,6 +625,10 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
             {
                 text = [buttonsTitles objectAtIndex:index];
             }
+            else
+            {
+                text = nil;
+            }
             
             button.hidden = (text.length == 0);
             
@@ -567,175 +740,6 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
         }
     }];
     [self.actionMenu showInViewController:self];
-}
-
-- (IBAction)onActionButtonPressed:(id)sender
-{
-    if ([sender isKindOfClass:[UIButton class]])
-    {
-        // already a pending action
-        if ([self hasPendingAction])
-        {
-            return;
-        }
-        
-        NSString* action = ((UIButton*)sender).titleLabel.text;
-        
-        if ([action isEqualToString:MXKRoomMemberDetailsActionLeave])
-        {
-            [self addPendingActionMask];
-            [self.mxRoom leave:^{
-                [self removePendingActionMask];
-                [self withdrawViewControllerAnimated:YES completion:nil];
-            } failure:^(NSError *error)
-            {
-                [self removePendingActionMask];
-                NSLog(@"[MXKMemberVC] Leave room %@ failed: %@", mxRoom.state.roomId, error);
-                // TODO GFO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-            
-        }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionSetPowerLevel])
-        {
-            [self updateUserPowerLevel:_mxRoomMember];
-        }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionKick])
-        {
-            [self addPendingActionMask];
-            [mxRoom kickUser:_mxRoomMember.userId
-                      reason:nil
-                     success:^{
-                         [self removePendingActionMask];
-                         // Pop/Dismiss the current view controller if the left members are hidden
-                         if (![[MXKAppSettings standardAppSettings] showLeftMembersInRoomMemberList])
-                         {
-                             [self withdrawViewControllerAnimated:YES completion:nil];
-                         }
-                     }
-                     failure:^(NSError *error) {
-                [self removePendingActionMask];
-                NSLog(@"[MXKMemberVC] Kick %@ failed: %@", _mxRoomMember.userId, error);
-                // TODO GFO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-        }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionBan])
-        {
-            [self addPendingActionMask];
-            [mxRoom banUser:_mxRoomMember.userId
-                     reason:nil
-                    success:^{
-                        [self removePendingActionMask];
-                    }
-                    failure:^(NSError *error)
-            {
-                [self removePendingActionMask];
-                NSLog(@"[MXKMemberVC] Ban %@ failed: %@", _mxRoomMember.userId, error);
-                // TODO GFO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-        }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionInvite])
-        {
-            [self addPendingActionMask];
-            [mxRoom inviteUser:_mxRoomMember.userId
-                       success:^{
-                           [self removePendingActionMask];
-                       }
-                       failure:^(NSError *error)
-            {
-                [self removePendingActionMask];
-                NSLog(@"[MXKMemberVC] Invite %@ failed: %@", _mxRoomMember.userId, error);
-                // TODO GFO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-        }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionUnban])
-        {
-            [self addPendingActionMask];
-            [mxRoom unbanUser:_mxRoomMember.userId
-                      success:^{
-                          [self removePendingActionMask];
-                      }
-                      failure:^(NSError *error)
-            {
-                [self removePendingActionMask];
-                NSLog(@"[MXKMemberVC] Unban %@ failed: %@", _mxRoomMember.userId, error);
-                // TODO GFO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
-            
-        }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionStartChat])
-        {
-            if (self.delegate)
-            {
-                [self addPendingActionMask];
-                
-                [self.delegate roomMemberDetailsViewController:self startOneToOneCommunication:MXKRoomMemberDetailsActionStartChat];
-                
-                [self removePendingActionMask];
-            }
-        }
-        else if (([action isEqualToString:MXKRoomMemberDetailsActionStartVoiceCall]) || ([action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall]))
-        {
-            if (self.delegate)
-            {
-                [self addPendingActionMask];
-                
-                [self.delegate roomMemberDetailsViewController:self startOneToOneCommunication:action];
-                
-                [self removePendingActionMask];
-            }
-            else
-            {
-                BOOL startVideoCall = [action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall];
-                
-                [self addPendingActionMask];
-                
-                MXRoom* oneToOneRoom = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
-                
-                // Place the call directly if the room exists
-                if (oneToOneRoom)
-                {
-                    [self.mainSession.callManager placeCallInRoom:oneToOneRoom.state.roomId withVideo:startVideoCall];
-                    [self removePendingActionMask];
-                } else
-                {
-                    // Create a new room
-                    [self.mainSession createRoom:nil
-                                      visibility:kMXRoomVisibilityPrivate
-                                       roomAlias:nil
-                                           topic:nil
-                                         success:^(MXRoom *room)
-                     {
-                         // Add the user
-                         [room inviteUser:_mxRoomMember.userId success:^{
-                             // Delay the call in order to be sure that the room is ready
-                             dispatch_async(dispatch_get_main_queue(), ^{
-                                 [self.mainSession.callManager placeCallInRoom:room.state.roomId withVideo:startVideoCall];
-                                 [self removePendingActionMask];
-                             });
-                             
-                         } failure:^(NSError *error)
-                          {
-                              NSLog(@"[MXKMemberVC] %@ invitation failed (roomId: %@): %@", _mxRoomMember.userId, room.state.roomId, error);
-                              [self removePendingActionMask];
-                              // TODO GFO Alert user
-                              //                            [[AppDelegate theDelegate] showErrorAsAlert:error];
-                          }];
-                     } failure:^(NSError *error)
-                     {
-                         NSLog(@"[MXKMemberVC] Create room failed: %@", error);
-                         [self removePendingActionMask];
-                         // TODO GFO Alert user
-                         //                        [[AppDelegate theDelegate] showErrorAsAlert:error];
-                     }];
-                }
-            }
-        }
-    }
 }
 
 @end
