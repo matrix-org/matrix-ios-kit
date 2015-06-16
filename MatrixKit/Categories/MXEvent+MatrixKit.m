@@ -52,6 +52,18 @@
     return NO;
 }
 
+- (BOOL)isAttachedMedia
+{
+    if (self.eventType == MXEventTypeRoomMessage)
+    {
+        NSString *msgtype = self.content[@"msgtype"];
+        if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] || [msgtype isEqualToString:kMXMessageTypeAudio])
+        {
+            return YES;
+        }
+    }
+    return NO;
+}
 
 #pragma mark - NSCopying
 - (id)copyWithZone:(NSZone *)zone

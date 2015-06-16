@@ -1158,7 +1158,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Let the datasource send it and manage the local echo
     [roomDataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error)
     {
-        
         // Just log the error. The message will be displayed in red in the room history
         NSLog(@"[MXKRoomViewController] sendTextMessage failed. Error:%@", error);
     }];
@@ -1345,15 +1344,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
             }];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+                
                 // Get again the loader
                 MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
                 if (loader)
                 {
                     [loader cancel];
                 }
-                strongSelf->currentAlert = nil;
             }];
             
             [currentAlert showInViewController:self];
@@ -1377,15 +1377,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                 }];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
                     // Get again the loader
                     MXKMediaLoader *loader = [MXKMediaManager existingUploaderWithId:uploadId];
                     if (loader)
                     {
                         [loader cancel];
                     }
-                    strongSelf->currentAlert = nil;
                 }];
                 
                 [currentAlert showInViewController:self];
@@ -1397,16 +1398,101 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         MXEvent *selectedEvent = userInfo[kMXKRoomBubbleCellEventKey];
         if (selectedEvent)
         {
+            if (currentAlert)
+            {
+                [currentAlert dismiss:NO];
+                currentAlert = nil;
+            }
+            
+            __weak __typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Select an action" style:MXKAlertStyleActionSheet];
+            
             // Check status of the selected event
             if (selectedEvent.mxkState == MXKEventStateSendingFailed)
             {
-                // The user may want to resend it
-                [self promptUserToResendEvent:selectedEvent.eventId];
+                [currentAlert addActionWithTitle:@"Resend" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    // Let the datasource resend. It will manage local echo, etc.
+                    [strongSelf.roomDataSource resendEventWithEventId:selectedEvent.eventId success:nil failure:nil];
+                }];
+                
+                [currentAlert addActionWithTitle:@"Delete" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    [strongSelf.roomDataSource removeEventWithEventId:selectedEvent.eventId];
+                }];
             }
-            else if (selectedEvent.mxkState != MXKEventStateSending)
+            else
             {
-                // Display event details
-                [self showEventDetails:selectedEvent];
+                if (selectedEvent.mxkState == MXKEventStateUploading)
+                {
+                    // Upload id is stored in attachment url (nasty trick)
+                    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                    NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
+                    if ([MXKMediaManager existingUploaderWithId:uploadId])
+                    {
+                        [currentAlert addActionWithTitle:@"Cancel upload" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            strongSelf->currentAlert = nil;
+                            
+                            // Get again the loader
+                            MXKMediaLoader *loader = [MXKMediaManager existingUploaderWithId:uploadId];
+                            if (loader)
+                            {
+                                [loader cancel];
+                            }
+                        }];
+                    }
+                }
+                else if (selectedEvent.mxkState != MXKEventStateSending)
+                {
+                    // Check whether download is in progress
+                    if (selectedEvent.isAttachedMedia)
+                    {
+                        MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                        NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+                        if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
+                        {
+                            [currentAlert addActionWithTitle:@"Cancel download" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                strongSelf->currentAlert = nil;
+                                
+                                // Get again the loader
+                                MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+                                if (loader)
+                                {
+                                    [loader cancel];
+                                }
+                            }];
+                        }
+                    }
+                    
+                    [currentAlert addActionWithTitle:@"Show details" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        strongSelf->currentAlert = nil;
+                        
+                        // Display event details
+                        [strongSelf showEventDetails:selectedEvent];
+                    }];
+                }
+            }
+            
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+            }];
+            
+            // Do not display empty action sheet
+            if (currentAlert.cancelButtonIndex)
+            {
+                [currentAlert showInViewController:self];
+            }
+            else
+            {
+                currentAlert = nil;
             }
         }
     }

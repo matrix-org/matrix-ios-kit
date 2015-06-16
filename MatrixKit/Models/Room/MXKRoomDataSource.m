@@ -345,13 +345,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     }];
     
     // Register a listener to handle redaction in live stream
-    redactionListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXEventDirection direction, MXRoomState *roomState)
-    {
+    redactionListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXEventDirection direction, MXRoomState *roomState) {
         
         // Consider only live redaction events
         if (direction == MXEventDirectionForwards)
         {
-            
             // Do the processing on the processing queue
             dispatch_async(processingQueue, ^{
                 
@@ -951,12 +949,10 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     
     if (event && event.eventType == MXEventTypeRoomMessage)
     {
-        
         // And retry the send the message accoding to its type
         NSString *msgType = event.content[@"msgtype"];
         if ([msgType isEqualToString:kMXMessageTypeText] || [msgType isEqualToString:kMXMessageTypeEmote])
         {
-            
             // Remove the local echo
             [self removeEventWithEventId:eventId];
             
@@ -994,13 +990,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         }
         else
         {
-            
             NSLog(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
         }
     }
     else
     {
-        
         NSLog(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
     }
 }
