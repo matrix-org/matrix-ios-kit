@@ -118,6 +118,8 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
     
     [self removeObservers];
     
+    self.delegate = nil;
+    
     [super destroy];
 }
 
@@ -263,25 +265,25 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
             {
                 [self addPendingActionMask];
                 
-                [self.delegate roomMemberDetailsViewController:self startOneToOneCommunication:MXKRoomMemberDetailsActionStartChat];
+                [self.delegate roomMemberDetailsViewController:self startChatWithMemberId:_mxRoomMember.userId];
                 
                 [self removePendingActionMask];
             }
         }
         else if (([action isEqualToString:MXKRoomMemberDetailsActionStartVoiceCall]) || ([action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall]))
         {
-            if (self.delegate)
+            BOOL isVideoCall = [action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall];
+            
+            if (self.delegate && [self.delegate respondsToSelector:@selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:)])
             {
                 [self addPendingActionMask];
                 
-                [self.delegate roomMemberDetailsViewController:self startOneToOneCommunication:action];
+                [self.delegate roomMemberDetailsViewController:self placeVoipCallWithMemberId:_mxRoomMember.userId andVideo:isVideoCall];
                 
                 [self removePendingActionMask];
             }
             else
             {
-                BOOL startVideoCall = [action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall];
-                
                 [self addPendingActionMask];
                 
                 MXRoom* oneToOneRoom = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
@@ -289,7 +291,7 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
                 // Place the call directly if the room exists
                 if (oneToOneRoom)
                 {
-                    [self.mainSession.callManager placeCallInRoom:oneToOneRoom.state.roomId withVideo:startVideoCall];
+                    [self.mainSession.callManager placeCallInRoom:oneToOneRoom.state.roomId withVideo:isVideoCall];
                     [self removePendingActionMask];
                 } else
                 {
@@ -304,7 +306,7 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
                          [room inviteUser:_mxRoomMember.userId success:^{
                              // Delay the call in order to be sure that the room is ready
                              dispatch_async(dispatch_get_main_queue(), ^{
-                                 [self.mainSession.callManager placeCallInRoom:room.state.roomId withVideo:startVideoCall];
+                                 [self.mainSession.callManager placeCallInRoom:room.state.roomId withVideo:isVideoCall];
                                  [self removePendingActionMask];
                              });
                              

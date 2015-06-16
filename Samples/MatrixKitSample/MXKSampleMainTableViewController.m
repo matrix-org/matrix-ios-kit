@@ -738,11 +738,13 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     {
         MXKRoomMemberDetailsViewController *memberDetails = (MXKRoomMemberDetailsViewController*)destinationViewController;
         [memberDetails displayRoomMember:selectedRoomMember withMatrixRoom:selectedRoom];
+        memberDetails.delegate = self;
     }
     else if ([segue.identifier isEqualToString:@"showMXKContactDetailsViewController"])
     {
         MXKContactDetailsViewController *contactDetails = (MXKContactDetailsViewController*)destinationViewController;
         contactDetails.contact = selectedContact;
+        contactDetails.delegate = self;
     }
 }
 
@@ -837,6 +839,20 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
 {
     selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
     NSLog(@"    -> Avatar of %@ has been tapped", selectedContact.displayName);
+}
+
+#pragma mark - MXKRoomMemberDetailsViewControllerDelegate
+
+- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString *)matrixId
+{
+    NSLog(@"    -> Start chat with %@ is requested", matrixId);
+}
+
+#pragma mark - MXKContactDetailsViewControllerDelegate
+
+- (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString *)matrixId
+{
+    NSLog(@"    -> Start chat with %@ is requested", matrixId);
 }
 
 #pragma mark - Call status handling

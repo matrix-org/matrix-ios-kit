@@ -76,8 +76,11 @@ NSString *const kMXKContactDetailsLabelAndButtonCellId = @"kMXKContactDetailsLab
 
 - (void)destroy
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     matrixIDs = nil;
+    
+    self.delegate = nil;
+    
+    [super destroy];
 }
 
 #pragma mark -

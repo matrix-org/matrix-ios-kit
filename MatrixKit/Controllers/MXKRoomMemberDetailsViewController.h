@@ -40,12 +40,23 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 @protocol MXKRoomMemberDetailsViewControllerDelegate <NSObject>
 
 /**
- Tells the delegate that the user wants to start a one-to-one chat or place a call with the room member.
+ Tells the delegate that the user wants to start a one-to-one chat with the room member.
  
  @param roomMemberDetailsViewController the `MXKRoomMemberDetailsViewController` instance.
- @param action the wanted action: MXKRoomMemberDetailsActionStartChat, MXKRoomMemberDetailsActionStartVoiceCall or MXKRoomMemberDetailsActionStartVideoCall.
+ @param matrixId the member's matrix id
  */
-- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startOneToOneCommunication:(MXKRoomMemberDetailsAction)action;
+- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString*)matrixId;
+
+@optional
+
+/**
+ Tells the delegate that the user wants to place a voip call with the room member.
+ 
+ @param roomMemberDetailsViewController the `MXKRoomMemberDetailsViewController` instance.
+ @param matrixId the member's matrix id
+ @param isVideoCall the type of the call: YES for video call / NO for voice call.
+ */
+- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController placeVoipCallWithMemberId:(NSString*)matrixId andVideo:(BOOL)isVideoCall;
 
 @end
 
@@ -108,11 +119,19 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 /**
  The member's thumbnail is displayed inside a button. The following method is registered on
  `UIControlEventTouchUpInside` event of this button.
+ 
+ Nothing is done by the current implementation.
  */
 - (IBAction)onMemberThumbnailPressed:(id)sender;
 
 /**
  The following method is registered on `UIControlEventTouchUpInside` event for all displayed action buttons (see MXKRoomMemberDetailsAction).
+ 
+ The start chat option ('MXKRoomMemberDetailsActionStartChat') is transferred to the delegate.
+ All the other actions are handled by the current implementation.
+ 
+ If the delegate responds to selector: @selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:), the voip options
+ ('MXKRoomMemberDetailsActionStartVoiceCall' and 'MXKRoomMemberDetailsActionStartVideoCall') are transferred to the delegate.
  */
 - (IBAction)onActionButtonPressed:(id)sender;
 
