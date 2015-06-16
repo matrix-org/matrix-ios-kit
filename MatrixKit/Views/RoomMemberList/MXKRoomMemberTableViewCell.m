@@ -181,6 +181,17 @@
             // Set it in our UILabel and we are done!
             [self.userLabel setAttributedText:attributedText];
         }
+        
+        // Set typing badge visibility
+        if (memberCellData.isTyping)
+        {
+            self.typingBadge.hidden = NO;
+            [self.typingBadge.superview bringSubviewToFront:self.typingBadge];
+        }
+        else
+        {
+            self.typingBadge.hidden = YES;
+        }
     }
 }
 

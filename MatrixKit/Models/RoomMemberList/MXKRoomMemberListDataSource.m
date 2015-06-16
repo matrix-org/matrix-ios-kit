@@ -92,7 +92,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 {
     if (MXSessionStateStoreDataReady <= self.mxSession.state)
     {
-        
         // Check whether the room is not already set
         if (!mxRoom)
         {
@@ -330,7 +329,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     cellDataArray = [NSMutableArray arrayWithArray:sortedMembers];
 }
 
-- (void)listenMembersEvents{
+- (void)listenMembersEvents
+{
     // Remove the previous live listener
     if (membersListener)
     {
@@ -377,7 +377,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     // Add typing notification listener
     typingNotifListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
     {
-        
         // Handle only live events
         if (direction == MXEventDirectionForwards)
         {
