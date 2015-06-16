@@ -419,8 +419,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 [self stopActivityIndicator];
                 
                 [self triggerInitialBackPagination];
-            } failure:^(NSError *error)
-            {
+            } failure:^(NSError *error) {
                 
                 NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
                 
@@ -433,10 +432,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                        message:[NSString stringWithFormat:@"Failed to join room (%@): %@", roomDataSource.room.state.displayname, error]
                                                          style:MXKAlertStyleAlert];
                 currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                {
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                }];
+                                                  {
+                                                      typeof(self) self = weakSelf;
+                                                      self->currentAlert = nil;
+                                                  }];
                 
                 [currentAlert showInViewController:self];
             }];
@@ -1228,17 +1227,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (event && event.eventType == MXEventTypeRoomMessage)
     {
-        
         NSString *msgtype = event.content[@"msgtype"];
         
         NSString* textMessage;
         if ([msgtype isEqualToString:kMXMessageTypeText])
         {
-            
             textMessage = event.content[@"body"];
         }
         
         // Show a confirmation popup to the end user
+        if (currentAlert)
+        {
+            [currentAlert dismiss:NO];
+            currentAlert = nil;
+        }
+        
         __weak typeof(self) weakSelf = self;
         currentAlert = [[MXKAlert alloc] initWithTitle:@"Resend the message"
                                                message:textMessage
@@ -1330,26 +1333,63 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
         if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
         {
-            __weak typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the download ?" style:MXKAlertStyleAlert];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            if (currentAlert)
             {
-                typeof(self) self = weakSelf;
-                self->currentAlert = nil;
+                [currentAlert dismiss:NO];
+                currentAlert = nil;
+            }
+            
+            __weak __typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the download?" style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"No" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
             }];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                typeof(self) self = weakSelf;
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
                 // Get again the loader
                 MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
                 if (loader)
                 {
                     [loader cancel];
                 }
-                self->currentAlert = nil;
+                strongSelf->currentAlert = nil;
             }];
             
             [currentAlert showInViewController:self];
+        }
+        else
+        {
+            // Check if there is an upload in progress, then offer to cancel it
+            // Upload id is stored in attachment url (nasty trick)
+            NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
+            if ([MXKMediaManager existingUploaderWithId:uploadId])
+            {
+                if (currentAlert)
+                {
+                    [currentAlert dismiss:NO];
+                    currentAlert = nil;
+                }
+                
+                __weak __typeof(self) weakSelf = self;
+                currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the upload?" style:MXKAlertStyleAlert];
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"No" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                }];
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    // Get again the loader
+                    MXKMediaLoader *loader = [MXKMediaManager existingUploaderWithId:uploadId];
+                    if (loader)
+                    {
+                        [loader cancel];
+                    }
+                    strongSelf->currentAlert = nil;
+                }];
+                
+                [currentAlert showInViewController:self];
+            }
         }
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnEvent])
@@ -1651,6 +1691,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 mimetype = content[@"info"][@"mimetype"];
             }
+            
             AVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
             [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
             videoPlayer = [[MPMoviePlayerController alloc] init];
@@ -1690,8 +1731,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
                     
-                    NSString *localFilePath = [MXKMediaManager cachePathForMediaWithURL:selectedVideoURL andType:mimetype inFolder:roomDataSource.roomId];
-                    [MXKMediaManager downloadMediaFromURL:selectedVideoURL andSaveAtFilePath:localFilePath];
+                    [MXKMediaManager downloadMediaFromURL:selectedVideoURL andSaveAtFilePath:selectedVideoCachePath];
                 }
             }
         }

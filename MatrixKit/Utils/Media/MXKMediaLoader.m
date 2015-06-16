@@ -61,7 +61,7 @@ NSString *const kUploadIdPrefix = @"upload-";
     {
         if (operation.operation.executing)
         {
-            NSLog(@"[MXKMediaLoader] Media upload has been cancelled (%@)", mediaURL);
+            NSLog(@"[MXKMediaLoader] Media upload has been cancelled");
             [operation cancel];
             operation = nil;
         }
@@ -252,29 +252,25 @@ NSString *const kUploadIdPrefix = @"upload-";
     operation = [mxSession.matrixRestClient uploadContent:data
                                                  mimeType:mimeType
                                                   timeout:30
-                                                  success:^(NSString *url)
-    {
-        if (success)
-        {
-            success(url);
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFinishNotification
-                                                            object:_uploadId
-                                                          userInfo:nil];
-    } failure:^(NSError *error)
-    {
-        if (failure)
-        {
-            failure (error);
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFailNotification
-                                                            object:_uploadId
-                                                          userInfo:@{kMXKMediaLoaderErrorKey:error}];
-    } uploadProgress:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite)
-    {
-        [self updateUploadProgressWithBytesWritten:bytesWritten totalBytesWritten:totalBytesWritten andTotalBytesExpectedToWrite:totalBytesExpectedToWrite];
-    }];
-    
+                                                  success:^(NSString *url) {
+                                                      if (success)
+                                                      {
+                                                          success(url);
+                                                      }
+                                                      [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFinishNotification
+                                                                                                          object:_uploadId
+                                                                                                        userInfo:nil];
+                                                  } failure:^(NSError *error) {
+                                                      if (failure)
+                                                      {
+                                                          failure (error);
+                                                      }
+                                                      [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFailNotification
+                                                                                                          object:_uploadId
+                                                                                                        userInfo:@{kMXKMediaLoaderErrorKey:error}];
+                                                  } uploadProgress:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+                                                      [self updateUploadProgressWithBytesWritten:bytesWritten totalBytesWritten:totalBytesWritten andTotalBytesExpectedToWrite:totalBytesExpectedToWrite];
+                                                  }];
 }
 
 - (void)updateUploadProgressWithBytesWritten:(NSUInteger)bytesWritten totalBytesWritten:(long long)totalBytesWritten andTotalBytesExpectedToWrite:(long long)totalBytesExpectedToWrite

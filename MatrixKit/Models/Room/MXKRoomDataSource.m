@@ -808,18 +808,14 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
     // Before sending data to the server, convert the video to MP4
-    [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs)
-    {
-        
+    [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs) {
         // Upload thumbnail
-        [uploader uploadData:videoThumbnailData mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl)
-        {
+        [uploader uploadData:videoThumbnailData mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
             
             // Upload video
             NSData* videoData = [NSData dataWithContentsOfFile:videoLocalURL.path];
             if (videoData)
-            {
-                
+            {  
                 MXKMediaLoader *videoUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
                 
                 // Apply the nasty trick again so that the cell can monitor the upload progress
@@ -827,8 +823,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 localEcho.content = msgContent;
                 [self updateLocalEcho:localEcho];
                 
-                [videoUploader uploadData:videoData mimeType:mimetype success:^(NSString *videoUrl)
-                {
+                [videoUploader uploadData:videoData mimeType:mimetype success:^(NSString *videoUrl) {
                     
                     // Finalise msgContent
                     msgContent[@"url"] = videoUrl;
@@ -842,8 +837,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                     [self updateLocalEcho:localEcho];
                     
                     // And send the Matrix room message video event to the homeserver
-                    [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId)
-                    {
+                    [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {
                         
                         // Nothing to do here
                         // The local echo will be removed when the corresponding event will come through the events stream
@@ -852,8 +846,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                         {
                             success(eventId);
                         }
-                    } failure:^(NSError *error)
-                    {
+                    } failure:^(NSError *error) {
                         
                         // Update the local echo with the error state
                         localEcho.mxkState = MXKEventStateSendingFailed;
@@ -866,8 +859,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                         }
                     }];
                     
-                } failure:^(NSError *error)
-                {
+                } failure:^(NSError *error) {
                     
                     // Update the local echo with the error state
                     localEcho.mxkState = MXKEventStateSendingFailed;
@@ -892,8 +884,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                     failure(nil);
                 }
             }
-        } failure:^(NSError *error)
-        {
+        } failure:^(NSError *error) {
             
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
@@ -906,8 +897,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             }
         }];
         
-    } failure:^(NSError *error)
-    {
+    } failure:^(NSError *error) {
         
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;

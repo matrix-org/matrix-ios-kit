@@ -288,25 +288,42 @@ static NSMutableDictionary* uploadTableById = nil;
 
 + (NSString*)cachePathForMediaWithURL:(NSString*)url andType:(NSString *)mimeType inFolder:(NSString*)folder
 {
+    NSString* fileBase = @"";
+    NSString *extension = @"";
+    
     if (!folder.length)
     {
         folder = kMXKMediaManagerDefaultCacheFolder;
     }
     
-    NSString* fileExt = [MXKTools fileExtensionFromContentType:mimeType];
-    
-    // use the mime type to extract a base filename
-    NSString* fileBase = @"";
-    if ([mimeType rangeOfString:@"/"].location != NSNotFound){
-        NSArray *components = [mimeType componentsSeparatedByString:@"/"];
-        fileBase = [components objectAtIndex:0];
-        if (fileBase.length > 3)
+    if (mimeType.length)
+    {
+        extension = [MXKTools fileExtensionFromContentType:mimeType];
+        
+        // use the mime type to extract a base filename
+        
+        if ([mimeType rangeOfString:@"/"].location != NSNotFound)
         {
-            fileBase = [fileBase substringToIndex:3];
+            NSArray *components = [mimeType componentsSeparatedByString:@"/"];
+            fileBase = [components objectAtIndex:0];
+            if (fileBase.length > 3)
+            {
+                fileBase = [fileBase substringToIndex:3];
+            }
         }
     }
     
-    return [[MXKMediaManager cacheFolderPath:folder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@%lu%@", fileBase, (unsigned long)url.hash, fileExt]];
+    if (!extension.length)
+    {
+        // Try to get this extension from url
+        NSString *pathExtension = [url pathExtension];
+        if (pathExtension.length)
+        {
+            extension = [NSString stringWithFormat:@".%@", pathExtension];
+        }
+    }
+    
+    return [[MXKMediaManager cacheFolderPath:folder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@%lu%@", fileBase, (unsigned long)url.hash, extension]];
 }
 
 + (void)reduceCacheSizeToInsert:(NSUInteger)sizeInBytes

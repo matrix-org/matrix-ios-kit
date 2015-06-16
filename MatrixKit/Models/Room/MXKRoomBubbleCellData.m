@@ -302,7 +302,14 @@
         // It was not a matrix content uri, we keep the provided url
         _attachmentURL = contentURL;
     }
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL inFolder:event.roomId];
+    
+    NSString *mimetype = nil;
+    if (event.content[@"info"])
+    {
+        mimetype = event.content[@"info"][@"mimetype"];
+    }
+    
+    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
     _attachmentInfo = event.content[@"info"];
     
     if (_attachmentInfo)
