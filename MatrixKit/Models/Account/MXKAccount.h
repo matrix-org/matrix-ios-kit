@@ -18,9 +18,15 @@
 
 /**
  Posted when account user information (display name, picture, presence) has been updated.
- The notification object is the matrix user id of the updated account.
+ The notification object is the matrix user id of the account.
  */
 extern NSString *const kMXKAccountUserInfoDidChangeNotification;
+
+/**
+ Posted when the activity of the Push notification service has been changed.
+ The notification object is the matrix user id of the account.
+ */
+extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
 
 /**
  `MXKAccount` object contains the credentials of a logged matrix user. It is used to handle matrix
@@ -76,6 +82,23 @@ extern NSString *const kMXKAccountUserInfoDidChangeNotification;
  rooms which belong to this account's user.
  */
 @property (nonatomic, readonly) UIColor *userTintColor;
+
+/**
+ The Push notification activity for this account. YES when APNS is turned on (locally available and synced with server).
+ */
+@property (nonatomic, readonly) BOOL pushNotificationServiceIsActive;
+
+/**
+ Enable Push notifications. Set YES to sync the device with the server.
+ NO by default.
+ */
+@property (nonatomic) BOOL enablePushNotifications;
+
+/**
+ Enable In-App notifications based on Remote notifications rules.
+ NO by default.
+ */
+@property (nonatomic) BOOL enableInAppNotifications;
 
 /**
  Get the color code related to a specific presence.

@@ -33,13 +33,16 @@ NSString *const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 NSString *const kMXKAccountDetailsSubmittedEmailCellId = @"kMXKAccountDetailsSubmittedEmailCellId";
 NSString *const kMXKAccountDetailsEmailTokenCellId = @"kMXKAccountDetailsEmailTokenCellId";
 
-NSString *const kMXKAccountDetailsConfigurationCellId = @"kMXKAccountDetailsConfigurationCellId";
-NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogoutButtonCellId";
+NSString *const kMXKAccountDetailsCellWithTextViewId = @"kMXKAccountDetailsCellWithTextViewId";
+NSString *const kMXKAccountDetailsCellWithSwitchId = @"kMXKAccountDetailsCellWithSwitchId";
+NSString *const kMXKAccountDetailsCellWithButtonId = @"kMXKAccountDetailsCellWithButtonId";
 
 #define MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX 0
-//#define MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX 1
-#define MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX 1
-#define MXK_ACCOUNT_DETAILS_SECTION_COUNT               2
+#define MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX 1
+#define MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX 2
+#define MXK_ACCOUNT_DETAILS_SECTION_COUNT               3
+
+NSString* const kUserInfoNotificationRulesText = @"To configure global notification settings (like rules), go find a webclient and hit Settings > Notifications.";
 
 @interface MXKAccountDetailsViewController ()
 {
@@ -69,10 +72,17 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     MXK3PID        *submittedEmail;
     MXKTableViewCellWithTextFieldAndButton* submittedEmailCell;
     MXKTableViewCellWithLabelTextFieldAndButton* emailTokenCell;
-    
     // Dynamic rows in the Linked emails section
     NSInteger submittedEmailRowIndex;
     NSInteger emailTokenRowIndex;
+    
+    // Notifications
+    UISwitch *apnsNotificationsSwitch;
+    UISwitch *inAppNotificationsSwitch;
+    // Dynamic rows in the Notifications section
+    NSInteger enablePushNotifRowIndex;
+    NSInteger enableInAppNotifRowIndex;
+    NSInteger userInfoNotifRowIndex;
     
     UIImagePickerController *mediaPicker;
 }
@@ -146,6 +156,8 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAPNSStatusUpdate) name:kMXKAccountAPNSActivityDidChangeNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -153,6 +165,8 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     [super viewWillDisappear:animated];
     
     [self stopProfileActivityIndicator];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKAccountAPNSActivityDidChangeNotification object:nil];
 }
 
 #pragma mark - override
@@ -184,7 +198,6 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     
     if (account)
     {
-        
         // Report matrix account session
         [self addMatrixSession:account.mxSession];
         
@@ -195,45 +208,42 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         [self updateSaveUserInfoButtonStatus];
         
         // Add observer on user's information
-        accountUserInfoObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-                                   {
-                                       
-                                       // Ignore any refresh when saving is in progress
-                                       if (isSavingInProgress)
-                                       {
-                                           return;
-                                       }
-                                       
-                                       NSString *accountUserId = notif.object;
-                                       
-                                       if ([accountUserId isEqualToString:_mxAccount.mxCredentials.userId])
-                                       {
-                                           
-                                           // Update displayName
-                                           if (![currentDisplayName isEqualToString:_mxAccount.userDisplayName])
-                                           {
-                                               currentDisplayName = _mxAccount.userDisplayName;
-                                               self.userDisplayName.text = _mxAccount.userDisplayName;
-                                           }
-                                           // Update user's avatar
-                                           [self updateUserPicture:_mxAccount.userAvatarUrl force:NO];
-                                           
-                                           // Update button management
-                                           [self updateSaveUserInfoButtonStatus];
-                                           
-                                           // Display user's presence
-                                           UIColor *presenceColor = [MXKAccount presenceColor:_mxAccount.userPresence];
-                                           if (presenceColor)
-                                           {
-                                               userPictureButton.layer.borderWidth = 2;
-                                               userPictureButton.layer.borderColor = presenceColor.CGColor;
-                                           }
-                                           else
-                                           {
-                                               userPictureButton.layer.borderWidth = 0;
-                                           }
-                                       }
-                                   }];
+        accountUserInfoObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            // Ignore any refresh when saving is in progress
+            if (isSavingInProgress)
+            {
+                return;
+            }
+            
+            NSString *accountUserId = notif.object;
+            
+            if ([accountUserId isEqualToString:_mxAccount.mxCredentials.userId])
+            {   
+                // Update displayName
+                if (![currentDisplayName isEqualToString:_mxAccount.userDisplayName])
+                {
+                    currentDisplayName = _mxAccount.userDisplayName;
+                    self.userDisplayName.text = _mxAccount.userDisplayName;
+                }
+                // Update user's avatar
+                [self updateUserPicture:_mxAccount.userAvatarUrl force:NO];
+                
+                // Update button management
+                [self updateSaveUserInfoButtonStatus];
+                
+                // Display user's presence
+                UIColor *presenceColor = [MXKAccount presenceColor:_mxAccount.userPresence];
+                if (presenceColor)
+                {
+                    userPictureButton.layer.borderWidth = 2;
+                    userPictureButton.layer.borderColor = presenceColor.CGColor;
+                }
+                else
+                {
+                    userPictureButton.layer.borderWidth = 0;
+                }
+            }
+        }];
     }
     
     [self.tableView reloadData];
@@ -643,6 +653,14 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
     }
 }
 
+- (void)onAPNSStatusUpdate
+{
+    // Force table reload to update notifications section
+    apnsNotificationsSwitch = nil;
+    
+    [self.tableView reloadData];
+}
+
 - (void)dismissMediaPicker
 {
     if (mediaPicker)
@@ -749,6 +767,16 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
              emailTokenCell.mxkButton.enabled = YES;
          }];
     }
+    else if (sender == apnsNotificationsSwitch)
+    {
+        _mxAccount.enablePushNotifications = apnsNotificationsSwitch.on;
+        apnsNotificationsSwitch.enabled = NO;
+    }
+    else if (sender == inAppNotificationsSwitch)
+    {
+        _mxAccount.enableInAppNotifications = inAppNotificationsSwitch.on;
+        [self.tableView reloadData];
+    }
 }
 
 #pragma mark - keyboard
@@ -813,6 +841,16 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             emailTokenCell = nil;
         }
     }
+    else if (section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    {
+        enableInAppNotifRowIndex = enablePushNotifRowIndex = userInfoNotifRowIndex = -1;
+        
+        if ([MXKAccountManager sharedManager].isAPNSAvailable) {
+            enablePushNotifRowIndex = count++;
+        }
+        enableInAppNotifRowIndex = count++;
+        userInfoNotifRowIndex = count++;
+    }
     else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
         count = 2;
@@ -828,6 +866,17 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         if (indexPath.row == emailTokenRowIndex)
         {
             return 70;
+        }
+    }
+    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    {
+        if (indexPath.row == userInfoNotifRowIndex)
+        {
+            UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
+            textView.font = [UIFont systemFontOfSize:14];
+            textView.text = kUserInfoNotificationRulesText;
+            CGSize contentSize = [textView sizeThatFits:textView.frame.size];
+            return contentSize.height + 1;
         }
     }
     else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
@@ -917,15 +966,55 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
             cell = emailTokenCell;
         }
     }
+    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    {
+        if (indexPath.row == userInfoNotifRowIndex)
+        {
+            MXKTableViewCellWithTextView *userInfoCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
+            if (!userInfoCell)
+            {
+                userInfoCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
+            }
+            
+            userInfoCell.mxkTextView.text = kUserInfoNotificationRulesText;
+            cell = userInfoCell;
+        }
+        else
+        {
+            MXKTableViewCellWithLabelAndSwitch *notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithSwitchId];
+            if (!notificationsCell)
+            {
+                notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithSwitchId];
+            }
+            
+            [notificationsCell.mxkSwitch addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventValueChanged];
+            
+            if (indexPath.row == enableInAppNotifRowIndex)
+            {
+                notificationsCell.mxkLabel.text = @"Enable In-App notifications";
+                notificationsCell.mxkSwitch.on = _mxAccount.enableInAppNotifications;
+                inAppNotificationsSwitch = notificationsCell.mxkSwitch;
+            }
+            else /* enablePushNotifRowIndex */
+            {
+                notificationsCell.mxkLabel.text = @"Enable push notifications";
+                notificationsCell.mxkSwitch.on = _mxAccount.pushNotificationServiceIsActive;
+                notificationsCell.mxkSwitch.enabled = YES;
+                apnsNotificationsSwitch = notificationsCell.mxkSwitch;
+            }
+            
+            cell = notificationsCell;
+        }
+    }
     else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
         
         if (indexPath.row == 0)
         {
-            MXKTableViewCellWithTextView *configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsConfigurationCellId];
+            MXKTableViewCellWithTextView *configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
             if (!configCell)
             {
-                configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsConfigurationCellId];
+                configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
             }
             
             configCell.mxkTextView.text = [NSString stringWithFormat:kMXKAccountDetailsConfigurationFormatText, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
@@ -933,10 +1022,10 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
         }
         else
         {
-            logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsLogoutButtonCellId];
+            logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithButtonId];
             if (!logoutBtnCell)
             {
-                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsLogoutButtonCellId];
+                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithButtonId];
             }
             [logoutBtnCell.mxkButton setTitle:@"Logout" forState:UIControlStateNormal];
             [logoutBtnCell.mxkButton setTitle:@"Logout" forState:UIControlStateHighlighted];
@@ -962,17 +1051,24 @@ NSString *const kMXKAccountDetailsLogoutButtonCellId = @"kMXKAccountDetailsLogou
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UILabel *sectionHeader = [[UILabel alloc] initWithFrame:[tableView rectForHeaderInSection:section]];
-    sectionHeader.font = [UIFont boldSystemFontOfSize:16];
+    UIView *sectionHeader = [[UIView alloc] initWithFrame:[tableView rectForHeaderInSection:section]];
     sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+    UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, sectionHeader.frame.size.width - 10, sectionHeader.frame.size.height - 10)];
+    sectionLabel.font = [UIFont boldSystemFontOfSize:16];
+    sectionLabel.backgroundColor = [UIColor clearColor];
+    [sectionHeader addSubview:sectionLabel];
     
     if (section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX)
     {
-        sectionHeader.text = @" Linked emails";
+        sectionLabel.text = @"Linked emails";
+    }
+    else if (section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    {
+        sectionLabel.text = @"Notifications";
     }
     else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
     {
-        sectionHeader.text = @" Configuration";
+        sectionLabel.text = @"Configuration";
     }
     
     return sectionHeader;

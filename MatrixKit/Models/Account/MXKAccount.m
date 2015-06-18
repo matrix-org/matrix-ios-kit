@@ -16,11 +16,13 @@
 
 #import "MXKAccount.h"
 
+#import "MXKAccountManager.h"
 #import "MXKRoomDataSourceManager.h"
 
 #import "MXKTools.h"
 
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
+NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
 NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
@@ -49,6 +51,11 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Internal list of ignored rooms
     NSMutableArray* ignoredRooms;
+    
+    /**
+     APNS handling
+     */
+    BOOL transientAPNSActivity;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -122,8 +129,16 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     if ([coder decodeObjectForKey:@"identityserverurl"])
     {
-        self.identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
+        _identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
+        if (_identityServerURL.length)
+        {
+            // Update the current restClient
+            [mxRestClient setIdentityServer:_identityServerURL];
+        }
     }
+    
+    _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
+    _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
     
     return self;
 }
@@ -138,6 +153,9 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     {
         [coder encodeObject:self.identityServerURL forKey:@"identityserverurl"];
     }
+    
+    [coder encodeBool:_enablePushNotifications forKey:@"_enablePushNotifications"];
+    [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
 }
 
 #pragma mark - Properties
@@ -156,6 +174,9 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         // By default, use the same address for the identity server
         [mxRestClient setIdentityServer:mxCredentials.homeServer];
     }
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
 }
 
 - (NSString*)userDisplayName
@@ -198,13 +219,99 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     return userTintColor;
 }
 
+- (BOOL)pushNotificationServiceIsActive
+{
+    return ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications);
+}
+
+- (void)setEnablePushNotifications:(BOOL)enablePushNotifications
+{
+    // Refuse to try & turn push on if we're not logged in, it's nonsensical.
+    if (!mxCredentials)
+    {
+        NSLog(@"[MXKAccount] Not setting push token because we're not logged in");
+        return;
+    }
+    
+    transientAPNSActivity = enablePushNotifications;
+    
+#ifdef DEBUG
+    NSString *appId = @"org.matrix.console.ios.dev";
+#else
+    NSString *appId = @"org.matrix.console.ios.prod";
+#endif
+    
+    NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
+    NSDictionary *pushData = @{
+                               @"url": @"https://matrix.org/_matrix/push/v1/notify",
+                               };
+    
+    NSString *deviceLang = [NSLocale preferredLanguages][0];
+    
+    NSString * profileTag = [[NSUserDefaults standardUserDefaults] valueForKey:@"pusherProfileTag"];
+    if (!profileTag)
+    {
+        profileTag = @"";
+        NSString *alphabet = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (int i = 0; i < 16; ++i)
+        {
+            unsigned char c = [alphabet characterAtIndex:arc4random() % alphabet.length];
+            profileTag = [profileTag stringByAppendingFormat:@"%c", c];
+        }
+        NSLog(@"[MXKAccount] Generated fresh profile tag: %@", profileTag);
+        [[NSUserDefaults standardUserDefaults] setValue:profileTag forKey:@"pusherProfileTag"];
+    }
+    else
+    {
+        NSLog(@"[MXKAccount] Using existing profile tag: %@", profileTag);
+    }
+    
+    NSObject *kind = enablePushNotifications ? @"http" : [NSNull null];
+    
+    // Retrieve the append flag from manager to handle multiple accounts registration
+    BOOL append = [MXKAccountManager sharedManager].apnsAppendFlag;
+    NSLog(@"[MXKAccount] append flag: %d", append);
+    
+    MXRestClient *restCli = self.mxRestClient;
+    
+    [restCli setPusherWithPushkey:b64Token kind:kind appId:appId appDisplayName:@"Matrix Console iOS" deviceDisplayName:[[UIDevice currentDevice] name] profileTag:profileTag lang:deviceLang data:pushData append:append success:^{
+        NSLog(@"[MXKAccount] Succeeded to update pusher for %@", self.mxCredentials.userId);
+        _enablePushNotifications = transientAPNSActivity;
+        
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+    } failure:^(NSError *error) {
+        NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+    }];
+}
+
+- (void)setEnableInAppNotifications:(BOOL)enableInAppNotifications
+{
+    _enableInAppNotifications = enableInAppNotifications;
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
 #pragma mark - Matrix user's profile
 
 - (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
     if (mxSession && mxSession.myUser)
     {
-        [mxSession.myUser setDisplayName:displayname success:success failure:failure];
+        [mxSession.myUser setDisplayName:displayname
+                                 success:^{
+                                     if (success) {
+                                         success();
+                                     }
+                                     
+                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                                 }
+                                 failure:failure];
     }
     else if (failure)
     {
@@ -216,7 +323,15 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 {
     if (mxSession && mxSession.myUser)
     {
-        [mxSession.myUser setAvatarUrl:avatarUrl success:success failure:failure];
+        [mxSession.myUser setAvatarUrl:avatarUrl
+                               success:^{
+                                   if (success) {
+                                       success();
+                                   }
+                                   
+                                   [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                               }
+                               failure:failure];
     }
     else if (failure)
     {
@@ -231,16 +346,20 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     if (mxSession)
     {
         // Update user presence on server side
-        [mxSession.myUser setPresence:userPresence andStatusMessage:statusMessage success:^{
-            NSLog(@"[MXKAccount] %@: set user presence (%lu) succeeded", mxCredentials.userId, (unsigned long)userPresence);
-            if (completion)
-            {
-                completion();
-            }
-        } failure:^(NSError *error)
-        {
-            NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
-        }];
+        [mxSession.myUser setPresence:userPresence
+                     andStatusMessage:statusMessage
+                              success:^{
+                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) succeeded", mxCredentials.userId, (unsigned long)userPresence);
+                                  if (completion)
+                                  {
+                                      completion();
+                                  }
+                                  
+                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                              }
+                              failure:^(NSError *error) {
+                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
+                              }];
     }
 }
 
@@ -517,15 +636,12 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 {
     if (mxSession.state == MXSessionStateRunning)
     {
-        
         // Check whether the session was not already running
         if (!userUpdateListener)
         {
-            
             // Register listener to user's information change
             userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event)
             {
-                
                 // Consider events related to user's presence
                 if (event.eventType == MXEventTypePresence)
                 {
@@ -556,32 +672,27 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
                 }
                 
                 // Here displayname or other information have been updated, post update notification.
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
             }];
             
             // User information are just up-to-date (`mxSession` is running), post update notification.
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
         }
         
     }
     else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateSyncInProgress)
     {
-        
         // Remove listener (if any), this action is required to handle correctly matrix sdk handler reload (see clear cache)
         if (userUpdateListener)
         {
-            
             [mxSession.myUser removeListener:userUpdateListener];
             userUpdateListener = nil;
-            
         }
         else
         {
-            
             // Here the initial server sync is in progress. The session is not running yet, but some user's information are available (from local storage).
             // We post update notification to let observer take into account this user's information even if they may not be up-to-date.
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId userInfo:nil];
-            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
         }
     }
 }

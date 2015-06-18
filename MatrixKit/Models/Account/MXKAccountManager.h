@@ -30,6 +30,7 @@ extern NSString *const kMXKAccountManagerDidAddAccountNotification;
  */
 extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 
+
 /**
  `MXKAccountManager` manages a pool of `MXKAccount` instances.
  */
@@ -39,6 +40,21 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  List of available accounts
  */
 @property (nonatomic, readonly) NSArray* accounts;
+
+/**
+ The device token used for Push notifications registration
+ */
+@property (nonatomic, copy) NSData *apnsDeviceToken;
+
+/**
+ In case of multiple accounts, this flag is used to create multiple pushers during Push notifications registration.
+ */
+@property (nonatomic, readonly) BOOL apnsAppendFlag;
+
+/**
+ The APNS status: YES when app is registered for remote notif, and devive token is known.
+ */
+@property (nonatomic) BOOL isAPNSAvailable;
 
 /**
  Retrieve the MXKAccounts manager.
@@ -68,6 +84,11 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param account a matrix account.
  */
 - (void)removeAccount:(MXKAccount*)account;
+
+/**
+ Save a snapshot of the current accounts
+ */
+- (void)saveAccounts;
 
 /**
  Log out all the existing accounts

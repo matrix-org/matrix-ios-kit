@@ -26,7 +26,6 @@
 static MXKAppSettings *standardAppSettings = nil;
 
 @implementation MXKAppSettings
-@synthesize enableInAppNotifications;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, phonebookCountryCode;
@@ -75,8 +74,6 @@ static MXKAppSettings *standardAppSettings = nil;
     if (self == [MXKAppSettings standardAppSettings])
     {
         // Flush shared user defaults
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableInAppNotifications"];
-        
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showUnsupportedEventsInRoomHistory"];
@@ -95,8 +92,6 @@ static MXKAppSettings *standardAppSettings = nil;
     }
     else
     {
-        enableInAppNotifications = NO;
-        
         showAllEventsInRoomHistory = NO;
         showRedactionsInRoomHistory = NO;
         showUnsupportedEventsInRoomHistory = NO;
@@ -110,33 +105,6 @@ static MXKAppSettings *standardAppSettings = nil;
         presenceColorForOnlineUser = [UIColor greenColor];
         presenceColorForUnavailableUser = [UIColor yellowColor];
         presenceColorForOfflineUser = [UIColor redColor];
-    }
-}
-
-#pragma mark -
-
-- (BOOL)enableInAppNotifications
-{
-    if (self == [MXKAppSettings standardAppSettings])
-    {
-        return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableInAppNotifications"];
-    }
-    else
-    {
-        return enableInAppNotifications;
-    }
-}
-
-- (void)setEnableInAppNotifications:(BOOL)boolValue
-{
-    if (self == [MXKAppSettings standardAppSettings])
-    {
-        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"enableInAppNotifications"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-    else
-    {
-        enableInAppNotifications = boolValue;
     }
 }
 

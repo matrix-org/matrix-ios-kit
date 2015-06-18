@@ -25,18 +25,6 @@
  */
 @interface MXKAppSettings : NSObject
 
-
-#pragma mark - Notifications
-
-/**
- Enable In-App notifications based on Remote notifications rules.
- 
- This boolean value is defined in shared settings object with the key: `enableInAppNotifications`.
- Return NO if no value is defined.
- */
-@property (nonatomic) BOOL enableInAppNotifications;
-
-
 #pragma mark - Room display
 
 /**
