@@ -111,7 +111,7 @@ static MXKAccountManager *sharedAccountManager = nil;
     [self saveAccounts];
     
     // Post notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account.mxCredentials.userId userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
 - (void)removeAccount:(MXKAccount*)account
@@ -128,7 +128,7 @@ static MXKAccountManager *sharedAccountManager = nil;
     [self saveAccounts];
     
     // Post notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account.mxCredentials.userId userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account userInfo:nil];
 }
 
 - (void)logout

@@ -159,37 +159,31 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     }];
     
     // Add observer to handle new account
-    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
-        NSString *userId = notif.object;
-        if (userId)
+        // Start matrix session for this new account
+        MXKAccount *mxAccount = notif.object;
+        if (mxAccount)
         {
-            // Start matrix session for this new account
-            MXKAccount *mxAccount = [[MXKAccountManager sharedManager] accountForUserId:userId];
-            if (mxAccount)
-            {
-                // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
-                MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-                [mxAccount openSessionWithStore:mxFileStore];
-            }
+            // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
+            MXFileStore *mxFileStore = [[MXFileStore alloc] init];
+            [mxAccount openSessionWithStore:mxFileStore];
         }
         
         // Refresh table to add this new account
         [self.tableView reloadData];
     }];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidRemoveAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidRemoveAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
-        NSString *userId = notif.object;
-        if (userId)
+        MXKAccount *mxAccount = notif.object;
+        if (mxAccount)
         {
             // Check whether details of this account was displayed
             if ([destinationViewController isKindOfClass:[MXKAccountDetailsViewController class]])
             {
                 MXKAccountDetailsViewController *accountDetailsViewController = (MXKAccountDetailsViewController*)destinationViewController;
-                if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:userId])
+                if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:mxAccount.mxCredentials.userId])
                 {
                     // pop the account details view controller
                     [self.navigationController popToRootViewControllerAnimated:YES];

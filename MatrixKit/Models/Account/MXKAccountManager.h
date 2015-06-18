@@ -20,13 +20,13 @@
 
 /**
  Posted when the user logged in with a matrix account.
- The notification object is the matrix user id of the new added account.
+ The notification object is the new added account.
  */
 extern NSString *const kMXKAccountManagerDidAddAccountNotification;
 
 /**
  Posted when an existing account is logged out.
- The notification object is the matrix user id of the removed account.
+ The notification object is the removed account.
  */
 extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 
