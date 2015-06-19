@@ -44,6 +44,11 @@
 @property (nonatomic, readonly) MXSession *mainSession;
 
 /**
+ Keep reference on the pushed and/or presented view controllers.
+ */
+@property (nonatomic, readonly) NSArray *childViewControllers;
+
+/**
  An object implementing the `MXKResponderRageShaking` protocol.
  The view controller uses this object (if any) to report beginning and end of potential
  rage shake when it is the first responder.

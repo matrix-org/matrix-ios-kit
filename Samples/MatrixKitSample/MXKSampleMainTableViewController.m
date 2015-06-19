@@ -67,11 +67,6 @@
     UIButton* callStatusBarButton;
     
     /**
-     Keep reference on the pushed view controllers to release them correctly
-     */
-    NSMutableArray *destinationViewControllers;
-    
-    /**
      Current index of sections
      */
     NSInteger accountSectionIndex;
@@ -90,8 +85,6 @@
 {
     [super viewDidLoad];
     
-    destinationViewControllers = [NSMutableArray array];
-    
     self.tableView.tableHeaderView.hidden = YES;
     self.tableView.allowsSelection = YES;
     
@@ -107,17 +100,6 @@
             [self addMatrixSession:mxSession];
             [[MXKContactManager sharedManager] addMatrixSession:mxSession];
             
-            if (destinationViewControllers.count)
-            {
-                for (id viewController in destinationViewControllers)
-                {
-                    if ([viewController respondsToSelector:@selector(addMatrixSession:)])
-                    {
-                        [viewController addMatrixSession:mxSession];
-                    }
-                }
-            }
-            
             self.tableView.tableHeaderView.hidden = NO;
             [self.tableView reloadData];
         }
@@ -125,17 +107,6 @@
         {
             [self removeMatrixSession:mxSession];
             [[MXKContactManager sharedManager] removeMatrixSession:mxSession];
-            
-            if (destinationViewControllers.count)
-            {
-                for (id viewController in destinationViewControllers)
-                {
-                    if ([viewController respondsToSelector:@selector(removeMatrixSession:)])
-                    {
-                        [viewController removeMatrixSession:mxSession];
-                    }
-                }
-            }
         }
     }];
     
@@ -173,9 +144,9 @@
         if (mxAccount)
         {
             // Check whether details of this account was displayed
-            if (destinationViewControllers.count)
+            if (self.childViewControllers.count)
             {
-                for (id viewController in destinationViewControllers)
+                for (id viewController in self.childViewControllers)
                 {
                     if ([viewController isKindOfClass:[MXKAccountDetailsViewController class]])
                     {
@@ -184,6 +155,7 @@
                         {
                             // pop the account details view controller
                             [self.navigationController popToRootViewControllerAnimated:YES];
+                            break;
                         }
                     }
                 }
@@ -235,24 +207,6 @@
         {
             [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:NO];
         }
-    }
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    if (destinationViewControllers.count)
-    {
-        for (id viewController in destinationViewControllers)
-        {
-            if ([viewController respondsToSelector:@selector(destroy)])
-            {
-                [viewController destroy];
-            }
-        }
-        
-        [destinationViewControllers removeAllObjects];
     }
 }
 
@@ -618,10 +572,9 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    // Keep ref on destinationViewController
-    id destinationViewController = segue.destinationViewController;
+    [super prepareForSegue:segue sender:sender];
     
-    [destinationViewControllers addObject:destinationViewController];
+    id destinationViewController = segue.destinationViewController;
     
     if (([segue.identifier isEqualToString:@"showMXKRecentListViewController"] || [segue.identifier isEqualToString:@"showRoomSelector"]) && self.mainSession)
     {

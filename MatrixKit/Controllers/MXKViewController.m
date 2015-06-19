@@ -22,16 +22,25 @@
      Array of `MXSession` instances.
      */
     NSMutableArray *mxSessionArray;
+    
+    /**
+     Keep reference on the pushed view controllers to release them correctly
+     */
+    NSMutableArray *childViewControllers;
 }
 @end
 
 @implementation MXKViewController
 @synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
+@synthesize childViewControllers;
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    childViewControllers = [NSMutableArray array];
     
     // Add default activity indicator
     activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -94,6 +103,25 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // Release properly pushed and/or presented view controller
+    if (childViewControllers.count)
+    {
+        for (id viewController in childViewControllers)
+        {
+            if ([viewController respondsToSelector:@selector(destroy)])
+            {
+                [viewController destroy];
+            }
+        }
+        
+        [childViewControllers removeAllObjects];
+    }
+}
+
 - (void)setView:(UIView *)view
 {
     [super setView:view];
@@ -104,6 +132,12 @@
         activityIndicator.center = self.view.center;
         [self.view addSubview:activityIndicator];
     }
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    // Keep ref on destinationViewController
+    [childViewControllers addObject:segue.destinationViewController];
 }
 
 #pragma mark -
