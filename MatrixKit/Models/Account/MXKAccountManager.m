@@ -24,7 +24,7 @@ static MXKAccountManager *sharedAccountManager = nil;
 @interface MXKAccountManager()
 {
     /**
-     The list of accounts. Each value is a `MXKAccount` instance.
+     The list of all accounts (enabled and disabled). Each value is a `MXKAccount` instance.
      */
     NSMutableArray *mxAccounts;
 }
@@ -37,7 +37,7 @@ static MXKAccountManager *sharedAccountManager = nil;
 {
     @synchronized(self)
     {
-        if(sharedAccountManager == nil)
+        if (sharedAccountManager == nil)
         {
             sharedAccountManager = [[super allocWithZone:NULL] init];
         }
@@ -50,7 +50,7 @@ static MXKAccountManager *sharedAccountManager = nil;
     self = [super init];
     if (self)
     {
-        [self loadAccounts];
+        self.storeClass = [MXFileStore class];
     }
     return self;
 }
@@ -58,6 +58,21 @@ static MXKAccountManager *sharedAccountManager = nil;
 - (void)dealloc
 {
     mxAccounts = nil;
+}
+
+#pragma mark -
+
+- (void)loadAccounts
+{
+    NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
+    if (accountData)
+    {
+        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
+    }
+    else
+    {
+        mxAccounts = [NSMutableArray array];
+    }
 }
 
 - (void)saveAccounts
@@ -75,39 +90,16 @@ static MXKAccountManager *sharedAccountManager = nil;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)loadAccounts
-{
-    NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
-    if (accountData)
-    {
-        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
-    }
-    else
-    {
-        mxAccounts = [NSMutableArray array];
-    }
-}
-
-#pragma mark -
-
-- (MXKAccount *)accountForUserId:(NSString *)userId
-{
-    for (MXKAccount *account in mxAccounts)
-    {
-        if ([account.mxCredentials.userId isEqualToString:userId])
-        {
-            return account;
-        }
-    }
-    return nil;
-}
-
 - (void)addAccount:(MXKAccount *)account
 {
     NSLog(@"[MXKAccountManager] login (%@)", account.mxCredentials.userId);
     
-    [mxAccounts addObject:account];
+    if (!mxAccounts)
+    {
+         mxAccounts = [NSMutableArray array];
+    }
     
+    [mxAccounts addObject:account];
     [self saveAccounts];
     
     // Post notification
@@ -118,11 +110,8 @@ static MXKAccountManager *sharedAccountManager = nil;
 {
     NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
     
-    // Turn off pusher
-    account.enablePushNotifications = NO;
-    
     // Close session and clear associated store.
-    [account closeSession:YES];
+    [account logout];
     
     [mxAccounts removeObject:account];
     [self saveAccounts];
@@ -145,11 +134,54 @@ static MXKAccountManager *sharedAccountManager = nil;
     }
 }
 
+- (MXKAccount *)accountForUserId:(NSString *)userId
+{
+    for (MXKAccount *account in mxAccounts)
+    {
+        if ([account.mxCredentials.userId isEqualToString:userId])
+        {
+            return account;
+        }
+    }
+    return nil;
+}
+
 #pragma mark -
+
+- (void)setStoreClass:(Class)storeClass
+{
+    // Sanity check
+    NSAssert([storeClass conformsToProtocol:@protocol(MXStore)], @"MXKAccountManager only manages store class that conforms to MXStore protocol");
+    
+    _storeClass = storeClass;
+}
 
 - (NSArray *)accounts
 {
+    if (!mxAccounts)
+    {
+        [self loadAccounts];
+    }
+    
     return [mxAccounts copy];
+}
+
+- (NSArray *)activeAccounts
+{
+    if (!mxAccounts)
+    {
+        [self loadAccounts];
+    }
+    
+    NSMutableArray *activeAccounts = [NSMutableArray arrayWithCapacity:mxAccounts.count];
+    for (MXKAccount *account in mxAccounts)
+    {
+        if (!account.disabled)
+        {
+            [activeAccounts addObject:account];
+        }
+    }
+    return activeAccounts;
 }
 
 - (NSData *)apnsDeviceToken

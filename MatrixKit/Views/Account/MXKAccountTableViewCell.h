@@ -38,4 +38,6 @@
 
 @property (strong, nonatomic) IBOutlet UILabel* accountDisplayName;
 
+@property (strong, nonatomic) IBOutlet UISwitch* accountSwitchToggle;
+
 @end

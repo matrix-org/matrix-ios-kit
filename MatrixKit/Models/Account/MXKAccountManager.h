@@ -37,9 +37,20 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 @interface MXKAccountManager : NSObject
 
 /**
- List of available accounts
+ The class of store used to open matrix session for the accounts. This class must be conformed to MXStore protocol.
+ By default this class is MXFileStore.
+ */
+@property (nonatomic) Class storeClass;
+
+/**
+ List of all available accounts (enabled and disabled).
  */
 @property (nonatomic, readonly) NSArray* accounts;
+
+/**
+ List of active accounts (only enabled accounts)
+ */
+@property (nonatomic, readonly) NSArray* activeAccounts;
 
 /**
  The device token used for Push notifications registration
@@ -64,15 +75,18 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 + (MXKAccountManager*)sharedManager;
 
 /**
- Retrieve the account for a user id.
- 
- @param userId the user id.
- @return the user's account (nil if no account exist).
+ Load existing accounts in local storage. A matrix session is opened for each enabled accounts.
+ The developper must set 'storeClass' before loading accounts if the default class is not suitable.
  */
-- (MXKAccount*)accountForUserId:(NSString*)userId;
+- (void)loadAccounts;
 
 /**
- Add an account and save the new account list.
+ Save a snapshot of the current accounts.
+ */
+- (void)saveAccounts;
+
+/**
+ Add an account and save the new account list. A matrix session is opened for this account, except if it is disabled.
  
  @param account a matrix account.
  */
@@ -86,13 +100,16 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 - (void)removeAccount:(MXKAccount*)account;
 
 /**
- Save a snapshot of the current accounts
- */
-- (void)saveAccounts;
-
-/**
- Log out all the existing accounts
+ Log out and remove all the existing accounts
  */
 - (void)logout;
+
+/**
+ Retrieve the account for a user id.
+ 
+ @param userId the user id.
+ @return the user's account (nil if no account exist).
+ */
+- (MXKAccount*)accountForUserId:(NSString*)userId;
 
 @end

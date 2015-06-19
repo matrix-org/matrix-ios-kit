@@ -37,16 +37,16 @@ NSString *const kMXKAccountDetailsCellWithTextViewId = @"kMXKAccountDetailsCellW
 NSString *const kMXKAccountDetailsCellWithSwitchId = @"kMXKAccountDetailsCellWithSwitchId";
 NSString *const kMXKAccountDetailsCellWithButtonId = @"kMXKAccountDetailsCellWithButtonId";
 
-#define MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX 0
-#define MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX 1
-#define MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX 2
-#define MXK_ACCOUNT_DETAILS_SECTION_COUNT               3
-
 NSString* const kUserInfoNotificationRulesText = @"To configure global notification settings (like rules), go find a webclient and hit Settings > Notifications.";
 
 @interface MXKAccountDetailsViewController ()
 {
     NSMutableArray *alertsArray;
+    
+    // Section index
+    NSInteger linkedEmailsSection;
+    NSInteger notificationsSection;
+    NSInteger configurationSection;
     
     // The table cell with logout button
     MXKTableViewCellWithButton *logoutBtnCell;
@@ -820,13 +820,25 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return MXK_ACCOUNT_DETAILS_SECTION_COUNT;
+    NSInteger count = 0;
+    
+    linkedEmailsSection = notificationsSection = configurationSection = -1;
+    
+    if (!_mxAccount.disabled)
+    {
+        linkedEmailsSection = count ++;
+        notificationsSection = count ++;
+    }
+    
+    configurationSection = count ++;
+    
+    return count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger count = 0;
-    if (section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX)
+    if (section == linkedEmailsSection)
     {
         submittedEmailRowIndex = emailTokenRowIndex = -1;
         
@@ -841,7 +853,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
             emailTokenCell = nil;
         }
     }
-    else if (section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    else if (section == notificationsSection)
     {
         enableInAppNotifRowIndex = enablePushNotifRowIndex = userInfoNotifRowIndex = -1;
         
@@ -851,7 +863,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
         enableInAppNotifRowIndex = count++;
         userInfoNotifRowIndex = count++;
     }
-    else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (section == configurationSection)
     {
         count = 2;
     }
@@ -861,14 +873,14 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX)
+    if (indexPath.section == linkedEmailsSection)
     {
         if (indexPath.row == emailTokenRowIndex)
         {
             return 70;
         }
     }
-    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    else if (indexPath.section == notificationsSection)
     {
         if (indexPath.row == userInfoNotifRowIndex)
         {
@@ -879,7 +891,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
             return contentSize.height + 1;
         }
     }
-    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (indexPath.section == configurationSection)
     {
         if (indexPath.row == 0)
         {
@@ -898,7 +910,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
 {
     UITableViewCell *cell = nil;
     
-    if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX)
+    if (indexPath.section == linkedEmailsSection)
     {
         if (indexPath.row < linkedEmails.count)
         {
@@ -966,7 +978,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
             cell = emailTokenCell;
         }
     }
-    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    else if (indexPath.section == notificationsSection)
     {
         if (indexPath.row == userInfoNotifRowIndex)
         {
@@ -1006,7 +1018,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
             cell = notificationsCell;
         }
     }
-    else if (indexPath.section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (indexPath.section == configurationSection)
     {
         
         if (indexPath.row == 0)
@@ -1058,15 +1070,15 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
     sectionLabel.backgroundColor = [UIColor clearColor];
     [sectionHeader addSubview:sectionLabel];
     
-    if (section == MXK_ACCOUNT_DETAILS_SECTION_LINKED_EMAILS_INDEX)
+    if (section == linkedEmailsSection)
     {
         sectionLabel.text = @"Linked emails";
     }
-    else if (section == MXK_ACCOUNT_DETAILS_SECTION_NOTIFICATIONS_INDEX)
+    else if (section == notificationsSection)
     {
         sectionLabel.text = @"Notifications";
     }
-    else if (section == MXK_ACCOUNT_DETAILS_SECTION_CONFIGURATION_INDEX)
+    else if (section == configurationSection)
     {
         sectionLabel.text = @"Configuration";
     }

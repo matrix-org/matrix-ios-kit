@@ -127,12 +127,6 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
             {
                 [destinationViewController removeMatrixSession:mxSession];
             }
-            
-            if (!self.mxSessions.count) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self logout];
-                });
-            }
         }
     }];
     
@@ -161,15 +155,6 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     // Add observer to handle new account
     [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
-        // Start matrix session for this new account
-        MXKAccount *mxAccount = notif.object;
-        if (mxAccount)
-        {
-            // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
-            MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-            [mxAccount openSessionWithStore:mxFileStore];
-        }
-        
         // Refresh table to add this new account
         [self.tableView reloadData];
     }];
@@ -191,24 +176,30 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
             }
         }
         
-        // Refresh table to remove this account
-        [self.tableView reloadData];
+        if (![MXKAccountManager sharedManager].accounts.count)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self logout];
+            });
+        }
+        else
+        {
+            // Refresh table to remove this account
+            [self.tableView reloadData];
+        }
     }];
     
     // Add observer to update accounts section
-    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
-        
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         // Refresh table to remove this account
         [self.tableView reloadData];
     }];
     
+    // As there is no mock for MatrixSDK yet, use an actual Matrix file store to boost init
+    [MXKAccountManager sharedManager].storeClass = [MXFileStore class];
+    
     // Check whether some accounts are availables
-    if ([[MXKAccountManager sharedManager] accounts].count)
-    {
-        [self launchMatrixSessions];
-    }
-    else
+    if (![[MXKAccountManager sharedManager] accounts].count)
     {
         // Ask for a matrix account first
         [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
@@ -251,20 +242,6 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     // Dispose of any resources that can be recreated.
 }
 
-- (void)launchMatrixSessions
-{
-    // Launch a matrix session for all existing accounts.
-    
-    NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
-    
-    for (MXKAccount *account in accounts)
-    {
-        // As there is no mock for MatrixSDK yet, use a cache for Matrix data to boost init
-        MXFileStore *mxFileStore = [[MXFileStore alloc] init];
-        [account openSessionWithStore:mxFileStore];
-    }
-}
-
 - (void)login
 {
     // Show authentication screen
@@ -275,16 +252,6 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
 {
     // Clear cache
     [MXKMediaManager clearCache];
-    
-    // Reset all stored room data
-    NSArray *mxAccounts = [MXKAccountManager sharedManager].accounts;
-    for (MXKAccount *account in mxAccounts)
-    {
-        if (account.mxSession)
-        {
-            [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:account.mxSession];
-        }
-    }
     
     // Logout all matrix account
     [[MXKAccountManager sharedManager] logout];
@@ -301,6 +268,20 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     // Update display
     self.tableView.tableHeaderView.hidden = YES;
     self.selectedRoomDisplayName.text = @"Please select a room";
+    [self.tableView reloadData];
+}
+
+- (IBAction)onAccountToggleChange:(id)sender
+{
+    UISwitch *accountSwitchToggle = sender;
+    
+    NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
+    if (accountSwitchToggle.tag < accounts.count)
+    {
+        MXKAccount *account = [accounts objectAtIndex:accountSwitchToggle.tag];
+        account.disabled = !accountSwitchToggle.on;
+    }
+    
     [self.tableView reloadData];
 }
 
@@ -425,6 +406,15 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
             }
             
             accountCell.mxAccount = [accounts objectAtIndex:indexPath.row];
+            
+            // Display switch toggle in case of multiple accounts
+            if (accounts.count > 1 || accountCell.mxAccount.disabled)
+            {
+                accountCell.accountSwitchToggle.tag = indexPath.row;
+                accountCell.accountSwitchToggle.hidden = NO;
+                [accountCell.accountSwitchToggle addTarget:self action:@selector(onAccountToggleChange:) forControlEvents:UIControlEventValueChanged];
+            }
+            
             cell = accountCell;
         }
         else if (indexPath.row == accounts.count)
@@ -618,7 +608,7 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         
         // Prepare listDataSource
         MXKRecentsDataSource *listDataSource = [[MXKRecentsDataSource alloc] init];
-        NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
+        NSArray* accounts = [[MXKAccountManager sharedManager] activeAccounts];
         for (MXKAccount *account in accounts)
         {
             if (account.mxSession)
@@ -635,7 +625,7 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         
         // Prepare listDataSource
         MXKInterleavedRecentsDataSource *listDataSource = [[MXKInterleavedRecentsDataSource alloc] init];
-        NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
+        NSArray* accounts = [[MXKAccountManager sharedManager] activeAccounts];
         for (MXKAccount *account in accounts)
         {
             if (account.mxSession)
@@ -713,7 +703,7 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
     else if ([segue.identifier isEqualToString:@"showMXKContactListViewController"])
     {
         MXKContactListViewController *contactsController = (MXKContactListViewController *)destinationViewController;
-        NSArray* accounts = [[MXKAccountManager sharedManager] accounts];
+        NSArray* accounts = [[MXKAccountManager sharedManager] activeAccounts];
         for (MXKAccount *account in accounts)
         {
             if (account.mxSession)

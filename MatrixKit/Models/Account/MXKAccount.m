@@ -51,11 +51,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Internal list of ignored rooms
     NSMutableArray* ignoredRooms;
-    
-    /**
-     APNS handling
-     */
-    BOOL transientAPNSActivity;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -96,6 +91,10 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         mxRestClient = [[MXRestClient alloc] initWithCredentials:credentials];
         
         userPresence = MXPresenceUnknown;
+        
+        // Open a new matrix session by default
+        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        [self openSessionWithStore:store];
     }
     return self;
 }
@@ -140,6 +139,14 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
     _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
     
+    _disabled = [coder decodeBoolForKey:@"disabled"];
+    if (!_disabled)
+    {
+        // Open a new matrix session
+        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        [self openSessionWithStore:store];
+    }
+    
     return self;
 }
 
@@ -151,11 +158,13 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     if (self.identityServerURL)
     {
-        [coder encodeObject:self.identityServerURL forKey:@"identityserverurl"];
+        [coder encodeObject:_identityServerURL forKey:@"identityserverurl"];
     }
     
     [coder encodeBool:_enablePushNotifications forKey:@"_enablePushNotifications"];
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
+    
+    [coder encodeBool:_disabled forKey:@"disabled"];
 }
 
 #pragma mark - Properties
@@ -221,77 +230,47 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (BOOL)pushNotificationServiceIsActive
 {
-    return ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications);
+    return ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications && mxSession);
 }
 
 - (void)setEnablePushNotifications:(BOOL)enablePushNotifications
 {
-    // Refuse to try & turn push on if we're not logged in, it's nonsensical.
-    if (!mxCredentials)
-    {
-        NSLog(@"[MXKAccount] Not setting push token because we're not logged in");
-        return;
-    }
-    
-    transientAPNSActivity = enablePushNotifications;
-    
-#ifdef DEBUG
-    NSString *appId = @"org.matrix.console.ios.dev";
-#else
-    NSString *appId = @"org.matrix.console.ios.prod";
-#endif
-    
-    NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
-    NSDictionary *pushData = @{
-                               @"url": @"https://matrix.org/_matrix/push/v1/notify",
-                               };
-    
-    NSString *deviceLang = [NSLocale preferredLanguages][0];
-    
-    NSString * profileTag = [[NSUserDefaults standardUserDefaults] valueForKey:@"pusherProfileTag"];
-    if (!profileTag)
-    {
-        profileTag = @"";
-        NSString *alphabet = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (int i = 0; i < 16; ++i)
-        {
-            unsigned char c = [alphabet characterAtIndex:arc4random() % alphabet.length];
-            profileTag = [profileTag stringByAppendingFormat:@"%c", c];
-        }
-        NSLog(@"[MXKAccount] Generated fresh profile tag: %@", profileTag);
-        [[NSUserDefaults standardUserDefaults] setValue:profileTag forKey:@"pusherProfileTag"];
-    }
-    else
-    {
-        NSLog(@"[MXKAccount] Using existing profile tag: %@", profileTag);
-    }
-    
-    NSObject *kind = enablePushNotifications ? @"http" : [NSNull null];
-    
-    // Retrieve the append flag from manager to handle multiple accounts registration
-    BOOL append = [MXKAccountManager sharedManager].apnsAppendFlag;
-    NSLog(@"[MXKAccount] append flag: %d", append);
-    
-    MXRestClient *restCli = self.mxRestClient;
-    
-    [restCli setPusherWithPushkey:b64Token kind:kind appId:appId appDisplayName:@"Matrix Console iOS" deviceDisplayName:[[UIDevice currentDevice] name] profileTag:profileTag lang:deviceLang data:pushData append:append success:^{
-        NSLog(@"[MXKAccount] Succeeded to update pusher for %@", self.mxCredentials.userId);
-        _enablePushNotifications = transientAPNSActivity;
-        
-        // Archive updated field
-        [[MXKAccountManager sharedManager] saveAccounts];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
-    } failure:^(NSError *error) {
-        NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
-    }];
+    // Update the pusher, report the new value only on success.
+    [self enablePusher:enablePushNotifications
+               success:^{
+                   
+                   _enablePushNotifications = enablePushNotifications;
+                   
+                   // Archive updated field
+                   [[MXKAccountManager sharedManager] saveAccounts];
+               }
+               failure:nil];
 }
 
 - (void)setEnableInAppNotifications:(BOOL)enableInAppNotifications
 {
     _enableInAppNotifications = enableInAppNotifications;
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
+- (void)setDisabled:(BOOL)disabled
+{
+    _disabled = disabled;
+    
+    if (_disabled)
+    {
+        // Close session (keep the storage).
+        [self closeSession:NO];
+    }
+    else if (!mxSession)
+    {
+        // Open a new matrix session
+        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        
+        [self openSessionWithStore:store];
+    }
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
@@ -365,88 +344,9 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 #pragma mark -
 
--(void)openSessionWithStore:(id<MXStore>)store
+- (void)logout
 {
-    // Sanity check
-    if (!mxCredentials || !mxRestClient)
-    {
-        NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
-        return;
-    }
-    
-    // Close potential session (keep associated store).
-    [self closeSession:NO];
-    
-    openSessionStartDate = [NSDate date];
-    
-    // Instantiate new session
-    mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
-    
-    // Register session state observer
-    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
-        
-        // Check whether the concerned session is the associated one
-        if (notif.object == mxSession)
-        {
-            [self onMatrixSessionStateChange];
-        }
-    }];
-    
-    __weak typeof(self) weakSelf = self;
-    [mxSession setStore:store success:^{
-        // Complete session registration by launching live stream
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
-        [strongSelf launchInitialServerSync];
-    } failure:^(NSError *error)
-    {
-        // This cannot happen. Loading of MXFileStore cannot fail.
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
-        strongSelf->mxSession = nil;
-        
-        [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
-        strongSelf->sessionStateObserver = nil;
-    }];
-}
-
-- (void)closeSession:(BOOL)clearStore
-{
-    [self removeNotificationListener];
-    
-    if (reachabilityObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
-        reachabilityObserver = nil;
-    }
-    
-    if (sessionStateObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
-        sessionStateObserver = nil;
-    }
-    
-    [initialServerSyncTimer invalidate];
-    initialServerSyncTimer = nil;
-    
-    if (userUpdateListener)
-    {
-        [mxSession.myUser removeListener:userUpdateListener];
-        userUpdateListener = nil;
-    }
-    
-    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
-    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
-    
-    [mxSession close];
-    
-    if (clearStore)
-    {
-        [mxSession.store deleteAllData];
-    }
-    
-    mxSession = nil;
-    
-    notifyOpenSessionFailure = YES;
+    [self closeSession:YES];
 }
 
 - (void)pauseInBackgroundTask
@@ -510,7 +410,92 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
 }
 
-#pragma mark - Push notification listeners
+- (void)reload:(BOOL)clearCache
+{
+    // close potential session
+    [self closeSession:clearCache];
+    
+    if (!_disabled)
+    {
+        // Open a new matrix session
+        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        [self openSessionWithStore:store];
+    }
+}
+
+#pragma mark - Push notifications
+
+// Update the pusher for this device and this account on the Home Server.
+- (void)enablePusher:(BOOL)enabled success:(void (^)())success failure:(void (^)(NSError *))failure
+{
+    // Refuse to try & turn push on if we're not logged in, it's nonsensical.
+    if (!mxCredentials)
+    {
+        NSLog(@"[MXKAccount] Not setting push token because we're not logged in");
+        return;
+    }
+    
+#ifdef DEBUG
+    NSString *appId = @"org.matrix.console.ios.dev";
+#else
+    NSString *appId = @"org.matrix.console.ios.prod";
+#endif
+    
+    NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
+    NSDictionary *pushData = @{
+                               @"url": @"https://matrix.org/_matrix/push/v1/notify",
+                               };
+    
+    NSString *deviceLang = [NSLocale preferredLanguages][0];
+    
+    NSString * profileTag = [[NSUserDefaults standardUserDefaults] valueForKey:@"pusherProfileTag"];
+    if (!profileTag)
+    {
+        profileTag = @"";
+        NSString *alphabet = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (int i = 0; i < 16; ++i)
+        {
+            unsigned char c = [alphabet characterAtIndex:arc4random() % alphabet.length];
+            profileTag = [profileTag stringByAppendingFormat:@"%c", c];
+        }
+        NSLog(@"[MXKAccount] Generated fresh profile tag: %@", profileTag);
+        [[NSUserDefaults standardUserDefaults] setValue:profileTag forKey:@"pusherProfileTag"];
+    }
+    else
+    {
+        NSLog(@"[MXKAccount] Using existing profile tag: %@", profileTag);
+    }
+    
+    NSObject *kind = enabled ? @"http" : [NSNull null];
+    
+    // Retrieve the append flag from manager to handle multiple accounts registration
+    BOOL append = [MXKAccountManager sharedManager].apnsAppendFlag;
+    NSLog(@"[MXKAccount] append flag: %d", append);
+    
+    MXRestClient *restCli = self.mxRestClient;
+    
+    [restCli setPusherWithPushkey:b64Token kind:kind appId:appId appDisplayName:@"Matrix Console iOS" deviceDisplayName:[[UIDevice currentDevice] name] profileTag:profileTag lang:deviceLang data:pushData append:append success:^{
+        NSLog(@"[MXKAccount] Succeeded to update pusher for %@", self.mxCredentials.userId);
+        
+        if (success)
+        {
+            success();
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+    } failure:^(NSError *error) {
+        NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+        
+        if (failure)
+        {
+            failure(error);
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+    }];
+}
+
+#pragma mark - InApp notifications
 
 - (void)listenToNotifications:(MXOnNotification)onNotification
 {
@@ -526,7 +511,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     // Register on notification center
     notificationCenterListener = [self.mxSession.notificationCenter listenToNotifications:^(MXEvent *event, MXRoomState *roomState, MXPushRule *rule)
     {
-        
         // Apply first the event filter defined in the related room data source
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:event.roomId create:NO];
@@ -570,7 +554,134 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
 }
 
-#pragma mark -
+#pragma mark - Internals
+
+/**
+ Create a matrix session based on the provided store.
+ When store data is ready, the live stream is automatically launched by synchronising the session with the server.
+ 
+ In case of failure during server sync, the method is reiterated until the data is up-to-date with the server.
+ This loop is stopped if you call [MXCAccount closeSession:], it is suspended if you call [MXCAccount pauseInBackgroundTask].
+ 
+ @param store the store to use for the session.
+ */
+-(void)openSessionWithStore:(id<MXStore>)store
+{
+    // Sanity check
+    if (!mxCredentials || !mxRestClient)
+    {
+        NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
+        return;
+    }
+    
+    // Close potential session (keep associated store).
+    [self closeSession:NO];
+    
+    openSessionStartDate = [NSDate date];
+    
+    // Instantiate new session
+    mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
+    
+    // Register session state observer
+    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether the concerned session is the associated one
+        if (notif.object == mxSession)
+        {
+            [self onMatrixSessionStateChange];
+        }
+    }];
+    
+    __weak typeof(self) weakSelf = self;
+    [mxSession setStore:store success:^{
+        
+        // Complete session registration by launching live stream
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        
+        // Restore pusher (if it is enabled)
+        if (strongSelf->_enablePushNotifications)
+        {
+            [strongSelf enablePusher:strongSelf->_enablePushNotifications
+                       success:nil
+                       failure:^(NSError *error) {
+                           
+                           strongSelf->_enablePushNotifications = NO;
+                           
+                           // Archive updated field
+                           [[MXKAccountManager sharedManager] saveAccounts];
+                       }];
+        }
+        
+        // Launch server sync
+        [strongSelf launchInitialServerSync];
+    } failure:^(NSError *error)
+     {
+         // This cannot happen. Loading of MXFileStore cannot fail.
+         __strong __typeof(weakSelf)strongSelf = weakSelf;
+         strongSelf->mxSession = nil;
+         
+         [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
+         strongSelf->sessionStateObserver = nil;
+     }];
+}
+
+/**
+ Close the matrix session.
+ 
+ @param clearStore set YES to delete all store data.
+ */
+- (void)closeSession:(BOOL)clearStore
+{
+    if (_enablePushNotifications)
+    {
+        // Turn off pusher
+        [self enablePusher:NO success:nil failure:nil];
+    }
+    
+    [self removeNotificationListener];
+    
+    if (reachabilityObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
+        reachabilityObserver = nil;
+    }
+    
+    if (sessionStateObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
+        sessionStateObserver = nil;
+    }
+    
+    [initialServerSyncTimer invalidate];
+    initialServerSyncTimer = nil;
+    
+    if (userUpdateListener)
+    {
+        [mxSession.myUser removeListener:userUpdateListener];
+        userUpdateListener = nil;
+    }
+    
+    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
+    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
+    
+    if (mxSession)
+    {
+        // Reset room data stored in memory
+        [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:mxSession];
+        
+        // Close session
+        [mxSession close];
+        
+        if (clearStore)
+        {
+            [mxSession.store deleteAllData];
+        }
+        
+        mxSession = nil;
+    }
+    
+    notifyOpenSessionFailure = YES;
+}
 
 - (void)launchInitialServerSync
 {
@@ -594,7 +705,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-        
     } failure:^(NSError *error)
     {
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);

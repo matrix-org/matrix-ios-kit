@@ -42,10 +42,10 @@
 {
     UIColor *presenceColor = nil;
     
+    _accountDisplayName.text = mxAccount.fullDisplayName;
+    
     if (mxAccount.mxSession)
     {
-        _accountDisplayName.text = mxAccount.fullDisplayName;
-        
         // User thumbnail
         NSString *thumbnailURL = nil;
         if (mxAccount.userAvatarUrl)
@@ -57,11 +57,9 @@
         [_accountPicture setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
         
         presenceColor = [MXKAccount presenceColor:mxAccount.userPresence];
-        
     }
     else
     {
-        _accountDisplayName.text = nil;
         _accountPicture.image = self.picturePlaceholder;
     }
     
@@ -74,6 +72,18 @@
     {
         _accountPicture.layer.borderWidth = 0;
     }
+    
+    _accountSwitchToggle.on = !mxAccount.disabled;
+    if (mxAccount.disabled)
+    {
+        _accountDisplayName.textColor = [UIColor lightGrayColor];
+    }
+    else
+    {
+        _accountDisplayName.textColor = [UIColor blackColor];
+    }
+    
+    _mxAccount = mxAccount;
 }
 
 - (UIImage*)picturePlaceholder
