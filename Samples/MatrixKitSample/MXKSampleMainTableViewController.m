@@ -67,9 +67,9 @@
     UIButton* callStatusBarButton;
     
     /**
-     Keep reference on the current view controller to release it correctly
+     Keep reference on the pushed view controllers to release them correctly
      */
-    id destinationViewController;
+    NSMutableArray *destinationViewControllers;
     
     /**
      Current index of sections
@@ -90,6 +90,8 @@
 {
     [super viewDidLoad];
     
+    destinationViewControllers = [NSMutableArray array];
+    
     self.tableView.tableHeaderView.hidden = YES;
     self.tableView.allowsSelection = YES;
     
@@ -105,9 +107,15 @@
             [self addMatrixSession:mxSession];
             [[MXKContactManager sharedManager] addMatrixSession:mxSession];
             
-            if (destinationViewController && [destinationViewController respondsToSelector:@selector(addMatrixSession:)])
+            if (destinationViewControllers.count)
             {
-                [destinationViewController addMatrixSession:mxSession];
+                for (id viewController in destinationViewControllers)
+                {
+                    if ([viewController respondsToSelector:@selector(addMatrixSession:)])
+                    {
+                        [viewController addMatrixSession:mxSession];
+                    }
+                }
             }
             
             self.tableView.tableHeaderView.hidden = NO;
@@ -118,9 +126,15 @@
             [self removeMatrixSession:mxSession];
             [[MXKContactManager sharedManager] removeMatrixSession:mxSession];
             
-            if (destinationViewController && [destinationViewController respondsToSelector:@selector(removeMatrixSession:)])
+            if (destinationViewControllers.count)
             {
-                [destinationViewController removeMatrixSession:mxSession];
+                for (id viewController in destinationViewControllers)
+                {
+                    if ([viewController respondsToSelector:@selector(removeMatrixSession:)])
+                    {
+                        [viewController removeMatrixSession:mxSession];
+                    }
+                }
             }
         }
     }];
@@ -159,13 +173,19 @@
         if (mxAccount)
         {
             // Check whether details of this account was displayed
-            if ([destinationViewController isKindOfClass:[MXKAccountDetailsViewController class]])
+            if (destinationViewControllers.count)
             {
-                MXKAccountDetailsViewController *accountDetailsViewController = (MXKAccountDetailsViewController*)destinationViewController;
-                if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:mxAccount.mxCredentials.userId])
+                for (id viewController in destinationViewControllers)
                 {
-                    // pop the account details view controller
-                    [self.navigationController popToRootViewControllerAnimated:YES];
+                    if ([viewController isKindOfClass:[MXKAccountDetailsViewController class]])
+                    {
+                        MXKAccountDetailsViewController *accountDetailsViewController = (MXKAccountDetailsViewController*)viewController;
+                        if ([accountDetailsViewController.mxAccount.mxCredentials.userId isEqualToString:mxAccount.mxCredentials.userId])
+                        {
+                            // pop the account details view controller
+                            [self.navigationController popToRootViewControllerAnimated:YES];
+                        }
+                    }
                 }
             }
         }
@@ -222,13 +242,17 @@
 {
     [super viewDidAppear:animated];
     
-    if (destinationViewController)
+    if (destinationViewControllers.count)
     {
-        if ([destinationViewController respondsToSelector:@selector(destroy)])
+        for (id viewController in destinationViewControllers)
         {
-            [destinationViewController destroy];
+            if ([viewController respondsToSelector:@selector(destroy)])
+            {
+                [viewController destroy];
+            }
         }
-        destinationViewController = nil;
+        
+        [destinationViewControllers removeAllObjects];
     }
 }
 
@@ -595,7 +619,9 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     // Keep ref on destinationViewController
-    destinationViewController = segue.destinationViewController;
+    id destinationViewController = segue.destinationViewController;
+    
+    [destinationViewControllers addObject:destinationViewController];
     
     if (([segue.identifier isEqualToString:@"showMXKRecentListViewController"] || [segue.identifier isEqualToString:@"showRoomSelector"]) && self.mainSession)
     {
