@@ -14,13 +14,35 @@
  limitations under the License.
  */
 
+#import <UIKit/UIKit.h>
 
-#import "MXKTableViewCellWithButton.h"
-#import "MXKTableViewCellWithLabelAndSlider.h"
-#import "MXKTableViewCellWithLabelAndSubLabel.h"
-#import "MXKTableViewCellWithLabelAndSwitch.h"
-#import "MXKTableViewCellWithLabelAndTextField.h"
-#import "MXKTableViewCellWithLabelTextFieldAndButton.h"
-#import "MXKTableViewCellWithPicker.h"
-#import "MXKTableViewCellWithTextFieldAndButton.h"
-#import "MXKTableViewCellWithTextView.h"
+/**
+ 'MXKTableViewCell' class is used to define custom UITableViewCell.
+ Each 'MXKTableViewCell-inherited' class has its own 'reuseIdentifier'.
+ */
+@interface MXKTableViewCell : UITableViewCell
+{
+@protected
+    NSString *mxkReuseIdentifier;
+}
+
+/**
+ Returns the `UINib` object initialized for the cell.
+ 
+ @return The initialized `UINib` object or `nil` if there were errors during
+ initialization or the nib file could not be located.
+ */
++ (UINib *)nib;
+
+/**
+ The default reuseIdentifier of the 'MXKTableViewCell-inherited' class.
+ */
++ (NSString*)defaultReuseIdentifier;
+
+/**
+ Override [UITableViewCell initWithStyle:reuseIdentifier:] to load cell content from nib file (if any), 
+ and handle reuse identifier.
+ */
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
+
+@end

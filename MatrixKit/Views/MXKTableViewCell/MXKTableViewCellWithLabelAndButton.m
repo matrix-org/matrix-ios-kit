@@ -18,15 +18,5 @@
 
 @implementation MXKTableViewCellWithLabelAndButton
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithLabelAndButton class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithLabelAndButton class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
-
 @end
 

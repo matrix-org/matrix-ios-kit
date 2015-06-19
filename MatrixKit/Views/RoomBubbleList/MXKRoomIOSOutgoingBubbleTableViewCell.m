@@ -27,13 +27,12 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomIOSOutgoingBubbleTableViewCell class]] loadNibNamed:NSStringFromClass([MXKRoomIOSOutgoingBubbleTableViewCell class])
-                                                                                                        owner:nil
-                                                                                                      options:nil];
-    self = nibViews.firstObject;
-    
-    // Create the strechable background bubble
-    self.bubbleImageView.image = self.class.bubbleImage;
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self)
+    {
+        // Create the strechable background bubble
+        self.bubbleImageView.image = self.class.bubbleImage;
+    }
     
     return self;
 }

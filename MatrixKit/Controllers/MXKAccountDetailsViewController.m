@@ -23,21 +23,19 @@
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
 
-#import "MXKTableViewCell.h"
+#import "MXKTableViewCellWithButton.h"
+#import "MXKTableViewCellWithTextFieldAndButton.h"
+#import "MXKTableViewCellWithLabelTextFieldAndButton.h"
+#import "MXKTableViewCellWithTextView.h"
+#import "MXKTableViewCellWithLabelAndSwitch.h"
 
 #import "NSBundle+MatrixKit.h"
 
 NSString* const kMXKAccountDetailsConfigurationFormatText = @"Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
-NSString *const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
-NSString *const kMXKAccountDetailsSubmittedEmailCellId = @"kMXKAccountDetailsSubmittedEmailCellId";
-NSString *const kMXKAccountDetailsEmailTokenCellId = @"kMXKAccountDetailsEmailTokenCellId";
+NSString* const kMXKAccountDetailsNotificationRulesUserInfo = @"To configure global notification settings (like rules), go find a webclient and hit Settings > Notifications.";
 
-NSString *const kMXKAccountDetailsCellWithTextViewId = @"kMXKAccountDetailsCellWithTextViewId";
-NSString *const kMXKAccountDetailsCellWithSwitchId = @"kMXKAccountDetailsCellWithSwitchId";
-NSString *const kMXKAccountDetailsCellWithButtonId = @"kMXKAccountDetailsCellWithButtonId";
-
-NSString* const kUserInfoNotificationRulesText = @"To configure global notification settings (like rules), go find a webclient and hit Settings > Notifications.";
+NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
 
 @interface MXKAccountDetailsViewController ()
 {
@@ -886,7 +884,7 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
         {
             UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
             textView.font = [UIFont systemFontOfSize:14];
-            textView.text = kUserInfoNotificationRulesText;
+            textView.text = kMXKAccountDetailsNotificationRulesUserInfo;
             CGSize contentSize = [textView sizeThatFits:textView.frame.size];
             return contentSize.height + 1;
         }
@@ -932,10 +930,10 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
                 currentEmail = submittedEmailCell.mxkTextField.text;
             }
             
-            submittedEmailCell = [[MXKTableViewCellWithTextFieldAndButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsSubmittedEmailCellId];
+            submittedEmailCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextFieldAndButton defaultReuseIdentifier]];
             if (!submittedEmailCell)
             {
-                submittedEmailCell = [[MXKTableViewCellWithTextFieldAndButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsSubmittedEmailCellId];
+                submittedEmailCell = [[MXKTableViewCellWithTextFieldAndButton alloc] init];
             }
             
             submittedEmailCell.mxkTextField.text = currentEmail;
@@ -962,10 +960,10 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
                 currentToken = emailTokenCell.mxkTextField.text;
             }
             
-            emailTokenCell = [[MXKTableViewCellWithLabelTextFieldAndButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsEmailTokenCellId];
+            emailTokenCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelTextFieldAndButton defaultReuseIdentifier]];
             if (!emailTokenCell)
             {
-                emailTokenCell = [[MXKTableViewCellWithLabelTextFieldAndButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsEmailTokenCellId];
+                emailTokenCell = [[MXKTableViewCellWithLabelTextFieldAndButton alloc] init];
             }
             
             emailTokenCell.mxkLabel.text = [NSString stringWithFormat:@"Enter validation token for %@:", submittedEmail.address];
@@ -982,21 +980,21 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
     {
         if (indexPath.row == userInfoNotifRowIndex)
         {
-            MXKTableViewCellWithTextView *userInfoCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
+            MXKTableViewCellWithTextView *userInfoCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextView defaultReuseIdentifier]];
             if (!userInfoCell)
             {
-                userInfoCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
+                userInfoCell = [[MXKTableViewCellWithTextView alloc] init];
             }
             
-            userInfoCell.mxkTextView.text = kUserInfoNotificationRulesText;
+            userInfoCell.mxkTextView.text = kMXKAccountDetailsNotificationRulesUserInfo;
             cell = userInfoCell;
         }
         else
         {
-            MXKTableViewCellWithLabelAndSwitch *notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithSwitchId];
+            MXKTableViewCellWithLabelAndSwitch *notificationsCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelAndSwitch defaultReuseIdentifier]];
             if (!notificationsCell)
             {
-                notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithSwitchId];
+                notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] init];
             }
             
             [notificationsCell.mxkSwitch addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventValueChanged];
@@ -1023,10 +1021,10 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
         
         if (indexPath.row == 0)
         {
-            MXKTableViewCellWithTextView *configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
+            MXKTableViewCellWithTextView *configCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextView defaultReuseIdentifier]];
             if (!configCell)
             {
-                configCell = [[MXKTableViewCellWithTextView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithTextViewId];
+                configCell = [[MXKTableViewCellWithTextView alloc] init];
             }
             
             configCell.mxkTextView.text = [NSString stringWithFormat:kMXKAccountDetailsConfigurationFormatText, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
@@ -1034,10 +1032,10 @@ NSString* const kUserInfoNotificationRulesText = @"To configure global notificat
         }
         else
         {
-            logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithButtonId];
+            logoutBtnCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithButton defaultReuseIdentifier]];
             if (!logoutBtnCell)
             {
-                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsCellWithButtonId];
+                logoutBtnCell = [[MXKTableViewCellWithButton alloc] init];
             }
             [logoutBtnCell.mxkButton setTitle:@"Logout" forState:UIControlStateNormal];
             [logoutBtnCell.mxkButton setTitle:@"Logout" forState:UIControlStateHighlighted];

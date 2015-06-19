@@ -14,9 +14,11 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
-@interface MXKTableViewCellWithLabelAndButton : UITableViewCell
+@interface MXKTableViewCellWithLabelAndButton : MXKTableViewCell
+
 @property (strong, nonatomic) IBOutlet UILabel *mxkLabel;
 @property (strong, nonatomic) IBOutlet UIButton *mxkButton;
+
 @end

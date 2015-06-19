@@ -20,11 +20,6 @@
 
 #import "MXKSectionedContacts.h"
 
-/**
- String identifying table view cell used to display a contact.
- */
-NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellIdentifier";
-
 @interface MXKContactListViewController ()
 {
     // YES -> only matrix users
@@ -131,7 +126,7 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
     NSParameterAssert([contactTableViewCellClass isSubclassOfClass:MXKContactTableCell.class]);
     
     _contactTableViewCellClass = contactTableViewCellClass;
-    [self.tableView registerClass:contactTableViewCellClass forCellReuseIdentifier:kMXKContactTableViewCellIdentifier];
+    [self.tableView registerClass:contactTableViewCellClass forCellReuseIdentifier:[MXKContactTableCell defaultReuseIdentifier]];
 }
 
 - (void)setEnableSearch:(BOOL)enableSearch
@@ -282,7 +277,7 @@ NSString *const kMXKContactTableViewCellIdentifier = @"kMXKContactTableViewCellI
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:kMXKContactTableViewCellIdentifier forIndexPath:indexPath];
+    MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:[MXKContactTableCell defaultReuseIdentifier] forIndexPath:indexPath];
     
     MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
     

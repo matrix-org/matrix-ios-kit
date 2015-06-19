@@ -14,8 +14,10 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
-@interface MXKTableViewCellWithPicker : UITableViewCell
+@interface MXKTableViewCellWithPicker : MXKTableViewCell
+
 @property (strong, nonatomic) IBOutlet UIPickerView* mxkPickerView;
+
 @end

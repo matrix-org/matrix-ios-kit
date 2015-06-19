@@ -14,9 +14,10 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
-@interface MXKTableViewCellWithTextFieldAndButton : UITableViewCell <UITextFieldDelegate> {
+@interface MXKTableViewCellWithTextFieldAndButton : MXKTableViewCell <UITextFieldDelegate>
+{
 @protected
     UIView *inputAccessoryView;
 }

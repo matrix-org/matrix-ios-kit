@@ -34,8 +34,6 @@ NSString *const MXKRoomMemberDetailsActionStartChat = @"Start Chat";
 NSString *const MXKRoomMemberDetailsActionStartVoiceCall = @"Start Voice Call";
 NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
 
-NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActionCellId";
-
 @interface MXKRoomMemberDetailsViewController ()
 {
     NSString *thumbnailURL;
@@ -605,16 +603,16 @@ NSString *const kMXKRoomMemberDetailsActionCellId = @"kMXKRoomMemberDetailsActio
     return (buttonsTitles.count + 1) / 2;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.tableView == aTableView)
+    if (self.tableView == tableView)
     {
         NSInteger row = indexPath.row;
         
-        MXKTableViewCellWithButtons *cell = [[MXKTableViewCellWithButtons alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKRoomMemberDetailsActionCellId];
+        MXKTableViewCellWithButtons *cell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithButtons defaultReuseIdentifier]];
         if (!cell)
         {
-            cell = [[MXKTableViewCellWithButtons alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKRoomMemberDetailsActionCellId];
+            cell = [[MXKTableViewCellWithButtons alloc] init];
         }
         
         cell.mxkButtonNumber = 2;

@@ -23,15 +23,6 @@
 
 @implementation MXKRoomIncomingBubbleTableViewCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomIncomingBubbleTableViewCell class]] loadNibNamed:NSStringFromClass([MXKRoomIncomingBubbleTableViewCell class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
 - (void)awakeFromNib
 {
     [super awakeFromNib];

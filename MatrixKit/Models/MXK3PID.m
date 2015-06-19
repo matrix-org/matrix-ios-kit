@@ -32,7 +32,7 @@
 {
     self = [super init];
     if (self)
-        
+
     {
         _medium = [medium copy];
         _address = [address copy];

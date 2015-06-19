@@ -25,16 +25,6 @@
 @implementation MXKInterleavedRecentTableViewCell
 
 #pragma mark - Class methods
-+ (UINib *)nib
-{
-    return [UINib nibWithNibName:NSStringFromClass([MXKInterleavedRecentTableViewCell class])
-                          bundle:[NSBundle bundleForClass:[MXKInterleavedRecentTableViewCell class]]];
-}
-
-- (NSString *)reuseIdentifier
-{
-    return kMXKRecentCellIdentifier;
-}
 
 - (void)awakeFromNib
 {

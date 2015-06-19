@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKCellRendering.h"
 
@@ -77,7 +77,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
  */
-@interface MXKRoomBubbleTableViewCell : UITableViewCell <MXKCellRendering>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering>
 
 /**
  The current bubble data displayed by the table view cell

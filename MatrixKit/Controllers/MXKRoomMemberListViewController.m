@@ -211,7 +211,6 @@
 {
     for (id memberCell in self.tableView.visibleCells)
     {
-        
         if ([memberCell respondsToSelector:@selector(updateActivityInfo)])
         {
             [memberCell updateActivityInfo];

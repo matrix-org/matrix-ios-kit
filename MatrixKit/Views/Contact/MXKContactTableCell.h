@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKCellRendering.h"
 #import "MXKImageView.h"
@@ -36,7 +36,7 @@ extern NSString *const kMXKContactCellContactIdKey;
 /**
  'MXKContactTableCell' is a base class for displaying a contact.
  */
-@interface MXKContactTableCell : UITableViewCell <MXKCellRendering>
+@interface MXKContactTableCell : MXKTableViewCell <MXKCellRendering>
 
 @property (strong, nonatomic) IBOutlet MXKImageView *thumbnailView;
 

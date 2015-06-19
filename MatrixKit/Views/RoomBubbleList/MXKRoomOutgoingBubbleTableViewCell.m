@@ -23,16 +23,6 @@
 
 @implementation MXKRoomOutgoingBubbleTableViewCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomOutgoingBubbleTableViewCell class]] loadNibNamed:NSStringFromClass([MXKRoomOutgoingBubbleTableViewCell class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
-
 - (void)dealloc
 {
     [self stopAnimating];

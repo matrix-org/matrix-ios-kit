@@ -14,9 +14,11 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
-@interface MXKTableViewCellWithLabelAndSlider : UITableViewCell
+@interface MXKTableViewCellWithLabelAndSlider : MXKTableViewCell
+
 @property (nonatomic) IBOutlet UILabel *mxkLabel;
 @property (nonatomic) IBOutlet UISlider *mxkSlider;
+
 @end

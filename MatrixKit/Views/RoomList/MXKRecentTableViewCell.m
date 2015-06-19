@@ -23,16 +23,6 @@
 @implementation MXKRecentTableViewCell
 
 #pragma mark - Class methods
-+ (UINib *)nib
-{
-    return [UINib nibWithNibName:NSStringFromClass([MXKRecentTableViewCell class])
-                          bundle:[NSBundle bundleForClass:[MXKRecentTableViewCell class]]];
-}
-
-- (NSString *) reuseIdentifier
-{
-    return kMXKRecentCellIdentifier;
-}
 
 - (void)render:(MXKCellData *)cellData
 {

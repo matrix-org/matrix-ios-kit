@@ -14,12 +14,12 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 /**
  Display several buttons with the system style in a UITableViewCell. All buttons have the same width and they are horizontally aligned.
  */
-@interface MXKTableViewCellWithButtons : UITableViewCell
+@interface MXKTableViewCellWithButtons : MXKTableViewCell
 
 /**
  The number of buttons

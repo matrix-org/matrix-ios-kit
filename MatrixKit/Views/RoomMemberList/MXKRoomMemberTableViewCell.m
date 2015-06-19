@@ -36,21 +36,6 @@
 
 @implementation MXKRoomMemberTableViewCell
 
-+ (UINib *)nib
-{
-    // By default, no nib is available.
-    return nil;
-}
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKRoomMemberTableViewCell class]] loadNibNamed:NSStringFromClass([MXKRoomMemberTableViewCell class])
-                                                                                             owner:nil
-                                                                                           options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
 - (void)awakeFromNib
 {
     [super awakeFromNib];
@@ -281,12 +266,10 @@
     // Check whether update is required.
     if (shouldUpdateActivityInfo)
     {
-        
         NSString *lastSeen = [self lastActiveTime];
         NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:self.userLabel.attributedText];
         if (lastSeen.length)
         {
-            
             [attributedText replaceCharactersInRange:lastSeenRange withString:lastSeen];
             
             // Update last seen range
@@ -294,7 +277,6 @@
         }
         else
         {
-            
             // remove presence info
             lastSeenRange.location -= 1;
             lastSeenRange.length += 2;

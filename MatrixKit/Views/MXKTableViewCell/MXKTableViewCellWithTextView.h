@@ -14,8 +14,10 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
-@interface MXKTableViewCellWithTextView : UITableViewCell
+@interface MXKTableViewCellWithTextView : MXKTableViewCell
+
 @property (strong, nonatomic) IBOutlet UITextView *mxkTextView;
+
 @end

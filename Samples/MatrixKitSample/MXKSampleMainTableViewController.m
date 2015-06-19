@@ -23,9 +23,6 @@
 
 #import <MatrixSDK/MXFileStore.h>
 
-NSString *const kMXKSampleAccountCellIdentifier = @"kMXKSampleAccountCellIdentifier";
-NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifier";
-
 @interface MXKSampleMainTableViewController ()
 {
     /**
@@ -93,10 +90,6 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
 {
     [super viewDidLoad];
     
-    self.tableView.tableHeaderView.hidden = YES;
-    self.tableView.allowsSelection = YES;
-    [self.tableView reloadData];
-    
     // Register matrix session state observer
     matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
     {
@@ -130,7 +123,7 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         }
     }];
     
-    // Register call observer in order to handle new opened session
+    // Register call observer in order to handle voip call
     callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
     {
         
@@ -204,6 +197,10 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         // Ask for a matrix account first
         [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
     }
+    
+    self.tableView.tableHeaderView.hidden = YES;
+    self.tableView.allowsSelection = YES;
+    [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -399,10 +396,10 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         NSArray *accounts = [[MXKAccountManager sharedManager] accounts];
         if (indexPath.row < accounts.count)
         {
-            MXKAccountTableViewCell *accountCell = [[MXKAccountTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleAccountCellIdentifier];
+            MXKAccountTableViewCell *accountCell = [tableView dequeueReusableCellWithIdentifier:[MXKAccountTableViewCell defaultReuseIdentifier]];
             if (!accountCell)
             {
-                accountCell = [[MXKAccountTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleAccountCellIdentifier];
+                accountCell = [[MXKAccountTableViewCell alloc] init];
             }
             
             accountCell.mxAccount = [accounts objectAtIndex:indexPath.row];
@@ -419,10 +416,10 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         }
         else if (indexPath.row == accounts.count)
         {
-            MXKTableViewCellWithButton *addBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
+            MXKTableViewCellWithButton *addBtnCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithButton defaultReuseIdentifier]];
             if (!addBtnCell)
             {
-                addBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
+                addBtnCell = [[MXKTableViewCellWithButton alloc] init];
             }
             [addBtnCell.mxkButton setTitle:@"Add account" forState:UIControlStateNormal];
             [addBtnCell.mxkButton setTitle:@"Add account" forState:UIControlStateHighlighted];
@@ -432,10 +429,10 @@ NSString *const kMXKSampleActionCellIdentifier = @"kMXKSampleActionCellIdentifie
         }
         else
         {
-            MXKTableViewCellWithButton *logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
+            MXKTableViewCellWithButton *logoutBtnCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithButton defaultReuseIdentifier]];
             if (!logoutBtnCell)
             {
-                logoutBtnCell = [[MXKTableViewCellWithButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKSampleActionCellIdentifier];
+                logoutBtnCell = [[MXKTableViewCellWithButton alloc] init];
             }
             [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateNormal];
             [logoutBtnCell.mxkButton setTitle:@"Logout all accounts" forState:UIControlStateHighlighted];

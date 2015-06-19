@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"
@@ -26,7 +26,7 @@
 /**
  `MXKRoomMemberTableViewCell` instances display a user in the context of the room member list.
  */
-@interface MXKRoomMemberTableViewCell : UITableViewCell <MXKCellRendering> {
+@interface MXKRoomMemberTableViewCell : MXKTableViewCell <MXKCellRendering> {
 
 @protected
     /**

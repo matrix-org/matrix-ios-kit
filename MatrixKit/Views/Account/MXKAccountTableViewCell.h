@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKImageView.h"
 #import "MXKAccount.h"
@@ -22,7 +22,7 @@
 /**
  MXKAccountTableViewCell instance is a table view cell used to display a matrix user.
  */
-@interface MXKAccountTableViewCell : UITableViewCell
+@interface MXKAccountTableViewCell : MXKTableViewCell
 
 /**
  The displayed account

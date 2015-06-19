@@ -34,12 +34,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 @implementation MXKRoomBubbleTableViewCell
 @synthesize delegate, bubbleData;
 
-+ (UINib *)nib
-{
-    // By default, no nib is available.
-    return nil;
-}
-
 + (instancetype)roomBubbleTableViewCell
 {
     // Check whether a xib is defined

@@ -16,7 +16,9 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-@interface MXKPublicRoomTableViewCell : UITableViewCell
+#import "MXKTableViewCell.h"
+
+@interface MXKPublicRoomTableViewCell : MXKTableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *roomDisplayName;
 @property (weak, nonatomic) IBOutlet UILabel *memberCount;

@@ -18,15 +18,5 @@
 
 @implementation MXKTableViewCellWithLabelAndSwitch
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithLabelAndSwitch class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithLabelAndSwitch class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
-
 @end
 

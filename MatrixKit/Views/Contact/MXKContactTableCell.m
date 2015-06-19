@@ -27,7 +27,6 @@ NSString *const kMXKContactCellTapOnThumbnailView = @"kMXKContactCellTapOnThumbn
 
 NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 
-
 @interface MXKContactTableCell()
 {
     /**
@@ -44,21 +43,6 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 
 @implementation MXKContactTableCell
 @synthesize delegate;
-
-+ (UINib *)nib
-{
-    // By default, no nib is available.
-    return nil;
-}
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKContactTableCell class]] loadNibNamed:NSStringFromClass([MXKContactTableCell class])
-                                                                                             owner:nil
-                                                                                           options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
 
 - (void)awakeFromNib
 {

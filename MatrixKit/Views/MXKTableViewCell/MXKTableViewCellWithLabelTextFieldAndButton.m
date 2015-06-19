@@ -21,14 +21,13 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithLabelTextFieldAndButton class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithLabelTextFieldAndButton class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    
-    // Add an accessory view to the text view in order to retrieve keyboard view.
-    inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
-    _mxkTextField.inputAccessoryView = inputAccessoryView;
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self)
+    {
+        // Add an accessory view to the text view in order to retrieve keyboard view.
+        inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
+        _mxkTextField.inputAccessoryView = inputAccessoryView;
+    }
     
     return self;
 }

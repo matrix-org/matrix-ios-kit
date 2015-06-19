@@ -22,15 +22,6 @@
 
 @implementation MXKAccountTableViewCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKAccountTableViewCell class]] loadNibNamed:NSStringFromClass([MXKAccountTableViewCell class])
-                                                                                          owner:nil
-                                                                                        options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
 - (void)awakeFromNib
 {
     [super awakeFromNib];

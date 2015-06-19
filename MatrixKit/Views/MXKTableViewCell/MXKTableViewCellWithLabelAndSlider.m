@@ -18,14 +18,5 @@
 
 @implementation MXKTableViewCellWithLabelAndSlider
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKTableViewCellWithLabelAndSlider class]] loadNibNamed:NSStringFromClass([MXKTableViewCellWithLabelAndSlider class])
-                                                                                                     owner:nil
-                                                                                                   options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
 @end
 

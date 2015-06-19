@@ -18,15 +18,6 @@
 
 @implementation MXKPublicRoomTableViewCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKPublicRoomTableViewCell class]] loadNibNamed:NSStringFromClass([MXKPublicRoomTableViewCell class])
-                                                                                             owner:nil
-                                                                                           options:nil];
-    self = nibViews.firstObject;
-    return self;
-}
-
 - (void)render:(MXPublicRoom*)publicRoom
 {
     // Check whether this public room has topic
@@ -75,7 +66,6 @@
     }
     _focused = focused;
 }
-
 
 @end
 

@@ -14,13 +14,13 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
-@interface MXKTableViewCellWithLabelAndTextField : UITableViewCell <UITextFieldDelegate> {
+@interface MXKTableViewCellWithLabelAndTextField : MXKTableViewCell <UITextFieldDelegate>
+{
 @protected
     UIView *inputAccessoryView;
 }
-
 
 @property (strong, nonatomic) IBOutlet UILabel *mxkLabel;
 @property (strong, nonatomic) IBOutlet UITextField *mxkTextField;

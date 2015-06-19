@@ -20,8 +20,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-NSString *const kMXKContactDetailsLabelAndButtonCellId = @"kMXKContactDetailsLabelAndButtonCellId";
-
 @interface MXKContactDetailsViewController ()
 {
     NSArray* matrixIDs;
@@ -128,14 +126,14 @@ NSString *const kMXKContactDetailsLabelAndButtonCellId = @"kMXKContactDetailsLab
     return matrixIDs.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger row = indexPath.row;
     
-    MXKTableViewCellWithLabelAndButton *cell = [[MXKTableViewCellWithLabelAndButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKContactDetailsLabelAndButtonCellId];
+    MXKTableViewCellWithLabelAndButton *cell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelAndButton defaultReuseIdentifier]];
     if (!cell)
     {
-        cell = [[MXKTableViewCellWithLabelAndButton alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKContactDetailsLabelAndButtonCellId];
+        cell = [[MXKTableViewCellWithLabelAndButton alloc] init];
     }
     
     if (row < matrixIDs.count)

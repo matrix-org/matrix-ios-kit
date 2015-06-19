@@ -54,7 +54,18 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
-#import "MXKTableViewCell.h"
+
+#import "MXKTableViewCellWithButton.h"
+#import "MXKTableViewCellWithButtons.h"
+#import "MXKTableViewCellWithLabelAndButton.h"
+#import "MXKTableViewCellWithLabelAndSlider.h"
+#import "MXKTableViewCellWithLabelAndSubLabel.h"
+#import "MXKTableViewCellWithLabelAndSwitch.h"
+#import "MXKTableViewCellWithLabelAndTextField.h"
+#import "MXKTableViewCellWithLabelTextFieldAndButton.h"
+#import "MXKTableViewCellWithPicker.h"
+#import "MXKTableViewCellWithTextFieldAndButton.h"
+#import "MXKTableViewCellWithTextView.h"
 
 #import "MXKRoomTitleView.h"
 #import "MXKRoomTitleViewWithTopic.h"
