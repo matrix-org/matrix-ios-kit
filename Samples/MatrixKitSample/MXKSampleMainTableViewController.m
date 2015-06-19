@@ -90,9 +90,11 @@
 {
     [super viewDidLoad];
     
+    self.tableView.tableHeaderView.hidden = YES;
+    self.tableView.allowsSelection = YES;
+    
     // Register matrix session state observer
-    matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
+    matrixSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         MXSession *mxSession = (MXSession*)notif.object;
         
@@ -124,8 +126,7 @@
     }];
     
     // Register call observer in order to handle voip call
-    callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
+    callObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXCallManagerNewCall object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         // Ignore the call if a call is already in progress
         if (!currentCallViewController)
@@ -198,8 +199,6 @@
         [self performSegueWithIdentifier:@"showMXKAuthenticationViewController" sender:self];
     }
     
-    self.tableView.tableHeaderView.hidden = YES;
-    self.tableView.allowsSelection = YES;
     [self.tableView reloadData];
 }
 
