@@ -26,7 +26,7 @@
 
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isSameSenderAsPreviousBubble, date, isIncoming, isAttachment;
-@synthesize attributedTextMessage;
+@synthesize textMessage, attributedTextMessage;
 @synthesize startsWithSenderName, isTyping, showBubbleDateTime;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
@@ -336,6 +336,11 @@
 - (NSArray*)bubbleComponents
 {
     return [bubbleComponents copy];
+}
+
+- (NSString*)textMessage
+{
+    return self.attributedTextMessage.string;
 }
 
 - (void)setAttributedTextMessage:(NSAttributedString *)inAttributedTextMessage

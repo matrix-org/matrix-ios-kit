@@ -76,6 +76,11 @@
 @property (nonatomic) BOOL isAttachment;
 
 /**
+ The raw text message (without attributes)
+ */
+@property (nonatomic) NSString *textMessage;
+
+/**
  The body of the message with sets of attributes, or kind of content description in case of attachment (e.g. "image attachment")
  */
 @property (nonatomic) NSAttributedString *attributedTextMessage;

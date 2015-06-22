@@ -14,6 +14,12 @@
  limitations under the License.
  */
 
+#import <AssetsLibrary/ALAsset.h>
+#import <AssetsLibrary/ALAssetRepresentation.h>
+
+#import <Photos/PHPhotoLibrary.h>
+#import <Photos/PHAssetChangeRequest.h>
+
 #import "MXKMediaManager.h"
 
 #import "MXKTools.h"
@@ -90,6 +96,135 @@ static NSMutableDictionary* uploadTableById = nil;
     }
     
     return res;
+}
+
++ (void)saveImageToPhotosLibrary:(UIImage*)image success:(void (^)())success failure:(void (^)(NSError *error))failure
+{
+    if (image)
+    {
+        // Use the Photos framework on iOS 8 and later (use AssetsLibrary framework on iOS < 8).
+        Class PHPhotoLibrary_class = NSClassFromString(@"PHPhotoLibrary");
+        if (PHPhotoLibrary_class)
+        {
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                // Request creating an asset from the image.
+                [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+            } completionHandler:^(BOOL successFlag, NSError *error) {
+                NSLog(@"Finished adding asset. %@", (successFlag ? @"Success" : error));
+                
+                if (successFlag)
+                {
+                    if (success)
+                    {
+                        success ();
+                    }
+                }
+                else if (failure)
+                {
+                    failure (error);
+                }
+            }];
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+                
+                NSData *data = UIImageJPEGRepresentation(image, 0.9);
+                
+                [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                    if (error)
+                    {
+                        if (failure) {
+                            failure(error);
+                        }
+                    }
+                    else if (success)
+                    {
+                        success();
+                    }
+                }];
+            });
+        }
+    }
+}
+
++ (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)())success failure:(void (^)(NSError *error))failure
+{
+    if (fileURL)
+    {
+        // Use the Photos framework on iOS 8 and later (use AssetsLibrary framework on iOS < 8).
+        Class PHPhotoLibrary_class = NSClassFromString(@"PHPhotoLibrary");
+        if (PHPhotoLibrary_class)
+        {
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                if (isImage)
+                {
+                    // Request creating an asset from the image.
+                    [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:fileURL];
+                }
+                else
+                {
+                    // Request creating an asset from the image.
+                    [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:fileURL];
+                }
+                
+            } completionHandler:^(BOOL successFlag, NSError *error) {
+                NSLog(@"Finished adding asset. %@", (successFlag ? @"Success" : error));
+                
+                if (successFlag)
+                {
+                    if (success)
+                    {
+                        success ();
+                    }
+                }
+                else if (failure)
+                {
+                    failure (error);
+                }
+            }];
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+                
+                if (isImage)
+                {
+                    NSData *data = [NSData dataWithContentsOfFile:fileURL.path options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+                    [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                        if (error)
+                        {
+                            if (failure) {
+                                failure(error);
+                            }
+                        }
+                        else if (success)
+                        {
+                            success();
+                        }
+                    }];
+                }
+                else
+                {
+                    [library writeVideoAtPathToSavedPhotosAlbum:fileURL completionBlock:^(NSURL *assetURL, NSError *error) {
+                        if (error)
+                        {
+                            if (failure) {
+                                failure(error);
+                            }
+                        }
+                        else if (success)
+                        {
+                            success();
+                        }
+                    }];
+                }
+                
+            });
+        }
+    }
 }
 
 #pragma mark - Media Download

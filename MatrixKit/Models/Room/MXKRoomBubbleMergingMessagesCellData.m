@@ -137,6 +137,33 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark -
 
+- (NSString*)textMessage
+{
+    NSString *rawText = nil;
+    
+    if (self.attributedTextMessage)
+    {
+        // Append all components text message
+        NSMutableString *currentTextMsg;
+        for (MXKRoomBubbleComponent* component in bubbleComponents)
+        {
+            if (!currentTextMsg)
+            {
+                currentTextMsg = [NSMutableString stringWithString:component.textMessage];
+            }
+            else
+            {
+                // Append text message
+                [currentTextMsg appendString:@"\n"];
+                [currentTextMsg appendString:component.textMessage];
+            }
+        }
+        rawText = currentTextMsg;
+    }
+    
+    return rawText;
+}
+
 - (void)setAttributedTextMessage:(NSAttributedString *)inAttributedTextMessage
 {
     super.attributedTextMessage = inAttributedTextMessage;
@@ -156,7 +183,7 @@ static NSAttributedString *messageSeparator = nil;
         {
             if (!currentAttributedTextMsg)
             {
-                currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];;
+                currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
             }
             else
             {

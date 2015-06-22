@@ -50,7 +50,6 @@
         }
         
         // Add unsent label for failed components
-        [self.bubbleData prepareBubbleComponentsPosition];
         for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
         {
             if (component.event.mxkState == MXKEventStateSendingFailed)

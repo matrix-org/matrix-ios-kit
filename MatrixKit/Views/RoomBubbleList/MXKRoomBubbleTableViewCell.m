@@ -205,12 +205,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             [self.messageTextView addGestureRecognizer:longPress];
         }
         
+        // Check and update each component position (used to align timestamps label in front of events, and to handle tap gesture on events)
+        [bubbleData prepareBubbleComponentsPosition];
+        
         // Handle timestamp display
         if (bubbleData.showBubbleDateTime)
         {
             // Add datetime label for each component
             self.dateTimeLabelContainer.hidden = NO;
-            [bubbleData prepareBubbleComponentsPosition];
             for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
             {
                 if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
@@ -346,7 +348,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict
 {
-    self.progressView.hidden = NO;
+    self.progressView.hidden = !statisticsDict;
     
     NSString* downloadRate = [statisticsDict valueForKey:kMXKMediaLoaderProgressRateKey];
     NSString* remaingTime = [statisticsDict valueForKey:kMXKMediaLoaderProgressRemaingTimeKey];
@@ -424,7 +426,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     // there is an attachment URL
     if (bubbleData.attachmentURL)
     {
-        
         // check if there is a download in progress
         MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachmentCacheFilePath];
         
@@ -453,19 +454,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     // do not remove the observer here
     // the download could restart without recomposing the cell
-}
-
-- (void)cancelDownload
-{
-    // get the linked media loader
-    MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachmentCacheFilePath];
-    if (loader)
-    {
-        [loader cancel];
-    }
-    
-    // ensure there is no more progress bar
-    [self stopProgressUI];
 }
 
 #pragma mark - Original Xib values
