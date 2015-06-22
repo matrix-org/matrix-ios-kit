@@ -210,7 +210,11 @@
     
     if (_fullScreen)
     {
-        [self removeFromSuperview];
+        if (self.superview)
+        {
+            [super removeFromSuperview];
+        }
+        
         [UIApplication sharedApplication].statusBarHidden = YES;
         
         UIWindow *window = [[UIApplication sharedApplication] keyWindow];
