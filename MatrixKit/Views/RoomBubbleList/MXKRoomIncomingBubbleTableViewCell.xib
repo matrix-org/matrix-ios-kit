@@ -39,7 +39,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="text message" translatesAutoresizingMaskIntoConstraints="NO" id="HTH-5n-MSU">
-                        <rect key="frame" x="51" y="10" width="480" height="39"/>
+                        <rect key="frame" x="51" y="10" width="97" height="39"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -61,6 +61,9 @@
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kwd-hP-feC" userLabel="showHideDateTime">
                         <rect key="frame" x="531" y="0.0" width="69" height="49"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="69" id="9vA-4g-EE5"/>
+                        </constraints>
                         <state key="normal">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
@@ -71,6 +74,9 @@
                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IOg-Kt-8vW" userLabel="DateTimeLabelContainer">
                         <rect key="frame" x="531" y="10" width="61" height="39"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="61" id="tLr-6k-ArA"/>
+                        </constraints>
                     </view>
                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fdx-qs-8en" userLabel="ProgressView">
                         <rect key="frame" x="487" y="-1" width="100" height="70"/>
@@ -112,11 +118,9 @@
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="centerY" secondItem="Cot-3X-2cU" secondAttribute="centerY" id="H5t-l6-fL1"/>
                     <constraint firstItem="q9c-0p-QyP" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" constant="3" id="Ixr-7h-f8j"/>
                     <constraint firstAttribute="bottom" secondItem="kwd-hP-feC" secondAttribute="bottom" id="LQg-cI-Nkn"/>
-                    <constraint firstItem="kwd-hP-feC" firstAttribute="leading" secondItem="q9c-0p-QyP" secondAttribute="trailing" id="M4l-O1-QI4"/>
                     <constraint firstAttribute="bottom" secondItem="5IE-JS-uf3" secondAttribute="bottom" id="SHN-tC-zsJ"/>
-                    <constraint firstAttribute="trailing" secondItem="HTH-5n-MSU" secondAttribute="trailing" constant="69" id="Shz-6S-kGd"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="HTH-5n-MSU" secondAttribute="trailing" constant="69" id="Shz-6S-kGd"/>
                     <constraint firstAttribute="bottom" secondItem="IOg-Kt-8vW" secondAttribute="bottom" id="TPw-iE-nii"/>
-                    <constraint firstItem="IOg-Kt-8vW" firstAttribute="leading" secondItem="q9c-0p-QyP" secondAttribute="trailing" id="U3A-YW-JK6"/>
                     <constraint firstItem="IOg-Kt-8vW" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" constant="10" id="XSL-TG-m62"/>
                     <constraint firstItem="q9c-0p-QyP" firstAttribute="leading" secondItem="hgp-Z5-rAj" secondAttribute="trailing" constant="3" id="YWK-C2-15w"/>
                     <constraint firstItem="zwq-eh-8Fb" firstAttribute="leading" secondItem="ef1-Tq-U3Z" secondAttribute="leading" constant="5" id="dgK-4e-UuE"/>

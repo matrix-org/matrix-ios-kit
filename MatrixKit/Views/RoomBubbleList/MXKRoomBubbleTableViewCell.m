@@ -192,12 +192,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.attachmentView.hidden = YES;
             self.playIconView.hidden = YES;
             self.messageTextView.hidden = NO;
-            if (!bubbleData.isIncoming)
-            {
-                // Adjust horizontal position for outgoing messages (text is left aligned, but the textView should be right aligned)
-                CGFloat leftInset = bubbleData.maxTextViewWidth - contentSize.width;
-                self.messageTextView.contentInset = UIEdgeInsetsMake(0, leftInset, 0, -leftInset);
-            }
             self.messageTextView.attributedText = bubbleData.attributedTextMessage;
             
             // Add a long gesture recognizer on text view in order to display event details
