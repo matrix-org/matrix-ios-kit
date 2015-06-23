@@ -589,7 +589,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                                 MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
                                                 account.identityServerURL = _identityServerTextField.text;
                                                 
-                                                [[MXKAccountManager sharedManager] addAccount:account];
+                                                [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
                                                 
                                                 if (_delegate)
                                                 {
@@ -799,7 +799,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
          MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
          account.identityServerURL = _identityServerTextField.text;
          
-         [[MXKAccountManager sharedManager] addAccount:account];
+         [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
          
          if (_delegate)
          {

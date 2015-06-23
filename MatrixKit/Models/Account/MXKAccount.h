@@ -101,9 +101,10 @@ extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
 @property (nonatomic) BOOL enableInAppNotifications;
 
 /**
- Disable the account without logging out. NO by default.
+ Disable the account without logging out (NO by default).
  
- A matrix session is automatically opened for the account except when the value of this property is YES.
+ A matrix session is automatically opened for the account when this property is toggled from YES to NO.
+ The session is closed when this property is set to YES.
  */
 @property (nonatomic,getter=isDisabled) BOOL disabled;
 
@@ -116,11 +117,29 @@ extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
 + (UIColor*)presenceColor:(MXPresence)presence;
 
 /**
- Init `MXKAccount` instance with credentials.
+ Init `MXKAccount` instance with credentials. No matrix session is opened by default.
  
  @param credentials user's credentials
  */
 - (instancetype)initWithCredentials:(MXCredentials*)credentials;
+
+/**
+ Create a matrix session based on the provided store.
+ When store data is ready, the live stream is automatically launched by synchronising the session with the server.
+ 
+ In case of failure during server sync, the method is reiterated until the data is up-to-date with the server.
+ This loop is stopped if you call [MXCAccount closeSession:], it is suspended if you call [MXCAccount pauseInBackgroundTask].
+ 
+ @param store the store to use for the session.
+ */
+-(void)openSessionWithStore:(id<MXStore>)store;
+
+/**
+ Close the matrix session.
+ 
+ @param clearStore set YES to delete all store data.
+ */
+- (void)closeSession:(BOOL)clearStore;
 
 /**
  Close the matrix session, and delete all store data.

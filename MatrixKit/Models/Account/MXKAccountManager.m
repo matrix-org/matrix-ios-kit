@@ -50,7 +50,10 @@ static MXKAccountManager *sharedAccountManager = nil;
     self = [super init];
     if (self)
     {
-        self.storeClass = [MXFileStore class];
+        _storeClass = [MXFileStore class];
+        
+        // Load existing accounts from local storage
+        [self loadAccounts];
     }
     return self;
 }
@@ -62,16 +65,16 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 #pragma mark -
 
-- (void)loadAccounts
+- (void)openSessionForActiveAccounts
 {
-    NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
-    if (accountData)
+    for (MXKAccount *account in mxAccounts)
     {
-        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
-    }
-    else
-    {
-        mxAccounts = [NSMutableArray array];
+        if (!account.isDisabled)
+        {
+            // Open a new matrix session by default
+            id<MXStore> store = [[_storeClass alloc] init];
+            [account openSessionWithStore:store];
+        }
     }
 }
 
@@ -90,20 +93,23 @@ static MXKAccountManager *sharedAccountManager = nil;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)addAccount:(MXKAccount *)account
+- (void)addAccount:(MXKAccount *)account andOpenSession:(BOOL)openSession
 {
     NSLog(@"[MXKAccountManager] login (%@)", account.mxCredentials.userId);
-    
-    if (!mxAccounts)
-    {
-         mxAccounts = [NSMutableArray array];
-    }
     
     [mxAccounts addObject:account];
     [self saveAccounts];
     
     // Post notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
+    
+    // Check conditions to open a matrix session
+    if (openSession && !account.disabled)
+    {
+        // Open a new matrix session by default
+        id<MXStore> store = [[_storeClass alloc] init];
+        [account openSessionWithStore:store];
+    }
 }
 
 - (void)removeAccount:(MXKAccount*)account
@@ -132,6 +138,10 @@ static MXKAccountManager *sharedAccountManager = nil;
     {
         [self removeAccount:mxAccounts.lastObject];
     }
+    
+    // Be sure that no account survive in local storage
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (MXKAccount *)accountForUserId:(NSString *)userId
@@ -158,21 +168,11 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (NSArray *)accounts
 {
-    if (!mxAccounts)
-    {
-        [self loadAccounts];
-    }
-    
     return [mxAccounts copy];
 }
 
 - (NSArray *)activeAccounts
 {
-    if (!mxAccounts)
-    {
-        [self loadAccounts];
-    }
-    
     NSMutableArray *activeAccounts = [NSMutableArray arrayWithCapacity:mxAccounts.count];
     for (MXKAccount *account in mxAccounts)
     {
@@ -267,6 +267,21 @@ static MXKAccountManager *sharedAccountManager = nil;
     }
     
     return (isRegisteredForRemoteNotifications && self.apnsDeviceToken);
+}
+
+#pragma mark -
+
+- (void)loadAccounts
+{
+    NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
+    if (accountData)
+    {
+        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
+    }
+    else
+    {
+        mxAccounts = [NSMutableArray array];
+    }
 }
 
 @end

@@ -181,8 +181,10 @@
         [self.tableView reloadData];
     }];
     
+    // Observers have been set, we will start now a matrix session for each enabled accounts.
     // As there is no mock for MatrixSDK yet, use an actual Matrix file store to boost init
     [MXKAccountManager sharedManager].storeClass = [MXFileStore class];
+    [[MXKAccountManager sharedManager] openSessionForActiveAccounts];
     
     // Check whether some accounts are availables
     if (![[MXKAccountManager sharedManager] accounts].count)

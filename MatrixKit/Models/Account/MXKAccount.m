@@ -91,10 +91,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         mxRestClient = [[MXRestClient alloc] initWithCredentials:credentials];
         
         userPresence = MXPresenceUnknown;
-        
-        // Open a new matrix session by default
-        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
-        [self openSessionWithStore:store];
     }
     return self;
 }
@@ -140,12 +136,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
     
     _disabled = [coder decodeBoolForKey:@"disabled"];
-    if (!_disabled)
-    {
-        // Open a new matrix session
-        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
-        [self openSessionWithStore:store];
-    }
     
     return self;
 }
@@ -257,23 +247,26 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 
 - (void)setDisabled:(BOOL)disabled
 {
-    _disabled = disabled;
-    
-    if (_disabled)
+    if (_disabled != disabled)
     {
-        // Close session (keep the storage).
-        [self closeSession:NO];
-    }
-    else if (!mxSession)
-    {
-        // Open a new matrix session
-        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        _disabled = disabled;
         
-        [self openSessionWithStore:store];
+        if (_disabled)
+        {
+            // Close session (keep the storage).
+            [self closeSession:NO];
+        }
+        else if (!mxSession)
+        {
+            // Open a new matrix session
+            id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+            
+            [self openSessionWithStore:store];
+        }
+        
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
     }
-    
-    // Archive updated field
-    [[MXKAccountManager sharedManager] saveAccounts];
 }
 
 #pragma mark - Matrix user's profile
@@ -343,6 +336,133 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 }
 
 #pragma mark -
+
+/**
+ Create a matrix session based on the provided store.
+ When store data is ready, the live stream is automatically launched by synchronising the session with the server.
+ 
+ In case of failure during server sync, the method is reiterated until the data is up-to-date with the server.
+ This loop is stopped if you call [MXCAccount closeSession:], it is suspended if you call [MXCAccount pauseInBackgroundTask].
+ 
+ @param store the store to use for the session.
+ */
+-(void)openSessionWithStore:(id<MXStore>)store
+{
+    // Sanity check
+    if (!mxCredentials || !mxRestClient)
+    {
+        NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
+        return;
+    }
+    
+    // Close potential session (keep associated store).
+    [self closeSession:NO];
+    
+    openSessionStartDate = [NSDate date];
+    
+    // Instantiate new session
+    mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
+    
+    // Register session state observer
+    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether the concerned session is the associated one
+        if (notif.object == mxSession)
+        {
+            [self onMatrixSessionStateChange];
+        }
+    }];
+    
+    __weak typeof(self) weakSelf = self;
+    [mxSession setStore:store success:^{
+        
+        // Complete session registration by launching live stream
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        
+        // Restore pusher (if it is enabled)
+        if (strongSelf->_enablePushNotifications)
+        {
+            [strongSelf enablePusher:strongSelf->_enablePushNotifications
+                             success:nil
+                             failure:^(NSError *error) {
+                                 
+                                 strongSelf->_enablePushNotifications = NO;
+                                 
+                                 // Archive updated field
+                                 [[MXKAccountManager sharedManager] saveAccounts];
+                             }];
+        }
+        
+        // Launch server sync
+        [strongSelf launchInitialServerSync];
+    } failure:^(NSError *error)
+     {
+         // This cannot happen. Loading of MXFileStore cannot fail.
+         __strong __typeof(weakSelf)strongSelf = weakSelf;
+         strongSelf->mxSession = nil;
+         
+         [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
+         strongSelf->sessionStateObserver = nil;
+     }];
+}
+
+/**
+ Close the matrix session.
+ 
+ @param clearStore set YES to delete all store data.
+ */
+- (void)closeSession:(BOOL)clearStore
+{
+    if (_enablePushNotifications)
+    {
+        // Turn off pusher
+        [self enablePusher:NO success:nil failure:nil];
+    }
+    
+    [self removeNotificationListener];
+    
+    if (reachabilityObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
+        reachabilityObserver = nil;
+    }
+    
+    if (sessionStateObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
+        sessionStateObserver = nil;
+    }
+    
+    [initialServerSyncTimer invalidate];
+    initialServerSyncTimer = nil;
+    
+    if (userUpdateListener)
+    {
+        [mxSession.myUser removeListener:userUpdateListener];
+        userUpdateListener = nil;
+    }
+    
+    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
+    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
+    
+    if (mxSession)
+    {
+        // Reset room data stored in memory
+        [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:mxSession];
+        
+        // Close session
+        [mxSession close];
+        
+        if (clearStore)
+        {
+            [mxSession.store deleteAllData];
+        }
+        
+        mxSession = nil;
+    }
+    
+    notifyOpenSessionFailure = YES;
+}
 
 - (void)logout
 {
@@ -555,133 +675,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 }
 
 #pragma mark - Internals
-
-/**
- Create a matrix session based on the provided store.
- When store data is ready, the live stream is automatically launched by synchronising the session with the server.
- 
- In case of failure during server sync, the method is reiterated until the data is up-to-date with the server.
- This loop is stopped if you call [MXCAccount closeSession:], it is suspended if you call [MXCAccount pauseInBackgroundTask].
- 
- @param store the store to use for the session.
- */
--(void)openSessionWithStore:(id<MXStore>)store
-{
-    // Sanity check
-    if (!mxCredentials || !mxRestClient)
-    {
-        NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
-        return;
-    }
-    
-    // Close potential session (keep associated store).
-    [self closeSession:NO];
-    
-    openSessionStartDate = [NSDate date];
-    
-    // Instantiate new session
-    mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
-    
-    // Register session state observer
-    sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-        
-        // Check whether the concerned session is the associated one
-        if (notif.object == mxSession)
-        {
-            [self onMatrixSessionStateChange];
-        }
-    }];
-    
-    __weak typeof(self) weakSelf = self;
-    [mxSession setStore:store success:^{
-        
-        // Complete session registration by launching live stream
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
-        
-        // Restore pusher (if it is enabled)
-        if (strongSelf->_enablePushNotifications)
-        {
-            [strongSelf enablePusher:strongSelf->_enablePushNotifications
-                       success:nil
-                       failure:^(NSError *error) {
-                           
-                           strongSelf->_enablePushNotifications = NO;
-                           
-                           // Archive updated field
-                           [[MXKAccountManager sharedManager] saveAccounts];
-                       }];
-        }
-        
-        // Launch server sync
-        [strongSelf launchInitialServerSync];
-    } failure:^(NSError *error)
-     {
-         // This cannot happen. Loading of MXFileStore cannot fail.
-         __strong __typeof(weakSelf)strongSelf = weakSelf;
-         strongSelf->mxSession = nil;
-         
-         [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
-         strongSelf->sessionStateObserver = nil;
-     }];
-}
-
-/**
- Close the matrix session.
- 
- @param clearStore set YES to delete all store data.
- */
-- (void)closeSession:(BOOL)clearStore
-{
-    if (_enablePushNotifications)
-    {
-        // Turn off pusher
-        [self enablePusher:NO success:nil failure:nil];
-    }
-    
-    [self removeNotificationListener];
-    
-    if (reachabilityObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:reachabilityObserver];
-        reachabilityObserver = nil;
-    }
-    
-    if (sessionStateObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
-        sessionStateObserver = nil;
-    }
-    
-    [initialServerSyncTimer invalidate];
-    initialServerSyncTimer = nil;
-    
-    if (userUpdateListener)
-    {
-        [mxSession.myUser removeListener:userUpdateListener];
-        userUpdateListener = nil;
-    }
-    
-    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
-    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
-    
-    if (mxSession)
-    {
-        // Reset room data stored in memory
-        [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:mxSession];
-        
-        // Close session
-        [mxSession close];
-        
-        if (clearStore)
-        {
-            [mxSession.store deleteAllData];
-        }
-        
-        mxSession = nil;
-    }
-    
-    notifyOpenSessionFailure = YES;
-}
 
 - (void)launchInitialServerSync
 {

@@ -75,10 +75,10 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 + (MXKAccountManager*)sharedManager;
 
 /**
- Load existing accounts in local storage. A matrix session is opened for each enabled accounts.
- The developper must set 'storeClass' before loading accounts if the default class is not suitable.
+ Open a matrix session for each enabled accounts.
+ The developper must set 'storeClass' before this call if the default class is not suitable.
  */
-- (void)loadAccounts;
+- (void)openSessionForActiveAccounts;
 
 /**
  Save a snapshot of the current accounts.
@@ -86,14 +86,15 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 - (void)saveAccounts;
 
 /**
- Add an account and save the new account list. A matrix session is opened for this account, except if it is disabled.
+ Add an account and save the new account list. Optionally a matrix session may be opened for the provided account.
  
  @param account a matrix account.
+ @param openSession YES to open a matrix session (this value is ignored if the account is disabled).
  */
-- (void)addAccount:(MXKAccount*)account;
+- (void)addAccount:(MXKAccount *)account andOpenSession:(BOOL)openSession;
 
 /**
- Remove the provided account. This method is used in case of logout.
+ Remove the provided account and save the new account list. This method is used in case of logout.
  
  @param account a matrix account.
  */
