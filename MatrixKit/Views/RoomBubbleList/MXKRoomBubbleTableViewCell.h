@@ -85,6 +85,11 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (strong, nonatomic) MXKRoomBubbleCellData *bubbleData;
 
 /**
+ Option to highlight or not the content of message text view (May be used in case of text selection)
+ */
+@property (nonatomic) BOOL allTextHighlighted;
+
+/**
  The default picture displayed when no picture is available.
  */
 @property (nonatomic) UIImage *picturePlaceholder;
@@ -134,5 +139,12 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  @return the cell height
  */
 + (CGFloat)originalHeightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth;
+
+/**
+ Highlight text message related to a specific event in the displayed message.
+ 
+ @param eventId the id of the event to highlight (use nil to cancel highlighting).
+ */
+- (void)highlightTextMessageForEvent:(NSString*)eventId;
 
 @end

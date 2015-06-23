@@ -95,6 +95,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      */
     id kMXSessionWillLeaveRoomNotificationObserver;
     
+    /**
+     Observe UIMenuControllerDidHideMenuNotification to cancel text selection
+     */
+    id UIMenuControllerDidHideMenuNotificationObserver;
+    NSString *selectedText;
+    
     // Attachment handling
     MXKImageView *highResImageView;
     NSString *AVAudioSessionCategory;
@@ -325,6 +331,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         kMXSessionWillLeaveRoomNotificationObserver = nil;
     }
     
+    if (UIMenuControllerDidHideMenuNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
+        UIMenuControllerDidHideMenuNotificationObserver = nil;
+    }
+    
     [self dismissTemporarySubViews];
     
     _bubblesTableView.dataSource = nil;
@@ -377,8 +389,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
+    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         // Check whether the user will leave the current room
         if (notif.object == self.mainSession)
@@ -1439,6 +1450,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             // Add actions for text message
             if (!selectedEvent.isAttachedMedia)
             {
+                // Highlight the select event
+                [roomBubbleTableViewCell highlightTextMessageForEvent:selectedEvent.eventId];
+                
+                // Retrieved data related to the selected event
                 NSArray *components = roomBubbleTableViewCell.bubbleData.bubbleComponents;
                 MXKRoomBubbleComponent *selectedComponent;
                 for (selectedComponent in components)
@@ -1454,12 +1469,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
+                    // Cancel event highlighting
+                    [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
+                    
                     [[UIPasteboard generalPasteboard] setString:selectedComponent.textMessage];
                 }];
                 
                 [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
+                    
+                    // Cancel event highlighting
+                    [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
                     
                     NSArray *activityItems = [NSArray arrayWithObjects:selectedComponent.textMessage, nil];
                     
@@ -1476,44 +1497,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 {
                     [currentAlert addActionWithTitle:@"Select All" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        strongSelf->currentAlert = nil;
                         
-                        // Select all the events of the cell
-                        NSMutableAttributedString *attributedString= [[NSMutableAttributedString alloc] initWithAttributedString:roomBubbleTableViewCell.bubbleData.attributedTextMessage];
-                        UIColor *color = [[strongSelf view] tintColor] ? [[strongSelf view] tintColor] : [UIColor lightGrayColor];
-                        [attributedString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, attributedString.length)];
-                        roomBubbleTableViewCell.messageTextView.attributedText = attributedString;
-                        
-                        // Display a new list of actions
-                        strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Select an action" style:MXKAlertStyleActionSheet];
-                        
-                        [strongSelf->currentAlert addActionWithTitle:@"Copy" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                            __strong __typeof(weakSelf)strongSelf = weakSelf;
-                            strongSelf->currentAlert = nil;
-                            
-                            [[UIPasteboard generalPasteboard] setString:roomBubbleTableViewCell.bubbleData.textMessage];
-                        }];
-                        
-                        [strongSelf->currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                            __strong __typeof(weakSelf)strongSelf = weakSelf;
-                            strongSelf->currentAlert = nil;
-                            
-                            NSArray *activityItems = [NSArray arrayWithObjects:roomBubbleTableViewCell.bubbleData.textMessage, nil];
-                            
-                            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-                            activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-                            
-                            if (activityViewController)
-                            {
-                                [strongSelf presentViewController:activityViewController animated:YES completion:nil];
-                            }
-                        }];
-                        
-                        strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                            __strong __typeof(weakSelf)strongSelf = weakSelf;
-                            strongSelf->currentAlert = nil;
-                        }];
-                        
-                        [strongSelf->currentAlert showInViewController:strongSelf];
+                        [strongSelf selectAllTextMessageInCell:cell];
                     }];
                 }
             }
@@ -1608,6 +1594,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
+                    // Cancel event highlighting (if any)
+                    [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
+                    
                     // Display event details
                     [strongSelf showEventDetails:selectedEvent];
                 }];
@@ -1616,11 +1605,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
+                
+                // Cancel event highlighting (if any)
+                [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
             }];
             
             // Do not display empty action sheet
             if (currentAlert.cancelButtonIndex)
             {
+                currentAlert.sourceView = roomBubbleTableViewCell;
                 [currentAlert showInViewController:self];
             }
             else
@@ -1638,6 +1631,70 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self promptUserToResendEvent:selectedEvent.eventId];
         }
     }
+}
+#pragma mark - Clipboard
+
+- (void)selectAllTextMessageInCell:(id<MXKCellRendering>)cell
+{
+    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+    selectedText = roomBubbleTableViewCell.bubbleData.textMessage;
+    roomBubbleTableViewCell.allTextHighlighted = YES;
+    
+    // Display Menu (dispatch is required here, else the attributed text change hides the menu)
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            // Deselect text
+            roomBubbleTableViewCell.allTextHighlighted = NO;
+            selectedText = nil;
+            
+            [UIMenuController sharedMenuController].menuItems = nil;
+            
+            [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
+            UIMenuControllerDidHideMenuNotificationObserver = nil;
+        }];
+        
+        [self becomeFirstResponder];
+        UIMenuController *menu = [UIMenuController sharedMenuController];
+        menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:@"Share" action:@selector(share:)]];
+        [menu setTargetRect:roomBubbleTableViewCell.messageTextView.frame inView:roomBubbleTableViewCell];
+        [menu setMenuVisible:YES animated:YES];
+    });
+}
+
+- (void)copy:(id)sender
+{
+    [[UIPasteboard generalPasteboard] setString:selectedText];
+}
+
+- (void)share:(id)sender
+{
+    if (selectedText)
+    {
+        NSArray *activityItems = [NSArray arrayWithObjects:selectedText, nil];
+        
+        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        
+        if (activityViewController)
+        {
+            [self presentViewController:activityViewController animated:YES completion:nil];
+        }
+    }
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if (action == @selector(copy:) || action == @selector(share:))
+    {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return (selectedText.length != 0);
 }
 
 #pragma mark - UITableView delegate
@@ -1884,7 +1941,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSString *url = content[@"url"];
         if (url.length)
         {
-            
             // Use another MXKImageView that will show the fullscreen image URL in fullscreen
             highResImageView = [[MXKImageView alloc] initWithFrame:self.view.frame];
             highResImageView.stretchable = YES;

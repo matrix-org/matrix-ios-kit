@@ -196,6 +196,29 @@
     return YES;
 }
 
+- (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor
+{
+    NSAttributedString *customAttributedTextMsg;
+    
+    if (bubbleComponents.count)
+    {
+        // By default only one component is supported, consider here the first component
+        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
+        customAttributedTextMsg = firstComponent.attributedTextMessage;
+        
+        // Sanity check
+        if ([firstComponent.event.eventId isEqualToString:eventId])
+        {
+            NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:customAttributedTextMsg];
+            UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
+            [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
+            customAttributedTextMsg = customComponentString;
+        }
+    }
+    
+    return customAttributedTextMsg;
+}
+
 #pragma mark -
 
 - (void)prepareBubbleComponentsPosition

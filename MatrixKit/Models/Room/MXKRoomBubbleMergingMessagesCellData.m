@@ -98,6 +98,38 @@ static NSAttributedString *messageSeparator = nil;
     return NO;
 }
 
+- (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor
+{
+    // Create attributed string
+    NSMutableAttributedString *customAttributedTextMsg;
+    NSAttributedString *componentString;
+    
+    for (MXKRoomBubbleComponent* component in bubbleComponents)
+    {
+        componentString = component.attributedTextMessage;
+        
+        if ([component.event.eventId isEqualToString:eventId])
+        {
+            NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+            UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
+            [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
+            componentString = customComponentString;
+        }
+        
+        if (!customAttributedTextMsg)
+        {
+            customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+        }
+        else
+        {
+            // Append attributed text
+            [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleMergingMessagesCellData messageSeparator]];
+            [customAttributedTextMsg appendAttributedString:componentString];
+        }
+    }
+    return customAttributedTextMsg;
+}
+
 #pragma mark -
 
 - (void)prepareBubbleComponentsPosition

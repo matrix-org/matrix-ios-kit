@@ -67,6 +67,42 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
 
+- (void)setAllTextHighlighted:(BOOL)allTextHighlighted
+{
+    if (bubbleData.textMessage.length != 0)
+    {
+        _allTextHighlighted = allTextHighlighted;
+        
+        if (allTextHighlighted)
+        {
+            NSMutableAttributedString *highlightedString = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
+            UIColor *color = self.tintColor ? self.tintColor : [UIColor lightGrayColor];
+            [highlightedString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, highlightedString.length)];
+            _messageTextView.attributedText = highlightedString;
+        }
+        else
+        {
+            _messageTextView.attributedText = bubbleData.attributedTextMessage;
+        }
+    }
+}
+
+- (void)highlightTextMessageForEvent:(NSString*)eventId
+{
+    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+    {
+        if (eventId.length)
+        {
+            self.messageTextView.attributedText = [bubbleData attributedTextMessageWithHighlightedEvent:eventId tintColor:self.tintColor];
+        }
+        else
+        {
+            // Restore original string
+            self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+        }
+    }
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
