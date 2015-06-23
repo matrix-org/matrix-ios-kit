@@ -374,7 +374,8 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
     {
         // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
         thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnailButton.frame.size withMethod:MXThumbnailingMethodCrop];
-        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:thumbnailURL inFolder:kMXKMediaManagerAvatarThumbnailFolder];
+        
+        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:thumbnailURL andType:nil inFolder:kMXKMediaManagerAvatarThumbnailFolder];
         
         // Check whether the image download is in progress
         id loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];

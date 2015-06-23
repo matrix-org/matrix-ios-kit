@@ -33,7 +33,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 /**
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
  */
-@interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate>
+@interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate>
 
 /**
  The current data source associated to the view controller.

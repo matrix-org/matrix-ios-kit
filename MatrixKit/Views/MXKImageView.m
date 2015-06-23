@@ -21,6 +21,7 @@
 @interface MXKImageView ()
 {
     NSString *imageURL;
+    NSString *mimeType;
     UIImageOrientation imageOrientation;
     
     UIImage *currentImage;
@@ -479,7 +480,7 @@
     }
     else
     {
-        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:imageURL inFolder:mediaFolder];
+        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
         if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
         {
             // Loading is in progress, start activity indicator
@@ -488,7 +489,7 @@
     }
 }
 
-- (void)setImageURL:(NSString *)anImageURL withImageOrientation:(UIImageOrientation)orientation andPreviewImage:(UIImage*)previewImage
+- (void)setImageURL:(NSString *)anImageURL withType:(NSString *)type andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage
 {
     // Remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -504,8 +505,20 @@
     // Store image orientation
     imageOrientation = orientation;
     
+    // Store the mime type used to define the cache path of the image.
+    mimeType = type;
+    if (!mimeType.length)
+    {
+        // Check if the extension could not be deduced from url
+        if (![anImageURL pathExtension].length)
+        {
+            // Set default mime type if no information is available
+            mimeType = @"image/jpeg";
+        }
+    }
+    
     // Check whether the image download is in progress
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:imageURL inFolder:mediaFolder];
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
     MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
     if (loader)
     {

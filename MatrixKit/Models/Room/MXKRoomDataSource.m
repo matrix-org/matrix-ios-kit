@@ -701,7 +701,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
     NSString *fakeMediaManagerURL = uploader.uploadId;
     
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL inFolder:self.roomId];
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
     [MXKMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
     
     // Prepare the message content for building an echo message
@@ -785,7 +785,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.1];
     NSString *fakeMediaManagerThumbnailURL = uploader.uploadId;
     
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerThumbnailURL inFolder:self.roomId];
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerThumbnailURL andType:@"image/jpeg" inFolder:self.roomId];
     [MXKMediaManager writeMediaData:videoThumbnailData toFilePath:cacheFilePath];
     
     // Prepare the message content for building an echo message
@@ -961,15 +961,19 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         }
         else if ([msgType isEqualToString:kMXMessageTypeImage])
         {
-            
             // Remove the local echo
             [self removeEventWithEventId:eventId];
             
+            NSString *mimetype = nil;
+            if (event.content[@"info"])
+            {
+                mimetype = event.content[@"info"][@"mimetype"];
+            }
+            
             UIImage* image;
-            NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:event.content[@"url"] inFolder:_roomId];
+            NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:event.content[@"url"] andType:mimetype inFolder:_roomId];
             if (localImagePath)
             {
-                
                 image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
             }
             
@@ -977,13 +981,11 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             // If the image is still available in the MXKMediaManager cache, the upload was not complete
             if (image)
             {
-                
                 // Restart sending the image from the beginning
                 [self sendImage:image success:success failure:failure];
             }
             else
             {
-                
                 // Resend the Matrix event
                 [self sendMessageOfType:msgType content:event.content success:success failure:failure];
             }

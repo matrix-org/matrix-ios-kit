@@ -101,6 +101,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     id UIMenuControllerDidHideMenuNotificationObserver;
     NSString *selectedText;
     
+    /**
+     The document interaction Controller used to share attachment
+     */
+    UIDocumentInteractionController *documentInteractionController;
+    
     // Attachment handling
     MXKImageView *highResImageView;
     NSString *AVAudioSessionCategory;
@@ -335,6 +340,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
         UIMenuControllerDidHideMenuNotificationObserver = nil;
+    }
+    
+    if (documentInteractionController)
+    {
+        [documentInteractionController dismissPreviewAnimated:NO];
+        [documentInteractionController dismissMenuAnimated:NO];
+        documentInteractionController = nil;
     }
     
     [self dismissTemporarySubViews];
@@ -1423,6 +1435,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 [currentAlert dismiss:NO];
                 currentAlert = nil;
+                
+                // Cancel potential text selection in other bubbles
+                for (MXKRoomBubbleTableViewCell *bubble in self.bubblesTableView.visibleCells)
+                {
+                    [bubble highlightTextMessageForEvent:nil];
+                }
             }
             
             __weak __typeof(self) weakSelf = self;
@@ -1531,6 +1549,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                               [strongSelf stopActivityIndicator];
                                                               //TODO GFO display error as alert
                                                           }];
+                    }];
+                    
+                    [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        strongSelf->currentAlert = nil;
+                        
+                        NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
+                        
+                        strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
+                        [strongSelf->documentInteractionController setDelegate:strongSelf];
+                        
+                        if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
+                        {
+                            strongSelf->documentInteractionController = nil;
+                        }
                     }];
                 }
                 else
@@ -1941,11 +1974,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSString *url = content[@"url"];
         if (url.length)
         {
+            NSString *mimetype = nil;
+            if (content[@"info"])
+            {
+                mimetype = content[@"info"][@"mimetype"];
+            }
+            
             // Use another MXKImageView that will show the fullscreen image URL in fullscreen
             highResImageView = [[MXKImageView alloc] initWithFrame:self.view.frame];
             highResImageView.stretchable = YES;
             highResImageView.mediaFolder = roomDataSource.roomId;
-            [highResImageView setImageURL:url withImageOrientation:UIImageOrientationUp andPreviewImage:attachment.image];
+            [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachment.image];
             [highResImageView showFullScreen];
             
             // Add tap recognizer to hide attachment
@@ -2104,5 +2143,34 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
     }
 }
+
+#pragma mark - UIDocumentInteractionControllerDelegate
+
+- (UIViewController *)documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller
+{
+    return self;
+}
+
+// Preview presented/dismissed on document.  Use to set up any HI underneath.
+- (void)documentInteractionControllerWillBeginPreview:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = controller;
+}
+
+- (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = nil;
+}
+
+- (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = nil;
+}
+
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = nil;
+}
+
 
 @end

@@ -68,7 +68,7 @@
             thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-        [self.pictureView setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:nil];
+        [self.pictureView setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
         
         // Shade invited users
         if (memberCellData.roomMember.membership == MXMembershipInvite)

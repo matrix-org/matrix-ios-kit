@@ -42,9 +42,19 @@
 
 - (UIView *)mediaView
 {
+    NSString *mimetype = nil;
+    if (cellData.thumbnailInfo)
+    {
+        mimetype = cellData.thumbnailInfo[@"mimetype"];
+    }
+    else if (cellData.attachmentInfo)
+    {
+        mimetype = cellData.attachmentInfo[@"mimetype"];
+    }
+    
     // MXKImageView will automatically download and cache the media thumbnail
     MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(0, 0, cellData.contentSize.width, cellData.contentSize.height)];
-    [imageView setImageURL:cellData.thumbnailURL withImageOrientation:cellData.thumbnailOrientation andPreviewImage:nil];
+    [imageView setImageURL:cellData.thumbnailURL withType:mimetype andImageOrientation:cellData.thumbnailOrientation previewImage:nil];
     
     // Use transparent color while downloading the media
     imageView.backgroundColor = [UIColor clearColor];

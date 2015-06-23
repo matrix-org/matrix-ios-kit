@@ -235,7 +235,7 @@ static NSMutableDictionary* uploadTableById = nil;
     // Check provided file path
     if (!filePath.length)
     {
-        filePath = [self cachePathForMediaWithURL:mediaURL inFolder:kMXKMediaManagerDefaultCacheFolder];
+        filePath = [self cachePathForMediaWithURL:mediaURL andType:nil inFolder:kMXKMediaManagerDefaultCacheFolder];
     }
     
     if (mediaURL)
@@ -403,24 +403,6 @@ static NSMutableDictionary* uploadTableById = nil;
     return path;
 }
 
-+ (NSString*)cachePathForMediaWithURL:(NSString*)url inFolder:(NSString*)folder
-{
-    if (!folder.length)
-    {
-        folder = kMXKMediaManagerDefaultCacheFolder;
-    }
-    
-    NSString *cacheFilePath = [[MXKMediaManager cacheFolderPath:folder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%lu", (unsigned long)url.hash]];
-    
-    NSString *extension = [url pathExtension];
-    if (extension.length)
-    {
-        cacheFilePath = [NSString stringWithFormat:@"%@.%@", cacheFilePath, extension];
-    }
-    
-    return cacheFilePath;
-}
-
 + (NSString*)cachePathForMediaWithURL:(NSString*)url andType:(NSString *)mimeType inFolder:(NSString*)folder
 {
     NSString* fileBase = @"";
@@ -455,6 +437,11 @@ static NSMutableDictionary* uploadTableById = nil;
         if (pathExtension.length)
         {
             extension = [NSString stringWithFormat:@".%@", pathExtension];
+        }
+        else if ([folder isEqualToString:kMXKMediaManagerAvatarThumbnailFolder])
+        {
+            // Consider the default image type for thumbnail folder
+            extension = [MXKTools fileExtensionFromContentType:@"image/jpeg"];
         }
     }
     

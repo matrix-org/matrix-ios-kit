@@ -122,7 +122,7 @@
     
     if (avatarURL.length > 0)
     {
-        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:avatarURL inFolder:kMXKMediaManagerAvatarThumbnailFolder];
+        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:avatarURL andType:nil inFolder:kMXKMediaManagerAvatarThumbnailFolder];
         
         _avatarImage = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
         

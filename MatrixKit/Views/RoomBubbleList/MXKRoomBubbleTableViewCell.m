@@ -138,7 +138,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
-        [self.pictureView setImageURL:avatarThumbURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
+        [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
         self.pictureView.clipsToBounds = YES;
         self.pictureView.backgroundColor = [UIColor redColor];
@@ -185,17 +185,27 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             {
                 self.playIconView.hidden = YES;
             }
+            
+            NSString *mimetype = nil;
+            if (bubbleData.thumbnailInfo)
+            {
+                mimetype = bubbleData.thumbnailInfo[@"mimetype"];
+            }
+            else if (bubbleData.attachmentInfo)
+            {
+                mimetype = bubbleData.attachmentInfo[@"mimetype"];
+            }
+            
             UIImage *preview = nil;
             if (bubbleData.previewURL)
             {
-                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.previewURL inFolder:self.attachmentView.mediaFolder];
+                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
                 preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
             }
-            [self.attachmentView setImageURL:url withImageOrientation:bubbleData.thumbnailOrientation andPreviewImage:preview];
+            [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.thumbnailOrientation previewImage:preview];
             
             if (url && bubbleData.attachmentURL && bubbleData.attachmentInfo)
             {
-                
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
                 [tap setNumberOfTouchesRequired:1];

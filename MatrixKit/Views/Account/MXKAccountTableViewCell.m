@@ -45,7 +45,7 @@
             thumbnailURL = [mxAccount.mxSession.matrixRestClient urlOfContentThumbnail:mxAccount.userAvatarUrl toFitViewSize:_accountPicture.frame.size withMethod:MXThumbnailingMethodCrop];
         }
         _accountPicture.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-        [_accountPicture setImageURL:thumbnailURL withImageOrientation:UIImageOrientationUp andPreviewImage:self.picturePlaceholder];
+        [_accountPicture setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         
         presenceColor = [MXKAccount presenceColor:mxAccount.userPresence];
     }

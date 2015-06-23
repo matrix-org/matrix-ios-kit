@@ -559,7 +559,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         {
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             currentPictureThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:currentPictureURL toFitViewSize:self.userPictureButton.frame.size withMethod:MXThumbnailingMethodCrop];
-            NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:currentPictureThumbURL inFolder:kMXKMediaManagerAvatarThumbnailFolder];
+            
+            NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:currentPictureThumbURL andType:nil inFolder:kMXKMediaManagerAvatarThumbnailFolder];
             
             // Check whether the image download is in progress
             id loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];

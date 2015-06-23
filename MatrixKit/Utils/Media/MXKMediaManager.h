@@ -136,19 +136,15 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
 #pragma mark - Cache handling
 
 /**
- Build a cache file path based on media url and an optional cache folder.
- 
- @param url media url.
- @param folder cache folder to use (may be nil).
- @return cache file path.
- */
-+ (NSString*)cachePathForMediaWithURL:(NSString*)url inFolder:(NSString*)folder;
-
-/**
  Build a cache file path based on media information and an optional cache folder.
  
- @param url media url.
- @param mimeType media mime type.
+ The file extension is extracted from the provided mime type (if any). If no type is available, we look for a potential
+ extension in the url.
+ By default 'image/jpeg' is considered for thumbnail folder (kMXKMediaManagerAvatarThumbnailFolder). No default mime type 
+ is defined for other folders.
+ 
+ @param url the media url.
+ @param mimeType the media mime type (may be nil).
  @param folder cache folder to use (may be nil).
  @return cache file path.
  */
