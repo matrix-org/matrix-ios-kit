@@ -319,8 +319,13 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Only one section is handled by this data source.
-    return (readyRecentsDataSourceArray.count ? 1 : 0);
+    // Check whether all data sources are ready before rendering recents
+    if (self.state == MXKDataSourceStateReady)
+    {
+        // Only one section is handled by this data source.
+        return (readyRecentsDataSourceArray.count ? 1 : 0);
+    }
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

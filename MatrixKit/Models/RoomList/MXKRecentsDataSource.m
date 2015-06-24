@@ -144,8 +144,7 @@
 
 - (MXKDataSourceState)state
 {
-    // Presently only a global state is available.
-    // TODO: state of each internal recents data source should be public.
+    // Manage a global state based on the state of each internal data source.
     
     MXKDataSourceState currentState = MXKDataSourceStateUnknown;
     MXKSessionRecentsDataSource *dataSource;
@@ -389,7 +388,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return readyRecentsDataSourceArray.count;
+    // Check whether all data sources are ready before rendering recents
+    if (self.state == MXKDataSourceStateReady)
+    {
+        return readyRecentsDataSourceArray.count;
+    }
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
