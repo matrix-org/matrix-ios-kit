@@ -111,6 +111,8 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateTimeLabelContainerTopConstraint;
 
+- (void)startProgressUI;
+
 - (void)updateProgressUI:(NSDictionary*)statisticsDict;
 
 #pragma mark - Original Xib values

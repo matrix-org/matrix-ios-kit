@@ -176,12 +176,18 @@ static NSMutableDictionary* uploadTableById = nil;
                 {
                     if (success)
                     {
-                        success ();
+                        // Return on main thread
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            success ();
+                        });
                     }
                 }
                 else if (failure)
                 {
-                    failure (error);
+                    // Return on main thread
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        failure (error);
+                    });
                 }
             }];
         }

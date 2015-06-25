@@ -102,6 +102,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSString *selectedText;
     
     /**
+     Observe Attachment download
+     */
+    id onAttachmentDownloadFailureObs;
+    id onAttachmentDownloadEndObs;
+    
+    /**
      The document interaction Controller used to share attachment
      */
     UIDocumentInteractionController *documentInteractionController;
@@ -340,6 +346,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
         UIMenuControllerDidHideMenuNotificationObserver = nil;
+    }
+    
+    if (onAttachmentDownloadEndObs)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
+        onAttachmentDownloadEndObs = nil;
+    }
+    
+    if (onAttachmentDownloadFailureObs)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
+        onAttachmentDownloadFailureObs = nil;
     }
     
     if (documentInteractionController)
@@ -1523,18 +1541,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             else // Add action for medias
             {
-                // Check whether the image is downloaded
-                NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
-                
-                if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
-                {
-                    [currentAlert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                        strongSelf->currentAlert = nil;
+                [currentAlert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
                         
                         NSString *msgtype = selectedEvent.content[@"msgtype"];
                         BOOL isImage = [msgtype isEqualToString:kMXMessageTypeImage];
-                        
                         NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
                         
                         [strongSelf startActivityIndicator];
@@ -1549,11 +1563,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                               [strongSelf stopActivityIndicator];
                                                               //TODO GFO display error as alert
                                                           }];
-                    }];
+                    } failure:nil];
+                }];
+                
+                [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
                     
-                    [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                        strongSelf->currentAlert = nil;
+                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
                         
                         NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
                         
@@ -1564,17 +1581,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         {
                             strongSelf->documentInteractionController = nil;
                         }
-                    }];
-                }
-                else
-                {
-                    [currentAlert addActionWithTitle:@"Open" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                        strongSelf->currentAlert = nil;
-                        
-                        [strongSelf showAttachmentView:roomBubbleTableViewCell.attachmentView];
-                    }];
-                }
+                    } failure:nil];
+                }];
             }
             
             // Check status of the selected event
@@ -1728,6 +1736,92 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (BOOL)canBecomeFirstResponder
 {
     return (selectedText.length != 0);
+}
+
+#pragma mark - Download attachment
+
+- (void)downloadAttachmentInCell:(id<MXKCellRendering>)cell success:(void (^)(NSString *cacheFilePath))success failure:(void (^)(NSError *error))failure
+{
+    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+    
+    // Check whether the attachment is already available
+    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+    {
+        // Done
+        if (success)
+        {
+            success (cacheFilePath);
+        }
+    }
+    else
+    {
+        // Trigger download if it is not already in progress
+        MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+        NSString *attachmentURL = roomBubbleTableViewCell.bubbleData.attachmentURL;
+        if (!loader)
+        {
+            loader = [MXKMediaManager downloadMediaFromURL:attachmentURL andSaveAtFilePath:cacheFilePath];
+        }
+        
+        if (loader)
+        {
+            [roomBubbleTableViewCell startProgressUI];
+            
+            // Add observers
+            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // Sanity check
+                if ([notif.object isKindOfClass:[NSString class]])
+                {
+                    NSString* url = notif.object;
+                    NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
+                    
+                    if ([url isEqualToString:attachmentURL] && cacheFilePath.length)
+                    {
+                        // Remove the observers
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
+                        onAttachmentDownloadEndObs = nil;
+                        onAttachmentDownloadFailureObs = nil;
+                        
+                        if (success)
+                        {
+                            success (cacheFilePath);
+                        }
+                    }
+                }
+            }];
+            
+            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // Sanity check
+                if ([notif.object isKindOfClass:[NSString class]])
+                {
+                    NSString* url = notif.object;
+                    NSError* error = notif.userInfo[kMXKMediaLoaderErrorKey];
+                    
+                    if ([url isEqualToString:attachmentURL])
+                    {
+                        // Remove the observers
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
+                        onAttachmentDownloadEndObs = nil;
+                        onAttachmentDownloadFailureObs = nil;
+                        
+                        if (failure)
+                        {
+                            failure (error);
+                        }
+                    }
+                }
+            }];
+        }
+        else if (failure)
+        {
+            failure (nil);
+        }
+    }
 }
 
 #pragma mark - UITableView delegate
