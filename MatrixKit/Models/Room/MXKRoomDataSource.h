@@ -50,11 +50,17 @@ extern NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier;
 
 #pragma mark - Notifications
 /**
- Notification sent when an information about the room has changed.
+ Posted when an information about the room has changed.
  Tracked informations are: lastMessage, unreadCount, unreadBingCount.
+ The notification object is the `MXKRoomDataSource` instance.
  */
 extern NSString *const kMXKRoomDataSourceMetaDataChanged;
 
+/**
+ Posted when a server sync starts or ends (depend on 'serverSyncEventCount').
+ The notification object is the `MXKRoomDataSource` instance.
+ */
+extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 #pragma mark - MXKRoomDataSource
 @protocol MXKRoomBubbleCellDataStoring;
@@ -111,6 +117,12 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
  */
 @property (nonatomic, readonly) NSUInteger unreadBingCount;
+
+/**
+ The events are processed asynchronously. This property counts the number of queued events
+ during server sync for which the process is pending.
+ */
+@property (nonatomic, readonly) NSUInteger serverSyncEventCount;
 
 /**
  The current text message partially typed in text input (use nil to reset it).

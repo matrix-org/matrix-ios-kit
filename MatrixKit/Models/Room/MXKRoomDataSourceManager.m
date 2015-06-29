@@ -95,6 +95,30 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
 }
 
+#pragma mark
+
+- (BOOL)isServerSyncInProgress
+{
+    // Check first the matrix session state
+    if (mxSession.state == MXSessionStateSyncInProgress)
+    {
+        return YES;
+    }
+    
+    // Check all data sources (events process is asynchronous, server sync may not be complete in data source).
+    for (MXKRoomDataSource *roomDataSource in roomDataSources.allValues)
+    {
+        if (roomDataSource.serverSyncEventCount)
+        {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+#pragma mark
+
 - (void)reset
 {
     NSArray *roomIds =  roomDataSources.allKeys;

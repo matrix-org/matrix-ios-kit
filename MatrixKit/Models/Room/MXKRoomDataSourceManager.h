@@ -106,4 +106,9 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) MXKRoomDataSourceManagerReleasePolicy releasePolicy;
 
+/**
+ Tells whether a server sync is in progress in the matrix session.
+ */
+@property (nonatomic, readonly) BOOL isServerSyncInProgress;
+
 @end

@@ -27,6 +27,13 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 @interface MXKSessionRecentsDataSource ()
 {
     MXKRoomDataSourceManager *roomDataSourceManager;
+    
+    /**
+     Internal array used to regulate change notifications.
+     Cell data changes are stored instantly in this array.
+     These changes are reported to the delegate only if no server sync is in progress.
+     */
+    NSMutableArray *internalCellDataArray;
 }
 
 @end
@@ -40,7 +47,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     {  
         roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
         
-        cellDataArray = [NSMutableArray array];
+        internalCellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
         
         // Set default data and view classes
@@ -52,9 +59,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         _eventFormatter.isForSubtitle = YES;
         
         [self didMXSessionStateChange];
-        
-        // Listen to MXRoomDataSource
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
     }
     return self;
 }
@@ -62,10 +66,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 - (void)destroy
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     
     cellDataArray = nil;
+    internalCellDataArray = nil;
     filteredCellDataArray = nil;
     
     _eventFormatter = nil;
@@ -75,9 +81,18 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (void)didMXSessionStateChange
 {
-    if (MXSessionStateStoreDataReady <= self.mxSession.state && (0 == cellDataArray.count))
+    if (MXSessionStateStoreDataReady <= self.mxSession.state)
     {
-        [self loadData];
+        // Check whether some data have been already load
+        if (0 == internalCellDataArray.count)
+        {
+            [self loadData];
+        }
+        else if (!roomDataSourceManager.isServerSyncInProgress)
+        {
+            // Sort cell data and notify the delegate
+            [self sortCellDataAndNotifyChanges];
+        }
     }
 }
 
@@ -178,8 +193,13 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 #pragma mark - Events processing
 - (void)loadData
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
+    
     // Reset the table
-    [cellDataArray removeAllObjects];
+    [internalCellDataArray removeAllObjects];
     
     // Retrieve the MXKCellData class to manage the data
     Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
@@ -192,45 +212,57 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
         if (cellData)
         {
-            [cellDataArray addObject:cellData];
+            [internalCellDataArray addObject:cellData];
         }
     }
     
-    // Update here data source state
-    state = MXKDataSourceStateReady;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+    // Report loaded array except if sync is in progress
+    if (!roomDataSourceManager.isServerSyncInProgress)
     {
-        [self.delegate dataSource:self didStateChange:state];
+        [self sortCellDataAndNotifyChanges];
     }
-    [self sortCellData];
     
     // Listen to MXSession rooms count changes
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
     
+    // Listen to MXRoomDataSource
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
 
 - (void)didRoomInformationChanged:(NSNotification *)notif
 {
     MXKRoomDataSource *roomDataSource = notif.object;
     if (roomDataSource.mxSession == self.mxSession)
-    { 
-        // Retrieve the corresponding cell data
-        id<MXKRecentCellDataStoring> theRoomData;
-        for (id<MXKRecentCellDataStoring> roomData in cellDataArray)
+    {
+        // Find the index of the related cell data
+        NSInteger index;
+        for (index = 0; index < internalCellDataArray.count; index++)
         {
-            if (roomData.roomDataSource == roomDataSource)
+            id<MXKRecentCellDataStoring> theRoomData = [internalCellDataArray objectAtIndex:index];
+            if (theRoomData.roomDataSource == roomDataSource)
             {
-                theRoomData = roomData;
                 break;
             }
         }
         
-        // And update it
-        if (theRoomData)
+        if (index < internalCellDataArray.count)
         {
-            [theRoomData update];
-            [self sortCellData];
+            // Create a new instance to not modify the content of 'cellDataArray' (the copy is not a deep copy).
+            Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+            if (cellData)
+            {
+                [internalCellDataArray replaceObjectAtIndex:index withObject:cellData];
+            }
+            
+            // Report change except if sync is in progress
+            if (!roomDataSourceManager.isServerSyncInProgress)
+            {
+                NSLog(@"[MXKSessionRecentsDataSource] sortCellDataAndNotifyChanges");
+                [self sortCellDataAndNotifyChanges];
+            }
         }
         else
         {
@@ -259,8 +291,13 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
             if (cellData)
             {
-                [cellDataArray addObject:cellData];
-                [self sortCellData];
+                [internalCellDataArray addObject:cellData];
+                
+                // Report change except if sync is in progress
+                if (!roomDataSourceManager.isServerSyncInProgress)
+                {
+                    [self sortCellDataAndNotifyChanges];
+                }
             }
         }
     }
@@ -278,17 +315,22 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         {
             NSLog(@"MXKSessionRecentsDataSource] Remove left room: %@", roomId);
             
-            [cellDataArray removeObject:roomData];
-            [self sortCellData];
+            [internalCellDataArray removeObject:roomData];
+            
+            // Report change except if sync is in progress
+            if (!roomDataSourceManager.isServerSyncInProgress)
+            {
+                [self sortCellDataAndNotifyChanges];
+            }
         }
     }
 }
 
 // Order cells
-- (void)sortCellData
+- (void)sortCellDataAndNotifyChanges
 {
     // Order them by origin_server_ts
-    [cellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2)
+    [internalCellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2)
     {
         NSComparisonResult result = NSOrderedAscending;
         if (cellData2.lastEvent.originServerTs > cellData1.lastEvent.originServerTs)
@@ -301,6 +343,19 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
         return result;
     }];
+    
+    // Snapshot the cell data array
+    cellDataArray = [internalCellDataArray copy];
+    
+    // Update here data source state
+    if (state != MXKDataSourceStateReady)
+    {
+        state = MXKDataSourceStateReady;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+        {
+            [self.delegate dataSource:self didStateChange:state];
+        }
+    }
     
     // And inform the delegate about the update
     [self.delegate dataSource:self didCellChange:nil];

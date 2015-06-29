@@ -37,7 +37,7 @@ NSString *const kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier = @"kMXK
 NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier";
 
 NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
-
+NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncStatusChanged";
 
 @interface MXKRoomDataSource ()
 {
@@ -91,7 +91,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     self = [super initWithMatrixSession:matrixSession];
     if (self)
     {
-        
         NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
         
         _roomId = roomId;
@@ -200,6 +199,8 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         
         _room = nil;
     }
+    
+    _serverSyncEventCount = 0;
 }
 
 - (void)reload
@@ -243,15 +244,12 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 {
     if (MXSessionStateStoreDataReady <= self.mxSession.state)
     {
-        
         // Check whether the room is not already set
         if (!_room)
         {
-            
             _room = [self.mxSession roomWithRoomId:_roomId];
             if (_room)
             {
-                
                 // Only one pagination process can be done at a time by an MXRoom object.
                 // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                 [_room resetBackState];
@@ -317,15 +315,12 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     _eventsFilterForMessages = [eventsFilterForMessages copy];
     liveEventsListener = [_room listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
     {
-        
         if (MXEventDirectionForwards == direction)
         {
-            
             // Check for local echo suppression
             MXEvent *localEcho;
             if (pendingLocalEchoes.count && [event.userId isEqualToString:self.mxSession.myUser.userId])
             {
-                
                 localEcho = [self pendingLocalEchoRelatedToEvent:event];
                 if (localEcho)
                 {
@@ -559,7 +554,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     
     if (NO == _room.canPaginate)
     {
-        
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: No more events to paginate");
         if (success)
         {
@@ -603,7 +597,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     CGFloat bubblesTotalHeight = 0;
     for (NSInteger i = bubbles.count - 1; i >= 0; i--)
     {
-        
         CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
         
         bubblesTotalHeight += bubbleHeight;
@@ -621,7 +614,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     // Is there enough cells to cover all the requested height?
     if (bubblesTotalHeight < rect.size.height)
     {
-        
         // No. Paginate to get more messages
         if (_room.canPaginate)
         {
@@ -652,7 +644,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     }
     else
     {
-        
         // Yes. Nothing to do
         if (success)
         {
@@ -721,7 +712,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:imageData mimeType:mimetype success:^(NSString *url)
     {
-        
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
@@ -761,7 +751,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         
     } failure:^(NSError *error)
     {
-        
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
         [self removePendingLocalEcho:localEcho];
@@ -915,8 +904,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent];
     
     // Make the request to the homeserver
-    [_room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId)
-    {
+    [_room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId) {
         
         // Nothing to do here
         // The local echo will be removed when the corresponding event will come through the events stream
@@ -926,9 +914,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             success(eventId);
         }
         
-    } failure:^(NSError *error)
-    {
-        
+    } failure:^(NSError *error) {
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
         [self removePendingLocalEcho:localEcho];
@@ -1033,7 +1019,6 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
     if (bubbleData)
     {
-        
         NSUInteger remainingEvents;
         @synchronized (bubbleData)
         {
@@ -1166,8 +1151,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
     // Refresh the room data source when the room has been initialSync'ed
     MXSession *mxSession = notif.object;
     if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[kMXSessionNotificationRoomIdKey]])
-    {
-        
+    { 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
         
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
@@ -1188,6 +1172,19 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
 - (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXEventDirection)direction
 {
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
+    
+    // Count queued events when the server sync is in progress
+    if (self.mxSession.state == MXSessionStateSyncInProgress)
+    {
+        queuedEvent.serverSyncEvent = YES;
+        _serverSyncEventCount++;
+        
+        if (_serverSyncEventCount == 1)
+        {
+            // Notify that sync process starts
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
+        }
+    }
     
     @synchronized(eventsToProcess)
     {
@@ -1222,6 +1219,7 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         NSMutableArray *bubblesSnapshot = nil;
         NSUInteger unreadCount = 0;
         NSUInteger unreadBingCount = 0;
+        NSUInteger serverSyncEventCount = 0;
         
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(eventsToProcessSnapshot)
@@ -1239,6 +1237,12 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
                 
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
+                    // Count events received while the server sync was in progress
+                    if (queuedEvent.serverSyncEvent)
+                    {
+                        serverSyncEventCount ++;
+                    }
+                    
                     // Check if we should bing this event
                     MXPushRule *rule = [self.mxSession.notificationCenter ruleMatchingEvent:queuedEvent.event];
                     if (rule)
@@ -1335,6 +1339,16 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
             // Synchronously wait for the end of the block execution to
             dispatch_sync(dispatch_get_main_queue(), ^{
                 
+                if (_serverSyncEventCount)
+                {
+                    _serverSyncEventCount -= serverSyncEventCount;
+                    if (!_serverSyncEventCount)
+                    {
+                        // Notify that sync process ends
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
+                    }
+                }
+                
                 // Check whether self has not been reloaded or destroyed
                 if (self.state == MXKDataSourceStateReady)
                 {
@@ -1364,6 +1378,17 @@ NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaData
         {
             // No new event has been added, we just inform about the end if requested.
             dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (_serverSyncEventCount)
+                {
+                    _serverSyncEventCount -= serverSyncEventCount;
+                    
+                    if (!_serverSyncEventCount)
+                    {
+                        // Notify that sync process ends
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
+                    }
+                }
                 
                 if (onComplete)
                 {

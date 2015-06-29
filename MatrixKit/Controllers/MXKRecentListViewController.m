@@ -15,6 +15,7 @@
  */
 
 #import "MXKRecentListViewController.h"
+#import "MXKRoomDataSourceManager.h"
 
 @interface MXKRecentListViewController ()
 {
@@ -125,7 +126,15 @@
     }
 }
 
-- (void) viewWillDisappear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    // Observe server sync at room data source level too
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     
@@ -134,6 +143,8 @@
     {
         [self searchBarCancelButtonClicked:self.recentsSearchBar];
     }
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
 
 - (void)dealloc
@@ -184,6 +195,23 @@
 }
 
 #pragma mark - Override MXKViewController
+
+- (void)onMatrixSessionChange
+{
+    [super onMatrixSessionChange];
+    
+    // Check whether no server sync is in progress in room data sources
+    NSArray *mxSessions = self.mxSessions;
+    for (MXSession *mxSession in mxSessions)
+    {
+        if ([MXKRoomDataSourceManager sharedManagerForMatrixSession:mxSession].isServerSyncInProgress)
+        {
+            // sync is in progress for at least one data source, keep running the loading wheel
+            [self.activityIndicator startAnimating];
+            break;
+        }
+    }
+}
 
 - (void)onKeyboardShowAnimationComplete
 {

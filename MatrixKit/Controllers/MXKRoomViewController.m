@@ -206,6 +206,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    // Observe server sync process at room data source level too
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     
     // Finalize view controller appearance
     [self updateViewControllerAppearanceOnRoomDataSourceState];
@@ -240,6 +243,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Store the potential message partially typed in text input
         roomDataSource.partialTextMessage = inputToolbarView.textMessage;
     }
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
 
 - (void)dealloc
@@ -288,6 +293,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 #pragma mark - Override MXKViewController
+
+- (void)onMatrixSessionChange
+{
+    [super onMatrixSessionChange];
+    
+    // Check dataSource state
+    if (self.roomDataSource && (self.roomDataSource.state == MXKDataSourceStatePreparing || self.roomDataSource.serverSyncEventCount))
+    {
+        // dataSource is not ready, keep running the loading wheel
+        [self.activityIndicator startAnimating];
+    }
+}
 
 - (void)onKeyboardShowAnimationComplete
 {
