@@ -1949,7 +1949,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Let the datasource send it and manage the local echo
     [roomDataSource sendImage:image success:nil failure:^(NSError *error)
     {
-        
         // Nothing to do. The image is marked as unsent in the room history by the datasource
         NSLog(@"[MXKRoomViewController] sendImage failed. Error:%@", error);
     }];
@@ -1960,7 +1959,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Let the datasource send it and manage the local echo
     [roomDataSource sendVideo:videoLocalURL withThumbnail:videoThumbnail success:nil failure:^(NSError *error)
     {
-        
         // Nothing to do. The video is marked as unsent in the room history by the datasource
         NSLog(@"[MXKRoomViewController] sendVideo failed. Error:%@", error);
     }];

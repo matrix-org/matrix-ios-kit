@@ -24,6 +24,18 @@
 
 #import "MXKImageView.h"
 
+#import "MXKMediaManager.h"
+#import "MXKTools.h"
+
+#define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
+#define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
+#define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
+
+NSString* const kMXKRoomInputToolbarView_originalFormatLabel = @"Actual Size: %@";
+NSString* const kMXKRoomInputToolbarView_smallFormatLabel = @"Small: %@";
+NSString* const kMXKRoomInputToolbarView_mediumFormatLabel = @"Medium: %@";
+NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
+
 @interface MXKRoomInputToolbarView()
 {
     /**
@@ -100,6 +112,12 @@
 {
     if (button == self.leftInputToolbarButton)
     {
+        if (currentAlert)
+        {
+            [currentAlert dismiss:NO];
+            currentAlert = nil;
+        }
+        
         // Option button has been pressed
         // List available options
         __weak typeof(self) weakSelf = self;
@@ -107,7 +125,6 @@
         // Check whether media attachment is supported
         if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)])
         {
-            
             currentAlert = [[MXKAlert alloc] initWithTitle:@"Select an action:" message:nil style:MXKAlertStyleActionSheet];
             
             [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
@@ -295,12 +312,10 @@
             UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
             if (selectedImage)
             {
-                
                 // media picker does not offer a preview
                 // so add a preview to let the user validates his selection
                 if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
                 {
-                    
                     __weak typeof(self) weakSelf = self;
                     
                     imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
@@ -313,14 +328,14 @@
                         
                         // Dismiss the image view
                         [strongSelf dismissImageValidationView];
-                        // Send the selected image
-                        [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:selectedImage];
+                       
+                        // prompt user about image compression
+                        [strongSelf promptCompressionForSelectedImage:info];
                     }];
                     
                     // the user wants to use an other image
                     [imageValidationView setLeftButtonTitle:@"Cancel" handler:^(MXKImageView* imageView, NSString* buttonTitle)
                     {
-                        
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
                         // dismiss the image view
@@ -340,8 +355,9 @@
                 }
                 else
                 {
-                    // Send the selected image
-                    [self.delegate roomInputToolbarView:self sendImage:selectedImage];
+                    // Save the original image in user's photos library and suggest compression before sending image
+                    [MXKMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
+                    [self promptCompressionForSelectedImage:info];
                 }
             }
         }
@@ -349,9 +365,15 @@
     else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
     {
         NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
+        
         // Check the selected video, and ignore multiple calls (observed when user pressed several time Choose button)
         if (selectedVideo && !tmpVideoPlayer)
         {
+            if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+            {
+                [MXKMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
+            }
+            
             // Create video thumbnail
             tmpVideoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:selectedVideo];
             if (tmpVideoPlayer)
@@ -384,6 +406,171 @@
         [imageValidationView removeFromSuperview];
         imageValidationView = nil;
     }
+}
+
+- (void)promptCompressionForSelectedImage:(NSDictionary*)selectedImageInfo
+{
+    if (currentAlert)
+    {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
+    UIImage *selectedImage = [selectedImageInfo objectForKey:UIImagePickerControllerOriginalImage];
+    CGSize originalSize = selectedImage.size;
+    NSLog(@"Selected image size : %f %f", originalSize.width, originalSize.height);
+    
+    [self getSelectedImageFileData:selectedImageInfo success:^(NSData *selectedImageFileData) {
+        
+        long long smallFilesize  = 0;
+        long long mediumFilesize = 0;
+        long long largeFilesize  = 0;
+        
+        // succeed to get the file size (provided by the photo library)
+        long long originalFileSize = selectedImageFileData.length;
+        NSLog(@"- use the photo library file size: %tu", originalFileSize);
+        
+        CGFloat maxSize = MAX(originalSize.width, originalSize.height);
+        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)
+        {
+            CGFloat factor = MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE / maxSize;
+            smallFilesize = factor * factor * originalFileSize;
+        }
+        else
+        {
+            NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
+        }
+        
+        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
+        {
+            CGFloat factor = MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE / maxSize;
+            mediumFilesize = factor * factor * originalFileSize;
+        }
+        else
+        {
+            NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
+        }
+        
+        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
+        {
+            CGFloat factor = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE / maxSize;
+            largeFilesize = factor * factor * originalFileSize;
+        }
+        else
+        {
+            NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
+        }
+        
+        if (smallFilesize || mediumFilesize || largeFilesize)
+        {
+            currentAlert = [[MXKAlert alloc] initWithTitle:@"Do you want to send as:" message:nil style:MXKAlertStyleActionSheet];
+            __weak typeof(self) weakSelf = self;
+            
+            if (smallFilesize)
+            {
+                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_smallFormatLabel, [MXKTools fileSizeToString: (int)smallFilesize]];
+                [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    // Send the small image
+                    UIImage *smallImage = [MXKTools resize:selectedImage toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
+                    [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:smallImage];
+                }];
+            }
+            
+            if (mediumFilesize)
+            {
+                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_mediumFormatLabel, [MXKTools fileSizeToString: (int)mediumFilesize]];
+                [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    // Send the medium image
+                    UIImage *mediumImage = [MXKTools resize:selectedImage toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
+                    [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:mediumImage];
+                }];
+            }
+            
+            if (largeFilesize)
+            {
+                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_largeFormatLabel, [MXKTools fileSizeToString: (int)largeFilesize]];
+                [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    // Send the large image
+                    UIImage *largeImage = [MXKTools resize:selectedImage toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)];
+                    [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:largeImage];
+                }];
+            }
+            
+            NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_originalFormatLabel, [MXKTools fileSizeToString: (int)originalFileSize]];
+            [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+                
+                // Send the original image
+                [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:selectedImage];
+            }];
+            
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+            }];
+            
+            currentAlert.sourceView = self;
+            
+            [self.delegate roomInputToolbarView:self presentMXKAlert:currentAlert];
+        }
+        else
+        {
+            // Send the original image
+            [self.delegate roomInputToolbarView:self sendImage:selectedImage];
+        }
+    } failure:^(NSError *error) {
+        
+        // Send the original image
+        [self.delegate roomInputToolbarView:self sendImage:selectedImage];
+    }];
+}
+
+- (void)getSelectedImageFileData:(NSDictionary*)selectedImageInfo success:(void (^)(NSData *selectedImageFileData))success failure:(void (^)(NSError *error))failure
+{
+    ALAssetsLibrary *assetLibrary=[[ALAssetsLibrary alloc] init];
+    [assetLibrary assetForURL:[selectedImageInfo valueForKey:UIImagePickerControllerReferenceURL] resultBlock:^(ALAsset *asset) {
+        
+        ALAssetRepresentation* assetRepresentation = [asset defaultRepresentation];
+        NSData *selectedImageFileData;
+        
+        // Check whether the user select an image with a cropping
+        if ([[assetRepresentation metadata] objectForKey:@"AdjustmentXMP"])
+        {
+            // In case of crop we have to consider the original image
+            selectedImageFileData = UIImageJPEGRepresentation([selectedImageInfo objectForKey:UIImagePickerControllerOriginalImage], 1.0);
+        }
+        else
+        {
+            // cannot use assetRepresentation size to get the image size
+            // it gives wrong result with panorama picture
+            unsigned long imageDataSize = (unsigned long)[assetRepresentation size];
+            uint8_t* imageDataBytes = malloc(imageDataSize);
+            [assetRepresentation getBytes:imageDataBytes fromOffset:0 length:imageDataSize error:nil];
+            
+            selectedImageFileData = [NSData dataWithBytesNoCopy:imageDataBytes length:imageDataSize freeWhenDone:YES];
+        }
+        
+        if (success)
+        {
+            success (selectedImageFileData);
+        }
+    } failureBlock:^(NSError *err) {
+        
+        if (failure)
+        {
+            failure (err);
+        }
+    }];
 }
 
 #pragma mark - Media Picker handling

@@ -683,7 +683,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // @TODO: Do not limit images to jpeg
     NSString *mimetype = @"image/jpeg";
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.8);
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
     
     // Use the uploader id as fake URL for this image data
     // The URL does not need to be valid as the MediaManager will get the data

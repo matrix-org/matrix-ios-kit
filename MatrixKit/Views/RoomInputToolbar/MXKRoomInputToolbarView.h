@@ -172,6 +172,13 @@
 - (IBAction)onTouchUpInside:(UIButton*)button;
 
 /**
+ Prompt user to select a compression level on selected image before transferring it to the delegate
+ 
+ @param imageInfo a dictionary containing the original image and the edited image, if an image was picked; or a filesystem URL for the movie, if a movie was picked.
+ */
+- (void)promptCompressionForSelectedImage:(NSDictionary*)selectedImageInfo;
+
+/**
  The maximum height of the toolbar.
  A value <= 0 means no limit.
  */

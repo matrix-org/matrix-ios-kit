@@ -31,6 +31,11 @@
 #pragma mark - File
 
 /**
+ Return file size in string format.
+ */
++ (NSString*)fileSizeToString:(long)fileSize;
+
+/**
  Get folder size
  
  @param folderPath

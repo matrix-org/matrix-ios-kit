@@ -90,6 +90,26 @@
     return res;
 }
 
++ (NSString*)fileSizeToString:(long)fileSize
+{
+    if (fileSize < 0)
+    {
+        return @"";
+    }
+    else if (fileSize < 1024)
+    {
+        return [NSString stringWithFormat:@"%ld bytes", fileSize];
+    }
+    else if (fileSize < (1024 * 1024))
+    {
+        return [NSString stringWithFormat:@"%.2f KB", (fileSize / 1024.0)];
+    }
+    else
+    {
+        return [NSString stringWithFormat:@"%.2f MB", (fileSize / 1024.0 / 1024.0)];
+    }
+}
+
 // recursive method to compute the folder content size
 + (long long)folderSize:(NSString *)folderPath
 {
@@ -379,13 +399,11 @@
     NSArray *supportedFileTypes = exportSession.supportedFileTypes;
     if ([supportedFileTypes containsObject:AVFileTypeMPEG4])
     {
-        
         exportSession.outputFileType = AVFileTypeMPEG4;
         mimetype = @"video/mp4";
     }
     else
     {
-        
         NSLog(@"[MXKTools] convertVideoToMP4: Warning: MPEG-4 file format is not supported. Use QuickTime format.");
         
         // Fallback to QuickTime format
