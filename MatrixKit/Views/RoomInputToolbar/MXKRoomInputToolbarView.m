@@ -540,24 +540,33 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
     ALAssetsLibrary *assetLibrary=[[ALAssetsLibrary alloc] init];
     [assetLibrary assetForURL:[selectedImageInfo valueForKey:UIImagePickerControllerReferenceURL] resultBlock:^(ALAsset *asset) {
         
-        ALAssetRepresentation* assetRepresentation = [asset defaultRepresentation];
         NSData *selectedImageFileData;
         
-        // Check whether the user select an image with a cropping
-        if ([[assetRepresentation metadata] objectForKey:@"AdjustmentXMP"])
+        // asset may be nil if the image is not saved in photos library
+        if (asset)
         {
-            // In case of crop we have to consider the original image
-            selectedImageFileData = UIImageJPEGRepresentation([selectedImageInfo objectForKey:UIImagePickerControllerOriginalImage], 1.0);
+            ALAssetRepresentation* assetRepresentation = [asset defaultRepresentation];
+            
+            // Check whether the user select an image with a cropping
+            if ([[assetRepresentation metadata] objectForKey:@"AdjustmentXMP"])
+            {
+                // In case of crop we have to consider the original image
+                selectedImageFileData = UIImageJPEGRepresentation([selectedImageInfo objectForKey:UIImagePickerControllerOriginalImage], 0.9);
+            }
+            else
+            {
+                // cannot use assetRepresentation size to get the image size
+                // it gives wrong result with panorama picture
+                unsigned long imageDataSize = (unsigned long)[assetRepresentation size];
+                uint8_t* imageDataBytes = malloc(imageDataSize);
+                [assetRepresentation getBytes:imageDataBytes fromOffset:0 length:imageDataSize error:nil];
+                
+                selectedImageFileData = [NSData dataWithBytesNoCopy:imageDataBytes length:imageDataSize freeWhenDone:YES];
+            }
         }
         else
         {
-            // cannot use assetRepresentation size to get the image size
-            // it gives wrong result with panorama picture
-            unsigned long imageDataSize = (unsigned long)[assetRepresentation size];
-            uint8_t* imageDataBytes = malloc(imageDataSize);
-            [assetRepresentation getBytes:imageDataBytes fromOffset:0 length:imageDataSize error:nil];
-            
-            selectedImageFileData = [NSData dataWithBytesNoCopy:imageDataBytes length:imageDataSize freeWhenDone:YES];
+            selectedImageFileData = UIImageJPEGRepresentation([selectedImageInfo objectForKey:UIImagePickerControllerOriginalImage], 0.9);
         }
         
         if (success)
