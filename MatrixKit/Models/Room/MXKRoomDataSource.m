@@ -324,7 +324,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 localEcho = [self pendingLocalEchoRelatedToEvent:event];
                 if (localEcho)
                 {
-                    
                     // Replace the local echo by the true event sent by the homeserver
                     [self replaceLocalEcho:localEcho withEvent:event];
                 }
@@ -710,11 +709,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
     // Launch the upload to the Matrix Content repository
-    [uploader uploadData:imageData mimeType:mimetype success:^(NSString *url)
-    {
+    [uploader uploadData:imageData mimeType:mimetype success:^(NSString *url) {
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
+        
+        // Copy the cached image to the actual cacheFile path
+        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
+        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSError *error;
+        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
         
         // Update the message content with the mxc:// of the media on the homeserver
         NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
@@ -724,8 +728,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         localEcho.content = msgContent2;
         
         // Make the final request that posts the image event
-        [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId)
-        {
+        [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
             
             // Nothing to do here
             // The local echo will be removed when the corresponding event will come through the events stream
@@ -735,8 +738,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 success(eventId);
             }
             
-        } failure:^(NSError *error)
-        {
+        } failure:^(NSError *error) {
             
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
@@ -749,8 +751,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }];
         
-    } failure:^(NSError *error)
-    {
+    } failure:^(NSError *error) {
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
         [self removePendingLocalEcho:localEcho];
@@ -811,6 +812,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 [self updateLocalEcho:localEcho];
                 
                 [videoUploader uploadData:videoData mimeType:mimetype success:^(NSString *videoUrl) {
+                    
+                    // Write the video to the actual cacheFile path
+                    NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:videoUrl];
+                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+                    [MXKMediaManager writeMediaData:videoData toFilePath:cacheFilePath];
                     
                     // Finalise msgContent
                     msgContent[@"url"] = videoUrl;
