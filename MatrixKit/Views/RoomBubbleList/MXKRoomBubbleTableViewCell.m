@@ -238,7 +238,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.attachmentView.hidden = YES;
             self.playIconView.hidden = YES;
             self.messageTextView.hidden = NO;
+            
+            // On iOS7, the width of the textview with messages ended with 'w' and 'm' is wrong.
+            // Trick: reset text view size before forcing resize with the actual message.
+            CGRect frame = self.messageTextView.frame;
+            frame.size.width = 0;
+            frame.size.height = 0;
+            self.messageTextView.frame = frame;
+            
             self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+            [self.messageTextView sizeToFit];
             
             // Add a long gesture recognizer on text view in order to display event details
             UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
