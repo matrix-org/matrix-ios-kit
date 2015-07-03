@@ -57,7 +57,7 @@
     /**
      Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
      */
-    id kMXSessionWillLeaveRoomNotificationObserver;
+    id leaveRoomNotificationObserver;
 }
 
 @end
@@ -86,18 +86,17 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
     
     // Check whether the user still belongs to the room's members.
     if (self.dataSource && [self.mainSession roomWithRoomId:self.dataSource.roomId])
     {
-        
         [self refreshUIBarButtons];
         
         // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-        kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
+        leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
         {
             
             // Check whether the user will leave the room related to the displayed member list
@@ -123,10 +122,10 @@
 {
     [super viewWillDisappear:animated];
     
-    if (kMXSessionWillLeaveRoomNotificationObserver)
+    if (leaveRoomNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
-        kMXSessionWillLeaveRoomNotificationObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
+        leaveRoomNotificationObserver = nil;
     }
     
     // Leave potential search session

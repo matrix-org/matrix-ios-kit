@@ -434,6 +434,36 @@
 
 - (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes
 {
+    // Keep update readyRecentsDataSourceArray by checking number of cells
+    if (dataSource.state == MXKDataSourceStateReady)
+    {
+        MXKSessionRecentsDataSource *recentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
+        
+        if (recentsDataSource.numberOfCells)
+        {
+            // Check whether the data source must be added
+            if ([readyRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+            {
+                // Add this data source first
+                [self dataSource:dataSource didStateChange:dataSource.state];
+                return;
+            }
+        }
+        else
+        {
+            // Check whether this data source must be removed
+            if ([readyRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
+            {
+                [readyRecentsDataSourceArray removeObject:recentsDataSource];
+                
+                // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this removed data source.
+                [self dataSource:recentsDataSource didCellChange:nil];
+                return;
+            }
+        }
+    }
+    
+    // Notify delegate
     [self.delegate dataSource:self didCellChange:changes];
 }
 

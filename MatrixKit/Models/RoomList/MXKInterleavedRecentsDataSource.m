@@ -444,7 +444,8 @@
         }
     }
     
-    [self.delegate dataSource:self didCellChange:changes];
+    // Call super to keep update readyRecentsDataSourceArray.
+    [super dataSource:dataSource didCellChange:changes];
 }
 
 @end

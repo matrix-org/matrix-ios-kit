@@ -47,7 +47,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
     UIActivityIndicatorView * pendingMaskSpinnerView;
     
     // Observe left rooms
-    id kMXSessionWillLeaveRoomNotificationObserver;
+    id leaveRoomNotificationObserver;
 }
 
 @property (strong, nonatomic) MXKAlert *actionMenu;
@@ -332,10 +332,10 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
 
 - (void)removeObservers
 {
-    if (kMXSessionWillLeaveRoomNotificationObserver)
+    if (leaveRoomNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
-        kMXSessionWillLeaveRoomNotificationObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
+        leaveRoomNotificationObserver = nil;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
@@ -457,7 +457,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         }];
         
         // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-        kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             // Check whether the user will leave the room related to the displayed member
             if (notif.object == self.mainSession)
