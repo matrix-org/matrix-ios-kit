@@ -760,35 +760,11 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         if (!userUpdateListener)
         {
             // Register listener to user's information change
-            userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event)
-            {
+            userUpdateListener = [mxSession.myUser listenToUserUpdate:^(MXEvent *event) {
                 // Consider events related to user's presence
                 if (event.eventType == MXEventTypePresence)
                 {
-                    MXPresence presence = [MXTools presence:event.content[@"presence"]];
-                    if (userPresence != presence)
-                    {
-                        // Handle user presence on multiple devices (keep the more pertinent)
-                        if (userPresence == MXPresenceOnline)
-                        {
-                            if (presence == MXPresenceUnavailable || presence == MXPresenceOffline)
-                            {
-                                // Force the local presence to overwrite the user presence on server side
-                                [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
-                                return;
-                            }
-                        }
-                        else if (userPresence == MXPresenceUnavailable)
-                        {
-                            if (presence == MXPresenceOffline)
-                            {
-                                // Force the local presence to overwrite the user presence on server side
-                                [self setUserPresence:userPresence andStatusMessage:nil completion:nil];
-                                return;
-                            }
-                        }
-                        userPresence = presence;
-                    }
+                    userPresence = [MXTools presence:event.content[@"presence"]];
                 }
                 
                 // Here displayname or other information have been updated, post update notification.
