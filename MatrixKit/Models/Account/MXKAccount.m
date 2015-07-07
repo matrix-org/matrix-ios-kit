@@ -51,6 +51,9 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Internal list of ignored rooms
     NSMutableArray* ignoredRooms;
+    
+    // If a server sync is in progress, the pause is delayed at the end of sync (except if resume is called).
+    BOOL isPauseRequested;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -500,11 +503,18 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
         reachabilityObserver = nil;
         [initialServerSyncTimer invalidate];
         initialServerSyncTimer = nil;
+        
+        if (mxSession.state == MXSessionStateSyncInProgress)
+        {
+            isPauseRequested = YES;
+        }
     }
 }
 
 - (void)resume
 {
+    isPauseRequested = NO;
+    
     if (mxSession)
     {
         if (mxSession.state == MXSessionStatePaused)
@@ -739,6 +749,13 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
 {
     if (mxSession.state == MXSessionStateRunning)
     {
+        // Check if pause has been requested
+        if (isPauseRequested)
+        {
+            [self pauseInBackgroundTask];
+            return;
+        }
+        
         // Check whether the session was not already running
         if (!userUpdateListener)
         {
@@ -781,7 +798,6 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
             // User information are just up-to-date (`mxSession` is running), post update notification.
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
         }
-        
     }
     else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateSyncInProgress)
     {
