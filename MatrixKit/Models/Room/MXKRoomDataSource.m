@@ -319,7 +319,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Check for local echo suppression
             MXEvent *localEcho;
-            if (pendingLocalEchoes.count && [event.userId isEqualToString:self.mxSession.myUser.userId])
+            if (pendingLocalEchoes.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
             {
                 localEcho = [self pendingLocalEchoRelatedToEvent:event];
                 if (localEcho)

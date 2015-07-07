@@ -45,7 +45,7 @@ static NSAttributedString *messageSeparator = nil;
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
 {
     // We group together text messages from the same user
-    if ([event.userId isEqualToString:self.senderId] && (self.dataType == MXKRoomBubbleCellDataTypeText))
+    if ([event.sender isEqualToString:self.senderId] && (self.dataType == MXKRoomBubbleCellDataTypeText))
     {
         // Attachments (image, video ...) cannot be added here
         if ([roomDataSource.eventFormatter isSupportedAttachment:event])
