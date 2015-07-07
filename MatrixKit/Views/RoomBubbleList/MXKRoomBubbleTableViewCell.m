@@ -242,7 +242,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // On iOS7, the width of the textview with messages ended with 'w' and 'm' is wrong.
             // Trick: reset text view size before forcing resize with the actual message.
             CGRect frame = self.messageTextView.frame;
-            frame.size.width = 0;
+            frame.size.width = bubbleData.maxTextViewWidth;
             frame.size.height = 0;
             self.messageTextView.frame = frame;
             
@@ -277,7 +277,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                         dateTimeLabel.textAlignment = NSTextAlignmentLeft;
                     }
                     dateTimeLabel.textColor = [UIColor lightGrayColor];
-                    dateTimeLabel.font = [UIFont systemFontOfSize:12];
+                    dateTimeLabel.font = [UIFont systemFontOfSize:11];
                     dateTimeLabel.adjustsFontSizeToFitWidth = YES;
                     dateTimeLabel.minimumScaleFactor = 0.6;
                     [dateTimeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -370,14 +370,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     // Remove potential dateTime (or unsent) label(s)
     if (self.dateTimeLabelContainer.subviews.count > 0)
     {
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:self.dateTimeLabelContainer.constraints];
-        }
-        else
-        {
-            [self.dateTimeLabelContainer removeConstraints:self.dateTimeLabelContainer.constraints];
-        }
         for (UIView *view in self.dateTimeLabelContainer.subviews)
         {
             [view removeFromSuperview];
