@@ -260,7 +260,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             // Report change except if sync is in progress
             if (!roomDataSourceManager.isServerSyncInProgress)
             {
-                NSLog(@"[MXKSessionRecentsDataSource] sortCellDataAndNotifyChanges");
                 [self sortCellDataAndNotifyChanges];
             }
         }
