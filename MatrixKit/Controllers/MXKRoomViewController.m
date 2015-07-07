@@ -1113,13 +1113,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                    [self reloadBubblesTable];
                                                    [self stopActivityIndicator];
                                                }
-                                               failure:^(NSError *error)
-        {
-            // Reload table
-            isBackPaginationInProgress = NO;
-            [self reloadBubblesTable];
-            [self stopActivityIndicator];
-        }];
+                                               failure:^(NSError *error) {
+                                                   // Reload table
+                                                   isBackPaginationInProgress = NO;
+                                                   [self reloadBubblesTable];
+                                                   [self stopActivityIndicator];
+                                               }];
     });
 }
 

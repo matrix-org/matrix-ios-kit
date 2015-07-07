@@ -577,15 +577,20 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [_room removeListener:backPaginateListener];
         [self processQueuedEvents:success];
         
-    } failure:^(NSError *error)
-    {
+    } failure:^(NSError *error) {
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
+        
         backPaginationRequest = nil;
-        if (failure)
-        {
-            failure(error);
-        }
+        [_room removeListener:backPaginateListener];
+        // Process at least events retrieved from store
+        [self processQueuedEvents:^{
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
+        
     }];
 };
 
@@ -616,7 +621,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // No. Paginate to get more messages
         if (_room.canPaginate)
         {
-            
             // Bound the minimal height to 44
             minMessageHeight = MIN(minMessageHeight, 44);
             
