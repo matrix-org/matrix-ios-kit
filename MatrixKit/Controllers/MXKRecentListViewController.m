@@ -385,7 +385,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     // Section header is required only when several recent lists are displayed.
-    if (self.dataSource.recentsDataSourcesCount > 1)
+    if (self.dataSource.displayedRecentsDataSourcesCount > 1)
     {
         return 35;
     }

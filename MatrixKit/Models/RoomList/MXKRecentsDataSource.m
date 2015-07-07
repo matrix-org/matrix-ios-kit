@@ -50,7 +50,7 @@
         mxSessionArray = [NSMutableArray array];
         recentsDataSourceArray = [NSMutableArray array];
         
-        readyRecentsDataSourceArray = [NSMutableArray array];
+        displayedRecentsDataSourceArray = [NSMutableArray array];
         shrinkedRecentsDataSourceArray = [NSMutableArray array];
         
         // Set default data and view classes
@@ -106,7 +106,7 @@
             MXKSessionRecentsDataSource *recentsDataSource = [recentsDataSourceArray objectAtIndex:index];
             [recentsDataSource destroy];
             
-            [readyRecentsDataSourceArray removeObject:recentsDataSource];
+            [displayedRecentsDataSourceArray removeObject:recentsDataSource];
             
             [recentsDataSourceArray removeObjectAtIndex:index];
             [mxSessionArray removeObjectAtIndex:index];
@@ -214,7 +214,7 @@
     {
         [recentsDataSource destroy];
     }
-    readyRecentsDataSourceArray = nil;
+    displayedRecentsDataSourceArray = nil;
     recentsDataSourceArray = nil;
     shrinkedRecentsDataSourceArray = nil;
     mxSessionArray = nil;
@@ -231,9 +231,9 @@
     return [NSArray arrayWithArray:mxSessionArray];
 }
 
-- (NSUInteger)recentsDataSourcesCount
+- (NSUInteger)displayedRecentsDataSourcesCount
 {
-    return readyRecentsDataSourceArray.count;
+    return displayedRecentsDataSourceArray.count;
 }
 
 - (NSUInteger)unreadCount
@@ -241,7 +241,7 @@
     NSUInteger unreadCount = 0;
     
     // Sum unreadCount of all ready data sources
-    for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+    for (MXKSessionRecentsDataSource *recentsDataSource in displayedRecentsDataSourceArray)
     {
         unreadCount += recentsDataSource.unreadCount;
     }
@@ -250,7 +250,7 @@
 
 - (void)markAllAsRead
 {
-    for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+    for (MXKSessionRecentsDataSource *recentsDataSource in displayedRecentsDataSourceArray)
     {
         [recentsDataSource markAllAsRead];
     }
@@ -260,9 +260,14 @@
 {
     searchPatternsList = patternsList;
     
-    for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+    // CAUTION: Apply here the search pattern to all ready data sources (not only displayed ones).
+    // Some data sources may have been removed from 'displayedRecentsDataSourceArray' during a previous search if no recent was matching.
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
     {
-        [recentsDataSource searchWithPatterns:patternsList];
+        if (recentsDataSource.state == MXKDataSourceStateReady)
+        {
+            [recentsDataSource searchWithPatterns:patternsList];
+        }
     }
 }
 
@@ -270,9 +275,9 @@
 {
     UIView *sectionHeader = nil;
     
-    if (readyRecentsDataSourceArray.count > 1 && section < readyRecentsDataSourceArray.count)
+    if (displayedRecentsDataSourceArray.count > 1 && section < displayedRecentsDataSourceArray.count)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:section];
+        MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:section];
         
         NSString* sectionTitle = recentsDataSource.mxSession.myUser.userId;
         
@@ -332,9 +337,9 @@
 
 - (id<MXKRecentCellDataStoring>)cellDataAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section < readyRecentsDataSourceArray.count)
+    if (indexPath.section < displayedRecentsDataSourceArray.count)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:indexPath.section];
+        MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:indexPath.section];
         
         return [recentsDataSource cellDataAtIndex:indexPath.row];
     }
@@ -343,9 +348,9 @@
 
 - (CGFloat)cellHeightAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section < readyRecentsDataSourceArray.count)
+    if (indexPath.section < displayedRecentsDataSourceArray.count)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:indexPath.section];
+        MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:indexPath.section];
         
         return [recentsDataSource cellHeightAtIndex:indexPath.row];
     }
@@ -357,9 +362,9 @@
     NSIndexPath *indexPath = nil;
     
     // Look for the right data source
-    for (NSInteger section = 0; section < readyRecentsDataSourceArray.count; section++)
+    for (NSInteger section = 0; section < displayedRecentsDataSourceArray.count; section++)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray[section];
+        MXKSessionRecentsDataSource *recentsDataSource = displayedRecentsDataSourceArray[section];
         if (recentsDataSource.mxSession == matrixSession)
         {
             // Check whether the source is not shrinked
@@ -391,16 +396,16 @@
     // Check whether all data sources are ready before rendering recents
     if (self.state == MXKDataSourceStateReady)
     {
-        return readyRecentsDataSourceArray.count;
+        return displayedRecentsDataSourceArray.count;
     }
     return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section < readyRecentsDataSourceArray.count)
+    if (section < displayedRecentsDataSourceArray.count)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:section];
+        MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:section];
         
         // Check whether the source is shrinked
         if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
@@ -414,9 +419,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section < readyRecentsDataSourceArray.count)
+    if (indexPath.section < displayedRecentsDataSourceArray.count)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:indexPath.section];
+        MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:indexPath.section];
         
         id<MXKRecentCellDataStoring> roomData = [recentsDataSource cellDataAtIndex:indexPath.row];
         
@@ -442,7 +447,7 @@
         if (recentsDataSource.numberOfCells)
         {
             // Check whether the data source must be added
-            if ([readyRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+            if ([displayedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
             {
                 // Add this data source first
                 [self dataSource:dataSource didStateChange:dataSource.state];
@@ -452,9 +457,9 @@
         else
         {
             // Check whether this data source must be removed
-            if ([readyRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
+            if ([displayedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
             {
-                [readyRecentsDataSourceArray removeObject:recentsDataSource];
+                [displayedRecentsDataSourceArray removeObject:recentsDataSource];
                 
                 // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this removed data source.
                 [self dataSource:recentsDataSource didCellChange:nil];
@@ -473,9 +478,9 @@
     MXKSessionRecentsDataSource *recentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
     if (dataSource.state == MXKDataSourceStateReady && recentsDataSource.numberOfCells)
     {
-        if ([readyRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
+        if ([displayedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
         {
-            [readyRecentsDataSourceArray addObject:recentsDataSource];
+            [displayedRecentsDataSourceArray addObject:recentsDataSource];
             
             // Check whether a search session is in progress
             if (searchPatternsList)
@@ -489,9 +494,9 @@
             }
         }
     }
-    else if ([readyRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
+    else if ([displayedRecentsDataSourceArray indexOfObject:recentsDataSource] != NSNotFound)
     {
-        [readyRecentsDataSourceArray removeObject:recentsDataSource];
+        [displayedRecentsDataSourceArray removeObject:recentsDataSource];
         
         // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle this removed data source.
         [self dataSource:recentsDataSource didCellChange:nil];
@@ -511,9 +516,9 @@
     {
         UIButton *shrinkButton = (UIButton*)sender;
         
-        if (shrinkButton.tag < readyRecentsDataSourceArray.count)
+        if (shrinkButton.tag < displayedRecentsDataSourceArray.count)
         {
-            MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:shrinkButton.tag];
+            MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:shrinkButton.tag];
             
             NSUInteger index = [shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource];
             if (index != NSNotFound)

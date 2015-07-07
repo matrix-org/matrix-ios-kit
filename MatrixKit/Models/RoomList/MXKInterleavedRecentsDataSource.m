@@ -62,16 +62,16 @@
 {
     UIView *sectionHeader = nil;
     
-    if (readyRecentsDataSourceArray.count > 1 && section == 0)
+    if (displayedRecentsDataSourceArray.count > 1 && section == 0)
     {
         sectionHeader = [[UIView alloc] initWithFrame:frame];
         sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-        CGFloat btnWidth = frame.size.width / readyRecentsDataSourceArray.count;
+        CGFloat btnWidth = frame.size.width / displayedRecentsDataSourceArray.count;
         UIButton *previousShrinkButton;
         
-        for (NSInteger index = 0; index < readyRecentsDataSourceArray.count; index++)
+        for (NSInteger index = 0; index < displayedRecentsDataSourceArray.count; index++)
         {
-            MXKSessionRecentsDataSource *recentsDataSource = [readyRecentsDataSourceArray objectAtIndex:index];
+            MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:index];
             NSString* btnTitle = recentsDataSource.mxSession.myUser.userId;
             
             // Add shrink button
@@ -103,7 +103,7 @@
                                                                relatedBy:NSLayoutRelationEqual
                                                                   toItem:sectionHeader
                                                                attribute:NSLayoutAttributeWidth
-                                                              multiplier:(1.0 /readyRecentsDataSourceArray.count)
+                                                              multiplier:(1.0 /displayedRecentsDataSourceArray.count)
                                                                 constant:0];
             }
             else
@@ -198,9 +198,9 @@
     if (indexPath.section == 0)
     {
         // Consider first the case where there is only one data source (no interleaving).
-        if (readyRecentsDataSourceArray.count == 1)
+        if (displayedRecentsDataSourceArray.count == 1)
         {
-            MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+            MXKSessionRecentsDataSource *recentsDataSource = displayedRecentsDataSourceArray.firstObject;
             cellData = [recentsDataSource cellDataAtIndex:indexPath.row];
         }
         // Else all the cells have been interleaved.
@@ -221,9 +221,9 @@
     if (indexPath.section == 0)
     {
         // Consider first the case where there is only one data source (no interleaving).
-        if (readyRecentsDataSourceArray.count == 1)
+        if (displayedRecentsDataSourceArray.count == 1)
         {
-            MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+            MXKSessionRecentsDataSource *recentsDataSource = displayedRecentsDataSourceArray.firstObject;
             height = [recentsDataSource cellHeightAtIndex:indexPath.row];
         }
         // Else all the cells have been interleaved.
@@ -233,7 +233,7 @@
             
             // Select the right recent data source
             MXKSessionRecentsDataSource *recentsDataSource = nil;
-            for (recentsDataSource in readyRecentsDataSourceArray)
+            for (recentsDataSource in displayedRecentsDataSourceArray)
             {
                 if (recentsDataSource.mxSession == recentCellData.roomDataSource.mxSession)
                 {
@@ -267,9 +267,9 @@
     NSIndexPath *indexPath = nil;
     
     // Consider first the case where there is only one data source (no interleaving).
-    if (readyRecentsDataSourceArray.count == 1)
+    if (displayedRecentsDataSourceArray.count == 1)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+        MXKSessionRecentsDataSource *recentsDataSource = displayedRecentsDataSourceArray.firstObject;
         if (recentsDataSource.mxSession == matrixSession)
         {
             // Look for the cell
@@ -288,7 +288,7 @@
     else
     {
         // Look for the right data source
-        for (MXKSessionRecentsDataSource *recentsDataSource in readyRecentsDataSourceArray)
+        for (MXKSessionRecentsDataSource *recentsDataSource in displayedRecentsDataSourceArray)
         {
             if (recentsDataSource.mxSession == matrixSession)
             {
@@ -323,7 +323,7 @@
     if (self.state == MXKDataSourceStateReady)
     {
         // Only one section is handled by this data source.
-        return (readyRecentsDataSourceArray.count ? 1 : 0);
+        return (displayedRecentsDataSourceArray.count ? 1 : 0);
     }
     return 0;
 }
@@ -331,9 +331,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Consider first the case where there is only one data source (no interleaving).
-    if (readyRecentsDataSourceArray.count == 1)
+    if (displayedRecentsDataSourceArray.count == 1)
     {
-        MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+        MXKSessionRecentsDataSource *recentsDataSource = displayedRecentsDataSourceArray.firstObject;
         return recentsDataSource.numberOfCells;
     }
     
@@ -351,7 +351,7 @@
         [cell render:roomData];
         
         // Clear the user flag, if only one recents list is available
-        if (readyRecentsDataSourceArray.count == 1)
+        if (displayedRecentsDataSourceArray.count == 1)
         {
             if ([cell isKindOfClass:[MXKInterleavedRecentTableViewCell class]])
             {
@@ -369,7 +369,7 @@
 - (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes
 {
     // Consider first the case where there is only one data source (no interleaving).
-    if (readyRecentsDataSourceArray.count == 1)
+    if (displayedRecentsDataSourceArray.count == 1)
     {
         // Flush interleaved cells array, we will refer directly to the cell data of the unique data source.
         [interleavedCellDataArray removeAllObjects];
@@ -378,13 +378,13 @@
     {
         // Handle here the specific case where a second source is just added.
         // The empty interleaved cells array has to be prefilled with the cell data of the other source (except if this other source is shrinked).
-        if (!interleavedCellDataArray.count && readyRecentsDataSourceArray.count == 2)
+        if (!interleavedCellDataArray.count && displayedRecentsDataSourceArray.count == 2)
         {
             // This is the first interleaving, look for the other source
-            MXKSessionRecentsDataSource *recentsDataSource = readyRecentsDataSourceArray.firstObject;
+            MXKSessionRecentsDataSource *recentsDataSource = displayedRecentsDataSourceArray.firstObject;
             if (recentsDataSource == dataSource)
             {
-                recentsDataSource = readyRecentsDataSourceArray.lastObject;
+                recentsDataSource = displayedRecentsDataSourceArray.lastObject;
             }
             
             if ([shrinkedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
@@ -401,7 +401,7 @@
         MXKSessionRecentsDataSource *updateRecentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
         NSInteger numberOfUpdatedCells = 0;
         // Check whether this dataSource is used
-        if ([readyRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound && [shrinkedRecentsDataSourceArray indexOfObject:dataSource] == NSNotFound)
+        if ([displayedRecentsDataSourceArray indexOfObject:dataSource] != NSNotFound && [shrinkedRecentsDataSourceArray indexOfObject:dataSource] == NSNotFound)
         {
             numberOfUpdatedCells = updateRecentsDataSource.numberOfCells;
         }

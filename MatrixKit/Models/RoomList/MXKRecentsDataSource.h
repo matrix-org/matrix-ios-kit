@@ -27,11 +27,12 @@
 @protected
     /**
      Array of `MXKSessionRecentsDataSource` instances. Only ready and non empty data source are listed here.
+     (Note: a data source may be considered as empty during searching)
      */
-    NSMutableArray *readyRecentsDataSourceArray;
+    NSMutableArray *displayedRecentsDataSourceArray;
     
     /**
-     Array of shrinked/hidden sources.
+     Array of shrinked sources. Sub-list of displayedRecentsDataSourceArray.
      */
     NSMutableArray *shrinkedRecentsDataSourceArray;
 }
@@ -44,7 +45,7 @@
 /**
  The number of available recents data sources (This count may be different than mxSession.count because empty data sources are ignored).
  */
-@property (nonatomic, readonly) NSUInteger recentsDataSourcesCount;
+@property (nonatomic, readonly) NSUInteger displayedRecentsDataSourcesCount;
 
 /**
  The total count of unread messages.
