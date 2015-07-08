@@ -30,7 +30,8 @@ typedef enum : NSUInteger {
     MXKRoomBubbleCellDataTypeImage,
     MXKRoomBubbleCellDataTypeAudio,
     MXKRoomBubbleCellDataTypeVideo,
-    MXKRoomBubbleCellDataTypeLocation
+    MXKRoomBubbleCellDataTypeLocation,
+    MXKRoomBubbleCellDataTypeFile
     
 } MXKRoomBubbleCellDataType;
 

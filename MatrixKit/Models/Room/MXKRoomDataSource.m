@@ -1546,7 +1546,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
             else
             {
-                // Here the type is kMXMessageTypeImage, kMXMessageTypeAudio or kMXMessageTypeVideo
+                // Here the type is kMXMessageTypeImage, kMXMessageTypeAudio, kMXMessageTypeVideo or kMXMessageTypeFile
                 if ([event.content[@"url"] isEqualToString:localEcho.content[@"url"]])
                 {
                     break;

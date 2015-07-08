@@ -89,6 +89,14 @@
         {
             // Not supported yet
         }
+        else if ([msgtype isEqualToString:kMXMessageTypeFile])
+        {
+            requiredField = event.content[@"url"];
+            if (requiredField)
+            {
+                isSupportedAttachment = YES;
+            }
+        }
     }
     return isSupportedAttachment;
 }
@@ -541,6 +549,17 @@
                         {
                             displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
                         }
+                        *error = MXKEventFormatterErrorUnsupported;
+                    }
+                }
+                else if ([msgtype isEqualToString:kMXMessageTypeFile])
+                {
+                    displayText = displayText? displayText : @"file attachment";
+                    // Check attachment validity
+                    if (![self isSupportedAttachment:event])
+                    {
+                        NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                        displayText = @"invalid file attachment";
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }

@@ -85,8 +85,8 @@ typedef enum : NSUInteger
 - (BOOL)isEmote;
 
 /**
- Return YES if the event contains an image, an audio or a video.
+ Return YES if the event contains a media: image, audio, video or file.
  */
-- (BOOL)isAttachedMedia;
+- (BOOL)isMediaAttachment;
 
 @end

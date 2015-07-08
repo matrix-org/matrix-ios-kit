@@ -92,7 +92,6 @@
     // Do more thing to manage redaction case
     if (_event.isRedactedEvent)
     {
-        
         // Build text component related to this event (Note: we don't have valid room state here, userId will be used as display name)
         MXKEventFormatterError error;
         _textMessage = [_eventFormatter stringFromEvent:event withRoomState:nil error:&error];

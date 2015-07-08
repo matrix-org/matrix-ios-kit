@@ -52,12 +52,12 @@
     return NO;
 }
 
-- (BOOL)isAttachedMedia
+- (BOOL)isMediaAttachment
 {
     if (self.eventType == MXEventTypeRoomMessage)
     {
         NSString *msgtype = self.content[@"msgtype"];
-        if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] || [msgtype isEqualToString:kMXMessageTypeAudio])
+        if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] || [msgtype isEqualToString:kMXMessageTypeAudio] || [msgtype isEqualToString:kMXMessageTypeFile])
         {
             return YES;
         }

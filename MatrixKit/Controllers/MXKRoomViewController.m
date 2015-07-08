@@ -1500,7 +1500,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             // Add actions for text message
-            if (!selectedEvent.isAttachedMedia)
+            if (!selectedEvent.isMediaAttachment)
             {
                 // Highlight the select event
                 [roomBubbleTableViewCell highlightTextMessageForEvent:selectedEvent.eventId];
@@ -1626,7 +1626,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             else if (selectedEvent.mxkState != MXKEventStateSending && selectedEvent.mxkState != MXKEventStateSendingFailed)
             {
                 // Check whether download is in progress
-                if (selectedEvent.isAttachedMedia)
+                if (selectedEvent.isMediaAttachment)
                 {
                     NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
                     if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])

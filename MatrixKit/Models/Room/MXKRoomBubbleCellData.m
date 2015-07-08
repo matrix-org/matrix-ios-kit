@@ -79,6 +79,10 @@
                     // Not supported yet
                     // _dataType = MXKRoomBubbleCellDataTypeLocation;
                 }
+                else if ([msgtype isEqualToString:kMXMessageTypeFile])
+                {
+                    [self handleFileMessage:event];
+                }
             }
             
             // Report the attributed string (This will initialize _contentSize attribute)
@@ -117,36 +121,42 @@
             }
             // flush the current attributed string to force refresh
             self.attributedTextMessage = nil;
-            break;
-        }
-    }
-    
-    // The case of update of image event happens when an image or video echo is replaced by its true event
-    // received back by the events stream
-    if (MXKRoomBubbleCellDataTypeImage == _dataType || MXKRoomBubbleCellDataTypeVideo == _dataType)
-    {
-        NSString *msgtype =  event.content[@"msgtype"];
-        if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] )
-        {
-            if (NO == [_attachmentURL isEqualToString:event.content[@"url"]])
+            
+            // Handle here attachment update.
+            // The case of update of attachment event happens when an echo is replaced by its true event
+            // received back by the events stream.
+            if (_dataType != MXKRoomBubbleCellDataTypeText)
             {
-                // Store the echo image as preview to prevent the cell from flashing
-                _previewURL = _attachmentURL;
-                
-                // Update the data with new image or video event
-                if ([msgtype isEqualToString:kMXMessageTypeImage])
+                // Check the attachment url, to update it with the actual one
+                if (! [_attachmentURL isEqualToString:event.content[@"url"]])
                 {
-                    [self handleImageMessage:event];
-                }
-                else
-                {
-                    [self handleVideoMessage:event];
+                    NSString *msgtype =  event.content[@"msgtype"];
+                    
+                    // Check event type
+                    if ([msgtype isEqualToString:kMXMessageTypeImage] && _dataType == MXKRoomBubbleCellDataTypeImage)
+                    {
+                        // Store the echo image as preview to prevent the cell from flashing
+                        _previewURL = _attachmentURL;
+                        [self handleImageMessage:event];
+                    }
+                    else if ([msgtype isEqualToString:kMXMessageTypeVideo] && _dataType == MXKRoomBubbleCellDataTypeVideo)
+                    {
+                        // Store the echo image as preview to prevent the cell from flashing
+                        _previewURL = _attachmentURL;
+                        [self handleVideoMessage:event];
+                    }
+                    else if ([msgtype isEqualToString:kMXMessageTypeFile] && _dataType == MXKRoomBubbleCellDataTypeFile)
+                    {
+                        [self handleFileMessage:event];
+                    }
+                    else
+                    {
+                        NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of event type");
+                    }
                 }
             }
-        }
-        else
-        {
-            NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of event type");
+            
+            break;
         }
     }
     
@@ -355,6 +365,30 @@
         
         _thumbnailInfo = _attachmentInfo[@"thumbnail_info"];
     }
+}
+
+- (void)handleFileMessage:(MXEvent*)event
+{
+    _dataType = MXKRoomBubbleCellDataTypeFile;
+    
+    // Retrieve content url/info
+    NSString *contentURL = event.content[@"url"];
+    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
+    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
+    if (nil == _attachmentURL)
+    {
+        // It was not a matrix content uri, we keep the provided url
+        _attachmentURL = contentURL;
+    }
+    
+    NSString *mimetype = nil;
+    if (event.content[@"info"])
+    {
+        mimetype = event.content[@"info"][@"mimetype"];
+    }
+    
+    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
+    _attachmentInfo = event.content[@"info"];
 }
 
 #pragma mark - Properties
