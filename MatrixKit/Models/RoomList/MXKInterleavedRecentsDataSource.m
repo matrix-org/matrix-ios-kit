@@ -231,16 +231,8 @@
         {
             id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[indexPath.row];
             
-            // Select the right recent data source
-            MXKSessionRecentsDataSource *recentsDataSource = nil;
-            for (recentsDataSource in displayedRecentsDataSourceArray)
-            {
-                if (recentsDataSource.mxSession == recentCellData.roomDataSource.mxSession)
-                {
-                    break;
-                }
-            }
-            
+            // Select the related recent data source
+            MXKSessionRecentsDataSource *recentsDataSource = recentCellData.recentsDataSource;
             if (recentsDataSource)
             {
                 // Count the index of this cell data in original data source array
@@ -421,7 +413,7 @@
             id<MXKRecentCellDataStoring> currentCellData = interleavedCellDataArray[currentCellIndex];
             
             // Remove existing cell data of the updated data source
-            if (currentCellData.roomDataSource.mxSession == dataSource.mxSession)
+            if (currentCellData.recentsDataSource == dataSource)
             {
                 [interleavedCellDataArray removeObjectAtIndex:currentCellIndex];
             }

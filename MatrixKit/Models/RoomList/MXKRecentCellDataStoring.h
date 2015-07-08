@@ -32,7 +32,12 @@
 #pragma mark - Data displayed by a room recent cell
 
 /**
- The `MXKRoomDataSource` instance of the room displayed by the cell.
+ The original data source of the recent displayed by the cell.
+ */
+@property (nonatomic, readonly) MXKSessionRecentsDataSource *recentsDataSource;
+
+/**
+ The `MXKRoomDataSource` instance of the room for the recent displayed by the cell.
  */
 @property (nonatomic, readonly) MXKRoomDataSource *roomDataSource;
 

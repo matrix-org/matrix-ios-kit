@@ -150,11 +150,14 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)markAllAsRead
 {
-    _unreadCount = 0;
-    _unreadBingCount = 0;
-    
-    // Notify the unreadCount has changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    if (_unreadCount || _unreadBingCount)
+    {
+        _unreadCount = 0;
+        _unreadBingCount = 0;
+        
+        // Notify the unreadCount has changed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    }
 }
 
 - (void)reset

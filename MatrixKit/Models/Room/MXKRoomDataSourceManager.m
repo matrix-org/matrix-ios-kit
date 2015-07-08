@@ -162,7 +162,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
     
     switch (releasePolicy)
     {
-            
         case MXKRoomDataSourceManagerReleasePolicyReleaseOnClose:
             
             // Destroy and forget the instance
@@ -184,7 +183,6 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 {
     if (mxSession == notif.object)
     {
-        
         // The room is no more available, remove it from the manager
         MXKRoomDataSource *roomDataSourceForRoom = [self roomDataSourceForRoom:notif.userInfo[kMXSessionNotificationRoomIdKey] create:NO];
         if (roomDataSourceForRoom)
