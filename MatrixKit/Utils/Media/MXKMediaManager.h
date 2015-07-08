@@ -163,6 +163,11 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
 + (void)clearCache;
 
 /**
+ Return cache root path
+ */
++ (NSString*)getCachePath;
+
+/**
  Cache size management (values are in bytes)
  */
 + (NSUInteger)cacheSize;

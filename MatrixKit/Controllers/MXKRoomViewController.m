@@ -112,6 +112,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      */
     UIDocumentInteractionController *documentInteractionController;
     
+    /**
+     The temporary symbolic link defined with the original attachment name
+     */
+    NSString *documentSymbolicLinkPath;
+    
     // Attachment handling
     MXKImageView *highResImageView;
     NSString *AVAudioSessionCategory;
@@ -382,6 +387,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [documentInteractionController dismissPreviewAnimated:NO];
         [documentInteractionController dismissMenuAnimated:NO];
         documentInteractionController = nil;
+    }
+    
+    if (documentSymbolicLinkPath)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
+        documentSymbolicLinkPath = nil;
     }
     
     [self dismissTemporarySubViews];
@@ -1591,14 +1602,39 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     
                     [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
                         
-                        NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
+                        NSURL *fileUrl;
                         
-                        strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
+                        // The original attachment body (if any) is reported in bubble text message
+                        NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
+                        if ([attachmentBody pathExtension].length)
+                        {
+                            // Create a symbolic link to the cached file to keep its original name
+                            strongSelf->documentSymbolicLinkPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
+                            
+                            [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentSymbolicLinkPath error:nil];
+                            if ([[NSFileManager defaultManager] createSymbolicLinkAtPath:strongSelf->documentSymbolicLinkPath withDestinationPath:cacheFilePath error:nil])
+                            {
+                                fileUrl = [NSURL fileURLWithPath:strongSelf->documentSymbolicLinkPath];
+                            }
+                        }
+                        
+                        if (!fileUrl)
+                        {
+                            // Use the cached file by default
+                            fileUrl = [NSURL fileURLWithPath:cacheFilePath];
+                        }
+                        
+                        strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileUrl];
                         [strongSelf->documentInteractionController setDelegate:strongSelf];
                         
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
                         {
                             strongSelf->documentInteractionController = nil;
+                            if (strongSelf->documentSymbolicLinkPath)
+                            {
+                                [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentSymbolicLinkPath error:nil];
+                                strongSelf->documentSymbolicLinkPath = nil;
+                            }
                         }
                     } failure:nil];
                 }];
@@ -2174,7 +2210,29 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
             
-            documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:cacheFilePath]];
+            NSURL *fileUrl;
+            
+            // The original attachment body (if any) is reported in bubble text message
+            NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
+            if ([attachmentBody pathExtension].length)
+            {
+                // Create a symbolic link to the cached file to keep its original name
+                documentSymbolicLinkPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
+                
+                [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
+                if ([[NSFileManager defaultManager] createSymbolicLinkAtPath:documentSymbolicLinkPath withDestinationPath:cacheFilePath error:nil])
+                {
+                    fileUrl = [NSURL fileURLWithPath:documentSymbolicLinkPath];
+                }
+            }
+            
+            if (!fileUrl)
+            {
+                // Use the cached file by default
+                fileUrl = [NSURL fileURLWithPath:cacheFilePath];
+            }
+            
+            documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileUrl];
             
             [documentInteractionController setDelegate:self];
             
@@ -2183,6 +2241,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
                 {
                     documentInteractionController = nil;
+                    if (documentSymbolicLinkPath)
+                    {
+                        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
+                        documentSymbolicLinkPath = nil;
+                    }
                 }
             }
 
@@ -2292,16 +2355,31 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
+    if (documentSymbolicLinkPath)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
+        documentSymbolicLinkPath = nil;
+    }
 }
 
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
+    if (documentSymbolicLinkPath)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
+        documentSymbolicLinkPath = nil;
+    }
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
+    if (documentSymbolicLinkPath)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
+        documentSymbolicLinkPath = nil;
+    }
 }
 
 
