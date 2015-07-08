@@ -1378,8 +1378,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAttachmentView])
     {
-        MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-        [self showAttachmentView:roomBubbleTableViewCell.attachmentView];
+        [self showAttachmentInCell:cell];
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnProgressView])
     {
@@ -1557,30 +1556,34 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             else // Add action for medias
             {
-                [currentAlert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->currentAlert = nil;
-                    
-                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                NSString *msgtype = selectedEvent.content[@"msgtype"];
+                
+                if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo])
+                {
+                    [currentAlert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        strongSelf->currentAlert = nil;
                         
-                        NSString *msgtype = selectedEvent.content[@"msgtype"];
-                        BOOL isImage = [msgtype isEqualToString:kMXMessageTypeImage];
-                        NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
-                        
-                        [strongSelf startActivityIndicator];
-                        [MXKMediaManager saveMediaToPhotosLibrary:url
-                                                          isImage:isImage
-                                                          success:^() {
-                                                              __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                              [strongSelf stopActivityIndicator];
-                                                          }
-                                                          failure:^(NSError *error) {
-                                                              __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                              [strongSelf stopActivityIndicator];
-                                                              //TODO GFO display error as alert
-                                                          }];
-                    } failure:nil];
-                }];
+                        [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                            
+                            BOOL isImage = [msgtype isEqualToString:kMXMessageTypeImage];
+                            NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
+                            
+                            [strongSelf startActivityIndicator];
+                            [MXKMediaManager saveMediaToPhotosLibrary:url
+                                                              isImage:isImage
+                                                              success:^() {
+                                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                                                  [strongSelf stopActivityIndicator];
+                                                              }
+                                                              failure:^(NSError *error) {
+                                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                                                  [strongSelf stopActivityIndicator];
+                                                                  //TODO GFO display error as alert
+                                                              }];
+                        } failure:nil];
+                    }];
+                }
                 
                 [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -2070,9 +2073,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 # pragma mark - Attachment handling
 
-- (void)showAttachmentView:(MXKImageView *)attachment
+- (void)showAttachmentInCell:(id<MXKCellRendering>)cell
 {
     [self dismissKeyboard];
+    
+    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+    MXKImageView *attachment = roomBubbleTableViewCell.attachmentView;
     
     // Retrieve attachment information
     NSDictionary *content = attachment.mediaInfo;
@@ -2166,7 +2172,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     else if (msgtype == MXKRoomBubbleCellDataTypeFile)
     {
-        // TODO GFO download/open attached file
+        [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+            
+            documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:cacheFilePath]];
+            
+            [documentInteractionController setDelegate:self];
+            
+            if (![documentInteractionController presentPreviewAnimated:YES])
+            {
+                if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                {
+                    documentInteractionController = nil;
+                }
+            }
+
+        } failure:nil];
     }
 }
 

@@ -247,12 +247,26 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.messageTextView.frame = frame;
             
             // Underline attached file name
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
+            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeFile && bubbleData.attachmentURL && bubbleData.attachmentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
                 self.messageTextView.attributedText = updatedText;
+                
+                // Add tap recognizer to open attachment
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
+                [tap setNumberOfTouchesRequired:1];
+                [tap setNumberOfTapsRequired:1];
+                [tap setDelegate:self];
+                [self.messageTextView addGestureRecognizer:tap];
+                
+                // Store attachment content description used in showAttachmentView:
+                self.attachmentView.mediaInfo = @{
+                                                  @"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType],
+                                                  @"url" : bubbleData.attachmentURL,
+                                                  @"info" : bubbleData.attachmentInfo
+                                                  };
             }
             else
             {
