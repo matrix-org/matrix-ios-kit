@@ -25,7 +25,7 @@
 #import "MXKMediaManager.h"
 
 @implementation MXKRoomBubbleCellData
-@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isSameSenderAsPreviousBubble, date, isIncoming, isAttachment;
+@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isSameSenderAsPreviousBubble, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon;
 @synthesize textMessage, attributedTextMessage;
 @synthesize startsWithSenderName, isTyping, showBubbleDateTime;
 
@@ -237,7 +237,7 @@
     if (bubbleComponents.count)
     {
         MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
-        CGFloat positionY = (_dataType == MXKRoomBubbleCellDataTypeText) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
+        CGFloat positionY = (_dataType == MXKRoomBubbleCellDataTypeText || _dataType == MXKRoomBubbleCellDataTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -463,14 +463,20 @@
     return nil;
 }
 
-- (BOOL)isAttachment
+- (BOOL)isAttachmentWithThumbnail
 {
-    return (_dataType != MXKRoomBubbleCellDataTypeText);
+    return (_dataType == MXKRoomBubbleCellDataTypeImage || _dataType == MXKRoomBubbleCellDataTypeVideo);
+}
+
+- (BOOL)isAttachmentWithIcon
+{
+    // Not supported yet (TODO for audio, file).
+    return NO;
 }
 
 - (void)setMaxTextViewWidth:(CGFloat)inMaxTextViewWidth
 {
-    if (_dataType == MXKRoomBubbleCellDataTypeText)
+    if (_dataType == MXKRoomBubbleCellDataTypeText || _dataType == MXKRoomBubbleCellDataTypeFile)
     {
         // Check change
         if (inMaxTextViewWidth != _maxTextViewWidth)
@@ -541,6 +547,21 @@
             else
             {
                 _contentSize = CGSizeMake(width, height);
+            }
+        }
+        else if (_dataType == MXKRoomBubbleCellDataTypeFile)
+        {
+            // Presently we displayed only the file name for attached file (no icon yet)
+            // Return suitable content size of a text view to display the file name (available in text message). 
+            if ([NSThread currentThread] != [NSThread mainThread])
+            {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    _contentSize = [self textContentSize:self.attributedTextMessage];
+                });
+            }
+            else
+            {
+                _contentSize = [self textContentSize:self.attributedTextMessage];
             }
         }
         else

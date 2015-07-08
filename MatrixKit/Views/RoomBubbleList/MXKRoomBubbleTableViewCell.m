@@ -152,7 +152,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.pictureView.userInteractionEnabled = YES;
         
         // Adjust top constraint constant for dateTime labels container, and hide it by default
-        if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+        if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
         {
             self.dateTimeLabelContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
         }
@@ -165,7 +165,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Set message content
         bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
-        if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText)
+        if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText && bubbleData.dataType != MXKRoomBubbleCellDataTypeFile)
         {
             self.messageTextView.hidden = YES;
             self.attachmentView.hidden = NO;
@@ -246,7 +246,19 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             frame.size.height = 0;
             self.messageTextView.frame = frame;
             
-            self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+            // Underline attached file name
+            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
+            {
+                NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
+                [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
+                
+                self.messageTextView.attributedText = updatedText;
+            }
+            else
+            {
+                self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+            }
+            
             [self.messageTextView sizeToFit];
             
             // Add a long gesture recognizer on text view in order to display event details
@@ -345,7 +357,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
-    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
     {
         rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
     }

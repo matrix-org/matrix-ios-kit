@@ -80,14 +80,16 @@ typedef enum : NSUInteger {
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
- The max width of the text view used to display the text message (relevant only when `dataType` is MXKRoomBubbleCellDataTypeText).
+ The max width of the text view used to display the text message (relevant only when `dataType` is MXKRoomBubbleCellDataTypeText or MXKRoomBubbleCellDataTypeFile).
  */
 @property (nonatomic) CGFloat maxTextViewWidth;
 
 /**
  The bubble content size depends on its type:
- - Text (MXKRoomBubbleCellDataTypeText): returns suitable content size of a text view to display the whole text message (respecting maxTextViewWidth)
- - Attachments: returns suitable content size for an image view in order to display attachment thumbnail or icon.
+ - MXKRoomBubbleCellDataTypeText: returns suitable content size of a text view to display the whole text message (respecting maxTextViewWidth).
+ - MXKRoomBubbleCellDataTypeImage and MXKRoomBubbleCellDataTypeVideo: returns suitable content size for an image view in order to display
+ attachment thumbnail or icon.
+ - MXKRoomBubbleCellDataTypeFile: returns suitable content size of a text view to display the file name (no icon is used presently).
  */
 @property (nonatomic) CGSize contentSize;
 

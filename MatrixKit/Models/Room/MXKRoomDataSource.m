@@ -513,7 +513,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     Class cellViewClass;
     if (bubbleData.isIncoming)
     {
-        if (bubbleData.isAttachment)
+        if (bubbleData.isAttachmentWithThumbnail)
         {
             cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
         }
@@ -522,7 +522,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
         }
     }
-    else if (bubbleData.isAttachment)
+    else if (bubbleData.isAttachmentWithThumbnail)
     {
         cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
     }
@@ -1438,7 +1438,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     if (bubbleData.isIncoming)
     {
-        if (bubbleData.isAttachment)
+        if (bubbleData.isAttachmentWithThumbnail)
         {
             cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier forIndexPath:indexPath];
         }
@@ -1447,7 +1447,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier forIndexPath:indexPath];
         }
     }
-    else if (bubbleData.isAttachment)
+    else if (bubbleData.isAttachmentWithThumbnail)
     {
         cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier forIndexPath:indexPath];
     }

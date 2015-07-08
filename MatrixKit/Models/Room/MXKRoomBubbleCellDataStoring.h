@@ -71,9 +71,14 @@
 @property (nonatomic) BOOL isIncoming;
 
 /**
- YES when the bubble correspond to an attachment (image, audio, video, location...).
+ YES when the bubble correspond to an attachment displayed with a thumbnail (see image, video).
  */
-@property (nonatomic) BOOL isAttachment;
+@property (nonatomic) BOOL isAttachmentWithThumbnail;
+
+/**
+ YES when the bubble correspond to an attachment displayed with an icon (audio, file...).
+ */
+@property (nonatomic) BOOL isAttachmentWithIcon;
 
 /**
  The raw text message (without attributes)

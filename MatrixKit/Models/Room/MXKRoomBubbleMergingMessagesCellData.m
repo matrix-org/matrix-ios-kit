@@ -83,7 +83,6 @@ static NSAttributedString *messageSeparator = nil;
 {
     if ([self hasSameSenderAsBubbleCellData:bubbleCellData])
     {
-        
         MXKRoomBubbleCellData *cellData = (MXKRoomBubbleCellData*)bubbleCellData;
         if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText))
         {

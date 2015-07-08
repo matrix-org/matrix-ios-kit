@@ -2164,6 +2164,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     else if (msgtype == MXKRoomBubbleCellDataTypeLocation)
     {
     }
+    else if (msgtype == MXKRoomBubbleCellDataTypeFile)
+    {
+        // TODO GFO download/open attached file
+    }
 }
 
 - (void)onMediaDownloadEnd:(NSNotification *)notif

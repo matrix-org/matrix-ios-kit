@@ -81,7 +81,7 @@
     }
     
     // Mask the image with the bubble
-    if (self.bubbleData.dataType != MXKRoomBubbleCellDataTypeText)
+    if (self.bubbleData.dataType != MXKRoomBubbleCellDataTypeText && self.bubbleData.dataType != MXKRoomBubbleCellDataTypeFile)
     {
         self.bubbleImageView.hidden = YES;
         
