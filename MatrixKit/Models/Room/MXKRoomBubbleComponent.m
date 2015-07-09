@@ -89,8 +89,8 @@
     // (Actually, we are unable to recompute `textMessage` as we do not have the room state)
     _attributedTextMessage = nil;
     
-    // Do more thing to manage redaction case
-    if (_event.isRedactedEvent)
+    // text message must be updated here in case of redaction, or for media attachment (see body update during video upload) 
+    if (_event.isRedactedEvent || _event.isMediaAttachment)
     {
         // Build text component related to this event (Note: we don't have valid room state here, userId will be used as display name)
         MXKEventFormatterError error;

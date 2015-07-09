@@ -27,6 +27,8 @@
 
 #import "MXKAppSettings.h"
 
+#import "NSData+MatrixKit.h"
+
 #pragma mark - Constant definitions
 const NSString *MatrixKitVersion = @"0.1.0";
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
@@ -701,10 +703,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
     [MXKMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
     
+    // Create a fake image name based on imageData to keep the same name for the same image.
+    NSString *dataHash = [imageData MD5];
+    if (dataHash.length > 7)
+    {
+        // Crop
+        dataHash = [dataHash substringToIndex:7];
+    }
+    NSString *filename = [NSString stringWithFormat:@"ima_%@.jpeg", dataHash];
+
     // Prepare the message content for building an echo message
     NSDictionary *msgContent = @{
                                  @"msgtype": kMXMessageTypeImage,
-                                 @"body": @"Image",
+                                 @"body": filename,
                                  @"url": fakeMediaManagerURL,
                                  @"info": @{
                                          @"mimetype": mimetype,
@@ -716,7 +727,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
     // Launch the upload to the Matrix Content repository
-    [uploader uploadData:imageData mimeType:mimetype success:^(NSString *url) {
+    [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
@@ -805,7 +816,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Before sending data to the server, convert the video to MP4
     [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs) {
         // Upload thumbnail
-        [uploader uploadData:videoThumbnailData mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
+        [uploader uploadData:videoThumbnailData filename:nil mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
             
             // Upload video
             NSData* videoData = [NSData dataWithContentsOfFile:videoLocalURL.path];
@@ -813,12 +824,23 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             {  
                 MXKMediaLoader *videoUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
                 
+                // Create a fake image name based on imageData to keep the same name for the same image.
+                NSString *dataHash = [videoData MD5];
+                if (dataHash.length > 7)
+                {
+                    // Crop
+                    dataHash = [dataHash substringToIndex:7];
+                }
+                NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+                NSString *filename = [NSString stringWithFormat:@"video_%@%@", dataHash, extension];
+                msgContent[@"body"] = filename;
+                
                 // Apply the nasty trick again so that the cell can monitor the upload progress
                 msgContent[@"url"] = videoUploader.uploadId;
                 localEcho.content = msgContent;
                 [self updateLocalEcho:localEcho];
                 
-                [videoUploader uploadData:videoData mimeType:mimetype success:^(NSString *videoUrl) {
+                [videoUploader uploadData:videoData filename:filename mimeType:mimetype success:^(NSString *videoUrl) {
                     
                     // Write the video to the actual cacheFile path
                     NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:videoUrl];

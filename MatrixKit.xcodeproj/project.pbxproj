@@ -28,6 +28,7 @@
 		8B9E9737BF25A512725372BE /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C994EE81FBAC79EE746DF4E5 /* libPods-MatrixKitSample.a */; };
 		F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */; };
 		F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */; };
+		F003FD4F1B4E64B4000FC7A5 /* NSData+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F003FD4E1B4E64B4000FC7A5 /* NSData+MatrixKit.m */; };
 		F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */ = {isa = PBXBuildFile; fileRef = F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */; };
 		F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00C252A1ADBC60300065077 /* MXKTableViewController.m */; };
 		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
@@ -197,6 +198,8 @@
 		F0036EEC1AB98DC40008E432 /* MXKRoomInputToolbarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarView.h; sourceTree = "<group>"; };
 		F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomInputToolbarView.m; sourceTree = "<group>"; };
 		F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomInputToolbarView.xib; sourceTree = "<group>"; };
+		F003FD4D1B4E64B4000FC7A5 /* NSData+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MatrixKit.h"; sourceTree = "<group>"; };
+		F003FD4E1B4E64B4000FC7A5 /* NSData+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MatrixKit.m"; sourceTree = "<group>"; };
 		F00BB4481AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarViewWithHPGrowingText.h; sourceTree = "<group>"; };
 		F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomInputToolbarViewWithHPGrowingText.m; sourceTree = "<group>"; };
 		F00C25281ADBC3C100065077 /* MXKViewControllerHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKViewControllerHandling.h; sourceTree = "<group>"; };
@@ -722,6 +725,8 @@
 		F07E18111ABC563900DE3766 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				F003FD4D1B4E64B4000FC7A5 /* NSData+MatrixKit.h */,
+				F003FD4E1B4E64B4000FC7A5 /* NSData+MatrixKit.m */,
 				F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */,
 				F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */,
 				F07E18121ABC563900DE3766 /* MXEvent+MatrixKit.h */,
@@ -1111,6 +1116,7 @@
 				F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */,
 				F095E50F1B25899F009606CE /* MXKContactManager.m in Sources */,
 				F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */,
+				F003FD4F1B4E64B4000FC7A5 /* NSData+MatrixKit.m in Sources */,
 				F0AD3CC71B289441002E0899 /* MXKInterleavedRecentTableViewCell.m in Sources */,
 				F0DB1AC51B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m in Sources */,
 				F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */,

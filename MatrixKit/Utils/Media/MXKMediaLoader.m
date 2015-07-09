@@ -245,11 +245,12 @@ NSString *const kUploadIdPrefix = @"upload-";
     return self;
 }
 
-- (void)uploadData:(NSData *)data mimeType:(NSString *)mimeType success:(blockMXKMediaLoader_onSuccess)success failure:(blockMXKMediaLoader_onError)failure
+- (void)uploadData:(NSData *)data filename:(NSString*)filename mimeType:(NSString *)mimeType success:(blockMXKMediaLoader_onSuccess)success failure:(blockMXKMediaLoader_onError)failure
 {
     statsStartTime = CFAbsoluteTimeGetCurrent();
     
     operation = [mxSession.matrixRestClient uploadContent:data
+                                                 filename:filename
                                                  mimeType:mimeType
                                                   timeout:30
                                                   success:^(NSString *url) {

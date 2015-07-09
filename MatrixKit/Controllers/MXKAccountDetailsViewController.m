@@ -461,7 +461,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             
             // Upload picture
             MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mainSession initialRange:0 andRange:1.0];
-            [uploader uploadData:UIImageJPEGRepresentation(updatedPicture, 0.5) mimeType:@"image/jpeg" success:^(NSString *url)
+            [uploader uploadData:UIImageJPEGRepresentation(updatedPicture, 0.5) filename:nil mimeType:@"image/jpeg" success:^(NSString *url)
              {
                  // Store uploaded picture url and trigger picture saving
                  uploadedPictureURL = url;
