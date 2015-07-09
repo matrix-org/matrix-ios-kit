@@ -53,7 +53,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: 0f374cfa70024d8ee64469d1aecf4c76d0d38585
+    :commit: 6b6418c05a4a03122a75ffcd9c225b82ca733cc5
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
   OpenWebRTC-SDK:
     :commit: 2e2fd572c22f73f1d6c42bf37697b33dd2af3cda
@@ -70,4 +70,4 @@ SPEC CHECKSUMS:
   OpenWebRTC: 85be1caf6dc45b11106eacba93de61e3e52b1cf8
   OpenWebRTC-SDK: fd66e49ab80e88ed1e55231ac875a4976dc3ba74
 
-COCOAPODS: 0.37.1
+COCOAPODS: 0.37.2
