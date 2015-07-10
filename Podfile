@@ -8,8 +8,7 @@ target "MatrixKitSample" do
 
 # Different flavours of pods to Matrix SDK
 # The tagged version on which this version of MatrixKit has been built
-#pod 'MatrixSDK', '~> 0.5.0'
-pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'master'
+pod 'MatrixSDK', '~> 0.5.0'
 
 # The lastest release available on the CocoaPods repository 
 #pod 'MatrixSDK'
