@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -14,15 +15,13 @@
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aXI-hs-gNf" id="q4T-pF-CuP">
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile.png" translatesAutoresizingMaskIntoConstraints="NO" id="byO-pg-bD4" customClass="MXKImageView">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CJC-M2-3cz" customClass="MXKImageView">
                         <rect key="frame" x="8" y="5" width="40" height="40"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="40" id="6hT-DX-QDg"/>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="EJp-2Z-zgI"/>
-                            <constraint firstAttribute="width" constant="40" id="PKC-KE-LNn"/>
-                            <constraint firstAttribute="height" constant="40" id="yck-B0-lak"/>
+                            <constraint firstAttribute="width" secondItem="CJC-M2-3cz" secondAttribute="height" multiplier="1:1" id="bly-Ea-Vvq"/>
                         </constraints>
-                    </imageView>
+                    </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="userLabel" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iFy-OK-xut" userLabel="userLabel">
                         <rect key="frame" x="56" y="5" width="520" height="34"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -37,7 +36,7 @@
                             <constraint firstAttribute="width" constant="14" id="imM-WQ-Qgf"/>
                         </constraints>
                     </view>
-                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_keyboard.png" translatesAutoresizingMaskIntoConstraints="NO" id="YAu-wP-WnM" userLabel="typingBadge">
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YAu-wP-WnM" userLabel="typingBadge">
                         <rect key="frame" x="5" y="0.0" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="dFN-Im-pSS"/>
@@ -46,35 +45,26 @@
                     </imageView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="byO-pg-bD4" firstAttribute="leading" secondItem="q4T-pF-CuP" secondAttribute="leading" constant="8" id="03u-Cv-jEj"/>
                     <constraint firstItem="YAu-wP-WnM" firstAttribute="leading" secondItem="q4T-pF-CuP" secondAttribute="leading" constant="5" id="5ft-Pb-UJN"/>
                     <constraint firstAttribute="trailingMargin" secondItem="W5Z-3a-LW2" secondAttribute="trailing" id="74P-LT-vkG"/>
+                    <constraint firstAttribute="bottom" secondItem="CJC-M2-3cz" secondAttribute="bottom" constant="4" id="9qa-86-pGV"/>
                     <constraint firstItem="iFy-OK-xut" firstAttribute="top" secondItem="q4T-pF-CuP" secondAttribute="top" constant="5" id="A3N-Wc-aBt"/>
                     <constraint firstItem="YAu-wP-WnM" firstAttribute="top" secondItem="q4T-pF-CuP" secondAttribute="top" id="CZT-v2-b58"/>
                     <constraint firstAttribute="centerY" secondItem="W5Z-3a-LW2" secondAttribute="centerY" id="IZJ-Xf-g1s"/>
-                    <constraint firstItem="iFy-OK-xut" firstAttribute="leading" secondItem="byO-pg-bD4" secondAttribute="trailing" constant="8" id="NSp-Ba-B8a"/>
-                    <constraint firstItem="byO-pg-bD4" firstAttribute="top" secondItem="q4T-pF-CuP" secondAttribute="top" constant="5" id="SAh-5g-YXM"/>
+                    <constraint firstItem="iFy-OK-xut" firstAttribute="leading" secondItem="CJC-M2-3cz" secondAttribute="trailing" constant="8" id="Iq2-M3-vu0"/>
+                    <constraint firstItem="CJC-M2-3cz" firstAttribute="top" secondItem="q4T-pF-CuP" secondAttribute="top" constant="5" id="MZl-z6-Jxx"/>
+                    <constraint firstItem="CJC-M2-3cz" firstAttribute="leading" secondItem="q4T-pF-CuP" secondAttribute="leading" constant="8" id="TJZ-CX-NiF"/>
                     <constraint firstAttribute="bottom" secondItem="iFy-OK-xut" secondAttribute="bottom" constant="10" id="fKg-iv-O1W"/>
                     <constraint firstAttribute="trailing" secondItem="iFy-OK-xut" secondAttribute="trailing" constant="24" id="sVQ-oi-McX"/>
-                    <constraint firstAttribute="trailing" secondItem="W5Z-3a-LW2" secondAttribute="trailing" constant="21" id="zgn-oU-9yG"/>
                 </constraints>
-                <variation key="default">
-                    <mask key="constraints">
-                        <exclude reference="zgn-oU-9yG"/>
-                    </mask>
-                </variation>
             </tableViewCellContentView>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <connections>
-                <outlet property="pictureView" destination="byO-pg-bD4" id="yov-hp-QV6"/>
+                <outlet property="pictureView" destination="CJC-M2-3cz" id="AZY-ZP-KSE"/>
                 <outlet property="powerContainer" destination="W5Z-3a-LW2" id="Ssq-sC-S6p"/>
                 <outlet property="typingBadge" destination="YAu-wP-WnM" id="6PS-4m-cB4"/>
                 <outlet property="userLabel" destination="iFy-OK-xut" id="2Jp-tX-5Jl"/>
             </connections>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="default-profile.png" width="160" height="160"/>
-        <image name="icon_keyboard.png" width="20" height="20"/>
-    </resources>
 </document>

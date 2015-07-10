@@ -108,12 +108,16 @@
  
  By default the right button of the toolbar offers the following options: attach media, invite new members.
  By default the left button is used to send the content of the message composer.
+ By default 'messageComposerContainer' is empty.
  */
 @interface MXKRoomInputToolbarView : UIView <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
     /**
      The message composer container view. Your own message composer may be added inside this container.
      */
     UIView *messageComposerContainer;
+    
+@protected
+    UIView *inputAccessoryView;
 }
 
 /**
@@ -125,14 +129,17 @@
 + (UINib *)nib;
 
 /**
+ Creates and returns a new `MXKRoomInputToolbarView-inherited` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ @return An initialized `MXKRoomInputToolbarView-inherited` object if successful, `nil` otherwise.
+ */
++ (instancetype)roomInputToolbarView;
+
+/**
  The delegate notified when inputs are ready.
  */
 @property (nonatomic) id<MXKRoomInputToolbarViewDelegate> delegate;
-
-/**
- Background view which contains all view items.
- */
-@property (weak, nonatomic) IBOutlet UIView *backgroundView;
 
 /**
   A custom button displayed on the left of the toolbar view.
@@ -165,6 +172,13 @@
 - (IBAction)onTouchUpInside:(UIButton*)button;
 
 /**
+ Prompt user to select a compression level on selected image before transferring it to the delegate
+ 
+ @param imageInfo a dictionary containing the original image and the edited image, if an image was picked; or a filesystem URL for the movie, if a movie was picked.
+ */
+- (void)promptCompressionForSelectedImage:(NSDictionary*)selectedImageInfo;
+
+/**
  The maximum height of the toolbar.
  A value <= 0 means no limit.
  */
@@ -186,11 +200,16 @@
  actually used to retrieve the keyboard view. Indeed the keyboard view is the superview of
  the accessory view when the message composer become the first responder.
  */
-@property UIView *inputAccessoryView;
+@property (readonly) UIView *inputAccessoryView;
 
 /**
  Force dismiss keyboard.
  */
 - (void)dismissKeyboard;
+
+/**
+ Dispose any resources and listener.
+ */
+- (void)destroy;
 
 @end

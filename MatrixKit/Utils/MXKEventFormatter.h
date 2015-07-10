@@ -148,4 +148,31 @@ typedef enum : NSUInteger {
  */
 - (NSString*)dateStringForEvent:(MXEvent*)event;
 
+
+# pragma mark - Customisation
+/**
+ Default color used to display text content of event.
+ Default is black.
+ */
+@property (nonatomic) UIColor *defaultTextColor;
+
+/**
+ Color used when the event must be bing to the end user. This happens when the event
+ matches the user's push rules.
+ Default is blue.
+ */
+@property (nonatomic) UIColor *bingTextColor;
+
+/**
+ Color used to display text content of an event being sent.
+ Default is ligh gray.
+ */
+@property (nonatomic) UIColor *sendingTextColor;
+
+/**
+ Color used to display error text.
+ Default is red.
+ */
+@property (nonatomic) UIColor *errorTextColor;
+
 @end

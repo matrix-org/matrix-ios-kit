@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,8 @@
 
 #import "UIImageView+AFNetworking.h"
 
-@interface MXKSampleJSQMessagesViewController () {
+@interface MXKSampleJSQMessagesViewController ()
+{
     /**
      The data source providing messages for the current room.
      */
@@ -26,7 +27,7 @@
     
     JSQMessagesBubbleImage *outgoingBubbleImageData;
     JSQMessagesBubbleImage *incomingBubbleImageData;
-
+    
     /**
      The cache for initials avatars placeholders
      */
@@ -41,34 +42,48 @@
 
 #pragma mark -
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-
+    
     // Check whether a source has been defined
-    if (roomDataSource) {
+    if (roomDataSource)
+    {
         [self configureView];
     }
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
+    // Remove potential key value observers on cell avatar view
+    NSArray *array = self.collectionView.visibleCells;
+    for (JSQMessagesCollectionViewCell *cell in array)
+    {
+        if (!cell.avatarImageView.image)
+        {
+            [cell.avatarImageView removeObserver:self forKeyPath:@"image"];
+        }
+    }
+    
     roomDataSource = nil;
     
     outgoingBubbleImageData = nil;
     incomingBubbleImageData = nil;
     
     membersPlaceHolderAvatar = nil;
-
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
-
+    
     // Dispose of any resources that can be recreated.
 }
 
-- (void)configureView {
-    
+- (void)configureView
+{
     // Create message bubble images objects.
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
     outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
@@ -80,13 +95,16 @@
     // Start showing history right now
     [roomDataSource paginateBackMessagesToFillRect:self.view.frame success:^{
         // @TODO (hide loading wheel)
-    } failure:^(NSError *error) {
+    } failure:^(NSError *error)
+    {
         // @TODO
     }];
 }
 
-- (void)dismissMediaPicker {
-    if (mediaPicker) {
+- (void)dismissMediaPicker
+{
+    if (mediaPicker)
+    {
         [self dismissViewControllerAnimated:NO completion:nil];
         mediaPicker.delegate = nil;
         mediaPicker = nil;
@@ -95,48 +113,55 @@
 
 #pragma mark -
 
-- (void)displayRoom:(MXKSampleJSQRoomDataSource *)inRoomDataSource {
+- (void)displayRoom:(MXKSampleJSQRoomDataSource *)inRoomDataSource
+{
     roomDataSource = inRoomDataSource;
     roomDataSource.delegate = self;
-
+    
     self.senderId = roomDataSource.mxSession.matrixRestClient.credentials.userId;
-    if (roomDataSource.mxSession.myUser) {
+    if (roomDataSource.mxSession.myUser)
+    {
         self.senderDisplayName = roomDataSource.mxSession.myUser.displayname;
     }
-    else {
+    else
+    {
         // MXSession is not yet ready. Use sender id for now. It will be updated on didMXSessionStateChange:
         self.senderDisplayName = self.senderId;
     }
-
-    if (self.collectionView) {
+    
+    if (self.collectionView)
+    {
         [self configureView];
     }
-
+    
     // Listen to MXSession state changes
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:kMXSessionStateDidChangeNotification object:nil];
 }
 
 #pragma mark - MXKDataSourceDelegate
-- (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes {
+- (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
+{
     // For now, do a simple full reload
     [self.collectionView reloadData];
     [self.collectionView.collectionViewLayout invalidateLayout];
-
+    
     // @TODO: Use this method only when receiving a message and the bottom of messages list is displayed
     //[self finishReceivingMessage];
-
+    
     // Show "Load Earlier Messages" only if there are messages in the room
     self.showLoadEarlierMessagesHeader = YES;
 }
 
 #pragma mark - MXSessionStateDidChangeNotification
-- (void)didMXSessionStateChange:(NSNotification *)notif {
-
+- (void)didMXSessionStateChange:(NSNotification *)notif
+{
     // Check this is our Matrix session that has changed
-    if (notif.object == roomDataSource.mxSession) {
-
+    if (notif.object == roomDataSource.mxSession)
+    {
+        
         // Display name is now available
-        if (NO == [self.senderId isEqualToString:roomDataSource.mxSession.myUser.displayname]) {
+        if (NO == [self.senderId isEqualToString:roomDataSource.mxSession.myUser.displayname])
+        {
             self.senderDisplayName = roomDataSource.mxSession.myUser.displayname;
             [self finishReceivingMessage];
         }
@@ -144,17 +169,19 @@
 }
 
 #pragma mark - KVO
-- (void) observeValueForKeyPath:(NSString *)path ofObject:(id) object change:(NSDictionary *) change context:(void *)context {
-
+- (void)observeValueForKeyPath:(NSString *)path ofObject:(id) object change:(NSDictionary *) change context:(void *)context
+{
     // Check changes on cell.avatarImageView.image (registered by [self cellForItemAtIndexPath:])
-    if ([path isEqualToString:@"image"]) {
-
+    if ([path isEqualToString:@"image"])
+    {
+        
         UIImageView *avatarImageView = (UIImageView*)object;
-        if (avatarImageView.image) {
-
+        if (avatarImageView.image)
+        {
+            
             // Avoid infinite loop
             [avatarImageView removeObserver:self forKeyPath:@"image"];
-
+            
             // Make the image circular
             avatarImageView.image = [JSQMessagesAvatarImageFactory circularAvatarImage:avatarImageView.image withDiameter:kJSQMessagesCollectionViewAvatarSizeDefault];
         }
@@ -169,7 +196,8 @@
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
-    if (!text.length) {
+    if (!text.length)
+    {
         return;
     }
     
@@ -177,11 +205,13 @@
     button.enabled = NO;
     
     // Send message to the room
-    [roomDataSource.room sendMessageOfType:kMXMessageTypeText content:@{@"body":text} success:^(NSString *eventId) {
+    [roomDataSource.room sendMessageOfType:kMXMessageTypeText content:@{@"body":text} success:^(NSString *eventId)
+    {
         NSLog(@"Succeed to send text message");
         [self finishSendingMessage];
         button.enabled = YES;
-    } failure:^(NSError *error) {
+    } failure:^(NSError *error)
+    {
         NSLog(@"Failed to send text message (%@)", error);
         button.enabled = YES;
     }];
@@ -200,13 +230,13 @@
 
 #pragma mark - JSQMessages CollectionView DataSource
 
-- (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
+{
     return [roomDataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
 }
 
-- (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
+{
     /**
      *  You may return nil here if you do not want bubbles.
      *  In this case, you should set the background color of your collection view cell's textView.
@@ -215,14 +245,15 @@
      */
     id<JSQMessageData> messageData = [self collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     
-    if ([messageData.senderId isEqualToString:self.senderId]) {
+    if ([messageData.senderId isEqualToString:self.senderId])
+    {
         return outgoingBubbleImageData;
     }
     return incomingBubbleImageData;
 }
 
-- (id<JSQMessageAvatarImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView avatarImageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (id<JSQMessageAvatarImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView avatarImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
+{
     /**
      *  Return `nil` here if you do not want avatars.
      *  If you do return `nil`, be sure to do the following in `viewDidLoad`:
@@ -245,18 +276,19 @@
      */
     
     id<JSQMessageData> messageData = [self collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
-
+    
     // Return a placeholder UIImage for the avatar here
     // The true avatar will be set during the call of [self cellForItemAtIndexPath:]
     // In this last method, the avatarImageView is created and we need it to set the avatar URL asynchronously.
     // Once the avatar image is loaded, the avatarImageView will automatically refresh.
     JSQMessagesAvatarImage *placeHolderAvatar = [membersPlaceHolderAvatar objectForKey:messageData.senderId];
-    if (!placeHolderAvatar) {
+    if (!placeHolderAvatar)
+    {
         placeHolderAvatar = [JSQMessagesAvatarImageFactory avatarImageWithUserInitials:[messageData.senderId substringWithRange:NSMakeRange(1,2)]
-                                                            backgroundColor:[UIColor colorWithWhite:0.85f alpha:1.0f]
-                                                                  textColor:[UIColor colorWithWhite:0.60f alpha:1.0f]
-                                                                       font:[UIFont systemFontOfSize:14.0f]
-                                                                   diameter:kJSQMessagesCollectionViewAvatarSizeDefault];
+                                                                       backgroundColor:[UIColor colorWithWhite:0.85f alpha:1.0f]
+                                                                             textColor:[UIColor colorWithWhite:0.60f alpha:1.0f]
+                                                                                  font:[UIFont systemFontOfSize:14.0f]
+                                                                              diameter:kJSQMessagesCollectionViewAvatarSizeDefault];
         
         [membersPlaceHolderAvatar setObject:placeHolderAvatar forKey:messageData.senderId];
     }
@@ -264,62 +296,66 @@
     return placeHolderAvatar;
 }
 
-- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
+{
     /**
      *  This logic should be consistent with what you return from `heightForCellTopLabelAtIndexPath:`
      *  The other label text delegate methods should follow a similar pattern.
      *
      *  Show a timestamp for every 3rd message
      */
-    if (indexPath.item % 3 == 0) {
+    if (indexPath.item % 3 == 0)
+    {
         id<JSQMessageData> messageData = [self collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
         return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:messageData.date];
     }
-
+    
     return nil;
 }
 
-- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath
+{
     id<JSQMessageData> messageData = [self collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     
     /**
      *  iOS7-style sender name labels
      */
-    if ([messageData.senderId isEqualToString:self.senderId]) {
+    if ([messageData.senderId isEqualToString:self.senderId])
+    {
         return nil;
     }
-
-    if (indexPath.item - 1 > 0) {
+    
+    if (indexPath.item - 1 > 0)
+    {
         NSIndexPath *previousIndexPath = [NSIndexPath  indexPathForItem:indexPath.item - 1 inSection:indexPath.section];
         id<JSQMessageData> previousMessageData = [self collectionView:collectionView messageDataForItemAtIndexPath:previousIndexPath];
-
-        if ([previousMessageData.senderId isEqualToString:messageData.senderId]) {
+        
+        if ([previousMessageData.senderId isEqualToString:messageData.senderId])
+        {
             return nil;
         }
     }
-
+    
     /**
      *  Don't specify attributes to use the defaults.
      */
     return [[NSAttributedString alloc] initWithString:messageData.senderDisplayName];
 }
 
-- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
+{
     return nil;
 }
 
 #pragma mark - UICollectionView DataSource
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
     return [roomDataSource collectionView:collectionView numberOfItemsInSection:section];
 }
 
-- (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
     /**
      *  Override point for customizing cells
      */
@@ -341,42 +377,63 @@
     
     id<JSQMessageData> messageData = [self collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     
-    if (!messageData.isMediaMessage) {
+    if (!messageData.isMediaMessage)
+    {
         
-        if ([messageData.senderId isEqualToString:self.senderId]) {
+        if ([messageData.senderId isEqualToString:self.senderId])
+        {
             cell.textView.textColor = [UIColor blackColor];
         }
-        else {
+        else
+        {
             cell.textView.textColor = [UIColor whiteColor];
         }
         
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
-
+    
     // Compute the member avatar URL
     MXRoomMember *roomMember = [roomDataSource.room.state memberWithUserId:messageData.senderId];
-
+    
     NSString *avatarUrl = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:cell.avatarImageView.frame.size withMethod:MXThumbnailingMethodCrop];
-    if (!avatarUrl) {
+    if (!avatarUrl)
+    {
         avatarUrl = roomMember.avatarUrl ;
     }
-
+    
+    // Reset existing image if any
+    cell.avatarImageView.image = nil;
     // As the "square" image will be set asynchronously, register an observer on it in order to make it circular at runtime
     [cell.avatarImageView addObserver:self
                            forKeyPath:@"image"
                               options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                               context:NULL];
-
+    
     // Use the AFNetworking category to asynchronously load the image into the read-only avatarImageView
     // @TODO: Use the MXCMediaManager permanent cache. AFNetworking cache is just memory.
     // @TODO: This AFNetworking category does not detect multiple requests on the same URL.
     [cell.avatarImageView setImageWithURL:[NSURL URLWithString:avatarUrl]];
-
+    
     return cell;
 }
 
 #pragma mark - JSQMessages collection view flow layout delegate
+
+- (void)collectionView:(JSQMessagesCollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([cell isKindOfClass:[JSQMessagesCollectionViewCell class]])
+    {
+        JSQMessagesCollectionViewCell *jsqCell = (JSQMessagesCollectionViewCell*)cell;
+        
+        // Remove potential key value observer on cell avatar view
+        if (!jsqCell.avatarImageView.image)
+        {
+            [jsqCell.avatarImageView removeObserver:self forKeyPath:@"image"];
+        }
+    }
+    
+}
 
 #pragma mark - Adjusting cell label heights
 
@@ -384,10 +441,11 @@
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
     // Reuse the algo defined in the paired method
-    if ([self collectionView:collectionView attributedTextForCellTopLabelAtIndexPath:indexPath]) {
+    if ([self collectionView:collectionView attributedTextForCellTopLabelAtIndexPath:indexPath])
+    {
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
-
+    
     return 0.0f;
 }
 
@@ -395,10 +453,11 @@
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
     // Reuse the algo defined in the paired method
-    if ([self collectionView:collectionView attributedTextForMessageBubbleTopLabelAtIndexPath:indexPath]) {
+    if ([self collectionView:collectionView attributedTextForMessageBubbleTopLabelAtIndexPath:indexPath])
+    {
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
-
+    
     return 0.0f;
 }
 
@@ -416,12 +475,13 @@
     // Disable the button while requesting
     sender.enabled = NO;
     [roomDataSource paginateBackMessages:30 success:^{
-
+        
         // Pagingate messages have been received by the didChange protocol
         // Just need  to reenable the button
         sender.enabled = YES;
-
-    } failure:^(NSError *error) {
+        
+    } failure:^(NSError *error)
+    {
         sender.enabled= YES;
     }];
 }
@@ -445,12 +505,15 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == actionSheet.cancelButtonIndex) {
+    if (buttonIndex == actionSheet.cancelButtonIndex)
+    {
         return;
     }
     
-    switch (buttonIndex) {
-        case 0: {
+    switch (buttonIndex)
+    {
+        case 0:
+        {
             // Open media gallery
             mediaPicker = [[UIImagePickerController alloc] init];
             mediaPicker.delegate = self;
@@ -460,7 +523,8 @@
             [self presentViewController:mediaPicker animated:YES completion:^{}];
             break;
         }
-        case 1: {
+        case 1:
+        {
             // Open Camera
             mediaPicker = [[UIImagePickerController alloc] init];
             mediaPicker.delegate = self;
@@ -475,24 +539,30 @@
 
 #pragma mark - UIImagePickerControllerDelegate
 
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
+    if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
+    {
         UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-        if (selectedImage) {
+        if (selectedImage)
+        {
             NSLog(@"An Image has been selected");
-            [roomDataSource sendImage:selectedImage success:nil failure:^(NSError *error) {
+            [roomDataSource sendImage:selectedImage success:nil failure:^(NSError *error)
+            {
                 // @TODO
             }];
         }
-    } else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
+    }
+    else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
+    {
         NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
         // Check the selected video, and ignore multiple calls (observed when user pressed several time Choose button)
-        if (selectedVideo) {
+        if (selectedVideo)
+        {
             NSLog(@"A video has been selected");
             // TODO
-//            [roomDataSource.room sendVideo:selectedVideo];
+            //            [roomDataSource.room sendVideo:selectedVideo];
         }
     }
     

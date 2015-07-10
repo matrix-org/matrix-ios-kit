@@ -71,9 +71,19 @@
 @property (nonatomic) BOOL isIncoming;
 
 /**
- YES when the bubble correspond to an attachment (image, audio, video, location...).
+ YES when the bubble correspond to an attachment displayed with a thumbnail (see image, video).
  */
-@property (nonatomic) BOOL isAttachment;
+@property (nonatomic) BOOL isAttachmentWithThumbnail;
+
+/**
+ YES when the bubble correspond to an attachment displayed with an icon (audio, file...).
+ */
+@property (nonatomic) BOOL isAttachmentWithIcon;
+
+/**
+ The raw text message (without attributes)
+ */
+@property (nonatomic) NSString *textMessage;
 
 /**
  The body of the message with sets of attributes, or kind of content description in case of attachment (e.g. "image attachment")
@@ -149,5 +159,14 @@ Update the event because its mxkState changed or it is has been redacted.
  @return YES if the provided cell data has been merged into receiver.
  */
 - (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData;
+
+/**
+ Highlight text message of an event in the resulting message body.
+ 
+ @param eventId the id of the event to highlight.
+ @param tintColor optional tint color
+ @return The body of the message by highlighting the content relatad to the provided event id
+ */
+- (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor;
 
 @end

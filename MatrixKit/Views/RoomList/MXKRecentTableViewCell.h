@@ -14,14 +14,14 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKCellRendering.h"
 
 /**
  `MXKRecentTableViewCell` instances display a room in the context of the recents list.
  */
-@interface MXKRecentTableViewCell : UITableViewCell <MXKCellRendering>
+@interface MXKRecentTableViewCell : MXKTableViewCell <MXKCellRendering>
 
 @property (weak, nonatomic) IBOutlet UILabel *roomTitle;
 @property (weak, nonatomic) IBOutlet UILabel *lastEventDescription;

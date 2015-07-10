@@ -25,17 +25,28 @@
  all matrixKit view controllers and table view controllers.
  
  It manages the following points:
- - stop/start activity indicator according to associated matrix session state.
+ - matrix sessions handling, one or more sessions are supported.
+ - stop/start activity indicator according to the state of the associated matrix sessions.
  - update view appearance on matrix session state change.
  - support rage shake mechanism (depend on `rageShakeManager` property).
  */
 @protocol MXKViewControllerHandling <NSObject>
 
 /**
- Associated matrix session (nil by default).
- This property is used to update view appearance according to the session state.
+ List of associated matrix sessions (empty by default).
+ This property is used to update view appearance according to the session(s) state.
  */
-@property (nonatomic) MXSession *mxSession;
+@property (nonatomic, readonly) NSArray* mxSessions;
+
+/**
+ The first associated matrix session is considered as the main session (nil by default).
+ */
+@property (nonatomic, readonly) MXSession *mainSession;
+
+/**
+ Keep reference on the pushed and/or presented view controllers.
+ */
+@property (nonatomic, readonly) NSArray *childViewControllers;
 
 /**
  An object implementing the `MXKResponderRageShaking` protocol.
@@ -56,16 +67,29 @@
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
 
 /**
- Update view controller appearance according to the state of its associated matrix session.
- This method is called on session state change (see `MXSessionStateDidChangeNotification`).
+ Add/remove matrix session.
  
- The default implementation:
- - switches in red the navigation bar tintColor on `MXSessionStateHomeserverNotReachable`
- - starts activity indicator on `MXSessionStateInitialised` and `MXSessionStateSyncInProgress`.
- 
- Override it to customize view appearance according to session state.
+ @param mxSession a Matrix session.
  */
-- (void)didMatrixSessionStateChange;
+- (void)addMatrixSession:(MXSession*)mxSession;
+- (void)removeMatrixSession:(MXSession*)mxSession;
+
+/**
+ This method is called on the following matrix session changes:
+ - a new session is added.
+ - a session is removed.
+ - the state of an associated session changed (according to `MXSessionStateDidChangeNotification`).
+ 
+ This method is called to refresh the display when the view controller will appear too.
+ 
+ By default view controller appearance is updated according to the state of associated sessions:
+ - starts activity indicator as soon as at least one session state is `MXSessionStateInitialised` or `MXSessionStateSyncInProgress`.
+ - switches in red the navigation bar tintColor when all sessions are in `MXSessionStateHomeserverNotReachable` state.
+ - switches in orange the navigation bar tintColor when at least one session is in `MXSessionStateHomeserverNotReachable` state.
+ 
+ Override it to customize view appearance according to associated session(s).
+ */
+- (void)onMatrixSessionChange;
 
 /**
  Pop or dismiss the view controller. It depends if the view controller is embedded inside a navigation controller or not.
@@ -76,6 +100,11 @@
 - (void)withdrawViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion;
 
 /**
+ Dispose of any resources, and remove event observers.
+ */
+- (void)destroy;
+
+/**
  Bring the activity indicator to the front and start it.
  */
 - (void)startActivityIndicator;
@@ -84,7 +113,6 @@
  Stop the activity indicator if all conditions are satisfied.
  */
 - (void)stopActivityIndicator;
-
 
 @end
 

@@ -51,6 +51,24 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
  */
 + (UIImage*)loadPictureFromFilePath:(NSString*)filePath;
 
+/**
+ Save an image to user's photos library
+ 
+ @param image
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
++ (void)saveImageToPhotosLibrary:(UIImage*)image success:(void (^)())success failure:(void (^)(NSError *error))failure;
+
+/**
+ Save a media to user's photos library
+ 
+ @param fileURL URL based on local media file path.
+ @param isImage YES for images, NO for video files.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
++ (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 #pragma mark - Download
 
@@ -118,19 +136,15 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
 #pragma mark - Cache handling
 
 /**
- Build a cache file path based on media url and an optional cache folder.
- 
- @param url media url.
- @param folder cache folder to use (may be nil).
- @return cache file path.
- */
-+ (NSString*)cachePathForMediaWithURL:(NSString*)url inFolder:(NSString*)folder;
-
-/**
  Build a cache file path based on media information and an optional cache folder.
  
- @param url media url.
- @param mimeType media mime type.
+ The file extension is extracted from the provided mime type (if any). If no type is available, we look for a potential
+ extension in the url.
+ By default 'image/jpeg' is considered for thumbnail folder (kMXKMediaManagerAvatarThumbnailFolder). No default mime type 
+ is defined for other folders.
+ 
+ @param url the media url.
+ @param mimeType the media mime type (may be nil).
  @param folder cache folder to use (may be nil).
  @return cache file path.
  */
@@ -147,6 +161,11 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
  Clear cache
  */
 + (void)clearCache;
+
+/**
+ Return cache root path
+ */
++ (NSString*)getCachePath;
 
 /**
  Cache size management (values are in bytes)

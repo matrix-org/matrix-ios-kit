@@ -14,21 +14,55 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"
 
 #import "MXKCellRendering.h"
 
+#import "MXUser.h"
+
 /**
- `MXKRoomMemberTableViewCell` instances display a room in the context of the recents list.
+ `MXKRoomMemberTableViewCell` instances display a user in the context of the room member list.
  */
-@interface MXKRoomMemberTableViewCell : UITableViewCell <MXKCellRendering>
+@interface MXKRoomMemberTableViewCell : MXKTableViewCell <MXKCellRendering> {
+
+@protected
+    /**
+     */
+    MXSession *mxSession;
+    
+    /**
+     */
+    NSString *memberId;
+    
+    /**
+     YES when last activity time is displayed and must be refreshed regularly.
+     */
+    BOOL shouldUpdateActivityInfo;
+}
 
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UILabel *userLabel;
 @property (weak, nonatomic) IBOutlet UIView *powerContainer;
 @property (weak, nonatomic) IBOutlet UIImageView *typingBadge;
+
+/**
+ The default picture displayed when no picture is available.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ Update last activity information if any.
+ */
+- (void)updateActivityInfo;
+
+/**
+ Stringify the last activity date/time of the member.
+ 
+ @return a string which described the last activity time of the member.
+ */
+- (NSString*)lastActiveTime;
 
 @end

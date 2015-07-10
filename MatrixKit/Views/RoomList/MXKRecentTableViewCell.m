@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,64 +18,69 @@
 
 #import "MXKRecentCellDataStoring.h"
 
-#import "MXKRecentListDataSource.h"
+#import "MXKSessionRecentsDataSource.h"
 
 @implementation MXKRecentTableViewCell
 
 #pragma mark - Class methods
-+ (UINib *)nib {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRecentTableViewCell class])
-                          bundle:[NSBundle bundleForClass:[MXKRecentTableViewCell class]]];
-}
 
-- (NSString *) reuseIdentifier {
-    return kMXKRecentCellIdentifier;
-}
-
-- (void)render:(MXKCellData *)cellData {
-
+- (void)render:(MXKCellData *)cellData
+{
     id<MXKRecentCellDataStoring> roomCellData = (id<MXKRecentCellDataStoring>)cellData;
-    if (roomCellData) {
-
+    if (roomCellData)
+    {
+        
         // Report computed values as is
         _roomTitle.text = roomCellData.roomDisplayname;
         _lastEventDate.text = roomCellData.lastEventDate;
-
+        
         // Manage lastEventAttributedTextMessage optional property
-        if ([roomCellData respondsToSelector:@selector(lastEventAttributedTextMessage)]) {
+        if ([roomCellData respondsToSelector:@selector(lastEventAttributedTextMessage)])
+        {
             _lastEventDescription.attributedText = roomCellData.lastEventAttributedTextMessage;
         }
-        else {
+        else
+        {
             _lastEventDescription.text = roomCellData.lastEventTextMessage;
         }
-
+        
         // Set in bold public room name
-        if (roomCellData.roomDataSource.room.state.isPublic) {
+        if (roomCellData.roomDataSource.room.state.isPublic)
+        {
             _roomTitle.font = [UIFont boldSystemFontOfSize:20];
-        } else {
+        }
+        else
+        {
             _roomTitle.font = [UIFont systemFontOfSize:19];
         }
-
+        
         // Set background color and unread count
-        if (roomCellData.unreadCount) {
-            if (0 < roomCellData.unreadBingCount) {
+        if (roomCellData.unreadCount)
+        {
+            if (0 < roomCellData.unreadBingCount)
+            {
                 self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:1 alpha:1.0];
-            } else {
+            }
+            else
+            {
                 self.backgroundColor = [UIColor colorWithRed:1 green:0.9 blue:0.9 alpha:1.0];
             }
             _roomTitle.text = [NSString stringWithFormat:@"%@ (%tu)", _roomTitle.text, roomCellData.unreadCount];
-        } else {
+        }
+        else
+        {
             self.backgroundColor = [UIColor clearColor];
         }
-
+        
     }
-    else {
-         _lastEventDescription.text = @"";
+    else
+    {
+        _lastEventDescription.text = @"";
     }
 }
 
-+ (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth {
-
++ (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
+{
     // The height is fixed
     return 70;
 }

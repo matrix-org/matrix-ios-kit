@@ -19,7 +19,8 @@
 /**
  Internal event states used for example to handle event display.
  */
-typedef enum : NSUInteger {
+typedef enum : NSUInteger
+{
     /**
      Default state of incoming events.
      The outgoing events switch into this state when their sending succeeds.
@@ -82,5 +83,10 @@ typedef enum : NSUInteger {
  Return YES if the event is an emote event
  */
 - (BOOL)isEmote;
+
+/**
+ Return YES if the event contains a media: image, audio, video or file.
+ */
+- (BOOL)isMediaAttachment;
 
 @end

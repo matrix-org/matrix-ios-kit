@@ -31,6 +31,11 @@
 #pragma mark - File
 
 /**
+ Return file size in string format.
+ */
++ (NSString*)fileSizeToString:(long)fileSize;
+
+/**
  Get folder size
  
  @param folderPath
@@ -56,6 +61,40 @@
  */
 + (NSString*)fileExtensionFromContentType:(NSString*)contentType;
 
+#pragma mark - Hex color to UIColor conversion
+
+/**
+ Build a UIColor from an hexadecimal color value
+ 
+ @param rgbValue the color expressed in hexa (0xRRGGBB)
+ @return the UIColor
+ */
++ (UIColor*)colorWithRGBValue:(NSUInteger)rgbValue;
+
+/**
+ Build a UIColor from an hexadecimal color value with transparency
+
+ @param argbValue the color expressed in hexa (0xAARRGGBB)
+ @return the UIColor
+ */
++ (UIColor*)colorWithARGBValue:(NSUInteger)argbValue;
+
+/**
+ Return an hexadecimal color value from UIColor
+ 
+ @param the UIColor
+ @return rgbValue the color expressed in hexa (0xRRGGBB)
+ */
++ (NSUInteger)rgbValueWithColor:(UIColor*)color;
+
+/**
+ Return an hexadecimal color value with transparency from UIColor
+ 
+ @param the UIColor
+ @return argbValue the color expressed in hexa (0xAARRGGBB)
+ */
++ (NSUInteger)argbValueWithColor:(UIColor*)color;
+
 #pragma mark - Image processing
 
 /**
@@ -74,6 +113,18 @@
  @return resized image.
  */
 + (UIImage *)resize:(UIImage *)image toFitInSize:(CGSize)size;
+
+/**
+ Paint an image with a color.
+ 
+ @discussion
+ All non fully transparent (alpha = 0) will be painted with the provided color.
+ 
+ @param image the image to paint.
+ @param color the color to use.
+ @result a new UIImage object.
+ */
++ (UIImage*)paintImage:(UIImage*)image withColor:(UIColor*)color;
 
 /**
  Convert a rotation angle to the most suitable image orientation.

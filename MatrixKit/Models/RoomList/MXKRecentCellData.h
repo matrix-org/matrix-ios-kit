@@ -20,9 +20,8 @@
 #import "MXKRecentCellDataStoring.h"
 
 /**
- `MXKRoomCellData` modelised the data for a `MXKRoomTableViewCell` cell.
+ `MXKRecentCellData` modelised the data for a `MXKRecentTableViewCell` cell.
  */
 @interface MXKRecentCellData : MXKCellData <MXKRecentCellDataStoring>
-
 
 @end

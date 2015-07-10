@@ -30,7 +30,8 @@ typedef enum : NSUInteger {
     MXKRoomBubbleCellDataTypeImage,
     MXKRoomBubbleCellDataTypeAudio,
     MXKRoomBubbleCellDataTypeVideo,
-    MXKRoomBubbleCellDataTypeLocation
+    MXKRoomBubbleCellDataTypeLocation,
+    MXKRoomBubbleCellDataTypeFile
     
 } MXKRoomBubbleCellDataType;
 
@@ -40,9 +41,14 @@ typedef enum : NSUInteger {
  This is the basic implementation which considers only one component (event) by bubble.
  `MXKRoomBubbleMergingMessagesCellData` extends this class to merge consecutive messages from the same sender into one bubble.
  */
-@interface MXKRoomBubbleCellData : MXKCellData <MXKRoomBubbleCellDataStoring> {
-    
+@interface MXKRoomBubbleCellData : MXKCellData <MXKRoomBubbleCellDataStoring>
+{
 @protected
+    /**
+     The data source owner of this instance.
+     */
+    MXKRoomDataSource *roomDataSource;
+    
     /**
      Array of bubble components. Each bubble is supposed to have at least one component.
      */
@@ -74,14 +80,16 @@ typedef enum : NSUInteger {
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
- The max width of the text view used to display the text message (relevant only when `dataType` is MXKRoomBubbleCellDataTypeText).
+ The max width of the text view used to display the text message (relevant only when `dataType` is MXKRoomBubbleCellDataTypeText or MXKRoomBubbleCellDataTypeFile).
  */
 @property (nonatomic) CGFloat maxTextViewWidth;
 
 /**
  The bubble content size depends on its type:
- - Text (MXKRoomBubbleCellDataTypeText): returns suitable content size of a text view to display the whole text message (respecting maxTextViewWidth)
- - Attachments: returns suitable content size for an image view in order to display attachment thumbnail or icon.
+ - MXKRoomBubbleCellDataTypeText: returns suitable content size of a text view to display the whole text message (respecting maxTextViewWidth).
+ - MXKRoomBubbleCellDataTypeImage and MXKRoomBubbleCellDataTypeVideo: returns suitable content size for an image view in order to display
+ attachment thumbnail or icon.
+ - MXKRoomBubbleCellDataTypeFile: returns suitable content size of a text view to display the file name (no icon is used presently).
  */
 @property (nonatomic) CGSize contentSize;
 

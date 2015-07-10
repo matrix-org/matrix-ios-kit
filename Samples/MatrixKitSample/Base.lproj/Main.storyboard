@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="P8X-dO-YH1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="P8X-dO-YH1">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <scenes>
-        <!--SampleRoomViewController-->
+        <!--Recent List View Controller-->
+        <scene sceneID="6r9-d3-cv0">
+            <objects>
+                <viewController id="YbK-3w-mDu" customClass="MXKRecentListViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Tog-oL-liB"/>
+                        <viewControllerLayoutGuide type="bottom" id="u3h-AL-g0w"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4Dg-Op-2kE">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="crX-Dd-MGC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-858" y="-2042"/>
+        </scene>
+        <!--RoomViewController-->
         <scene sceneID="Thv-pf-Y4Q">
             <objects>
-                <viewController id="XgL-bX-RPC" userLabel="SampleRoomViewController" customClass="MXKSampleRoomViewController" sceneMemberID="viewController">
+                <viewController id="XgL-bX-RPC" userLabel="RoomViewController" customClass="MXKRoomViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ljq-dh-3mb"/>
                         <viewControllerLayoutGuide type="bottom" id="2Xp-md-gUg"/>
@@ -18,7 +36,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Room Title" id="5SM-AZ-XDY"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Igb-wz-h0F" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -42,41 +59,91 @@
             </objects>
             <point key="canvasLocation" x="-190" y="-1310"/>
         </scene>
-        <!--Sample Recents View Controller-->
-        <scene sceneID="TAe-cT-fQU">
+        <!--Sample Room View Controller-->
+        <scene sceneID="7XK-7j-501">
             <objects>
-                <tableViewController id="xYP-xv-2cb" customClass="MXKSampleRecentsViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Lkt-Ok-qiD">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="dataSource" destination="xYP-xv-2cb" id="oh2-7m-9IS"/>
-                            <outlet property="delegate" destination="xYP-xv-2cb" id="OXA-ET-6Bt"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Myg-fM-iMh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="ZPO-Jz-T86" customClass="MXKSampleRoomViewController" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="wpH-IE-cv7">
+                        <nil key="title"/>
+                        <view key="titleView" contentMode="scaleToFill" id="KFu-Hb-y2S" userLabel="roomTitleViewContainer">
+                            <rect key="frame" x="180" y="4" width="240" height="36"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="roomTitleViewContainer" destination="KFu-Hb-y2S" id="dYb-q2-90D"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u3S-ZR-OBR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-850" y="-2072"/>
+            <point key="canvasLocation" x="462" y="-1310"/>
         </scene>
         <!--Sample Room Members View Controller-->
         <scene sceneID="wke-Om-3we">
             <objects>
-                <tableViewController id="QAG-34-oEa" customClass="MXKSampleRoomMembersViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="STL-du-v5j">
+                <tableViewController id="QAG-34-oEa" customClass="MXKSampleRoomMembersViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pHi-Cd-dr1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-190" y="-570"/>
+        </scene>
+        <!--Room Member Details View Controller-->
+        <scene sceneID="YyP-Fs-6TY">
+            <objects>
+                <tableViewController id="UuX-gA-8uG" customClass="MXKRoomMemberDetailsViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MJd-o9-ofu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-190" y="236"/>
+        </scene>
+        <!--Room Member List View Controller-->
+        <scene sceneID="xB0-2j-NkM">
+            <objects>
+                <tableViewController id="Wgg-iS-db1" customClass="MXKRoomMemberListViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9dj-xn-UZM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-858" y="-570"/>
+        </scene>
+        <!--Authentication View Controller-->
+        <scene sceneID="peW-WS-Ln9">
+            <objects>
+                <viewController id="hza-rL-vB2" customClass="MXKAuthenticationViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7EP-jv-CHM"/>
+                        <viewControllerLayoutGuide type="bottom" id="Fhr-e2-LfS"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Msk-oh-g8l">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="dataSource" destination="QAG-34-oEa" id="4PK-yn-F5q"/>
-                            <outlet property="delegate" destination="QAG-34-oEa" id="0n4-a3-1M7"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="pHi-Cd-dr1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0aS-bk-8U0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-850" y="-570"/>
+            <point key="canvasLocation" x="-2230" y="264"/>
+        </scene>
+        <!--Account Details View Controller-->
+        <scene sceneID="LOU-c7-JNY">
+            <objects>
+                <tableViewController id="AJD-Wn-nDw" customClass="MXKAccountDetailsViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kcF-fa-yai" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-874" y="236"/>
+        </scene>
+        <!--Contact List View Controller-->
+        <scene sceneID="S8r-Lm-tzf">
+            <objects>
+                <tableViewController id="PaO-MN-amw" customClass="MXKContactListViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u3j-Tu-jdo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1562" y="672"/>
+        </scene>
+        <!--Contact Details View Controller-->
+        <scene sceneID="2LL-Vg-PFG">
+            <objects>
+                <tableViewController id="uwp-lu-7Nl" customClass="MXKContactDetailsViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="v9F-tK-x36" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="522" y="236"/>
         </scene>
         <!--MatrixKit Samples-->
         <scene sceneID="HuU-tB-Z5y">
@@ -87,17 +154,17 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="g7F-zA-9eD" userLabel="Table Header View">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                            <rect key="frame" x="0.0" y="64" width="600" height="50"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Selected room title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dk3-ey-9cK" userLabel="room title">
-                                    <rect key="frame" x="8" y="11" width="145" height="21"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please select a room" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dk3-ey-9cK" userLabel="room title">
+                                    <rect key="frame" x="8" y="17" width="159" height="21"/>
                                     <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
-                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I8v-5h-rrZ">
-                                    <rect key="frame" x="548" y="6" width="44" height="30"/>
+                                    <rect key="frame" x="548" y="12" width="44" height="30"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="44" id="ZpH-ER-RPe"/>
                                     </constraints>
@@ -105,31 +172,44 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <segue destination="xYP-xv-2cb" kind="show" identifier="showSampleRecentsViewController" id="lFv-iu-VuN"/>
+                                        <segue destination="YbK-3w-mDu" kind="show" identifier="showRoomSelector" id="Y6Z-lf-5du"/>
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
-                                <constraint firstItem="I8v-5h-rrZ" firstAttribute="top" secondItem="g7F-zA-9eD" secondAttribute="top" constant="6" id="D31-MI-BPR"/>
                                 <constraint firstAttribute="trailing" secondItem="I8v-5h-rrZ" secondAttribute="trailing" constant="8" id="Ubd-fv-hwR"/>
                                 <constraint firstItem="I8v-5h-rrZ" firstAttribute="leading" relation="lessThanOrEqual" secondItem="dk3-ey-9cK" secondAttribute="trailing" constant="461" id="cF2-In-rg9"/>
-                                <constraint firstItem="dk3-ey-9cK" firstAttribute="top" secondItem="g7F-zA-9eD" secondAttribute="top" constant="11" id="dhj-sa-Y5e"/>
                                 <constraint firstItem="dk3-ey-9cK" firstAttribute="leading" secondItem="g7F-zA-9eD" secondAttribute="leading" constant="8" id="eT5-Sj-CBZ"/>
                                 <constraint firstAttribute="bottom" secondItem="I8v-5h-rrZ" secondAttribute="bottom" constant="8" id="ek2-cl-2pg"/>
                                 <constraint firstAttribute="bottom" secondItem="dk3-ey-9cK" secondAttribute="bottom" constant="12" id="xhm-EO-ggW"/>
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SampleMainTableViewCell" textLabel="kKE-Ks-Tkj" style="IBUITableViewCellStyleDefault" id="LDf-Nb-Cy6">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="mainTableViewCellSampleVC" textLabel="kKE-Ks-Tkj" style="IBUITableViewCellStyleDefault" id="LDf-Nb-Cy6">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LDf-Nb-Cy6" id="LAe-MX-BrZ">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kKE-Ks-Tkj">
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="mainTableViewCellAction" textLabel="8WO-Fx-GSE" style="IBUITableViewCellStyleDefault" id="bQb-CH-pka">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bQb-CH-pka" id="Z5z-LM-nJJ">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Action" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8WO-Fx-GSE">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                            <color key="textColor" red="0.22481874389132883" green="0.40248149657007426" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -145,9 +225,18 @@
                     <connections>
                         <outlet property="selectedRoomDisplayName" destination="dk3-ey-9cK" id="5Eh-OY-HYM"/>
                         <outlet property="tableView" destination="a3F-qI-Vdh" id="VyL-gx-Ge0"/>
-                        <segue destination="XgL-bX-RPC" kind="show" identifier="showSampleRoomViewController" id="xhv-fW-ZTq"/>
+                        <segue destination="XgL-bX-RPC" kind="show" identifier="showMXKRoomViewController" id="xhv-fW-ZTq"/>
                         <segue destination="aaK-R6-eRn" kind="show" identifier="showSampleJSQMessagesViewController" id="mwb-xA-dOT"/>
                         <segue destination="QAG-34-oEa" kind="show" identifier="showSampleRoomMembersViewController" id="f7u-wO-NGI"/>
+                        <segue destination="hza-rL-vB2" kind="show" identifier="showMXKAuthenticationViewController" id="HSp-bf-C1Q"/>
+                        <segue destination="Wgg-iS-db1" kind="show" identifier="showMXKRoomMemberListViewController" id="NPB-63-INS"/>
+                        <segue destination="AJD-Wn-nDw" kind="show" identifier="showMXKAccountDetailsViewController" id="e6q-tj-0Hv"/>
+                        <segue destination="ZPO-Jz-T86" kind="show" identifier="showSampleRoomViewController" id="Yx7-ap-F4B"/>
+                        <segue destination="PaO-MN-amw" kind="show" identifier="showMXKContactListViewController" id="5Yg-2p-fIt"/>
+                        <segue destination="YbK-3w-mDu" kind="show" identifier="showMXKRecentListViewController" id="MBc-Hp-U9v"/>
+                        <segue destination="YbK-3w-mDu" kind="show" identifier="showInterleavedRecentsViewController" id="8a2-C4-GfS"/>
+                        <segue destination="UuX-gA-8uG" kind="show" identifier="showMXKRoomMemberDetailsViewController" id="qYZ-nn-TMh"/>
+                        <segue destination="uwp-lu-7Nl" kind="show" identifier="showMXKContactDetailsViewController" id="bbV-58-Cj4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -171,4 +260,7 @@
             <point key="canvasLocation" x="-2506" y="-570"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Y6Z-lf-5du"/>
+    </inferredMetricsTieBreakers>
 </document>

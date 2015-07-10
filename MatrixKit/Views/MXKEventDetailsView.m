@@ -18,7 +18,8 @@
 
 #import "MXEvent+MatrixKit.h"
 
-@interface MXKEventDetailsView () {
+@interface MXKEventDetailsView ()
+{
     /**
      The displayed event
      */
@@ -33,12 +34,14 @@
 
 @implementation MXKEventDetailsView
 
-- (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session {
+- (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
+{
     NSArray *nibViews = [[NSBundle bundleForClass:[MXKEventDetailsView class]] loadNibNamed:NSStringFromClass([MXKEventDetailsView class])
-                                                                                          owner:nil
-                                                                                        options:nil];
+                                                                                      owner:nil
+                                                                                    options:nil];
     self = nibViews.firstObject;
-    if (self) {
+    if (self)
+    {
         mxEvent = event;
         mxSession = session;
         
@@ -47,23 +50,33 @@
         // Disable redact button by default
         _redactButton.enabled = NO;
         
-        if (mxEvent) {
+        if (mxEvent)
+        {
             NSMutableDictionary *eventDict = [NSMutableDictionary dictionaryWithDictionary:mxEvent.originalDictionary];
             
             // Remove event type added by SDK
             [eventDict removeObjectForKey:@"event_type"];
             // Remove null values and empty dictionaries
-            for (NSString *key in eventDict.allKeys) {
-                if ([[eventDict objectForKey:key] isEqual:[NSNull null]]) {
+            for (NSString *key in eventDict.allKeys)
+            {
+                if ([[eventDict objectForKey:key] isEqual:[NSNull null]])
+                {
                     [eventDict removeObjectForKey:key];
-                } else if ([[eventDict objectForKey:key] isKindOfClass:[NSDictionary class]]) {
+                }
+                else if ([[eventDict objectForKey:key] isKindOfClass:[NSDictionary class]])
+                {
                     NSDictionary *dict = [eventDict objectForKey:key];
-                    if (!dict.count) {
+                    if (!dict.count)
+                    {
                         [eventDict removeObjectForKey:key];
-                    } else {
+                    }
+                    else
+                    {
                         NSMutableDictionary *updatedDict = [NSMutableDictionary dictionaryWithDictionary:dict];
-                        for (NSString *subKey in dict.allKeys) {
-                            if ([[dict objectForKey:subKey] isEqual:[NSNull null]]) {
+                        for (NSString *subKey in dict.allKeys)
+                        {
+                            if ([[dict objectForKey:subKey] isEqual:[NSNull null]])
+                            {
                                 [updatedDict removeObjectForKey:subKey];
                             }
                         }
@@ -80,22 +93,30 @@
             _textView.text = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             
             // Check whether the user can redact this event
-            if (!mxEvent.isRedactedEvent) {
+            if (!mxEvent.isRedactedEvent)
+            {
                 // Here the event has not been already redacted, check the user's power level
                 MXRoom *mxRoom = [mxSession roomWithRoomId:mxEvent.roomId];
-                if (mxRoom) {
+                if (mxRoom)
+                {
                     MXRoomPowerLevels *powerLevels = [mxRoom.state powerLevels];
                     NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:mxSession.myUser.userId];
-                    if (powerLevels.redact) {
-                        if (userPowerLevel >= powerLevels.redact) {
+                    if (powerLevels.redact)
+                    {
+                        if (userPowerLevel >= powerLevels.redact)
+                        {
                             _redactButton.enabled = YES;
                         }
-                    } else if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsMessage:kMXEventTypeStringRoomRedaction]) {
+                    }
+                    else if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsMessage:kMXEventTypeStringRoomRedaction])
+                    {
                         _redactButton.enabled = YES;
                     }
                 }
             }
-        } else {
+        }
+        else
+        {
             _textView.text = nil;
         }
         
@@ -106,30 +127,37 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     mxEvent = nil;
     mxSession = nil;
 }
 
 #pragma mark - Actions
 
-- (IBAction)onButtonPressed:(id)sender {
-    if (sender == _redactButton) {
+- (IBAction)onButtonPressed:(id)sender
+{
+    if (sender == _redactButton)
+    {
         MXRoom *mxRoom = [mxSession roomWithRoomId:mxEvent.roomId];
-        if (mxRoom) {
+        if (mxRoom)
+        {
             [_activityIndicator startAnimating];
             [mxRoom redactEvent:mxEvent.eventId reason:nil success:^{
                 [_activityIndicator stopAnimating];
                 [self removeFromSuperview];
-            } failure:^(NSError *error) {
+            } failure:^(NSError *error)
+            {
                 NSLog(@"[MXKEventDetailsView] Redact event (%@) failed: %@", mxEvent.eventId, error);
                 // TODO Alert user
-//                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
                 [_activityIndicator stopAnimating];
             }];
         }
         
-    } else if (sender == _closeButton) {
+    }
+    else if (sender == _closeButton)
+    {
         [self removeFromSuperview];
     }
 }

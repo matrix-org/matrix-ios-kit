@@ -30,6 +30,17 @@
 #import "MXKRoomViewController.h"
 #import "MXKRecentListViewController.h"
 #import "MXKRoomMemberListViewController.h"
+#import "MXKCallViewController.h"
+#import "MXKContactListViewController.h"
+#import "MXKAccountDetailsViewController.h"
+#import "MXKContactDetailsViewController.h"
+#import "MXKRoomMemberDetailsViewController.h"
+
+#import "MXKAuthenticationViewController.h"
+
+#import "MXKInterleavedRecentsDataSource.h"
+
+#import "MXKRoomCreationView.h"
 
 #import "MXKRoomInputToolbarView.h"
 #import "MXKRoomInputToolbarViewWithHPGrowingText.h"
@@ -38,6 +49,32 @@
 
 #import "MXKRoomBubbleCellData.h"
 #import "MXKRoomBubbleMergingMessagesCellData.h"
+
+#import "MXKPublicRoomTableViewCell.h"
+
+#import "MXKRoomMemberTableViewCell.h"
+#import "MXKAccountTableViewCell.h"
+
+#import "MXKTableViewCellWithButton.h"
+#import "MXKTableViewCellWithButtons.h"
+#import "MXKTableViewCellWithLabelAndButton.h"
+#import "MXKTableViewCellWithLabelAndSlider.h"
+#import "MXKTableViewCellWithLabelAndSubLabel.h"
+#import "MXKTableViewCellWithLabelAndSwitch.h"
+#import "MXKTableViewCellWithLabelAndTextField.h"
+#import "MXKTableViewCellWithLabelTextFieldAndButton.h"
+#import "MXKTableViewCellWithPicker.h"
+#import "MXKTableViewCellWithTextFieldAndButton.h"
+#import "MXKTableViewCellWithTextView.h"
+
+#import "MXKRoomTitleView.h"
+#import "MXKRoomTitleViewWithTopic.h"
+
+#import "MXKAccountManager.h"
+
+#import "MXKContactManager.h"
+
+#import "MXK3PID.h"
 
 /**
  The Matrix iOS Kit version.

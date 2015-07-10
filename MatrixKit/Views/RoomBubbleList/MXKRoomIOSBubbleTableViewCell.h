@@ -14,13 +14,13 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKCellRendering.h"
 
 /**
  `MXKRoomIOSBubbleTableViewCell` instances mimic bubbles in the stock iOS messages application.
  */
-@interface MXKRoomIOSBubbleTableViewCell : UITableViewCell <MXKCellRendering>
+@interface MXKRoomIOSBubbleTableViewCell : MXKTableViewCell <MXKCellRendering>
 
 @end

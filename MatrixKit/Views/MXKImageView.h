@@ -16,12 +16,25 @@
 
 #import <UIKit/UIKit.h>
 
-// Customize UIView in order to display image defined with remote url. Zooming inside the image (Stretching) is supported.
+/**
+ Customize UIView in order to display image defined with remote url. Zooming inside the image (Stretching) is supported.
+ */
 @interface MXKImageView : UIView <UIScrollViewDelegate>
 
 typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* title);
 
-- (void)setImageURL:(NSString *)imageURL withImageOrientation:(UIImageOrientation)orientation andPreviewImage:(UIImage*)previewImage;
+/**
+ Load an image by its url.
+ 
+ The image extension is extracted from the provided mime type (if any). If no type is available, we look for a potential extension
+ in the url. By default 'image/jpeg' is considered.
+ 
+ @param imageURL the remote image url
+ @param mimeType the media mime type, it is used to define the file extension (may be nil).
+ @param orientation the actual orientation of the encoded image (used UIImageOrientationUp by default).
+ @param previewImage image displayed until the actual image is available.
+ */
+- (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage;
 
 /**
  Toggle display to fullscreen.

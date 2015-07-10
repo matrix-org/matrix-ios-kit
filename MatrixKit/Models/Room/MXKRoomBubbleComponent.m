@@ -20,16 +20,21 @@
 
 @implementation MXKRoomBubbleComponent
 
-- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState andEventFormatter:(MXKEventFormatter*)formatter {
-    if (self = [super init]) {
+- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState andEventFormatter:(MXKEventFormatter*)formatter
+{
+    if (self = [super init])
+    {
         // Build text component related to this event
         _eventFormatter = formatter;
         MXKEventFormatterError error;
         NSString *eventString = [_eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
-        if (eventString.length) {
+        if (eventString.length)
+        {
             // Manage error
-            if (error != MXKEventFormatterErrorNone) {
-                switch (error) {
+            if (error != MXKEventFormatterErrorNone)
+            {
+                switch (error)
+                {
                     case MXKEventFormatterErrorUnsupported:
                         event.mxkState = MXKEventStateUnsupported;
                         break;
@@ -49,15 +54,20 @@
             _attributedTextMessage = nil;
             
             // Set date time
-            if (event.originServerTs != kMXUndefinedTimestamp) {
+            if (event.originServerTs != kMXUndefinedTimestamp)
+            {
                 _date = [NSDate dateWithTimeIntervalSince1970:(double)event.originServerTs/1000];
-            } else {
+            }
+            else
+            {
                 _date = nil;
             }
             
             // Keep ref on event (used in case of redaction)
             _event = event;
-        } else {
+        }
+        else
+        {
             // Ignore this event
             self = nil;
         }
@@ -65,35 +75,41 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 }
 
-- (void)updateWithEvent:(MXEvent*)event {
-
+- (void)updateWithEvent:(MXEvent*)event
+{
     // Report the new event
     _event = event;
-
+    
     // Reseting `attributedTextMessage` is enough to take into account the new event state
     // as it is only a font color change, there is no need to update `textMessage`
     // (Actually, we are unable to recompute `textMessage` as we do not have the room state)
     _attributedTextMessage = nil;
-
-    // Do more thing to manage redaction case
-    if (_event.isRedactedEvent) {
-
+    
+    // text message must be updated here in case of redaction, or for media attachment (see body update during video upload) 
+    if (_event.isRedactedEvent || _event.isMediaAttachment)
+    {
         // Build text component related to this event (Note: we don't have valid room state here, userId will be used as display name)
         MXKEventFormatterError error;
         _textMessage = [_eventFormatter stringFromEvent:event withRoomState:nil error:&error];
     }
 }
 
-- (NSAttributedString*)attributedTextMessage {
-    if (!_attributedTextMessage) {
+- (NSAttributedString*)attributedTextMessage
+{
+    if (!_attributedTextMessage)
+    {
         // Retrieve string attributes from formatter
         NSDictionary *attributes = [_eventFormatter stringAttributesForEvent:_event];
-        if (attributes) {
+        if (attributes)
+        {
             _attributedTextMessage = [[NSAttributedString alloc] initWithString:_textMessage attributes:attributes];
-        } else {
+        }
+        else
+        {
             _attributedTextMessage = [[NSAttributedString alloc] initWithString:_textMessage];
         }
     }

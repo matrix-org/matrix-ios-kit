@@ -16,6 +16,8 @@
 
 #import "MXKAppSettings.h"
 
+#import "MXKTools.h"
+
 
 // get ISO country name
 #import <CoreTelephony/CTCarrier.h>
@@ -24,43 +26,54 @@
 static MXKAppSettings *standardAppSettings = nil;
 
 @implementation MXKAppSettings
-@synthesize enableInAppNotifications;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, phonebookCountryCode;
+@synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 
-+ (MXKAppSettings *)standardAppSettings {
-    @synchronized(self) {
-        if(standardAppSettings == nil) {
++ (MXKAppSettings *)standardAppSettings
+{
+    @synchronized(self)
+    {
+        if(standardAppSettings == nil)
+        {
             standardAppSettings = [[super allocWithZone:NULL] init];
         }
     }
     return standardAppSettings;
 }
 
-#pragma  mark - 
+#pragma  mark -
 
--(instancetype)init {
-    if (self = [super init]) {
+-(instancetype)init
+{
+    if (self = [super init])
+    {
         
         // Use presence to sort room members by default
-        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"]) {
+        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"])
+        {
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"sortRoomMembersUsingLastSeenTime"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
         }
         sortRoomMembersUsingLastSeenTime = YES;
+        
+        presenceColorForOnlineUser = [UIColor greenColor];
+        presenceColorForUnavailableUser = [UIColor yellowColor];
+        presenceColorForOfflineUser = [UIColor redColor];
     }
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 }
 
-- (void)reset {
-    
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)reset
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         // Flush shared user defaults
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableInAppNotifications"];
-        
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showUnsupportedEventsInRoomHistory"];
@@ -70,10 +83,15 @@ static MXKAppSettings *standardAppSettings = nil;
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncLocalContacts"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phonebookCountryCode"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        enableInAppNotifications = NO;
         
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOnlineUser"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForUnavailableUser"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOfflineUser"];
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         showAllEventsInRoomHistory = NO;
         showRedactionsInRoomHistory = NO;
         showUnsupportedEventsInRoomHistory = NO;
@@ -83,146 +101,191 @@ static MXKAppSettings *standardAppSettings = nil;
         
         syncLocalContacts = NO;
         phonebookCountryCode = nil;
+        
+        presenceColorForOnlineUser = [UIColor greenColor];
+        presenceColorForUnavailableUser = [UIColor yellowColor];
+        presenceColorForOfflineUser = [UIColor redColor];
     }
 }
 
-#pragma mark -
+#pragma mark - Room display
 
-- (BOOL)enableInAppNotifications {
-    if (self == [MXKAppSettings standardAppSettings]) {
-        return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableInAppNotifications"];
-    } else {
-        return enableInAppNotifications;
-    }
-}
-
-- (void)setEnableInAppNotifications:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
-        [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"enableInAppNotifications"];
-    } else {
-        enableInAppNotifications = boolValue;
-    }
-}
-
-#pragma mark -
-
-- (BOOL)showAllEventsInRoomHistory {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (BOOL)showAllEventsInRoomHistory
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         return [[NSUserDefaults standardUserDefaults] boolForKey:@"showAllEventsInRoomHistory"];
-    } else {
+    }
+    else
+    {
         return showAllEventsInRoomHistory;
     }
 }
 
-- (void)setShowAllEventsInRoomHistory:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setShowAllEventsInRoomHistory:(BOOL)boolValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showAllEventsInRoomHistory"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         showAllEventsInRoomHistory = boolValue;
     }
 }
 
-- (BOOL)showRedactionsInRoomHistory {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (BOOL)showRedactionsInRoomHistory
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         return [[NSUserDefaults standardUserDefaults] boolForKey:@"showRedactionsInRoomHistory"];
-    } else {
+    }
+    else
+    {
         return showRedactionsInRoomHistory;
     }
 }
 
-- (void)setShowRedactionsInRoomHistory:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setShowRedactionsInRoomHistory:(BOOL)boolValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showRedactionsInRoomHistory"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         showRedactionsInRoomHistory = boolValue;
     }
 }
 
-- (BOOL)showUnsupportedEventsInRoomHistory {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (BOOL)showUnsupportedEventsInRoomHistory
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         return [[NSUserDefaults standardUserDefaults] boolForKey:@"showUnsupportedEventsInRoomHistory"];
-    } else {
+    }
+    else
+    {
         return showUnsupportedEventsInRoomHistory;
     }
 }
 
-- (void)setShowUnsupportedEventsInRoomHistory:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setShowUnsupportedEventsInRoomHistory:(BOOL)boolValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showUnsupportedEventsInRoomHistory"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         showUnsupportedEventsInRoomHistory = boolValue;
     }
 }
 
-#pragma mark -
+#pragma mark - Room members
 
-- (BOOL)sortRoomMembersUsingLastSeenTime {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (BOOL)sortRoomMembersUsingLastSeenTime
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         return [[NSUserDefaults standardUserDefaults] boolForKey:@"sortRoomMembersUsingLastSeenTime"];
-    } else {
+    }
+    else
+    {
         return sortRoomMembersUsingLastSeenTime;
     }
 }
 
-- (void)setSortRoomMembersUsingLastSeenTime:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setSortRoomMembersUsingLastSeenTime:(BOOL)boolValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"sortRoomMembersUsingLastSeenTime"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         sortRoomMembersUsingLastSeenTime = boolValue;
     }
 }
 
-- (BOOL)showLeftMembersInRoomMemberList {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (BOOL)showLeftMembersInRoomMemberList
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         return [[NSUserDefaults standardUserDefaults] boolForKey:@"showLeftMembersInRoomMemberList"];
-    } else {
+    }
+    else
+    {
         return showLeftMembersInRoomMemberList;
     }
 }
 
-- (void)setShowLeftMembersInRoomMemberList:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setShowLeftMembersInRoomMemberList:(BOOL)boolValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showLeftMembersInRoomMemberList"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         showLeftMembersInRoomMemberList = boolValue;
     }
 }
 
-#pragma mark -
+#pragma mark - Contacts
 
-- (BOOL)syncLocalContacts {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (BOOL)syncLocalContacts
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         return [[NSUserDefaults standardUserDefaults] boolForKey:@"syncLocalContacts"];
-    } else {
+    }
+    else
+    {
         return syncLocalContacts;
     }
 }
 
-- (void)setSyncLocalContacts:(BOOL)boolValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setSyncLocalContacts:(BOOL)boolValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"syncLocalContacts"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         syncLocalContacts = boolValue;
     }
 }
 
-- (NSString*)phonebookCountryCode {
+- (NSString*)phonebookCountryCode
+{
     NSString* res = phonebookCountryCode;
     
-    if (self == [MXKAppSettings standardAppSettings]) {
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         res = [[NSUserDefaults standardUserDefaults] stringForKey:@"phonebookCountryCode"];
     }
     
     // does not exist : try to get the SIM card information
-    if (!res) {
+    if (!res)
+    {
         // get the current MCC
         CTTelephonyNetworkInfo *netInfo = [[CTTelephonyNetworkInfo alloc] init];
         CTCarrier *carrier = [netInfo subscriberCellularProvider];
         
-        if (carrier) {
+        if (carrier)
+        {
             res = [[carrier isoCountryCode] uppercaseString];
             
-            if (res) {
+            if (res)
+            {
                 [self setPhonebookCountryCode:res];
             }
         }
@@ -231,11 +294,141 @@ static MXKAppSettings *standardAppSettings = nil;
     return res;
 }
 
-- (void)setPhonebookCountryCode:(NSString *)stringValue {
-    if (self == [MXKAppSettings standardAppSettings]) {
+- (void)setPhonebookCountryCode:(NSString *)stringValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
         [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"phonebookCountryCode"];
-    } else {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
         phonebookCountryCode = stringValue;
+    }
+}
+
+#pragma mark - Matrix users
+
+- (UIColor*)presenceColorForOnlineUser
+{
+    UIColor *color = presenceColorForOnlineUser;
+    
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        NSNumber *rgbValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"presenceColorForOnlineUser"];
+        if (rgbValue)
+        {
+            color = [MXKTools colorWithRGBValue:[rgbValue unsignedIntegerValue]];
+        }
+        else
+        {
+            color = [UIColor greenColor];
+        }
+    }
+    
+    return color;
+}
+
+- (void)setPresenceColorForOnlineUser:(UIColor*)color
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        if (color)
+        {
+            NSUInteger rgbValue = [MXKTools rgbValueWithColor:color];
+            [[NSUserDefaults standardUserDefaults] setInteger:rgbValue forKey:@"presenceColorForOnlineUser"];
+        }
+        else
+        {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOnlineUser"];
+        }
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        presenceColorForOnlineUser = color ? color : [UIColor greenColor];
+    }
+}
+
+- (UIColor*)presenceColorForUnavailableUser
+{
+    UIColor *color = presenceColorForUnavailableUser;
+    
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        NSNumber *rgbValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"presenceColorForUnavailableUser"];
+        if (rgbValue)
+        {
+            color = [MXKTools colorWithRGBValue:[rgbValue unsignedIntegerValue]];
+        }
+        else
+        {
+            color = [UIColor yellowColor];
+        }
+    }
+    
+    return color;
+}
+
+- (void)setPresenceColorForUnavailableUser:(UIColor*)color
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        if (color)
+        {
+            NSUInteger rgbValue = [MXKTools rgbValueWithColor:color];
+            [[NSUserDefaults standardUserDefaults] setInteger:rgbValue forKey:@"presenceColorForUnavailableUser"];
+        }
+        else
+        {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForUnavailableUser"];
+        }
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        presenceColorForUnavailableUser = color ? color : [UIColor yellowColor];
+    }
+}
+
+- (UIColor*)presenceColorForOfflineUser
+{
+    UIColor *color = presenceColorForOfflineUser;
+    
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        NSNumber *rgbValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"presenceColorForOfflineUser"];
+        if (rgbValue)
+        {
+            color = [MXKTools colorWithRGBValue:[rgbValue unsignedIntegerValue]];
+        }
+        else
+        {
+            color = [UIColor redColor];
+        }
+    }
+    
+    return color;
+}
+
+- (void)setPresenceColorForOfflineUser:(UIColor *)color
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        if (color)
+        {
+            NSUInteger rgbValue = [MXKTools rgbValueWithColor:color];
+            [[NSUserDefaults standardUserDefaults] setInteger:rgbValue forKey:@"presenceColorForOfflineUser"];
+        }
+        else
+        {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOfflineUser"];
+        }
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        presenceColorForOfflineUser = color ? color : [UIColor redColor];
     }
 }
 

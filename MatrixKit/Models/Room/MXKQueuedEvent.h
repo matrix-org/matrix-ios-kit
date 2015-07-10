@@ -37,6 +37,11 @@
  */
 @property (nonatomic, readonly) MXEventDirection direction;
 
+/**
+ Tells whether the event is queued during server sync or not.
+ */
+@property (nonatomic) BOOL serverSyncEvent;
+
 - (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)state direction:(MXEventDirection)direction;
 
 @end

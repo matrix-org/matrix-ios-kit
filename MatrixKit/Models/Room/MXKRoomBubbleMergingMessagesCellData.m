@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,8 @@
 
 #import "MXKRoomBubbleMergingMessagesCellData.h"
 
-@interface MXKRoomBubbleMergingMessagesCellData () {
-
-    /**
-     The data source owner of this instance.
-     */
-    MXKRoomDataSource *roomDataSource;
-    
+@interface MXKRoomBubbleMergingMessagesCellData ()
+{
     /**
      YES if position of each component must be refreshed
      */
@@ -37,23 +32,24 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
-- (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)roomState andRoomDataSource:(MXKRoomDataSource *)inRoomDataSource {
+- (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)roomState andRoomDataSource:(MXKRoomDataSource *)inRoomDataSource
+{
     self = [super initWithEvent:event andRoomState:roomState andRoomDataSource:inRoomDataSource];
-    if (self) {
+    if (self)
+    {
         roomDataSource = inRoomDataSource;
     }
     return self;
 }
 
-- (void)dealloc {
-    roomDataSource = nil;
-}
-
-- (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState {
+- (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
+{
     // We group together text messages from the same user
-    if ([event.userId isEqualToString:self.senderId] && (self.dataType == MXKRoomBubbleCellDataTypeText)) {
+    if ([event.userId isEqualToString:self.senderId] && (self.dataType == MXKRoomBubbleCellDataTypeText))
+    {
         // Attachments (image, video ...) cannot be added here
-        if ([roomDataSource.eventFormatter isSupportedAttachment:event]) {
+        if ([roomDataSource.eventFormatter isSupportedAttachment:event])
+        {
             return NO;
         }
         
@@ -61,17 +57,20 @@ static NSAttributedString *messageSeparator = nil;
         NSString *eventSenderName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
         NSString *eventSenderAvatar = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
         if ((self.senderDisplayName || eventSenderName) &&
-            ([self.senderDisplayName isEqualToString:eventSenderName] == NO)) {
+            ([self.senderDisplayName isEqualToString:eventSenderName] == NO))
+        {
             return NO;
         }
         if ((self.senderAvatarUrl || eventSenderAvatar) &&
-            ([self.senderAvatarUrl isEqualToString:eventSenderAvatar] == NO)) {
+            ([self.senderAvatarUrl isEqualToString:eventSenderAvatar] == NO))
+        {
             return NO;
         }
         
         // Create new message component
         MXKRoomBubbleComponent *addedComponent = [[MXKRoomBubbleComponent alloc] initWithEvent:event andRoomState:roomState andEventFormatter:roomDataSource.eventFormatter];
-        if (addedComponent) {
+        if (addedComponent)
+        {
             [self addComponent:addedComponent];
         }
         // else the event is ignored, we consider it as handled
@@ -80,14 +79,16 @@ static NSAttributedString *messageSeparator = nil;
     return NO;
 }
 
-- (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData {
-    
-    if ([self hasSameSenderAsBubbleCellData:bubbleCellData]) {
-        
+- (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData
+{
+    if ([self hasSameSenderAsBubbleCellData:bubbleCellData])
+    {
         MXKRoomBubbleCellData *cellData = (MXKRoomBubbleCellData*)bubbleCellData;
-        if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText)) {
+        if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText))
+        {
             // Add all components of the provided message
-            for (MXKRoomBubbleComponent* component in cellData.bubbleComponents) {
+            for (MXKRoomBubbleComponent* component in cellData.bubbleComponents)
+            {
                 [self addComponent:component];
             }
             return YES;
@@ -96,14 +97,48 @@ static NSAttributedString *messageSeparator = nil;
     return NO;
 }
 
+- (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor
+{
+    // Create attributed string
+    NSMutableAttributedString *customAttributedTextMsg;
+    NSAttributedString *componentString;
+    
+    for (MXKRoomBubbleComponent* component in bubbleComponents)
+    {
+        componentString = component.attributedTextMessage;
+        
+        if ([component.event.eventId isEqualToString:eventId])
+        {
+            NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+            UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
+            [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
+            componentString = customComponentString;
+        }
+        
+        if (!customAttributedTextMsg)
+        {
+            customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+        }
+        else
+        {
+            // Append attributed text
+            [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleMergingMessagesCellData messageSeparator]];
+            [customAttributedTextMsg appendAttributedString:componentString];
+        }
+    }
+    return customAttributedTextMsg;
+}
+
 #pragma mark -
 
-- (void)prepareBubbleComponentsPosition {
+- (void)prepareBubbleComponentsPosition
+{
     // Set position of the first component
     [super prepareBubbleComponentsPosition];
     
     // Check whether the position of other components need to be refreshed
-    if (self.dataType != MXKRoomBubbleCellDataTypeText || !shouldUpdateComponentsPosition || bubbleComponents.count < 2) {
+    if (self.dataType != MXKRoomBubbleCellDataTypeText || !shouldUpdateComponentsPosition || bubbleComponents.count < 2)
+    {
         return;
     }
     
@@ -115,7 +150,8 @@ static NSAttributedString *messageSeparator = nil;
     CGFloat positionY = component.position.y;
     CGFloat cumulatedHeight = 0;
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
-    for (NSUInteger index = 1; index < bubbleComponents.count; index++) {
+    for (NSUInteger index = 1; index < bubbleComponents.count; index++)
+    {
         cumulatedHeight += componentHeight;
         positionY += componentHeight;
         
@@ -132,15 +168,56 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark -
 
-- (NSAttributedString*)attributedTextMessage {
-    if (!attributedTextMessage.length && bubbleComponents.count) {
+- (NSString*)textMessage
+{
+    NSString *rawText = nil;
+    
+    if (self.attributedTextMessage)
+    {
+        // Append all components text message
+        NSMutableString *currentTextMsg;
+        for (MXKRoomBubbleComponent* component in bubbleComponents)
+        {
+            if (!currentTextMsg)
+            {
+                currentTextMsg = [NSMutableString stringWithString:component.textMessage];
+            }
+            else
+            {
+                // Append text message
+                [currentTextMsg appendString:@"\n"];
+                [currentTextMsg appendString:component.textMessage];
+            }
+        }
+        rawText = currentTextMsg;
+    }
+    
+    return rawText;
+}
+
+- (void)setAttributedTextMessage:(NSAttributedString *)inAttributedTextMessage
+{
+    super.attributedTextMessage = inAttributedTextMessage;
+
+    // Position of each components should be computed again
+    shouldUpdateComponentsPosition = YES;
+}
+
+- (NSAttributedString*)attributedTextMessage
+{
+    if (!attributedTextMessage.length && bubbleComponents.count)
+    {
         // Create attributed string
         NSMutableAttributedString *currentAttributedTextMsg;
         
-        for (MXKRoomBubbleComponent* component in bubbleComponents) {
-            if (!currentAttributedTextMsg) {
-                currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];;
-            } else {
+        for (MXKRoomBubbleComponent* component in bubbleComponents)
+        {
+            if (!currentAttributedTextMsg)
+            {
+                currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+            }
+            else
+            {
                 // Append attributed text
                 [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleMergingMessagesCellData messageSeparator]];
                 [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
@@ -152,11 +229,13 @@ static NSAttributedString *messageSeparator = nil;
     return attributedTextMessage;
 }
 
-- (void)setMaxTextViewWidth:(CGFloat)inMaxTextViewWidth {
+- (void)setMaxTextViewWidth:(CGFloat)inMaxTextViewWidth
+{
     [super setMaxTextViewWidth:inMaxTextViewWidth];
     
     // Check change
-    if (CGSizeEqualToSize(self.contentSize, CGSizeZero)) {
+    if (CGSizeEqualToSize(self.contentSize, CGSizeZero))
+    {
         // Position of each components should be computed again
         shouldUpdateComponentsPosition = YES;
     }
@@ -164,11 +243,14 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark -
 
-+ (NSAttributedString *)messageSeparator {
-    @synchronized(self) {
-        if(messageSeparator == nil) {
++ (NSAttributedString *)messageSeparator
+{
+    @synchronized(self)
+    {
+        if(messageSeparator == nil)
+        {
             messageSeparator = [[NSAttributedString alloc] initWithString:@"\n\n" attributes:@{NSForegroundColorAttributeName : [UIColor blackColor],
-                                                                                                   NSFontAttributeName: [UIFont systemFontOfSize:4]}];
+                                                                                               NSFontAttributeName: [UIFont systemFontOfSize:4]}];
         }
     }
     return messageSeparator;
@@ -176,12 +258,15 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark - Privates
 
-- (void)addComponent:(MXKRoomBubbleComponent*)addedComponent {
+- (void)addComponent:(MXKRoomBubbleComponent*)addedComponent
+{
     // Check date of existing components to insert this new one
     NSUInteger index = bubbleComponents.count;
-    while (index) {
+    while (index)
+    {
         MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
-        if ([msgComponent.date compare:addedComponent.date] != NSOrderedDescending) {
+        if ([msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+        {
             // New component will be inserted here
             index ++;
             break;
@@ -192,9 +277,6 @@ static NSAttributedString *messageSeparator = nil;
     
     // Reset the current attributed string (This will reset rendering attributes).
     self.attributedTextMessage = nil;
-    
-    // Position of each components should be computed again
-    shouldUpdateComponentsPosition = YES;
 }
 
 @end

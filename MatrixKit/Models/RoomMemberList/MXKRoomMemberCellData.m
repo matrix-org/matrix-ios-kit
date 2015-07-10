@@ -1,12 +1,12 @@
 /*
  Copyright 2015 OpenMarket Ltd
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +18,8 @@
 
 #import "MXKRoomMemberListDataSource.h"
 
-@interface MXKRoomMemberCellData () {
-
+@interface MXKRoomMemberCellData ()
+{
     MXKRoomMemberListDataSource *roomMemberListDataSource;
 }
 
@@ -29,10 +29,11 @@
 @synthesize roomMember;
 @synthesize memberDisplayName, powerLevel, isTyping;
 
-- (instancetype)initWithRoomMember:(MXRoomMember*)member roomState:(MXRoomState*)roomState andRoomMemberListDataSource:(MXKRoomMemberListDataSource*)memberListDataSource {
-    
+- (instancetype)initWithRoomMember:(MXRoomMember*)member roomState:(MXRoomState*)roomState andRoomMemberListDataSource:(MXKRoomMemberListDataSource*)memberListDataSource
+{
     self = [self init];
-    if (self) {
+    if (self)
+    {
         roomMember = member;
         roomMemberListDataSource = memberListDataSource;
         
@@ -45,17 +46,20 @@
     return  self;
 }
 
-- (void)updateWithRoomState:(MXRoomState*)roomState {
+- (void)updateWithRoomState:(MXRoomState*)roomState
+{
     memberDisplayName = [roomState memberName:roomMember.userId];
     powerLevel = [roomState memberNormalizedPowerLevel:roomMember.userId];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     roomMember = nil;
     roomMemberListDataSource = nil;
 }
 
-- (MXSession*)mxSession {
+- (MXSession*)mxSession
+{
     return roomMemberListDataSource.mxSession;
 }
 

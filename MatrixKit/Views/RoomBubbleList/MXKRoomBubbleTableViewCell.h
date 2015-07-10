@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKTableViewCell.h"
 
 #import "MXKCellRendering.h"
 
@@ -77,13 +77,22 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
  */
-@interface MXKRoomBubbleTableViewCell : UITableViewCell <MXKCellRendering>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering>
 
 /**
  The current bubble data displayed by the table view cell
  */
 @property (strong, nonatomic) MXKRoomBubbleCellData *bubbleData;
 
+/**
+ Option to highlight or not the content of message text view (May be used in case of text selection)
+ */
+@property (nonatomic) BOOL allTextHighlighted;
+
+/**
+ The default picture displayed when no picture is available.
+ */
+@property (nonatomic) UIImage *picturePlaceholder;
 
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;
@@ -96,10 +105,48 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet MXKPieChartView *progressChartView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateTimeLabelContainerTopConstraint;
 
+- (void)startProgressUI;
+
 - (void)updateProgressUI:(NSDictionary*)statisticsDict;
+
+#pragma mark - Original Xib values
+
+/**
+ Get an original instance of the `MXKRoomBubbleTableViewCell` child class.
+
+ @return an instance of the child class caller which has the original Xib values.
+ */
++ (MXKRoomBubbleTableViewCell*)cellWithOriginalXib;
+
+/**
+ The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering render:] not
+ overidden by a class child.
+
+ @param cellData the data object to render.
+ */
+- (void)originalRender:(MXKCellData*)cellData;
+
+/**
+ The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering 
+ originalHeightForCellData: withMaximumWidth:] not overidden by a class child.
+
+ @param cellData the data object to render.
+ @param maxWidth the maximum available width.
+ @return the cell height
+ */
++ (CGFloat)originalHeightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth;
+
+/**
+ Highlight text message related to a specific event in the displayed message.
+ 
+ @param eventId the id of the event to highlight (use nil to cancel highlighting).
+ */
+- (void)highlightTextMessageForEvent:(NSString*)eventId;
 
 @end

@@ -57,6 +57,13 @@ typedef enum : NSUInteger {
 + (MXKRoomDataSourceManager*)sharedManagerForMatrixSession:(MXSession*)mxSession;
 
 /**
+ Remove the MXKRoomDataSources manager for a particular Matrix session.
+ 
+ @param mxSession the Matrix session.
+ */
++ (void)removeSharedManagerForMatrixSession:(MXSession*)mxSession;
+
+/**
  Force close all the current room data source instances.
  */
 - (void)reset;
@@ -98,5 +105,10 @@ typedef enum : NSUInteger {
  Default is MXKRoomDataSourceManagerReleasePolicyNeverRelease.
  */
 @property (nonatomic) MXKRoomDataSourceManagerReleasePolicy releasePolicy;
+
+/**
+ Tells whether a server sync is in progress in the matrix session.
+ */
+@property (nonatomic, readonly) BOOL isServerSyncInProgress;
 
 @end

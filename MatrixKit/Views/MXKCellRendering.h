@@ -73,7 +73,6 @@
 
 @end
 
-
 /**
 `MXKCellRenderingDelegate` defines a protocol used when the user has interactions with
  the cell view.
