@@ -8,13 +8,13 @@ target "MatrixKitSample" do
 
 # Different flavours of pods to Matrix SDK
 # The tagged version on which this version of MatrixKit has been built
-#pod 'MatrixSDK', '~> 0.4.0'
+pod 'MatrixSDK', '~> 0.5.0'
 
 # The lastest release available on the CocoaPods repository 
 #pod 'MatrixSDK'
 
 # The develop branch version
-pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'develop'
+#pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'develop'
 
 # The one used for developping both MatrixSDK and MatrixKit
 # Note that MatrixSDK must be cloned into a folder called matrix-ios-sdk next to the MatrixKit folder
@@ -30,7 +30,7 @@ pod 'JSQMessagesViewController', '~> 7.0.0'
 
 # Matrix.org fork of 'OpenWebRTC-SDK'
 #pod 'OpenWebRTC-SDK', :path => '../openwebrtc-ios-sdk-mx/OpenWebRTC-SDK.podspec'
-pod 'OpenWebRTC-SDK', :git => 'https://github.com/matrix-org/openwebrtc-ios-sdk.git', :branch => 'cvo_support'
+#pod 'OpenWebRTC-SDK', :git => 'https://github.com/matrix-org/openwebrtc-ios-sdk.git', :branch => 'cvo_support'
 
 end
 
