@@ -1781,7 +1781,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-    if (action == @selector(copy:) || action == @selector(share:))
+    if (selectedText.length && (action == @selector(copy:) || action == @selector(share:)))
     {
         return YES;
     }
