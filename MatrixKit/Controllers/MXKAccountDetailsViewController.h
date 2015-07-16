@@ -20,6 +20,8 @@ limitations under the License.
 
 #import "MXKAccountManager.h"
 
+#import "MXK3PID.h"
+
 /**
  */
 typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
@@ -29,6 +31,37 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
  Only one matrix session is handled by this view controller.
  */
 @interface MXKAccountDetailsViewController : MXKTableViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+{
+@protected
+    
+    /**
+     Section index
+     */
+    NSInteger linkedEmailsSection;
+    NSInteger notificationsSection;
+    NSInteger configurationSection;
+    
+    /**
+     The logout button
+     */
+    UIButton *logoutButton;
+    
+    /**
+     Linked email
+     */
+    MXK3PID  *submittedEmail;
+    UIButton *emailSubmitButton;
+    UITextField *emailTextField;
+    UIButton *emailTokenSubmitButton;
+    UITextField *emailTokenTextField;
+    
+    // Notifications
+    UISwitch *apnsNotificationsSwitch;
+    UISwitch *inAppNotificationsSwitch;
+    
+    // The table cell with "Global Notification Settings" button
+    UIButton *notificationSettingsButton;
+}
 
 /**
  The account displayed into the view controller.
@@ -70,7 +103,9 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
 + (instancetype)accountDetailsViewController;
 
 /**
- Action registered on `UIControlEventTouchUpInside` for some buttons.
+ Action registered on the following events:
+ - 'UIControlEventTouchUpInside' for each UIButton instance.
+ - 'UIControlEventValueChanged' for each UISwitch instance.
  */
 - (IBAction)onButtonPressed:(id)sender;
 

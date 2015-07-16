@@ -33,21 +33,11 @@
 
 NSString* const kMXKAccountDetailsConfigurationFormatText = @"Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
-NSString* const kMXKAccountDetailsNotificationRulesUserInfo = @"To configure global notification settings (like rules), go find a webclient and hit Settings > Notifications.";
-
 NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
 
 @interface MXKAccountDetailsViewController ()
 {
     NSMutableArray *alertsArray;
-    
-    // Section index
-    NSInteger linkedEmailsSection;
-    NSInteger notificationsSection;
-    NSInteger configurationSection;
-    
-    // The table cell with logout button
-    MXKTableViewCellWithButton *logoutBtnCell;
     
     // User's profile
     MXKMediaLoader *imageLoader;
@@ -66,21 +56,14 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     // Linked emails
     // TODO: When server will provide existing linked emails, these linked emails should be stored in MXKAccount instance.
     NSMutableArray *linkedEmails;
-    
-    MXK3PID        *submittedEmail;
-    MXKTableViewCellWithTextFieldAndButton* submittedEmailCell;
-    MXKTableViewCellWithLabelTextFieldAndButton* emailTokenCell;
     // Dynamic rows in the Linked emails section
     NSInteger submittedEmailRowIndex;
     NSInteger emailTokenRowIndex;
     
     // Notifications
-    UISwitch *apnsNotificationsSwitch;
-    UISwitch *inAppNotificationsSwitch;
     // Dynamic rows in the Notifications section
     NSInteger enablePushNotifRowIndex;
     NSInteger enableInAppNotifRowIndex;
-    NSInteger userInfoNotifRowIndex;
     
     UIImagePickerController *mediaPicker;
 }
@@ -363,12 +346,14 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     
     linkedEmails = nil;
     submittedEmail = nil;
-    submittedEmailCell = nil;
-    emailTokenCell = nil;
+    emailSubmitButton = nil;
+    emailTextField = nil;
+    emailTokenSubmitButton = nil;
+    emailTokenTextField = nil;
     
     [self removeMatrixSession:self.mainSession];
     
-    logoutBtnCell = nil;
+    logoutButton = nil;
     
     onReadyToLeaveHandler = nil;
 }
@@ -689,35 +674,35 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         mediaPicker.allowsEditing = NO;
         [self presentViewController:mediaPicker animated:YES completion:nil];
     }
-    else if (sender == logoutBtnCell.mxkButton)
+    else if (sender == logoutButton)
     {
         [[MXKAccountManager sharedManager] removeAccount:_mxAccount];
         self.mxAccount = nil;
     }
-    else if (sender == submittedEmailCell.mxkButton)
+    else if (sender == emailSubmitButton)
     {
-        if (!submittedEmail || ![submittedEmail.address isEqualToString:submittedEmailCell.mxkTextField.text])
+        if (!submittedEmail || ![submittedEmail.address isEqualToString:emailTextField.text])
         {
-            submittedEmail = [[MXK3PID alloc] initWithMedium:kMX3PIDMediumEmail andAddress:submittedEmailCell.mxkTextField.text];
+            submittedEmail = [[MXK3PID alloc] initWithMedium:kMX3PIDMediumEmail andAddress:emailTextField.text];
         }
         
-        submittedEmailCell.mxkButton.enabled = NO;
+        emailSubmitButton.enabled = NO;
         [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient success:^{
             // Reset email field
-            submittedEmailCell.mxkTextField.text = nil;
+            emailTextField.text = nil;
             [self.tableView reloadData];
         } failure:^(NSError *error)
          {
              NSLog(@"[MXKAccountDetailsVC] Failed to request email token: %@", error);
              //Alert user TODO GFO
              //            [[AppDelegate theDelegate] showErrorAsAlert:error];
-             submittedEmailCell.mxkButton.enabled = YES;
+             emailSubmitButton.enabled = YES;
          }];
     }
-    else if (sender == emailTokenCell.mxkButton)
+    else if (sender == emailTokenSubmitButton)
     {
-        emailTokenCell.mxkButton.enabled = NO;
-        [submittedEmail validateWithToken:emailTokenCell.mxkTextField.text success:^(BOOL success)
+        emailTokenSubmitButton.enabled = NO;
+        [submittedEmail validateWithToken:emailTokenTextField.text success:^(BOOL success)
          {
              if (success)
              {
@@ -756,14 +741,14 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                             }];
                  [alert showInViewController:self];
                  // Reset wrong token
-                 emailTokenCell.mxkTextField.text = nil;
+                 emailTokenTextField.text = nil;
              }
          } failure:^(NSError *error)
          {
              NSLog(@"[MXKAccountDetailsVC] Failed to submit email token: %@", error);
              //Alert user TODO GFO
              //            [[AppDelegate theDelegate] showErrorAsAlert:error];
-             emailTokenCell.mxkButton.enabled = YES;
+             emailTokenSubmitButton.enabled = YES;
          }];
     }
     else if (sender == apnsNotificationsSwitch)
@@ -788,13 +773,13 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         [userDisplayName resignFirstResponder];
         [self updateSaveUserInfoButtonStatus];
     }
-    else if ([submittedEmailCell.mxkTextField isFirstResponder])
+    else if ([emailTextField isFirstResponder])
     {
-        [submittedEmailCell.mxkTextField resignFirstResponder];
+        [emailTextField resignFirstResponder];
     }
-    else if ([emailTokenCell.mxkTextField isFirstResponder])
+    else if ([emailTokenTextField isFirstResponder])
     {
-        [emailTokenCell.mxkTextField resignFirstResponder];
+        [emailTokenTextField resignFirstResponder];
     }
 }
 
@@ -849,18 +834,18 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         }
         else
         {
-            emailTokenCell = nil;
+            emailTokenSubmitButton = nil;
+            emailTokenTextField = nil;
         }
     }
     else if (section == notificationsSection)
     {
-        enableInAppNotifRowIndex = enablePushNotifRowIndex = userInfoNotifRowIndex = -1;
+        enableInAppNotifRowIndex = enablePushNotifRowIndex = -1;
         
         if ([MXKAccountManager sharedManager].isAPNSAvailable) {
             enablePushNotifRowIndex = count++;
         }
         enableInAppNotifRowIndex = count++;
-        userInfoNotifRowIndex = count++;
     }
     else if (section == configurationSection)
     {
@@ -877,17 +862,6 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         if (indexPath.row == emailTokenRowIndex)
         {
             return 70;
-        }
-    }
-    else if (indexPath.section == notificationsSection)
-    {
-        if (indexPath.row == userInfoNotifRowIndex)
-        {
-            UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
-            textView.font = [UIFont systemFontOfSize:14];
-            textView.text = kMXKAccountDetailsNotificationRulesUserInfo;
-            CGSize contentSize = [textView sizeThatFits:textView.frame.size];
-            return contentSize.height + 1;
         }
     }
     else if (indexPath.section == configurationSection)
@@ -926,12 +900,12 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         {
             // Report the current email value (if any)
             NSString *currentEmail = nil;
-            if (submittedEmailCell)
+            if (emailTextField)
             {
-                currentEmail = submittedEmailCell.mxkTextField.text;
+                currentEmail = emailTextField.text;
             }
             
-            submittedEmailCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextFieldAndButton defaultReuseIdentifier]];
+            MXKTableViewCellWithTextFieldAndButton *submittedEmailCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextFieldAndButton defaultReuseIdentifier]];
             if (!submittedEmailCell)
             {
                 submittedEmailCell = [[MXKTableViewCellWithTextFieldAndButton alloc] init];
@@ -942,6 +916,9 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             [submittedEmailCell.mxkButton setTitle:@"Link Email" forState:UIControlStateNormal];
             [submittedEmailCell.mxkButton setTitle:@"Link Email" forState:UIControlStateHighlighted];
             [submittedEmailCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            
+            emailSubmitButton = submittedEmailCell.mxkButton;
+            emailTextField = submittedEmailCell.mxkTextField;
             
             if (emailTokenRowIndex != -1)
             {
@@ -956,12 +933,12 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         {
             // Report the current token value (if any)
             NSString *currentToken = nil;
-            if (emailTokenCell)
+            if (emailTokenTextField)
             {
-                currentToken = emailTokenCell.mxkTextField.text;
+                currentToken = emailTokenTextField.text;
             }
             
-            emailTokenCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelTextFieldAndButton defaultReuseIdentifier]];
+            MXKTableViewCellWithLabelTextFieldAndButton *emailTokenCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelTextFieldAndButton defaultReuseIdentifier]];
             if (!emailTokenCell)
             {
                 emailTokenCell = [[MXKTableViewCellWithLabelTextFieldAndButton alloc] init];
@@ -974,52 +951,40 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             [emailTokenCell.mxkButton setTitle:@"Submit code" forState:UIControlStateHighlighted];
             [emailTokenCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
+            emailTokenSubmitButton = emailTokenCell.mxkButton;
+            emailTokenTextField = emailTokenCell.mxkTextField;
+            
             cell = emailTokenCell;
         }
     }
     else if (indexPath.section == notificationsSection)
     {
-        if (indexPath.row == userInfoNotifRowIndex)
+        MXKTableViewCellWithLabelAndSwitch *notificationsCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelAndSwitch defaultReuseIdentifier]];
+        if (!notificationsCell)
         {
-            MXKTableViewCellWithTextView *userInfoCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextView defaultReuseIdentifier]];
-            if (!userInfoCell)
-            {
-                userInfoCell = [[MXKTableViewCellWithTextView alloc] init];
-            }
-            
-            userInfoCell.mxkTextView.text = kMXKAccountDetailsNotificationRulesUserInfo;
-            cell = userInfoCell;
+            notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] init];
         }
-        else
+        
+        [notificationsCell.mxkSwitch addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventValueChanged];
+        
+        if (indexPath.row == enableInAppNotifRowIndex)
         {
-            MXKTableViewCellWithLabelAndSwitch *notificationsCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithLabelAndSwitch defaultReuseIdentifier]];
-            if (!notificationsCell)
-            {
-                notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] init];
-            }
-            
-            [notificationsCell.mxkSwitch addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventValueChanged];
-            
-            if (indexPath.row == enableInAppNotifRowIndex)
-            {
-                notificationsCell.mxkLabel.text = @"Enable In-App notifications";
-                notificationsCell.mxkSwitch.on = _mxAccount.enableInAppNotifications;
-                inAppNotificationsSwitch = notificationsCell.mxkSwitch;
-            }
-            else /* enablePushNotifRowIndex */
-            {
-                notificationsCell.mxkLabel.text = @"Enable push notifications";
-                notificationsCell.mxkSwitch.on = _mxAccount.pushNotificationServiceIsActive;
-                notificationsCell.mxkSwitch.enabled = YES;
-                apnsNotificationsSwitch = notificationsCell.mxkSwitch;
-            }
-            
-            cell = notificationsCell;
+            notificationsCell.mxkLabel.text = @"Enable In-App notifications";
+            notificationsCell.mxkSwitch.on = _mxAccount.enableInAppNotifications;
+            inAppNotificationsSwitch = notificationsCell.mxkSwitch;
         }
+        else /* enablePushNotifRowIndex */
+        {
+            notificationsCell.mxkLabel.text = @"Enable push notifications";
+            notificationsCell.mxkSwitch.on = _mxAccount.pushNotificationServiceIsActive;
+            notificationsCell.mxkSwitch.enabled = YES;
+            apnsNotificationsSwitch = notificationsCell.mxkSwitch;
+        }
+        
+        cell = notificationsCell;
     }
     else if (indexPath.section == configurationSection)
     {
-        
         if (indexPath.row == 0)
         {
             MXKTableViewCellWithTextView *configCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithTextView defaultReuseIdentifier]];
@@ -1033,7 +998,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         }
         else
         {
-            logoutBtnCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithButton defaultReuseIdentifier]];
+            MXKTableViewCellWithButton *logoutBtnCell = [tableView dequeueReusableCellWithIdentifier:[MXKTableViewCellWithButton defaultReuseIdentifier]];
             if (!logoutBtnCell)
             {
                 logoutBtnCell = [[MXKTableViewCellWithButton alloc] init];
@@ -1041,6 +1006,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             [logoutBtnCell.mxkButton setTitle:@"Logout" forState:UIControlStateNormal];
             [logoutBtnCell.mxkButton setTitle:@"Logout" forState:UIControlStateHighlighted];
             [logoutBtnCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            
+            logoutButton = logoutBtnCell.mxkButton;
             
             cell = logoutBtnCell;
         }
