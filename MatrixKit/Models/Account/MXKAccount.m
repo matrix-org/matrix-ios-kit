@@ -365,7 +365,14 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Instantiate new session
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
-    
+
+    // If a call stack is defined, used it
+    if ([MXKAccountManager sharedManager].callStackClass)
+    {
+        id<MXCallStack> callStack = [[[MXKAccountManager sharedManager].callStackClass alloc] init];
+        [mxSession enableVoIPWithCallStack:callStack];
+    }
+
     // Register session state observer
     sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
