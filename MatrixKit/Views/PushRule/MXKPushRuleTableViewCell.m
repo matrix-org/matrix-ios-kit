@@ -31,6 +31,8 @@
     _deleteButton.backgroundColor = [UIColor clearColor];
     [_deleteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_minus"] forState:UIControlStateNormal];
     [_deleteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_minus"] forState:UIControlStateHighlighted];
+    
+    _ruleDescription.numberOfLines = 0;
 }
 
 - (void)setMxPushRule:(MXPushRule *)mxPushRule
