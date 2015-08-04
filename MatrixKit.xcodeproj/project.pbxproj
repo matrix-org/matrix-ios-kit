@@ -32,6 +32,11 @@
 		F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */ = {isa = PBXBuildFile; fileRef = F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */; };
 		F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00C252A1ADBC60300065077 /* MXKTableViewController.m */; };
 		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
+		F01449AB1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */; };
+		F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */; };
+		F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A91B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m */; };
+		F01449AE1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01449AA1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.xib */; };
+		F01449B11B56A92800EA7D73 /* MXKNotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449B01B56A92800EA7D73 /* MXKNotificationSettingsViewController.m */; };
 		F01C7DFA1AFB6BF900FC2F59 /* MXKCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */; };
 		F01C7DFB1AFB6BF900FC2F59 /* MXKCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */; };
 		F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */; };
@@ -207,6 +212,14 @@
 		F00C252A1ADBC60300065077 /* MXKTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTableViewController.m; sourceTree = "<group>"; };
 		F01267481AF8A9440067D962 /* MXK3PID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXK3PID.h; sourceTree = "<group>"; };
 		F01267491AF8A9440067D962 /* MXK3PID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXK3PID.m; sourceTree = "<group>"; };
+		F01449A51B53FA7600EA7D73 /* MXKPushRuleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPushRuleTableViewCell.h; sourceTree = "<group>"; };
+		F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPushRuleTableViewCell.m; sourceTree = "<group>"; };
+		F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKPushRuleTableViewCell.xib; sourceTree = "<group>"; };
+		F01449A81B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPushRuleCreationTableViewCell.h; sourceTree = "<group>"; };
+		F01449A91B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPushRuleCreationTableViewCell.m; sourceTree = "<group>"; };
+		F01449AA1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKPushRuleCreationTableViewCell.xib; sourceTree = "<group>"; };
+		F01449AF1B56A92800EA7D73 /* MXKNotificationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKNotificationSettingsViewController.h; sourceTree = "<group>"; };
+		F01449B01B56A92800EA7D73 /* MXKNotificationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKNotificationSettingsViewController.m; sourceTree = "<group>"; };
 		F01C7DF71AFB6BF900FC2F59 /* MXKCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCallViewController.h; sourceTree = "<group>"; };
 		F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKCallViewController.m; sourceTree = "<group>"; };
 		F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKCallViewController.xib; sourceTree = "<group>"; };
@@ -496,6 +509,8 @@
 				F095E4FB1B2586C6009606CE /* MXKContactListViewController.h */,
 				F095E4FC1B2586C6009606CE /* MXKContactListViewController.m */,
 				F095E4FE1B258750009606CE /* MXKContactListViewController.xib */,
+				F01449AF1B56A92800EA7D73 /* MXKNotificationSettingsViewController.h */,
+				F01449B01B56A92800EA7D73 /* MXKNotificationSettingsViewController.m */,
 				32CEE2201AB1E37600F7C74D /* MXKRecentListViewController.h */,
 				32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */,
 				F0CF99031B0F1A0B00EAE373 /* MXKRecentListViewController.xib */,
@@ -540,6 +555,7 @@
 				F06E768A1AF0FED000980E5A /* Authentication */,
 				F095E5131B259942009606CE /* Contact */,
 				F0CF98CB1B0B7FDC00EAE373 /* MXKTableViewCell */,
+				F01449A41B53FA7600EA7D73 /* PushRule */,
 				328AC47A1AA75D140044A6FB /* RoomBubbleList */,
 				F00BB4471AB840B300AE388E /* RoomInputToolbar */,
 				32CEE22D1AB1EE0900F7C74D /* RoomList */,
@@ -650,6 +666,19 @@
 				F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */,
 			);
 			path = RoomInputToolbar;
+			sourceTree = "<group>";
+		};
+		F01449A41B53FA7600EA7D73 /* PushRule */ = {
+			isa = PBXGroup;
+			children = (
+				F01449A51B53FA7600EA7D73 /* MXKPushRuleTableViewCell.h */,
+				F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */,
+				F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */,
+				F01449A81B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.h */,
+				F01449A91B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m */,
+				F01449AA1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.xib */,
+			);
+			path = PushRule;
 			sourceTree = "<group>";
 		};
 		F05FB1721AD5129500DC0647 /* RoomMemberList */ = {
@@ -982,6 +1011,7 @@
 				F0CF98CA1B0B63B900EAE373 /* MXKAccountDetailsViewController.xib in Resources */,
 				F06E76961AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
+				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
 				F0CE56E91AA8BB5E003BE77A /* Info.plist in Resources */,
 				F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */,
 				F06E76821AF0FEB100980E5A /* MXKAuthenticationViewController.xib in Resources */,
@@ -1008,6 +1038,7 @@
 				F0CF98ED1B0B87D200EAE373 /* MXKTableViewCellWithLabelTextFieldAndButton.xib in Resources */,
 				F0CF98F31B0B889C00EAE373 /* MXKTableViewCellWithTextView.xib in Resources */,
 				F0CF98E71B0B869800EAE373 /* MXKTableViewCellWithLabelAndSubLabel.xib in Resources */,
+				F01449AE1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.xib in Resources */,
 				F0B0ECD71B15C745005EB20D /* MXKRoomTitleViewWithTopic.xib in Resources */,
 				F06E76981AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.xib in Resources */,
 				321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */,
@@ -1083,6 +1114,7 @@
 				F0CE56EC1AA8BB5E003BE77A /* MXKSampleRoomViewController.m in Sources */,
 				F07E18171ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m in Sources */,
 				F05FB17C1AD5131300DC0647 /* MXKRoomMemberListDataSource.m in Sources */,
+				F01449AB1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m in Sources */,
 				F0EA4CB41ADD6E98007197D2 /* MXKAppSettings.m in Sources */,
 				F01C7DFA1AFB6BF900FC2F59 /* MXKCallViewController.m in Sources */,
 				F04356321B2EF6FD0096FA02 /* MXKRoomMemberDetailsViewController.m in Sources */,
@@ -1108,6 +1140,7 @@
 				F0F148C21AB31237005F5D4A /* MXKMediaLoader.m in Sources */,
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
 				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
+				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
 				F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */,
 				F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */,
@@ -1139,6 +1172,7 @@
 				32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */,
 				F095E5121B25899F009606CE /* MXKSectionedContacts.m in Sources */,
 				F06E76881AF0FEBC00980E5A /* MXKAccount.m in Sources */,
+				F01449B11B56A92800EA7D73 /* MXKNotificationSettingsViewController.m in Sources */,
 				F06E76891AF0FEBC00980E5A /* MXKAccountManager.m in Sources */,
 				F06E76971AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.m in Sources */,
 				F043563B1B2EFEBD0096FA02 /* MXKTableViewCellWithButtons.m in Sources */,

@@ -198,3 +198,7 @@ branch and make git pull requests from it.
 As its dependencies are based on CocoaPods, you will need to run `pod install`
 before opening MatrixKit.xcworkspace.
 
+Attributions
+============
+
+The filled icons play, pause, minus and keyboard are taken from icons8: http://icons8.com/

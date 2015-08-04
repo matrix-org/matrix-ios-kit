@@ -35,6 +35,7 @@
 #import "MXKAccountDetailsViewController.h"
 #import "MXKContactDetailsViewController.h"
 #import "MXKRoomMemberDetailsViewController.h"
+#import "MXKNotificationSettingsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 
@@ -54,6 +55,9 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
+
+#import "MXKPushRuleTableViewCell.h"
+#import "MXKPushRuleCreationTableViewCell.h"
 
 #import "MXKTableViewCellWithButton.h"
 #import "MXKTableViewCellWithButtons.h"
