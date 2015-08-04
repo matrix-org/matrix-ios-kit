@@ -1598,13 +1598,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                             [MXKMediaManager saveMediaToPhotosLibrary:url
                                                               isImage:isImage
                                                               success:^() {
+                                                                  
                                                                   __strong __typeof(weakSelf)strongSelf = weakSelf;
                                                                   [strongSelf stopActivityIndicator];
-                                                              }
-                                                              failure:^(NSError *error) {
+                                                                  
+                                                              } failure:^(NSError *error) {
+                                                                  
                                                                   __strong __typeof(weakSelf)strongSelf = weakSelf;
                                                                   [strongSelf stopActivityIndicator];
-                                                                  //TODO GFO display error as alert
+                                                                  
+                                                                  // Notify MatrixKit user
+                                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                  
                                                               }];
                         } failure:nil];
                     }];
