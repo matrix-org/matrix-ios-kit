@@ -389,8 +389,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     if (0 == remainingEvents)
                     {
                         [self removeCellData:bubbleData];
-                        
-                        // TODO GFO: check whether the adjacent bubbles can merge together
                     }
                     
                     // Update the delegate on main thread
@@ -1177,7 +1175,23 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     @synchronized(bubbles)
     {
-        [bubbles removeObject:cellData];
+        NSUInteger index = [bubbles indexOfObject:cellData];
+        if (index != NSNotFound)
+        {
+            [bubbles removeObjectAtIndex:index];
+            
+            if (index != 0 && index < bubbles.count)
+            {
+                // Check whether the adjacent bubbles can merge together
+                id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
+                id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
+                
+                if ([cellData1 mergeWithBubbleCellData:cellData2])
+                {
+                    [bubbles removeObjectAtIndex:index];
+                }
+            }
+        }
     }
 }
 
