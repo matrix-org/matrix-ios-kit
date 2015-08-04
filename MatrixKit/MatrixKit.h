@@ -18,6 +18,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKConstants.h"
+
 #import "MXKAppSettings.h"
 
 #import "MXEvent+MatrixKit.h"
@@ -79,8 +81,3 @@
 #import "MXKContactManager.h"
 
 #import "MXK3PID.h"
-
-/**
- The Matrix iOS Kit version.
- */
-FOUNDATION_EXPORT NSString *MatrixKitVersion;

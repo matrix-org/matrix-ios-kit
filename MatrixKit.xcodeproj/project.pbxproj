@@ -39,6 +39,7 @@
 		F01449B11B56A92800EA7D73 /* MXKNotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449B01B56A92800EA7D73 /* MXKNotificationSettingsViewController.m */; };
 		F01C7DFA1AFB6BF900FC2F59 /* MXKCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */; };
 		F01C7DFB1AFB6BF900FC2F59 /* MXKCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */; };
+		F02D21491B7109950002DE01 /* MXKConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = F02D21481B7109950002DE01 /* MXKConstants.m */; };
 		F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */; };
 		F04356311B2EF6FD0096FA02 /* MXKContactDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F043562E1B2EF6FD0096FA02 /* MXKContactDetailsViewController.m */; };
 		F04356321B2EF6FD0096FA02 /* MXKRoomMemberDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F04356301B2EF6FD0096FA02 /* MXKRoomMemberDetailsViewController.m */; };
@@ -223,6 +224,8 @@
 		F01C7DF71AFB6BF900FC2F59 /* MXKCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCallViewController.h; sourceTree = "<group>"; };
 		F01C7DF81AFB6BF900FC2F59 /* MXKCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKCallViewController.m; sourceTree = "<group>"; };
 		F01C7DF91AFB6BF900FC2F59 /* MXKCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKCallViewController.xib; sourceTree = "<group>"; };
+		F02D21471B7109950002DE01 /* MXKConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKConstants.h; sourceTree = "<group>"; };
+		F02D21481B7109950002DE01 /* MXKConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKConstants.m; sourceTree = "<group>"; };
 		F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomViewController.xib; sourceTree = "<group>"; };
 		F043562D1B2EF6FD0096FA02 /* MXKContactDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKContactDetailsViewController.h; sourceTree = "<group>"; };
 		F043562E1B2EF6FD0096FA02 /* MXKContactDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKContactDetailsViewController.m; sourceTree = "<group>"; };
@@ -602,6 +605,8 @@
 			isa = PBXGroup;
 			children = (
 				F0F148BD1AB31237005F5D4A /* Media */,
+				F02D21471B7109950002DE01 /* MXKConstants.h */,
+				F02D21481B7109950002DE01 /* MXKConstants.m */,
 				32CEE21D1AB1A57E00F7C74D /* MXKEventFormatter.h */,
 				32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */,
 				F0F148C41AB31240005F5D4A /* MXKTools.h */,
@@ -1142,6 +1147,7 @@
 				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
+				F02D21491B7109950002DE01 /* MXKConstants.m in Sources */,
 				F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */,
 				F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */,
 				F094EC671ABAC380006B8CE3 /* MXKViewController.m in Sources */,

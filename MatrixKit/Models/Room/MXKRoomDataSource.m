@@ -30,7 +30,7 @@
 #import "NSData+MatrixKit.h"
 
 #pragma mark - Constant definitions
-const NSString *MatrixKitVersion = @"0.2.0";
+
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
 
 NSString *const kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier";
