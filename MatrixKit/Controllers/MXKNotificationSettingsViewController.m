@@ -220,7 +220,7 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         // A first cell will display a user information
         count = 1;
         
-        // Only removable content rules will be listed in this section
+        // Only removable content rules are listed in this section (we ignore here predefined rules)
         for (MXPushRule *pushRule in _mxAccount.mxSession.notificationCenter.rules.global.content)
         {
             if (!pushRule.isDefault)
@@ -375,19 +375,29 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         }
         else
         {
-            rowIndex --;
-            if (rowIndex < _mxAccount.mxSession.notificationCenter.rules.global.content.count)
+            // Only removable content rules are listed in this section
+            NSInteger count = 0;
+            for (MXPushRule *pushRule in _mxAccount.mxSession.notificationCenter.rules.global.content)
             {
-                MXKPushRuleTableViewCell *pushRuleCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleTableViewCell defaultReuseIdentifier]];
-                if (!pushRuleCell)
+                if (!pushRule.isDefault)
                 {
-                    pushRuleCell = [[MXKPushRuleTableViewCell alloc] init];
+                    count++;
+                    
+                    if (count == rowIndex)
+                    {
+                        MXKPushRuleTableViewCell *pushRuleCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleTableViewCell defaultReuseIdentifier]];
+                        if (!pushRuleCell)
+                        {
+                            pushRuleCell = [[MXKPushRuleTableViewCell alloc] init];
+                        }
+                        
+                        pushRuleCell.mxSession = _mxAccount.mxSession;
+                        pushRuleCell.mxPushRule = pushRule;
+                        
+                        cell = pushRuleCell;
+                        break;
+                    }
                 }
-                
-                pushRuleCell.mxSession = _mxAccount.mxSession;
-                pushRuleCell.mxPushRule = [_mxAccount.mxSession.notificationCenter.rules.global.content objectAtIndex:rowIndex];
-                
-                cell = pushRuleCell;
             }
         }
     }
@@ -609,6 +619,5 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
     
     return sectionHeader;
 }
-
 
 @end
