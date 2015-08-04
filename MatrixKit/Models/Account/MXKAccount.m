@@ -24,7 +24,7 @@
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
-NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
+NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 
 @interface MXKAccount ()
 {
@@ -290,7 +290,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
     }
 }
 
@@ -310,7 +310,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
     }
 }
 

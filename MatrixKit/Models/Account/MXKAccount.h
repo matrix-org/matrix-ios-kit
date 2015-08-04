@@ -29,6 +29,11 @@ extern NSString *const kMXKAccountUserInfoDidChangeNotification;
 extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
 
 /**
+ MXKAccount error domain
+ */
+extern NSString *const kMXKAccountErrorDomain;
+
+/**
  `MXKAccount` object contains the credentials of a logged matrix user. It is used to handle matrix
  session and presence for this user.
  */
