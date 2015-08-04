@@ -23,6 +23,8 @@
 
 #import "MXKConstants.h"
 
+#import "NSBundle+MatrixKit.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
@@ -292,7 +294,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"matrix_session_is_not_opened"]}]);
     }
 }
 
@@ -312,7 +314,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"matrix_session_is_not_opened"]}]);
     }
 }
 

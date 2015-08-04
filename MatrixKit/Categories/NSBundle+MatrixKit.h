@@ -37,4 +37,13 @@
  */
 + (NSURL *)mxk_audioURLFromMXKAssetsBundleWithName:(NSString *)name;
 
+
+/**
+ Retrieve localized string from MatrixKit Assets bundle.
+ 
+ @param key The string key.
+ @return The localized string.
+ */
++ (NSString *)mxk_localizedStringForKey:(NSString *)key;
+
 @end

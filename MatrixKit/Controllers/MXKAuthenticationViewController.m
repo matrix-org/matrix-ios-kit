@@ -604,13 +604,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 else
                 {
                     // FIXME
-                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
+                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
                 }
             }
             else
             {
                 // FIXME
-                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
             }
         }
     }
