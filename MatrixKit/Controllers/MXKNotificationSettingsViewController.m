@@ -43,6 +43,12 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
     BOOL      areAllDisabled;
     
     /**
+     */
+    NSInteger contentRuleCreationIndex;
+    NSInteger roomRuleCreationIndex;
+    NSInteger senderRuleCreationIndex;
+    
+    /**
      Predefined rules index
      */
     NSInteger ruleContainsUserNameIndex;
@@ -224,21 +230,21 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         }
         
         // Add one item to suggest new rule creation
-//        count ++;
+        contentRuleCreationIndex = count ++;
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX)
     {
         count = _mxAccount.mxSession.notificationCenter.rules.global.room.count;
         
         // Add one item to suggest new rule creation
-        //        count ++;
+        roomRuleCreationIndex = count ++;
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_SENDER_INDEX)
     {
         count = _mxAccount.mxSession.notificationCenter.rules.global.sender.count;
         
         // Add one item to suggest new rule creation
-        //        count ++;
+        senderRuleCreationIndex = count ++;
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_OTHERS_INDEX)
     {
@@ -355,6 +361,18 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
              
              cell = introCell;
         }
+        else if (rowIndex == contentRuleCreationIndex)
+        {
+            MXKPushRuleCreationTableViewCell *pushRuleCreationCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleCreationTableViewCell defaultReuseIdentifier]];
+            if (!pushRuleCreationCell)
+            {
+                pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
+            }
+            
+            pushRuleCreationCell.mxSession = _mxAccount.mxSession;;
+            pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindContent;
+            cell = pushRuleCreationCell;
+        }
         else
         {
             rowIndex --;
@@ -371,23 +389,23 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
                 
                 cell = pushRuleCell;
             }
-//            else
-//            {
-//                MXKPushRuleCreationTableViewCell *pushRuleCreationCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleCreationTableViewCell defaultReuseIdentifier]];
-//                if (!pushRuleCreationCell)
-//                {
-//                    pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
-//                }
-//                
-//                pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindContent;
-//                pushRuleCreationCell.mxSession = _account.mxSession;
-//                cell = pushRuleCreationCell;
-//            }
         }
     }
     else if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX)
     {
-        if (rowIndex  < _mxAccount.mxSession.notificationCenter.rules.global.room.count)
+        if (rowIndex == roomRuleCreationIndex)
+        {
+            MXKPushRuleCreationTableViewCell *pushRuleCreationCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleCreationTableViewCell defaultReuseIdentifier]];
+            if (!pushRuleCreationCell)
+            {
+                pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
+            }
+            
+            pushRuleCreationCell.mxSession = _mxAccount.mxSession;
+            pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindRoom;
+            cell = pushRuleCreationCell;
+        }
+        else if (rowIndex < _mxAccount.mxSession.notificationCenter.rules.global.room.count)
         {
             MXKPushRuleTableViewCell *pushRuleCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleTableViewCell defaultReuseIdentifier]];
             if (!pushRuleCell)
@@ -400,22 +418,22 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
             
             cell = pushRuleCell;
         }
-//        else
-//        {
-//                MXKPushRuleCreationTableViewCell *pushRuleCreationCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleCreationTableViewCell defaultReuseIdentifier]];
-//                if (!pushRuleCreationCell)
-//                {
-//                    pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
-//                }
-//
-//                pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindRoom;
-//                pushRuleCreationCell.mxSession = _account.mxSession;
-//                cell = pushRuleCreationCell;
-//        }
     }
     else if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_PER_SENDER_INDEX)
     {
-        if (rowIndex  < _mxAccount.mxSession.notificationCenter.rules.global.sender.count)
+        if (rowIndex == senderRuleCreationIndex)
+        {
+            MXKPushRuleCreationTableViewCell *pushRuleCreationCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleCreationTableViewCell defaultReuseIdentifier]];
+            if (!pushRuleCreationCell)
+            {
+                pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
+            }
+            
+            pushRuleCreationCell.mxSession = _mxAccount.mxSession;
+            pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindSender;
+            cell = pushRuleCreationCell;
+        }
+        else if (rowIndex  < _mxAccount.mxSession.notificationCenter.rules.global.sender.count)
         {
             MXKPushRuleTableViewCell *pushRuleCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleTableViewCell defaultReuseIdentifier]];
             if (!pushRuleCell)
@@ -428,18 +446,6 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
 
             cell = pushRuleCell;
         }
-//        else
-//        {
-//                MXKPushRuleCreationTableViewCell *pushRuleCreationCell = [tableView dequeueReusableCellWithIdentifier:[MXKPushRuleCreationTableViewCell defaultReuseIdentifier]];
-//                if (!pushRuleCreationCell)
-//                {
-//                    pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
-//                }
-//
-//                pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindSender;
-//                pushRuleCreationCell.mxSession = _account.mxSession;
-//                cell = pushRuleCreationCell;
-//        }
     }
     else if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_OTHERS_INDEX)
     {
@@ -533,13 +539,30 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         return contentSize.height + 1;
     }
     
-    if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX && indexPath.row == 0)
+    if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX)
     {
-        UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
-        textView.font = [UIFont systemFontOfSize:14];
-        textView.text = kGlobalNotificationSettingsPerWordIntroText;
-        CGSize contentSize = [textView sizeThatFits:textView.frame.size];
-        return contentSize.height + 1;
+        if (indexPath.row == 0)
+        {
+            UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
+            textView.font = [UIFont systemFontOfSize:14];
+            textView.text = kGlobalNotificationSettingsPerWordIntroText;
+            CGSize contentSize = [textView sizeThatFits:textView.frame.size];
+            return contentSize.height + 1;
+        }
+        else if (indexPath.row == contentRuleCreationIndex)
+        {
+            return 120;
+        }
+    }
+    
+    if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX && indexPath.row == roomRuleCreationIndex)
+    {
+        return 120;
+    }
+    
+    if (indexPath.section == MXKNOTIFICATIONSETTINGS_SECTION_PER_SENDER_INDEX && indexPath.row == senderRuleCreationIndex)
+    {
+        return 120;
     }
     
     return 50;
