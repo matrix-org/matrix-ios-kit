@@ -16,6 +16,8 @@
 
 #import "MXKRoomTitleViewWithTopic.h"
 
+#import "MXKConstants.h"
+
 @interface MXKRoomTitleViewWithTopic ()
 {
     id roomTopicListener;
@@ -420,6 +422,7 @@
             }
             __weak typeof(self) weakSelf = self;
             [self.mxRoom setTopic:topic success:^{
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -428,8 +431,9 @@
                 
                 // Hide topic field if empty
                 strongSelf.hiddenTopic = !textField.text.length;
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -442,8 +446,9 @@
                 strongSelf.hiddenTopic = !textField.text.length;
                 
                 NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed: %@", error);
-                // TODO GFO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else

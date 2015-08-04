@@ -31,6 +31,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKConstants.h"
+
 NSString* const kMXKAccountDetailsConfigurationFormatText = @"Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
 NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
@@ -687,69 +689,82 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         }
         
         emailSubmitButton.enabled = NO;
-        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient success:^{
-            // Reset email field
-            emailTextField.text = nil;
-            [self.tableView reloadData];
-        } failure:^(NSError *error)
-         {
-             NSLog(@"[MXKAccountDetailsVC] Failed to request email token: %@", error);
-             //Alert user TODO GFO
-             //            [[AppDelegate theDelegate] showErrorAsAlert:error];
-             emailSubmitButton.enabled = YES;
-         }];
+        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient
+                                                           success:^{
+                                                               
+                                                               // Reset email field
+                                                               emailTextField.text = nil;
+                                                               [self.tableView reloadData];
+                                                               
+                                                           } failure:^(NSError *error) {
+                                                               
+                                                               NSLog(@"[MXKAccountDetailsVC] Failed to request email token: %@", error);
+                                                               
+                                                               // Notify MatrixKit user
+                                                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                               
+                                                               emailSubmitButton.enabled = YES;
+                                                               
+                                                           }];
     }
     else if (sender == emailTokenSubmitButton)
     {
         emailTokenSubmitButton.enabled = NO;
-        [submittedEmail validateWithToken:emailTokenTextField.text success:^(BOOL success)
-         {
-             if (success)
-             {
-                 // The email has been "Authenticated"
-                 // Link the email with user's account
-                 [submittedEmail bindWithUserId:_mxAccount.mxCredentials.userId success:^{
-                     // Add new linked email
-                     if (!linkedEmails)
-                     {
-                         linkedEmails = [NSMutableArray array];
-                     }
-                     [linkedEmails addObject:submittedEmail.address];
-                     
-                     // Release pending email and refresh table to remove related cell
-                     submittedEmail = nil;
-                     [self.tableView reloadData];
-                 } failure:^(NSError *error)
-                  {
-                      NSLog(@"[MXKAccountDetailsVC] Failed to link email: %@", error);
-                      //Alert user TODO GFO
-                      //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-                      
-                      // Release the pending email (even if it is Authenticated)
-                      submittedEmail = nil;
-                      [self.tableView reloadData];
-                  }];
-             }
-             else
-             {
-                 NSLog(@"[MXKAccountDetailsVC] Failed to link email");
-                 MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:@"Failed to link email"  style:MXKAlertStyleAlert];
-                 [alertsArray addObject:alert];
-                 alert.cancelButtonIndex = [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                                            {
-                                                [alertsArray removeObject:alert];
-                                            }];
-                 [alert showInViewController:self];
-                 // Reset wrong token
-                 emailTokenTextField.text = nil;
-             }
-         } failure:^(NSError *error)
-         {
-             NSLog(@"[MXKAccountDetailsVC] Failed to submit email token: %@", error);
-             //Alert user TODO GFO
-             //            [[AppDelegate theDelegate] showErrorAsAlert:error];
-             emailTokenSubmitButton.enabled = YES;
-         }];
+        [submittedEmail validateWithToken:emailTokenTextField.text success:^(BOOL success) {
+            
+            if (success)
+            {
+                // The email has been "Authenticated"
+                // Link the email with user's account
+                [submittedEmail bindWithUserId:_mxAccount.mxCredentials.userId success:^{
+                    
+                    // Add new linked email
+                    if (!linkedEmails)
+                    {
+                        linkedEmails = [NSMutableArray array];
+                    }
+                    [linkedEmails addObject:submittedEmail.address];
+                    
+                    // Release pending email and refresh table to remove related cell
+                    submittedEmail = nil;
+                    [self.tableView reloadData];
+                    
+                } failure:^(NSError *error) {
+                    
+                    NSLog(@"[MXKAccountDetailsVC] Failed to link email: %@", error);
+                    
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                    // Release the pending email (even if it is Authenticated)
+                    submittedEmail = nil;
+                    [self.tableView reloadData];
+                    
+                }];
+            }
+            else
+            {
+                NSLog(@"[MXKAccountDetailsVC] Failed to link email");
+                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:@"Failed to link email"  style:MXKAlertStyleAlert];
+                [alertsArray addObject:alert];
+                alert.cancelButtonIndex = [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                                               [alertsArray removeObject:alert];
+                                           }];
+                [alert showInViewController:self];
+                // Reset wrong token
+                emailTokenTextField.text = nil;
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKAccountDetailsVC] Failed to submit email token: %@", error);
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+            
+            emailTokenSubmitButton.enabled = YES;
+            
+        }];
     }
     else if (sender == apnsNotificationsSwitch)
     {

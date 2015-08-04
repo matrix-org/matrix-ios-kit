@@ -16,6 +16,8 @@
 
 #import "MXKRoomTitleView.h"
 
+#import "MXKConstants.h"
+
 @interface MXKRoomTitleView ()
 {
     id roomListener;
@@ -193,6 +195,7 @@
             
             __weak typeof(self) weakSelf = self;
             [_mxRoom setName:roomName success:^{
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -201,8 +204,9 @@
                 
                 // Refresh title display
                 textField.text = strongSelf.mxRoom.state.displayname;
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -212,8 +216,9 @@
                 // Revert change
                 textField.text = strongSelf.mxRoom.state.displayname;
                 NSLog(@"[MXKRoomTitleView] Rename room failed: %@", error);
-                // TODO GFO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else

@@ -21,6 +21,8 @@
 #import "MXKPushRuleCreationTableViewCell.h"
 #import "MXKTableViewCellWithTextView.h"
 
+#import "MXKConstants.h"
+
 #define MXKNOTIFICATIONSETTINGS_SECTION_INTRO_INDEX      0
 #define MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX   1
 #define MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX   2
@@ -143,7 +145,8 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         notificationCenterDidFailObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXNotificationCenterDidFailRulesUpdate object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             [self stopActivityIndicator];
             
-            // TODO notify user by using note.userInfo[kMXNotificationCenterErrorKey]
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:note.userInfo[kMXNotificationCenterErrorKey]];
         }];
     }
     

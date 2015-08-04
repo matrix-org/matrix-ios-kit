@@ -16,6 +16,8 @@
 
 #import "MXKRoomCreationView.h"
 
+#import "MXKConstants.h"
+
 @interface MXKRoomCreationView ()
 {
     MXKAlert *mxSessionPicker;
@@ -491,36 +493,46 @@
                               roomAlias:self.alias
                                   topic:nil
                                 success:^(MXRoom *room) {
-                // Check whether some users must be invited
-                NSArray *invitedUsers = self.participantsList;
-                for (NSString *userId in invitedUsers)
-                {
-                    [room inviteUser:userId success:^{
-                        NSLog(@"[MXKRoomCreationTableVC] %@ has been invited (roomId: %@)", userId, room.state.roomId);
-                    } failure:^(NSError *error)
-                    {
-                        NSLog(@"[MXKRoomCreationTableVC] %@ invitation failed (roomId: %@): %@", userId, room.state.roomId, error);
-                        // TODO GFO Alert user
-                        //                                            [[AppDelegate theDelegate] showErrorAsAlert:error];
-                    }];
-                }
-                
-                // Reset text fields
-                _roomNameTextField.text = nil;
-                _roomAliasTextField.text = nil;
-                _participantsTextField.text = nil;
-                
-                if (self.delegate)
-                {
-                    // Open created room
-                    [self.delegate roomCreationView:self showRoom:room.state.roomId withMatrixSession:selectedSession];
-                }
-            } failure:^(NSError *error) {
-                _createRoomBtn.enabled = YES;
-                NSLog(@"[MXKRoomCreationTableVC] Create room (%@ %@ (%@)) failed: %@", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private", error);
-                // TODO GFO Alert user
-                //                                    [[AppDelegate theDelegate] showErrorAsAlert:error];
-            }];
+                                    
+                                    // Check whether some users must be invited
+                                    NSArray *invitedUsers = self.participantsList;
+                                    for (NSString *userId in invitedUsers)
+                                    {
+                                        [room inviteUser:userId success:^{
+                                            
+                                            NSLog(@"[MXKRoomCreationTableVC] %@ has been invited (roomId: %@)", userId, room.state.roomId);
+                                            
+                                        } failure:^(NSError *error) {
+                                            
+                                            NSLog(@"[MXKRoomCreationTableVC] %@ invitation failed (roomId: %@): %@", userId, room.state.roomId, error);
+                                            
+                                            // Notify MatrixKit user
+                                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                            
+                                        }];
+                                    }
+                                    
+                                    // Reset text fields
+                                    _roomNameTextField.text = nil;
+                                    _roomAliasTextField.text = nil;
+                                    _participantsTextField.text = nil;
+                                    
+                                    if (self.delegate)
+                                    {
+                                        // Open created room
+                                        [self.delegate roomCreationView:self showRoom:room.state.roomId withMatrixSession:selectedSession];
+                                    }
+                                    
+                                } failure:^(NSError *error) {
+                                    
+                                    _createRoomBtn.enabled = YES;
+                                    
+                                    NSLog(@"[MXKRoomCreationTableVC] Create room (%@ %@ (%@)) failed: %@", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private", error);
+                                    
+                                    // Notify MatrixKit user
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                    
+                                }];
         }
     }];
 }

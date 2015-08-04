@@ -21,6 +21,8 @@
 
 #import "MXKTools.h"
 
+#import "MXKConstants.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
@@ -712,18 +714,19 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     
     // Launch mxSession
     [mxSession start:^{
+        
         NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-    } failure:^(NSError *error)
-    {
+        
+    } failure:^(NSError *error) {
+        
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
-        if (notifyOpenSessionFailure)
+        if (notifyOpenSessionFailure && error)
         {
-            //Alert user only once
+            // Notify MatrixKit user only once
             notifyOpenSessionFailure = NO;
-            // TODO GFO Alert user
-            //            [[AppDelegate theDelegate] showErrorAsAlert:error];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
         }
         
         // Check network reachability

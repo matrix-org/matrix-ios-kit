@@ -18,6 +18,8 @@
 
 #import "MXEvent+MatrixKit.h"
 
+#import "MXKConstants.h"
+
 @interface MXKEventDetailsView ()
 {
     /**
@@ -144,14 +146,19 @@
         {
             [_activityIndicator startAnimating];
             [mxRoom redactEvent:mxEvent.eventId reason:nil success:^{
+                
                 [_activityIndicator stopAnimating];
                 [self removeFromSuperview];
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 NSLog(@"[MXKEventDetailsView] Redact event (%@) failed: %@", mxEvent.eventId, error);
-                // TODO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
                 [_activityIndicator stopAnimating];
+                
             }];
         }
         

@@ -20,6 +20,8 @@
 
 #import "MXKAlert.h"
 
+#import "MXKConstants.h"
+
 @interface MXKRoomMemberListViewController ()
 {
     /**
@@ -457,11 +459,13 @@
             if (mxRoom)
             {
                 [mxRoom inviteUser:userId success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Invite %@ failed: %@", userId, error);
-                    // TODO: Alert user
-                    //        [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
         }

@@ -29,6 +29,8 @@
 
 #import "MXKRoomInputToolbarViewWithSimpleTextView.h"
 
+#import "MXKConstants.h"
+
 NSString *const kCmdChangeDisplayName = @"/nick";
 NSString *const kCmdEmote = @"/me";
 NSString *const kCmdJoinRoom = @"/join";
@@ -869,11 +871,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         if (displayName.length)
         {
             [roomDataSource.mxSession.matrixRestClient setDisplayName:displayName success:^{
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 NSLog(@"[MXKRoomVC] Set displayName failed: %@", error);
-                // TODO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else
@@ -892,14 +896,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Check
         if (roomAlias.length)
         {
-            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room)
-            {
+            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
                 // Do nothing by default when we succeed to join the room
-            } failure:^(NSError *error)
-            {
+            } failure:^(NSError *error) {
+                
                 NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed: %@", roomAlias, error);
-                // TODO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else
@@ -943,11 +947,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 // Kick the user
                 [roomDataSource.room kickUser:userId reason:reason success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Kick user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -975,11 +981,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 // Ban the user
                 [roomDataSource.room banUser:userId reason:reason success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Ban user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -994,11 +1002,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Unban the user
                 [roomDataSource.room unbanUser:userId success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Unban user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -1027,11 +1037,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Set user power level
                 [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:[powerLevel integerValue] success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Set user power (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -1046,11 +1058,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Reset user power level
                 [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -2333,8 +2347,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             NSLog(@"[RoomVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
             [self hideAttachmentView];
-            //Alert user
-            // @TODO [[AppDelegate theDelegate] showErrorAsAlert:mediaPlayerError];
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
         }
     }
 }
