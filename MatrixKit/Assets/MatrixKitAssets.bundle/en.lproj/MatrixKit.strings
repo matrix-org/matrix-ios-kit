@@ -54,8 +54,60 @@
 /* -*- 
    Automatic localization for en
 
-   The end of this file was generated from the android i18n file
-    (/console/src/main/res/values/strings.xml).
+   The following key/value pairs were extracted from the android i18n file:
+    /matrix-sdk/src/main/res/values/strings.xml.
+*/
+
+"app_name" = "Matrix Android SDK";
+"downloading" = "Downloading";
+"summary_message" = "%@: %@";
+"summary_invitation" = "Room Invitation";
+"summary_user_invitation" = "%@\'s invitation";
+"summary_user_sent_image" = "%@ sent an image.";
+"notice_room_invite" = "%@ invited %@.";
+"notice_room_join" = "%@ joined.";
+"notice_room_leave" = "%@ left.";
+"notice_room_kick" = "%@ kicked %@.";
+"notice_room_unban" = "%@ unbanned %@.";
+"notice_room_ban" = "%@ banned %@.";
+"notice_avatar_url_changed" = "%@ changed their avatar.";
+"notice_display_name_changed" = "%@ changed their display name to %@.";
+"notice_topic_changed" = "%@ changed the topic to %@.";
+"notice_room_name_changed" = "%@ changed the room name to %@.";
+
+// Room Screen 
+"could_not_redact" = "Could not redact\"";
+"unable_to_send_message" = "Unable to send message";
+"downloading_dot" = "Downloading ...";
+"uploading_dot" = "Uploading ...";
+"message_uploading" = "Uploading…";
+"message_failed_to_upload" = "Failed to upload image";
+
+// general errors 
+"network_error" = "Network error";
+"matrix_error" = "Matrix error";
+"unexpected_error" = "Unexpected error";
+
+// Home Screen 
+"users" = " users";
+"user" = " user";
+
+// Last seen time 
+"last_seen_secs" = "%ds";
+"last_seen_mins" = "%dm";
+"last_seen_hours" = "%dh";
+"last_seen_days" = "%dd";
+
+// call events 
+"call_invitation" = "Call invitation.";
+"call_hungup" = "Call hung up.";
+"call_answered" = "Call answered.";
+
+/* -*- 
+   Automatic localization for en
+
+   The following key/value pairs were extracted from the android i18n file:
+    /console/src/main/res/values/strings.xml.
 */
 
 
@@ -286,6 +338,9 @@
 "call_connecting" = "Call connecting...";
 "call_ended" = "Call ended";
 "call_ring" = "Calling...";
+"incoming_video_call" = "Incoming Video Call";
+"incoming_voice_call" = "Incoming Voice Call";
+"call_invite_expired" = "Call Invite Expired";
 "action_accept" = "Accept";
 "action_reject" = "Reject";
 "action_cancel" = "Cancel";

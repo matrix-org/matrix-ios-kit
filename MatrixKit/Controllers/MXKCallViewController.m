@@ -441,11 +441,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = YES;
             if (call.isVideoCall)
             {
-                callStatusLabel.text = @"Incoming Video Call";
+                callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_video_call"];
             }
             else
             {
-                callStatusLabel.text = @"Incoming Voice Call";
+                callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_voice_call"];
             }
             // Update bottom bar
             endCallButton.hidden = YES;
@@ -465,7 +465,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             // MXCallStateInviteExpired state is sent as an notification
             // MXCall will move quickly to the MXCallStateEnded state
             self.isRinging = NO;
-            callStatusLabel.text = @"Call Invite Expired";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_invite_expired"];
             break;
         case MXCallStateEnded:
         {
