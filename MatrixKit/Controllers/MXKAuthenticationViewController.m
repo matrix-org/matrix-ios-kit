@@ -261,18 +261,18 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if (authType == MXKAuthenticationTypeLogin)
     {
         _createAccountLabel.hidden = YES;
-        [_submitButton setTitle:@"Login" forState:UIControlStateNormal];
-        [_submitButton setTitle:@"Login" forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:@"Create account" forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:@"Create account" forState:UIControlStateHighlighted];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateHighlighted];
     }
     else
     {
         _createAccountLabel.hidden = NO;
-        [_submitButton setTitle:@"Sign up" forState:UIControlStateNormal];
-        [_submitButton setTitle:@"Sign up" forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:@"Back" forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:@"Back" forState:UIControlStateHighlighted];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
     }
     
     _authType = authType;
@@ -464,11 +464,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Notify user that no flow is supported
         if (_authType == MXKAuthenticationTypeLogin)
         {
-            _noFlowLabel.text = @"Currently we do not support Login flows defined by this Home Server.";
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"do_not_support_login_flows"];
         }
         else
         {
-            _noFlowLabel.text = @"Registration is not currently supported.";
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"registration_is_not_supported"];
         }
         NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
@@ -492,14 +492,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Alert user
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
     if (!title)
-        
     {
-        title = @"Error";
+        title = [NSBundle mxk_localizedStringForKey:@"error"];
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
     alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"Dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                {}];
     [alert showInViewController:self];
     

@@ -17,20 +17,27 @@
 "abort" = "Abort";
 "account_details_configuration_format_text" = "Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
+"back" = "Back";
+
 "changes_will_be_discarded" = "Changes will be discarded";
 "configuration" = "Configuration";
+"create_account" = "Create account";
 
 "discard" = "Discard";
+"dismiss" = "Dismiss";
 "display_name_change_failed" = "Display name change failed";
+"do_not_support_login_flows" = "Currently we do not support Login flows defined by this Home Server.";
 
 "enable_inapp_notifications" = "Enable In-App notifications";
 "enable_push_notifications" = "Enable push notifications";
 "enter_validation_token_for" = "Enter validation token for %@:";
+"error" = "Error";
 
 "failed_to_link_email" = "Failed to link email";
 
 "link_email" = "Link Email";
 "linked_emails" = "Linked emails";
+"login" = "Login";
 "logout" = "Logout";
 
 "matrix_session_is_not_opened" = "Matrix session is not opened";
@@ -42,7 +49,9 @@
 
 "picture_change_failed" = "Picture change failed";
 
+"registration_is_not_supported" = "Registration is not currently supported.";
 "retry" = "Retry";
 
 "save" = "Save";
+"sign_up" = "Sign up";
 "submit_code" = "Submit code";
