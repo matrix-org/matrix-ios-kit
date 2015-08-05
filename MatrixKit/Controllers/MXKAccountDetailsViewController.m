@@ -241,7 +241,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     if (saveUserInfoButton.enabled)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"changes_will_be_discarded"] style:MXKAlertStyleAlert];
+            MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"message_unsaved_changes"] style:MXKAlertStyleAlert];
             [alertsArray addObject:alert];
             alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"discard"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 [alertsArray removeObject:alert];
@@ -880,7 +880,11 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         {
             UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
             textView.font = [UIFont systemFontOfSize:14];
-            textView.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"account_details_configuration_format_text"], _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            
+            NSString *configFormat = [NSString stringWithFormat:@"%@\n%@\n%@", [NSBundle mxk_localizedStringForKey:@"settings_config_home_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_identity_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_user_id"]];
+            
+            textView.text = [NSString stringWithFormat:configFormat, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            
             CGSize contentSize = [textView sizeThatFits:textView.frame.size];
             return contentSize.height + 1;
         }
@@ -1003,7 +1007,10 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 configCell = [[MXKTableViewCellWithTextView alloc] init];
             }
             
-            configCell.mxkTextView.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"account_details_configuration_format_text"], _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            NSString *configFormat = [NSString stringWithFormat:@"%@\n%@\n%@", [NSBundle mxk_localizedStringForKey:@"settings_config_home_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_identity_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_user_id"]];
+            
+            configCell.mxkTextView.text = [NSString stringWithFormat:configFormat, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            
             cell = configCell;
         }
         else
@@ -1013,8 +1020,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             {
                 logoutBtnCell = [[MXKTableViewCellWithButton alloc] init];
             }
-            [logoutBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"logout"] forState:UIControlStateNormal];
-            [logoutBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"logout"] forState:UIControlStateHighlighted];
+            [logoutBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"action_logout"] forState:UIControlStateNormal];
+            [logoutBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"action_logout"] forState:UIControlStateHighlighted];
             [logoutBtnCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
             logoutButton = logoutBtnCell.mxkButton;
@@ -1052,11 +1059,11 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     else if (section == notificationsSection)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notifications"];
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_title_notifications"];
     }
     else if (section == configurationSection)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"configuration"];
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_title_config"];
     }
     
     return sectionHeader;

@@ -23,6 +23,8 @@
 
 #import "MXKConstants.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #define MXKNOTIFICATIONSETTINGS_SECTION_INTRO_INDEX      0
 #define MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX   1
 #define MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX   2
@@ -30,11 +32,6 @@
 #define MXKNOTIFICATIONSETTINGS_SECTION_OTHERS_INDEX     4
 #define MXKNOTIFICATIONSETTINGS_SECTION_DEFAULT_INDEX    5
 #define MXKNOTIFICATIONSETTINGS_SECTION_COUNT            6
-
-NSString* const kGlobalNotificationSettingsMainIntroText = @"Notification settings are saved to your user account and are shared between all clients which support them (including desktop notifications).\n\nRules are applied in order; the first rule which matches defines the outcome for the message.\nSo: Per-word notifications are more important than per-room notifications which are more important than per-sender notifications.\nFor multiple rules of the same kind, the first one in the list that matches takes priority.";
-NSString* const kGlobalNotificationSettingsMainIntroTextWhenDisabled = @"All notifications are currently disabled for all devices.";
-
-NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case insensitively, and may include a * wildcard. So:\n\"foo\" matches the string foo surrounded by word delimiters (e.g. punctuation and whitespace or start/end of line).\n\"foo*\" matches any such word that begins foo.\n\"*foo*\" matches any such word which includes the 3 letters foo.";
 
 @interface MXKNotificationSettingsViewController ()
 {
@@ -311,13 +308,13 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
             
             if (areAllDisabled)
             {
-                [masterBtnCell.mxkButton setTitle:@"Enable notifications" forState:UIControlStateNormal];
-                [masterBtnCell.mxkButton setTitle:@"Enable notifications" forState:UIControlStateHighlighted];
+                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications"] forState:UIControlStateNormal];
+                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications"] forState:UIControlStateHighlighted];
             }
             else
             {
-                [masterBtnCell.mxkButton setTitle:@"Disable all notifications" forState:UIControlStateNormal];
-                [masterBtnCell.mxkButton setTitle:@"Disable all notifications" forState:UIControlStateHighlighted];
+                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_disable_all"] forState:UIControlStateNormal];
+                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_disable_all"] forState:UIControlStateHighlighted];
             }
             
             [masterBtnCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -336,12 +333,12 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
             
             if (areAllDisabled)
             {
-                introCell.mxkTextView.text = kGlobalNotificationSettingsMainIntroTextWhenDisabled;
+                introCell.mxkTextView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications_warning"];
                 introCell.mxkTextView.backgroundColor = [UIColor redColor];
             }
             else
             {
-                introCell.mxkTextView.text = kGlobalNotificationSettingsMainIntroText;
+                introCell.mxkTextView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_global_info"];
                 introCell.mxkTextView.backgroundColor = [UIColor clearColor];
             }
             
@@ -359,7 +356,7 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
             {
                 introCell = [[MXKTableViewCellWithTextView alloc] init];
             }
-            introCell.mxkTextView.text = kGlobalNotificationSettingsPerWordIntroText;
+            introCell.mxkTextView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_word_info"];
             introCell.mxkTextView.font = [UIFont systemFontOfSize:14];
              
              cell = introCell;
@@ -468,37 +465,37 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         if (rowIndex == ruleContainsUserNameIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterContainUserNameRuleID];
-            ruleDescription = @"Notify me with sound about messages that contain my user name";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_contain_my_user_name"];
         }
         if (rowIndex == ruleContainsDisplayNameIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterContainDisplayNameRuleID];
-            ruleDescription = @"Notify me with sound about messages that contain my display name";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_contain_my_display_name"];
         }
         if (rowIndex == ruleOneToOneRoomIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterOneToOneRoomRuleID];
-            ruleDescription = @"Notify me with sound about messages sent just to me";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_just_sent_to_me"];
         }
         if (rowIndex == ruleInviteForMeIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterInviteMeRuleID];
-            ruleDescription = @"Notify me when I'm invited to a new room";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_invite_to_a_new_room"];
         }
         if (rowIndex == ruleMemberEventIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterMemberEventRuleID];
-            ruleDescription = @"Notify me when people join or leave rooms";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_people_join_leave_rooms"];
         }
         if (rowIndex == ruleCallIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterCallRuleID];
-            ruleDescription = @"Notify me when I receive a call";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_receive_a_call"];
         }
         if (rowIndex == ruleSuppressBotsNotificationsIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterSuppressBotsNotificationsRuleID];
-            ruleDescription = @"Suppress notifications from bots";
+            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_suppress_from_bots"];
         }
         
         if (pushRule)
@@ -530,7 +527,7 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
             
             pushRuleCell.mxSession = _mxAccount.mxSession;
             pushRuleCell.mxPushRule = pushRule;
-            pushRuleCell.ruleDescription.text = @"Notify for all other messages/rooms";
+            pushRuleCell.ruleDescription.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_notify_all_other"];
 
             cell = pushRuleCell;
         }
@@ -547,7 +544,7 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
     {
         UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
         textView.font = [UIFont systemFontOfSize:14];
-        textView.text = areAllDisabled ? kGlobalNotificationSettingsMainIntroTextWhenDisabled : kGlobalNotificationSettingsMainIntroText;
+        textView.text = areAllDisabled ? [NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications_warning"] : [NSBundle mxk_localizedStringForKey:@"notification_settings_global_info"];
         CGSize contentSize = [textView sizeThatFits:textView.frame.size];
         return contentSize.height + 1;
     }
@@ -558,7 +555,7 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
         {
             UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
             textView.font = [UIFont systemFontOfSize:14];
-            textView.text = kGlobalNotificationSettingsPerWordIntroText;
+            textView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_word_info"];
             CGSize contentSize = [textView sizeThatFits:textView.frame.size];
             return contentSize.height + 1;
         }
@@ -601,23 +598,23 @@ NSString* const kGlobalNotificationSettingsPerWordIntroText = @"Words match case
     
     if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX)
     {
-        sectionLabel.text = @"Per-word notifications";
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_word_notifications"];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX)
     {
-        sectionLabel.text = @"Per-room notifications";
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_room_notifications"];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_SENDER_INDEX)
     {
-        sectionLabel.text = @"Per-sender notifications";
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_sender_notifications"];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_OTHERS_INDEX)
     {
-        sectionLabel.text = @"Other Alerts";
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_other_alerts"];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_DEFAULT_INDEX)
     {
-        sectionLabel.text = @"By default...";
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_by_default"];
     }
     
     return sectionHeader;

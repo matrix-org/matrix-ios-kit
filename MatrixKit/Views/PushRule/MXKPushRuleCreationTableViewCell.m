@@ -41,14 +41,14 @@
     switch (mxPushRuleKind)
     {
         case MXPushRuleKindContent:
-            _inputTextField.placeholder = @"word to match";
+            _inputTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"notification_settings_word_to_match"];
             _inputTextField.autocorrectionType = UITextAutocorrectionTypeDefault;
             break;
         case MXPushRuleKindRoom:
-            _inputTextField.placeholder = @"select a room";
+            _inputTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"notification_settings_select_room"];
             break;
         case MXPushRuleKindSender:
-            _inputTextField.placeholder = @"@user:domain.com";
+            _inputTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"notification_settings_sender_hint"];
             _inputTextField.autocorrectionType = UITextAutocorrectionTypeNo;
             break;
         default:

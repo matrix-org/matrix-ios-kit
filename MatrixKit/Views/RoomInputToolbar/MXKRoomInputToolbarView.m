@@ -27,6 +27,8 @@
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
 #define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
 #define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
@@ -175,7 +177,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 
                 // Ask for userId to invite
                 strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
-                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                 {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -186,7 +188,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                     textField.secureTextEntry = NO;
                     textField.placeholder = @"ex: @bob:homeserver";
                 }];
-                [strongSelf->currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                [strongSelf->currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                 {
                     UITextField *textField = [alert textFieldAtIndex:0];
                     NSString *userId = textField.text;
@@ -210,7 +212,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
         
         if (currentAlert)
         {
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -334,7 +336,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                     }];
                     
                     // the user wants to use an other image
-                    [imageValidationView setLeftButtonTitle:@"Cancel" handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                    [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                     {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
@@ -514,7 +516,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:selectedImage];
             }];
             
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
             }];

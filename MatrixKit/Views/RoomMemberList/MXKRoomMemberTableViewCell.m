@@ -100,7 +100,7 @@
         if (memberCellData.roomMember.membership == MXMembershipLeave || memberCellData.roomMember.membership == MXMembershipBan)
         {
             self.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0];
-            presenceText = (memberCellData.roomMember.membership == MXMembershipLeave) ? @"left" : @"banned";
+            presenceText = (memberCellData.roomMember.membership == MXMembershipLeave) ? [NSBundle mxk_localizedStringForKey:@"membership_leave"] : [NSBundle mxk_localizedStringForKey:@"membership_ban"];
         }
         else
         {
@@ -110,7 +110,7 @@
             if (memberCellData.roomMember.membership == MXMembershipInvite)
             {
                 thumbnailBorderColor = [UIColor lightGrayColor];
-                presenceText = @"invited";
+                presenceText = [NSBundle mxk_localizedStringForKey:@"membership_invite"];
             }
             else
             {

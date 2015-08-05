@@ -435,7 +435,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateCreateOffer:
         case MXCallStateInviteSent:
             self.isRinging = YES;
-            callStatusLabel.text = @"Calling";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
             break;
         case MXCallStateRinging:
             self.isRinging = YES;
@@ -455,7 +455,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateCreateAnswer:
         case MXCallStateConnecting:
             self.isRinging = NO;
-            callStatusLabel.text = @"Call Connecting";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
             break;
         case MXCallStateConnected:
             self.isRinging = NO;
@@ -470,7 +470,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateEnded:
         {
             self.isRinging = NO;
-            callStatusLabel.text = @"Call Ended";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ended"];
             
             if (audioPlayer)
             {

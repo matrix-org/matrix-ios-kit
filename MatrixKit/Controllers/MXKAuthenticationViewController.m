@@ -575,7 +575,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                             {
                                                 //Alert user
                                                 __weak typeof(self) weakSelf = self;
-                                                alert = [[MXKAlert alloc] initWithTitle:@"Already logged in" message:nil style:MXKAlertStyleAlert];
+                                                alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
                                                 [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
                                                     // We remove the authentication view controller.
                                                     [weakSelf withdrawViewControllerAnimated:YES completion:nil];

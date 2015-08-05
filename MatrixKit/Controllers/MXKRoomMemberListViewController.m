@@ -22,6 +22,8 @@
 
 #import "MXKConstants.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKRoomMemberListViewController ()
 {
     /**
@@ -434,7 +436,7 @@
     
     // Ask for userId to invite
     currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
-    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
     {
         typeof(self) self = weakSelf;
         self->currentAlert = nil;
@@ -445,7 +447,7 @@
         textField.secureTextEntry = NO;
         textField.placeholder = @"ex: @bob:homeserver";
     }];
-    [currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
     {
         UITextField *textField = [alert textFieldAtIndex:0];
         NSString *userId = textField.text;

@@ -408,50 +408,50 @@
             NSDictionary *users = event.content[@"users"];
             for (NSString *key in users.allKeys)
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, key, [users objectForKey:key]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, key, [users objectForKey:key]];
             }
             if (event.content[@"users_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, @"default", event.content[@"users_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, @"default", event.content[@"users_default"]];
             }
             
-            displayText = [NSString stringWithFormat:@"%@\r\nThe minimum power levels that a user must have before acting are:", displayText];
+            displayText = [NSString stringWithFormat:@"%@\nThe minimum power levels that a user must have before acting are:", displayText];
             if (event.content[@"ban"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 ban: %@", displayText, event.content[@"ban"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 ban: %@", displayText, event.content[@"ban"]];
             }
             if (event.content[@"kick"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 kick: %@", displayText, event.content[@"kick"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 kick: %@", displayText, event.content[@"kick"]];
             }
             if (event.content[@"redact"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 redact: %@", displayText, event.content[@"redact"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 redact: %@", displayText, event.content[@"redact"]];
             }
             if (event.content[@"invite"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 invite: %@", displayText, event.content[@"invite"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 invite: %@", displayText, event.content[@"invite"]];
             }
             
-            displayText = [NSString stringWithFormat:@"%@\r\nThe minimum power levels related to events are:", displayText];
+            displayText = [NSString stringWithFormat:@"%@\nThe minimum power levels related to events are:", displayText];
             NSDictionary *events = event.content[@"events"];
             for (NSString *key in events.allKeys)
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, key, [events objectForKey:key]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, key, [events objectForKey:key]];
             }
             if (event.content[@"events_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, @"events_default", event.content[@"events_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, @"events_default", event.content[@"events_default"]];
             }
             if (event.content[@"state_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, @"state_default", event.content[@"state_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, @"state_default", event.content[@"state_default"]];
             }
             
             // Append redacted info if any
             if (redactedInfo)
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n %@", displayText, redactedInfo];
+                displayText = [NSString stringWithFormat:@"%@\n %@", displayText, redactedInfo];
             }
             break;
         }
@@ -464,7 +464,7 @@
                 // Append redacted info if any
                 if (redactedInfo)
                 {
-                    displayText = [NSString stringWithFormat:@"%@\r\n %@", displayText, redactedInfo];
+                    displayText = [NSString stringWithFormat:@"%@\n %@", displayText, redactedInfo];
                 }
             }
             break;

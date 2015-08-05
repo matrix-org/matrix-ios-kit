@@ -106,20 +106,20 @@
         {
             if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
             {
-                notify = @"Never notify";
+                notify = [NSBundle mxk_localizedStringForKey:@"notification_settings_never_notify"];
                 sound = @"";
                 highlight = @"";
                 break;
             }
             else if (ruleAction.actionType == MXPushRuleActionTypeNotify || ruleAction.actionType == MXPushRuleActionTypeCoalesce)
             {
-                notify = @"Always notify";
+                notify = [NSBundle mxk_localizedStringForKey:@"notification_settings_always_notify"];
             }
             else if (ruleAction.actionType == MXPushRuleActionTypeSetTweak)
             {
                 if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"sound"])
                 {
-                    sound = @", Custom sound";
+                    sound = [NSString stringWithFormat:@", %@", [NSBundle mxk_localizedStringForKey:@"notification_settings_custom_sound"]];
                 }
                 else if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"highlight"])
                 {
@@ -127,7 +127,7 @@
                     // If not present, highlight. Else check its value before highlighting
                     if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
                     {
-                        highlight = @", Highlight";
+                        highlight = [NSString stringWithFormat:@", %@", [NSBundle mxk_localizedStringForKey:@"notification_settings_highlight"]];
                     }
                 }
             }

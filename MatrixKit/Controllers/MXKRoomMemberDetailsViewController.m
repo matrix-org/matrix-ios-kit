@@ -26,11 +26,6 @@
 
 #import "MXKConstants.h"
 
-NSString *const MXKRoomMemberDetailsActionInvite = @"Invite";
-NSString *const MXKRoomMemberDetailsActionLeave = @"Leave";
-NSString *const MXKRoomMemberDetailsActionKick = @"Kick";
-NSString *const MXKRoomMemberDetailsActionBan = @"Ban";
-NSString *const MXKRoomMemberDetailsActionUnban = @"Unban";
 NSString *const MXKRoomMemberDetailsActionSetPowerLevel = @"Set Power Level";
 NSString *const MXKRoomMemberDetailsActionStartChat = @"Start Chat";
 NSString *const MXKRoomMemberDetailsActionStartVoiceCall = @"Start Voice Call";
@@ -173,7 +168,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         
         NSString* action = ((UIButton*)sender).titleLabel.text;
         
-        if ([action isEqualToString:MXKRoomMemberDetailsActionLeave])
+        if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"leave"]])
         {
             [self addPendingActionMask];
             [self.mxRoom leave:^{
@@ -194,7 +189,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         {
             [self updateUserPowerLevel:_mxRoomMember];
         }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionKick])
+        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"kick"]])
         {
             [self addPendingActionMask];
             [mxRoom kickUser:_mxRoomMember.userId
@@ -217,7 +212,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                          
                      }];
         }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionBan])
+        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"ban"]])
         {
             [self addPendingActionMask];
             [mxRoom banUser:_mxRoomMember.userId
@@ -235,7 +230,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                         
                     }];
         }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionInvite])
+        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"invite"]])
         {
             [self addPendingActionMask];
             [mxRoom inviteUser:_mxRoomMember.userId
@@ -252,7 +247,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                            
                        }];
         }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionUnban])
+        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"unban"]])
         {
             [self addPendingActionMask];
             [mxRoom unbanUser:_mxRoomMember.userId
@@ -540,7 +535,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
     // Consider the case of the user himself
     if ([_mxRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
     {
-        [buttonsTitles addObject:MXKRoomMemberDetailsActionLeave];
+        [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"leave"]];
         
         if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels])
         {
@@ -565,12 +560,12 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                 // Check conditions to be able to kick someone
                 if (oneSelfPowerLevel >= [powerLevels kick] && oneSelfPowerLevel >= memberPowerLevel)
                 {
-                    [buttonsTitles addObject:MXKRoomMemberDetailsActionKick];
+                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"kick"]];
                 }
                 // Check conditions to be able to ban someone
                 if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel >= memberPowerLevel)
                 {
-                    [buttonsTitles addObject:MXKRoomMemberDetailsActionBan];
+                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"ban"]];
                 }
                 break;
             }
@@ -579,12 +574,12 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                 // Check conditions to be able to invite someone
                 if (oneSelfPowerLevel >= [powerLevels invite])
                 {
-                    [buttonsTitles addObject:MXKRoomMemberDetailsActionInvite];
+                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"invite"]];
                 }
                 // Check conditions to be able to ban someone
                 if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel >= memberPowerLevel)
                 {
-                    [buttonsTitles addObject:MXKRoomMemberDetailsActionBan];
+                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"ban"]];
                 }
                 break;
             }
@@ -593,7 +588,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                 // Check conditions to be able to unban someone
                 if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel >= memberPowerLevel)
                 {
-                    [buttonsTitles addObject:MXKRoomMemberDetailsActionUnban];
+                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"unban"]];
                 }
                 break;
             }

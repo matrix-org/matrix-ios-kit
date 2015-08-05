@@ -18,6 +18,8 @@
 
 #import "MXKConstants.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKRoomCreationView ()
 {
     MXKAlert *mxSessionPicker;
@@ -316,7 +318,7 @@
             }];
         }
         
-        mxSessionPicker.cancelButtonIndex = [mxSessionPicker addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        mxSessionPicker.cancelButtonIndex = [mxSessionPicker addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             strongSelf->mxSessionPicker = nil;

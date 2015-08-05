@@ -31,6 +31,8 @@
 
 #import "MXKConstants.h"
 
+#import "NSBundle+MatrixKit.h"
+
 NSString *const kCmdChangeDisplayName = @"/nick";
 NSString *const kCmdEmote = @"/me";
 NSString *const kCmdJoinRoom = @"/join";
@@ -1327,7 +1329,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         currentAlert = [[MXKAlert alloc] initWithTitle:@"Resend the message"
                                                message:textMessage
                                                  style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             typeof(self) self = weakSelf;
             self->currentAlert = nil;
@@ -1507,7 +1509,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             // Add actions for a failed event
             if (selectedEvent.mxkState == MXKEventStateSendingFailed)
             {
-                [currentAlert addActionWithTitle:@"Resend" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"resend"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1515,7 +1517,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     [strongSelf.roomDataSource resendEventWithEventId:selectedEvent.eventId success:nil failure:nil];
                 }];
                 
-                [currentAlert addActionWithTitle:@"Delete" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"delete"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1541,7 +1543,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     selectedComponent = nil;
                 }
                 
-                [currentAlert addActionWithTitle:@"Copy" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1551,7 +1553,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     [[UIPasteboard generalPasteboard] setString:selectedComponent.textMessage];
                 }];
                 
-                [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1585,7 +1587,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo])
                 {
-                    [currentAlert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
@@ -1615,7 +1617,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }];
                 }
                 
-                [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1717,7 +1719,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }];
             }
             
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
                 
@@ -1771,7 +1773,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         [self becomeFirstResponder];
         UIMenuController *menu = [UIMenuController sharedMenuController];
-        menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:@"Share" action:@selector(share:)]];
+        menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] action:@selector(share:)]];
         [menu setTargetRect:roomBubbleTableViewCell.messageTextView.frame inView:roomBubbleTableViewCell];
         [menu setMenuVisible:YES animated:YES];
     });
