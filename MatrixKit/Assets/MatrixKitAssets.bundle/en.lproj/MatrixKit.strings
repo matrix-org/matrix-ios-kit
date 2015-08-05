@@ -14,6 +14,10 @@
  limitations under the License.
  */
 
+/* *********************** */
+/*      iOS specific       */
+/* *********************** */
+
 "abort" = "Abort";
 "account_details_configuration_format_text" = "Home server: %@\r\nIdentity server: %@\r\nUser ID: %@";
 
@@ -55,3 +59,243 @@
 "save" = "Save";
 "sign_up" = "Sign up";
 "submit_code" = "Submit code";
+
+/* -*- 
+   Automatic localization for en
+
+   The end of this file was generated from the android i18n file
+    (/console/src/main/res/values/strings.xml).
+*/
+
+
+// titles 
+"app_name" = "Matrix Console";
+"title_activity_home" = "Matrix Home";
+"title_activity_room" = "Matrix Room";
+"title_activity_public_rooms" = "Public Rooms";
+"title_activity_room_info" = "Room info";
+"title_activity_settings" = "Settings";
+"title_activity_notification_settings" = "Notification Settings";
+"title_activity_member_details" = "Member Details";
+"title_activity_invite_user" = "Invite Users";
+
+// button names 
+"ok" = "OK";
+"cancel" = "Cancel";
+"save" = "Save";
+"stay" = "Stay";
+"leave" = "Leave";
+"send" = "Send";
+"copy" = "Copy";
+"resend" = "Resend";
+"redact" = "Redact";
+"share" = "Share";
+"forward" = "Forward";
+"message_details" = "Message details";
+"view" = "View";
+"set_power_level" = "Power level";
+"chat" = "Chat";
+"clear_cache" = "Clear Cache";
+"more" = "More";
+"chat_with" = "Chat with ";
+"delete" = "Delete";
+
+// actions 
+"action_settings" = "Settings";
+"action_members" = "Members list";
+"action_public_rooms" = "Public Rooms";
+"action_my_rooms" = "My Rooms";
+"action_add_account" = "Add account";
+"action_remove_account" = "remove account";
+"action_leave" = "Leave Room";
+"action_delete" = "Delete Room";
+"action_invite" = "Invite";
+"action_disconnect" = "Disconnect";
+"action_logout" = "Logout";
+"send_bug_report" = "Send bug report";
+"action_create_room" = "Create...";
+"action_room_info" = "Room info";
+"action_voice_call" = "Voice Call";
+"action_video_call" = "Video Call";
+"action_search_room" = "Search room";
+"action_search_contact" = "Search contact";
+"action_mark_all_as_read" = "Mark all as read";
+"action_quick_reply" = "Quick reply";
+"action_open" = "Open";
+"action_close" = "Close";
+"action_invite_by_name" = "Invite from identifier";
+"action_invite_by_list" = "Invite from other rooms";
+"action_home" = "Home";
+"action_drawer" = "Extras";
+"send_files_in" = "Send into";
+"save_files_in" = "Save into";
+"file_is_saved" = "%@ is saved.";
+"downloads" = "Downloads";
+"gallery" = "Gallery";
+"sd_scard" = "SD card";
+"other" = "Other";
+"my_rooms" = "My rooms";
+"create_room" = "Create room";
+"join_room" = "Join room";
+"create" = "Create:";
+"username" = "Username";
+"password" = "Password";
+"matrix_login" = "Matrix Login";
+"login" = "Login";
+"create_account" = "Create account";
+"hs_url" = "Home Server URL";
+"create_room_set_alias" = "Set room alias";
+"create_room_alias_hint" = "room-alias";
+"create_room_set_name" = "Set room name";
+"create_room_name_hint" = "My room";
+"join_room_title" = "Join Room";
+"join_room_hint" = "(e.g. #foo:example.org)";
+"membership_invite" = "Invited";
+"membership_join" = "Joined";
+"membership_leave" = "Left";
+"membership_kick" = "Kicked";
+"membership_ban" = "Banned";
+"num_members_one" = "%@ user";
+"num_members_other" = "%@ users";
+"invite" = "Invite";
+"kick" = "Kick";
+"ban" = "Ban";
+"unban" = "Un-ban";
+"message_changes_successful" = "Changes successfully made";
+"message_unsaved_changes" = "There are unsaved changes. Leaving will discard them.";
+"option_send_files" = "Send files";
+"option_take_photo" = "Take photo";
+"option_attach_video" = "Attach video";
+
+// Login Screen 
+"login_error_already_logged_in" = "Already logged in";
+"login_error_must_start_http" = "URL must start with http[s]://";
+"login_error_network_error" = "Unable to login: Network error";
+"login_error_unable_login" = "Unable to login";
+"login_error_invalid_credentials" = "Enter valid credentials";
+"login_error_invalid_home_server" = "Enter valid URL";
+
+// members list Screen 
+"members_list" = "Members List";
+
+// accounts list Screen 
+"choose_account" = "Choose account";
+
+// image size selection 
+"compression_options" = "What size should this be sent as?";
+"compression_opt_list_original" = "Original";
+"compression_opt_list_large" = "Large";
+"compression_opt_list_medium" = "Medium";
+"compression_opt_list_small" = "Small";
+
+// invitation members list Screen 
+"members_one_to_one" = "One to one room members";
+"members_small_room_members" = "Small room members";
+"members_large_room_members" = "Large room members";
+
+// room creation dialog Screen 
+"room_creation_room_name" = "Name";
+"room_creation_room_name_hint" = "(e.g lunchGroup)";
+"room_creation_room_alias" = "Alias";
+"room_creation_room_alias_hint" = "\"Room Alias (optional)";
+"room_creation_participants" = "With";
+"room_creation_participants_hint" = "(e.g. @me:hs;...)";
+"room_creation_create_room" = "Create room";
+"room_creation_public" = "Public Room";
+"room_creation_private" = "Private";
+
+// room info dialog Screen 
+"room_info_room_name" = "Room name";
+"room_info_room_name_hint" = "Enter a room name";
+"room_info_room_topic" = "Room topic";
+"room_info_room_topic_hint" = "Enter a room topic";
+"room_info_room_discard_changes" = "Discard changes ?";
+"room_info_room_discard" = "Discard";
+
+// contacts list screen 
+"contacts" = "Contacts";
+"invite_this_user_to_use_matrix" = "Invite this user to use matrix with";
+"invitation_message" = "I\'d like to chat with you with matrix. Please, visit the website http://matrix.org to have more information.";
+
+// Settings screen 
+"settings_webclient_push" = "To configure global notification settings (like rules), go find a webclient and hit Settings > Notifications.";
+"settings_title_profile" = "Profile information";
+"settings_title_gcm" = "Google cloud messaging (GCM)";
+"settings_title_config" = "Configuration";
+"settings_title_notifications" = "Notifications";
+"settings_title_notifications_rules" = "Update Notifications Rules";
+"settings_title_rooms" = "Rooms";
+"settings_title_commands" = "Commands";
+"settings_config_console_version" = "matrixConsole version: %@";
+"settings_config_sdk_version" = "SDK version: %@";
+"settings_config_build_number" = "Build: %@";
+"settings_display_all_events" = "Display all events";
+"settings_hide_redactions" = "Hide redactions";
+"settings_hide_unsupported_events" = "Hide unsupported events";
+"settings_sort_by_last_seen" = "Sort members by last seen time";
+"settings_display_left_members" = "Display left members";
+"settings_clear_cache" = "Clear cache";
+"settings_display_public_rooms" = "Display public rooms with recents";
+
+// Notification settings screen 
+"notification_settings_title" = "Notification Settings";
+"notification_settings_disable_all" = "Disable all notifications";
+"notification_settings_enable_notifications" = "Enable notifications";
+"notification_settings_enable_notifications_warning" = "All notifications are currently disabled for all devices.";
+"notification_settings_global_notification_settings" = "Global Notification Settings";
+"notification_settings_global_info" = "Notification settings are saved to your user account and are shared between all clients which support them (including desktop notifications).\n\nRules are applied in order; the first rule which matches defines the outcome for the message.\nSo: Per-word notifications are more important than per-room notifications which are more important than per-sender notifications.\nFor multiple rules of the same kind, the first one in the list that matches takes priority.";
+"notification_settings_per_word_notifications" = "Per-word notifications";
+"notification_settings_per_word_info" = "Words match case insensitively, and may include a * wildcard. So:\nfoo matches the string foo surrounded by word delimiters (e.g. punctuation and whitespace or start/end of line).\nfoo* matches any such word that begins foo.\n*foo* matches any such word which includes the 3 letters foo.";
+"notification_settings_always_notify" = "Always notify";
+"notification_settings_never_notify" = "Never notify";
+"notification_settings_word_to_match" = "word to match";
+"notification_settings_sound" = "Sound";
+"notification_settings_highlight" = "Highlight";
+"notification_settings_custom_sound" = "Custom sound";
+"notification_settings_per_room_notifications" = "Per-room notifications";
+"notification_settings_per_sender_notifications" = "Per-sender notifications";
+"notification_settings_sender_hint" = "\@user:domain.com";
+"notification_settings_room" = "Room : ";
+"notification_settings_select_room" = "Select a room";
+"notification_settings_add" = "Add";
+"notification_settings_other_alerts" = "Other Alerts";
+"notification_settings_contain_my_user_name" = "Notify me with sound about messages that contain my user name";
+"notification_settings_contain_my_display_name" = "Notify me with sound about messages that contain my display name";
+"notification_settings_just_sent_to_me" = "Notify me with sound about messages sent just to me";
+"notification_settings_invite_to_a_new_room" = "Notify me when I am invited to a new room";
+"notification_settings_people_join_leave_rooms" = "Notify me when people join or leave rooms";
+"notification_settings_receive_a_call" = "Notify me when I receive a call";
+"notification_settings_suppress_from_bots" = "Suppress notifications from bots";
+"notification_settings_by_default" = "By default...";
+"notification_settings_notify_all_other" = "Notify for all other messages/rooms";
+
+// gcm section 
+"settings_use_gcm" = "Use GCM";
+"settings_gcm_app_id" = "GCM pusher application ID";
+"settings_gcm_sender_id" = "GCM sender ID";
+"settings_gcm_pusher_url" = "GCM pusher url";
+"settings_gcm_pusher_profile_tag" = "GCM pusher profile tag";
+"settings_config_home_server" = "Home server: %@";
+"settings_config_identity_server" = "Identity server: %@";
+"settings_config_user_id" = "User ID: %@";
+"settings_config_access_token" = "Access token: %@";
+"settings_command_commands" = "The following commands are available in the room chat:\r\n\r\n /nick <display_name>: change your display name\r\n /me <action>: send the action you are doing. /me will be replaced by your display name\r\n /join <room_alias>: join a room\r\n /kick <user_id> [<reason>]: kick the user\r\n /ban <user_id> [<reason>]: ban the user\r\n /unban <user_id>: unban the user\r\n /op <user_id> <power_level>: set user power level\r\n /deop <user_id>: reset user power level to the room default value";
+"settings_failed_to_upload_avatar" = "Failed to upload avatar";
+"settings_display_name_hint" = "Enter a display name";
+"settings_update_profile" = "Update profile";
+
+// Settings keys 
+"logo" = "Logo";
+"user_says_body" = "%@ says %@";
+"unseen_message" = "%@ unseen notified message";
+"unseen_messages" = "%@ unseen notified messages";
+
+// call string 
+"call_connected" = "Call connected...";
+"call_connecting" = "Call connecting ...";
+"call_ended" = "Call ended ...";
+"call_ring" = "Ringing ...";
+"action_accept" = "Accept";
+"action_reject" = "Reject";
+"action_cancel" = "Cancel";
+"action_hangup" = "Hang up";
