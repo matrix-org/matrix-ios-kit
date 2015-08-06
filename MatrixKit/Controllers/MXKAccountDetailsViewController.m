@@ -406,7 +406,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
              NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
              if (!title)
              {
-                 title = [NSBundle mxk_localizedStringForKey:@"display_name_change_failed"];
+                 title = [NSBundle mxk_localizedStringForKey:@"account_error_display_name_change_failed"];
              }
              NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
              
@@ -495,7 +495,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
     if (!title)
     {
-        title = [NSBundle mxk_localizedStringForKey:@"picture_change_failed"];
+        title = [NSBundle mxk_localizedStringForKey:@"account_error_picture_change_failed"];
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
@@ -740,7 +740,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             else
             {
                 NSLog(@"[MXKAccountDetailsVC] Failed to link email");
-                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"failed_to_link_email"] style:MXKAlertStyleAlert];
+                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"account_error_email_link_failed"] style:MXKAlertStyleAlert];
                 [alertsArray addObject:alert];
                 alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     [alertsArray removeObject:alert];
@@ -927,8 +927,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             
             submittedEmailCell.mxkTextField.text = currentEmail;
             submittedEmailCell.mxkButton.enabled = (currentEmail.length != 0);
-            [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"link_email"] forState:UIControlStateNormal];
-            [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"link_email"] forState:UIControlStateHighlighted];
+            [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_link_email"] forState:UIControlStateNormal];
+            [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_link_email"] forState:UIControlStateHighlighted];
             [submittedEmailCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
             emailSubmitButton = submittedEmailCell.mxkButton;
@@ -958,7 +958,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 emailTokenCell = [[MXKTableViewCellWithLabelTextFieldAndButton alloc] init];
             }
             
-            emailTokenCell.mxkLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"enter_validation_token_for"], submittedEmail.address];
+            emailTokenCell.mxkLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"settings_enter_validation_token_for"], submittedEmail.address];
             emailTokenCell.mxkTextField.text = currentToken;
             emailTokenCell.mxkButton.enabled = (currentToken.length != 0);
             [emailTokenCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"submit_code"] forState:UIControlStateNormal];
@@ -983,13 +983,13 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         
         if (indexPath.row == enableInAppNotifRowIndex)
         {
-            notificationsCell.mxkLabel.text = [NSBundle mxk_localizedStringForKey:@"enable_inapp_notifications"];
+            notificationsCell.mxkLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_enable_inapp_notifications"];
             notificationsCell.mxkSwitch.on = _mxAccount.enableInAppNotifications;
             inAppNotificationsSwitch = notificationsCell.mxkSwitch;
         }
         else /* enablePushNotifRowIndex */
         {
-            notificationsCell.mxkLabel.text = [NSBundle mxk_localizedStringForKey:@"enable_push_notifications"];
+            notificationsCell.mxkLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_enable_push_notifications"];
             notificationsCell.mxkSwitch.on = _mxAccount.pushNotificationServiceIsActive;
             notificationsCell.mxkSwitch.enabled = YES;
             apnsNotificationsSwitch = notificationsCell.mxkSwitch;
@@ -1055,7 +1055,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     
     if (section == linkedEmailsSection)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"linked_emails"];
+        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"account_linked_emails"];
     }
     else if (section == notificationsSection)
     {

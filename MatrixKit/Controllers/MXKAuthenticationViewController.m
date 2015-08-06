@@ -464,11 +464,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Notify user that no flow is supported
         if (_authType == MXKAuthenticationTypeLogin)
         {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"do_not_support_login_flows"];
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
         }
         else
         {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"registration_is_not_supported"];
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
         }
         NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
@@ -507,7 +507,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _noFlowLabel.text = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     if (!_noFlowLabel.text.length)
     {
-        _noFlowLabel.text = @"We failed to retrieve authentication information from this Home Server";
+        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
     }
     _retryButton.hidden = NO;
     

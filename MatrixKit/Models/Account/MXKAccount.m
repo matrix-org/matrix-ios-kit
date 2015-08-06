@@ -294,7 +294,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
     }
 }
 
@@ -314,7 +314,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
     }
 }
 

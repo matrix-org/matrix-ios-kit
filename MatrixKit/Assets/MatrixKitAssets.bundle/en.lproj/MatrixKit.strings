@@ -18,29 +18,21 @@
 /*      iOS specific       */
 /* *********************** */
 
+// Login Screen
+"login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
+"login_error_do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
+"login_error_registration_is_not_supported" = "Registration is not currently supported";
+
+// Action
 "abort" = "Abort";
-
 "back" = "Back";
-
-"default" = "default";
 "discard" = "Discard";
 "dismiss" = "Dismiss";
-"display_name_change_failed" = "Display name change failed";
-"do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
+"retry" = "Retry";
+"sign_up" = "Sign up";
+"submit_code" = "Submit code";
 
-"enable_inapp_notifications" = "Enable In-App notifications";
-"enable_push_notifications" = "Enable push notifications";
-"enter_validation_token_for" = "Enter validation token for %@:";
-"error" = "Error";
-
-"failed_to_link_email" = "Failed to link email";
-
-"link_email" = "Link Email";
-"linked_emails" = "Linked emails";
-
-"matrix_session_is_not_opened" = "Matrix session is not opened";
-
-"not_supported_yet" = "Not supported yet";
+// Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
 "notice_room_name_removed" = "%@ removed the room name";
 "notice_room_topic_removed" = "%@ removed the topic";
@@ -67,15 +59,26 @@
 "notice_error_unexpected_event" = "Unexpected event";
 "notice_error_unknown_event_type" = "Unknown event type";
 
-"picture_change_failed" = "Picture change failed";
+// Settings
+"settings_enable_inapp_notifications" = "Enable In-App notifications";
+"settings_enable_push_notifications" = "Enable push notifications";
+"settings_enter_validation_token_for" = "Enter validation token for %@:";
+
+// Account
+"account_link_email" = "Link Email";
+"account_linked_emails" = "Linked emails";
+
+"account_error_display_name_change_failed" = "Display name change failed";
+"account_error_picture_change_failed" = "Picture change failed";
+"account_error_email_link_failed" = "Failed to link email";
+"account_error_matrix_session_is_not_opened" = "Matrix session is not opened";
+
+// Others
+"error" = "Error";
+"not_supported_yet" = "Not supported yet";
+"default" = "default";
 "private" = "Private";
 "public" = "Public";
-
-"registration_is_not_supported" = "Registration is not currently supported";
-"retry" = "Retry";
-
-"sign_up" = "Sign up";
-"submit_code" = "Submit code";
 
 /* -*- 
    Automatic localization for en
