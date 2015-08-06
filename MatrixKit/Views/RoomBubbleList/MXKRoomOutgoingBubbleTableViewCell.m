@@ -18,6 +18,8 @@
 
 #import "MXEvent+MatrixKit.h"
 
+#import "NSBundle+Matrixkit.h"
+
 #pragma mark - UI Constant definitions
 #define MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN -10
 
@@ -56,8 +58,8 @@
             {
                 UIButton *unsentButton = [[UIButton alloc] initWithFrame:CGRectMake(0, component.position.y, 58 , 20)];
                 
-                [unsentButton setTitle:@"Unsent" forState:UIControlStateNormal];
-                [unsentButton setTitle:@"Unsent" forState:UIControlStateSelected];
+                [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateNormal];
+                [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateSelected];
                 [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
                 [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
                 

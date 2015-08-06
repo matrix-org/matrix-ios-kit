@@ -302,7 +302,7 @@
             [mxSessionPicker dismiss:NO];
         }
         
-        mxSessionPicker = [[MXKAlert alloc] initWithTitle:@"Select an account" message:nil style:MXKAlertStyleActionSheet];
+        mxSessionPicker = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"select_account"] message:nil style:MXKAlertStyleActionSheet];
         
         __weak typeof(self) weakSelf = self;
         for(MXSession *mxSession in _mxSessions)

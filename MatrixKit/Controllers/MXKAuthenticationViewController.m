@@ -576,7 +576,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                                 //Alert user
                                                 __weak typeof(self) weakSelf = self;
                                                 alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
-                                                [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+                                                [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
                                                     // We remove the authentication view controller.
                                                     [weakSelf withdrawViewControllerAnimated:YES completion:nil];
                                                 }];
@@ -693,9 +693,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
     }
     
-    //Alert user
-    alert = [[MXKAlert alloc] initWithTitle:@"Login Failed" message:message style:MXKAlertStyleAlert];
-    [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
+    // Alert user
+    alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_title"] message:message style:MXKAlertStyleAlert];
+    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
      {}];
     [alert showInViewController:self];
 }

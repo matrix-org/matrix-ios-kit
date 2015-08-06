@@ -122,9 +122,9 @@
         // Check whether media attachment is supported
         if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)])
         {
-            currentAlert = [[MXKAlert alloc] initWithTitle:@"Select an action:" message:nil style:MXKAlertStyleActionSheet];
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             
-            [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"attach_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -138,7 +138,7 @@
                 [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
             }];
             
-            [currentAlert addActionWithTitle:@"Take Photo/Video" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"capture_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -166,12 +166,12 @@
                 currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             }
             
-            [currentAlert addActionWithTitle:@"Invite matrix User" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite_user"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Ask for userId to invite
-                strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
+                strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil style:MXKAlertStyleAlert];
                 strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                 {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -319,7 +319,7 @@
                     imageValidationView.stretchable = YES;
                     
                     // the user validates the image
-                    [imageValidationView setRightButtonTitle:@"OK" handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                    [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                     {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
@@ -460,7 +460,7 @@
         
         if (smallFilesize || mediumFilesize || largeFilesize)
         {
-            currentAlert = [[MXKAlert alloc] initWithTitle:@"Do you want to send as:" message:nil style:MXKAlertStyleActionSheet];
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
             __weak typeof(self) weakSelf = self;
             
             if (smallFilesize)

@@ -501,10 +501,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 // Show the error to the end user
                 __weak typeof(self) weakSelf = self;
-                currentAlert = [[MXKAlert alloc] initWithTitle:@"Error"
+                currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
                                                        message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
                                                          style:MXKAlertStyleAlert];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                                   {
                                                       typeof(self) self = weakSelf;
                                                       self->currentAlert = nil;
@@ -1326,7 +1326,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         
         __weak typeof(self) weakSelf = self;
-        currentAlert = [[MXKAlert alloc] initWithTitle:@"Resend the message"
+        currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"resend_message"]
                                                message:textMessage
                                                  style:MXKAlertStyleAlert];
         currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
@@ -1335,7 +1335,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             self->currentAlert = nil;
         }];
         
-        [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             typeof(self) self = weakSelf;
             self->currentAlert = nil;
@@ -1422,12 +1422,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the download?" style:MXKAlertStyleAlert];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"No" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"attachment_cancel_download"] style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
             }];
-            [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
                 
@@ -1458,12 +1458,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 
                 __weak __typeof(self) weakSelf = self;
-                currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the upload?" style:MXKAlertStyleAlert];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"No" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                currentAlert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"attachment_cancel_upload"] style:MXKAlertStyleAlert];
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                 }];
-                [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1504,7 +1504,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Select an action" style:MXKAlertStyleActionSheet];
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             
             // Add actions for a failed event
             if (selectedEvent.mxkState == MXKEventStateSendingFailed)
@@ -1573,7 +1573,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 if (components.count > 1)
                 {
-                    [currentAlert addActionWithTitle:@"Select All" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"select_all"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
@@ -1668,7 +1668,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
                 if ([MXKMediaManager existingUploaderWithId:uploadId])
                 {
-                    [currentAlert addActionWithTitle:@"Cancel Upload" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
@@ -1691,7 +1691,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
                     if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
                     {
-                        [currentAlert addActionWithTitle:@"Cancel Download" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                             __strong __typeof(weakSelf)strongSelf = weakSelf;
                             strongSelf->currentAlert = nil;
                             
@@ -1707,7 +1707,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }
                 }
                 
-                [currentAlert addActionWithTitle:@"Show Details" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"show_details"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
