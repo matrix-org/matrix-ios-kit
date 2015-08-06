@@ -498,7 +498,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
     alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"Dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                {}];
     [alert showInViewController:self];
     

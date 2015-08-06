@@ -17,6 +17,7 @@
 #import "MXKEventFormatter.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "NSBundle+MatrixKit.h"
 
 @interface MXKEventFormatter ()
 {
@@ -209,11 +210,11 @@
             
             if (roomName.length)
             {
-                displayText = [NSString stringWithFormat:@"%@ changed the room name to: %@", senderDisplayName, roomName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
             }
             else
             {
-                displayText = [NSString stringWithFormat:@"%@ removed the room name", senderDisplayName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
             }
             break;
         }
@@ -232,7 +233,7 @@
             
             if (roomTopic.length)
             {
-                displayText = [NSString stringWithFormat:@"%@ changed the topic to: %@", senderDisplayName, roomTopic];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed"], senderDisplayName, roomTopic];
             }
             else
             {
@@ -283,15 +284,15 @@
                     {
                         if (!prevDisplayname)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ set their display name to %@", event.userId, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.userId, displayname];
                         }
                         else if (!displayname)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ removed their display name (previously named %@)", event.userId, prevDisplayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.userId];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"%@ changed their display name from %@ to %@", event.userId, prevDisplayname, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.userId, prevDisplayname, displayname];
                         }
                     }
                     
@@ -310,11 +311,11 @@
                     {
                         if (displayText)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ (picture profile was changed too)", displayText];
+                            displayText = [NSString stringWithFormat:@"%@ %@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_avatar_changed_too"]];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"%@ changed their picture profile", senderDisplayName];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed"], senderDisplayName];
                         }
                     }
                 }
@@ -324,23 +325,23 @@
                 // Consider here a membership change
                 if ([membership isEqualToString:@"invite"])
                 {
-                    displayText = [NSString stringWithFormat:@"%@ invited %@", senderDisplayName, targetDisplayName];
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
                 }
                 else if ([membership isEqualToString:@"join"])
                 {
-                    displayText = [NSString stringWithFormat:@"%@ joined", senderDisplayName];
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
                     if ([event.userId isEqualToString:event.stateKey])
                     {
-                        displayText = [NSString stringWithFormat:@"%@ left", senderDisplayName];
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
                     }
                     else if (prevMembership)
                     {
                         if ([prevMembership isEqualToString:@"join"] || [prevMembership isEqualToString:@"invite"])
                         {
-                            displayText = [NSString stringWithFormat:@"%@ kicked %@", senderDisplayName, targetDisplayName];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
                             if (event.content[@"reason"])
                             {
                                 displayText = [NSString stringWithFormat:@"%@: %@", displayText, event.content[@"reason"]];
@@ -348,13 +349,13 @@
                         }
                         else if ([prevMembership isEqualToString:@"ban"])
                         {
-                            displayText = [NSString stringWithFormat:@"%@ unbanned %@", senderDisplayName, targetDisplayName];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban"], senderDisplayName, targetDisplayName];
                         }
                     }
                 }
                 else if ([membership isEqualToString:@"ban"])
                 {
-                    displayText = [NSString stringWithFormat:@"%@ banned %@", senderDisplayName, targetDisplayName];
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
                     if (event.content[@"reason"])
                     {
                         displayText = [NSString stringWithFormat:@"%@: %@", displayText, event.content[@"reason"]];

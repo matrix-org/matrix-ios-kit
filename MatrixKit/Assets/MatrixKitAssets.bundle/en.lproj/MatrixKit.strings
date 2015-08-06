@@ -40,6 +40,8 @@
 "matrix_session_is_not_opened" = "Matrix session is not opened";
 
 "not_supported_yet" = "Not supported yet";
+"notice_avatar_changed_too" = "(avatar was changed too)";
+"notice_room_name_removed" = "%@ removed the room name";
 
 "picture_change_failed" = "Picture change failed";
 "private" = "Private";
@@ -64,19 +66,22 @@
 "summary_invitation" = "Room Invitation";
 "summary_user_invitation" = "%@\'s invitation";
 "summary_user_sent_image" = "%@ sent an image.";
-"notice_room_invite" = "%@ invited %@.";
-"notice_room_join" = "%@ joined.";
-"notice_room_leave" = "%@ left.";
-"notice_room_kick" = "%@ kicked %@.";
-"notice_room_unban" = "%@ unbanned %@.";
-"notice_room_ban" = "%@ banned %@.";
-"notice_avatar_url_changed" = "%@ changed their avatar.";
-"notice_display_name_changed" = "%@ changed their display name to %@.";
-"notice_topic_changed" = "%@ changed the topic to %@.";
-"notice_room_name_changed" = "%@ changed the room name to %@.";
+"notice_room_invite" = "%@ invited %@";
+"notice_room_join" = "%@ joined";
+"notice_room_leave" = "%@ left";
+"notice_room_kick" = "%@ kicked %@";
+"notice_room_unban" = "%@ unbanned %@";
+"notice_room_ban" = "%@ banned %@";
+"notice_avatar_url_changed" = "%@ changed their avatar";
+"notice_display_name_set" = "%@ set their display name to %@";
+"notice_display_name_changed_from" = "%@ changed their display name from %@ to %@";
+"notice_display_name_removed" = "%@ removed their display name";
+"notice_display_name_changed" = "%@ changed their display name to %@";
+"notice_topic_changed" = "%@ changed the topic to: %@";
+"notice_room_name_changed" = "%@ changed the room name to: %@";
 
 // Room Screen 
-"could_not_redact" = "Could not redact\"";
+"could_not_redact" = "Could not redact";
 "unable_to_send_message" = "Unable to send message";
 "downloading_dot" = "Downloading ...";
 "uploading_dot" = "Uploading ...";
@@ -102,6 +107,7 @@
 "call_invitation" = "Call invitation.";
 "call_hungup" = "Call hung up.";
 "call_answered" = "Call answered.";
+
 
 /* -*- 
    Automatic localization for en
