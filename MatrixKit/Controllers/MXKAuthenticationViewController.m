@@ -157,6 +157,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
     }
     
+    // Localize labels
+    _createAccountLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
+    _homeServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_title"];
+    _homeServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
+    _homeServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_info"];
+    _identityServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_title"];
+    _identityServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
+    _identityServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_info"];
+    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
+    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
+    
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
 }

@@ -62,8 +62,10 @@ extern NSString *const MXKAuthErrorDomain;
 @property (weak, nonatomic) IBOutlet UIView *authInputsContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewHeightConstraint;
 
+@property (weak, nonatomic) IBOutlet UILabel *homeServerLabel;
 @property (weak, nonatomic) IBOutlet UITextField *homeServerTextField;
 @property (weak, nonatomic) IBOutlet UILabel *homeServerInfoLabel;
+@property (weak, nonatomic) IBOutlet UILabel *identityServerLabel;
 @property (weak, nonatomic) IBOutlet UITextField *identityServerTextField;
 @property (weak, nonatomic) IBOutlet UILabel *identityServerInfoLabel;
 

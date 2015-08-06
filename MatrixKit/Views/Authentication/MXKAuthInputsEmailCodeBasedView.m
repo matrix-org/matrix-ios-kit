@@ -16,6 +16,8 @@
 
 #import "MXKAuthInputsEmailCodeBasedView.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @implementation MXKAuthInputsEmailCodeBasedView
 @dynamic displayNameTextField;
 
@@ -23,6 +25,15 @@
 {
     return [UINib nibWithNibName:NSStringFromClass([MXKAuthInputsEmailCodeBasedView class])
                           bundle:[NSBundle bundleForClass:[MXKAuthInputsEmailCodeBasedView class]]];
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    _userLoginTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_user_id_placeholder"];
+    _emailAndTokenTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_email_placeholder"];
+    _promptEmailTokenLabel.text = [NSBundle mxk_localizedStringForKey:@"login_prompt_email_token"];
 }
 
 - (CGFloat)actualHeight
@@ -76,6 +87,7 @@
     
     self.userLoginTextField.hidden = YES;
     self.promptEmailTokenLabel.hidden = NO;
+    self.emailAndTokenTextField.placeholder = nil;
     self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
 }
 

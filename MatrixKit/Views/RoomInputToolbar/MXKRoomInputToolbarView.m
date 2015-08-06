@@ -96,6 +96,10 @@
     
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
+    
+    // Localize string
+    [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateNormal];
+    [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateHighlighted];
 }
 
 - (void)dealloc

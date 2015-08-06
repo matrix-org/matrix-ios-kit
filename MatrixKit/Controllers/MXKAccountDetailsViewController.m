@@ -112,6 +112,9 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     [userPictureButton.layer setCornerRadius:userPictureButton.frame.size.width / 2];
     userPictureButton.clipsToBounds = YES;
     
+    [saveUserInfoButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_save_changes"] forState:UIControlStateNormal];
+    [saveUserInfoButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_save_changes"] forState:UIControlStateHighlighted];
+    
     // Force refresh
     self.mxAccount = _mxAccount;
 }

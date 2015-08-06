@@ -69,6 +69,20 @@
     _roomNameTextField.inputAccessoryView = inputAccessoryView;
     _roomAliasTextField.inputAccessoryView = inputAccessoryView;
     _participantsTextField.inputAccessoryView = inputAccessoryView;
+    
+    // Localize strings
+    _roomNameLabel.text = [NSBundle mxk_localizedStringForKey:@"room_creation_name_title"];
+    _roomNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_name_placeholder"];
+    _roomAliasLabel.text = [NSBundle mxk_localizedStringForKey:@"room_creation_alias_title"];
+    _roomAliasTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_alias_placeholder"];
+    _participantsLabel.text = [NSBundle mxk_localizedStringForKey:@"room_creation_participants_title"];
+    _participantsTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_participants_placeholder"];
+    
+    [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"public"] forSegmentAtIndex:0];
+    [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"private"] forSegmentAtIndex:0];
+    
+    [_createRoomBtn setTitle:[NSBundle mxk_localizedStringForKey:@"create_room"] forState:UIControlStateNormal];
+    [_createRoomBtn setTitle:[NSBundle mxk_localizedStringForKey:@"create_room"] forState:UIControlStateHighlighted];
 }
 
 - (void)dealloc

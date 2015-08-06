@@ -17,6 +17,7 @@
 #import "MXKEventDetailsView.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "NSBundle+MatrixKit.h"
 
 #import "MXKConstants.h"
 
@@ -35,6 +36,17 @@
 @end
 
 @implementation MXKEventDetailsView
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    // Localize string
+    [_redactButton setTitle:[NSBundle mxk_localizedStringForKey:@"redact"] forState:UIControlStateNormal];
+    [_redactButton setTitle:[NSBundle mxk_localizedStringForKey:@"redact"] forState:UIControlStateHighlighted];
+    [_closeButton setTitle:[NSBundle mxk_localizedStringForKey:@"close"] forState:UIControlStateNormal];
+    [_closeButton setTitle:[NSBundle mxk_localizedStringForKey:@"close"] forState:UIControlStateHighlighted];
+}
 
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
 {

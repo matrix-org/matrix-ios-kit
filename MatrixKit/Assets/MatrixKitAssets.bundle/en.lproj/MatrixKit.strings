@@ -19,6 +19,19 @@
 /* *********************** */
 
 // Login Screen
+"login_create_account" = "Create account:";
+"login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
+"login_home_server_title" = "Home Server:";
+"login_home_server_info" = "Your home server stores all your conservation and account data";
+"login_identity_server_title" = "Identity Server:";
+"login_identity_server_info" = "Matrix provides identity servers to track which emails etc. belong to which Matrix IDs. Only https://matrix.org currently exists.";
+"login_user_id_placeholder" = "Matrix ID (e.g. @bob:matrix.org or bob)";
+"login_password_placeholder" = "Password";
+"login_optional_field" = "optional";
+"login_display_name_placeholder" = "Display name (e.g. Bob Obson)";
+"login_email_info" = "Specify an email address lets other users find you on Matrix more easily, and will give you a way to reset your password in the future.";
+"login_email_placeholder" = "Email address";
+"login_prompt_email_token" = "Please enter your email validation token:";
 "login_error_title" = "Login Failed";
 "login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
 "login_error_do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
@@ -36,6 +49,7 @@
 "yes" = "Yes";
 "abort" = "Abort";
 "back" = "Back";
+"close" = "Close";
 "discard" = "Discard";
 "dismiss" = "Dismiss";
 "retry" = "Retry";
@@ -55,6 +69,9 @@
 "cancel_upload" = "Cancel Upload";
 "cancel_download" = "Cancel Download";
 "show_details" = "Show Details";
+"answer_call" = "Answer Call";
+"reject_call" = "Reject Call";
+"end_call" = "End Call";
 
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
@@ -91,6 +108,7 @@
 "notification_settings_room_rule_title" = "Room: '%@'";
 
 // Account
+"account_save_changes" = "Save changes";
 "account_link_email" = "Link Email";
 "account_linked_emails" = "Linked emails";
 
@@ -100,8 +118,13 @@
 "account_error_matrix_session_is_not_opened" = "Matrix session is not opened";
 
 // Room creation
+"room_creation_name_title" = "Room name:";
+"room_creation_name_placeholder" = "(e.g. lunchGroup)";
+"room_creation_alias_title" = "Room alias:";
 "room_creation_alias_placeholder" = "(e.g. #foo:example.org)";
 "room_creation_alias_placeholder_with_homeserver" = "(e.g. #foo%@)";
+"room_creation_participants_title" = "Participants:";
+"room_creation_participants_placeholder" = "(e.g. @bob:homeserver1; @john:homeserver2...)";
 
 // Room
 "room_please_select" = "Please select a room";
@@ -118,6 +141,10 @@
 "attachment_large" = "Large: %@";
 "attachment_cancel_download" = "Cancel the download?";
 "attachment_cancel_upload" = "Cancel the upload?";
+
+// Contacts
+"contact_mx_users" = "Matrix Users";
+"contact_local_contacts" = "Local Contacts";
 
 // Others
 "user_id_title" = "User ID:";
@@ -264,14 +291,14 @@
 "sd_scard" = "SD card";
 "other" = "Other";
 "my_rooms" = "My rooms";
-"create_room" = "Create room";
-"join_room" = "Join room";
+"create_room" = "Create Room";
+"join_room" = "Join Room";
 "create" = "Create:";
 "username" = "Username";
 "password" = "Password";
 "matrix_login" = "Matrix Login";
 "login" = "Login";
-"create_account" = "Create account";
+"create_account" = "Create Account";
 "hs_url" = "Home Server URL";
 "create_room_set_alias" = "Set room alias";
 "create_room_alias_hint" = "room-alias";
