@@ -62,7 +62,7 @@
             MXRoom *room = [_mxSession roomWithRoomId:mxPushRule.ruleId];
             if (room)
             {
-                description = [NSString stringWithFormat:@"Room: '%@'", room.state.displayname];
+                description = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notification_settings_room_rule_title"], room.state.displayname];
             }
             break;
         }

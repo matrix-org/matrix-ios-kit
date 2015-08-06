@@ -72,7 +72,7 @@
     }
     else
     {
-        self.displayNameTextField.text = @"Please select a room";
+        self.displayNameTextField.text = [NSBundle mxk_localizedStringForKey:@"room_please_select"];
         self.displayNameTextField.enabled = NO;
     }
     self.displayNameTextField.hidden = NO;
@@ -157,7 +157,7 @@
         }
         else
         {
-            alertMsg = @"You are not authorized to edit this room name";
+            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
         }
     }
     

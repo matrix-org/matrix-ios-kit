@@ -26,11 +26,6 @@
 
 #import "MXKConstants.h"
 
-NSString *const MXKRoomMemberDetailsActionSetPowerLevel = @"Set Power Level";
-NSString *const MXKRoomMemberDetailsActionStartChat = @"Start Chat";
-NSString *const MXKRoomMemberDetailsActionStartVoiceCall = @"Start Voice Call";
-NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
-
 @interface MXKRoomMemberDetailsViewController ()
 {
     NSString *thumbnailURL;
@@ -185,7 +180,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                 
             }];
         }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionSetPowerLevel])
+        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"set_power_level"]])
         {
             [self updateUserPowerLevel:_mxRoomMember];
         }
@@ -264,7 +259,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                           
                       }];
         }
-        else if ([action isEqualToString:MXKRoomMemberDetailsActionStartChat])
+        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_chat"]])
         {
             if (self.delegate)
             {
@@ -275,9 +270,9 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
                 [self removePendingActionMask];
             }
         }
-        else if (([action isEqualToString:MXKRoomMemberDetailsActionStartVoiceCall]) || ([action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall]))
+        else if (([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_voice_call"]]) || ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_video_call"]]))
         {
-            BOOL isVideoCall = [action isEqualToString:MXKRoomMemberDetailsActionStartVideoCall];
+            BOOL isVideoCall = [action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_video_call"]];
             
             if (self.delegate && [self.delegate respondsToSelector:@selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:)])
             {
@@ -539,7 +534,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         
         if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels])
         {
-            [buttonsTitles addObject:MXKRoomMemberDetailsActionSetPowerLevel];
+            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"set_power_level"]];
         }
     }
     else if (_mxRoomMember)
@@ -547,8 +542,8 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         if (_enableVoipCall)
         {
             // Offer voip call options
-            [buttonsTitles addObject:MXKRoomMemberDetailsActionStartVoiceCall];
-            [buttonsTitles addObject:MXKRoomMemberDetailsActionStartVideoCall];
+            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"start_voice_call"]];
+            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"start_video_call"]];
         }
         
         // Consider membership of the selected member
@@ -601,7 +596,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         // update power level
         if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels])
         {
-            [buttonsTitles addObject:MXKRoomMemberDetailsActionSetPowerLevel];
+            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"set_power_level"]];
         }
         
         // offer to start a new chat only if the room is not a 1:1 room with this user
@@ -609,7 +604,7 @@ NSString *const MXKRoomMemberDetailsActionStartVideoCall = @"Start Video Call";
         MXRoom* room = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
         if (!room || (![room.state.roomId isEqualToString:mxRoom.state.roomId]))
         {
-            [buttonsTitles addObject:MXKRoomMemberDetailsActionStartChat];
+            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"start_chat"]];
         }
     }
     

@@ -445,7 +445,7 @@
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
-        textField.placeholder = @"ex: @bob:homeserver";
+        textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
     }];
     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
     {

@@ -162,11 +162,11 @@
     // Update alias placeholder in room creation section
     if (homeServerSuffixArray.count == 1)
     {
-        _roomAliasTextField.placeholder = [NSString stringWithFormat:@"(e.g. #foo%@)", homeServerSuffixArray.firstObject];
+        _roomAliasTextField.placeholder = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_creation_alias_placeholder_with_homeserver"], homeServerSuffixArray.firstObject];
     }
     else
     {
-        _roomAliasTextField.placeholder = @"(e.g. #foo:example.org)";
+        _roomAliasTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_alias_placeholder"];
     }
 }
 

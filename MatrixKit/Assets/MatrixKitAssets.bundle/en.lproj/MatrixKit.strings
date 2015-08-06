@@ -22,6 +22,13 @@
 "login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
 "login_error_do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
 "login_error_registration_is_not_supported" = "Registration is not currently supported";
+"login_error_forbidden" = "Invalid username/password";
+"login_error_unknown_token" = "The access token specified was not recognised";
+"login_error_bad_json" = "Malformed JSON";
+"login_error_not_json" = "Did not contain valid JSON";
+"login_error_limit_exceeded" = "Too many requests have been sent";
+"login_error_user_in_use" = "This user name is already used";
+"login_error_login_email_not_yet" = "The email link which has not been clicked yet";
 
 // Action
 "abort" = "Abort";
@@ -31,6 +38,10 @@
 "retry" = "Retry";
 "sign_up" = "Sign up";
 "submit_code" = "Submit code";
+"set_power_level" = "Set Power Level";
+"start_chat" = "Start Chat";
+"start_voice_call" = "Start Voice Call";
+"start_video_call" = "Start Video Call";
 
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
@@ -64,6 +75,8 @@
 "settings_enable_push_notifications" = "Enable push notifications";
 "settings_enter_validation_token_for" = "Enter validation token for %@:";
 
+"notification_settings_room_rule_title" = "Room: '%@'";
+
 // Account
 "account_link_email" = "Link Email";
 "account_linked_emails" = "Linked emails";
@@ -73,12 +86,32 @@
 "account_error_email_link_failed" = "Failed to link email";
 "account_error_matrix_session_is_not_opened" = "Matrix session is not opened";
 
+// Room creation
+"room_creation_alias_placeholder" = "(e.g. #foo:example.org)";
+"room_creation_alias_placeholder_with_homeserver" = "(e.g. #foo%@)";
+
+// Room
+"room_please_select" = "Please select a room";
+"room_error_join_failed" = "Failed to join room (%@)";
+"room_error_name_edition_not_authorized" = "You are not authorized to edit this room name";
+"room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
+"room_left" = "You left the room";
+
+// Attachment
+"attachment_original" = "Actual Size: %@";
+"attachment_small" = "Small: %@";
+"attachment_medium" = "Medium: %@";
+"attachment_large" = "Large: %@";
+
 // Others
+"offline" = "offline";
 "error" = "Error";
 "not_supported_yet" = "Not supported yet";
 "default" = "default";
 "private" = "Private";
 "public" = "Public";
+"network_error_not_reachable" = "Please check your network connectivity";
+"user_id_placeholder" = "ex: @bob:homeserver";
 
 /* -*- 
    Automatic localization for en

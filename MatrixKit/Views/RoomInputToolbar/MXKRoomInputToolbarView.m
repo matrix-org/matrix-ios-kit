@@ -33,11 +33,6 @@
 #define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
 #define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
 
-NSString* const kMXKRoomInputToolbarView_originalFormatLabel = @"Actual Size: %@";
-NSString* const kMXKRoomInputToolbarView_smallFormatLabel = @"Small: %@";
-NSString* const kMXKRoomInputToolbarView_mediumFormatLabel = @"Medium: %@";
-NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
-
 @interface MXKRoomInputToolbarView()
 {
     /**
@@ -186,7 +181,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 [strongSelf->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
                 {
                     textField.secureTextEntry = NO;
-                    textField.placeholder = @"ex: @bob:homeserver";
+                    textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
                 }];
                 [strongSelf->currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                 {
@@ -470,7 +465,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
             
             if (smallFilesize)
             {
-                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_smallFormatLabel, [MXKTools fileSizeToString: (int)smallFilesize]];
+                NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXKTools fileSizeToString: (int)smallFilesize]];
                 [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -483,7 +478,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
             
             if (mediumFilesize)
             {
-                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_mediumFormatLabel, [MXKTools fileSizeToString: (int)mediumFilesize]];
+                NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXKTools fileSizeToString: (int)mediumFilesize]];
                 [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -496,7 +491,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
             
             if (largeFilesize)
             {
-                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_largeFormatLabel, [MXKTools fileSizeToString: (int)largeFilesize]];
+                NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXKTools fileSizeToString: (int)largeFilesize]];
                 [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -507,7 +502,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 }];
             }
             
-            NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_originalFormatLabel, [MXKTools fileSizeToString: (int)originalFileSize]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXKTools fileSizeToString: (int)originalFileSize]];
             [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;

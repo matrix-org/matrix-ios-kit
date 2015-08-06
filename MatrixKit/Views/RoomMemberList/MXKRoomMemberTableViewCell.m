@@ -218,7 +218,7 @@
         {
             case MXPresenceOffline:
             {
-                lastActiveTime = @"offline";
+                lastActiveTime = [NSBundle mxk_localizedStringForKey:@"offline"];
                 break;
             }
             case MXPresenceHidden:

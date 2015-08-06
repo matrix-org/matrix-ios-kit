@@ -502,7 +502,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 // Show the error to the end user
                 __weak typeof(self) weakSelf = self;
                 currentAlert = [[MXKAlert alloc] initWithTitle:@"Error"
-                                                       message:[NSString stringWithFormat:@"Failed to join room (%@): %@", roomDataSource.room.state.displayname, error]
+                                                       message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
                                                          style:MXKAlertStyleAlert];
                 currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                                   {
@@ -694,7 +694,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (!reason.length)
     {
-        reason = @"You left the room";
+        reason = [NSBundle mxk_localizedStringForKey:@"room_left"];
     }
     
     

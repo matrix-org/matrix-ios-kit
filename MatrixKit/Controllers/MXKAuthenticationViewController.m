@@ -543,7 +543,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else if (status == AFNetworkReachabilityStatusNotReachable)
     {
-        _noFlowLabel.text = @"Please check your network connectivity";
+        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
     }
 }
 
@@ -656,31 +656,31 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             if ([errCode isEqualToString:@"M_FORBIDDEN"])
             {
-                message = @"Invalid username/password";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
             }
             else if ([errCode isEqualToString:@"M_UNKNOWN_TOKEN"])
             {
-                message = @"The access token specified was not recognised";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
             }
             else if ([errCode isEqualToString:@"M_BAD_JSON"])
             {
-                message = @"Malformed JSON";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
             }
             else if ([errCode isEqualToString:@"M_NOT_JSON"])
             {
-                message = @"Did not contain valid JSON";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
             }
             else if ([errCode isEqualToString:@"M_LIMIT_EXCEEDED"])
             {
-                message = @"Too many requests have been sent";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
             }
             else if ([errCode isEqualToString:@"M_USER_IN_USE"])
             {
-                message = @"This user name is already used";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
             }
             else if ([errCode isEqualToString:@"M_LOGIN_EMAIL_URL_NOT_YET"])
             {
-                message = @"The email link which has not been clicked yet";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
             }
             else
             {

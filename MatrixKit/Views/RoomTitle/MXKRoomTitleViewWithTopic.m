@@ -356,7 +356,7 @@
         }
         else
         {
-            alertMsg = @"You are not authorized to edit this room name";
+            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
         }
         
         // Check whether the user is allowed to change room topic
@@ -385,7 +385,7 @@
         }
         else
         {
-            alertMsg = @"You are not authorized to edit this room topic";
+            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_topic_edition_not_authorized"];
         }
     }
     
