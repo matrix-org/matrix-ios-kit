@@ -164,14 +164,6 @@ static MXKAccountManager *sharedAccountManager = nil;
     _storeClass = storeClass;
 }
 
-- (void)setCallStackClass:(Class)callStackClass
-{
-    // Sanity check
-    NSAssert([callStackClass conformsToProtocol:@protocol(MXCallStack)], @"MXKAccountManager.callStackClass must conform the MXCallStack protocol");
-
-    _callStackClass = callStackClass;
-}
-
 - (NSArray *)accounts
 {
     return [mxAccounts copy];

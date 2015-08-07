@@ -43,13 +43,6 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 @property (nonatomic) Class storeClass;
 
 /**
- The class to use to place and answer VoIP voice or video calls. This class must be conformed to MXCallStack protocol.
- Nil, by default - ie, calls are disabled by default.
- This property must be set before opening a MXSession.
- */
-@property (nonatomic) Class callStackClass;
-
-/**
  List of all available accounts (enabled and disabled).
  */
 @property (nonatomic, readonly) NSArray* accounts;
