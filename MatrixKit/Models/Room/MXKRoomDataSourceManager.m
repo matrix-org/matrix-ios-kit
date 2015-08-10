@@ -171,7 +171,8 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
             
         case MXKRoomDataSourceManagerReleasePolicyNeverRelease:
             
-            // Keep the instance for life. Do nothing
+            // Keep the instance for life (reduce memory usage by flushing room data if the number of bubbles is over 30).
+            [roomDataSource limitMemoryUsage:30];
             break;
             
         default:

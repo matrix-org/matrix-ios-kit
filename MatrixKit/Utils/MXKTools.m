@@ -32,17 +32,14 @@
         [formattedString appendString:@"< 1s"];
     }
     else if (secondsInterval < 60)
-        
     {
         [formattedString appendFormat:@"%ds", (int)secondsInterval];
     }
     else if (secondsInterval < 3600)
-        
     {
         [formattedString appendFormat:@"%dm %2ds", (int)(secondsInterval/60), ((int)secondsInterval) % 60];
     }
     else if (secondsInterval >= 3600)
-        
     {
         [formattedString appendFormat:@"%dh %dm %ds", (int)(secondsInterval / 3600),
          ((int)(secondsInterval) % 3600) / 60,

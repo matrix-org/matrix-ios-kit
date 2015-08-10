@@ -49,7 +49,6 @@ static MXKAppSettings *standardAppSettings = nil;
 {
     if (self = [super init])
     {
-        
         // Use presence to sort room members by default
         if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"])
         {

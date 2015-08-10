@@ -37,4 +37,9 @@
     return [NSURL fileURLWithPath:[[NSBundle mxk_assetsBundle] pathForResource:name ofType:@"mp3" inDirectory:@"Sounds"]];
 }
 
++ (NSString *)mxk_localizedStringForKey:(NSString *)key
+{
+    return NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
+}
+
 @end

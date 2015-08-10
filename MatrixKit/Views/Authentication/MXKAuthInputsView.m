@@ -16,6 +16,8 @@
 
 #import "MXKAuthInputsView.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @implementation MXKAuthInputsView
 
 + (UINib *)nib
@@ -38,6 +40,9 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
+    
+    // Localize string
+    _displayNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_display_name_placeholder"];
     
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
     

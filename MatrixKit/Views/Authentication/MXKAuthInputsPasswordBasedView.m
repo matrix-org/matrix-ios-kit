@@ -16,6 +16,8 @@
 
 #import "MXKAuthInputsPasswordBasedView.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @implementation MXKAuthInputsPasswordBasedView
 @dynamic displayNameTextField;
 
@@ -23,6 +25,16 @@
 {
     return [UINib nibWithNibName:NSStringFromClass([MXKAuthInputsPasswordBasedView class])
                           bundle:[NSBundle bundleForClass:[MXKAuthInputsPasswordBasedView class]]];
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    _userLoginTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_user_id_placeholder"];
+    _passWordTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_password_placeholder"];
+    _emailTextField.placeholder = [NSString stringWithFormat:@"%@ (%@)", [NSBundle mxk_localizedStringForKey:@"login_email_placeholder"], [NSBundle mxk_localizedStringForKey:@"login_optional_field"]];
+    _emailInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_email_info"];
 }
 
 - (CGFloat)actualHeight

@@ -339,7 +339,7 @@
 {
     // Keep centering the loading wheel
     CGPoint center = self.view.center;
-    center.y -= self.tableView.contentInset.top;
+    center.y +=  self.tableView.contentOffset.y - self.tableView.contentInset.top;
     activityIndicator.center = center;
     [self.view bringSubviewToFront:activityIndicator];
     

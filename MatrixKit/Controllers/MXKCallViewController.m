@@ -105,6 +105,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker"] forState:UIControlStateNormal];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker"] forState:UIControlStateSelected];
     
+    // Localize string
+    [answerCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"answer_call"] forState:UIControlStateNormal];
+    [answerCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"answer_call"] forState:UIControlStateHighlighted];
+    [rejectCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"reject_call"] forState:UIControlStateNormal];
+    [rejectCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"reject_call"] forState:UIControlStateHighlighted];
+    [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateNormal];
+    [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateHighlighted];
+    
     // Refresh call information
     self.mxCall = mxCall;
 }
@@ -435,17 +443,17 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateCreateOffer:
         case MXCallStateInviteSent:
             self.isRinging = YES;
-            callStatusLabel.text = @"Calling";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
             break;
         case MXCallStateRinging:
             self.isRinging = YES;
             if (call.isVideoCall)
             {
-                callStatusLabel.text = @"Incoming Video Call";
+                callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_video_call"];
             }
             else
             {
-                callStatusLabel.text = @"Incoming Voice Call";
+                callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_voice_call"];
             }
             // Update bottom bar
             endCallButton.hidden = YES;
@@ -455,7 +463,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateCreateAnswer:
         case MXCallStateConnecting:
             self.isRinging = NO;
-            callStatusLabel.text = @"Call Connecting";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
             break;
         case MXCallStateConnected:
             self.isRinging = NO;
@@ -465,12 +473,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             // MXCallStateInviteExpired state is sent as an notification
             // MXCall will move quickly to the MXCallStateEnded state
             self.isRinging = NO;
-            callStatusLabel.text = @"Call Invite Expired";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_invite_expired"];
             break;
         case MXCallStateEnded:
         {
             self.isRinging = NO;
-            callStatusLabel.text = @"Call Ended";
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ended"];
             
             if (audioPlayer)
             {

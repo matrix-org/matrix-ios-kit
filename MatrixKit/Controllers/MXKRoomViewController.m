@@ -29,6 +29,10 @@
 
 #import "MXKRoomInputToolbarViewWithSimpleTextView.h"
 
+#import "MXKConstants.h"
+
+#import "NSBundle+MatrixKit.h"
+
 NSString *const kCmdChangeDisplayName = @"/nick";
 NSString *const kCmdEmote = @"/me";
 NSString *const kCmdJoinRoom = @"/join";
@@ -230,6 +234,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [self reloadBubblesTable];
     }
     _bubblesTableView.hidden = NO;
+    shouldScrollToBottomOnTableRefresh = NO;
     
     if (_saveProgressTextInput && roomDataSource)
     {
@@ -497,10 +502,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 // Show the error to the end user
                 __weak typeof(self) weakSelf = self;
-                currentAlert = [[MXKAlert alloc] initWithTitle:@"Error"
-                                                       message:[NSString stringWithFormat:@"Failed to join room (%@): %@", roomDataSource.room.state.displayname, error]
+                currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
+                                                       message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
                                                          style:MXKAlertStyleAlert];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                                   {
                                                       typeof(self) self = weakSelf;
                                                       self->currentAlert = nil;
@@ -690,7 +695,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (!reason.length)
     {
-        reason = @"You left the room";
+        reason = [NSBundle mxk_localizedStringForKey:@"room_left"];
     }
     
     
@@ -869,11 +874,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         if (displayName.length)
         {
             [roomDataSource.mxSession.matrixRestClient setDisplayName:displayName success:^{
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 NSLog(@"[MXKRoomVC] Set displayName failed: %@", error);
-                // TODO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else
@@ -892,14 +899,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Check
         if (roomAlias.length)
         {
-            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room)
-            {
+            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
                 // Do nothing by default when we succeed to join the room
-            } failure:^(NSError *error)
-            {
+            } failure:^(NSError *error) {
+                
                 NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed: %@", roomAlias, error);
-                // TODO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else
@@ -943,11 +950,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 // Kick the user
                 [roomDataSource.room kickUser:userId reason:reason success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Kick user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -975,11 +984,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 // Ban the user
                 [roomDataSource.room banUser:userId reason:reason success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Ban user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -994,11 +1005,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Unban the user
                 [roomDataSource.room unbanUser:userId success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Unban user (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -1027,11 +1040,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Set user power level
                 [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:[powerLevel integerValue] success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Set user power (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -1046,11 +1061,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Reset user power level
                 [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
-                    // TODO Alert user
-                    //                    [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
             else
@@ -1101,36 +1118,28 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)triggerInitialBackPagination
 {
     // Trigger back pagination to fill all the screen
-    // This is currently done with best effort depending on views already loaded
-    // Delay the call, provide a better chance to get the true self.bubblesTableView.frame.
-    // Thus, we can download as less as messages to fill the table view. But it is not crucial.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        // Ideally, the targetted frame is the one of the tableview
-        CGRect frame = self.bubblesTableView.frame;
-        if (0 == frame.size.height)
-        {
-            
-            // If not available, use the vc one
-            frame = self.view.frame;
-        }
-        
-        isBackPaginationInProgress = YES;
-        [self startActivityIndicator];
-        [roomDataSource paginateBackMessagesToFillRect:frame
-                                               success:^{
-                                                   // Reload table
-                                                   isBackPaginationInProgress = NO;
-                                                   [self reloadBubblesTable];
-                                                   [self stopActivityIndicator];
-                                               }
-                                               failure:^(NSError *error) {
-                                                   // Reload table
-                                                   isBackPaginationInProgress = NO;
-                                                   [self reloadBubblesTable];
-                                                   [self stopActivityIndicator];
-                                               }];
-    });
+    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+    CGRect frame = window.rootViewController.view.bounds;
+    
+    isBackPaginationInProgress = YES;
+    [self startActivityIndicator];
+    [roomDataSource paginateBackMessagesToFillRect:frame
+                                           success:^{
+                                               
+                                               // Reload table
+                                               isBackPaginationInProgress = NO;
+                                               [self reloadBubblesTable];
+                                               [self stopActivityIndicator];
+                                               
+                                           }
+                                           failure:^(NSError *error) {
+                                               
+                                               // Reload table
+                                               isBackPaginationInProgress = NO;
+                                               [self reloadBubblesTable];
+                                               [self stopActivityIndicator];
+                                               
+                                           }];
 }
 
 - (void)triggerBackPagination
@@ -1310,16 +1319,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         
         __weak typeof(self) weakSelf = self;
-        currentAlert = [[MXKAlert alloc] initWithTitle:@"Resend the message"
+        currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"resend_message"]
                                                message:textMessage
                                                  style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             typeof(self) self = weakSelf;
             self->currentAlert = nil;
         }];
         
-        [currentAlert addActionWithTitle:@"OK" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             typeof(self) self = weakSelf;
             self->currentAlert = nil;
@@ -1345,8 +1354,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (shouldScrollToBottom)
     {
         // Scroll to the bottom
-        [self scrollBubblesTableViewToBottomAnimated:YES];
-        shouldScrollToBottomOnTableRefresh = NO;
+        [self scrollBubblesTableViewToBottomAnimated:NO];
     }
 }
 
@@ -1406,12 +1414,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the download?" style:MXKAlertStyleAlert];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"No" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"attachment_cancel_download"] style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
             }];
-            [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
                 
@@ -1442,12 +1450,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 
                 __weak __typeof(self) weakSelf = self;
-                currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Cancel the upload?" style:MXKAlertStyleAlert];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"No" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                currentAlert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"attachment_cancel_upload"] style:MXKAlertStyleAlert];
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                 }];
-                [currentAlert addActionWithTitle:@"Yes" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1488,12 +1496,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:@"Select an action" style:MXKAlertStyleActionSheet];
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             
             // Add actions for a failed event
             if (selectedEvent.mxkState == MXKEventStateSendingFailed)
             {
-                [currentAlert addActionWithTitle:@"Resend" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"resend"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1501,7 +1509,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     [strongSelf.roomDataSource resendEventWithEventId:selectedEvent.eventId success:nil failure:nil];
                 }];
                 
-                [currentAlert addActionWithTitle:@"Delete" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"delete"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1527,7 +1535,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     selectedComponent = nil;
                 }
                 
-                [currentAlert addActionWithTitle:@"Copy" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1537,7 +1545,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     [[UIPasteboard generalPasteboard] setString:selectedComponent.textMessage];
                 }];
                 
-                [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1557,7 +1565,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 if (components.count > 1)
                 {
-                    [currentAlert addActionWithTitle:@"Select All" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"select_all"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
@@ -1571,7 +1579,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo])
                 {
-                    [currentAlert addActionWithTitle:@"Save" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
@@ -1584,19 +1592,24 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                             [MXKMediaManager saveMediaToPhotosLibrary:url
                                                               isImage:isImage
                                                               success:^() {
+                                                                  
                                                                   __strong __typeof(weakSelf)strongSelf = weakSelf;
                                                                   [strongSelf stopActivityIndicator];
-                                                              }
-                                                              failure:^(NSError *error) {
+                                                                  
+                                                              } failure:^(NSError *error) {
+                                                                  
                                                                   __strong __typeof(weakSelf)strongSelf = weakSelf;
                                                                   [strongSelf stopActivityIndicator];
-                                                                  //TODO GFO display error as alert
+                                                                  
+                                                                  // Notify MatrixKit user
+                                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                  
                                                               }];
                         } failure:nil];
                     }];
                 }
                 
-                [currentAlert addActionWithTitle:@"Share" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1647,7 +1660,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
                 if ([MXKMediaManager existingUploaderWithId:uploadId])
                 {
-                    [currentAlert addActionWithTitle:@"Cancel Upload" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
@@ -1670,7 +1683,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
                     if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
                     {
-                        [currentAlert addActionWithTitle:@"Cancel Download" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                             __strong __typeof(weakSelf)strongSelf = weakSelf;
                             strongSelf->currentAlert = nil;
                             
@@ -1686,7 +1699,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }
                 }
                 
-                [currentAlert addActionWithTitle:@"Show Details" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"show_details"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
@@ -1698,7 +1711,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }];
             }
             
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
                 
@@ -1752,7 +1765,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         [self becomeFirstResponder];
         UIMenuController *menu = [UIMenuController sharedMenuController];
-        menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:@"Share" action:@selector(share:)]];
+        menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] action:@selector(share:)]];
         [menu setTargetRect:roomBubbleTableViewCell.messageTextView.frame inView:roomBubbleTableViewCell];
         [menu setMenuVisible:YES animated:YES];
     });
@@ -2333,8 +2346,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             NSLog(@"[RoomVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
             [self hideAttachmentView];
-            //Alert user
-            // @TODO [[AppDelegate theDelegate] showErrorAsAlert:mediaPlayerError];
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
         }
     }
 }

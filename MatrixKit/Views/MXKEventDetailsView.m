@@ -17,6 +17,9 @@
 #import "MXKEventDetailsView.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "NSBundle+MatrixKit.h"
+
+#import "MXKConstants.h"
 
 @interface MXKEventDetailsView ()
 {
@@ -33,6 +36,17 @@
 @end
 
 @implementation MXKEventDetailsView
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    // Localize string
+    [_redactButton setTitle:[NSBundle mxk_localizedStringForKey:@"redact"] forState:UIControlStateNormal];
+    [_redactButton setTitle:[NSBundle mxk_localizedStringForKey:@"redact"] forState:UIControlStateHighlighted];
+    [_closeButton setTitle:[NSBundle mxk_localizedStringForKey:@"close"] forState:UIControlStateNormal];
+    [_closeButton setTitle:[NSBundle mxk_localizedStringForKey:@"close"] forState:UIControlStateHighlighted];
+}
 
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
 {
@@ -144,14 +158,19 @@
         {
             [_activityIndicator startAnimating];
             [mxRoom redactEvent:mxEvent.eventId reason:nil success:^{
+                
                 [_activityIndicator stopAnimating];
                 [self removeFromSuperview];
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 NSLog(@"[MXKEventDetailsView] Redact event (%@) failed: %@", mxEvent.eventId, error);
-                // TODO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
                 [_activityIndicator stopAnimating];
+                
             }];
         }
         

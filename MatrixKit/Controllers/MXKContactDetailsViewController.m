@@ -146,8 +146,8 @@
         cell.mxkLabel.text = @"";
     }
     
-    [cell.mxkButton setTitle:@"Start Chat" forState:UIControlStateNormal];
-    [cell.mxkButton setTitle:@"Start Chat" forState:UIControlStateHighlighted];
+    [cell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"start_chat"] forState:UIControlStateNormal];
+    [cell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"start_chat"] forState:UIControlStateHighlighted];
     cell.mxkButton.tag = row;
     [cell.mxkButton addTarget:self action:@selector(startChat:) forControlEvents:UIControlEventTouchUpInside];
     

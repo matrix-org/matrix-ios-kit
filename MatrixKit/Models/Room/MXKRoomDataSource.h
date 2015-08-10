@@ -163,6 +163,15 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)markAllAsRead;
 
+/**
+ Reduce memory usage by releasing room data if the number of bubbles is over the provided limit 'maxBubbleNb'.
+ 
+ This operation is ignored if some local echoes are pending or if unread messages counter is not nil.
+ 
+ @param maxBubbleNb The room bubble data are released only if the number of bubbles is over this limit.
+ */
+- (void)limitMemoryUsage:(NSInteger)maxBubbleNb;
+
 #pragma mark - Public methods
 /**
  Get the data for the cell at the given index.

@@ -18,6 +18,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKConstants.h"
+
 #import "MXKAppSettings.h"
 
 #import "MXEvent+MatrixKit.h"
@@ -35,6 +37,7 @@
 #import "MXKAccountDetailsViewController.h"
 #import "MXKContactDetailsViewController.h"
 #import "MXKRoomMemberDetailsViewController.h"
+#import "MXKNotificationSettingsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 
@@ -54,6 +57,9 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
+
+#import "MXKPushRuleTableViewCell.h"
+#import "MXKPushRuleCreationTableViewCell.h"
 
 #import "MXKTableViewCellWithButton.h"
 #import "MXKTableViewCellWithButtons.h"
@@ -75,8 +81,3 @@
 #import "MXKContactManager.h"
 
 #import "MXK3PID.h"
-
-/**
- The Matrix iOS Kit version.
- */
-FOUNDATION_EXPORT NSString *MatrixKitVersion;

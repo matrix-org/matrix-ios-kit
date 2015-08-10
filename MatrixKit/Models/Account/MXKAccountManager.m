@@ -128,17 +128,15 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (void)logout
 {
-    // Remove APNS device token
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
     // Logout all existing accounts
     while (mxAccounts.lastObject)
     {
         [self removeAccount:mxAccounts.lastObject];
     }
     
+    // Remove APNS device token
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
     // Be sure that no account survive in local storage
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
     [[NSUserDefaults standardUserDefaults] synchronize];

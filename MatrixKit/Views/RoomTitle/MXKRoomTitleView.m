@@ -16,6 +16,10 @@
 
 #import "MXKRoomTitleView.h"
 
+#import "MXKConstants.h"
+
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKRoomTitleView ()
 {
     id roomListener;
@@ -68,7 +72,7 @@
     }
     else
     {
-        self.displayNameTextField.text = @"Please select a room";
+        self.displayNameTextField.text = [NSBundle mxk_localizedStringForKey:@"room_please_select"];
         self.displayNameTextField.enabled = NO;
     }
     self.displayNameTextField.hidden = NO;
@@ -153,7 +157,7 @@
         }
         else
         {
-            alertMsg = @"You are not authorized to edit this room name";
+            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
         }
     }
     
@@ -166,7 +170,7 @@
             [currentAlert dismiss:NO];
         }
         currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             strongSelf->currentAlert = nil;
@@ -193,6 +197,7 @@
             
             __weak typeof(self) weakSelf = self;
             [_mxRoom setName:roomName success:^{
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -201,8 +206,9 @@
                 
                 // Refresh title display
                 textField.text = strongSelf.mxRoom.state.displayname;
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -212,8 +218,9 @@
                 // Revert change
                 textField.text = strongSelf.mxRoom.state.displayname;
                 NSLog(@"[MXKRoomTitleView] Rename room failed: %@", error);
-                // TODO GFO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else

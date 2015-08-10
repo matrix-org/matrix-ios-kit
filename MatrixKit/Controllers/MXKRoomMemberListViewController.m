@@ -20,6 +20,10 @@
 
 #import "MXKAlert.h"
 
+#import "MXKConstants.h"
+
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKRoomMemberListViewController ()
 {
     /**
@@ -431,8 +435,8 @@
     __weak typeof(self) weakSelf = self;
     
     // Ask for userId to invite
-    currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
-    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil style:MXKAlertStyleAlert];
+    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
     {
         typeof(self) self = weakSelf;
         self->currentAlert = nil;
@@ -441,9 +445,9 @@
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
-        textField.placeholder = @"ex: @bob:homeserver";
+        textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
     }];
-    [currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
     {
         UITextField *textField = [alert textFieldAtIndex:0];
         NSString *userId = textField.text;
@@ -457,11 +461,13 @@
             if (mxRoom)
             {
                 [mxRoom inviteUser:userId success:^{
-                } failure:^(NSError *error)
-                {
+                    
+                } failure:^(NSError *error) {
+                    
                     NSLog(@"[MXKRoomVC] Invite %@ failed: %@", userId, error);
-                    // TODO: Alert user
-                    //        [[AppDelegate theDelegate] showErrorAsAlert:error];
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
                 }];
             }
         }

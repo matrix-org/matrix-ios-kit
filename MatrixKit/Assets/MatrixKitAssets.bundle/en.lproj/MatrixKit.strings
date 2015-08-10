@@ -1,0 +1,297 @@
+/*
+ Copyright 2015 OpenMarket Ltd
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+/* *********************** */
+/*      iOS specific       */
+/* *********************** */
+
+// Login Screen
+"login_create_account" = "Create account:";
+"login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
+"login_home_server_title" = "Home Server:";
+"login_home_server_info" = "Your home server stores all your conservation and account data";
+"login_identity_server_title" = "Identity Server:";
+"login_identity_server_info" = "Matrix provides identity servers to track which emails etc. belong to which Matrix IDs. Only https://matrix.org currently exists.";
+"login_user_id_placeholder" = "Matrix ID (e.g. @bob:matrix.org or bob)";
+"login_password_placeholder" = "Password";
+"login_optional_field" = "optional";
+"login_display_name_placeholder" = "Display name (e.g. Bob Obson)";
+"login_email_info" = "Specify an email address lets other users find you on Matrix more easily, and will give you a way to reset your password in the future.";
+"login_email_placeholder" = "Email address";
+"login_prompt_email_token" = "Please enter your email validation token:";
+"login_error_title" = "Login Failed";
+"login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
+"login_error_do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
+"login_error_registration_is_not_supported" = "Registration is not currently supported";
+"login_error_forbidden" = "Invalid username/password";
+"login_error_unknown_token" = "The access token specified was not recognised";
+"login_error_bad_json" = "Malformed JSON";
+"login_error_not_json" = "Did not contain valid JSON";
+"login_error_limit_exceeded" = "Too many requests have been sent";
+"login_error_user_in_use" = "This user name is already used";
+"login_error_login_email_not_yet" = "The email link which has not been clicked yet";
+
+// Action
+"no" = "No";
+"yes" = "Yes";
+"abort" = "Abort";
+"back" = "Back";
+"close" = "Close";
+"discard" = "Discard";
+"dismiss" = "Dismiss";
+"retry" = "Retry";
+"sign_up" = "Sign up";
+"submit_code" = "Submit code";
+"set_power_level" = "Set Power Level";
+"start_chat" = "Start Chat";
+"start_voice_call" = "Start Voice Call";
+"start_video_call" = "Start Video Call";
+"select_account" = "Select an account";
+"attach_media" = "Attach Media from Library";
+"capture_media" = "Take Photo/Video";
+"invite_user" = "Invite matrix User";
+"reset_to_default" = "Reset to default";
+"resend_message" = "Resend the message";
+"select_all" = "Select All";
+"cancel_upload" = "Cancel Upload";
+"cancel_download" = "Cancel Download";
+"show_details" = "Show Details";
+"answer_call" = "Answer Call";
+"reject_call" = "Reject Call";
+"end_call" = "End Call";
+
+// Events formatter
+"notice_avatar_changed_too" = "(avatar was changed too)";
+"notice_room_name_removed" = "%@ removed the room name";
+"notice_room_topic_removed" = "%@ removed the topic";
+"notice_event_redacted" = "<redacted%@>";
+"notice_event_redacted_by" = " by %@";
+"notice_event_redacted_reason" = " [reason: %@]";
+"notice_profile_change_redacted" = "%@ updated their profile %@";
+"notice_room_created" = "%@ created the room";
+"notice_room_join_rule" = "The join rule is: %@";
+"notice_room_power_level_intro" = "The power level of room members are:";
+"notice_room_power_level_acting_requirement" = "The minimum power levels that a user must have before acting are:";
+"notice_room_power_level_event_requirement" = "The minimum power levels related to events are:";
+"notice_room_aliases" = "The room aliases are: %@";
+"notice_image_attachment" = "image attachment";
+"notice_audio_attachment" = "audio attachment";
+"notice_video_attachment" = "video attachment";
+"notice_location_attachment" = "location attachment";
+"notice_file_attachment" = "file attachment";
+"notice_invalid_attachment" = "invalid attachment";
+"notice_unsupported_attachment" = "Unsupported attachment: %@";
+"notice_feedback" = "Feedback event (id: %@): %@";
+"notice_redaction" = "%@ redacted an event (id: %@)";
+"notice_error_unsupported_event" = "Unsupported event";
+"notice_error_unexpected_event" = "Unexpected event";
+"notice_error_unknown_event_type" = "Unknown event type";
+
+// Settings
+"settings_enable_inapp_notifications" = "Enable In-App notifications";
+"settings_enable_push_notifications" = "Enable push notifications";
+"settings_enter_validation_token_for" = "Enter validation token for %@:";
+
+"notification_settings_room_rule_title" = "Room: '%@'";
+
+// Account
+"account_save_changes" = "Save changes";
+"account_link_email" = "Link Email";
+"account_linked_emails" = "Linked emails";
+
+"account_error_display_name_change_failed" = "Display name change failed";
+"account_error_picture_change_failed" = "Picture change failed";
+"account_error_email_link_failed" = "Failed to link email";
+"account_error_matrix_session_is_not_opened" = "Matrix session is not opened";
+
+// Room creation
+"room_creation_name_title" = "Room name:";
+"room_creation_name_placeholder" = "(e.g. lunchGroup)";
+"room_creation_alias_title" = "Room alias:";
+"room_creation_alias_placeholder" = "(e.g. #foo:example.org)";
+"room_creation_alias_placeholder_with_homeserver" = "(e.g. #foo%@)";
+"room_creation_participants_title" = "Participants:";
+"room_creation_participants_placeholder" = "(e.g. @bob:homeserver1; @john:homeserver2...)";
+
+// Room
+"room_please_select" = "Please select a room";
+"room_error_join_failed" = "Failed to join room (%@)";
+"room_error_name_edition_not_authorized" = "You are not authorized to edit this room name";
+"room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
+"room_left" = "You left the room";
+
+// Attachment
+"attachment_size_prompt" = "Do you want to send as:";
+"attachment_original" = "Actual Size: %@";
+"attachment_small" = "Small: %@";
+"attachment_medium" = "Medium: %@";
+"attachment_large" = "Large: %@";
+"attachment_cancel_download" = "Cancel the download?";
+"attachment_cancel_upload" = "Cancel the upload?";
+
+// Contacts
+"contact_mx_users" = "Matrix Users";
+"contact_local_contacts" = "Local Contacts";
+
+// Others
+"user_id_title" = "User ID:";
+"offline" = "offline";
+"unsent" = "Unsent";
+"error" = "Error";
+"not_supported_yet" = "Not supported yet";
+"default" = "default";
+"private" = "Private";
+"public" = "Public";
+"power_level" = "Power Level";
+"network_error_not_reachable" = "Please check your network connectivity";
+"user_id_placeholder" = "ex: @bob:homeserver";
+
+/* -*- 
+   Automatic localization for en
+
+   The following key/value pairs were extracted from the android i18n file:
+    /matrix-sdk/src/main/res/values/strings.xml.
+*/
+
+"notice_room_invite" = "%@ invited %@";
+"notice_room_join" = "%@ joined";
+"notice_room_leave" = "%@ left";
+"notice_room_kick" = "%@ kicked %@";
+"notice_room_unban" = "%@ unbanned %@";
+"notice_room_ban" = "%@ banned %@";
+"notice_avatar_url_changed" = "%@ changed their avatar";
+"notice_display_name_set" = "%@ set their display name to %@";
+"notice_display_name_changed_from" = "%@ changed their display name from %@ to %@";
+"notice_display_name_removed" = "%@ removed their display name";
+"notice_topic_changed" = "%@ changed the topic to: %@";
+"notice_room_name_changed" = "%@ changed the room name to: %@";
+"notice_outgoing_call" = "Outgoing Call";
+"notice_incoming_call" = "Incoming Call";
+
+// Room Screen 
+
+// general errors 
+
+// Home Screen 
+
+// Last seen time 
+
+// call events 
+
+/* -*- 
+   Automatic localization for en
+
+   The following key/value pairs were extracted from the android i18n file:
+    /console/src/main/res/values/strings.xml.
+*/
+
+
+// titles 
+
+// button names 
+"ok" = "OK";
+"cancel" = "Cancel";
+"save" = "Save";
+"leave" = "Leave";
+"send" = "Send";
+"copy" = "Copy";
+"resend" = "Resend";
+"redact" = "Redact";
+"share" = "Share";
+"set_power_level" = "Power level";
+"delete" = "Delete";
+
+// actions 
+"action_logout" = "Logout";
+"create_room" = "Create Room";
+"login" = "Login";
+"create_account" = "Create Account";
+"membership_invite" = "Invited";
+"membership_leave" = "Left";
+"membership_ban" = "Banned";
+"num_members_one" = "%@ user";
+"num_members_other" = "%@ users";
+"invite" = "Invite";
+"kick" = "Kick";
+"ban" = "Ban";
+"unban" = "Un-ban";
+"message_unsaved_changes" = "There are unsaved changes. Leaving will discard them.";
+
+// Login Screen 
+"login_error_already_logged_in" = "Already logged in";
+"login_error_must_start_http" = "URL must start with http[s]://";
+
+// members list Screen 
+
+// accounts list Screen 
+
+// image size selection 
+
+// invitation members list Screen 
+
+// room creation dialog Screen 
+
+// room info dialog Screen 
+
+// contacts list screen 
+"invitation_message" = "I\'d like to chat with you with matrix. Please, visit the website http://matrix.org to have more information.";
+
+// Settings screen 
+"settings_title_config" = "Configuration";
+"settings_title_notifications" = "Notifications";
+
+// Notification settings screen 
+"notification_settings_disable_all" = "Disable all notifications";
+"notification_settings_enable_notifications" = "Enable notifications";
+"notification_settings_enable_notifications_warning" = "All notifications are currently disabled for all devices.";
+"notification_settings_global_info" = "Notification settings are saved to your user account and are shared between all clients which support them (including desktop notifications).\n\nRules are applied in order; the first rule which matches defines the outcome for the message.\nSo: Per-word notifications are more important than per-room notifications which are more important than per-sender notifications.\nFor multiple rules of the same kind, the first one in the list that matches takes priority.";
+"notification_settings_per_word_notifications" = "Per-word notifications";
+"notification_settings_per_word_info" = "Words match case insensitively, and may include a * wildcard. So:\nfoo matches the string foo surrounded by word delimiters (e.g. punctuation and whitespace or start/end of line).\nfoo* matches any such word that begins foo.\n*foo* matches any such word which includes the 3 letters foo.";
+"notification_settings_always_notify" = "Always notify";
+"notification_settings_never_notify" = "Never notify";
+"notification_settings_word_to_match" = "word to match";
+"notification_settings_highlight" = "Highlight";
+"notification_settings_custom_sound" = "Custom sound";
+"notification_settings_per_room_notifications" = "Per-room notifications";
+"notification_settings_per_sender_notifications" = "Per-sender notifications";
+"notification_settings_sender_hint" = "\@user:domain.com";
+"notification_settings_select_room" = "Select a room";
+"notification_settings_other_alerts" = "Other Alerts";
+"notification_settings_contain_my_user_name" = "Notify me with sound about messages that contain my user name";
+"notification_settings_contain_my_display_name" = "Notify me with sound about messages that contain my display name";
+"notification_settings_just_sent_to_me" = "Notify me with sound about messages sent just to me";
+"notification_settings_invite_to_a_new_room" = "Notify me when I am invited to a new room";
+"notification_settings_people_join_leave_rooms" = "Notify me when people join or leave rooms";
+"notification_settings_receive_a_call" = "Notify me when I receive a call";
+"notification_settings_suppress_from_bots" = "Suppress notifications from bots";
+"notification_settings_by_default" = "By default...";
+"notification_settings_notify_all_other" = "Notify for all other messages/rooms";
+
+// gcm section 
+"settings_config_home_server" = "Home server: %@";
+"settings_config_identity_server" = "Identity server: %@";
+"settings_config_user_id" = "User ID: %@";
+
+// Settings keys 
+
+// call string 
+"call_connecting" = "Call connecting...";
+"call_ended" = "Call ended";
+"call_ring" = "Calling...";
+"incoming_video_call" = "Incoming Video Call";
+"incoming_voice_call" = "Incoming Voice Call";
+"call_invite_expired" = "Call Invite Expired";
+

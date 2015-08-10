@@ -20,6 +20,8 @@
 
 #import "MXKSectionedContacts.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKContactListViewController ()
 {
     // YES -> only matrix users
@@ -93,6 +95,10 @@
         // Set default table view cell class
         self.contactTableViewCellClass = [MXKContactTableCell class];
     }
+    
+    // Localize string
+    [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_mx_users"] forSegmentAtIndex:0];
+    [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_local_contacts"] forSegmentAtIndex:1];
     
     // Add search option in navigation bar
     self.enableSearch = YES;

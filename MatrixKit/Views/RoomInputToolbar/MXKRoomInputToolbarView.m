@@ -27,14 +27,11 @@
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
 
+#import "NSBundle+MatrixKit.h"
+
 #define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
 #define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
 #define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
-
-NSString* const kMXKRoomInputToolbarView_originalFormatLabel = @"Actual Size: %@";
-NSString* const kMXKRoomInputToolbarView_smallFormatLabel = @"Small: %@";
-NSString* const kMXKRoomInputToolbarView_mediumFormatLabel = @"Medium: %@";
-NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
 
 @interface MXKRoomInputToolbarView()
 {
@@ -99,6 +96,10 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
     
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
+    
+    // Localize string
+    [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateNormal];
+    [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateHighlighted];
 }
 
 - (void)dealloc
@@ -125,9 +126,9 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
         // Check whether media attachment is supported
         if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)])
         {
-            currentAlert = [[MXKAlert alloc] initWithTitle:@"Select an action:" message:nil style:MXKAlertStyleActionSheet];
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             
-            [currentAlert addActionWithTitle:@"Attach Media from Library" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"attach_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -141,7 +142,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
             }];
             
-            [currentAlert addActionWithTitle:@"Take Photo/Video" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"capture_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -169,13 +170,13 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             }
             
-            [currentAlert addActionWithTitle:@"Invite matrix User" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite_user"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Ask for userId to invite
-                strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:@"User ID:" message:nil style:MXKAlertStyleAlert];
-                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                strongSelf->currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil style:MXKAlertStyleAlert];
+                strongSelf->currentAlert.cancelButtonIndex = [strongSelf->currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                 {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -184,9 +185,9 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 [strongSelf->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
                 {
                     textField.secureTextEntry = NO;
-                    textField.placeholder = @"ex: @bob:homeserver";
+                    textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
                 }];
-                [strongSelf->currentAlert addActionWithTitle:@"Invite" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                [strongSelf->currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                 {
                     UITextField *textField = [alert textFieldAtIndex:0];
                     NSString *userId = textField.text;
@@ -210,7 +211,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
         
         if (currentAlert)
         {
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
             {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -322,7 +323,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                     imageValidationView.stretchable = YES;
                     
                     // the user validates the image
-                    [imageValidationView setRightButtonTitle:@"OK" handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                    [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                     {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
@@ -334,7 +335,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                     }];
                     
                     // the user wants to use an other image
-                    [imageValidationView setLeftButtonTitle:@"Cancel" handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                    [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                     {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
@@ -463,12 +464,12 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
         
         if (smallFilesize || mediumFilesize || largeFilesize)
         {
-            currentAlert = [[MXKAlert alloc] initWithTitle:@"Do you want to send as:" message:nil style:MXKAlertStyleActionSheet];
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
             __weak typeof(self) weakSelf = self;
             
             if (smallFilesize)
             {
-                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_smallFormatLabel, [MXKTools fileSizeToString: (int)smallFilesize]];
+                NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXKTools fileSizeToString: (int)smallFilesize]];
                 [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -481,7 +482,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
             
             if (mediumFilesize)
             {
-                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_mediumFormatLabel, [MXKTools fileSizeToString: (int)mediumFilesize]];
+                NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXKTools fileSizeToString: (int)mediumFilesize]];
                 [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -494,7 +495,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
             
             if (largeFilesize)
             {
-                NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_largeFormatLabel, [MXKTools fileSizeToString: (int)largeFilesize]];
+                NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXKTools fileSizeToString: (int)largeFilesize]];
                 [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
@@ -505,7 +506,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 }];
             }
             
-            NSString *title = [NSString stringWithFormat:kMXKRoomInputToolbarView_originalFormatLabel, [MXKTools fileSizeToString: (int)originalFileSize]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXKTools fileSizeToString: (int)originalFileSize]];
             [currentAlert addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
@@ -514,7 +515,7 @@ NSString* const kMXKRoomInputToolbarView_largeFormatLabel = @"Large: %@";
                 [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:selectedImage];
             }];
             
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 strongSelf->currentAlert = nil;
             }];

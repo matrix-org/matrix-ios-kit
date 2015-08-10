@@ -21,10 +21,14 @@
 
 #import "MXKTools.h"
 
+#import "MXKConstants.h"
+
+#import "NSBundle+MatrixKit.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
-NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
+NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 
 @interface MXKAccount ()
 {
@@ -290,7 +294,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
     }
 }
 
@@ -310,7 +314,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:MXKAccountErrorDomain code:0 userInfo:@{@"error": @"Matrix session is not opened"}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
     }
 }
 
@@ -365,7 +369,7 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Instantiate new session
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
-    
+
     // Register session state observer
     sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
@@ -705,18 +709,19 @@ NSString *const MXKAccountErrorDomain = @"MXKAccountErrorDomain";
     
     // Launch mxSession
     [mxSession start:^{
+        
         NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
         [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-    } failure:^(NSError *error)
-    {
+        
+    } failure:^(NSError *error) {
+        
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
-        if (notifyOpenSessionFailure)
+        if (notifyOpenSessionFailure && error)
         {
-            //Alert user only once
+            // Notify MatrixKit user only once
             notifyOpenSessionFailure = NO;
-            // TODO GFO Alert user
-            //            [[AppDelegate theDelegate] showErrorAsAlert:error];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
         }
         
         // Check network reachability

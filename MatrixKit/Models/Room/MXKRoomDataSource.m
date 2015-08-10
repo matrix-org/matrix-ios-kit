@@ -30,7 +30,7 @@
 #import "NSData+MatrixKit.h"
 
 #pragma mark - Constant definitions
-const NSString *MatrixKitVersion = @"0.2.0";
+
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
 
 NSString *const kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier";
@@ -159,6 +159,27 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Notify the unreadCount has changed
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    }
+}
+
+- (void)limitMemoryUsage:(NSInteger)maxBubbleNb
+{
+    // Do nothing if some local echoes are in progress or if unread counter is not nil.
+    if (pendingLocalEchoes.count || _unreadCount)
+    {
+        return;
+    }
+    
+    NSInteger bubbleCount;
+    @synchronized(bubbles)
+    {
+        bubbleCount = bubbles.count;
+    }
+    
+    if (bubbleCount > maxBubbleNb)
+    {
+        // Reset the room data source (return in initial state: minimum memory usage).
+        [self reload];
     }
 }
 
@@ -389,8 +410,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     if (0 == remainingEvents)
                     {
                         [self removeCellData:bubbleData];
-                        
-                        // TODO GFO: check whether the adjacent bubbles can merge together
                     }
                     
                     // Update the delegate on main thread
@@ -1165,19 +1184,31 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
     {
-        NSArray *keys = eventIdToBubbleMap.allKeys;
-        for (NSString *key in keys)
+        for (MXEvent *event in cellData.events)
         {
-            if (eventIdToBubbleMap[key] == cellData)
-            {
-                [eventIdToBubbleMap removeObjectForKey:key];
-            }
+            [eventIdToBubbleMap removeObjectForKey:event.eventId];
         }
     }
     
     @synchronized(bubbles)
     {
-        [bubbles removeObject:cellData];
+        NSUInteger index = [bubbles indexOfObject:cellData];
+        if (index != NSNotFound)
+        {
+            [bubbles removeObjectAtIndex:index];
+            
+            if (index != 0 && index < bubbles.count)
+            {
+                // Check whether the adjacent bubbles can merge together
+                id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
+                id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
+                
+                if ([cellData1 mergeWithBubbleCellData:cellData2])
+                {
+                    [bubbles removeObjectAtIndex:index];
+                }
+            }
+        }
     }
 }
 

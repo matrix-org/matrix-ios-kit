@@ -157,6 +157,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
     }
     
+    // Localize labels
+    _createAccountLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
+    _homeServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_title"];
+    _homeServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
+    _homeServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_info"];
+    _identityServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_title"];
+    _identityServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
+    _identityServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_info"];
+    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
+    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
+    
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
 }
@@ -261,18 +272,18 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if (authType == MXKAuthenticationTypeLogin)
     {
         _createAccountLabel.hidden = YES;
-        [_submitButton setTitle:@"Login" forState:UIControlStateNormal];
-        [_submitButton setTitle:@"Login" forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:@"Create account" forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:@"Create account" forState:UIControlStateHighlighted];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateHighlighted];
     }
     else
     {
         _createAccountLabel.hidden = NO;
-        [_submitButton setTitle:@"Sign up" forState:UIControlStateNormal];
-        [_submitButton setTitle:@"Sign up" forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:@"Back" forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:@"Back" forState:UIControlStateHighlighted];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
     }
     
     _authType = authType;
@@ -464,11 +475,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Notify user that no flow is supported
         if (_authType == MXKAuthenticationTypeLogin)
         {
-            _noFlowLabel.text = @"Currently we do not support Login flows defined by this Home Server.";
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
         }
         else
         {
-            _noFlowLabel.text = @"Registration is not currently supported.";
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
         }
         NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
@@ -492,14 +503,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Alert user
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
     if (!title)
-        
     {
-        title = @"Error";
+        title = [NSBundle mxk_localizedStringForKey:@"error"];
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
     alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                {}];
     [alert showInViewController:self];
     
@@ -508,7 +518,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _noFlowLabel.text = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     if (!_noFlowLabel.text.length)
     {
-        _noFlowLabel.text = @"We failed to retrieve authentication information from this Home Server";
+        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
     }
     _retryButton.hidden = NO;
     
@@ -544,7 +554,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else if (status == AFNetworkReachabilityStatusNotReachable)
     {
-        _noFlowLabel.text = @"Please check your network connectivity";
+        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
     }
 }
 
@@ -576,8 +586,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                             {
                                                 //Alert user
                                                 __weak typeof(self) weakSelf = self;
-                                                alert = [[MXKAlert alloc] initWithTitle:@"Already logged in" message:nil style:MXKAlertStyleAlert];
-                                                [alert addActionWithTitle:@"OK" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+                                                alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
+                                                [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
                                                     // We remove the authentication view controller.
                                                     [weakSelf withdrawViewControllerAnimated:YES completion:nil];
                                                 }];
@@ -604,13 +614,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 else
                 {
                     // FIXME
-                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
+                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
                 }
             }
             else
             {
                 // FIXME
-                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{@"error": @"Not supported yet"}]];
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
             }
         }
     }
@@ -657,31 +667,31 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             if ([errCode isEqualToString:@"M_FORBIDDEN"])
             {
-                message = @"Invalid username/password";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
             }
             else if ([errCode isEqualToString:@"M_UNKNOWN_TOKEN"])
             {
-                message = @"The access token specified was not recognised";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
             }
             else if ([errCode isEqualToString:@"M_BAD_JSON"])
             {
-                message = @"Malformed JSON";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
             }
             else if ([errCode isEqualToString:@"M_NOT_JSON"])
             {
-                message = @"Did not contain valid JSON";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
             }
             else if ([errCode isEqualToString:@"M_LIMIT_EXCEEDED"])
             {
-                message = @"Too many requests have been sent";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
             }
             else if ([errCode isEqualToString:@"M_USER_IN_USE"])
             {
-                message = @"This user name is already used";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
             }
             else if ([errCode isEqualToString:@"M_LOGIN_EMAIL_URL_NOT_YET"])
             {
-                message = @"The email link which has not been clicked yet";
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
             }
             else
             {
@@ -694,9 +704,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
     }
     
-    //Alert user
-    alert = [[MXKAlert alloc] initWithTitle:@"Login Failed" message:message style:MXKAlertStyleAlert];
-    [alert addActionWithTitle:@"Dismiss" style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
+    // Alert user
+    alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_title"] message:message style:MXKAlertStyleAlert];
+    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
      {}];
     [alert showInViewController:self];
 }

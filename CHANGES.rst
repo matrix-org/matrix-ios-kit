@@ -1,3 +1,17 @@
+Changes in MatrixKit in 0.2.1 (2015-08-10)
+===============================================
+
+Improvements:
+ * MXKAccountDetailsViewController: Add UI to support global notification settings.
+ * MatrixKit Error handling: Post MXKErrorNotification event on error.
+ * MXKRoomDataSource: Reduce memory usage.
+ * MXKRoomDataSource: In case of redacted events, merge adjacent bubbles if they are related to the same sender.
+ * Localization: Add localized strings in MatrixKitAssets bundle.
+ 
+Bug fixes:
+ * Bug Fix: MXKRoomViewController - App crashes when user selects copy in text input view.
+ * Bug Fix: App crashes when user press "Logout all accounts".
+
 Changes in MatrixKit in 0.2.0 (2015-07-10)
 ===============================================
 

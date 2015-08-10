@@ -16,6 +16,10 @@
 
 #import "MXKRoomTitleViewWithTopic.h"
 
+#import "MXKConstants.h"
+
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKRoomTitleViewWithTopic ()
 {
     id roomTopicListener;
@@ -352,7 +356,7 @@
         }
         else
         {
-            alertMsg = @"You are not authorized to edit this room name";
+            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
         }
         
         // Check whether the user is allowed to change room topic
@@ -381,7 +385,7 @@
         }
         else
         {
-            alertMsg = @"You are not authorized to edit this room topic";
+            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_topic_edition_not_authorized"];
         }
     }
     
@@ -394,7 +398,7 @@
             [currentAlert dismiss:NO];
         }
         currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:@"Cancel" style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             strongSelf->currentAlert = nil;
@@ -420,6 +424,7 @@
             }
             __weak typeof(self) weakSelf = self;
             [self.mxRoom setTopic:topic success:^{
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -428,8 +433,9 @@
                 
                 // Hide topic field if empty
                 strongSelf.hiddenTopic = !textField.text.length;
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
                 {
@@ -442,8 +448,9 @@
                 strongSelf.hiddenTopic = !textField.text.length;
                 
                 NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed: %@", error);
-                // TODO GFO Alert user
-                //                [[AppDelegate theDelegate] showErrorAsAlert:error];
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
             }];
         }
         else

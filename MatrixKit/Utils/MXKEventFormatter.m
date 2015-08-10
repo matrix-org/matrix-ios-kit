@@ -17,6 +17,7 @@
 #import "MXKEventFormatter.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "NSBundle+MatrixKit.h"
 
 @interface MXKEventFormatter ()
 {
@@ -148,10 +149,8 @@
         // Check whether redacted information is required
         if (_settings.showRedactionsInRoomHistory)
         {
-            redactedInfo = @"<redacted>";
-            
             NSString *redactorId = event.redactedBecause[@"user_id"];
-            NSString *redactedBy;
+            NSString *redactedBy = @"";
             // Consider live room state to resolve redactor name if no roomState is provided
             MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
             redactedBy = [aRoomState memberName:redactorId];
@@ -161,22 +160,20 @@
             {
                 if (redactedBy.length)
                 {
-                    redactedBy = [NSString stringWithFormat:@"by %@ [reason: %@]", redactedBy, redactedReason];
+                    NSString *formatString = [NSString stringWithFormat:@"%@%@", [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by"], [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"]];
+                    redactedBy = [NSString stringWithFormat:formatString, redactedBy, redactedReason];
                 }
                 else
                 {
-                    redactedBy = [NSString stringWithFormat:@"[reason: %@]", redactedReason];
+                    redactedBy = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"], redactedReason];
                 }
             }
             else if (redactedBy.length)
             {
-                redactedBy = [NSString stringWithFormat:@"by %@", redactedBy];
+                redactedBy = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by"], redactedBy];
             }
             
-            if (redactedBy.length)
-            {
-                redactedInfo = [NSString stringWithFormat:@"<redacted %@>", redactedBy];
-            }
+            redactedInfo = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted"], redactedBy];
         }
     }
     
@@ -209,11 +206,11 @@
             
             if (roomName.length)
             {
-                displayText = [NSString stringWithFormat:@"%@ changed the room name to: %@", senderDisplayName, roomName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
             }
             else
             {
-                displayText = [NSString stringWithFormat:@"%@ removed the room name", senderDisplayName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
             }
             break;
         }
@@ -232,11 +229,11 @@
             
             if (roomTopic.length)
             {
-                displayText = [NSString stringWithFormat:@"%@ changed the topic to: %@", senderDisplayName, roomTopic];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed"], senderDisplayName, roomTopic];
             }
             else
             {
-                displayText = [NSString stringWithFormat:@"%@ removed the topic", senderDisplayName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_topic_removed"], senderDisplayName];
             }
             
             break;
@@ -264,7 +261,7 @@
                         // Here the event is ignored (no display)
                         return nil;
                     }
-                    displayText = [NSString stringWithFormat:@"%@ updated their profile %@", senderDisplayName, redactedInfo];;
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_profile_change_redacted"], senderDisplayName, redactedInfo];
                 }
                 else
                 {
@@ -283,15 +280,15 @@
                     {
                         if (!prevDisplayname)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ set their display name to %@", event.userId, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.userId, displayname];
                         }
                         else if (!displayname)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ removed their display name (previously named %@)", event.userId, prevDisplayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.userId];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"%@ changed their display name from %@ to %@", event.userId, prevDisplayname, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.userId, prevDisplayname, displayname];
                         }
                     }
                     
@@ -310,11 +307,11 @@
                     {
                         if (displayText)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ (picture profile was changed too)", displayText];
+                            displayText = [NSString stringWithFormat:@"%@ %@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_avatar_changed_too"]];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"%@ changed their picture profile", senderDisplayName];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed"], senderDisplayName];
                         }
                     }
                 }
@@ -324,23 +321,23 @@
                 // Consider here a membership change
                 if ([membership isEqualToString:@"invite"])
                 {
-                    displayText = [NSString stringWithFormat:@"%@ invited %@", senderDisplayName, targetDisplayName];
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
                 }
                 else if ([membership isEqualToString:@"join"])
                 {
-                    displayText = [NSString stringWithFormat:@"%@ joined", senderDisplayName];
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
                     if ([event.userId isEqualToString:event.stateKey])
                     {
-                        displayText = [NSString stringWithFormat:@"%@ left", senderDisplayName];
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
                     }
                     else if (prevMembership)
                     {
                         if ([prevMembership isEqualToString:@"join"] || [prevMembership isEqualToString:@"invite"])
                         {
-                            displayText = [NSString stringWithFormat:@"%@ kicked %@", senderDisplayName, targetDisplayName];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
                             if (event.content[@"reason"])
                             {
                                 displayText = [NSString stringWithFormat:@"%@: %@", displayText, event.content[@"reason"]];
@@ -348,13 +345,13 @@
                         }
                         else if ([prevMembership isEqualToString:@"ban"])
                         {
-                            displayText = [NSString stringWithFormat:@"%@ unbanned %@", senderDisplayName, targetDisplayName];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban"], senderDisplayName, targetDisplayName];
                         }
                     }
                 }
                 else if ([membership isEqualToString:@"ban"])
                 {
-                    displayText = [NSString stringWithFormat:@"%@ banned %@", senderDisplayName, targetDisplayName];
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
                     if (event.content[@"reason"])
                     {
                         displayText = [NSString stringWithFormat:@"%@: %@", displayText, event.content[@"reason"]];
@@ -379,7 +376,7 @@
             NSString *creatorId = event.content[@"creator"];
             if (creatorId)
             {
-                displayText = [NSString stringWithFormat:@"%@ created the room", (roomState ? [roomState memberName:creatorId] : creatorId)];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState memberName:creatorId] : creatorId)];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -393,7 +390,7 @@
             NSString *joinRule = event.content[@"join_rule"];
             if (joinRule)
             {
-                displayText = [NSString stringWithFormat:@"The join rule is: %@", joinRule];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -404,54 +401,54 @@
         }
         case MXEventTypeRoomPowerLevels:
         {
-            displayText = @"The power level of room members are:";
+            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
             NSDictionary *users = event.content[@"users"];
             for (NSString *key in users.allKeys)
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, key, [users objectForKey:key]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, key, [users objectForKey:key]];
             }
             if (event.content[@"users_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, @"default", event.content[@"users_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, [NSBundle mxk_localizedStringForKey:@"default"], event.content[@"users_default"]];
             }
             
-            displayText = [NSString stringWithFormat:@"%@\r\nThe minimum power levels that a user must have before acting are:", displayText];
+            displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_acting_requirement"]];
             if (event.content[@"ban"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 ban: %@", displayText, event.content[@"ban"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 ban: %@", displayText, event.content[@"ban"]];
             }
             if (event.content[@"kick"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 kick: %@", displayText, event.content[@"kick"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 kick: %@", displayText, event.content[@"kick"]];
             }
             if (event.content[@"redact"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 redact: %@", displayText, event.content[@"redact"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 redact: %@", displayText, event.content[@"redact"]];
             }
             if (event.content[@"invite"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 invite: %@", displayText, event.content[@"invite"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 invite: %@", displayText, event.content[@"invite"]];
             }
             
-            displayText = [NSString stringWithFormat:@"%@\r\nThe minimum power levels related to events are:", displayText];
+            displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_event_requirement"]];
             NSDictionary *events = event.content[@"events"];
             for (NSString *key in events.allKeys)
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, key, [events objectForKey:key]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, key, [events objectForKey:key]];
             }
             if (event.content[@"events_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, @"events_default", event.content[@"events_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, @"events_default", event.content[@"events_default"]];
             }
             if (event.content[@"state_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n\u2022 %@: %@", displayText, @"state_default", event.content[@"state_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, @"state_default", event.content[@"state_default"]];
             }
             
             // Append redacted info if any
             if (redactedInfo)
             {
-                displayText = [NSString stringWithFormat:@"%@\r\n %@", displayText, redactedInfo];
+                displayText = [NSString stringWithFormat:@"%@\n %@", displayText, redactedInfo];
             }
             break;
         }
@@ -460,11 +457,11 @@
             NSArray *aliases = event.content[@"aliases"];
             if (aliases)
             {
-                displayText = [NSString stringWithFormat:@"The room aliases are: %@", aliases];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
-                    displayText = [NSString stringWithFormat:@"%@\r\n %@", displayText, redactedInfo];
+                    displayText = [NSString stringWithFormat:@"%@\n %@", displayText, redactedInfo];
                 }
             }
             break;
@@ -492,74 +489,74 @@
                 }
                 else if ([msgtype isEqualToString:kMXMessageTypeImage])
                 {
-                    displayText = displayText? displayText : @"image attachment";
+                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_image_attachment"];
                     // Check attachment validity
                     if (![self isSupportedAttachment:event])
                     {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        displayText = @"invalid image attachment";
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
                 else if ([msgtype isEqualToString:kMXMessageTypeAudio])
                 {
-                    displayText = displayText? displayText : @"audio attachment";
+                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_audio_attachment"];
                     if (![self isSupportedAttachment:event])
                     {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                         if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                         {
-                            displayText = @"invalid audio attachment";
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
                         }
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
                 else if ([msgtype isEqualToString:kMXMessageTypeVideo])
                 {
-                    displayText = displayText? displayText : @"video attachment";
+                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_video_attachment"];
                     if (![self isSupportedAttachment:event])
                     {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                         if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                         {
-                            displayText = @"invalid video attachment";
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
                         }
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
                 else if ([msgtype isEqualToString:kMXMessageTypeLocation])
                 {
-                    displayText = displayText? displayText : @"location attachment";
+                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_location_attachment"];
                     if (![self isSupportedAttachment:event])
                     {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                         if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                         {
-                            displayText = @"invalid location attachment";
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:@"Unsupported attachment: %@", event.description];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
                         }
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
                 else if ([msgtype isEqualToString:kMXMessageTypeFile])
                 {
-                    displayText = displayText? displayText : @"file attachment";
+                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_file_attachment"];
                     // Check attachment validity
                     if (![self isSupportedAttachment:event])
                     {
                         NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        displayText = @"invalid file attachment";
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
@@ -578,7 +575,7 @@
             NSString *eventId = event.content[@"target_event_id"];
             if (type && eventId)
             {
-                displayText = [NSString stringWithFormat:@"Feedback event (id: %@): %@", eventId, type];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_feedback"], eventId, type];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -590,7 +587,7 @@
         case MXEventTypeRoomRedaction:
         {
             NSString *eventId = event.redacts;
-            displayText = [NSString stringWithFormat:@"%@ redacted an event (id: %@)", senderDisplayName, eventId];
+            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction"], senderDisplayName, eventId];
             break;
         }
         case MXEventTypeCallInvite:
@@ -598,11 +595,11 @@
             // outgoing call?
             if ([event.userId isEqualToString:mxSession.myUser.userId])
             {
-                displayText = @"Outgoing Call";
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_outgoing_call"];
             }
             else
             {
-                displayText = @"Incoming Call";
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_incoming_call"];
             }
             break;
         }
@@ -628,13 +625,13 @@
             switch (*error)
             {
                 case MXKEventFormatterErrorUnsupported:
-                    shortDescription = @"Unsupported event";
+                    shortDescription = [NSBundle mxk_localizedStringForKey:@"notice_error_unsupported_event"];
                     break;
                 case MXKEventFormatterErrorUnexpected:
-                    shortDescription = @"Unexpected event";
+                    shortDescription = [NSBundle mxk_localizedStringForKey:@"notice_error_unexpected_event"];
                     break;
                 case MXKEventFormatterErrorUnknownEventType:
-                    shortDescription = @"Unknown event type";
+                    shortDescription = [NSBundle mxk_localizedStringForKey:@"notice_error_unknown_event_type"];
                     break;
                     
                 default:
