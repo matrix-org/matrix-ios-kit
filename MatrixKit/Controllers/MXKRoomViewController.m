@@ -234,6 +234,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [self reloadBubblesTable];
     }
     _bubblesTableView.hidden = NO;
+    shouldScrollToBottomOnTableRefresh = NO;
     
     if (_saveProgressTextInput && roomDataSource)
     {
@@ -1117,36 +1118,28 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)triggerInitialBackPagination
 {
     // Trigger back pagination to fill all the screen
-    // This is currently done with best effort depending on views already loaded
-    // Delay the call, provide a better chance to get the true self.bubblesTableView.frame.
-    // Thus, we can download as less as messages to fill the table view. But it is not crucial.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        // Ideally, the targetted frame is the one of the tableview
-        CGRect frame = self.bubblesTableView.frame;
-        if (0 == frame.size.height)
-        {
-            
-            // If not available, use the vc one
-            frame = self.view.frame;
-        }
-        
-        isBackPaginationInProgress = YES;
-        [self startActivityIndicator];
-        [roomDataSource paginateBackMessagesToFillRect:frame
-                                               success:^{
-                                                   // Reload table
-                                                   isBackPaginationInProgress = NO;
-                                                   [self reloadBubblesTable];
-                                                   [self stopActivityIndicator];
-                                               }
-                                               failure:^(NSError *error) {
-                                                   // Reload table
-                                                   isBackPaginationInProgress = NO;
-                                                   [self reloadBubblesTable];
-                                                   [self stopActivityIndicator];
-                                               }];
-    });
+    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+    CGRect frame = window.rootViewController.view.bounds;
+    
+    isBackPaginationInProgress = YES;
+    [self startActivityIndicator];
+    [roomDataSource paginateBackMessagesToFillRect:frame
+                                           success:^{
+                                               
+                                               // Reload table
+                                               isBackPaginationInProgress = NO;
+                                               [self reloadBubblesTable];
+                                               [self stopActivityIndicator];
+                                               
+                                           }
+                                           failure:^(NSError *error) {
+                                               
+                                               // Reload table
+                                               isBackPaginationInProgress = NO;
+                                               [self reloadBubblesTable];
+                                               [self stopActivityIndicator];
+                                               
+                                           }];
 }
 
 - (void)triggerBackPagination
@@ -1361,8 +1354,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (shouldScrollToBottom)
     {
         // Scroll to the bottom
-        [self scrollBubblesTableViewToBottomAnimated:YES];
-        shouldScrollToBottomOnTableRefresh = NO;
+        [self scrollBubblesTableViewToBottomAnimated:NO];
     }
 }
 

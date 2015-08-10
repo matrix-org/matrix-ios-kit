@@ -856,7 +856,6 @@
 {
     if (callStatusBarWindow)
     {
-        
         // Hide & destroy it
         callStatusBarWindow.hidden = YES;
         [self statusBarDidChangeFrame];

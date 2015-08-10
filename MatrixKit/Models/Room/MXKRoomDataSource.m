@@ -162,6 +162,27 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)limitMemoryUsage:(NSInteger)maxBubbleNb
+{
+    // Do nothing if some local echoes are in progress or if unread counter is not nil.
+    if (pendingLocalEchoes.count || _unreadCount)
+    {
+        return;
+    }
+    
+    NSInteger bubbleCount;
+    @synchronized(bubbles)
+    {
+        bubbleCount = bubbles.count;
+    }
+    
+    if (bubbleCount > maxBubbleNb)
+    {
+        // Reset the room data source (return in initial state: minimum memory usage).
+        [self reload];
+    }
+}
+
 - (void)reset
 {
     if (backPaginationRequest)
@@ -1163,13 +1184,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
     {
-        NSArray *keys = eventIdToBubbleMap.allKeys;
-        for (NSString *key in keys)
+        for (MXEvent *event in cellData.events)
         {
-            if (eventIdToBubbleMap[key] == cellData)
-            {
-                [eventIdToBubbleMap removeObjectForKey:key];
-            }
+            [eventIdToBubbleMap removeObjectForKey:event.eventId];
         }
     }
     
