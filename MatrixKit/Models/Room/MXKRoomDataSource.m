@@ -227,6 +227,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     _serverSyncEventCount = 0;
+
+    // Notify the delegate to reload its tableview
+    if (self.delegate)
+    {
+        [self.delegate dataSource:self didCellChange:nil];
+    }
 }
 
 - (void)reload
@@ -253,6 +259,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
+    [super destroy];
+    
     [self reset];
     
     self.eventFormatter = nil;
@@ -262,8 +270,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     bubbles = nil;
     eventIdToBubbleMap = nil;
     pendingLocalEchoes = nil;
-    
-    [super destroy];
 }
 
 - (void)didMXSessionStateChange
@@ -503,7 +509,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id<MXKRoomBubbleCellDataStoring> bubbleData;
     @synchronized(bubbles)
     {
-        bubbleData = bubbles[index];
+        if (index < bubbles.count)
+        {
+            bubbleData = bubbles[index];
+        }
     }
     return bubbleData;
 }
@@ -1484,6 +1493,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataAtIndex:indexPath.row];
+    
+    // Sanity check: this method may be called during a layout refresh while room data have been modified.
+    if (!bubbleData)
+    {
+        // Return an empty cell
+        return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"fakeCell"];
+    }
     
     // The cell to use depends if this is a message from the user or not
     // Then use the cell class defined by the table view
