@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.2.2 (2015-08-13)
+===============================================
+
+Improvements:
+ * MXKRecentsDataSource: handle recents edition at MatrixKit level.
+ * Add MXKRoomCreationInputs to list fields used during room creation.
+ 
+Bug fixes:
+ * Bug fix: App crashes on resume via a push notification.
+
 Changes in MatrixKit in 0.2.1 (2015-08-10)
 ===============================================
 

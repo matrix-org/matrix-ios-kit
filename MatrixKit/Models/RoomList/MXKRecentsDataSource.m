@@ -20,6 +20,10 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKConstants.h"
+
+#import "MXKMediaManager.h"
+
 @interface MXKRecentsDataSource ()
 {
     /**
@@ -433,6 +437,42 @@
         return cell;
     }
     return nil;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        // Leave the selected room
+        id<MXKRecentCellDataStoring> recentCellData = [self cellDataAtIndexPath:indexPath];
+        
+        // cancel pending uploads/downloads
+        // they are useless by now
+        [MXKMediaManager cancelDownloadsInCacheFolder:recentCellData.roomDataSource.room.state.roomId];
+        // TODO GFO cancel pending uploads related to this room
+        
+        [recentCellData.roomDataSource.room leave:^{
+            
+            // Refresh table display
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed: %@", recentCellData.roomDataSource.room.state.roomId, error);
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        }];
+    }
 }
 
 #pragma mark - MXKDataSourceDelegate

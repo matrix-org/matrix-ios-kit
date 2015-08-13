@@ -148,10 +148,9 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
 
 - (void)closeRoomDataSource:(MXKRoomDataSource *)roomDataSource forceClose:(BOOL)forceRelease
 {
-    // The close consists in no more sending actions to the currrent view controller, the room data source delegate
     // According to the policy, it is interesting to keep the room data source in life: it can keep managing echo messages
     // in background for instance
-    roomDataSource.delegate = nil;
+    
     
     MXKRoomDataSourceManagerReleasePolicy releasePolicy = _releasePolicy;
     if (forceRelease)
@@ -173,6 +172,8 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
             
             // Keep the instance for life (reduce memory usage by flushing room data if the number of bubbles is over 30).
             [roomDataSource limitMemoryUsage:30];
+            // The close here consists in no more sending actions to the currrent view controller, the room data source delegate
+            roomDataSource.delegate = nil;
             break;
             
         default:
