@@ -124,7 +124,7 @@
         __weak typeof(self) weakSelf = self;
         
         // Check whether media attachment is supported
-        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentMediaPicker:)])
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentViewController:)])
         {
             currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             
@@ -139,7 +139,7 @@
                 strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
                 strongSelf->mediaPicker.allowsEditing = NO;
                 strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
-                [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+                [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
             }];
             
             [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"capture_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
@@ -153,7 +153,7 @@
                 strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
                 strongSelf->mediaPicker.allowsEditing = NO;
                 strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
-                [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+                [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
             }];
         }
         else
@@ -261,11 +261,7 @@
         currentAlert = nil;
     }
     
-    if (mediaPicker)
-    {
-        [self dismissMediaPicker];
-        mediaPicker = nil;
-    }
+    [self dismissMediaPicker];
     
     self.delegate = nil;
 }
@@ -348,7 +344,7 @@
                         strongSelf->mediaPicker.sourceType = picker.sourceType;
                         strongSelf->mediaPicker.allowsEditing = NO;
                         strongSelf->mediaPicker.mediaTypes = picker.mediaTypes;
-                        [strongSelf.delegate roomInputToolbarView:strongSelf presentMediaPicker:strongSelf->mediaPicker];
+                        [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
                     }];
                     
                     imageValidationView.image = selectedImage;
@@ -587,11 +583,16 @@
 
 - (void)dismissMediaPicker
 {
-    mediaPicker.delegate = nil;
-    
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissMediaPicker:)])
+    if (mediaPicker)
     {
-        [self.delegate roomInputToolbarView:self dismissMediaPicker:mediaPicker];
+        mediaPicker.delegate = nil;
+        
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissViewControllerAnimated:completion:)])
+        {
+            [self.delegate roomInputToolbarView:self dismissViewControllerAnimated:NO completion:^{
+                mediaPicker = nil;
+            }];
+        }
     }
 }
 

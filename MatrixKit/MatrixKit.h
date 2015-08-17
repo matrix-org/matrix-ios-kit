@@ -23,6 +23,7 @@
 #import "MXKAppSettings.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "NSBundle+MatrixKit.h"
 
 #import "MXKTools.h"
 #import "MXKAlert.h"
@@ -79,6 +80,9 @@
 
 #import "MXKRoomTitleView.h"
 #import "MXKRoomTitleViewWithTopic.h"
+
+#import "MXKRoomIncomingBubbleTableViewCell.h"
+#import "MXKRoomOutgoingBubbleTableViewCell.h"
 
 #import "MXKAccountManager.h"
 

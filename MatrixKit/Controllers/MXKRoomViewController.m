@@ -2021,18 +2021,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [alert showInViewController:self];
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMediaPicker:(UIImagePickerController*)mediaPicker
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentViewController:(UIViewController*)viewControllerToPresent
 {
     [self dismissKeyboard];
-    [self presentViewController:mediaPicker animated:YES completion:nil];
+    [self presentViewController:viewControllerToPresent animated:YES completion:nil];
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissMediaPicker:(UIImagePickerController*)mediaPicker
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
 {
-    if (self.presentedViewController == mediaPicker)
-    {
-        [self dismissViewControllerAnimated:NO completion:nil];
-    }
+    [self dismissViewControllerAnimated:flag completion:completion];
 }
 
 # pragma mark - Typing notification

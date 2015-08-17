@@ -83,22 +83,23 @@
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId;
 
 /**
- Tells the delegate that a media picker must be presented.
+ Tells the delegate to present a view controller modally.
  
  Note: Media attachment is available only if the delegate implements this method.
  
  @param toolbarView the room input toolbar view.
- @param mediaPicker the media picker to present.
+ @param viewControllerToPresent.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMediaPicker:(UIImagePickerController*)mediaPicker;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentViewController:(UIViewController*)viewControllerToPresent;
 
 /**
- Tells the delegate that a media picker must be dismissed.
+ Tells the delegate to dismiss the view controller that was presented modally
  
  @param toolbarView the room input toolbar view.
- @param mediaPicker the media picker to dismiss.
+ @param flag Pass YES to animate the transition.
+ @param completion The block to execute after the view controller is dismissed.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissMediaPicker:(UIImagePickerController*)mediaPicker;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion;
 
 @end
 
