@@ -258,18 +258,24 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
         {
             for (NSString* mxId in identifiers)
             {
-                for (NSString* pattern in patterns)
+                // Consider only the first part of the matrix id (ignore homeserver name)
+                NSRange range = [mxId rangeOfString:@":"];
+                if (range.location != NSNotFound)
                 {
-                    if ([mxId rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
+                    NSString *mxIdName = [mxId substringToIndex:range.location];
+                    for (NSString* pattern in patterns)
                     {
-                        matched = YES;
+                        if ([mxIdName rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
+                        {
+                            matched = YES;
+                            break;
+                        }
+                    }
+                    
+                    if (matched)
+                    {
                         break;
                     }
-                }
-                
-                if (matched)
-                {
-                    break;
                 }
             }
         }
