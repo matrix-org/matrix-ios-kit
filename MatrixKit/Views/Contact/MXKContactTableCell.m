@@ -49,12 +49,32 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     [super awakeFromNib];
     
     self.thumbnailView.backgroundColor = [UIColor clearColor];
-    self.matrixUserIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+    
+    // No accessory view by default
+    self.contactAccessoryViewType = MXKContactTableCellAccessoryCustom;
 }
 
 - (UIImage*)picturePlaceholder
 {
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
+}
+
+- (void)setContactAccessoryViewType:(MXKContactTableCellAccessoryType)contactAccessoryViewType
+{
+    _contactAccessoryViewType = contactAccessoryViewType;
+    
+    if (contactAccessoryViewType == MXKContactTableCellAccessoryMatrixIcon)
+    {
+        // Load default matrix icon
+        self.contactAccessoryView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+        // Update accessory view visibility
+        [self refreshUserPresence];
+    }
+    else
+    {
+        // Hide accessory view by default
+        self.contactAccessoryView.hidden = YES;
+    }
 }
 
 #pragma mark - MXKCellRendering
@@ -181,9 +201,12 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
                 break;
             }
         }
-        
-        // we know that this user is a matrix one
-        self.matrixUserIconView.hidden = NO;
+    }
+    
+    // Update accessory view visibility
+    if (self.contactAccessoryViewType == MXKContactTableCellAccessoryMatrixIcon)
+    {
+        self.contactAccessoryView.hidden = (!matrixIdentifiers.count);
     }
 }
 
@@ -240,8 +263,6 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 
 - (void)manageMatrixIcon
 {
-    self.matrixUserIconView.hidden = (0 == contact.matrixIdentifiers.count);
-    
     // try to update the thumbnail with the matrix thumbnail
     if (contact.matrixIdentifiers)
     {
@@ -275,7 +296,6 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
         if ([contactID isEqualToString:contact.contactID])
         {
             [self refreshContactThumbnail];
-            self.matrixUserIconView.hidden = (0 == contact.matrixIdentifiers.count);
             
             [self refreshUserPresence];
         }

@@ -19,6 +19,22 @@
 #import "MXKCellRendering.h"
 #import "MXKImageView.h"
 
+/**
+ List accessory view type for a 'MXKContactTableCell' instance.
+ */
+typedef enum : NSUInteger {
+    /**
+     Don't show accessory view by default.
+     */
+    MXKContactTableCellAccessoryCustom,
+    /**
+     The accessory view is automatically handled. It shown only for contact with matrix identifier(s).
+     */
+    MXKContactTableCellAccessoryMatrixIcon
+    
+} MXKContactTableCellAccessoryType;
+
+
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 
 /**
@@ -44,13 +60,18 @@ extern NSString *const kMXKContactCellContactIdKey;
 @property (strong, nonatomic) IBOutlet UILabel *matrixDisplayNameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *matrixIDLabel;
 
-@property (strong, nonatomic) IBOutlet UIImageView *matrixUserIconView;
-@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *matrixUserIconViewHeightConstraint;
+@property (strong, nonatomic) IBOutlet UIImageView *contactAccessoryView;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *contactAccessoryViewHeightConstraint;
 
 /**
  The default picture displayed when no picture is available.
  */
 @property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ The accessory view type ('MXKContactTableCellAccessoryCustom' by default)
+ */
+@property (nonatomic) MXKContactTableCellAccessoryType contactAccessoryViewType;
 
 @end
 

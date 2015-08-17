@@ -299,8 +299,12 @@
         }
     }
     
-    [cell render:contact];
-    cell.delegate = self;
+    if (contact)
+    {
+        cell.contactAccessoryViewType = MXKContactTableCellAccessoryMatrixIcon;
+        [cell render:contact];
+        cell.delegate = self;
+    }
     
     return cell;
 }

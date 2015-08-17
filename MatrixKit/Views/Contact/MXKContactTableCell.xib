@@ -75,11 +75,11 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="contactAccessoryView" destination="BcH-3j-P0i" id="nOm-Ss-LjI"/>
+                <outlet property="contactAccessoryViewHeightConstraint" destination="6gE-wc-Ncb" id="Ail-zR-HRl"/>
                 <outlet property="contactDisplayNameLabel" destination="AqS-OH-Gcq" id="Znz-dt-zKJ"/>
                 <outlet property="matrixDisplayNameLabel" destination="MBc-s3-6mn" id="BWe-zO-aM3"/>
                 <outlet property="matrixIDLabel" destination="Dqg-OY-Nhb" id="SlZ-le-uC1"/>
-                <outlet property="matrixUserIconView" destination="BcH-3j-P0i" id="5yr-cL-e7o"/>
-                <outlet property="matrixUserIconViewHeightConstraint" destination="6gE-wc-Ncb" id="6jG-a6-hP6"/>
                 <outlet property="thumbnailView" destination="2UL-NX-Nd1" id="uMq-9r-M4G"/>
             </connections>
         </tableViewCell>
