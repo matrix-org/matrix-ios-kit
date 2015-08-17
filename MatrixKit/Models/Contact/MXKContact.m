@@ -241,11 +241,10 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     
     if (patterns.count > 0)
     {
-        
         matched = YES;
         
         // test first display name
-        for(NSString* pattern in patterns)
+        for (NSString* pattern in patterns)
         {
             if ([_displayName rangeOfString:pattern options:NSCaseInsensitiveSearch].location == NSNotFound)
             {
@@ -254,9 +253,30 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
             }
         }
         
+        NSArray *identifiers = self.matrixIdentifiers;
+        if (!matched && identifiers.count > 0)
+        {
+            for (NSString* mxId in identifiers)
+            {
+                for (NSString* pattern in patterns)
+                {
+                    if ([mxId rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
+                    {
+                        matched = YES;
+                        break;
+                    }
+                }
+                
+                if (matched)
+                {
+                    break;
+                }
+            }
+        }
+        
         if (!matched && _phoneNumbers.count > 0)
         {
-            for(MXKPhoneNumber* phonenumber in _phoneNumbers)
+            for (MXKPhoneNumber* phonenumber in _phoneNumbers)
             {
                 if ([phonenumber matchedWithPatterns:patterns])
                 {
@@ -268,7 +288,7 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
         
         if (!matched && _emailAddresses.count > 0)
         {
-            for(MXKEmail* email in _emailAddresses)
+            for (MXKEmail* email in _emailAddresses)
             {
                 if ([email matchedWithPatterns:patterns])
                 {
