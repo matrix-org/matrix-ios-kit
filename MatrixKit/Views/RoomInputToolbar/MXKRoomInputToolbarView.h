@@ -83,6 +83,14 @@
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId;
 
 /**
+ Tells the delegate that the user wants to place a voice or a video call.
+ 
+ @param toolbarView the room input toolbar view.
+ @param video YES to make a video call.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView placeCallWithVideo:(BOOL)video;
+
+/**
  Tells the delegate to present a view controller modally.
  
  Note: Media attachment is available only if the delegate implements this method.

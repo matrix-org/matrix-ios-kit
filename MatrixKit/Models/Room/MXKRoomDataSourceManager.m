@@ -30,6 +30,7 @@
 @end
 
 static NSMutableDictionary *_roomDataSourceManagers = nil;
+static Class _roomDataSourceClass;
 
 @implementation MXKRoomDataSourceManager
 
@@ -48,6 +49,11 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
     
     @synchronized(_roomDataSourceManagers)
     {
+        if (_roomDataSourceClass == nil)
+        {
+            // Set default class
+            _roomDataSourceClass = MXKRoomDataSource.class;
+        }
         // If not available yet, create the `MXKRoomDataSourceManager` for this Matrix session
         roomDataSourceManager = _roomDataSourceManagers[mxSessionId];
         if (!roomDataSourceManager)
@@ -72,6 +78,31 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
         {
             [roomDataSourceManager reset];
             [_roomDataSourceManagers removeObjectForKey:mxSessionId];
+        }
+    }
+}
+
++ (void)registerRoomDataSourceClass:(Class)roomDataSourceClass
+{
+    // Sanity check: accept only MXKRoomDataSource classes or sub-classes
+    NSParameterAssert([roomDataSourceClass isSubclassOfClass:MXKRoomDataSource.class]);
+    
+    @synchronized(_roomDataSourceManagers)
+    {
+        if (roomDataSourceClass !=_roomDataSourceClass)
+        {
+            _roomDataSourceClass = roomDataSourceClass;
+            
+            NSArray *mxSessionIds = _roomDataSourceManagers.allKeys;
+            for (NSString *mxSessionId in mxSessionIds)
+            {
+                MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
+                if (roomDataSourceManager)
+                {
+                    [roomDataSourceManager reset];
+                    [_roomDataSourceManagers removeObjectForKey:mxSessionId];
+                }
+            }
         }
     }
 }
@@ -135,7 +166,7 @@ static NSMutableDictionary *_roomDataSourceManagers = nil;
     MXKRoomDataSource *roomDataSource = roomDataSources[roomId];
     if (!roomDataSource && create)
     {
-        roomDataSource = [[MXKRoomDataSource alloc] initWithRoomId:roomId andMatrixSession:mxSession];
+        roomDataSource = [[_roomDataSourceClass alloc] initWithRoomId:roomId andMatrixSession:mxSession];
         [self addRoomDataSource:roomDataSource];
     }
     return roomDataSource;

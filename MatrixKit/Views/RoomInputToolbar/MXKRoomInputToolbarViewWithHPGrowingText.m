@@ -87,6 +87,8 @@
 {
     _growingTextView.maxHeight = maxHeight - (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
     [_growingTextView refreshHeight];
+    
+    super.maxHeight = maxHeight;
 }
 
 - (NSString*)textMessage
