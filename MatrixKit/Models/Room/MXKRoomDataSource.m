@@ -1199,22 +1199,26 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }
     
-    @synchronized(bubbles)
+    Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+    if ([class instancesRespondToSelector:@selector(mergeWithBubbleCellData:)])
     {
-        NSUInteger index = [bubbles indexOfObject:cellData];
-        if (index != NSNotFound)
+        // Check whether the adjacent bubbles can merge together
+        @synchronized(bubbles)
         {
-            [bubbles removeObjectAtIndex:index];
-            
-            if (index != 0 && index < bubbles.count)
+            NSUInteger index = [bubbles indexOfObject:cellData];
+            if (index != NSNotFound)
             {
-                // Check whether the adjacent bubbles can merge together
-                id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
-                id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
+                [bubbles removeObjectAtIndex:index];
                 
-                if ([cellData1 mergeWithBubbleCellData:cellData2])
+                if (index != 0 && index < bubbles.count)
                 {
-                    [bubbles removeObjectAtIndex:index];
+                    id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
+                    id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
+                    
+                    if ([cellData1 mergeWithBubbleCellData:cellData2])
+                    {
+                        [bubbles removeObjectAtIndex:index];
+                    }
                 }
             }
         }
