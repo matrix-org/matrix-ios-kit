@@ -54,7 +54,7 @@
 #import "MXKRoomDataSourceManager.h"
 
 #import "MXKRoomBubbleCellData.h"
-#import "MXKRoomBubbleMergingMessagesCellData.h"
+#import "MXKRoomBubbleCellDataWithAppendingMode.h"
 
 #import "MXKPublicRoomTableViewCell.h"
 

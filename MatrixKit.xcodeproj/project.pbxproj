@@ -73,7 +73,7 @@
 		F07D74AE1AC5A36B00D83B98 /* MXKEventDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */; };
 		F07E180D1ABC2EDA00DE3766 /* MXKQueuedEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18051ABC2EDA00DE3766 /* MXKQueuedEvent.m */; };
 		F07E180E1ABC2EDA00DE3766 /* MXKRoomBubbleCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18071ABC2EDA00DE3766 /* MXKRoomBubbleCellData.m */; };
-		F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E180A1ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.m */; };
+		F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E180A1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m */; };
 		F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E180C1ABC2EDA00DE3766 /* MXKRoomDataSource.m */; };
 		F07E18141ABC563900DE3766 /* MXEvent+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18131ABC563900DE3766 /* MXEvent+MatrixKit.m */; };
 		F07E18171ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18161ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m */; };
@@ -287,8 +287,8 @@
 		F07E18061ABC2EDA00DE3766 /* MXKRoomBubbleCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellData.h; sourceTree = "<group>"; };
 		F07E18071ABC2EDA00DE3766 /* MXKRoomBubbleCellData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleCellData.m; sourceTree = "<group>"; };
 		F07E18081ABC2EDA00DE3766 /* MXKRoomBubbleCellDataStoring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellDataStoring.h; sourceTree = "<group>"; };
-		F07E18091ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleMergingMessagesCellData.h; sourceTree = "<group>"; };
-		F07E180A1ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleMergingMessagesCellData.m; sourceTree = "<group>"; };
+		F07E18091ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellDataWithAppendingMode.h; sourceTree = "<group>"; };
+		F07E180A1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleCellDataWithAppendingMode.m; sourceTree = "<group>"; };
 		F07E180B1ABC2EDA00DE3766 /* MXKRoomDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomDataSource.h; sourceTree = "<group>"; };
 		F07E180C1ABC2EDA00DE3766 /* MXKRoomDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomDataSource.m; sourceTree = "<group>"; };
 		F07E18121ABC563900DE3766 /* MXEvent+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MXEvent+MatrixKit.h"; sourceTree = "<group>"; };
@@ -759,8 +759,8 @@
 				F07E18081ABC2EDA00DE3766 /* MXKRoomBubbleCellDataStoring.h */,
 				F07E18151ABC8B8B00DE3766 /* MXKRoomBubbleComponent.h */,
 				F07E18161ABC8B8B00DE3766 /* MXKRoomBubbleComponent.m */,
-				F07E18091ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.h */,
-				F07E180A1ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.m */,
+				F07E18091ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.h */,
+				F07E180A1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m */,
 				F0DD7D831B7B3CF100C4BE02 /* MXKRoomCreationInputs.h */,
 				F0DD7D841B7B3CF100C4BE02 /* MXKRoomCreationInputs.m */,
 				F07E180B1ABC2EDA00DE3766 /* MXKRoomDataSource.h */,
@@ -1133,7 +1133,7 @@
 				F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */,
 				3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */,
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
-				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleMergingMessagesCellData.m in Sources */,
+				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */,
 				F04356361B2EF9D80096FA02 /* MXKTableViewCellWithLabelAndButton.m in Sources */,
 				F0CF98F81B0C6EA000EAE373 /* MXKAccountTableViewCell.m in Sources */,
 				F0F1489B1AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.m in Sources */,

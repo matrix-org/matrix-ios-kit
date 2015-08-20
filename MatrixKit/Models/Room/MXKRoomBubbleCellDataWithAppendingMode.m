@@ -14,9 +14,9 @@
  limitations under the License.
  */
 
-#import "MXKRoomBubbleMergingMessagesCellData.h"
+#import "MXKRoomBubbleCellDataWithAppendingMode.h"
 
-@interface MXKRoomBubbleMergingMessagesCellData ()
+@interface MXKRoomBubbleCellDataWithAppendingMode ()
 {
     /**
      YES if position of each component must be refreshed
@@ -28,7 +28,7 @@
 
 static NSAttributedString *messageSeparator = nil;
 
-@implementation MXKRoomBubbleMergingMessagesCellData
+@implementation MXKRoomBubbleCellDataWithAppendingMode
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
@@ -122,7 +122,7 @@ static NSAttributedString *messageSeparator = nil;
         else
         {
             // Append attributed text
-            [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleMergingMessagesCellData messageSeparator]];
+            [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
             [customAttributedTextMsg appendAttributedString:componentString];
         }
     }
@@ -159,7 +159,7 @@ static NSAttributedString *messageSeparator = nil;
         component.position = CGPointMake(0, positionY);
         
         // Compute height of the current component
-        [attributedString appendAttributedString:[MXKRoomBubbleMergingMessagesCellData messageSeparator]];
+        [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
         [attributedString appendAttributedString:component.attributedTextMessage];
         componentHeight = [self rawTextHeight:attributedString] - cumulatedHeight;
     }
@@ -219,7 +219,7 @@ static NSAttributedString *messageSeparator = nil;
             else
             {
                 // Append attributed text
-                [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleMergingMessagesCellData messageSeparator]];
+                [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
                 [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
             }
         }

@@ -19,7 +19,7 @@
 #import "MXKQueuedEvent.h"
 #import "MXKRoomBubbleTableViewCell.h"
 
-#import "MXKRoomBubbleMergingMessagesCellData.h"
+#import "MXKRoomBubbleCellDataWithAppendingMode.h"
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 #import "MXKRoomOutgoingBubbleTableViewCell.h"
 
@@ -104,7 +104,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Set default data and view classes
         // Cell data
-        [self registerCellDataClass:MXKRoomBubbleMergingMessagesCellData.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+        [self registerCellDataClass:MXKRoomBubbleCellDataWithAppendingMode.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
         // For incoming messages
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];

@@ -17,10 +17,10 @@
 #import "MXKRoomBubbleCellData.h"
 
 /**
- `MXKRoomBubbleMergingMessagesCellData` class inherits from `MXKRoomBubbleCellData`, it merges
+ `MXKRoomBubbleCellDataWithAppendingMode` class inherits from `MXKRoomBubbleCellData`, it merges
  consecutive events from the same sender into one bubble.
  Each concatenated event is represented by a bubble component.
  */
-@interface MXKRoomBubbleMergingMessagesCellData : MXKRoomBubbleCellData
+@interface MXKRoomBubbleCellDataWithAppendingMode : MXKRoomBubbleCellData
 
 @end
