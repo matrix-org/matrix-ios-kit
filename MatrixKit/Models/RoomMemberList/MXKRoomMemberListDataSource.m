@@ -50,7 +50,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     self = [super initWithMatrixSession:mxSession];
     if (self)
     {
-        
         _roomId = roomId;
         
         cellDataArray = [NSMutableArray array];
@@ -62,8 +61,6 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         // Set default data and view classes
         [self registerCellDataClass:MXKRoomMemberCellData.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
         [self registerCellViewClass:MXKRoomMemberTableViewCell.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
-        
-        [self didMXSessionStateChange];
     }
     return self;
 }

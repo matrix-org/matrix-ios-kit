@@ -76,11 +76,23 @@ typedef enum : NSUInteger {
 #pragma mark - Life cycle
 /**
  Base constructor of data source.
+ 
+ Customization like class registrations must be done before loading data (see '[MXKDataSource registerCellDataClass: forCellIdentifier:]'
+ and '[MXKDataSource registerCellViewClass: forCellIdentifier:]') .
+ That is why 3 steps should be considered during 'MXKDataSource' initialization:
+ 1- call [MXKDataSource initWithMatrixSession:] to initialize a new allocated object.
+ 2- customize classes and others...
+ 3- call [MXKDataSource finalizeInitialization] to finalize the initialization.
 
  @param mxSession the Matrix session to get data from.
  @return the newly created instance.
  */
 - (instancetype)initWithMatrixSession:(MXSession*)mxSession;
+
+/**
+ Finalize the initialization by adding an observer on matrix session state change.
+ */
+- (void)finalizeInitialization;
 
 /**
  Dispose all resources.

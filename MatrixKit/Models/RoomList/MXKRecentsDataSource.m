@@ -81,14 +81,22 @@
     
     if (recentsDataSource)
     {
+        // Report the shared event formatter (if any)
+        if (_eventFormatter)
+        {
+            recentsDataSource.eventFormatter = _eventFormatter;
+        }
+        
         // Set the actual data and view classes
-        [self registerCellDataClass:[self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
-        [self registerCellViewClass:[self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
+        [recentsDataSource registerCellDataClass:[self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
+        [recentsDataSource registerCellViewClass:[self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
         
         [mxSessionArray addObject:matrixSession];
         
         recentsDataSource.delegate = self;
         [recentsDataSourceArray addObject:recentsDataSource];
+        
+        [recentsDataSource finalizeInitialization];
         
         if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didAddMatrixSession:)])
         {
@@ -250,6 +258,17 @@
         unreadCount += recentsDataSource.unreadCount;
     }
     return unreadCount;
+}
+
+- (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
+{
+    _eventFormatter = eventFormatter;
+    
+    // Report this formatter in all existing dataSource
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
+    {
+        recentsDataSource.eventFormatter = eventFormatter;
+    }
 }
 
 - (void)markAllAsRead

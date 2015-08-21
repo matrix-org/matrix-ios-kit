@@ -167,6 +167,7 @@ static Class _roomDataSourceClass;
     if (!roomDataSource && create)
     {
         roomDataSource = [[_roomDataSourceClass alloc] initWithRoomId:roomId andMatrixSession:mxSession];
+        [roomDataSource finalizeInitialization];
         [self addRoomDataSource:roomDataSource];
     }
     return roomDataSource;

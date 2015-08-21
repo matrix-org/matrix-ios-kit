@@ -52,6 +52,14 @@
  */
 @property (nonatomic, readonly) NSUInteger unreadCount;
 
+#pragma mark - Configuration
+
+/**
+ The events to display texts formatter (nil by default).
+ When this formatter is defined, it is used by all available recents data sources
+ */
+@property (nonatomic) MXKEventFormatter *eventFormatter;
+
 /**
  Add recents data from a matrix session.
  

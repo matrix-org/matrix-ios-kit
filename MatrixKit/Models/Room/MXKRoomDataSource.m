@@ -144,8 +144,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringCallInvite
                                              ];
         }
-        
-        [self didMXSessionStateChange];
     }
     return self;
 }

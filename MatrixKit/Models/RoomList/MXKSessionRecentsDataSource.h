@@ -59,7 +59,7 @@ extern NSString *const kMXKRecentCellIdentifier;
 
 /**
  The events to display texts formatter.
- `MXKRoomCellDataStoring` instances can use it to format text.
+ `MXKRecentCellDataStoring` instances can use it to format text.
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
