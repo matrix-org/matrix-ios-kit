@@ -283,8 +283,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Check and update each component position (used to align timestamps label in front of events, and to handle tap gesture on events)
         [bubbleData prepareBubbleComponentsPosition];
         
-        // Handle timestamp display
-        if (bubbleData.showBubbleDateTime)
+        // Handle here timestamp display (only if a container has been defined)
+        if (bubbleData.showBubbleDateTime && self.dateTimeLabelContainer)
         {
             // Add datetime label for each component
             self.dateTimeLabelContainer.hidden = NO;

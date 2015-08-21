@@ -39,7 +39,7 @@
         // Check whether the previous message has been sent by the same user.
         // The user's picture and name are displayed only for the first message.
         // Handle sender's picture and adjust view's constraints
-        if (self.bubbleData.isSameSenderAsPreviousBubble)
+        if (self.bubbleData.shouldHideSenderInformation)
         {
             self.pictureView.hidden = YES;
             self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
@@ -51,29 +51,32 @@
             }
         }
         
-        // Add unsent label for failed components
-        for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
+        // Add unsent label for failed components (only if dateTimeLabelContainer is defined)
+        if (self.dateTimeLabelContainer)
         {
-            if (component.event.mxkState == MXKEventStateSendingFailed)
+            for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
             {
-                UIButton *unsentButton = [[UIButton alloc] initWithFrame:CGRectMake(0, component.position.y, 58 , 20)];
-                
-                [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateNormal];
-                [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateSelected];
-                [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-                [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
-                
-                unsentButton.backgroundColor = [UIColor whiteColor];
-                unsentButton.titleLabel.font =  [UIFont systemFontOfSize:14];
-                
-                [unsentButton addTarget:self action:@selector(onResendToggle:) forControlEvents:UIControlEventTouchUpInside];
-                
-                [self.dateTimeLabelContainer addSubview:unsentButton];
-                self.dateTimeLabelContainer.hidden = NO;
-                self.dateTimeLabelContainer.userInteractionEnabled = YES;
-                
-                // ensure that dateTimeLabelContainer is at front to catch the tap event
-                [self.dateTimeLabelContainer.superview bringSubviewToFront:self.dateTimeLabelContainer];
+                if (component.event.mxkState == MXKEventStateSendingFailed)
+                {
+                    UIButton *unsentButton = [[UIButton alloc] initWithFrame:CGRectMake(0, component.position.y, 58 , 20)];
+                    
+                    [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateNormal];
+                    [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateSelected];
+                    [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+                    [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
+                    
+                    unsentButton.backgroundColor = [UIColor whiteColor];
+                    unsentButton.titleLabel.font =  [UIFont systemFontOfSize:14];
+                    
+                    [unsentButton addTarget:self action:@selector(onResendToggle:) forControlEvents:UIControlEventTouchUpInside];
+                    
+                    [self.dateTimeLabelContainer addSubview:unsentButton];
+                    self.dateTimeLabelContainer.hidden = NO;
+                    self.dateTimeLabelContainer.userInteractionEnabled = YES;
+                    
+                    // ensure that dateTimeLabelContainer is at front to catch the tap event
+                    [self.dateTimeLabelContainer.superview bringSubviewToFront:self.dateTimeLabelContainer];
+                }
             }
         }
         
@@ -106,7 +109,7 @@
     
     // Check whether the previous message has been sent by the same user.
     // The user's picture and name are displayed only for the first message.
-    if (bubbleData.isSameSenderAsPreviousBubble)
+    if (bubbleData.shouldHideSenderInformation)
     {
         // Reduce top margin -> row height reduction
         rowHeight += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;

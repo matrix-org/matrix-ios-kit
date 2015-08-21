@@ -39,7 +39,7 @@
         // Check whether the previous message has been sent by the same user.
         // The user's picture and name are displayed only for the first message.
         // Handle sender's picture and adjust view's constraints
-        if (self.bubbleData.isSameSenderAsPreviousBubble)
+        if (self.bubbleData.shouldHideSenderInformation)
         {
             self.pictureView.hidden = YES;
             self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
@@ -52,7 +52,7 @@
         }
         
         // Display user's display name except if the name appears in the displayed text (see emote and membership event)
-        self.userNameLabel.hidden = (self.bubbleData.isSameSenderAsPreviousBubble || self.bubbleData.startsWithSenderName);
+        self.userNameLabel.hidden = (self.bubbleData.shouldHideSenderInformation || self.bubbleData.startsWithSenderName);
         self.userNameLabel.text = self.bubbleData.senderDisplayName;
         // Set typing badge visibility
         self.typingBadge.hidden = (self.pictureView.hidden || !self.bubbleData.isTyping);
@@ -71,7 +71,7 @@
     
     // Check whether the previous message has been sent by the same user.
     // The user's picture and name are displayed only for the first message.
-    if (bubbleData.isSameSenderAsPreviousBubble)
+    if (bubbleData.shouldHideSenderInformation)
     {
         // Reduce top margin -> row height reduction
         rowHeight += MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;

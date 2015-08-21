@@ -1533,13 +1533,21 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         cell.delegate = self;
     }
     
-    // Check whether the previous bubble has been sent by the same user.
-    // The user's picture and name are displayed only for the first message.
-    bubbleData.isSameSenderAsPreviousBubble = NO;
+    // Check whether the sender information is relevant for this bubble.
+    bubbleData.shouldHideSenderInformation = NO;
     if (indexPath.row)
     {
+        // Check first whether the previous bubble has been sent by the same user.
         id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
-        bubbleData.isSameSenderAsPreviousBubble = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
+        bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
+        
+        if (bubbleData.shouldHideSenderInformation && self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+        {
+            // Keep display the sender info if the 2 bubbles do not belong to the same pagination
+            NSString *previousBubbleDateString = [self.eventFormatter dateStringFromDate:previousBubbleData.date withTime:NO];
+            NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+            bubbleData.shouldHideSenderInformation = [bubbleDateString isEqualToString:previousBubbleDateString];
+        }
     }
     
     // Update typing flag before rendering

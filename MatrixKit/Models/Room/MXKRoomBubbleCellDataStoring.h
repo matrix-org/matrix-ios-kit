@@ -51,9 +51,10 @@
 @property (nonatomic) NSString *senderAvatarUrl;
 
 /**
- YES if the previous bubble sender is the same as the previous stored bubble.
+ Tell whether the sender information is relevant for this bubble
+ (For example this information should be hidden in case of 2 consecutive bubbles from the same sender).
  */
-@property (nonatomic) BOOL isSameSenderAsPreviousBubble;
+@property (nonatomic) BOOL shouldHideSenderInformation;
 
 /**
  The list of events (`MXEvent` instances) handled by this bubble.
