@@ -49,7 +49,7 @@
 {
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
-    lastEventDate = [recentsDataSource.eventFormatter dateStringForEvent:lastEvent];
+    lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
     
     // Compute the text message
     MXKEventFormatterError error;

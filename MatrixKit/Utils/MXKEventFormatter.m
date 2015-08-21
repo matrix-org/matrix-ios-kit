@@ -37,12 +37,13 @@
     {
         mxSession = matrixSession;
         
-        NSString *dateFormat = @"MMM dd HH:mm";
+        dateFormat = @"MMM dd";
+        dateTimeFormat = @"MMM dd HH:mm";
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
         [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        [_dateFormatter setDateFormat:dateFormat];
+        [_dateFormatter setDateFormat:dateTimeFormat];
         
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -718,15 +719,36 @@
 
 
 #pragma mark - Timestamp formatting
-- (NSString*)dateStringForTimestamp:(uint64_t)timestamp
+
+- (NSString*)dateStringFromDate:(NSDate *)date withTime:(BOOL)time
 {
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
+    if (time)
+    {
+        [_dateFormatter setDateFormat:dateTimeFormat];
+    }
+    else
+    {
+        [_dateFormatter setDateFormat:dateFormat];
+    }
+    
     return [_dateFormatter stringFromDate:date];
 }
 
-- (NSString*)dateStringForEvent:(MXEvent *)event
+- (NSString*)dateStringFromTimestamp:(uint64_t)timestamp withTime:(BOOL)time
 {
-    return [self dateStringForTimestamp:event.originServerTs];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
+    
+    return [self dateStringFromDate:date withTime:time];
+}
+
+- (NSString*)dateStringFromEvent:(MXEvent *)event withTime:(BOOL)time
+{
+    if (event.originServerTs != kMXUndefinedTimestamp)
+    {
+        return [self dateStringFromTimestamp:event.originServerTs withTime:time];
+    }
+    
+    return nil;
 }
 
 @end

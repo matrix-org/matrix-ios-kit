@@ -32,16 +32,6 @@ static NSAttributedString *messageSeparator = nil;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
-- (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)roomState andRoomDataSource:(MXKRoomDataSource *)inRoomDataSource
-{
-    self = [super initWithEvent:event andRoomState:roomState andRoomDataSource:inRoomDataSource];
-    if (self)
-    {
-        roomDataSource = inRoomDataSource;
-    }
-    return self;
-}
-
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
 {
     // We group together text messages from the same user
@@ -65,6 +55,18 @@ static NSAttributedString *messageSeparator = nil;
             ([self.senderAvatarUrl isEqualToString:eventSenderAvatar] == NO))
         {
             return NO;
+        }
+        
+        // Take into account here the rendered bubbles pagination
+        if (roomDataSource.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+        {
+            // Event must be sent the same day than the existing bubble.
+            NSString *bubbleDateString = [roomDataSource.eventFormatter dateStringFromDate:self.date withTime:NO];
+            NSString *eventDateString = [roomDataSource.eventFormatter dateStringFromEvent:event withTime:NO];
+            if (![bubbleDateString isEqualToString:eventDateString])
+            {
+                return NO;
+            }
         }
         
         // Create new message component

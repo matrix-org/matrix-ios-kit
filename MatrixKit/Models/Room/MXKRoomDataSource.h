@@ -20,6 +20,22 @@
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
 
+/**
+ List the supported pagination of the rendered room bubble cells
+ */
+typedef enum : NSUInteger
+{
+    /**
+     No pagination
+     */
+    MXKRoomDataSourceBubblesPaginationNone,
+    /**
+     The rendered room bubble cells are paginated per day
+     */
+    MXKRoomDataSourceBubblesPaginationPerDay
+    
+} MXKRoomDataSourceBubblesPagination;
+
 
 #pragma mark - Cells identifiers
 /**
@@ -146,6 +162,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  Show the date time label in rendered room bubble cells (NO by default)
  */
 @property (nonatomic) BOOL showBubblesDateTime;
+
+/**
+ The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
+ */
+@property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;
 
 
 #pragma mark - Life cycle

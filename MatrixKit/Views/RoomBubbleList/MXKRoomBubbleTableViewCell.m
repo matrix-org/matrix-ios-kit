@@ -293,7 +293,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
                 {
                     UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 20)];
-                    dateTimeLabel.text = [bubbleData.eventFormatter.dateFormatter stringFromDate:component.date];
+                    dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
                     if (bubbleData.isIncoming)
                     {
                         dateTimeLabel.textAlignment = NSTextAlignmentRight;
