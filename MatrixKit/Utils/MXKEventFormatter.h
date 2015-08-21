@@ -55,13 +55,9 @@ typedef enum : NSUInteger {
 {
 @protected
     /**
-     The date format string used by the date formatter when a date string is requested without the time.
+     The date format string used by the date formatter.
      */
     NSString *dateFormat;
-    /**
-     The date format string used by the date formatter when a date string is requested with the time.
-     */
-    NSString *dateTimeFormat;
 }
 
 /**

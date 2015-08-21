@@ -38,12 +38,10 @@
         mxSession = matrixSession;
         
         dateFormat = @"MMM dd";
-        dateTimeFormat = @"MMM dd HH:mm";
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
         [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-        [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        [_dateFormatter setDateFormat:dateTimeFormat];
+        [_dateFormatter setTimeStyle:NSDateFormatterShortStyle];
         
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -717,21 +715,35 @@
     return event;
 }
 
-
 #pragma mark - Timestamp formatting
 
 - (NSString*)dateStringFromDate:(NSDate *)date withTime:(BOOL)time
 {
-    if (time)
-    {
-        [_dateFormatter setDateFormat:dateTimeFormat];
-    }
-    else
+    // Get first date string without time
+    NSString *dateString = nil;
+    if (dateFormat)
     {
         [_dateFormatter setDateFormat:dateFormat];
+        dateString = [_dateFormatter stringFromDate:date];
     }
     
-    return [_dateFormatter stringFromDate:date];
+    if (time)
+    {
+        // Remove data format to get time string in short style.
+        [_dateFormatter setDateFormat:nil];
+        NSString *timeString = [_dateFormatter stringFromDate:date];
+        if (dateString.length)
+        {
+            // Add time string
+            dateString = [NSString stringWithFormat:@"%@ %@", dateString, timeString.lowercaseString];
+        }
+        else
+        {
+            dateString = timeString.lowercaseString;
+        }
+    }
+    
+    return dateString;
 }
 
 - (NSString*)dateStringFromTimestamp:(uint64_t)timestamp withTime:(BOOL)time
