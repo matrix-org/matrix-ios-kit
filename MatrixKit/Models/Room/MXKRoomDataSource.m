@@ -1543,21 +1543,31 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         cell.delegate = self;
     }
     
-    // Check whether the sender information is relevant for this bubble.
-    bubbleData.shouldHideSenderInformation = NO;
-    if (indexPath.row)
+    // Pagination handling
+    if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
     {
-        // Check first whether the previous bubble has been sent by the same user.
-        id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
-        bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
-        
-        if (bubbleData.shouldHideSenderInformation && self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+        // Check whether a new pagination starts at this bubble
+        bubbleData.isPaginationFirstBubble = YES;
+        if (indexPath.row)
         {
-            // Keep display the sender info if the 2 bubbles do not belong to the same pagination
+            id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
             NSString *previousBubbleDateString = [self.eventFormatter dateStringFromDate:previousBubbleData.date withTime:NO];
             NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
-            bubbleData.shouldHideSenderInformation = [bubbleDateString isEqualToString:previousBubbleDateString];
+            bubbleData.isPaginationFirstBubble = ![bubbleDateString isEqualToString:previousBubbleDateString];
         }
+    }
+    else
+    {
+        bubbleData.isPaginationFirstBubble = NO;
+    }
+    
+    // Check whether the sender information is relevant for this bubble.
+    bubbleData.shouldHideSenderInformation = NO;
+    if (indexPath.row && (bubbleData.isPaginationFirstBubble == NO))
+    {
+        // Check whether the previous bubble has been sent by the same user.
+        id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
+        bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
     }
     
     // Update typing flag before rendering

@@ -51,6 +51,11 @@
 @property (nonatomic) NSString *senderAvatarUrl;
 
 /**
+ Tell whether a new pagination starts with this bubble.
+ */
+@property (nonatomic) BOOL isPaginationFirstBubble;
+
+/**
  Tell whether the sender information is relevant for this bubble
  (For example this information should be hidden in case of 2 consecutive bubbles from the same sender).
  */
