@@ -44,8 +44,9 @@
  
  @param toolbarView the room input toolbar view.
  @param height the updated height of toolbar view.
+ @param A block object to be executed when height change is taken into account.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height completion:(void (^)(BOOL finished))completion;
 
 /**
  Tells the delegate that the user wants to send a text message.

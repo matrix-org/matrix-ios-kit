@@ -1967,24 +1967,37 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self handleTypingNotification:typing];
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height completion:(void (^)(BOOL finished))completion
 {
     _roomInputToolbarContainerHeightConstraint.constant = height;
     
-    // Lays out the subviews immediately
-    // We will scroll to bottom if the bottom of the table is currently visible
-    BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
-    CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant;
-    if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
-    {
-        _bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
-        // Force to render the view
-        [self.view layoutIfNeeded];
-        if (shouldScrollToBottom)
-        {
-            [self scrollBubblesTableViewToBottomAnimated:NO];
-        }
-    }
+    // Update layout with animation
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         // We will scroll to bottom if the bottom of the table is currently visible
+                         BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
+                         
+                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant;
+                         
+                         if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
+                         {
+                             _bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
+                             
+                             // Force to render the view
+                             [self.view layoutIfNeeded];
+                             
+                             if (shouldScrollToBottom)
+                             {
+                                 [self scrollBubblesTableViewToBottomAnimated:NO];
+                             }
+                         }
+                     }
+                     completion:^(BOOL finished){
+                         if (completion)
+                         {
+                             completion(finished);
+                         }
+                     }];
 }
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendTextMessage:(NSString*)textMessage
