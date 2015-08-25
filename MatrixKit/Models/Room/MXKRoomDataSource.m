@@ -451,6 +451,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)setShowBubblesDateTime:(BOOL)showBubblesDateTime
+{
+    _showBubblesDateTime = showBubblesDateTime;
+    
+    if (self.delegate)
+    {
+        [self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
 - (void)listenTypingNotifications
 {
     // Remove the previous live listener

@@ -22,5 +22,17 @@
  Each concatenated event is represented by a bubble component.
  */
 @interface MXKRoomBubbleCellDataWithAppendingMode : MXKRoomBubbleCellData
+{
+@protected
+    /**
+     YES if position of each component must be refreshed
+     */
+    BOOL shouldUpdateComponentsPosition;
+}
+
+/**
+ The string appended to the current message before adding a new component text.
+ */
++ (NSAttributedString *)messageSeparator;
 
 @end

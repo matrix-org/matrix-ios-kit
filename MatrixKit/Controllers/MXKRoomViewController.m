@@ -1384,7 +1384,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     NSLog(@"Gesture %@ has been recognized in %@. UserInfo: %@", actionIdentifier, cell, userInfo);
     
-    if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
+    if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnMessageTextView])
+    {
+        NSLog(@"    -> A message has been tapped");
+    }
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
     {
         NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
     }
@@ -1392,8 +1396,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         roomDataSource.showBubblesDateTime = !roomDataSource.showBubblesDateTime;
         NSLog(@"    -> Turn %@ cells date", roomDataSource.showBubblesDateTime ? @"ON" : @"OFF");
-        
-        [self reloadBubblesTable];
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAttachmentView])
     {

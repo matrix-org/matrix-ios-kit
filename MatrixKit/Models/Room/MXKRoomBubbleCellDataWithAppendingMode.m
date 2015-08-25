@@ -16,16 +16,6 @@
 
 #import "MXKRoomBubbleCellDataWithAppendingMode.h"
 
-@interface MXKRoomBubbleCellDataWithAppendingMode ()
-{
-    /**
-     YES if position of each component must be refreshed
-     */
-    BOOL shouldUpdateComponentsPosition;
-}
-
-@end
-
 static NSAttributedString *messageSeparator = nil;
 
 @implementation MXKRoomBubbleCellDataWithAppendingMode
@@ -233,10 +223,12 @@ static NSAttributedString *messageSeparator = nil;
 
 - (void)setMaxTextViewWidth:(CGFloat)inMaxTextViewWidth
 {
+    CGFloat previousMaxWidth = self.maxTextViewWidth;
+    
     [super setMaxTextViewWidth:inMaxTextViewWidth];
     
     // Check change
-    if (CGSizeEqualToSize(self.contentSize, CGSizeZero))
+    if (previousMaxWidth != self.maxTextViewWidth)
     {
         // Position of each components should be computed again
         shouldUpdateComponentsPosition = YES;

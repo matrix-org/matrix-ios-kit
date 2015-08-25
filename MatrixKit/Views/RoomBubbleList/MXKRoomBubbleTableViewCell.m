@@ -19,6 +19,7 @@
 #import "NSBundle+MatrixKit.h"
 
 #pragma mark - Constant definitions
+NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
 NSString *const kMXKRoomBubbleCellTapOnAttachmentView = @"kMXKRoomBubbleCellTapOnAttachmentView";
@@ -150,6 +151,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [tapGesture setDelegate:self];
         [self.pictureView addGestureRecognizer:tapGesture];
         self.pictureView.userInteractionEnabled = YES;
+        
+        // Listen to textView tap
+        tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.messageTextView addGestureRecognizer:tapGesture];
+        self.messageTextView.userInteractionEnabled = YES;
         
         // Adjust top constraint constant for dateTime labels container, and hide it by default
         if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
@@ -555,6 +564,14 @@ static NSMutableDictionary *childClasses;
 }
 
 #pragma mark - User actions
+- (IBAction)onMessageTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:nil];
+    }
+}
+
 - (IBAction)onAvatarTap:(UITapGestureRecognizer*)sender
 {
     if (delegate)
