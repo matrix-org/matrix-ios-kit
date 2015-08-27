@@ -117,9 +117,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     UIDocumentInteractionController *documentInteractionController;
     
     /**
-     The temporary symbolic link defined with the original attachment name
+     The path of the temporary document defined with the original attachment name
      */
-    NSString *documentSymbolicLinkPath;
+    NSString *documentCopyPath;
     
     // Attachment handling
     MXKImageView *highResImageView;
@@ -394,10 +394,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         documentInteractionController = nil;
     }
     
-    if (documentSymbolicLinkPath)
+    if (documentCopyPath)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
-        documentSymbolicLinkPath = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        documentCopyPath = nil;
     }
     
     [self dismissTemporarySubViews];
@@ -1619,17 +1619,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         
                         NSURL *fileUrl;
                         
-                        // The original attachment body (if any) is reported in bubble text message
+                        // The original file name is available in attachment body (if any).
+                        // This attachment body is reported in bubble text message.
                         NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
                         if ([attachmentBody pathExtension].length)
                         {
-                            // Create a symbolic link to the cached file to keep its original name
-                            strongSelf->documentSymbolicLinkPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
+                            // Copy the cached file to restore its original name
+                            // Note: We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
+                            strongSelf->documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
                             
-                            [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentSymbolicLinkPath error:nil];
-                            if ([[NSFileManager defaultManager] createSymbolicLinkAtPath:strongSelf->documentSymbolicLinkPath withDestinationPath:cacheFilePath error:nil])
+                            [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentCopyPath error:nil];
+                            if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:strongSelf->documentCopyPath error:nil])
                             {
-                                fileUrl = [NSURL fileURLWithPath:strongSelf->documentSymbolicLinkPath];
+                                fileUrl = [NSURL fileURLWithPath:strongSelf->documentCopyPath];
                             }
                         }
                         
@@ -1645,10 +1647,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
                         {
                             strongSelf->documentInteractionController = nil;
-                            if (strongSelf->documentSymbolicLinkPath)
+                            if (strongSelf->documentCopyPath)
                             {
-                                [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentSymbolicLinkPath error:nil];
-                                strongSelf->documentSymbolicLinkPath = nil;
+                                [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentCopyPath error:nil];
+                                strongSelf->documentCopyPath = nil;
                             }
                         }
                     } failure:nil];
@@ -2237,17 +2239,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             
             NSURL *fileUrl;
             
-            // The original attachment body (if any) is reported in bubble text message
+            // The original file name is available in attachment body (if any).
+            // This attachment body is reported in bubble text message.
             NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
             if ([attachmentBody pathExtension].length)
             {
-                // Create a symbolic link to the cached file to keep its original name
-                documentSymbolicLinkPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
+                // Copy the cached file to restore its original name
+                // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
+                documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
                 
-                [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
-                if ([[NSFileManager defaultManager] createSymbolicLinkAtPath:documentSymbolicLinkPath withDestinationPath:cacheFilePath error:nil])
+                [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+                if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:documentCopyPath error:nil])
                 {
-                    fileUrl = [NSURL fileURLWithPath:documentSymbolicLinkPath];
+                    fileUrl = [NSURL fileURLWithPath:documentCopyPath];
                 }
             }
             
@@ -2266,10 +2270,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
                 {
                     documentInteractionController = nil;
-                    if (documentSymbolicLinkPath)
+                    if (documentCopyPath)
                     {
-                        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
-                        documentSymbolicLinkPath = nil;
+                        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+                        documentCopyPath = nil;
                     }
                 }
             }
@@ -2381,30 +2385,30 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentSymbolicLinkPath)
+    if (documentCopyPath)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
-        documentSymbolicLinkPath = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        documentCopyPath = nil;
     }
 }
 
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentSymbolicLinkPath)
+    if (documentCopyPath)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
-        documentSymbolicLinkPath = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        documentCopyPath = nil;
     }
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentSymbolicLinkPath)
+    if (documentCopyPath)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentSymbolicLinkPath error:nil];
-        documentSymbolicLinkPath = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        documentCopyPath = nil;
     }
 }
 
