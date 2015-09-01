@@ -366,7 +366,7 @@
         // Check the selected video, and ignore multiple calls (observed when user pressed several time Choose button)
         if (selectedVideo && !tmpVideoPlayer)
         {
-            if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+            if (picker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)
             {
                 [MXKMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
             }
