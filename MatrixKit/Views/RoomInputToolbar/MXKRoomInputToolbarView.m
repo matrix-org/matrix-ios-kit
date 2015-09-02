@@ -613,6 +613,8 @@
         NSLog(@"[MXKRoomInputToolbarView] Attach video is not supported");
     }
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerThumbnailImageRequestDidFinishNotification object:nil];
+    
     [self dismissMediaPicker];
 }
 
