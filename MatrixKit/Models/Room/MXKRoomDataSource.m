@@ -969,6 +969,98 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
 }
 
+- (void)sendFile:(NSURL *)fileLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    NSData *fileData = [NSData dataWithContentsOfFile:fileLocalURL.path];
+    
+    // Use the uploader id as fake URL for this file data
+    // The URL does not need to be valid as the MediaManager will get the data
+    // directly from its cache
+    // Pass this id in the URL is a nasty trick to retrieve it later
+    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
+    NSString *fakeMediaManagerURL = uploader.uploadId;
+    
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXKMediaManager writeMediaData:fileData toFilePath:cacheFilePath];
+    
+    // Create a fake name based on fileData to keep the same name for the same file.
+    NSString *dataHash = [fileData MD5];
+    if (dataHash.length > 7)
+    {
+        // Crop
+        dataHash = [dataHash substringToIndex:7];
+    }
+    NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+    NSString *filename = [NSString stringWithFormat:@"file_%@%@", dataHash, extension];
+    
+    // Prepare the message content for building an echo message
+    NSDictionary *msgContent = @{
+                                 @"msgtype": kMXMessageTypeFile,
+                                 @"body": filename,
+                                 @"url": fakeMediaManagerURL,
+                                 @"info": @{
+                                         @"mimetype": mimetype,
+                                         @"size": @(fileData.length)
+                                         }
+                                 };
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    
+    // Launch the upload to the Matrix Content repository
+    [uploader uploadData:fileData filename:filename mimeType:mimetype success:^(NSString *url) {
+        // Update the local echo state: move from content uploading to event sending
+        localEcho.mxkState = MXKEventStateSending;
+        [self updateLocalEcho:localEcho];
+        
+        // Copy the cached file to the actual cacheFile path
+        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
+        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSError *error;
+        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
+        
+        // Update the message content with the mxc:// of the media on the homeserver
+        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
+        msgContent2[@"url"] = url;
+        
+        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
+        localEcho.content = msgContent2;
+        
+        // Make the final request that posts the image event
+        [_room sendMessageOfType:kMXMessageTypeFile content:msgContent2 success:^(NSString *eventId) {
+            
+            // Nothing to do here
+            // The local echo will be removed when the corresponding event will come through the events stream
+            
+            if (success)
+            {
+                success(eventId);
+            }
+            
+        } failure:^(NSError *error) {
+            
+            // Update the local echo with the error state
+            localEcho.mxkState = MXKEventStateSendingFailed;
+            [self removePendingLocalEcho:localEcho];
+            [self updateLocalEcho:localEcho];
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
+        
+    } failure:^(NSError *error) {
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
+        
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
 - (void)sendMessageOfType:(MXMessageType)msgType content:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     // Build the local echo

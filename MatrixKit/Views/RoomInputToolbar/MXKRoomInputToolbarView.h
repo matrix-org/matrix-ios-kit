@@ -74,6 +74,15 @@
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail;
 
 /**
+ Tells the delegate that the user wants to send a file.
+ 
+ @param toolbarView the room input toolbar view.
+ @param fileLocalURL the local filesystem path of the file to send.
+ @param mimetype file mime type
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendFile:(NSURL*)fileLocalURL withMimeType:(NSString*)mimetype;
+
+/**
  Tells the delegate that the user wants invite a matrix user.
  
  Note: `Invite matrix user` option is displayed in actions list only if the delegate implements this method.

@@ -2074,6 +2074,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }];
 }
 
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendFile:(NSURL *)fileLocalURL withMimeType:(NSString*)mimetype
+{
+    // Let the datasource send it and manage the local echo
+    [roomDataSource sendFile:fileLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
+     {
+         // Nothing to do. The image is marked as unsent in the room history by the datasource
+         NSLog(@"[MXKRoomViewController] sendFile failed. Error:%@", error);
+     }];
+}
+
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert
 {
     [self dismissKeyboard];

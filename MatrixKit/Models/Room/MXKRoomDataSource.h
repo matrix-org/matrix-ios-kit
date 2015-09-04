@@ -290,6 +290,23 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
           failure:(void (^)(NSError *error))failure;
 
 /**
+ Send a file to the room.
+ 
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+ 
+ @param fileLocalURL the local filesystem path of the file to send.
+ @param mimeType the mime type of the file
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendFile:(NSURL*)fileLocalURL
+        mimeType:(NSString*)mimeType
+          success:(void (^)(NSString *eventId))success
+          failure:(void (^)(NSError *error))failure;
+
+/**
  Send a room message to a room.
  
  While sending, a fake event will be echoed in the messages list.

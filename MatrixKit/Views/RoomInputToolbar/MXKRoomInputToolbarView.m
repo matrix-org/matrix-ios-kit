@@ -28,10 +28,13 @@
 #import "MXKTools.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "NSData+MatrixKit.h"
 
 #define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
 #define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
 #define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
+
+NSString *const kPasteboardItemPrefix = @"pasteboard-";
 
 @interface MXKRoomInputToolbarView()
 {
@@ -46,9 +49,9 @@
     UIImagePickerController *mediaPicker;
     
     /**
-     Image selection preview (image picker does not offer a preview).
+     Array of validation views (MXKImageView instances)
      */
-    MXKImageView* imageValidationView;
+    NSMutableArray *validationViews;
     
     /**
      Temporary movie player used to retrieve video thumbnail
@@ -100,6 +103,8 @@
     // Localize string
     [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateNormal];
     [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateHighlighted];
+    
+    validationViews = [NSMutableArray array];
 }
 
 - (void)dealloc
@@ -253,7 +258,8 @@
 
 - (void)destroy
 {
-    [self dismissImageValidationView];
+    [self dismissValidationViews];
+    validationViews = nil;
     
     if (currentAlert)
     {
@@ -309,13 +315,13 @@
             UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
             if (selectedImage)
             {
-                // media picker does not offer a preview
+                // Media picker does not offer a preview
                 // so add a preview to let the user validates his selection
                 if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
                 {
                     __weak typeof(self) weakSelf = self;
                     
-                    imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+                    MXKImageView *imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
                     imageValidationView.stretchable = YES;
                     
                     // the user validates the image
@@ -324,7 +330,7 @@
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
                         // Dismiss the image view
-                        [strongSelf dismissImageValidationView];
+                        [strongSelf dismissValidationViews];
                        
                         // prompt user about image compression
                         [strongSelf promptCompressionForSelectedImage:info];
@@ -336,7 +342,7 @@
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         
                         // dismiss the image view
-                        [strongSelf dismissImageValidationView];
+                        [strongSelf dismissValidationViews];
                         
                         // Open again media gallery
                         strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
@@ -348,6 +354,8 @@
                     }];
                     
                     imageValidationView.image = selectedImage;
+                    
+                    [validationViews addObject:imageValidationView];
                     [imageValidationView showFullScreen];
                 }
                 else
@@ -395,14 +403,15 @@
     [self dismissMediaPicker];
 }
 
-- (void)dismissImageValidationView
+- (void)dismissValidationViews
 {
-    if (imageValidationView)
+    for (MXKImageView *validationView in validationViews)
     {
-        [imageValidationView dismissSelection];
-        [imageValidationView removeFromSuperview];
-        imageValidationView = nil;
+        [validationView dismissSelection];
+        [validationView removeFromSuperview];
     }
+    
+    [validationViews removeAllObjects];
 }
 
 - (void)promptCompressionForSelectedImage:(NSDictionary*)selectedImageInfo
@@ -623,40 +632,181 @@
 - (void)paste:(id)sender
 {
     UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
-    
-    UIImage *pasteboardImage = generalPasteboard.image;
-    if (pasteboardImage)
+    if (generalPasteboard.numberOfItems)
     {
-        [self dismissImageValidationView];
+        [self dismissValidationViews];
         [self dismissKeyboard];
         
         __weak typeof(self) weakSelf = self;
         
-        imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
-        imageValidationView.stretchable = YES;
-        
-        // the user validates the image
-        [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
-         {
-             __strong __typeof(weakSelf)strongSelf = weakSelf;
-             
-             // Dismiss the image view
-             [strongSelf dismissImageValidationView];
-             
-             [strongSelf.delegate roomInputToolbarView:strongSelf sendImage:pasteboardImage];
-         }];
-        
-        // the user wants to use an other image
-        [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
-         {
-             __strong __typeof(weakSelf)strongSelf = weakSelf;
-             
-             // dismiss the image view
-             [strongSelf dismissImageValidationView];
-         }];
-        
-        imageValidationView.image = pasteboardImage;
-        [imageValidationView showFullScreen];
+        for (NSDictionary* dict in generalPasteboard.items)
+        {
+            NSArray* allKeys = dict.allKeys;
+            for (NSString* key in allKeys)
+            {
+                NSString* MIMEType = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)key, kUTTagClassMIMEType);
+                if ([MIMEType hasPrefix:@"image/"])
+                {
+                    UIImage *pasteboardImage = [dict valueForKey:key];
+                    if (pasteboardImage)
+                    {
+                        MXKImageView *imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+                        imageValidationView.stretchable = YES;
+                        
+                        // the user validates the image
+                        [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                         {
+                             __strong __typeof(weakSelf)strongSelf = weakSelf;
+                             
+                             // dismiss the image validation view
+                             [imageView dismissSelection];
+                             [imageView removeFromSuperview];
+                             [validationViews removeObject:imageView];
+                             
+                             [strongSelf.delegate roomInputToolbarView:strongSelf sendImage:pasteboardImage];
+                         }];
+                        
+                        // the user wants to use an other image
+                        [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                         {
+                             // dismiss the image validation view
+                             [imageView dismissSelection];
+                             [imageView removeFromSuperview];
+                             [validationViews removeObject:imageView];
+                             
+                         }];
+                        
+                        imageValidationView.image = pasteboardImage;
+                        
+                        [validationViews addObject:imageValidationView];
+                        [imageValidationView showFullScreen];
+                    }
+                    
+                    break;
+                }
+                else if ([MIMEType hasPrefix:@"video/"])
+                {
+                    NSData *pasteboardVideoData = [dict valueForKey:key];
+                    NSString *fakePasteboardURL = [NSString stringWithFormat:@"%@%@", kPasteboardItemPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
+                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
+                    
+                    if ([MXKMediaManager writeMediaData:pasteboardVideoData toFilePath:cacheFilePath])
+                    {
+                        NSURL *videoLocalURL = [NSURL fileURLWithPath:cacheFilePath isDirectory:NO];
+                        
+                        // Retrieve the video frame at 1 sec to define the video thumbnail
+                        AVURLAsset *urlAsset = [[AVURLAsset alloc] initWithURL:videoLocalURL options:nil];
+                        AVAssetImageGenerator *assetImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:urlAsset];
+                        assetImageGenerator.appliesPreferredTrackTransform = YES;
+                        CMTime time = CMTimeMake(1, 1);
+                        CGImageRef imageRef = [assetImageGenerator copyCGImageAtTime:time actualTime:NULL error:nil];
+                        UIImage* videoThumbnail = [[UIImage alloc] initWithCGImage:imageRef];
+                        
+                        MXKImageView *videoValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+                        videoValidationView.stretchable = YES;
+                        
+                        // the user validates the image
+                        [videoValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                         {
+                             __strong __typeof(weakSelf)strongSelf = weakSelf;
+                             
+                             // dismiss the video validation view
+                             [imageView dismissSelection];
+                             [imageView removeFromSuperview];
+                             [validationViews removeObject:imageView];
+                             
+                             [strongSelf.delegate roomInputToolbarView:strongSelf sendVideo:videoLocalURL withThumbnail:videoThumbnail];
+                         }];
+                        
+                        // the user wants to use an other image
+                        [videoValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                         {
+                             // dismiss the video validation view
+                             [imageView dismissSelection];
+                             [imageView removeFromSuperview];
+                             [validationViews removeObject:imageView];
+                             
+                         }];
+                        
+                        videoValidationView.image = videoThumbnail;
+                        
+                        [validationViews addObject:videoValidationView];
+                        [videoValidationView showFullScreen];
+                        
+                        // Add video icon
+                        UIImageView *videoIconView = [[UIImageView alloc] initWithImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video"]];
+                        videoIconView.center = videoValidationView.center;
+                        videoIconView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+                        [videoValidationView addSubview:videoIconView];
+                    }
+                    break;
+                }
+                else if ([MIMEType hasPrefix:@"application/"])
+                {
+                    NSData *pasteboardDocumentData = [dict valueForKey:key];
+                    NSString *fakePasteboardURL = [NSString stringWithFormat:@"%@%@", kPasteboardItemPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
+                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
+                    
+                    if ([MXKMediaManager writeMediaData:pasteboardDocumentData toFilePath:cacheFilePath])
+                    {
+                        NSURL *localURL = [NSURL fileURLWithPath:cacheFilePath isDirectory:NO];
+                        
+                        MXKImageView *docValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+                        docValidationView.stretchable = YES;
+                        
+                        // the user validates the image
+                        [docValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                         {
+                             __strong __typeof(weakSelf)strongSelf = weakSelf;
+                             
+                             // dismiss the video validation view
+                             [imageView dismissSelection];
+                             [imageView removeFromSuperview];
+                             [validationViews removeObject:imageView];
+                             
+                             [strongSelf.delegate roomInputToolbarView:strongSelf sendFile:localURL withMimeType:MIMEType];
+                         }];
+                        
+                        // the user wants to use an other image
+                        [docValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                         {
+                             // dismiss the video validation view
+                             [imageView dismissSelection];
+                             [imageView removeFromSuperview];
+                             [validationViews removeObject:imageView];
+                             
+                         }];
+                        
+                        docValidationView.image = nil;
+                        
+                        [validationViews addObject:docValidationView];
+                        [docValidationView showFullScreen];
+                        
+                        // Create a fake name based on fileData to keep the same name for the same file.
+                        NSString *dataHash = [pasteboardDocumentData MD5];
+                        if (dataHash.length > 7)
+                        {
+                            // Crop
+                            dataHash = [dataHash substringToIndex:7];
+                        }
+                        NSString *extension = [MXKTools fileExtensionFromContentType:MIMEType];
+                        NSString *filename = [NSString stringWithFormat:@"file_%@%@", dataHash, extension];
+                        
+                        // Display this file name
+                        UITextView *fileNameTextView = [[UITextView alloc] initWithFrame:CGRectZero];
+                        fileNameTextView.text = filename;
+                        fileNameTextView.font = [UIFont systemFontOfSize:17];
+                        [fileNameTextView sizeToFit];
+                        fileNameTextView.center = docValidationView.center;
+                        fileNameTextView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+                        
+                        docValidationView.backgroundColor = [UIColor whiteColor];
+                        [docValidationView addSubview:fileNameTextView];
+                    }
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -664,8 +814,23 @@
 {
     if (action == @selector(paste:))
     {
-        // Check whether some data are available in general pasteboard
-        return ([UIPasteboard generalPasteboard].items.count != 0);
+        // Check whether some data listed in general pasteboard can be paste
+        UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
+        if (generalPasteboard.numberOfItems)
+        {
+            for (NSDictionary* dict in generalPasteboard.items)
+            {
+                NSArray* allKeys = dict.allKeys;
+                for (NSString* key in allKeys)
+                {
+                    NSString* MIMEType = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)key, kUTTagClassMIMEType);
+                    if ([MIMEType hasPrefix:@"image/"] || [MIMEType hasPrefix:@"video/"] || [MIMEType hasPrefix:@"application/"])
+                    {
+                        return YES;
+                    }
+                }
+            }
+        }
     }
     return NO;
 }
