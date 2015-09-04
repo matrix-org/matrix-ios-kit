@@ -618,4 +618,56 @@
     [self dismissMediaPicker];
 }
 
+#pragma mark - Clipboard - Handle image/data paste from general pasteboard
+
+- (void)paste:(id)sender
+{
+    UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
+    
+    UIImage *pasteboardImage = generalPasteboard.image;
+    if (pasteboardImage)
+    {
+        [self dismissImageValidationView];
+        [self dismissKeyboard];
+        
+        __weak typeof(self) weakSelf = self;
+        
+        imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+        imageValidationView.stretchable = YES;
+        
+        // the user validates the image
+        [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+         {
+             __strong __typeof(weakSelf)strongSelf = weakSelf;
+             
+             // Dismiss the image view
+             [strongSelf dismissImageValidationView];
+             
+             [strongSelf.delegate roomInputToolbarView:strongSelf sendImage:pasteboardImage];
+         }];
+        
+        // the user wants to use an other image
+        [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+         {
+             __strong __typeof(weakSelf)strongSelf = weakSelf;
+             
+             // dismiss the image view
+             [strongSelf dismissImageValidationView];
+         }];
+        
+        imageValidationView.image = pasteboardImage;
+        [imageValidationView showFullScreen];
+    }
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if (action == @selector(paste:))
+    {
+        // Check whether some data are available in general pasteboard
+        return ([UIPasteboard generalPasteboard].items.count != 0);
+    }
+    return NO;
+}
+
 @end

@@ -1611,37 +1611,44 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }];
                 }
                 
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                        
+                        if ([msgtype isEqualToString:kMXMessageTypeImage])
+                        {
+                            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:cacheFilePath]];
+                        }
+                        else
+                        {
+                            NSData* data = [NSData dataWithContentsOfFile:cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+                            
+                            if (data)
+                            {
+                                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[cacheFilePath pathExtension] , NULL);
+                                
+                                if (UTI)
+                                {
+                                    [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
+                                }
+                            }
+                        }
+                        
+                    } failure:nil];
+                }];
+                
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
                     [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
                         
-                        NSURL *fileUrl;
+                        // Prepare the file URL by considering the original file name (if any)
+                        NSURL *fileURL = [strongSelf attachmentURLWithOriginalFileNameInCell:cell];
                         
-                        // The original file name is available in attachment body (if any).
-                        // This attachment body is reported in bubble text message.
-                        NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
-                        if ([attachmentBody pathExtension].length)
-                        {
-                            // Copy the cached file to restore its original name
-                            // Note: We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-                            strongSelf->documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
-                            
-                            [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentCopyPath error:nil];
-                            if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:strongSelf->documentCopyPath error:nil])
-                            {
-                                fileUrl = [NSURL fileURLWithPath:strongSelf->documentCopyPath];
-                            }
-                        }
-                        
-                        if (!fileUrl)
-                        {
-                            // Use the cached file by default
-                            fileUrl = [NSURL fileURLWithPath:cacheFilePath];
-                        }
-                        
-                        strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileUrl];
+                        strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [strongSelf->documentInteractionController setDelegate:strongSelf];
                         
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
@@ -1745,6 +1752,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
     }
 }
+
 #pragma mark - Clipboard
 
 - (void)selectAllTextMessageInCell:(id<MXKCellRendering>)cell
@@ -1894,6 +1902,40 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             failure (nil);
         }
     }
+}
+
+- (NSURL*)attachmentURLWithOriginalFileNameInCell:(id<MXKCellRendering>)cell
+{
+    NSURL *fileUrl;
+    
+    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+    
+    // Retrieve the cache file path
+    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+    
+    // The original file name is available in attachment body (if any).
+    // This attachment body is reported in bubble text message.
+    NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
+    if ([attachmentBody pathExtension].length)
+    {
+        // Copy the cached file to restore its original name
+        // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
+        documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
+        
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:documentCopyPath error:nil])
+        {
+            fileUrl = [NSURL fileURLWithPath:documentCopyPath];
+        }
+    }
+    
+    if (!fileUrl)
+    {
+        // Use the cached file by default
+        fileUrl = [NSURL fileURLWithPath:cacheFilePath];
+    }
+    
+    return fileUrl;
 }
 
 #pragma mark - UITableView delegate
@@ -2237,31 +2279,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
             
-            NSURL *fileUrl;
+            // Prepare the file URL by considering the original file name (if any)
+            NSURL *fileURL = [self attachmentURLWithOriginalFileNameInCell:cell];
             
-            // The original file name is available in attachment body (if any).
-            // This attachment body is reported in bubble text message.
-            NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
-            if ([attachmentBody pathExtension].length)
-            {
-                // Copy the cached file to restore its original name
-                // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-                documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
-                
-                [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-                if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:documentCopyPath error:nil])
-                {
-                    fileUrl = [NSURL fileURLWithPath:documentCopyPath];
-                }
-            }
-            
-            if (!fileUrl)
-            {
-                // Use the cached file by default
-                fileUrl = [NSURL fileURLWithPath:cacheFilePath];
-            }
-            
-            documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileUrl];
+            documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
             
             [documentInteractionController setDelegate:self];
             
