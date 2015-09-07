@@ -126,8 +126,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSString *AVAudioSessionCategory;
     MPMoviePlayerController *videoPlayer;
     MPMoviePlayerController *tmpVideoPlayer;
-    NSString *selectedVideoURL;
-    NSString *selectedVideoCachePath;
+    UIWebView *animatedGifViewer;
 }
 
 @end
@@ -2209,12 +2208,77 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 mimetype = content[@"info"][@"mimetype"];
             }
             
-            // Use another MXKImageView that will show the fullscreen image URL in fullscreen
+            // Use another MXKImageView that will show the attachment in fullscreen
             highResImageView = [[MXKImageView alloc] initWithFrame:self.view.frame];
             highResImageView.stretchable = YES;
-            highResImageView.mediaFolder = roomDataSource.roomId;
-            [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachment.image];
+            
             [highResImageView showFullScreen];
+            
+            if ([mimetype isEqualToString:@"image/gif"])
+            {
+                // Animated gif is displayed in webview
+                CGFloat width, height;
+                if (content[@"info"][@"w"] && content[@"info"][@"h"])
+                {
+                    width = [content[@"info"][@"w"] integerValue];
+                    height = [content[@"info"][@"h"] integerValue];
+                    
+                    CGFloat maxSize = (self.view.frame.size.width > self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
+                    if (width > maxSize || height > maxSize)
+                    {
+                        if (width > height)
+                        {
+                            height = (height * maxSize) / width;
+                            height = floorf(height / 2) * 2;
+                            width = maxSize;
+                        }
+                        else
+                        {
+                            width = (width * maxSize) / height;
+                            width = floorf(width / 2) * 2;
+                            height = maxSize;
+                        }
+                    }
+                }
+                else
+                {
+                    width = self.view.frame.size.width;
+                    height = self.view.frame.size.height;
+                }
+                
+                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+                animatedGifViewer.center = highResImageView.center;
+                animatedGifViewer.contentMode = UIViewContentModeScaleAspectFit;
+                animatedGifViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+                animatedGifViewer.userInteractionEnabled = NO;
+                [highResImageView addSubview:animatedGifViewer];
+                
+                UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                activity.center = highResImageView.center;
+                [highResImageView addSubview:activity];
+                [activity startAnimating];
+                
+                [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                    
+                    [activity stopAnimating];
+                    [animatedGifViewer loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:cacheFilePath]]];
+                    
+                } failure:^(NSError *error) {
+                    
+                    NSLog(@"[MXKRoomVC] gif download failed: %@", error);
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                    [self hideAttachmentView];
+                    
+                }];
+            }
+            else
+            {
+                // Show the image in fullscreen
+                highResImageView.mediaFolder = roomDataSource.roomId;
+                [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachment.image];
+            }
             
             // Add tap recognizer to hide attachment
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideAttachmentView)];
@@ -2251,30 +2315,30 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                          selector:@selector(moviePlayerWillExitFullscreen:)
                                                              name:MPMoviePlayerWillExitFullscreenNotification
                                                            object:videoPlayer];
-                selectedVideoURL = url;
                 
                 // check if the file is a local one
                 // could happen because a media upload has failed
-                if ([[NSFileManager defaultManager] fileExistsAtPath:selectedVideoURL])
+                if ([[NSFileManager defaultManager] fileExistsAtPath:url])
                 {
-                    selectedVideoCachePath = selectedVideoURL;
-                }
-                else
-                {
-                    selectedVideoCachePath = [MXKMediaManager cachePathForMediaWithURL:selectedVideoURL andType:mimetype inFolder:roomDataSource.roomId];
-                }
-                
-                if ([[NSFileManager defaultManager] fileExistsAtPath:selectedVideoCachePath])
-                {
-                    videoPlayer.contentURL = [NSURL fileURLWithPath:selectedVideoCachePath];
+                    videoPlayer.contentURL = [NSURL fileURLWithPath:url];
                     [videoPlayer play];
                 }
                 else
                 {
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-                    
-                    [MXKMediaManager downloadMediaFromURL:selectedVideoURL andSaveAtFilePath:selectedVideoCachePath];
+                    [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                        
+                        videoPlayer.contentURL = [NSURL fileURLWithPath:cacheFilePath];
+                        [videoPlayer play];
+                        
+                    } failure:^(NSError *error) {
+                        
+                        NSLog(@"[MXKRoomVC] Video Download failed: %@", error);
+                        // Notify MatrixKit user
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+
+                        [self hideAttachmentView];
+                        
+                    }];
                 }
             }
         }
@@ -2313,39 +2377,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-- (void)onMediaDownloadEnd:(NSNotification *)notif
-{
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        if ([url isEqualToString:selectedVideoURL])
-        {
-            // remove the observers
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFailNotification object:nil];
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:selectedVideoCachePath])
-            {
-                videoPlayer.contentURL = [NSURL fileURLWithPath:selectedVideoCachePath];
-                [videoPlayer play];
-            }
-            else
-            {
-                NSLog(@"[RoomVC] Video Download failed"); // TODO we should notify user
-                [self hideAttachmentView];
-            }
-        }
-    }
-}
-
 - (void)hideAttachmentView
 {
-    selectedVideoURL = nil;
-    selectedVideoCachePath = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerWillExitFullscreenNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFinishNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFailNotification object:nil];
+    
+    if (animatedGifViewer)
+    {
+        [animatedGifViewer removeFromSuperview];
+        animatedGifViewer = nil;
+    }
     
     if (highResImageView)
     {
