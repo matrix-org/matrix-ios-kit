@@ -273,6 +273,20 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
           failure:(void (^)(NSError *error))failure;
 
 /**
+ Send an image to the room.
+ 
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+ 
+ @param imageLocalURL the local filesystem path of the image to send.
+ @param mimeType the mime type of the image
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure;
+
+/**
  Send an video to the room.
 
  While sending, a fake event will be echoed in the messages list.
@@ -296,7 +310,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  Once complete, this local echo will be replaced by the event saved by the homeserver.
  
  @param fileLocalURL the local filesystem path of the file to send.
- @param mimeType the mime type of the file
+ @param mimeType the mime type of the file.
  @param success A block object called when the operation succeeds. It returns
  the event id of the event generated on the home server
  @param failure A block object called when the operation fails.

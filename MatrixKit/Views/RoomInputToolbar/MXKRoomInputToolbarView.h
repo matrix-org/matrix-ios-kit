@@ -65,6 +65,15 @@
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(UIImage*)image;
 
 /**
+ Tells the delegate that the user wants to send an image.
+ 
+ @param toolbarView the room input toolbar view.
+ @param imageLocalURL the local filesystem path of the image to send.
+ @param mimetype image mime type
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSURL*)imageLocalURL withMimeType:(NSString*)mimetype;
+
+/**
  Tells the delegate that the user wants to send a video.
  
  @param toolbarView the room input toolbar view.
@@ -189,13 +198,6 @@
  @param button the event sender
  */
 - (IBAction)onTouchUpInside:(UIButton*)button;
-
-/**
- Prompt user to select a compression level on selected image before transferring it to the delegate
- 
- @param imageInfo a dictionary containing the original image and the edited image, if an image was picked; or a filesystem URL for the movie, if a movie was picked.
- */
-- (void)promptCompressionForSelectedImage:(NSDictionary*)selectedImageInfo;
 
 /**
  The maximum height of the toolbar.

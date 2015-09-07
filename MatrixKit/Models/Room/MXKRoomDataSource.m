@@ -725,7 +725,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Make sure the uploaded image orientation is up
     image = [MXKTools forceImageOrientationUp:image];
     
-    // @TODO: Do not limit images to jpeg
+    // Only jpeg image is supported here
     NSString *mimetype = @"image/jpeg";
     NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
     
@@ -769,6 +769,101 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [self updateLocalEcho:localEcho];
         
         // Copy the cached image to the actual cacheFile path
+        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
+        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSError *error;
+        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
+        
+        // Update the message content with the mxc:// of the media on the homeserver
+        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
+        msgContent2[@"url"] = url;
+        
+        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
+        localEcho.content = msgContent2;
+        
+        // Make the final request that posts the image event
+        [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
+            
+            // Nothing to do here
+            // The local echo will be removed when the corresponding event will come through the events stream
+            
+            if (success)
+            {
+                success(eventId);
+            }
+            
+        } failure:^(NSError *error) {
+            
+            // Update the local echo with the error state
+            localEcho.mxkState = MXKEventStateSendingFailed;
+            [self removePendingLocalEcho:localEcho];
+            [self updateLocalEcho:localEcho];
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
+        
+    } failure:^(NSError *error) {
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
+        
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
+- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    NSData *imageData = [NSData dataWithContentsOfFile:imageLocalURL.path];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    // Use the uploader id as fake URL for this image data
+    // The URL does not need to be valid as the MediaManager will get the data
+    // directly from its cache
+    // Pass this id in the URL is a nasty trick to retrieve it later
+    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
+    NSString *fakeMediaManagerURL = uploader.uploadId;
+    
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXKMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
+    
+    // Create a fake name based on fileData to keep the same name for the same file.
+    NSString *dataHash = [imageData MD5];
+    if (dataHash.length > 7)
+    {
+        // Crop
+        dataHash = [dataHash substringToIndex:7];
+    }
+    NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+    NSString *filename = [NSString stringWithFormat:@"ima_%@%@", dataHash, extension];
+    
+    // Prepare the message content for building an echo message
+    NSDictionary *msgContent = @{
+                                 @"msgtype": kMXMessageTypeImage,
+                                 @"body": filename,
+                                 @"url": fakeMediaManagerURL,
+                                 @"info": @{
+                                         @"mimetype": mimetype,
+                                         @"w": @(image.size.width),
+                                         @"h": @(image.size.height),
+                                         @"size": @(imageData.length)
+                                         }
+                                 };
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    
+    // Launch the upload to the Matrix Content repository
+    [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
+        // Update the local echo state: move from content uploading to event sending
+        localEcho.mxkState = MXKEventStateSending;
+        [self updateLocalEcho:localEcho];
+        
+        // Copy the cached file to the actual cacheFile path
         NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
         NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
         NSError *error;
@@ -1024,7 +1119,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
         localEcho.content = msgContent2;
         
-        // Make the final request that posts the image event
+        // Make the final request that posts the event
         [_room sendMessageOfType:kMXMessageTypeFile content:msgContent2 success:^(NSString *eventId) {
             
             // Nothing to do here
@@ -1119,22 +1214,33 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 mimetype = event.content[@"info"][@"mimetype"];
             }
             
-            UIImage* image;
-            NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:event.content[@"url"] andType:mimetype inFolder:_roomId];
-            if (localImagePath)
+            // Check whether the sending failed while uploading the data.
+            // If the content url corresponds to a upload id, the upload was not complete.
+            NSString *contentURL = event.content[@"url"];
+            if ([contentURL hasPrefix:kMXKMediaUploadIdPrefix])
             {
-                image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
-            }
-            
-            // Did the sending fail while uploading the image or while sending the corresponding Matrix event?
-            // If the image is still available in the MXKMediaManager cache, the upload was not complete
-            if (image)
-            {
-                // Restart sending the image from the beginning
-                [self sendImage:image success:success failure:failure];
+                NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
+                UIImage* image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
+                if (image)
+                {
+                    // Restart sending the image from the beginning
+                    if (mimetype)
+                    {
+                        [self sendImage:[NSURL fileURLWithPath:localImagePath isDirectory:NO] mimeType:mimetype success:success failure:failure];
+                    }
+                    else
+                    {
+                        [self sendImage:image success:success failure:failure];
+                    }
+                }
+                else
+                {
+                    NSLog(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                }
             }
             else
             {
+                // The sending failed while sending the corresponding Matrix event.
                 // Resend the Matrix event
                 [self sendMessageOfType:msgType content:event.content success:success failure:failure];
             }

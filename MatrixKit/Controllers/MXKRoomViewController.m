@@ -2063,6 +2063,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }];
 }
 
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSURL *)imageLocalURL withMimeType:(NSString*)mimetype
+{
+    // Let the datasource send it and manage the local echo
+    [roomDataSource sendImage:imageLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
+    {
+        // Nothing to do. The image is marked as unsent in the room history by the datasource
+        NSLog(@"[MXKRoomViewController] sendImage with mimetype failed. Error:%@", error);
+    }];
+}
+
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail
 {
     // Let the datasource send it and manage the local echo
@@ -2078,7 +2088,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Let the datasource send it and manage the local echo
     [roomDataSource sendFile:fileLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
      {
-         // Nothing to do. The image is marked as unsent in the room history by the datasource
+         // Nothing to do. The file is marked as unsent in the room history by the datasource
          NSLog(@"[MXKRoomViewController] sendFile failed. Error:%@", error);
      }];
 }
@@ -2293,12 +2303,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSString *url =content[@"url"];
         if (url.length)
         {
-            NSString *mimetype = nil;
-            if (content[@"info"])
-            {
-                mimetype = content[@"info"][@"mimetype"];
-            }
-            
             AVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
             [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
             videoPlayer = [[MPMoviePlayerController alloc] init];
