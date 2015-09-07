@@ -106,6 +106,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;
 @property (strong, nonatomic) IBOutlet MXKImageView *attachmentView;
 @property (strong, nonatomic) IBOutlet UIImageView *playIconView;
+@property (strong, nonatomic) IBOutlet UIImageView *fileTypeIconView;
 @property (weak, nonatomic) IBOutlet UIView *dateTimeLabelContainer;
 
 @property (weak, nonatomic) IBOutlet UIView *progressView;

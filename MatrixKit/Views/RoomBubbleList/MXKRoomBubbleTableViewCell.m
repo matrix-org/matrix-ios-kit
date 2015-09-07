@@ -185,16 +185,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             frame.size.height = contentSize.height;
             self.attachmentView.frame = frame;
             
-            NSString *url = bubbleData.thumbnailURL;
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
-            {
-                self.playIconView.hidden = NO;
-            }
-            else
-            {
-                self.playIconView.hidden = YES;
-            }
-            
             NSString *mimetype = nil;
             if (bubbleData.thumbnailInfo)
             {
@@ -203,6 +193,27 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             else if (bubbleData.attachmentInfo)
             {
                 mimetype = bubbleData.attachmentInfo[@"mimetype"];
+            }
+            
+            NSString *url = bubbleData.thumbnailURL;
+            
+            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
+            {
+                self.playIconView.hidden = NO;
+                self.fileTypeIconView.hidden = YES;
+            }
+            else
+            {
+                self.playIconView.hidden = YES;
+                if ([mimetype isEqualToString:@"image/gif"])
+                {
+                    self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
+                    self.fileTypeIconView.hidden = NO;
+                }
+                else
+                {
+                    self.fileTypeIconView.hidden = YES;
+                }
             }
             
             UIImage *preview = nil;
@@ -246,6 +257,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         {
             self.attachmentView.hidden = YES;
             self.playIconView.hidden = YES;
+            self.fileTypeIconView.hidden = YES;
             self.messageTextView.hidden = NO;
             
             // On iOS7, the width of the textview with messages ended with 'w' and 'm' is wrong.
