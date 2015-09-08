@@ -233,6 +233,14 @@ typedef enum : NSUInteger
 - (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL;
 
 /**
+ Handle video attachment. Save the image in user's photos library when 'isCameraRecording' is YES.
+ 
+ @param selectedVideo the local url of the video to send.
+ @param isCameraRecording tells whether the provided video has just been recorded.
+ */
+- (void)sendSelectedVideo:(NSURL*)selectedVideo isCameraRecording:(BOOL)isCameraRecording;
+
+/**
  The maximum height of the toolbar.
  A value <= 0 means no limit.
  */

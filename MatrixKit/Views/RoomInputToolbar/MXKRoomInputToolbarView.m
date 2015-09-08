@@ -55,11 +55,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     NSMutableArray *validationViews;
     
     /**
-     Temporary movie player used to retrieve video thumbnail
-     */
-    MPMoviePlayerController *tmpVideoPlayer;
-    
-    /**
      Handle images attachment
      */
     MXKAlert *compressionPrompt;
@@ -364,28 +359,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     {
         NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
         
-        // Check the selected video, and ignore multiple calls (observed when user pressed several time Choose button)
-        if (selectedVideo && !tmpVideoPlayer)
-        {
-            if (picker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)
-            {
-                [MXKMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
-            }
-            
-            // Create video thumbnail
-            tmpVideoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:selectedVideo];
-            if (tmpVideoPlayer)
-            {
-                [tmpVideoPlayer setShouldAutoplay:NO];
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(moviePlayerThumbnailImageRequestDidFinishNotification:)
-                                                             name:MPMoviePlayerThumbnailImageRequestDidFinishNotification
-                                                           object:nil];
-                [tmpVideoPlayer requestThumbnailImagesAtTimes:@[@1.0f] timeOption:MPMovieTimeOptionNearestKeyFrame];
-                // We will finalize video attachment when thumbnail will be available (see movie player callback)
-                return;
-            }
-        }
+        [self sendSelectedVideo:selectedVideo isCameraRecording:(picker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)];
     }
 }
 
@@ -665,6 +639,33 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     }
 }
 
+- (void)sendSelectedVideo:(NSURL*)selectedVideo isCameraRecording:(BOOL)isCameraRecording
+{
+    if (isCameraRecording)
+    {
+        [MXKMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
+    {
+        // Retrieve the video frame at 1 sec to define the video thumbnail
+        AVURLAsset *urlAsset = [[AVURLAsset alloc] initWithURL:selectedVideo options:nil];
+        AVAssetImageGenerator *assetImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:urlAsset];
+        assetImageGenerator.appliesPreferredTrackTransform = YES;
+        CMTime time = CMTimeMake(1, 1);
+        CGImageRef imageRef = [assetImageGenerator copyCGImageAtTime:time actualTime:NULL error:nil];
+        
+        // Finalize video attachment
+        UIImage* videoThumbnail = [[UIImage alloc] initWithCGImage:imageRef];
+        
+        [self.delegate roomInputToolbarView:self sendVideo:selectedVideo withThumbnail:videoThumbnail];
+    }
+    else
+    {
+        NSLog(@"[RoomInputToolbarView] Attach video is not supported");
+    }
+}
+
 #pragma mark - Media Picker handling
 
 - (void)dismissMediaPicker
@@ -680,28 +681,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
             }];
         }
     }
-}
-
-- (void)moviePlayerThumbnailImageRequestDidFinishNotification:(NSNotification *)notification
-{
-    // Finalize video attachment
-    UIImage* videoThumbnail = [[notification userInfo] objectForKey:MPMoviePlayerThumbnailImageKey];
-    NSURL* selectedVideo = [tmpVideoPlayer contentURL];
-    [tmpVideoPlayer stop];
-    tmpVideoPlayer = nil;
-    
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
-    {
-        [self.delegate roomInputToolbarView:self sendVideo:selectedVideo withThumbnail:videoThumbnail];
-    }
-    else
-    {
-        NSLog(@"[MXKRoomInputToolbarView] Attach video is not supported");
-    }
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerThumbnailImageRequestDidFinishNotification object:nil];
-    
-    [self dismissMediaPicker];
 }
 
 #pragma mark - Clipboard - Handle image/data paste from general pasteboard
