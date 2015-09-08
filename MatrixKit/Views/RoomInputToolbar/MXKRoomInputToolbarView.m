@@ -293,91 +293,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     [self dismissCompressionPrompt];
 }
 
-#pragma mark - UIImagePickerControllerDelegate
-
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-    [self dismissMediaPicker];
-    
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
-    {
-        UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-        if (selectedImage)
-        {
-            // Media picker does not offer a preview
-            // so add a preview to let the user validates his selection
-            if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
-            {
-                __weak typeof(self) weakSelf = self;
-                
-                MXKImageView *imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
-                imageValidationView.stretchable = YES;
-                
-                // the user validates the image
-                [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
-                 {
-                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                     
-                     // Dismiss the image view
-                     [strongSelf dismissValidationViews];
-                     
-                     // attach the selected image
-                     [strongSelf sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
-                 }];
-                
-                // the user wants to use an other image
-                [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
-                 {
-                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                     
-                     // dismiss the image view
-                     [strongSelf dismissValidationViews];
-                     
-                     // Open again media gallery
-                     strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                     strongSelf->mediaPicker.delegate = strongSelf;
-                     strongSelf->mediaPicker.sourceType = picker.sourceType;
-                     strongSelf->mediaPicker.allowsEditing = NO;
-                     strongSelf->mediaPicker.mediaTypes = picker.mediaTypes;
-                     [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
-                 }];
-                
-                imageValidationView.image = selectedImage;
-                
-                [validationViews addObject:imageValidationView];
-                [imageValidationView showFullScreen];
-            }
-            else
-            {
-                // Save the original image in user's photos library and suggest compression before sending image
-                [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:nil];
-            }
-        }
-    }
-    else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
-    {
-        NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
-        
-        [self sendSelectedVideo:selectedVideo isCameraRecording:(picker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)];
-    }
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [self dismissMediaPicker];
-}
-
-- (void)dismissValidationViews
-{
-    for (MXKImageView *validationView in validationViews)
-    {
-        [validationView dismissSelection];
-        [validationView removeFromSuperview];
-    }
-    
-    [validationViews removeAllObjects];
-}
+#pragma mark - Attachment handling
 
 - (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL
 {
@@ -666,7 +582,91 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     }
 }
 
-#pragma mark - Media Picker handling
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    [self dismissMediaPicker];
+    
+    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+    if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
+    {
+        UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+        if (selectedImage)
+        {
+            // Media picker does not offer a preview
+            // so add a preview to let the user validates his selection
+            if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+            {
+                __weak typeof(self) weakSelf = self;
+                
+                MXKImageView *imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
+                imageValidationView.stretchable = YES;
+                
+                // the user validates the image
+                [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                 {
+                     __strong __typeof(weakSelf)strongSelf = weakSelf;
+                     
+                     // Dismiss the image view
+                     [strongSelf dismissValidationViews];
+                     
+                     // attach the selected image
+                     [strongSelf sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
+                 }];
+                
+                // the user wants to use an other image
+                [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                 {
+                     __strong __typeof(weakSelf)strongSelf = weakSelf;
+                     
+                     // dismiss the image view
+                     [strongSelf dismissValidationViews];
+                     
+                     // Open again media gallery
+                     strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
+                     strongSelf->mediaPicker.delegate = strongSelf;
+                     strongSelf->mediaPicker.sourceType = picker.sourceType;
+                     strongSelf->mediaPicker.allowsEditing = NO;
+                     strongSelf->mediaPicker.mediaTypes = picker.mediaTypes;
+                     [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
+                 }];
+                
+                imageValidationView.image = selectedImage;
+                
+                [validationViews addObject:imageValidationView];
+                [imageValidationView showFullScreen];
+            }
+            else
+            {
+                // Save the original image in user's photos library and suggest compression before sending image
+                [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:nil];
+            }
+        }
+    }
+    else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
+    {
+        NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
+        
+        [self sendSelectedVideo:selectedVideo isCameraRecording:(picker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)];
+    }
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [self dismissMediaPicker];
+}
+
+- (void)dismissValidationViews
+{
+    for (MXKImageView *validationView in validationViews)
+    {
+        [validationView dismissSelection];
+        [validationView removeFromSuperview];
+    }
+    
+    [validationViews removeAllObjects];
+}
 
 - (void)dismissMediaPicker
 {
