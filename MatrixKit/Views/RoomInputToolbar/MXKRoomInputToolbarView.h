@@ -18,6 +18,30 @@
 
 #import "MXKAlert.h"
 
+/**
+ List the predefined modes to handle the size of attached images
+ */
+typedef enum : NSUInteger
+{
+    /**
+     Prompt the user to select the compression level
+     */
+    MXKRoomInputToolbarCompressionModePrompt,
+    
+    /**
+     The compression level is fixed for the following modes
+     */
+    MXKRoomInputToolbarCompressionModeSmall,
+    MXKRoomInputToolbarCompressionModeMedium,
+    MXKRoomInputToolbarCompressionModeLarge,
+    
+    /**
+     No compression, the original image is sent
+     */
+    MXKRoomInputToolbarCompressionModeNone
+    
+} MXKRoomInputToolbarCompressionMode;
+
 @class MXKRoomInputToolbarView;
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
@@ -198,6 +222,15 @@
  @param button the event sender
  */
 - (IBAction)onTouchUpInside:(UIButton*)button;
+
+/**
+ Handle image attachment according to the compression mode. Save the image in user's photos library when the local url is nil.
+ 
+ @param selectedImage the original selected image.
+ @param compressionMode the compression mode to apply on this image (see MXKRoomInputToolbarCompressionMode). This option is considered only for jpeg image.
+ @param imageURL the url that references the image in the file system or in the AssetsLibrary framework (nil if the image is not stored in Photos library).
+ */
+- (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL;
 
 /**
  The maximum height of the toolbar.
