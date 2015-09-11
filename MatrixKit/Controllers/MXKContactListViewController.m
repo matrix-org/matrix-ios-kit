@@ -284,6 +284,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:[MXKContactTableCell defaultReuseIdentifier] forIndexPath:indexPath];
+    cell.thumbnailDisplayBoxType = MXKContactTableCellThumbnailDisplayBoxTypeCircle;
     
     MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
     

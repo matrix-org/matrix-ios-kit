@@ -14,7 +14,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="2UL-NX-Nd1" userLabel="Contact Image View" customClass="MXKImageView">
-                        <rect key="frame" x="12" y="5" width="40" height="40"/>
+                        <rect key="frame" x="8" y="5" width="40" height="40"/>
                         <color key="backgroundColor" white="0.89720269880000003" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
@@ -23,7 +23,7 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single line" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AqS-OH-Gcq">
-                        <rect key="frame" x="64" y="10" width="506" height="30"/>
+                        <rect key="frame" x="60" y="10" width="510" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="zWe-gm-gkP"/>
                         </constraints>
@@ -32,7 +32,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Line 1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MBc-s3-6mn">
-                        <rect key="frame" x="64" y="8" width="506" height="22"/>
+                        <rect key="frame" x="60" y="8" width="510" height="22"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="22" id="7wT-nd-kfp"/>
                         </constraints>
@@ -41,7 +41,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Line 2" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dqg-OY-Nhb" userLabel="Line 2">
-                        <rect key="frame" x="64" y="28" width="506" height="18"/>
+                        <rect key="frame" x="60" y="28" width="510" height="18"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="18" id="BEu-8L-a1q"/>
                         </constraints>
@@ -81,10 +81,10 @@
                     <constraint firstAttribute="centerY" secondItem="AqS-OH-Gcq" secondAttribute="centerY" id="9jE-l2-2tm"/>
                     <constraint firstAttribute="trailing" secondItem="uMV-DW-X26" secondAttribute="trailing" constant="10" id="DDZ-6z-ppJ"/>
                     <constraint firstAttribute="centerY" secondItem="uMV-DW-X26" secondAttribute="centerY" id="OFV-RA-kUY"/>
+                    <constraint firstItem="2UL-NX-Nd1" firstAttribute="leading" secondItem="SeD-4h-8Bk" secondAttribute="leading" constant="8" id="Tno-FP-CJJ"/>
                     <constraint firstItem="MBc-s3-6mn" firstAttribute="width" secondItem="Dqg-OY-Nhb" secondAttribute="width" id="Wk2-qO-Gdj"/>
                     <constraint firstItem="AqS-OH-Gcq" firstAttribute="leading" secondItem="2UL-NX-Nd1" secondAttribute="trailing" constant="12" id="dSV-cR-GP0"/>
                     <constraint firstItem="MBc-s3-6mn" firstAttribute="leading" secondItem="2UL-NX-Nd1" secondAttribute="trailing" constant="12" id="f7x-gz-aR7"/>
-                    <constraint firstItem="2UL-NX-Nd1" firstAttribute="leading" secondItem="SeD-4h-8Bk" secondAttribute="leadingMargin" constant="4" id="khu-rG-w0a"/>
                     <constraint firstItem="uMV-DW-X26" firstAttribute="leading" secondItem="Dqg-OY-Nhb" secondAttribute="trailing" constant="4" id="oJV-sA-GzJ"/>
                     <constraint firstItem="AqS-OH-Gcq" firstAttribute="width" secondItem="MBc-s3-6mn" secondAttribute="width" id="qGv-M1-qC6"/>
                     <constraint firstItem="MBc-s3-6mn" firstAttribute="top" secondItem="SeD-4h-8Bk" secondAttribute="topMargin" id="qf2-UP-3lW"/>

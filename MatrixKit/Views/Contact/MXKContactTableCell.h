@@ -20,7 +20,26 @@
 #import "MXKImageView.h"
 
 /**
- List accessory view type for a 'MXKContactTableCell' instance.
+ List the display box types for contact thumbnail.
+ */
+typedef enum : NSUInteger {
+    /**
+     By default the thumbnail display box is a square.
+     */
+    MXKContactTableCellThumbnailDisplayBoxTypeDefault,
+    /**
+     Display the contact's thumbnail into a circle box.
+     */
+    MXKContactTableCellThumbnailDisplayBoxTypeCircle,
+    /**
+     Display the contact's thumbnail into a square box with rounded corner.
+     */
+    MXKContactTableCellThumbnailDisplayBoxTypeRoundedCorner
+    
+} MXKContactTableCellThumbnailDisplayBoxType;
+
+/**
+ List the accessory view types for a 'MXKContactTableCell' instance.
  */
 typedef enum : NSUInteger {
     /**
@@ -72,9 +91,19 @@ extern NSString *const kMXKContactCellContactIdKey;
 @property (nonatomic) UIImage *picturePlaceholder;
 
 /**
+ The thumbnail display box type ('MXKContactTableCellThumbnailDisplayBoxTypeDefault' by default)
+ */
+@property (nonatomic) MXKContactTableCellThumbnailDisplayBoxType thumbnailDisplayBoxType;
+
+/**
  The accessory view type ('MXKContactTableCellAccessoryCustom' by default)
  */
 @property (nonatomic) MXKContactTableCellAccessoryType contactAccessoryViewType;
+
+/**
+ Tell whether the matrix presence of the contact is displayed or not (NO by default)
+ */
+@property (nonatomic) BOOL hideMatrixPresence;
 
 @end
 
