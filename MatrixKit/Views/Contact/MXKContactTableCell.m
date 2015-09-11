@@ -66,7 +66,9 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     if (contactAccessoryViewType == MXKContactTableCellAccessoryMatrixIcon)
     {
         // Load default matrix icon
-        self.contactAccessoryView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+        self.contactAccessoryImageView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+        self.contactAccessoryImageView.hidden = NO;
+        self.contactAccessoryButton.hidden = YES;
         // Update accessory view visibility
         [self refreshUserPresence];
     }
@@ -74,6 +76,8 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     {
         // Hide accessory view by default
         self.contactAccessoryView.hidden = YES;
+        self.contactAccessoryImageView.hidden = YES;
+        self.contactAccessoryButton.hidden = YES;
     }
 }
 

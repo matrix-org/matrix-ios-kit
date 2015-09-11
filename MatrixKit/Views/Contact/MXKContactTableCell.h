@@ -60,8 +60,11 @@ extern NSString *const kMXKContactCellContactIdKey;
 @property (strong, nonatomic) IBOutlet UILabel *matrixDisplayNameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *matrixIDLabel;
 
-@property (strong, nonatomic) IBOutlet UIImageView *contactAccessoryView;
+@property (strong, nonatomic) IBOutlet UIView *contactAccessoryView;
 @property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *contactAccessoryViewHeightConstraint;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *contactAccessoryViewWidthConstraint;
+@property (strong, nonatomic) IBOutlet UIImageView *contactAccessoryImageView;
+@property (strong, nonatomic) IBOutlet UIButton *contactAccessoryButton;
 
 /**
  The default picture displayed when no picture is available.

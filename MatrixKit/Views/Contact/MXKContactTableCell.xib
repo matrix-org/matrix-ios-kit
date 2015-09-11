@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -14,14 +13,7 @@
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ChX-Tl-3Zt" id="SeD-4h-8Bk">
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BcH-3j-P0i">
-                        <rect key="frame" x="576" y="17" width="16" height="16"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="16" id="6gE-wc-Ncb"/>
-                            <constraint firstAttribute="width" secondItem="BcH-3j-P0i" secondAttribute="height" multiplier="1:1" id="Nnk-sR-pKc"/>
-                        </constraints>
-                    </imageView>
-                    <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="2UL-NX-Nd1" customClass="MXKImageView">
+                    <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="2UL-NX-Nd1" userLabel="Contact Image View" customClass="MXKImageView">
                         <rect key="frame" x="12" y="5" width="40" height="40"/>
                         <color key="backgroundColor" white="0.89720269880000003" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -31,7 +23,7 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single line" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AqS-OH-Gcq">
-                        <rect key="frame" x="64" y="10" width="508" height="30"/>
+                        <rect key="frame" x="64" y="10" width="506" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="zWe-gm-gkP"/>
                         </constraints>
@@ -40,7 +32,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Line 1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MBc-s3-6mn">
-                        <rect key="frame" x="64" y="8" width="508" height="22"/>
+                        <rect key="frame" x="64" y="8" width="506" height="22"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="22" id="7wT-nd-kfp"/>
                         </constraints>
@@ -49,7 +41,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Line 2" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dqg-OY-Nhb" userLabel="Line 2">
-                        <rect key="frame" x="64" y="28" width="508" height="18"/>
+                        <rect key="frame" x="64" y="28" width="506" height="18"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="18" id="BEu-8L-a1q"/>
                         </constraints>
@@ -57,26 +49,54 @@
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uMV-DW-X26" userLabel="Accessory View">
+                        <rect key="frame" x="574" y="17" width="16" height="16"/>
+                        <subviews>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BcH-3j-P0i" userLabel="Accessory Image View">
+                                <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
+                            </imageView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j2S-s7-q50" userLabel="Accessory Button">
+                                <rect key="frame" x="-7" y="-7" width="30" height="30"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerY" secondItem="j2S-s7-q50" secondAttribute="centerY" id="3Qb-sa-m7f"/>
+                            <constraint firstAttribute="bottom" secondItem="BcH-3j-P0i" secondAttribute="bottom" id="KIl-sC-FVk"/>
+                            <constraint firstAttribute="centerX" secondItem="j2S-s7-q50" secondAttribute="centerX" id="Wp1-CK-YKk"/>
+                            <constraint firstAttribute="width" constant="16" id="cWZ-C3-LfR"/>
+                            <constraint firstAttribute="trailing" secondItem="BcH-3j-P0i" secondAttribute="trailing" id="mol-ud-P3Q"/>
+                            <constraint firstItem="BcH-3j-P0i" firstAttribute="top" secondItem="uMV-DW-X26" secondAttribute="top" id="sT8-GB-Hzx"/>
+                            <constraint firstItem="BcH-3j-P0i" firstAttribute="leading" secondItem="uMV-DW-X26" secondAttribute="leading" id="wTq-hz-2Wl"/>
+                            <constraint firstAttribute="height" constant="16" id="xAv-oq-PkL"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="centerY" secondItem="2UL-NX-Nd1" secondAttribute="centerY" id="2z5-cx-W9f"/>
                     <constraint firstItem="Dqg-OY-Nhb" firstAttribute="leading" secondItem="2UL-NX-Nd1" secondAttribute="trailing" constant="12" id="5I6-PQ-4Bt"/>
                     <constraint firstAttribute="centerY" secondItem="AqS-OH-Gcq" secondAttribute="centerY" id="9jE-l2-2tm"/>
-                    <constraint firstAttribute="centerY" secondItem="BcH-3j-P0i" secondAttribute="centerY" id="EGu-6R-UgJ"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="BcH-3j-P0i" secondAttribute="trailing" id="EKT-8K-PEf"/>
+                    <constraint firstAttribute="trailing" secondItem="uMV-DW-X26" secondAttribute="trailing" constant="10" id="DDZ-6z-ppJ"/>
+                    <constraint firstAttribute="centerY" secondItem="uMV-DW-X26" secondAttribute="centerY" id="OFV-RA-kUY"/>
                     <constraint firstItem="MBc-s3-6mn" firstAttribute="width" secondItem="Dqg-OY-Nhb" secondAttribute="width" id="Wk2-qO-Gdj"/>
                     <constraint firstItem="AqS-OH-Gcq" firstAttribute="leading" secondItem="2UL-NX-Nd1" secondAttribute="trailing" constant="12" id="dSV-cR-GP0"/>
                     <constraint firstItem="MBc-s3-6mn" firstAttribute="leading" secondItem="2UL-NX-Nd1" secondAttribute="trailing" constant="12" id="f7x-gz-aR7"/>
                     <constraint firstItem="2UL-NX-Nd1" firstAttribute="leading" secondItem="SeD-4h-8Bk" secondAttribute="leadingMargin" constant="4" id="khu-rG-w0a"/>
+                    <constraint firstItem="uMV-DW-X26" firstAttribute="leading" secondItem="Dqg-OY-Nhb" secondAttribute="trailing" constant="4" id="oJV-sA-GzJ"/>
                     <constraint firstItem="AqS-OH-Gcq" firstAttribute="width" secondItem="MBc-s3-6mn" secondAttribute="width" id="qGv-M1-qC6"/>
                     <constraint firstItem="MBc-s3-6mn" firstAttribute="top" secondItem="SeD-4h-8Bk" secondAttribute="topMargin" id="qf2-UP-3lW"/>
                     <constraint firstAttribute="bottomMargin" secondItem="Dqg-OY-Nhb" secondAttribute="bottom" constant="-5" id="tLG-uu-oPr"/>
-                    <constraint firstItem="BcH-3j-P0i" firstAttribute="leading" secondItem="AqS-OH-Gcq" secondAttribute="trailing" constant="4" id="w3K-Wq-nvs"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="contactAccessoryView" destination="BcH-3j-P0i" id="nOm-Ss-LjI"/>
-                <outlet property="contactAccessoryViewHeightConstraint" destination="6gE-wc-Ncb" id="Ail-zR-HRl"/>
+                <outlet property="contactAccessoryButton" destination="j2S-s7-q50" id="9hP-Zr-kHK"/>
+                <outlet property="contactAccessoryImageView" destination="BcH-3j-P0i" id="Omi-4G-fbt"/>
+                <outlet property="contactAccessoryView" destination="uMV-DW-X26" id="6kX-sp-tuz"/>
+                <outlet property="contactAccessoryViewHeightConstraint" destination="xAv-oq-PkL" id="MGt-PN-Brr"/>
+                <outlet property="contactAccessoryViewWidthConstraint" destination="cWZ-C3-LfR" id="0pP-6i-gop"/>
                 <outlet property="contactDisplayNameLabel" destination="AqS-OH-Gcq" id="Znz-dt-zKJ"/>
                 <outlet property="matrixDisplayNameLabel" destination="MBc-s3-6mn" id="BWe-zO-aM3"/>
                 <outlet property="matrixIDLabel" destination="Dqg-OY-Nhb" id="SlZ-le-uC1"/>
