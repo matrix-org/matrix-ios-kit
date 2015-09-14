@@ -37,12 +37,11 @@
     {
         mxSession = matrixSession;
         
-        NSString *dateFormat = @"MMM dd HH:mm";
+        dateFormat = @"MMM dd";
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
         [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-        [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        [_dateFormatter setDateFormat:dateFormat];
+        [_dateFormatter setTimeStyle:NSDateFormatterShortStyle];
         
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -716,17 +715,52 @@
     return event;
 }
 
-
 #pragma mark - Timestamp formatting
-- (NSString*)dateStringForTimestamp:(uint64_t)timestamp
+
+- (NSString*)dateStringFromDate:(NSDate *)date withTime:(BOOL)time
 {
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
-    return [_dateFormatter stringFromDate:date];
+    // Get first date string without time
+    NSString *dateString = nil;
+    if (dateFormat)
+    {
+        [_dateFormatter setDateFormat:dateFormat];
+        dateString = [_dateFormatter stringFromDate:date];
+    }
+    
+    if (time)
+    {
+        // Remove data format to get time string in short style.
+        [_dateFormatter setDateFormat:nil];
+        NSString *timeString = [_dateFormatter stringFromDate:date];
+        if (dateString.length)
+        {
+            // Add time string
+            dateString = [NSString stringWithFormat:@"%@ %@", dateString, timeString.lowercaseString];
+        }
+        else
+        {
+            dateString = timeString.lowercaseString;
+        }
+    }
+    
+    return dateString;
 }
 
-- (NSString*)dateStringForEvent:(MXEvent *)event
+- (NSString*)dateStringFromTimestamp:(uint64_t)timestamp withTime:(BOOL)time
 {
-    return [self dateStringForTimestamp:event.originServerTs];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
+    
+    return [self dateStringFromDate:date withTime:time];
+}
+
+- (NSString*)dateStringFromEvent:(MXEvent *)event withTime:(BOOL)time
+{
+    if (event.originServerTs != kMXUndefinedTimestamp)
+    {
+        return [self dateStringFromTimestamp:event.originServerTs withTime:time];
+    }
+    
+    return nil;
 }
 
 @end

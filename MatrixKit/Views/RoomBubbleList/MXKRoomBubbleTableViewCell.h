@@ -25,6 +25,14 @@
 #import "MXKPieChartView.h"
 
 #pragma mark - MXKCellRenderingDelegate cell tap locations
+
+/**
+ Action identifier used when the user tapped on message text view.
+ 
+ The `userInfo` is nil.
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnMessageTextView;
+
 /**
  Action identifier used when the user tapped on avatar view.
  
@@ -98,6 +106,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;
 @property (strong, nonatomic) IBOutlet MXKImageView *attachmentView;
 @property (strong, nonatomic) IBOutlet UIImageView *playIconView;
+@property (strong, nonatomic) IBOutlet UIImageView *fileTypeIconView;
 @property (weak, nonatomic) IBOutlet UIView *dateTimeLabelContainer;
 
 @property (weak, nonatomic) IBOutlet UIView *progressView;

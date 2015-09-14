@@ -79,7 +79,7 @@
     _participantsTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_participants_placeholder"];
     
     [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"public"] forSegmentAtIndex:0];
-    [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"private"] forSegmentAtIndex:0];
+    [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"private"] forSegmentAtIndex:1];
     
     [_createRoomBtn setTitle:[NSBundle mxk_localizedStringForKey:@"create_room"] forState:UIControlStateNormal];
     [_createRoomBtn setTitle:[NSBundle mxk_localizedStringForKey:@"create_room"] forState:UIControlStateHighlighted];

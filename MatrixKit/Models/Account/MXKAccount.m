@@ -115,34 +115,39 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    notifyOpenSessionFailure = YES;
+    self = [super init];
     
-    NSString *homeServerURL = [coder decodeObjectForKey:@"homeserverurl"];
-    NSString *userId = [coder decodeObjectForKey:@"userid"];
-    NSString *accessToken = [coder decodeObjectForKey:@"accesstoken"];
-    
-    mxCredentials = [[MXCredentials alloc] initWithHomeServer:homeServerURL
-                                                       userId:userId
-                                                  accessToken:accessToken];
-    
-    mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials];
-    
-    userPresence = MXPresenceUnknown;
-    
-    if ([coder decodeObjectForKey:@"identityserverurl"])
+    if (self)
     {
-        _identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
-        if (_identityServerURL.length)
+        notifyOpenSessionFailure = YES;
+        
+        NSString *homeServerURL = [coder decodeObjectForKey:@"homeserverurl"];
+        NSString *userId = [coder decodeObjectForKey:@"userid"];
+        NSString *accessToken = [coder decodeObjectForKey:@"accesstoken"];
+        
+        mxCredentials = [[MXCredentials alloc] initWithHomeServer:homeServerURL
+                                                           userId:userId
+                                                      accessToken:accessToken];
+        
+        mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials];
+        
+        userPresence = MXPresenceUnknown;
+        
+        if ([coder decodeObjectForKey:@"identityserverurl"])
         {
-            // Update the current restClient
-            [mxRestClient setIdentityServer:_identityServerURL];
+            _identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
+            if (_identityServerURL.length)
+            {
+                // Update the current restClient
+                [mxRestClient setIdentityServer:_identityServerURL];
+            }
         }
+        
+        _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
+        _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
+        
+        _disabled = [coder decodeBoolForKey:@"disabled"];
     }
-    
-    _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
-    _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
-    
-    _disabled = [coder decodeBoolForKey:@"disabled"];
     
     return self;
 }

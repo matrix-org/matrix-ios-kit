@@ -87,6 +87,8 @@
 {
     _growingTextView.maxHeight = maxHeight - (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
     [_growingTextView refreshHeight];
+    
+    super.maxHeight = maxHeight;
 }
 
 - (NSString*)textMessage
@@ -160,9 +162,9 @@
 {
     // Update growing text's superview (toolbar view)
     CGFloat updatedHeight = height + (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:heightDidChanged:)])
+    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:heightDidChanged:completion:)])
     {
-        [self.delegate roomInputToolbarView:self heightDidChanged:updatedHeight];
+        [self.delegate roomInputToolbarView:self heightDidChanged:updatedHeight completion:nil];
     }
 }
 

@@ -221,7 +221,7 @@
         UIWindow *window = [[UIApplication sharedApplication] keyWindow];
         
         self.frame = window.rootViewController.view.bounds;
-        [window.rootViewController.view addSubview:self];
+        [window addSubview:self];
     }
 }
 

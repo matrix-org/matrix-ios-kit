@@ -20,6 +20,22 @@
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
 
+/**
+ List the supported pagination of the rendered room bubble cells
+ */
+typedef enum : NSUInteger
+{
+    /**
+     No pagination
+     */
+    MXKRoomDataSourceBubblesPaginationNone,
+    /**
+     The rendered room bubble cells are paginated per day
+     */
+    MXKRoomDataSourceBubblesPaginationPerDay
+    
+} MXKRoomDataSourceBubblesPagination;
+
 
 #pragma mark - Cells identifiers
 /**
@@ -147,6 +163,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 @property (nonatomic) BOOL showBubblesDateTime;
 
+/**
+ The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
+ */
+@property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;
+
 
 #pragma mark - Life cycle
 /**
@@ -252,6 +273,20 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
           failure:(void (^)(NSError *error))failure;
 
 /**
+ Send an image to the room.
+ 
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+ 
+ @param imageLocalURL the local filesystem path of the image to send.
+ @param mimeType the mime type of the image
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure;
+
+/**
  Send an video to the room.
 
  While sending, a fake event will be echoed in the messages list.
@@ -265,6 +300,23 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)sendVideo:(NSURL*)videoLocalURL
     withThumbnail:(UIImage*)videoThumbnail
+          success:(void (^)(NSString *eventId))success
+          failure:(void (^)(NSError *error))failure;
+
+/**
+ Send a file to the room.
+ 
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+ 
+ @param fileLocalURL the local filesystem path of the file to send.
+ @param mimeType the mime type of the file.
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendFile:(NSURL*)fileLocalURL
+        mimeType:(NSString*)mimeType
           success:(void (^)(NSString *eventId))success
           failure:(void (^)(NSError *error))failure;
 

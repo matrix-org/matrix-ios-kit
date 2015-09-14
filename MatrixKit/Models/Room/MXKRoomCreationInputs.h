@@ -56,7 +56,7 @@
 /**
  The room participants (nil by default).
  */
-@property (nonatomic, readonly) NSArray *roomParticipants;
+@property (nonatomic) NSArray *roomParticipants;
 
 /**
  Add a participant.

@@ -19,6 +19,7 @@
 #import "NSBundle+MatrixKit.h"
 
 #pragma mark - Constant definitions
+NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
 NSString *const kMXKRoomBubbleCellTapOnAttachmentView = @"kMXKRoomBubbleCellTapOnAttachmentView";
@@ -151,6 +152,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [self.pictureView addGestureRecognizer:tapGesture];
         self.pictureView.userInteractionEnabled = YES;
         
+        // Listen to textView tap
+        tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.messageTextView addGestureRecognizer:tapGesture];
+        self.messageTextView.userInteractionEnabled = YES;
+        
         // Adjust top constraint constant for dateTime labels container, and hide it by default
         if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
         {
@@ -176,16 +185,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             frame.size.height = contentSize.height;
             self.attachmentView.frame = frame;
             
-            NSString *url = bubbleData.thumbnailURL;
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
-            {
-                self.playIconView.hidden = NO;
-            }
-            else
-            {
-                self.playIconView.hidden = YES;
-            }
-            
             NSString *mimetype = nil;
             if (bubbleData.thumbnailInfo)
             {
@@ -194,6 +193,27 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             else if (bubbleData.attachmentInfo)
             {
                 mimetype = bubbleData.attachmentInfo[@"mimetype"];
+            }
+            
+            NSString *url = bubbleData.thumbnailURL;
+            
+            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
+            {
+                self.playIconView.hidden = NO;
+                self.fileTypeIconView.hidden = YES;
+            }
+            else
+            {
+                self.playIconView.hidden = YES;
+                if ([mimetype isEqualToString:@"image/gif"])
+                {
+                    self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
+                    self.fileTypeIconView.hidden = NO;
+                }
+                else
+                {
+                    self.fileTypeIconView.hidden = YES;
+                }
             }
             
             UIImage *preview = nil;
@@ -237,6 +257,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         {
             self.attachmentView.hidden = YES;
             self.playIconView.hidden = YES;
+            self.fileTypeIconView.hidden = YES;
             self.messageTextView.hidden = NO;
             
             // On iOS7, the width of the textview with messages ended with 'w' and 'm' is wrong.
@@ -283,8 +304,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Check and update each component position (used to align timestamps label in front of events, and to handle tap gesture on events)
         [bubbleData prepareBubbleComponentsPosition];
         
-        // Handle timestamp display
-        if (bubbleData.showBubbleDateTime)
+        // Handle here timestamp display (only if a container has been defined)
+        if (bubbleData.showBubbleDateTime && self.dateTimeLabelContainer)
         {
             // Add datetime label for each component
             self.dateTimeLabelContainer.hidden = NO;
@@ -293,7 +314,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
                 {
                     UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 20)];
-                    dateTimeLabel.text = [bubbleData.eventFormatter.dateFormatter stringFromDate:component.date];
+                    dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
                     if (bubbleData.isIncoming)
                     {
                         dateTimeLabel.textAlignment = NSTextAlignmentRight;
@@ -555,6 +576,14 @@ static NSMutableDictionary *childClasses;
 }
 
 #pragma mark - User actions
+- (IBAction)onMessageTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:nil];
+    }
+}
+
 - (IBAction)onAvatarTap:(UITapGestureRecognizer*)sender
 {
     if (delegate)

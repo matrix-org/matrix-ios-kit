@@ -57,11 +57,18 @@
     {
         _mxSession = matrixSession;
         state = MXKDataSourceStatePreparing;
-        
-        // Listen to MXSession state changes
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:kMXSessionStateDidChangeNotification object:nil];
     }
     return self;
+}
+
+- (void)finalizeInitialization
+{
+    // Add an observer on matrix session state change (prevent multiple registrations).
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange:) name:kMXSessionStateDidChangeNotification object:nil];
+    
+    // Call the registered callback to finalize the initialisation step.
+    [self didMXSessionStateChange];
 }
 
 - (void)destroy

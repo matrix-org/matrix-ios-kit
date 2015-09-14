@@ -64,6 +64,16 @@ typedef enum : NSUInteger {
 + (void)removeSharedManagerForMatrixSession:(MXSession*)mxSession;
 
 /**
+ Register the MXKRoomDataSource-inherited class that will be used to instantiate all room data source.
+ By default MXKRoomDataSource class is considered.
+ 
+ CAUTION: All existing room data source instances are reset in case of class change.
+ 
+ @param roomDataSourceClass a MXKRoomDataSource-inherited class.
+ */
++ (void)registerRoomDataSourceClass:(Class)roomDataSourceClass;
+
+/**
  Force close all the current room data source instances.
  */
 - (void)reset;
@@ -76,7 +86,7 @@ typedef enum : NSUInteger {
  
  @param roomId the room id of the room.
  @param create if YES, the MXKRoomDataSourceManager will create the room data source if it does not exist yet.
- @return the room data source
+ @return the room data source (instance of MXKRoomDataSource-inherited class)
  */
 - (MXKRoomDataSource*)roomDataSourceForRoom:(NSString*)roomId create:(BOOL)create;
 
@@ -84,7 +94,7 @@ typedef enum : NSUInteger {
  Make a room data source be managed by the manager.
 
  Use this method to add a MXKRoomDataSource-inherited instance that cannot be automatically created by
- [MXKRoomDataSourceManager roomDataSourceForRoom::].
+ [MXKRoomDataSourceManager roomDataSourceForRoom: create:].
  
  @param the MXKRoomDataSource-inherited object to the manager scope.
  */

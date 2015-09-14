@@ -19,6 +19,41 @@
 #import "MXKCellRendering.h"
 #import "MXKImageView.h"
 
+/**
+ List the display box types for contact thumbnail.
+ */
+typedef enum : NSUInteger {
+    /**
+     By default the thumbnail display box is a square.
+     */
+    MXKContactTableCellThumbnailDisplayBoxTypeDefault,
+    /**
+     Display the contact's thumbnail into a circle box.
+     */
+    MXKContactTableCellThumbnailDisplayBoxTypeCircle,
+    /**
+     Display the contact's thumbnail into a square box with rounded corner.
+     */
+    MXKContactTableCellThumbnailDisplayBoxTypeRoundedCorner
+    
+} MXKContactTableCellThumbnailDisplayBoxType;
+
+/**
+ List the accessory view types for a 'MXKContactTableCell' instance.
+ */
+typedef enum : NSUInteger {
+    /**
+     Don't show accessory view by default.
+     */
+    MXKContactTableCellAccessoryCustom,
+    /**
+     The accessory view is automatically handled. It shown only for contact with matrix identifier(s).
+     */
+    MXKContactTableCellAccessoryMatrixIcon
+    
+} MXKContactTableCellAccessoryType;
+
+
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 
 /**
@@ -44,12 +79,31 @@ extern NSString *const kMXKContactCellContactIdKey;
 @property (strong, nonatomic) IBOutlet UILabel *matrixDisplayNameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *matrixIDLabel;
 
-@property (strong, nonatomic) IBOutlet UIImageView *matrixUserIconView;
+@property (strong, nonatomic) IBOutlet UIView *contactAccessoryView;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *contactAccessoryViewHeightConstraint;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *contactAccessoryViewWidthConstraint;
+@property (strong, nonatomic) IBOutlet UIImageView *contactAccessoryImageView;
+@property (strong, nonatomic) IBOutlet UIButton *contactAccessoryButton;
 
 /**
  The default picture displayed when no picture is available.
  */
 @property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ The thumbnail display box type ('MXKContactTableCellThumbnailDisplayBoxTypeDefault' by default)
+ */
+@property (nonatomic) MXKContactTableCellThumbnailDisplayBoxType thumbnailDisplayBoxType;
+
+/**
+ The accessory view type ('MXKContactTableCellAccessoryCustom' by default)
+ */
+@property (nonatomic) MXKContactTableCellAccessoryType contactAccessoryViewType;
+
+/**
+ Tell whether the matrix presence of the contact is displayed or not (NO by default)
+ */
+@property (nonatomic) BOOL hideMatrixPresence;
 
 @end
 

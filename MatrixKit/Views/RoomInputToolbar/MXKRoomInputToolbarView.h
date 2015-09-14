@@ -18,6 +18,30 @@
 
 #import "MXKAlert.h"
 
+/**
+ List the predefined modes to handle the size of attached images
+ */
+typedef enum : NSUInteger
+{
+    /**
+     Prompt the user to select the compression level
+     */
+    MXKRoomInputToolbarCompressionModePrompt,
+    
+    /**
+     The compression level is fixed for the following modes
+     */
+    MXKRoomInputToolbarCompressionModeSmall,
+    MXKRoomInputToolbarCompressionModeMedium,
+    MXKRoomInputToolbarCompressionModeLarge,
+    
+    /**
+     No compression, the original image is sent
+     */
+    MXKRoomInputToolbarCompressionModeNone
+    
+} MXKRoomInputToolbarCompressionMode;
+
 @class MXKRoomInputToolbarView;
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
@@ -44,8 +68,9 @@
  
  @param toolbarView the room input toolbar view.
  @param height the updated height of toolbar view.
+ @param A block object to be executed when height change is taken into account.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height completion:(void (^)(BOOL finished))completion;
 
 /**
  Tells the delegate that the user wants to send a text message.
@@ -64,6 +89,15 @@
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(UIImage*)image;
 
 /**
+ Tells the delegate that the user wants to send an image.
+ 
+ @param toolbarView the room input toolbar view.
+ @param imageLocalURL the local filesystem path of the image to send.
+ @param mimetype image mime type
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSURL*)imageLocalURL withMimeType:(NSString*)mimetype;
+
+/**
  Tells the delegate that the user wants to send a video.
  
  @param toolbarView the room input toolbar view.
@@ -71,6 +105,15 @@
  @param videoThumbnail the UIImage hosting a video thumbnail.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail;
+
+/**
+ Tells the delegate that the user wants to send a file.
+ 
+ @param toolbarView the room input toolbar view.
+ @param fileLocalURL the local filesystem path of the file to send.
+ @param mimetype file mime type
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendFile:(NSURL*)fileLocalURL withMimeType:(NSString*)mimetype;
 
 /**
  Tells the delegate that the user wants invite a matrix user.
@@ -83,22 +126,31 @@
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView inviteMatrixUser:(NSString*)mxUserId;
 
 /**
- Tells the delegate that a media picker must be presented.
+ Tells the delegate that the user wants to place a voice or a video call.
+ 
+ @param toolbarView the room input toolbar view.
+ @param video YES to make a video call.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView placeCallWithVideo:(BOOL)video;
+
+/**
+ Tells the delegate to present a view controller modally.
  
  Note: Media attachment is available only if the delegate implements this method.
  
  @param toolbarView the room input toolbar view.
- @param mediaPicker the media picker to present.
+ @param viewControllerToPresent.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMediaPicker:(UIImagePickerController*)mediaPicker;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentViewController:(UIViewController*)viewControllerToPresent;
 
 /**
- Tells the delegate that a media picker must be dismissed.
+ Tells the delegate to dismiss the view controller that was presented modally
  
  @param toolbarView the room input toolbar view.
- @param mediaPicker the media picker to dismiss.
+ @param flag Pass YES to animate the transition.
+ @param completion The block to execute after the view controller is dismissed.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissMediaPicker:(UIImagePickerController*)mediaPicker;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion;
 
 @end
 
@@ -172,11 +224,21 @@
 - (IBAction)onTouchUpInside:(UIButton*)button;
 
 /**
- Prompt user to select a compression level on selected image before transferring it to the delegate
+ Handle image attachment according to the compression mode. Save the image in user's photos library when the local url is nil.
  
- @param imageInfo a dictionary containing the original image and the edited image, if an image was picked; or a filesystem URL for the movie, if a movie was picked.
+ @param selectedImage the original selected image.
+ @param compressionMode the compression mode to apply on this image (see MXKRoomInputToolbarCompressionMode). This option is considered only for jpeg image.
+ @param imageURL the url that references the image in the file system or in the AssetsLibrary framework (nil if the image is not stored in Photos library).
  */
-- (void)promptCompressionForSelectedImage:(NSDictionary*)selectedImageInfo;
+- (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL;
+
+/**
+ Handle video attachment. Save the image in user's photos library when 'isCameraRecording' is YES.
+ 
+ @param selectedVideo the local url of the video to send.
+ @param isCameraRecording tells whether the provided video has just been recorded.
+ */
+- (void)sendSelectedVideo:(NSURL*)selectedVideo isCameraRecording:(BOOL)isCameraRecording;
 
 /**
  The maximum height of the toolbar.

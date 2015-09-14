@@ -23,6 +23,7 @@
 #import "MXKAppSettings.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "NSBundle+MatrixKit.h"
 
 #import "MXKTools.h"
 #import "MXKAlert.h"
@@ -53,7 +54,7 @@
 #import "MXKRoomDataSourceManager.h"
 
 #import "MXKRoomBubbleCellData.h"
-#import "MXKRoomBubbleMergingMessagesCellData.h"
+#import "MXKRoomBubbleCellDataWithAppendingMode.h"
 
 #import "MXKPublicRoomTableViewCell.h"
 
@@ -66,17 +67,22 @@
 #import "MXKTableViewCellWithButton.h"
 #import "MXKTableViewCellWithButtons.h"
 #import "MXKTableViewCellWithLabelAndButton.h"
+#import "MXKTableViewCellWithLabelAndImageView.h"
 #import "MXKTableViewCellWithLabelAndSlider.h"
 #import "MXKTableViewCellWithLabelAndSubLabel.h"
 #import "MXKTableViewCellWithLabelAndSwitch.h"
 #import "MXKTableViewCellWithLabelAndTextField.h"
 #import "MXKTableViewCellWithLabelTextFieldAndButton.h"
 #import "MXKTableViewCellWithPicker.h"
+#import "MXKTableViewCellWithSearchBar.h"
 #import "MXKTableViewCellWithTextFieldAndButton.h"
 #import "MXKTableViewCellWithTextView.h"
 
 #import "MXKRoomTitleView.h"
 #import "MXKRoomTitleViewWithTopic.h"
+
+#import "MXKRoomIncomingBubbleTableViewCell.h"
+#import "MXKRoomOutgoingBubbleTableViewCell.h"
 
 #import "MXKAccountManager.h"
 

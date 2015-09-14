@@ -57,8 +57,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         _eventFormatter.isForSubtitle = YES;
-        
-        [self didMXSessionStateChange];
     }
     return self;
 }
@@ -119,6 +117,27 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         unreadCount += cellData.unreadCount;
     }
     return unreadCount;
+}
+
+- (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
+{
+    if (eventFormatter)
+    {
+        // Replace the current formatter
+        _eventFormatter = eventFormatter;
+    }
+    else
+    {
+        // Set default MXEvent -> NSString formatter
+        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
+        _eventFormatter.isForSubtitle = YES;
+    }
+    
+    // Reload data if some data have been already load
+    if (internalCellDataArray.count)
+    {
+        [self loadData];
+    }
 }
 
 - (void)markAllAsRead

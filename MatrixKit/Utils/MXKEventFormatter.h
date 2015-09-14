@@ -52,6 +52,13 @@ typedef enum : NSUInteger {
  will be displayed to the end user.
  */
 @interface MXKEventFormatter : NSObject
+{
+@protected
+    /**
+     The date format string used by the date formatter.
+     */
+    NSString *dateFormat;
+}
 
 /**
  The settings used to handle room events.
@@ -130,23 +137,35 @@ typedef enum : NSUInteger {
 
 
 #pragma mark - Timestamp formatting
+
+/**
+ Generate the date in string format corresponding to the date.
+ 
+ @param date The date.
+ @param time The flag used to know if the returned string must include time information or not.
+ @return the string representation of the date.
+ */
+- (NSString*)dateStringFromDate:(NSDate *)date withTime:(BOOL)time;
+
 /**
  Generate the date in string format corresponding to the timestamp.
  The returned string is localised according to the current device settings.
 
- @param timestamp the timestamp in milliseconds since Epoch.
- @return the string representation of the event data.
+ @param timestamp The timestamp in milliseconds since Epoch.
+ @param time The flag used to know if the returned string must include time information or not.
+ @return the string representation of the date.
  */
-- (NSString*)dateStringForTimestamp:(uint64_t)timestamp;
+- (NSString*)dateStringFromTimestamp:(uint64_t)timestamp withTime:(BOOL)time;;
 
 /**
  Generate the date in string format corresponding to the event.
  The returned string is localised according to the current device settings.
  
- @param event the event to format.
- @return the string representation of the event data.
+ @param event The event to format.
+ @param time The flag used to know if the returned string must include time information or not.
+ @return the string representation of the event date.
  */
-- (NSString*)dateStringForEvent:(MXEvent*)event;
+- (NSString*)dateStringFromEvent:(MXEvent*)event withTime:(BOOL)time;;
 
 
 # pragma mark - Customisation

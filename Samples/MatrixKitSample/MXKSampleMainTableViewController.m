@@ -616,15 +616,11 @@
     {
         MXKRoomViewController *roomViewController = (MXKRoomViewController *)destinationViewController;
         
+        // Update the RoomDataSource class at manager level
+        [MXKRoomDataSourceManager registerRoomDataSourceClass:MXKRoomDataSource.class];
+        
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
-        
-        // As the sample plays with several kinds of room data source, make sure we reuse one with the right type
-        if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKRoomDataSource.class])
-        {
-            [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:YES];
-            roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
-        }
         
         [roomViewController displayRoom:roomDataSource];
     }
@@ -632,21 +628,11 @@
     {
         MXKSampleJSQMessagesViewController *sampleRoomViewController = (MXKSampleJSQMessagesViewController *)destinationViewController;
         
+        // Update the RoomDataSource class at manager level
+        [MXKRoomDataSourceManager registerRoomDataSourceClass:MXKSampleJSQRoomDataSource.class];
+        
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
-        MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
-        
-        // As the sample plays with several kind of room data source, make sure we reuse one with the right type
-        if (roomDataSource && NO == [roomDataSource isMemberOfClass:MXKSampleJSQRoomDataSource.class])
-        {
-            [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:YES];
-            roomDataSource = nil;
-        }
-        
-        if (!roomDataSource)
-        {
-            roomDataSource = [[MXKSampleJSQRoomDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
-            [roomDataSourceManager addRoomDataSource:roomDataSource];
-        }
+        MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
         
         [sampleRoomViewController displayRoom:roomDataSource];
     }

@@ -49,12 +49,58 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     [super awakeFromNib];
     
     self.thumbnailView.backgroundColor = [UIColor clearColor];
-    self.matrixUserIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+    
+    self.thumbnailDisplayBoxType = MXKContactTableCellThumbnailDisplayBoxTypeDefault;
+    
+    // No accessory view by default
+    self.contactAccessoryViewType = MXKContactTableCellAccessoryCustom;
+    
+    self.hideMatrixPresence = NO;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    if (self.thumbnailDisplayBoxType == MXKContactTableCellThumbnailDisplayBoxTypeCircle)
+    {
+        // Round image view for thumbnail
+        self.thumbnailView.layer.cornerRadius = self.thumbnailView.frame.size.width / 2;
+        self.thumbnailView.clipsToBounds = YES;
+    }
+    else if (self.thumbnailDisplayBoxType == MXKContactTableCellThumbnailDisplayBoxTypeRoundedCorner)
+    {
+        self.thumbnailView.layer.cornerRadius = 5;
+        self.thumbnailView.clipsToBounds = YES;
+    }
 }
 
 - (UIImage*)picturePlaceholder
 {
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
+}
+
+- (void)setContactAccessoryViewType:(MXKContactTableCellAccessoryType)contactAccessoryViewType
+{
+    _contactAccessoryViewType = contactAccessoryViewType;
+    
+    if (contactAccessoryViewType == MXKContactTableCellAccessoryMatrixIcon)
+    {
+        // Load default matrix icon
+        self.contactAccessoryImageView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"matrixUser"];
+        self.contactAccessoryImageView.hidden = NO;
+        self.contactAccessoryButton.hidden = YES;
+        
+        // Update accessory view visibility
+        [self refreshMatrixIdentifiers];
+    }
+    else
+    {
+        // Hide accessory view by default
+        self.contactAccessoryView.hidden = YES;
+        self.contactAccessoryImageView.hidden = YES;
+        self.contactAccessoryButton.hidden = YES;
+    }
 }
 
 #pragma mark - MXKCellRendering
@@ -68,34 +114,40 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     
     // remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    if (mxPresenceObserver) {
+    if (mxPresenceObserver)
+    {
         [[NSNotificationCenter defaultCenter] removeObserver:mxPresenceObserver];
         mxPresenceObserver = nil;
     }
     
     self.thumbnailView.layer.borderWidth = 0;
     
-    if (contact) {
+    if (contact)
+    {
         // Be warned when the thumbnail is updated
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onThumbnailUpdate:) name:kMXKContactThumbnailUpdateNotification object:nil];
         
-        // Observe contact presence change
-        mxPresenceObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKContactManagerMatrixUserPresenceChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            // get the matrix identifiers
-            NSArray* matrixIdentifiers = contact.matrixIdentifiers;
-            if (matrixIdentifiers.count > 0)
-            {
-                // Consider only the first id
-                NSString *matrixUserID = matrixIdentifiers.firstObject;
-                if ([matrixUserID isEqualToString:notif.object])
+        if (! self.hideMatrixPresence)
+        {
+            // Observe contact presence change
+            mxPresenceObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKContactManagerMatrixUserPresenceChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // get the matrix identifiers
+                NSArray* matrixIdentifiers = contact.matrixIdentifiers;
+                if (matrixIdentifiers.count > 0)
                 {
-                    [self refreshPresenceUserRing:[MXTools presence:[notif.userInfo objectForKey:kMXKContactManagerMatrixPresenceKey]]];
+                    // Consider only the first id
+                    NSString *matrixUserID = matrixIdentifiers.firstObject;
+                    if ([matrixUserID isEqualToString:notif.object])
+                    {
+                        [self refreshPresenceUserRing:[MXTools presence:[notif.userInfo objectForKey:kMXKContactManagerMatrixPresenceKey]]];
+                    }
                 }
-            }
-        }];
+            }];
+        }
         
-        if (!contact.isMatrixContact) {
+        if (!contact.isMatrixContact)
+        {
             // Be warned when the linked matrix IDs are updated
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixIdUpdate:)  name:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:nil];
             
@@ -161,11 +213,12 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 
 #pragma mark -
 
-- (void)refreshUserPresence
+- (void)refreshMatrixIdentifiers
 {
     // Look for a potential matrix user linked with this contact
     NSArray* matrixIdentifiers = contact.matrixIdentifiers;
-    if (matrixIdentifiers.count > 0)
+    
+    if ((matrixIdentifiers.count > 0) && (! self.hideMatrixPresence))
     {
         // Consider only the first matrix identifier
         NSString* matrixUserID = matrixIdentifiers.firstObject;
@@ -181,9 +234,12 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
                 break;
             }
         }
-        
-        // we know that this user is a matrix one
-        self.matrixUserIconView.hidden = NO;
+    }
+    
+    // Update accessory view visibility
+    if (self.contactAccessoryViewType == MXKContactTableCellAccessoryMatrixIcon)
+    {
+        self.contactAccessoryView.hidden = (!matrixIdentifiers.count);
     }
 }
 
@@ -194,13 +250,6 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     if (!self.thumbnailView.image)
     {
         self.thumbnailView.image = self.picturePlaceholder;
-    }
-    
-    // display the thumbnail in a circle
-    if (self.thumbnailView.layer.cornerRadius  != self.thumbnailView.frame.size.width / 2)
-    {
-        self.thumbnailView.layer.cornerRadius = self.thumbnailView.frame.size.width / 2;
-        self.thumbnailView.clipsToBounds = YES;
     }
 }
 
@@ -224,8 +273,7 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     }
     
     // if the thumbnail is defined
-    if (ringColor)
-        
+    if (ringColor && (! self.hideMatrixPresence))
     {
         self.thumbnailView.layer.borderWidth = 2;
         self.thumbnailView.layer.borderColor = ringColor.CGColor;
@@ -240,15 +288,13 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 
 - (void)manageMatrixIcon
 {
-    self.matrixUserIconView.hidden = (0 == contact.matrixIdentifiers.count);
-    
     // try to update the thumbnail with the matrix thumbnail
     if (contact.matrixIdentifiers)
     {
         [self refreshContactThumbnail];
     }
     
-    [self refreshUserPresence];
+    [self refreshMatrixIdentifiers];
 }
 
 - (void)onMatrixIdUpdate:(NSNotification *)notif
@@ -275,9 +321,8 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
         if ([contactID isEqualToString:contact.contactID])
         {
             [self refreshContactThumbnail];
-            self.matrixUserIconView.hidden = (0 == contact.matrixIdentifiers.count);
             
-            [self refreshUserPresence];
+            [self refreshMatrixIdentifiers];
         }
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -52,7 +52,14 @@
                             <constraint firstAttribute="width" constant="192" id="9zO-jU-qTb"/>
                         </constraints>
                     </view>
-                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Cot-3X-2cU">
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="K9X-gn-noF" userLabel="File Type Image View">
+                        <rect key="frame" x="51" y="18" width="32" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="32" id="OE8-oh-B7Q"/>
+                            <constraint firstAttribute="height" constant="32" id="jJB-zj-fbT"/>
+                        </constraints>
+                    </imageView>
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Cot-3X-2cU" userLabel="Play Icon Image View">
                         <rect key="frame" x="131" y="18" width="32" height="32"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="32" id="8io-Wk-GzF"/>
@@ -128,11 +135,13 @@
                     <constraint firstAttribute="trailing" secondItem="IOg-Kt-8vW" secondAttribute="trailing" constant="8" id="hQV-lO-7aQ"/>
                     <constraint firstItem="HTH-5n-MSU" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" constant="10" id="mkw-3s-H8B"/>
                     <constraint firstAttribute="bottom" secondItem="HTH-5n-MSU" secondAttribute="bottom" id="oTk-3F-SEC"/>
+                    <constraint firstItem="5IE-JS-uf3" firstAttribute="leading" secondItem="K9X-gn-noF" secondAttribute="leading" id="p93-5h-lvW"/>
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="centerX" secondItem="Cot-3X-2cU" secondAttribute="centerX" id="sF7-QL-vdj"/>
                     <constraint firstItem="zwq-eh-8Fb" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" id="tUd-UR-lzA"/>
                     <constraint firstItem="hgp-Z5-rAj" firstAttribute="leading" secondItem="ef1-Tq-U3Z" secondAttribute="leading" constant="8" id="tuw-aU-ncu"/>
                     <constraint firstItem="HTH-5n-MSU" firstAttribute="leading" secondItem="ef1-Tq-U3Z" secondAttribute="leading" constant="51" id="uig-Xh-7m6"/>
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="centerY" secondItem="fdx-qs-8en" secondAttribute="centerY" id="v0F-Ts-14P"/>
+                    <constraint firstItem="5IE-JS-uf3" firstAttribute="top" secondItem="K9X-gn-noF" secondAttribute="top" id="wkX-zQ-iQS"/>
                     <constraint firstAttribute="trailing" secondItem="fdx-qs-8en" secondAttribute="trailing" constant="13" id="xKk-Gz-moE"/>
                 </constraints>
             </tableViewCellContentView>
@@ -143,6 +152,7 @@
                 <outlet property="attachmentView" destination="5IE-JS-uf3" id="imT-1z-hR1"/>
                 <outlet property="dateTimeLabelContainer" destination="IOg-Kt-8vW" id="TAw-QY-Y9e"/>
                 <outlet property="dateTimeLabelContainerTopConstraint" destination="XSL-TG-m62" id="qVf-vJ-4aP"/>
+                <outlet property="fileTypeIconView" destination="K9X-gn-noF" id="4Pj-bc-3gk"/>
                 <outlet property="messageTextView" destination="HTH-5n-MSU" id="YN4-iK-gNc"/>
                 <outlet property="msgTextViewLeadingConstraint" destination="uig-Xh-7m6" id="kgj-3v-ECW"/>
                 <outlet property="msgTextViewTopConstraint" destination="mkw-3s-H8B" id="lON-oG-Xx9"/>

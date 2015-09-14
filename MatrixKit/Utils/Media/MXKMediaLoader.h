@@ -78,6 +78,11 @@ typedef void (^blockMXKMediaLoader_onSuccess) (NSString *url); // url is the out
 typedef void (^blockMXKMediaLoader_onError) (NSError *error);
 
 /**
+ The prefix of upload identifier
+ */
+extern NSString *const kMXKMediaUploadIdPrefix;
+
+/**
  `MXKMediaLoader` defines a class to download/upload media. It provides progress information during the operation.
  */
 @interface MXKMediaLoader : NSObject <NSURLConnectionDataDelegate>

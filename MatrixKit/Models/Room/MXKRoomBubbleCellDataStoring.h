@@ -51,9 +51,15 @@
 @property (nonatomic) NSString *senderAvatarUrl;
 
 /**
- YES if the previous bubble sender is the same as the previous stored bubble.
+ Tell whether a new pagination starts with this bubble.
  */
-@property (nonatomic) BOOL isSameSenderAsPreviousBubble;
+@property (nonatomic) BOOL isPaginationFirstBubble;
+
+/**
+ Tell whether the sender information is relevant for this bubble
+ (For example this information should be hidden in case of 2 consecutive bubbles from the same sender).
+ */
+@property (nonatomic) BOOL shouldHideSenderInformation;
 
 /**
  The list of events (`MXEvent` instances) handled by this bubble.
@@ -142,6 +148,15 @@ Update the event because its mxkState changed or it is has been redacted.
  */
 - (BOOL)hasSameSenderAsBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData;
 
+/**
+ Highlight text message of an event in the resulting message body.
+ 
+ @param eventId the id of the event to highlight.
+ @param tintColor optional tint color
+ @return The body of the message by highlighting the content related to the provided event id
+ */
+- (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor;
+
 @optional
 /**
  Attempt to add a new event to the bubble.
@@ -160,13 +175,5 @@ Update the event because its mxkState changed or it is has been redacted.
  */
 - (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData;
 
-/**
- Highlight text message of an event in the resulting message body.
- 
- @param eventId the id of the event to highlight.
- @param tintColor optional tint color
- @return The body of the message by highlighting the content relatad to the provided event id
- */
-- (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor;
 
 @end

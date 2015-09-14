@@ -95,7 +95,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
 {
     if (self = [super init])
     {
-        NSString *label = [NSString stringWithFormat:@"ConsoleMatrix.%@.Contacts", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+        NSString *label = [NSString stringWithFormat:@"MatrixKit.%@.Contacts", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
         
         processingQueue = dispatch_queue_create([label UTF8String], DISPATCH_QUEUE_SERIAL);
         

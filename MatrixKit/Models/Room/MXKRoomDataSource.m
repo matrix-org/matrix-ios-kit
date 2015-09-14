@@ -19,7 +19,7 @@
 #import "MXKQueuedEvent.h"
 #import "MXKRoomBubbleTableViewCell.h"
 
-#import "MXKRoomBubbleMergingMessagesCellData.h"
+#import "MXKRoomBubbleCellDataWithAppendingMode.h"
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 #import "MXKRoomOutgoingBubbleTableViewCell.h"
 
@@ -104,7 +104,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Set default data and view classes
         // Cell data
-        [self registerCellDataClass:MXKRoomBubbleMergingMessagesCellData.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+        [self registerCellDataClass:MXKRoomBubbleCellDataWithAppendingMode.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
         // For incoming messages
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
@@ -144,8 +144,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringCallInvite
                                              ];
         }
-        
-        [self didMXSessionStateChange];
     }
     return self;
 }
@@ -453,6 +451,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)setShowBubblesDateTime:(BOOL)showBubblesDateTime
+{
+    _showBubblesDateTime = showBubblesDateTime;
+    
+    if (self.delegate)
+    {
+        [self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
 - (void)listenTypingNotifications
 {
     // Remove the previous live listener
@@ -717,7 +725,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Make sure the uploaded image orientation is up
     image = [MXKTools forceImageOrientationUp:image];
     
-    // @TODO: Do not limit images to jpeg
+    // Only jpeg image is supported here
     NSString *mimetype = @"image/jpeg";
     NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
     
@@ -761,6 +769,101 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [self updateLocalEcho:localEcho];
         
         // Copy the cached image to the actual cacheFile path
+        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
+        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSError *error;
+        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
+        
+        // Update the message content with the mxc:// of the media on the homeserver
+        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
+        msgContent2[@"url"] = url;
+        
+        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
+        localEcho.content = msgContent2;
+        
+        // Make the final request that posts the image event
+        [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
+            
+            // Nothing to do here
+            // The local echo will be removed when the corresponding event will come through the events stream
+            
+            if (success)
+            {
+                success(eventId);
+            }
+            
+        } failure:^(NSError *error) {
+            
+            // Update the local echo with the error state
+            localEcho.mxkState = MXKEventStateSendingFailed;
+            [self removePendingLocalEcho:localEcho];
+            [self updateLocalEcho:localEcho];
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
+        
+    } failure:^(NSError *error) {
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
+        
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
+- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    NSData *imageData = [NSData dataWithContentsOfFile:imageLocalURL.path];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    // Use the uploader id as fake URL for this image data
+    // The URL does not need to be valid as the MediaManager will get the data
+    // directly from its cache
+    // Pass this id in the URL is a nasty trick to retrieve it later
+    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
+    NSString *fakeMediaManagerURL = uploader.uploadId;
+    
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXKMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
+    
+    // Create a fake name based on fileData to keep the same name for the same file.
+    NSString *dataHash = [imageData MD5];
+    if (dataHash.length > 7)
+    {
+        // Crop
+        dataHash = [dataHash substringToIndex:7];
+    }
+    NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+    NSString *filename = [NSString stringWithFormat:@"ima_%@%@", dataHash, extension];
+    
+    // Prepare the message content for building an echo message
+    NSDictionary *msgContent = @{
+                                 @"msgtype": kMXMessageTypeImage,
+                                 @"body": filename,
+                                 @"url": fakeMediaManagerURL,
+                                 @"info": @{
+                                         @"mimetype": mimetype,
+                                         @"w": @(image.size.width),
+                                         @"h": @(image.size.height),
+                                         @"size": @(imageData.length)
+                                         }
+                                 };
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    
+    // Launch the upload to the Matrix Content repository
+    [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
+        // Update the local echo state: move from content uploading to event sending
+        localEcho.mxkState = MXKEventStateSending;
+        [self updateLocalEcho:localEcho];
+        
+        // Copy the cached file to the actual cacheFile path
         NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
         NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
         NSError *error;
@@ -961,6 +1064,98 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
 }
 
+- (void)sendFile:(NSURL *)fileLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    NSData *fileData = [NSData dataWithContentsOfFile:fileLocalURL.path];
+    
+    // Use the uploader id as fake URL for this file data
+    // The URL does not need to be valid as the MediaManager will get the data
+    // directly from its cache
+    // Pass this id in the URL is a nasty trick to retrieve it later
+    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
+    NSString *fakeMediaManagerURL = uploader.uploadId;
+    
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXKMediaManager writeMediaData:fileData toFilePath:cacheFilePath];
+    
+    // Create a fake name based on fileData to keep the same name for the same file.
+    NSString *dataHash = [fileData MD5];
+    if (dataHash.length > 7)
+    {
+        // Crop
+        dataHash = [dataHash substringToIndex:7];
+    }
+    NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+    NSString *filename = [NSString stringWithFormat:@"file_%@%@", dataHash, extension];
+    
+    // Prepare the message content for building an echo message
+    NSDictionary *msgContent = @{
+                                 @"msgtype": kMXMessageTypeFile,
+                                 @"body": filename,
+                                 @"url": fakeMediaManagerURL,
+                                 @"info": @{
+                                         @"mimetype": mimetype,
+                                         @"size": @(fileData.length)
+                                         }
+                                 };
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    
+    // Launch the upload to the Matrix Content repository
+    [uploader uploadData:fileData filename:filename mimeType:mimetype success:^(NSString *url) {
+        // Update the local echo state: move from content uploading to event sending
+        localEcho.mxkState = MXKEventStateSending;
+        [self updateLocalEcho:localEcho];
+        
+        // Copy the cached file to the actual cacheFile path
+        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
+        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSError *error;
+        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
+        
+        // Update the message content with the mxc:// of the media on the homeserver
+        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
+        msgContent2[@"url"] = url;
+        
+        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
+        localEcho.content = msgContent2;
+        
+        // Make the final request that posts the event
+        [_room sendMessageOfType:kMXMessageTypeFile content:msgContent2 success:^(NSString *eventId) {
+            
+            // Nothing to do here
+            // The local echo will be removed when the corresponding event will come through the events stream
+            
+            if (success)
+            {
+                success(eventId);
+            }
+            
+        } failure:^(NSError *error) {
+            
+            // Update the local echo with the error state
+            localEcho.mxkState = MXKEventStateSendingFailed;
+            [self removePendingLocalEcho:localEcho];
+            [self updateLocalEcho:localEcho];
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
+        
+    } failure:^(NSError *error) {
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self removePendingLocalEcho:localEcho];
+        [self updateLocalEcho:localEcho];
+        
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
 - (void)sendMessageOfType:(MXMessageType)msgType content:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     // Build the local echo
@@ -1019,22 +1214,33 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 mimetype = event.content[@"info"][@"mimetype"];
             }
             
-            UIImage* image;
-            NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:event.content[@"url"] andType:mimetype inFolder:_roomId];
-            if (localImagePath)
+            // Check whether the sending failed while uploading the data.
+            // If the content url corresponds to a upload id, the upload was not complete.
+            NSString *contentURL = event.content[@"url"];
+            if ([contentURL hasPrefix:kMXKMediaUploadIdPrefix])
             {
-                image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
-            }
-            
-            // Did the sending fail while uploading the image or while sending the corresponding Matrix event?
-            // If the image is still available in the MXKMediaManager cache, the upload was not complete
-            if (image)
-            {
-                // Restart sending the image from the beginning
-                [self sendImage:image success:success failure:failure];
+                NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
+                UIImage* image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
+                if (image)
+                {
+                    // Restart sending the image from the beginning
+                    if (mimetype)
+                    {
+                        [self sendImage:[NSURL fileURLWithPath:localImagePath isDirectory:NO] mimeType:mimetype success:success failure:failure];
+                    }
+                    else
+                    {
+                        [self sendImage:image success:success failure:failure];
+                    }
+                }
+                else
+                {
+                    NSLog(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                }
             }
             else
             {
+                // The sending failed while sending the corresponding Matrix event.
                 // Resend the Matrix event
                 [self sendMessageOfType:msgType content:event.content success:success failure:failure];
             }
@@ -1199,22 +1405,26 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }
     
-    @synchronized(bubbles)
+    Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+    if ([class instancesRespondToSelector:@selector(mergeWithBubbleCellData:)])
     {
-        NSUInteger index = [bubbles indexOfObject:cellData];
-        if (index != NSNotFound)
+        // Check whether the adjacent bubbles can merge together
+        @synchronized(bubbles)
         {
-            [bubbles removeObjectAtIndex:index];
-            
-            if (index != 0 && index < bubbles.count)
+            NSUInteger index = [bubbles indexOfObject:cellData];
+            if (index != NSNotFound)
             {
-                // Check whether the adjacent bubbles can merge together
-                id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
-                id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
+                [bubbles removeObjectAtIndex:index];
                 
-                if ([cellData1 mergeWithBubbleCellData:cellData2])
+                if (index != 0 && index < bubbles.count)
                 {
-                    [bubbles removeObjectAtIndex:index];
+                    id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
+                    id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
+                    
+                    if ([cellData1 mergeWithBubbleCellData:cellData2])
+                    {
+                        [bubbles removeObjectAtIndex:index];
+                    }
                 }
             }
         }
@@ -1531,13 +1741,31 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         cell.delegate = self;
     }
     
-    // Check whether the previous bubble has been sent by the same user.
-    // The user's picture and name are displayed only for the first message.
-    bubbleData.isSameSenderAsPreviousBubble = NO;
-    if (indexPath.row)
+    // Pagination handling
+    if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
     {
+        // Check whether a new pagination starts at this bubble
+        bubbleData.isPaginationFirstBubble = YES;
+        if (indexPath.row)
+        {
+            id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
+            NSString *previousBubbleDateString = [self.eventFormatter dateStringFromDate:previousBubbleData.date withTime:NO];
+            NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+            bubbleData.isPaginationFirstBubble = ![bubbleDateString isEqualToString:previousBubbleDateString];
+        }
+    }
+    else
+    {
+        bubbleData.isPaginationFirstBubble = NO;
+    }
+    
+    // Check whether the sender information is relevant for this bubble.
+    bubbleData.shouldHideSenderInformation = NO;
+    if (indexPath.row && (bubbleData.isPaginationFirstBubble == NO))
+    {
+        // Check whether the previous bubble has been sent by the same user.
         id<MXKRoomBubbleCellDataStoring> previousBubbleData = [self cellDataAtIndex:indexPath.row - 1];
-        bubbleData.isSameSenderAsPreviousBubble = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
+        bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
     }
     
     // Update typing flag before rendering

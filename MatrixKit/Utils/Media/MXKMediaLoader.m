@@ -32,7 +32,7 @@ NSString *const kMXKMediaLoaderProgressRateKey = @"kMXKMediaLoaderProgressRateKe
 NSString *const kMXKMediaLoaderFilePathKey = @"kMXKMediaLoaderFilePathKey";
 NSString *const kMXKMediaLoaderErrorKey = @"kMXKMediaLoaderErrorKey";
 
-NSString *const kUploadIdPrefix = @"upload-";
+NSString *const kMXKMediaUploadIdPrefix = @"upload-";
 
 @implementation MXKMediaLoader
 
@@ -236,7 +236,7 @@ NSString *const kUploadIdPrefix = @"upload-";
     if (self = [super init])
     {
         // Create a unique upload Id
-        _uploadId = [NSString stringWithFormat:@"%@%@", kUploadIdPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
+        _uploadId = [NSString stringWithFormat:@"%@%@", kMXKMediaUploadIdPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
         
         mxSession = matrixSession;
         initialRange = anInitialRange;

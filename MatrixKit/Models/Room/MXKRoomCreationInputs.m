@@ -24,13 +24,24 @@
 
 @implementation MXKRoomCreationInputs
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        _roomVisibility = kMXRoomVisibilityPrivate;
+    }
+    return self;
+}
+
+- (void)setRoomParticipants:(NSArray *)roomParticipants
+{
+    participants = [NSMutableArray arrayWithArray:roomParticipants];
+}
+
 - (NSArray*)roomParticipants
 {
-    if (participants)
-    {
-        return [NSArray arrayWithArray:participants];
-    }
-    return nil;
+    return participants;
 }
 
 - (void)addParticipant:(NSString *)participantId
