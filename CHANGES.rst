@@ -1,3 +1,25 @@
+Changes in MatrixKit in 0.2.3 (2015-09-14)
+===============================================
+
+Improvements:
+ * MXKRoomViewController: Support animated gif.
+ * MXKRoomInputToolbarView: Add ability to paste items from pasteboard (image, video and doc).
+ * MXKContact: Consider matrix ids during search session.
+ * MXKContactTableCell: Add custom accessory view.
+ * MXKContactTableCell: Add options to customize thumbnail display box.
+ * MXKRoomDataSourceManager: Register the MXKRoomDataSource-inherited class which is used to instantiate all room data source objects.
+ * MXKRoomDataSource: Add pagination per day for rendered bubble cells.
+ * MXKDataSource: Add a new step to finalize the initialisation after a potential customization.
+ * MXKRoomBubbleCellData: Rename "isSameSenderAsPreviousBubble" flag with "shouldHideSenderInformation".
+ * MXKRoomViewController: Animate toolbar height change.
+ * Add predefined UITableViewCell classes: MXKTableViewCellWithSearchBar and MXKTableViewCellWithLabelAndImageView.
+ 
+Bug fixes:
+ * MXKRoomCreationView: Only private option is displayed.
+ * MXKRecentListViewController: The room title overlaps the last message timestamp.
+ * Attachments: pptx and similar files are not actually viewable.
+ * Attachments: Recorded videos are not saved in user's photo library.
+
 Changes in MatrixKit in 0.2.2 (2015-08-13)
 ===============================================
 
