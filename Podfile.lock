@@ -28,7 +28,7 @@ PODS:
   - Mantle (1.5.5):
     - Mantle/extobjc (= 1.5.5)
   - Mantle/extobjc (1.5.5)
-  - MatrixSDK (0.5.2):
+  - MatrixSDK (0.5.3):
     - AFNetworking (~> 2.5.2)
     - Mantle (~> 1.5)
 
@@ -36,17 +36,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.0.0)
   - libPhoneNumber-iOS (~> 0.7.6)
-  - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
-
-EXTERNAL SOURCES:
-  MatrixSDK:
-    :branch: develop
-    :git: https://github.com/matrix-org/matrix-ios-sdk.git
-
-CHECKOUT OPTIONS:
-  MatrixSDK:
-    :commit: 906e5454e2110257b201685b413317310f2c4b26
-    :git: https://github.com/matrix-org/matrix-ios-sdk.git
+  - MatrixSDK (~> 0.5.3)
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
@@ -55,6 +45,6 @@ SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: fb90c5e0d100923b61f0db81de56daefbb67b103
   Mantle: 1b29072a707453975b200a173cf77ec1e2810b75
-  MatrixSDK: f53b8231f5d9b6d7ba999131943ece37a1e17b0c
+  MatrixSDK: 2749331571cd7499f4c4bd50b2772617a66d3969
 
 COCOAPODS: 0.38.2
