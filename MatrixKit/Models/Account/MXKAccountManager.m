@@ -100,9 +100,6 @@ static MXKAccountManager *sharedAccountManager = nil;
     [mxAccounts addObject:account];
     [self saveAccounts];
     
-    // Post notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
-    
     // Check conditions to open a matrix session
     if (openSession && !account.disabled)
     {
@@ -110,6 +107,9 @@ static MXKAccountManager *sharedAccountManager = nil;
         id<MXStore> store = [[_storeClass alloc] init];
         [account openSessionWithStore:store];
     }
+    
+    // Post notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
 - (void)removeAccount:(MXKAccount*)account
