@@ -36,7 +36,17 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.0.0)
   - libPhoneNumber-iOS (~> 0.7.6)
-  - MatrixSDK (~> 0.5.3)
+  - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
+
+EXTERNAL SOURCES:
+  MatrixSDK:
+    :branch: develop
+    :git: https://github.com/matrix-org/matrix-ios-sdk.git
+
+CHECKOUT OPTIONS:
+  MatrixSDK:
+    :commit: 959d7f92a8ee88c6c4541a89c59db7ddd070e4f5
+    :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
