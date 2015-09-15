@@ -2228,7 +2228,39 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Animated gif is displayed in webview
                 CGFloat minSize = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
-                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, minSize, minSize)];
+                CGFloat width, height;
+                if (content[@"info"][@"w"] && content[@"info"][@"h"])
+                {
+                    width = [content[@"info"][@"w"] integerValue];
+                    height = [content[@"info"][@"h"] integerValue];
+                    if (width > minSize || height > minSize)
+                    {
+                        if (width > height)
+                        {
+                            height = (height * minSize) / width;
+                            height = floorf(height / 2) * 2;
+                            width = minSize;
+                        }
+                        else
+                        {
+                            width = (width * minSize) / height;
+                            width = floorf(width / 2) * 2;
+                            height = minSize;
+                        }
+                    }
+                    else
+                    {
+                        width = minSize;
+                        height = minSize;
+                    }
+                }
+                else
+                {
+                    width = minSize;
+                    height = minSize;
+                }
+                
+                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
                 animatedGifViewer.center = highResImageView.center;
                 animatedGifViewer.opaque = NO;
                 animatedGifViewer.backgroundColor = highResImageView.backgroundColor;
@@ -2238,17 +2270,50 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 animatedGifViewer.userInteractionEnabled = NO;
                 [highResImageView addSubview:animatedGifViewer];
                 
-                UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                activity.center = highResImageView.center;
-                [highResImageView addSubview:activity];
-                [activity startAnimating];
+                UIImageView *previewImage = [[UIImageView alloc] initWithFrame:animatedGifViewer.frame];
+                previewImage.contentMode = animatedGifViewer.contentMode;
+                previewImage.autoresizingMask = animatedGifViewer.autoresizingMask;
+                previewImage.image = attachment.image;
+                previewImage.center = highResImageView.center;
+                [highResImageView addSubview:previewImage];
+                
+                MXKPieChartView *pieChartView = [[MXKPieChartView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+                pieChartView.progress = 0;
+                pieChartView.progressColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.25];
+                pieChartView.unprogressColor = [UIColor clearColor];
+                pieChartView.autoresizingMask = animatedGifViewer.autoresizingMask;
+                pieChartView.center = highResImageView.center;
+                [highResImageView addSubview:pieChartView];
+                
+                id downloadProgressObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    
+                    if ([notif.object isEqualToString:roomBubbleTableViewCell.bubbleData.attachmentURL])
+                    {
+                        if (notif.userInfo)
+                        {
+                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
+                            
+                            if (progressNumber)
+                            {
+                                pieChartView.progress = progressNumber.floatValue;
+                            }
+                        }
+                    }
+                    
+                }];
                 
                 [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
                     
-                    [activity stopAnimating];
+                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
+                    
                     [animatedGifViewer loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:cacheFilePath]]];
                     
+                    [pieChartView removeFromSuperview];
+                    [previewImage removeFromSuperview];
+                    
                 } failure:^(NSError *error) {
+                    
+                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
                     
                     NSLog(@"[MXKRoomVC] gif download failed: %@", error);
                     // Notify MatrixKit user
