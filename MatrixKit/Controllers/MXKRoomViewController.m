@@ -2227,38 +2227,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             if ([mimetype isEqualToString:@"image/gif"])
             {
                 // Animated gif is displayed in webview
-                CGFloat width, height;
-                if (content[@"info"][@"w"] && content[@"info"][@"h"])
-                {
-                    width = [content[@"info"][@"w"] integerValue];
-                    height = [content[@"info"][@"h"] integerValue];
-                    
-                    CGFloat maxSize = (self.view.frame.size.width > self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
-                    if (width > maxSize || height > maxSize)
-                    {
-                        if (width > height)
-                        {
-                            height = (height * maxSize) / width;
-                            height = floorf(height / 2) * 2;
-                            width = maxSize;
-                        }
-                        else
-                        {
-                            width = (width * maxSize) / height;
-                            width = floorf(width / 2) * 2;
-                            height = maxSize;
-                        }
-                    }
-                }
-                else
-                {
-                    width = self.view.frame.size.width;
-                    height = self.view.frame.size.height;
-                }
-                
-                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+                CGFloat minSize = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
+                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, minSize, minSize)];
                 animatedGifViewer.center = highResImageView.center;
+                animatedGifViewer.opaque = NO;
+                animatedGifViewer.backgroundColor = highResImageView.backgroundColor;
                 animatedGifViewer.contentMode = UIViewContentModeScaleAspectFit;
+                animatedGifViewer.scalesPageToFit = YES;
                 animatedGifViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
                 animatedGifViewer.userInteractionEnabled = NO;
                 [highResImageView addSubview:animatedGifViewer];
