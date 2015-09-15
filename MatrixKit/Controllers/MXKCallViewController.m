@@ -651,6 +651,36 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         {
             mxCall.selfOrientation = UIDeviceOrientationPortrait;
         }
+
+        // Rotate the self view so that it shows the user like in a mirror
+        // The translation is required in landscape because else the self video view
+        // goes out of the screen
+        float selfVideoRotation = 0;
+        float translation = 0;
+        switch (mxCall.selfOrientation) {
+            case UIInterfaceOrientationLandscapeLeft:
+                selfVideoRotation = M_PI/2;
+                translation = -20;
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                selfVideoRotation = -M_PI/2;
+                translation = 20;
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                selfVideoRotation = M_PI;
+                break;
+            default:
+                break;
+        }
+
+        if (!forcePortrait) {
+            [UIView animateWithDuration:.3
+                             animations:^{
+                                 CGAffineTransform transform = CGAffineTransformMakeRotation(selfVideoRotation);
+                                 transform = CGAffineTransformTranslate(transform, 0, translation);
+                                 mxCall.selfVideoView.transform = transform;
+                             }];
+        }
     }
 }
 
