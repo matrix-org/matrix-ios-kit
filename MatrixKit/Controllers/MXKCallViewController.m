@@ -645,11 +645,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Set the camera orientation according to the orientation supported by the app
         if (UIDeviceOrientationPortrait == deviceOrientation || UIDeviceOrientationLandscapeLeft == deviceOrientation || UIDeviceOrientationLandscapeRight == deviceOrientation)
         {
-            mxCall.videoOrientation = deviceOrientation;
+            mxCall.selfOrientation = deviceOrientation;
         }
         else if (forcePortrait)
         {
-            mxCall.videoOrientation = UIDeviceOrientationPortrait;
+            mxCall.selfOrientation = UIDeviceOrientationPortrait;
         }
     }
 }

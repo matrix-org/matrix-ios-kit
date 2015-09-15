@@ -257,8 +257,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
-    [super destroy];
-    
     [self reset];
     
     self.eventFormatter = nil;
@@ -268,6 +266,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     bubbles = nil;
     eventIdToBubbleMap = nil;
     pendingLocalEchoes = nil;
+    
+    [super destroy];
 }
 
 - (void)didMXSessionStateChange
@@ -498,6 +498,17 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }];
     currentTypingUsers = _room.typingUsers;
+}
+
+- (void)cancelAllRequests
+{
+    if (backPaginationRequest)
+    {
+        [backPaginationRequest cancel];
+        backPaginationRequest = nil;
+    }
+    
+    [super cancelAllRequests];
 }
 
 #pragma mark - KVO
