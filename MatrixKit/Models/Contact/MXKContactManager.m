@@ -155,21 +155,21 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                    if (event.eventType == MXEventTypePresence)
                                    {
                                        // Check whether the concerned matrix user belongs to at least one contact.
-                                       BOOL isMatched = ([matrixContactByMatrixID objectForKey:event.userId] != nil);
+                                       BOOL isMatched = ([matrixContactByMatrixID objectForKey:event.sender] != nil);
                                        if (!isMatched)
                                        {
                                            NSArray *matrixIDs = [matrixIDBy3PID allValues];
-                                           isMatched = ([matrixIDs indexOfObject:event.userId] != NSNotFound);
+                                           isMatched = ([matrixIDs indexOfObject:event.sender] != NSNotFound);
                                        }
                                        
                                        if (isMatched) {
-                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerMatrixUserPresenceChangeNotification object:event.userId userInfo:@{kMXKContactManagerMatrixPresenceKey:event.content[@"presence"]}];
+                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerMatrixUserPresenceChangeNotification object:event.sender userInfo:@{kMXKContactManagerMatrixPresenceKey:event.content[@"presence"]}];
                                        }
                                    }
                                    else //if (event.eventType == MXEventTypeRoomMember)
                                    {
                                        // Update matrix contact list on membership change
-                                       [self updateMatrixContactWithID:event.userId];
+                                       [self updateMatrixContactWithID:event.sender];
                                    }
                                }
                            }];

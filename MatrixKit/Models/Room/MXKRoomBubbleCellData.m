@@ -45,11 +45,11 @@
             bubbleComponents = [NSMutableArray array];
             [bubbleComponents addObject:firstComponent];
             
-            senderId = event.userId;
+            senderId = event.sender;
             roomId = event.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
             senderAvatarUrl = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
-            isIncoming = ([event.userId isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
+            isIncoming = ([event.sender isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
             
             // Set message type (consider text by default), and check attachment if any
             _dataType = MXKRoomBubbleCellDataTypeText;

@@ -107,7 +107,7 @@
 - (NSString*)senderDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderDisplayName = [roomState memberName:event.userId];
+    NSString *senderDisplayName = [roomState memberName:event.sender];
     // Check whether this sender name is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"displayname"] length])
     {
@@ -120,7 +120,7 @@
 - (NSString*)senderAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderAvatarUrl = [roomState memberWithUserId:event.userId].avatarUrl;
+    NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"avatar_url"] length])
     {
@@ -181,7 +181,7 @@
     
     // Prepare display name for concerned users
     NSString *senderDisplayName;
-    senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.userId;
+    senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.sender;
     NSString *targetDisplayName = nil;
     if (event.stateKey)
     {
@@ -279,15 +279,15 @@
                     {
                         if (!prevDisplayname)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.userId, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.sender, displayname];
                         }
                         else if (!displayname)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.userId];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.sender];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.userId, prevDisplayname, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.sender, prevDisplayname, displayname];
                         }
                     }
                     
@@ -328,7 +328,7 @@
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
-                    if ([event.userId isEqualToString:event.stateKey])
+                    if ([event.sender isEqualToString:event.stateKey])
                     {
                         displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
                     }
@@ -592,7 +592,7 @@
         case MXEventTypeCallInvite:
         {
             // outgoing call?
-            if ([event.userId isEqualToString:mxSession.myUser.userId])
+            if ([event.sender isEqualToString:mxSession.myUser.userId])
             {
                 displayText = [NSBundle mxk_localizedStringForKey:@"notice_outgoing_call"];
             }
@@ -709,7 +709,7 @@
     event.eventId = eventId;
     event.type = kMXEventTypeStringRoomMessage;
     event.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-    event.userId = mxSession.myUser.userId;
+    event.sender = mxSession.myUser.userId;
     event.content = content;
     
     return event;
