@@ -407,15 +407,17 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         
         // Launch server sync
         [strongSelf launchInitialServerSync];
-    } failure:^(NSError *error)
-     {
-         // This cannot happen. Loading of MXFileStore cannot fail.
-         __strong __typeof(weakSelf)strongSelf = weakSelf;
-         strongSelf->mxSession = nil;
-         
-         [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
-         strongSelf->sessionStateObserver = nil;
-     }];
+        
+    } failure:^(NSError *error) {
+        
+        // This cannot happen. Loading of MXFileStore cannot fail.
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        strongSelf->mxSession = nil;
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
+        strongSelf->sessionStateObserver = nil;
+        
+    }];
 }
 
 /**

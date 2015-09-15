@@ -2227,53 +2227,93 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             if ([mimetype isEqualToString:@"image/gif"])
             {
                 // Animated gif is displayed in webview
+                CGFloat minSize = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
                 CGFloat width, height;
                 if (content[@"info"][@"w"] && content[@"info"][@"h"])
                 {
                     width = [content[@"info"][@"w"] integerValue];
                     height = [content[@"info"][@"h"] integerValue];
-                    
-                    CGFloat maxSize = (self.view.frame.size.width > self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
-                    if (width > maxSize || height > maxSize)
+                    if (width > minSize || height > minSize)
                     {
                         if (width > height)
                         {
-                            height = (height * maxSize) / width;
+                            height = (height * minSize) / width;
                             height = floorf(height / 2) * 2;
-                            width = maxSize;
+                            width = minSize;
                         }
                         else
                         {
-                            width = (width * maxSize) / height;
+                            width = (width * minSize) / height;
                             width = floorf(width / 2) * 2;
-                            height = maxSize;
+                            height = minSize;
                         }
+                    }
+                    else
+                    {
+                        width = minSize;
+                        height = minSize;
                     }
                 }
                 else
                 {
-                    width = self.view.frame.size.width;
-                    height = self.view.frame.size.height;
+                    width = minSize;
+                    height = minSize;
                 }
                 
                 animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
                 animatedGifViewer.center = highResImageView.center;
+                animatedGifViewer.opaque = NO;
+                animatedGifViewer.backgroundColor = highResImageView.backgroundColor;
                 animatedGifViewer.contentMode = UIViewContentModeScaleAspectFit;
+                animatedGifViewer.scalesPageToFit = YES;
                 animatedGifViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
                 animatedGifViewer.userInteractionEnabled = NO;
                 [highResImageView addSubview:animatedGifViewer];
                 
-                UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                activity.center = highResImageView.center;
-                [highResImageView addSubview:activity];
-                [activity startAnimating];
+                UIImageView *previewImage = [[UIImageView alloc] initWithFrame:animatedGifViewer.frame];
+                previewImage.contentMode = animatedGifViewer.contentMode;
+                previewImage.autoresizingMask = animatedGifViewer.autoresizingMask;
+                previewImage.image = attachment.image;
+                previewImage.center = highResImageView.center;
+                [highResImageView addSubview:previewImage];
+                
+                MXKPieChartView *pieChartView = [[MXKPieChartView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+                pieChartView.progress = 0;
+                pieChartView.progressColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.25];
+                pieChartView.unprogressColor = [UIColor clearColor];
+                pieChartView.autoresizingMask = animatedGifViewer.autoresizingMask;
+                pieChartView.center = highResImageView.center;
+                [highResImageView addSubview:pieChartView];
+                
+                id downloadProgressObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    
+                    if ([notif.object isEqualToString:roomBubbleTableViewCell.bubbleData.attachmentURL])
+                    {
+                        if (notif.userInfo)
+                        {
+                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
+                            
+                            if (progressNumber)
+                            {
+                                pieChartView.progress = progressNumber.floatValue;
+                            }
+                        }
+                    }
+                    
+                }];
                 
                 [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
                     
-                    [activity stopAnimating];
+                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
+                    
                     [animatedGifViewer loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:cacheFilePath]]];
                     
+                    [pieChartView removeFromSuperview];
+                    [previewImage removeFromSuperview];
+                    
                 } failure:^(NSError *error) {
+                    
+                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
                     
                     NSLog(@"[MXKRoomVC] gif download failed: %@", error);
                     // Notify MatrixKit user

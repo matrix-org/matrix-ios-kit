@@ -149,7 +149,7 @@
  */
 - (void)cancelAllRequests
 {
-    NSLog(@"[MXKDataSource] cancelAllRequests: TODO");
+    // The inherited class is invited to override this method
 }
 
 @end
