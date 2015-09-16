@@ -18,6 +18,7 @@
 #import "MXKCallViewController.h"
 
 #import "MXKMediaManager.h"
+#import "MXKAlert.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -39,6 +40,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     Boolean isSelectingLocalPreview;
     
     CGPoint startNewLocalMove;
+
+    /**
+     The popup showed in case of call stack error.
+     */
+    MXKAlert *errorAlert;
 }
 
 @property (nonatomic) MXCall *mxCall;
@@ -496,13 +502,47 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             audioPlayer.numberOfLoops = 0;
             [audioPlayer play];
-            
-            [self dismiss];
-            
+
+            // Except in case of call error, quit the screen right now
+            if (!errorAlert)
+            {
+                [self dismiss];
+            }
+
             break;
         }
         default:
             break;
+    }
+}
+
+- (void)call:(MXCall *)call didEncounterError:(NSError *)error
+{
+    NSLog(@"[MXKCallViewController] didEncounterError. mxCall.state: %d. Stop call due to error: %@", mxCall.state, error);
+
+    if (mxCall.state != MXCallStateEnded)
+    {
+        // Popup the error to the user
+        NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
+        if (!title)
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"error"];
+        }
+        NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+
+        __weak typeof(self) weakSelf = self;
+        errorAlert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
+        errorAlert.cancelButtonIndex = [errorAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                                style:MXKAlertActionStyleDefault
+                                                              handler:^(MXKAlert *alert)
+                                        {
+                                            errorAlert = nil;
+                                            [weakSelf dismiss];
+                                        }];
+        [errorAlert showInViewController:self];
+        
+        // And interrupt the call
+        [mxCall hangup];
     }
 }
 
