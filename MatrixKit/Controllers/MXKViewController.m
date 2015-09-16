@@ -113,7 +113,18 @@
     {
         for (id viewController in childViewControllers)
         {
-            if ([viewController respondsToSelector:@selector(destroy)])
+            if ([viewController isKindOfClass:[UINavigationController class]])
+            {
+                UINavigationController *navigationController = (UINavigationController*)viewController;
+                for (id subViewController in navigationController.viewControllers)
+                {
+                    if ([subViewController respondsToSelector:@selector(destroy)])
+                    {
+                        [subViewController destroy];
+                    }
+                }
+            }
+            else if ([viewController respondsToSelector:@selector(destroy)])
             {
                 [viewController destroy];
             }
@@ -139,6 +150,14 @@
 {
     // Keep ref on destinationViewController
     [childViewControllers addObject:segue.destinationViewController];
+}
+
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion
+{
+    // Keep ref on presented view controller
+    [childViewControllers addObject:viewControllerToPresent];
+    
+    [super presentViewController:viewControllerToPresent animated:YES completion:nil];
 }
 
 #pragma mark -
@@ -218,14 +237,21 @@
     {
         // We pop the view controller (except if it is the root view controller).
         NSUInteger index = [self.navigationController.viewControllers indexOfObject:self];
-        if (index != NSNotFound && index > 0)
+        if (index != NSNotFound)
         {
-            UIViewController *previousViewController = [self.navigationController.viewControllers objectAtIndex:(index - 1)];
-            
-            [self.navigationController popToViewController:previousViewController animated:animated];
-            if (completion)
+            if (index > 0)
             {
-                completion();
+                UIViewController *previousViewController = [self.navigationController.viewControllers objectAtIndex:(index - 1)];
+                [self.navigationController popToViewController:previousViewController animated:animated];
+                
+                if (completion)
+                {
+                    completion();
+                }
+            }
+            else
+            {
+                [self.navigationController dismissViewControllerAnimated:animated completion:completion];
             }
         }
     }
