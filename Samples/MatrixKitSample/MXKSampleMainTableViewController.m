@@ -642,6 +642,9 @@
         roomMemberListViewController.delegate = self;
         
         MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
+        
+        [listDataSource finalizeInitialization];
+        
         [roomMemberListViewController displayList:listDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showSampleRoomMembersViewController"])
@@ -653,6 +656,8 @@
         
         // Replace default table view cell with customized cell: `MXKSampleRoomMemberTableViewCell`
         [listDataSource registerCellViewClass:MXKSampleRoomMemberTableViewCell.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
+        
+        [listDataSource finalizeInitialization];
         
         [sampleRoomMemberListViewController displayList:listDataSource];
     }
