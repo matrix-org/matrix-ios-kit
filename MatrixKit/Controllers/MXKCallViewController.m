@@ -518,7 +518,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)call:(MXCall *)call didEncounterError:(NSError *)error
 {
-    NSLog(@"[MXKCallViewController] didEncounterError. mxCall.state: %d. Stop call due to error: %@", mxCall.state, error);
+    NSLog(@"[MXKCallViewController] didEncounterError. mxCall.state: %tu. Stop call due to error: %@", mxCall.state, error);
 
     if (mxCall.state != MXCallStateEnded)
     {
