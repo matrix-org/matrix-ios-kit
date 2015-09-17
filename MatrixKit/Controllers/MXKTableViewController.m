@@ -148,7 +148,7 @@
     // Keep ref on presented view controller
     [childViewControllers addObject:viewControllerToPresent];
     
-    [self presentViewController:viewControllerToPresent animated:YES completion:nil];
+    [super presentViewController:viewControllerToPresent animated:YES completion:nil];
 }
 
 #pragma mark -
