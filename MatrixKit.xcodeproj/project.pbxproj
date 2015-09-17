@@ -112,7 +112,6 @@
 		F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DA1AA8BB5E003BE77A /* LaunchScreen.xib */; };
 		F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DC1AA8BB5E003BE77A /* Main.storyboard */; };
 		F0CE56E81AA8BB5E003BE77A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DE1AA8BB5E003BE77A /* Images.xcassets */; };
-		F0CE56E91AA8BB5E003BE77A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F0CE56DF1AA8BB5E003BE77A /* Info.plist */; };
 		F0CE56EA1AA8BB5E003BE77A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E01AA8BB5E003BE77A /* main.m */; };
 		F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E21AA8BB5E003BE77A /* MXKSampleMainTableViewController.m */; };
 		F0CE56EC1AA8BB5E003BE77A /* MXKSampleRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0CE56E41AA8BB5E003BE77A /* MXKSampleRoomViewController.m */; };
@@ -1038,7 +1037,6 @@
 				F06E76961AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
-				F0CE56E91AA8BB5E003BE77A /* Info.plist in Resources */,
 				F0316E441B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.xib in Resources */,
 				F03A00241AAA19F30070A7D8 /* MXKRoomViewController.xib in Resources */,
 				F06E76821AF0FEB100980E5A /* MXKAuthenticationViewController.xib in Resources */,
