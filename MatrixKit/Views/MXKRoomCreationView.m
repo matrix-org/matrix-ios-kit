@@ -356,14 +356,7 @@
     NSString *roomAlias = _roomAliasTextField.text;
     NSString *participants = _participantsTextField.text;
     
-    if (roomName.length || roomAlias.length || participants.length)
-    {
-        _createRoomBtn.enabled = YES;
-    }
-    else
-    {
-        _createRoomBtn.enabled = NO;
-    }
+    _createRoomBtn.enabled = (roomName.length || roomAlias.length || participants.length);
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
@@ -403,13 +396,18 @@
         {
             // reset text field
             textField.text = nil;
-            [self textFieldDidEndEditing:nil];
+            
+            // Update Create button status
+            _createRoomBtn.enabled = (_roomNameTextField.text.length || _participantsTextField.text.length);
         }
     }
     else if (textField == _participantsTextField)
     {
         NSArray *participants = self.participantsList;
         textField.text = [participants componentsJoinedByString:@"; "];
+        
+        // Update Create button status
+        _createRoomBtn.enabled = (_roomNameTextField.text.length || _roomAliasTextField.text.length || _participantsTextField.text.length);
     }
 }
 
@@ -424,8 +422,6 @@
             if ([string hasPrefix:@"@"] == NO)
             {
                 textField.text = [NSString stringWithFormat:@"@%@",string];
-                // Update Create button status
-                [self textFieldDidEndEditing:nil];
                 return NO;
             }
         }
@@ -435,8 +431,6 @@
             {
                 // Add '@' character
                 textField.text = [textField.text stringByAppendingString:@"; @"];
-                // Update Create button status
-                [self textFieldDidEndEditing:nil];
                 return NO;
             }
         }
@@ -456,8 +450,6 @@
                 {
                     textField.text = [NSString stringWithFormat:@"#%@",string];
                 }
-                // Update Create button status
-                [self textFieldDidEndEditing:nil];
                 return NO;
             }
         }
@@ -467,8 +459,6 @@
             if (range.location == textField.text.length && [string isEqualToString:@":"])
             {
                 textField.text = [textField.text stringByAppendingString:homeServerSuffixArray.firstObject];
-                // Update Create button status
-                [self textFieldDidEndEditing:nil];
                 return NO;
             }
         }
