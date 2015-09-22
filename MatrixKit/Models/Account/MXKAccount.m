@@ -625,7 +625,33 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
     } failure:^(NSError *error) {
-        NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+
+        // Ignore error if the client try to disable an unknown token
+        if (!enabled)
+        {
+            // Check whether the token was unknown
+            MXError *mxError = [[MXError alloc] initWithNSError:error];
+            if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
+            {
+                NSLog(@"[MXKAccount] APNS was already disabled for %@! (%@)", self.mxCredentials.userId, error);
+                
+                // Ignore the error
+                if (success)
+                {
+                    success();
+                }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+                
+                return;
+            }
+            
+            NSLog(@"[MXKAccount] Failed to disable APNS %@! (%@)", self.mxCredentials.userId, error);
+        }
+        else
+        {
+            NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+        }
         
         if (failure)
         {
