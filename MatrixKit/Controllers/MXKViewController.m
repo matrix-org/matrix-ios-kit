@@ -102,6 +102,10 @@
     {
         [self.rageShakeManager cancel:self];
     }
+
+    // Remove keyboard view (if any)
+    self.keyboardView = nil;
+    self.keyboardHeight = 0;
 }
 
 - (void)viewDidAppear:(BOOL)animated
