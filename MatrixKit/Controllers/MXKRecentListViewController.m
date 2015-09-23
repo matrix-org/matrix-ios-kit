@@ -28,7 +28,7 @@
      Search handling
      */
     UIBarButtonItem *searchButton;
-    BOOL searchBarShouldEndEditing;
+    BOOL ignoreSearchRequest;
 }
 
 @end
@@ -130,6 +130,9 @@
 {
     [super viewWillAppear:animated];
 
+    // Restore search mechanism (if enabled)
+    ignoreSearchRequest = NO;
+
     // Observe server sync at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
@@ -137,7 +140,10 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
+
+    // The user may still press search button whereas the view disappears
+    ignoreSearchRequest = YES;
+
     // Leave potential search session
     if (!self.recentsSearchBar.isHidden)
     {
@@ -337,6 +343,12 @@
 
 - (IBAction)search:(id)sender
 {
+    // The user may have pressed search button whereas the view controller was disappearing
+    if (ignoreSearchRequest)
+    {
+        return;
+    }
+    
     if (self.recentsSearchBar.isHidden)
     {
         // Check whether there are data in which search
@@ -347,7 +359,6 @@
             [self.view setNeedsUpdateConstraints];
             
             // Create search bar
-            searchBarShouldEndEditing = NO;
             [self.recentsSearchBar becomeFirstResponder];
         }
     }
@@ -374,7 +385,6 @@
 {
     [self removeMatrixSession:mxSession];
 }
-
 
 #pragma mark - UITableView delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -410,11 +420,7 @@
     // Hide the keyboard when user select a room
     // do not hide the searchBar until the view controller disappear
     // on tablets / iphone 6+, the user could expect to search again while looking at a room
-    if ([self.recentsSearchBar isFirstResponder])
-    {
-        searchBarShouldEndEditing = YES;
-        [self.recentsSearchBar resignFirstResponder];
-    }
+    [self.recentsSearchBar resignFirstResponder];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -427,17 +433,6 @@
 }
 
 #pragma mark - UISearchBarDelegate
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    searchBarShouldEndEditing = NO;
-    return YES;
-}
-
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
-{
-    return searchBarShouldEndEditing;
-}
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
@@ -455,14 +450,12 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     // "Done" key has been pressed
-    searchBarShouldEndEditing = YES;
     [searchBar resignFirstResponder];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     // Leave search
-    searchBarShouldEndEditing = YES;
     [searchBar resignFirstResponder];
     
     self.recentsSearchBar.hidden = YES;
