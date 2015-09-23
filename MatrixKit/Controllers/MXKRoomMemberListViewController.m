@@ -50,8 +50,7 @@
     /**
      Search bar
      */
-    UISearchBar  *roomMembersSearchBar;
-    BOOL searchBarShouldEndEditing;
+    BOOL ignoreSearchRequest;
     
     /**
      Used to auto scroll at the top when search session is started or cancelled.
@@ -69,11 +68,75 @@
 @implementation MXKRoomMemberListViewController
 @synthesize dataSource;
 
+#pragma mark - Class methods
+
++ (UINib *)nib
+{
+    return [UINib nibWithNibName:NSStringFromClass([MXKRoomMemberListViewController class])
+                          bundle:[NSBundle bundleForClass:[MXKRoomMemberListViewController class]]];
+}
+
++ (instancetype)roomMemberListViewController
+{
+    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRoomMemberListViewController class])
+                                          bundle:[NSBundle bundleForClass:[MXKRoomMemberListViewController class]]];
+}
+
+
 #pragma mark -
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Check whether the view controller has been pushed via storyboard
+    if (!self.membersTableView)
+    {
+        // Instantiate view controller objects
+        [[[self class] nib] instantiateWithOwner:self options:nil];
+    }
+    
+    // Adjust Top and Bottom constraints to take into account potential navBar and tabBar.
+    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+    {
+        [NSLayoutConstraint deactivateConstraints:@[_membersSearchBarTopConstraint, _membersTableViewBottomConstraint]];
+    }
+    else
+    {
+        [self.view removeConstraint:_membersSearchBarTopConstraint];
+        [self.view removeConstraint:_membersTableViewBottomConstraint];
+    }
+    
+    _membersSearchBarTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLayoutGuide
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.membersSearchBar
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1.0f
+                                                                   constant:0.0f];
+    
+    _membersTableViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
+                                                                     attribute:NSLayoutAttributeTop
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.membersTableView
+                                                                     attribute:NSLayoutAttributeBottom
+                                                                    multiplier:1.0f
+                                                                      constant:0.0f];
+    
+    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+    {
+        [NSLayoutConstraint activateConstraints:@[_membersSearchBarTopConstraint, _membersTableViewBottomConstraint]];
+    }
+    else
+    {
+        [self.view addConstraint:_membersSearchBarTopConstraint];
+        [self.view addConstraint:_membersTableViewBottomConstraint];
+    }
+    
+    // Hide search bar by default
+    self.membersSearchBar.hidden = YES;
+    self.membersSearchBarHeightConstraint.constant = 0;
+    [self.view setNeedsUpdateConstraints];
     
     searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
     addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(inviteNewMember:)];
@@ -82,6 +145,9 @@
     _enableMemberInvitation = YES;
     _enableMemberSearch = YES;
     [self refreshUIBarButtons];
+    
+    // Add an accessory view to the search bar in order to retrieve keyboard view.
+    self.membersSearchBar.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     
     // Check whether a room has been defined
     if (dataSource)
@@ -122,9 +188,20 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // Restore search mechanism (if enabled)
+    ignoreSearchRequest = NO;
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    // The user may still press search button whereas the view disappears
+    ignoreSearchRequest = YES;
     
     if (leaveRoomNotificationObserver)
     {
@@ -133,14 +210,15 @@
     }
     
     // Leave potential search session
-    if (roomMembersSearchBar)
+    if (!self.membersSearchBar.isHidden)
     {
-        [self searchBarCancelButtonClicked:roomMembersSearchBar];
+        [self searchBarCancelButtonClicked:self.membersSearchBar];
     }
 }
 
 - (void)dealloc
 {
+    self.membersSearchBar.inputAccessoryView = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -152,6 +230,29 @@
 
 #pragma mark - Override MXKTableViewController
 
+- (void)onKeyboardShowAnimationComplete
+{
+    // Report the keyboard view in order to track keyboard frame changes
+    self.keyboardView = _membersSearchBar.inputAccessoryView.superview;
+}
+
+- (void)setKeyboardHeight:(CGFloat)keyboardHeight
+{
+    // Deduce the bottom constraint for the table view (Don't forget the potential tabBar)
+    CGFloat tableViewBottomConst = keyboardHeight - self.bottomLayoutGuide.length;
+    // Check whether the keyboard is over the tabBar
+    if (tableViewBottomConst < 0)
+    {
+        tableViewBottomConst = 0;
+    }
+    
+    // Update constraints
+    _membersTableViewBottomConstraint.constant = tableViewBottomConst;
+    
+    // Force layout immediately to take into account new constraint
+    [self.view layoutIfNeeded];
+}
+
 - (void)destroy
 {
     if (presenceUpdateTimer)
@@ -160,9 +261,9 @@
         presenceUpdateTimer = nil;
     }
     
-    self.tableView.dataSource = nil;
-    self.tableView.delegate = nil;
-    self.tableView = nil;
+    self.membersTableView.dataSource = nil;
+    self.membersTableView.delegate = nil;
+    self.membersTableView = nil;
     dataSource.delegate = nil;
     dataSource = nil;
     
@@ -172,7 +273,6 @@
         currentAlert = nil;
     }
     
-    roomMembersSearchBar = nil;
     searchBarButton = nil;
     addBarButton = nil;
     
@@ -185,19 +285,19 @@
 
 - (void)configureView
 {
-    self.tableView.delegate = self;
+    self.membersTableView.delegate = self;
     
     // Set up table data source
-    self.tableView.dataSource = dataSource;
+    self.membersTableView.dataSource = dataSource;
     
     // Set up classes to use for cells
     if ([[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib])
     {
-        [self.tableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
+        [self.membersTableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
     }
     else
     {
-        [self.tableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
+        [self.membersTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
     }
 }
 
@@ -206,13 +306,13 @@
     // stop any scrolling effect
     [UIView setAnimationsEnabled:NO];
     // before scrolling to the tableview top
-    self.tableView.contentOffset = CGPointMake(-self.tableView.contentInset.left, -self.tableView.contentInset.top);
+    self.membersTableView.contentOffset = CGPointMake(-self.membersTableView.contentInset.left, -self.membersTableView.contentInset.top);
     [UIView setAnimationsEnabled:YES];
 }
 
 - (void)updateMembersActivityInfo
 {
-    for (id memberCell in self.tableView.visibleCells)
+    for (id memberCell in self.membersTableView.visibleCells)
     {
         if ([memberCell respondsToSelector:@selector(updateActivityInfo)])
         {
@@ -288,7 +388,7 @@
     // Report the matrix session at view controller level to update UI according to session state
     [self addMatrixSession:dataSource.mxSession];
     
-    if (self.tableView)
+    if (self.membersTableView)
     {
         [self configureView];
     }
@@ -304,7 +404,7 @@
     }
     
     // For now, do a simple full reload
-    [self.tableView reloadData];
+    [self.membersTableView reloadData];
     
     if (shouldScrollToTopOnRefresh)
     {
@@ -335,16 +435,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (roomMembersSearchBar)
-    {
-        return (roomMembersSearchBar.frame.size.height);
-    }
     return 0;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    return roomMembersSearchBar;
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -357,17 +448,6 @@
 }
 
 #pragma mark - UISearchBarDelegate
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    searchBarShouldEndEditing = NO;
-    return YES;
-}
-
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
-{
-    return searchBarShouldEndEditing;
-}
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
@@ -386,16 +466,19 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     // "Done" key has been pressed
-    searchBarShouldEndEditing = YES;
     [searchBar resignFirstResponder];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     // Leave search
-    searchBarShouldEndEditing = YES;
     [searchBar resignFirstResponder];
-    roomMembersSearchBar = nil;
+    
+    self.membersSearchBar.hidden = YES;
+    self.membersSearchBarHeightConstraint.constant = 0;
+    [self.view setNeedsUpdateConstraints];
+    
+    self.membersSearchBar.text = nil;
     
     // Refresh display
     shouldScrollToTopOnRefresh = YES;
@@ -406,27 +489,28 @@
 
 - (void)search:(id)sender
 {
-    if (!roomMembersSearchBar)
+    // The user may have pressed search button whereas the view controller was disappearing
+    if (ignoreSearchRequest)
+    {
+        return;
+    }
+    
+    if (self.membersSearchBar.isHidden)
     {
         // Check whether there are data in which search
-        if ([self.dataSource tableView:self.tableView numberOfRowsInSection:0])
+        if ([self.dataSource tableView:self.membersTableView numberOfRowsInSection:0])
         {
-            // Create search bar
-            roomMembersSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
-            roomMembersSearchBar.showsCancelButton = YES;
-            roomMembersSearchBar.returnKeyType = UIReturnKeyDone;
-            roomMembersSearchBar.delegate = self;
-            searchBarShouldEndEditing = NO;
-            [roomMembersSearchBar becomeFirstResponder];
+            self.membersSearchBar.hidden = NO;
+            self.membersSearchBarHeightConstraint.constant = 44;
+            [self.view setNeedsUpdateConstraints];
             
-            // Force table refresh to add search bar in section header
-            shouldScrollToTopOnRefresh = YES;
-            [self dataSource:self.dataSource didCellChange:nil];
+            // Create search bar
+            [self.membersSearchBar becomeFirstResponder];
         }
     }
     else
     {
-        [self searchBarCancelButtonClicked: roomMembersSearchBar];
+        [self searchBarCancelButtonClicked: self.membersSearchBar];
     }
 }
 

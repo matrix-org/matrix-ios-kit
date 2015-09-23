@@ -69,6 +69,7 @@
 		F06E76981AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F06E76901AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.xib */; };
 		F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76921AF0FED000980E5A /* MXKAuthInputsView.m */; };
 		F06E769A1AF0FED000980E5A /* MXKRegistrationWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76941AF0FED000980E5A /* MXKRegistrationWebView.m */; };
+		F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */; settings = {ASSET_TAGS = (); }; };
 		F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */; };
 		F07D74AE1AC5A36B00D83B98 /* MXKEventDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */; };
 		F07E180D1ABC2EDA00DE3766 /* MXKQueuedEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18051ABC2EDA00DE3766 /* MXKQueuedEvent.m */; };
@@ -278,6 +279,7 @@
 		F06E76921AF0FED000980E5A /* MXKAuthInputsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAuthInputsView.m; sourceTree = "<group>"; };
 		F06E76931AF0FED000980E5A /* MXKRegistrationWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRegistrationWebView.h; sourceTree = "<group>"; };
 		F06E76941AF0FED000980E5A /* MXKRegistrationWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRegistrationWebView.m; sourceTree = "<group>"; };
+		F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomMemberListViewController.xib; sourceTree = "<group>"; };
 		F07D74AA1AC5A29800D83B98 /* MXKEventDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEventDetailsView.h; sourceTree = "<group>"; };
 		F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventDetailsView.m; sourceTree = "<group>"; };
 		F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKEventDetailsView.xib; sourceTree = "<group>"; };
@@ -531,6 +533,7 @@
 				F0CF99031B0F1A0B00EAE373 /* MXKRecentListViewController.xib */,
 				F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */,
 				F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */,
+				F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */,
 				3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */,
 				3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */,
 				F03A00231AAA19F30070A7D8 /* MXKRoomViewController.xib */,
@@ -1044,6 +1047,7 @@
 				F0CF99041B0F1A0B00EAE373 /* MXKRecentListViewController.xib in Resources */,
 				327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */,
 				F095E4FF1B258750009606CE /* MXKContactListViewController.xib in Resources */,
+				F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */,
 				F04356371B2EF9D80096FA02 /* MXKTableViewCellWithLabelAndButton.xib in Resources */,
 				F0CF98E91B0B86ED00EAE373 /* MXKTableViewCellWithLabelAndSwitch.xib in Resources */,
 				F0CF98F91B0C6EA000EAE373 /* MXKAccountTableViewCell.xib in Resources */,

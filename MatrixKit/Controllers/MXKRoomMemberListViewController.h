@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXKTableViewController.h"
+#import "MXKViewController.h"
 #import "MXKRoomMemberListDataSource.h"
 
 @class MXKRoomMemberListViewController;
@@ -40,7 +40,13 @@
 /**
  This view controller displays members of a room. Only one matrix session is handled by this view controller.
  */
-@interface MXKRoomMemberListViewController : MXKTableViewController <MXKDataSourceDelegate, UISearchBarDelegate>
+@interface MXKRoomMemberListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate, UISearchBarDelegate>
+
+@property (weak, nonatomic) IBOutlet UISearchBar *membersSearchBar;
+@property (weak, nonatomic) IBOutlet UITableView *membersTableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *membersSearchBarTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *membersSearchBarHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *membersTableViewBottomConstraint;
 
 /**
  The current data source associated to the view controller.
@@ -63,6 +69,28 @@
  Set NO this property to disable this option and hide the related bar button.
  */
 @property (nonatomic) BOOL enableMemberInvitation;
+
+#pragma mark - Class methods
+
+/**
+ Returns the `UINib` object initialized for a `MXKRoomMemberListViewController`.
+ 
+ @return The initialized `UINib` object or `nil` if there were errors during initialization
+ or the nib file could not be located.
+ 
+ @discussion You may override this method to provide a customized nib. If you do,
+ you should also override `roomMemberListViewController` to return your
+ view controller loaded from your custom nib.
+ */
++ (UINib *)nib;
+
+/**
+ Creates and returns a new `MXKRoomMemberListViewController` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ @return An initialized `MXKRoomMemberListViewController` object if successful, `nil` otherwise.
+ */
++ (instancetype)roomMemberListViewController;
 
 /**
  Display the members list.
