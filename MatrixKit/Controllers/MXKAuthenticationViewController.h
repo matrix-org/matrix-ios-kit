@@ -127,13 +127,13 @@ extern NSString *const MXKAuthErrorDomain;
 + (instancetype)authenticationViewController;
 
 /**
- Check whether the provided flow is supported by `MXKAuthenticationViewController` implementation.
+ Check whether the provided flow is supported by `MXKAuthenticationViewController` instance.
  
  @param flowType a flow type.
  @param authType the concerned authentication type
  @return YES if the provided flow is supported.
  */
-+ (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType;
+- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType;
 
 @end
 

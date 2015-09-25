@@ -249,7 +249,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark -
 
-+ (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
+- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
 {
     if (authType == MXKAuthenticationTypeLogin)
     {
@@ -259,11 +259,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             return YES;
         }
     }
-    else
-    { // AuthenticationTypeRegister
+    else // AuthenticationTypeRegister
+    {
         // No registration flow is supported yet
     }
-    
+
     return NO;
 }
 
@@ -412,23 +412,28 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         if (_authType == MXKAuthenticationTypeLogin)
         {
             mxCurrentOperation = [mxRestClient getLoginFlow:^(NSArray *flows) {
-                                      [self handleHomeServerFlows:flows];
-                                  } failure:^(NSError *error) {
-                                      NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
-                                      [self onFailureDuringMXOperation:error];
-                                  }];
+                
+                [self handleHomeServerFlows:flows];
+                
+            } failure:^(NSError *error) {
+                
+                NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
+                [self onFailureDuringMXOperation:error];
+                
+            }];
         }
         else
         {
-            //        mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSArray *flows){
-            //            [self handleHomeServerFlows:flows];
-            //        } failure:^(NSError *error){
-            //            NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
-            //            [self onFailureDuringMXOperation:error];
-            //        }];
-            
-            // Currently no registration flow are supported, we switch directly to the fallback page
-            [self showRegistrationFallBackView:[mxRestClient registerFallback]];
+            mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSArray *flows){
+                
+                [self handleHomeServerFlows:flows];
+                
+            } failure:^(NSError *error){
+                
+                NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
+                [self onFailureDuringMXOperation:error];
+                
+            }];
         }
     }
 }
@@ -440,7 +445,32 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [supportedFlows removeAllObjects];
     for (MXLoginFlow* flow in flows)
     {
-        if ([MXKAuthenticationViewController isImplementedFlowType:flow.type forAuthType:_authType])
+        // Check whether flow type is defined (this type has been deprecated since C-S API v2)
+        if (flow.type)
+        {
+            if ([self isImplementedFlowType:flow.type forAuthType:_authType])
+            {
+                // Check here all stages
+                BOOL isSupported = YES;
+                if (flow.stages.count)
+                {
+                    for (NSString *stage in flow.stages)
+                    {
+                        if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
+                        {
+                            isSupported = NO;
+                            break;
+                        }
+                    }
+                }
+                
+                if (isSupported)
+                {
+                    [supportedFlows addObject:flow];
+                }
+            }
+        }
+        else
         {
             // Check here all stages
             BOOL isSupported = YES;
@@ -448,7 +478,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             {
                 for (NSString *stage in flow.stages)
                 {
-                    if ([MXKAuthenticationViewController isImplementedFlowType:stage forAuthType:_authType] == NO)
+                    if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
                     {
                         isSupported = NO;
                         break;
@@ -480,6 +510,14 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         else
         {
             _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
+
+            // Check whether fallback is defined
+            NSString *registerFallback = [mxRestClient registerFallback];
+            if (registerFallback.length)
+            {
+                // No registration flow are supported, we switch directly to the fallback page
+                [self showRegistrationFallBackView:registerFallback];
+            }
         }
         NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
@@ -624,7 +662,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             }
         }
     }
-    else if (sender == _authSwitchButton){
+    else if (sender == _authSwitchButton)
+    {
         if (_authType == MXKAuthenticationTypeLogin)
         {
             self.authType = MXKAuthenticationTypeRegister;
