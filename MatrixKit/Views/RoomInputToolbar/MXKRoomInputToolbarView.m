@@ -573,6 +573,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
         
         // Finalize video attachment
         UIImage* videoThumbnail = [[UIImage alloc] initWithCGImage:imageRef];
+        CFRelease(imageRef);
         
         [self.delegate roomInputToolbarView:self sendVideo:selectedVideo withThumbnail:videoThumbnail];
     }
