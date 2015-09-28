@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
@@ -17,7 +16,6 @@
                 <outlet property="cancelRegistrationFallbackButton" destination="9qj-5c-Sfb" id="S9V-QO-TJA"/>
                 <outlet property="contentView" destination="rhx-dD-4EJ" id="XXc-2j-Gi6"/>
                 <outlet property="contentViewHeightConstraint" destination="6v6-fz-e8o" id="wHX-YX-3gE"/>
-                <outlet property="createAccountLabel" destination="Bcs-TE-KZc" id="fo9-a2-pNC"/>
                 <outlet property="homeServerInfoLabel" destination="aLk-0i-Z0d" id="RRa-xP-oDQ"/>
                 <outlet property="homeServerLabel" destination="kHf-s1-cZa" id="nSI-4K-aQq"/>
                 <outlet property="homeServerTextField" destination="G8l-AP-iRs" id="F4s-Sf-TTZ"/>
@@ -28,6 +26,7 @@
                 <outlet property="registrationFallbackContentView" destination="q1e-Wg-6t7" id="exK-lW-ddp"/>
                 <outlet property="registrationFallbackWebView" destination="Vhh-m0-nXN" id="00Z-N0-Vib"/>
                 <outlet property="retryButton" destination="wIH-Kd-r7q" id="42j-Ad-zVS"/>
+                <outlet property="subTitleLabel" destination="Bcs-TE-KZc" id="Gk1-7I-jnR"/>
                 <outlet property="submitButton" destination="k3J-Eg-itz" id="fiZ-wK-6YM"/>
                 <outlet property="view" destination="5rn-KE-plm" id="bFJ-yJ-vc0"/>
                 <outlet property="welcomeImageView" destination="d8r-TX-pwX" id="vzD-zK-EeC"/>

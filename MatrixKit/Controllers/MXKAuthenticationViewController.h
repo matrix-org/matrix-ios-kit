@@ -48,6 +48,18 @@ extern NSString *const MXKAuthErrorDomain;
  You may add a delegate to be notified when a new account has been added successfully.
  */
 @interface MXKAuthenticationViewController : MXKViewController <UITextFieldDelegate, MXKAuthInputsViewDelegate>
+{
+@protected
+    /**
+     Array of flows supported by the home server and implemented by the view controller (for the current auth type).
+     */
+    NSMutableArray *supportedFlows;
+    
+    /**
+     The current selected login flow
+     */
+    MXLoginFlow *selectedFlow;
+}
 
 @property (weak, nonatomic) IBOutlet UIImageView *welcomeImageView;
 
@@ -57,7 +69,7 @@ extern NSString *const MXKAuthErrorDomain;
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentViewHeightConstraint;
 
-@property (weak, nonatomic) IBOutlet UILabel *createAccountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *subTitleLabel;
 
 @property (weak, nonatomic) IBOutlet UIView *authInputsContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewHeightConstraint;
@@ -84,11 +96,6 @@ extern NSString *const MXKAuthErrorDomain;
  The current authentication type
  */
 @property (nonatomic) MXKAuthenticationType authType;
-
-/**
- The current selected login flow
- */
-@property (nonatomic) MXLoginFlow *selectedFlow;
 
 /**
  The default home server url (nil by default).
@@ -127,13 +134,20 @@ extern NSString *const MXKAuthErrorDomain;
 + (instancetype)authenticationViewController;
 
 /**
- Check whether the provided flow is supported by `MXKAuthenticationViewController` instance.
+ Register the MXKAuthInputsView class that will be used to display inputs for the designated flow and authentication type.
  
- @param flowType a flow type.
+ By default only 'MXKAuthInputsPasswordBasedView' class is registered for 'kMXLoginFlowTypePassword' flow and 'MXKAuthenticationTypeLogin' authentication.
+ 
+ @param authInputsViewClass a MXKAuthInputsView-inherited class that will be used for the designated flow.
+ @param flowType the concerned flow type.
  @param authType the concerned authentication type
- @return YES if the provided flow is supported.
  */
-- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType;
+- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forFlowType:(MXLoginFlowType)flowType andAuthType:(MXKAuthenticationType)authType;
+
+/**
+ Check login mechanism supported by the server and the application.
+ */
+- (void)refreshSupportedAuthFlow;
 
 @end
 

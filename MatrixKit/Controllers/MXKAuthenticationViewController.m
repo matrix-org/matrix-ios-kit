@@ -40,11 +40,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     MXHTTPOperation *mxCurrentOperation;
     
     /**
-     Array of flows supported by the home server and implemented by the view controller (for the current auth type).
-     */
-    NSMutableArray *supportedFlows;
-    
-    /**
      The current view in which auth inputs are displayed (`MXKAuthInputsView-inherited` instance).
      */
     MXKAuthInputsView *currentAuthInputsView;
@@ -53,11 +48,27 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
      Reference to any opened alert view.
      */
     MXKAlert *alert;
+    
+    /**
+     The mapping between flow type and MXKAuthInputsView classes used when logging in.
+     */
+    NSMutableDictionary *loginAuthInputsViewMap;
+    
+    /**
+     The mapping between flow type and MXKAuthInputsView classes used when registering.
+     */
+    NSMutableDictionary *registerAuthInputsViewMap;
 }
+
+/**
+ The current selected login flow
+ */
+@property (nonatomic) MXLoginFlow *selectedFlow;
 
 @end
 
 @implementation MXKAuthenticationViewController
+@synthesize selectedFlow;
 
 #pragma mark - Class methods
 
@@ -158,7 +169,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     
     // Localize labels
-    _createAccountLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
+    _subTitleLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
     _homeServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_title"];
     _homeServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
     _homeServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_info"];
@@ -170,6 +181,14 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
+    
+    // Initialize supported flows by defining authInputs views
+    loginAuthInputsViewMap = [NSMutableDictionary dictionary];
+    loginAuthInputsViewMap[kMXLoginFlowTypePassword] = MXKAuthInputsPasswordBasedView.class;
+//    loginAuthInputsViewMap[kMXLoginFlowTypeEmailCode] = MXKAuthInputsEmailCodeBasedView.class;
+    
+    registerAuthInputsViewMap = [NSMutableDictionary dictionary];
+    // No registration flow is supported yet
 }
 
 - (void)dealloc
@@ -244,26 +263,52 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [mxRestClient close];
     mxRestClient = nil;
     
+    loginAuthInputsViewMap = nil;
+    registerAuthInputsViewMap = nil;
+    
     [super destroy];
 }
 
 #pragma mark -
 
-- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
+- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forFlowType:(MXLoginFlowType)flowType andAuthType:(MXKAuthenticationType)authType
 {
-    if (authType == MXKAuthenticationTypeLogin)
+    if (flowType)
     {
-        if ([flowType isEqualToString:kMXLoginFlowTypePassword]
-            /*|| [flowType isEqualToString:kMXLoginFlowTypeEmailCode]*/)
+        // Sanity check: accept only MXKAuthInputsView classes or sub-classes
+        NSParameterAssert([authInputsViewClass isSubclassOfClass:MXKAuthInputsView.class]);
+        
+        if (authType == MXKAuthenticationTypeLogin)
         {
-            return YES;
+            loginAuthInputsViewMap[flowType] = authInputsViewClass;
+        }
+        else
+        {
+            registerAuthInputsViewMap[flowType] = authInputsViewClass;
         }
     }
-    else // AuthenticationTypeRegister
-    {
-        // No registration flow is supported yet
-    }
+}
 
+- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
+{
+    // Sanity check
+    if (flowType)
+    {
+        NSDictionary *authInputsViewMap;
+        
+        if (authType == MXKAuthenticationTypeLogin)
+        {
+            authInputsViewMap = loginAuthInputsViewMap;
+        }
+        else
+        {
+            authInputsViewMap = registerAuthInputsViewMap;
+        }
+        
+        // A flow is supported only if an authInputsView class is registered.
+        return (authInputsViewMap[flowType] != nil);
+    }
+    
     return NO;
 }
 
@@ -271,7 +316,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     if (authType == MXKAuthenticationTypeLogin)
     {
-        _createAccountLabel.hidden = YES;
+        _subTitleLabel.hidden = YES;
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
@@ -279,7 +324,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else
     {
-        _createAccountLabel.hidden = NO;
+        _subTitleLabel.hidden = NO;
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
@@ -292,7 +337,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self refreshSupportedAuthFlow];
 }
 
-- (void)setSelectedFlow:(MXLoginFlow *)selectedFlow
+- (void)setSelectedFlow:(MXLoginFlow *)inSelectedFlow
 {
     // Hide views which depend on auth flow
     _submitButton.hidden = YES;
@@ -303,20 +348,31 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     currentAuthInputsView.delegate = nil;
     currentAuthInputsView = nil;
     
+    // C-S API v2: Consider the first flow from stages as current type
+    if (inSelectedFlow.type == nil && inSelectedFlow.stages.count)
+    {
+        inSelectedFlow.type = inSelectedFlow.stages.firstObject;
+    }
     
     // Create the right auth inputs view
-    if ([selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
+    NSDictionary *authInputsViewMap;
+    if (self.authType == MXKAuthenticationTypeLogin)
     {
-        currentAuthInputsView = [MXKAuthInputsPasswordBasedView authInputsView];
+        authInputsViewMap = loginAuthInputsViewMap;
     }
-    else if ([selectedFlow.type isEqualToString:kMXLoginFlowTypeEmailCode])
+    else
     {
-        currentAuthInputsView = [MXKAuthInputsEmailCodeBasedView authInputsView];
+        authInputsViewMap = registerAuthInputsViewMap;
+    }
+    
+    Class class = authInputsViewMap[inSelectedFlow.type];
+    if (class)
+    {
+        currentAuthInputsView = [class authInputsView];
     }
     
     if (currentAuthInputsView)
     {
-        
         [_authInputsContainerView addSubview:currentAuthInputsView];
         
         currentAuthInputsView.delegate = self;
@@ -358,7 +414,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Refresh content view height
     _contentViewHeightConstraint.constant = _authSwitchButton.frame.origin.y + _authSwitchButton.frame.size.height + 15;
     
-    _selectedFlow = selectedFlow;
+    selectedFlow = inSelectedFlow;
 }
 
 - (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl
@@ -411,8 +467,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         self.selectedFlow = nil;
         if (_authType == MXKAuthenticationTypeLogin)
         {
-            mxCurrentOperation = [mxRestClient getLoginFlow:^(NSArray *flows) {
+            mxCurrentOperation = [mxRestClient getLoginFlow:^(NSDictionary *JSONResponse) {
                 
+                NSArray *flows = [MXLoginFlow modelsFromJSON:JSONResponse[@"flows"]];
                 [self handleHomeServerFlows:flows];
                 
             } failure:^(NSError *error) {
@@ -424,8 +481,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
         else
         {
-            mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSArray *flows){
+            mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSDictionary *JSONResponse){
                 
+                NSArray *flows = [MXLoginFlow modelsFromJSON:JSONResponse[@"flows"]];
                 [self handleHomeServerFlows:flows];
                 
             } failure:^(NSError *error){
@@ -500,7 +558,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         self.selectedFlow = [supportedFlows firstObject];
     }
     
-    if (!_selectedFlow)
+    if (!self.selectedFlow)
     {
         // Notify user that no flow is supported
         if (_authType == MXKAuthenticationTypeLogin)
@@ -611,7 +669,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             
             if (_authType == MXKAuthenticationTypeLogin)
             {
-                if ([_selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
+                if ([self.selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
                 {
                     MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)currentAuthInputsView;
                     
