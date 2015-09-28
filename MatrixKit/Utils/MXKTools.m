@@ -87,6 +87,24 @@
     return res;
 }
 
++ (long long)roundFileSize:(long long)filesize
+{
+    static long long roundedFactor = (100 * 1024);
+    static long long smallRoundedFactor = (10 * 1024);
+    long long roundedFileSize = filesize;
+    
+    if (filesize > roundedFactor)
+    {
+        roundedFileSize = ((filesize + (roundedFactor /2)) / roundedFactor) * roundedFactor;
+    }
+    else if (filesize > smallRoundedFactor)
+    {
+        roundedFileSize = ((filesize + (smallRoundedFactor /2)) / smallRoundedFactor) * smallRoundedFactor;
+    }
+    
+    return roundedFileSize;
+}
+
 + (NSString*)fileSizeToString:(long)fileSize
 {
     if (fileSize < 0)
@@ -271,7 +289,54 @@
     return retImage;
 }
 
-+ (UIImage *)resize:(UIImage *)image toFitInSize:(CGSize)size
++ (CGSize)resizeImageSize:(CGSize)originalSize toFitInSize:(CGSize)maxSize canExpand:(BOOL)canExpand
+{
+    if ((originalSize.width == 0) || (originalSize.height == 0))
+    {
+        return CGSizeZero;
+    }
+    
+    CGSize resized = originalSize;
+    
+    if ((maxSize.width > 0) && (maxSize.height > 0) && (canExpand || ((originalSize.width > maxSize.width) || (originalSize.height > maxSize.height))))
+    {
+        CGFloat ratioX = maxSize.width  / originalSize.width;
+        CGFloat ratioY = maxSize.height / originalSize.height;
+        
+        CGFloat scale = MIN(ratioX, ratioY);
+        resized.width  *= scale;
+        resized.height *= scale;
+        
+        // padding
+        resized.width  = floorf(resized.width  / 2) * 2;
+        resized.height = floorf(resized.height / 2) * 2;
+    }
+    
+    return resized;
+}
+
++ (CGSize)resizeImageSize:(CGSize)originalSize toFillWithSize:(CGSize)maxSize canExpand:(BOOL)canExpand
+{
+    CGSize resized = originalSize;
+    
+    if ((maxSize.width > 0) && (maxSize.height > 0) && (canExpand || ((originalSize.width > maxSize.width) && (originalSize.height > maxSize.height))))
+    {
+        CGFloat ratioX = maxSize.width  / originalSize.width;
+        CGFloat ratioY = maxSize.height / originalSize.height;
+        
+        CGFloat scale = MAX(ratioX, ratioY);
+        resized.width  *= scale;
+        resized.height *= scale;
+        
+        // padding
+        resized.width  = floorf(resized.width  / 2) * 2;
+        resized.height = floorf(resized.height / 2) * 2;
+    }
+    
+    return resized;
+}
+
++ (UIImage *)resizeImage:(UIImage *)image toFitInSize:(CGSize)size
 {
     UIImage *resizedImage = image;
     
