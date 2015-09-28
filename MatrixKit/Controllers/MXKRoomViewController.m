@@ -100,6 +100,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     id kMXSessionWillLeaveRoomNotificationObserver;
     
     /**
+     Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+     */
+    id UIApplicationWillEnterForegroundNotificationObserver;
+    
+    /**
      Observe UIMenuControllerDidHideMenuNotification to cancel text selection
      */
     id UIMenuControllerDidHideMenuNotificationObserver;
@@ -209,6 +214,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self configureView];
     }
+    
+    // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+    UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+        {
+            [self reloadBubblesTable];
+        }
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -362,6 +376,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)destroy
 {
+    if (UIApplicationWillEnterForegroundNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationWillEnterForegroundNotificationObserver];
+        UIApplicationWillEnterForegroundNotificationObserver = nil;
+    }
+    
     if (kMXSessionWillLeaveRoomNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
