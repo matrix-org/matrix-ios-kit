@@ -26,4 +26,14 @@
  */
 - (NSString*)MD5;
 
+/**
+ Return a SHA256 hash code from NSData content
+ */
+- (NSString*)SHA256;
+
+/**
+ Return a readable SHA256 hash code from NSData content
+ */
+- (NSString*)SHA256AsHexString;
+
 @end

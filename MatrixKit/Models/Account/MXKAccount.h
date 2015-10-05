@@ -16,6 +16,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+@class MXKAccount;
+
 /**
  Posted when account user information (display name, picture, presence) has been updated.
  The notification object is the matrix user id of the account.
@@ -32,6 +34,15 @@ extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
  MXKAccount error domain
  */
 extern NSString *const kMXKAccountErrorDomain;
+
+/**
+ Block called when a certificate change is observed during authentication challenge from a server.
+ 
+ @param mxAccount the account concerned by this certificate change.
+ @param certificate the server certificate to evaluate.
+ @return YES to accept/trust this certificate, NO to cancel/ignore it.
+ */
+typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *certificate);
 
 /**
  `MXKAccount` object contains the credentials of a logged matrix user. It is used to handle matrix
@@ -112,6 +123,14 @@ extern NSString *const kMXKAccountErrorDomain;
  The session is closed when this property is set to YES.
  */
 @property (nonatomic,getter=isDisabled) BOOL disabled;
+
+/**
+ Register the MXKAccountOnCertificateChange block that will be used to handle certificate change during account use.
+ This block is nil by default, any new certificate is ignored.
+ 
+ @param onCertificateChangeBlock
+ */
++ (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock;
 
 /**
  Get the color code related to a specific presence.

@@ -39,4 +39,40 @@
     return output;
 }
 
+- (NSString*)SHA256
+{
+    // Create byte array of unsigned chars
+    unsigned char sha256Buffer[CC_SHA256_DIGEST_LENGTH];
+    
+    // Create 32 byte SHA256 hash value, store in buffer
+    CC_SHA256(self.bytes, (CC_LONG)self.length, sha256Buffer);
+    
+    // Convert unsigned char buffer to NSString of hex values
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+    for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++)
+    {
+        [output appendFormat:@"%02x",sha256Buffer[i]];
+    }
+    
+    return output;
+}
+
+- (NSString*)SHA256AsHexString
+{
+    // Create byte array of unsigned chars
+    unsigned char sha256Buffer[CC_SHA256_DIGEST_LENGTH];
+    
+    // Create 32 byte SHA256 hash value, store in buffer
+    CC_SHA256(self.bytes, (CC_LONG)self.length, sha256Buffer);
+    
+    // Convert unsigned char buffer to NSString of hex values
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 3];
+    for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++)
+    {
+        [output appendFormat:@"%02X ",sha256Buffer[i]];
+    }
+    
+    return output;
+}
+
 @end
