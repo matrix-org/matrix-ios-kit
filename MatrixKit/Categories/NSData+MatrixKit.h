@@ -22,8 +22,24 @@
 @interface NSData (MatrixKit)
 
 /**
- Return a MD5 hash code from NSData content
+ Return a MD5 hash code from NSData content.
+ 
+ @return a hex string without space.
  */
 - (NSString*)MD5;
+
+/**
+ Return a SHA256 hash code from NSData content.
+ 
+ @return a hex string without space.
+ */
+- (NSString*)SHA256;
+
+/**
+ Return a readable SHA256 hash code from NSData content.
+ 
+ @return a hex string with a white space between each value.
+ */
+- (NSString*)SHA256AsHexString;
 
 @end

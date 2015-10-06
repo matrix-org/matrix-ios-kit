@@ -30,6 +30,8 @@ NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNS
 
 NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 
+static MXKAccountOnCertificateChange _onCertificateChangeBlock;
+
 @interface MXKAccount ()
 {
     // We will notify user only once on session failure
@@ -69,6 +71,11 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 @synthesize userPresence;
 @synthesize userTintColor;
 
++ (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
+{
+    _onCertificateChangeBlock = onCertificateChangeBlock;
+}
+
 + (UIColor*)presenceColor:(MXPresence)presence
 {
     switch (presence)
@@ -95,7 +102,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         
         // Report credentials and alloc REST client.
         mxCredentials = credentials;
-        mxRestClient = [[MXRestClient alloc] initWithCredentials:credentials];
+        [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
     }
@@ -129,7 +136,9 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
                                                            userId:userId
                                                       accessToken:accessToken];
         
-        mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials];
+        mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
+        
+        [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
         
@@ -157,6 +166,11 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     [coder encodeObject:mxCredentials.homeServer forKey:@"homeserverurl"];
     [coder encodeObject:mxCredentials.userId forKey:@"userid"];
     [coder encodeObject:mxCredentials.accessToken forKey:@"accesstoken"];
+    
+    if (mxCredentials.allowedCertificate)
+    {
+        [coder encodeObject:mxCredentials.allowedCertificate forKey:@"allowedCertificate"];
+    }
     
     if (self.identityServerURL)
     {
@@ -828,6 +842,50 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
         }
     }
+}
+
+- (void)prepareRESTClient
+{
+    if (!mxCredentials)
+    {
+        return;
+    }
+    
+    mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
+        
+        // Check whether the provided certificate is the one trusted by the user during login/registration step.
+        if (mxCredentials.allowedCertificate && [mxCredentials.allowedCertificate isEqualToData:certificate])
+        {
+            return YES;
+        }
+        
+        // Check whether the user has already ignored this certificate change.
+        if (mxCredentials.ignoredCertificate && [mxCredentials.ignoredCertificate isEqualToData:certificate])
+        {
+            return NO;
+        }
+        
+        if (_onCertificateChangeBlock)
+        {
+            if (_onCertificateChangeBlock (self, certificate))
+            {
+                // Update the certificate in credentials
+                mxCredentials.allowedCertificate = certificate;
+                
+                // Archive updated field
+                [[MXKAccountManager sharedManager] saveAccounts];
+                
+                return YES;
+            }
+            
+            mxCredentials.ignoredCertificate = certificate;
+            
+            // Archive updated field
+            [[MXKAccountManager sharedManager] saveAccounts];
+        }
+        return NO;
+    
+    }];
 }
 
 @end

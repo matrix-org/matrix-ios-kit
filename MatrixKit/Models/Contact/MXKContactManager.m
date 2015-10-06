@@ -297,7 +297,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     
     if (identityServer)
     {
-        _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil];
+        _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
         _identityRESTClient.identityServer = identityServer;
         
         if (self.enableFullMatrixIdSyncOnLocalContactsDidLoad) {
@@ -320,13 +320,13 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         if (self.identityServer)
         {
-            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil];
+            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
             _identityRESTClient.identityServer = self.identityServer;
         }
         else if (mxSessionArray.count)
         {
             MXSession *mxSession = [mxSessionArray firstObject];
-            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil];
+            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
             _identityRESTClient.identityServer = mxSession.matrixRestClient.identityServer;
         }
     }
