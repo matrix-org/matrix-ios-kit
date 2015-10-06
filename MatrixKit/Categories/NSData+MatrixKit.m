@@ -65,7 +65,7 @@
     // Create 32 byte SHA256 hash value, store in buffer
     CC_SHA256(self.bytes, (CC_LONG)self.length, sha256Buffer);
     
-    // Convert unsigned char buffer to NSString of hex values
+    // Convert unsigned char buffer to NSString of hex values by adding a white space between each value.
     NSMutableString *output = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 3];
     for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++)
     {

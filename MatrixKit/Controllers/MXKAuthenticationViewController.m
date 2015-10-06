@@ -59,6 +59,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
      The mapping between flow type and MXKAuthInputsView classes used when registering.
      */
     NSMutableDictionary *registerAuthInputsViewMap;
+    
+    /**
+     Customized block used to handle unrecognized certificate (nil by default).
+     */
+    MXHTTPClientOnUnrecognizedCertificate onUnrecognizedCertificateCustomBlock;
 }
 
 /**
@@ -378,6 +383,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
+- (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock
+{
+    onUnrecognizedCertificateCustomBlock = onUnrecognizedCertificateBlock;
+}
+
 #pragma mark - Privates
 
 - (void)updateRESTClient
@@ -391,6 +401,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             mxRestClient = [[MXRestClient alloc] initWithHomeServer:homeserverURL andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
                 
+                // Check first if the app developer provided its own certificate handler.
+                if (onUnrecognizedCertificateCustomBlock)
+                {
+                    return onUnrecognizedCertificateCustomBlock (certificate);
+                }
+                
+                // Else prompt the user by displaying a fingerprint (SHA256) of the certificate.
                 __block BOOL isTrusted;
                 dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
                 
