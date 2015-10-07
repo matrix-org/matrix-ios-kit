@@ -756,7 +756,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 {
                     MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)currentAuthInputsView;
                     
-                    [mxRestClient loginWithUser:authInputsView.userLoginTextField.text andPassword:authInputsView.passWordTextField.text
+                    NSString *user = authInputsView.userLoginTextField.text;
+                    user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+                    [mxRestClient loginWithUser:user andPassword:authInputsView.passWordTextField.text
                                         success:^(MXCredentials *credentials){
                                             [_authenticationActivityIndicator stopAnimating];
                                             
