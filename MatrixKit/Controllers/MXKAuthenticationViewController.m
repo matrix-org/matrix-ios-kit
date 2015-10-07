@@ -348,6 +348,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [mxCurrentOperation cancel];
     mxCurrentOperation = nil;
     
+    [_authenticationActivityIndicator stopAnimating];
+    
     if (mxRestClient)
     {
         [_authenticationActivityIndicator startAnimating];
@@ -438,6 +440,16 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 
                 dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
                 
+                if (!isTrusted)
+                {
+                    // Cancel request in progress
+                    [mxCurrentOperation cancel];
+                    mxCurrentOperation = nil;
+                    [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
+
+                    [_authenticationActivityIndicator stopAnimating];
+                }
+                
                 return isTrusted;
             }];
             
@@ -489,6 +501,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 - (void)handleHomeServerFlows:(NSArray *)flows
 {
     [_authenticationActivityIndicator stopAnimating];
+    mxCurrentOperation = nil;
     
     [supportedFlows removeAllObjects];
     for (MXLoginFlow* flow in flows)
@@ -893,6 +906,26 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 - (void)onTextFieldChange:(NSNotification *)notif
 {
     _submitButton.enabled = currentAuthInputsView.areAllRequiredFieldsFilled;
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    if (textField == _homeServerTextField)
+    {
+        // Cancel supported AuthFlow refresh if a request is in progress
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
+        
+        if (mxCurrentOperation)
+        {
+            // Cancel potential request in progress
+            [mxCurrentOperation cancel];
+            mxCurrentOperation = nil;
+        }
+        
+        [_authenticationActivityIndicator stopAnimating];
+    }
+
+    return YES;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
