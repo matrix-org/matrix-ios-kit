@@ -56,17 +56,20 @@
 
 #define CUSTOM_IMAGE_VIEW_BUTTON_WIDTH 100
 
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.backgroundColor = [UIColor blackColor];
+    self.contentMode = UIViewContentModeScaleAspectFit;
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    
     if (self)
     {
-        leftButtonTitle = nil;
-        leftHandler = nil;
-        rightButtonTitle = nil;
-        rightHandler = nil;
-        
         self.backgroundColor = [UIColor blackColor];
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
@@ -195,6 +198,7 @@
 {
     currentImage = anImage;
     imageView.image = anImage;
+
     [self initScrollZoomFactors];
 }
 
@@ -334,6 +338,7 @@
         
         imageView = [[UIImageView alloc] init];
         imageView.backgroundColor = [UIColor clearColor];
+        imageView.userInteractionEnabled = YES;
         imageView.contentMode = self.contentMode;
         [scrollView addSubview:imageView];
     }
@@ -574,23 +579,28 @@
     {
         NSString* url = notif.object;
         NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
-        
-        if ([url isEqualToString:imageURL] && cacheFilePath.length)
+
+        if ([url isEqualToString:imageURL])
         {
             [self stopActivityIndicator];
-            // update the image
-            UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
-            if (image)
+
+            if (cacheFilePath.length)
             {
-                if (imageOrientation != UIImageOrientationUp)
+                // update the image
+                UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+                if (image)
                 {
-                    self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
-                }
-                else
-                {
-                    self.image = image;
+                    if (imageOrientation != UIImageOrientationUp)
+                    {
+                        self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
+                    }
+                    else
+                    {
+                        self.image = image;
+                    }
                 }
             }
+
             // remove the observers
             [[NSNotificationCenter defaultCenter] removeObserver:self];
         }
