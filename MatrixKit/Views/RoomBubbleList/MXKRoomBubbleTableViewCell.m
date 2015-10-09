@@ -179,6 +179,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.messageTextView.hidden = YES;
             self.attachmentView.hidden = NO;
             
+            self.attachmentView.backgroundColor = [UIColor clearColor];
+            
             // Update image view frame in order to center loading wheel (if any)
             CGRect frame = self.attachmentView.frame;
             frame.size.width = contentSize.width;

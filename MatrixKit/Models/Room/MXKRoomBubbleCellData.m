@@ -508,7 +508,7 @@
         else if (_dataType == MXKRoomBubbleCellDataTypeImage || _dataType == MXKRoomBubbleCellDataTypeVideo)
         {
             CGFloat width, height;
-            width = height = 40;
+            width = height = MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH;
             if (_thumbnailInfo || _attachmentInfo)
             {
                 if (_thumbnailInfo && _thumbnailInfo[@"w"] && _thumbnailInfo[@"h"])
