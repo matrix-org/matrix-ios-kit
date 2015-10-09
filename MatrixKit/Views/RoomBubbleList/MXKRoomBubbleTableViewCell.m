@@ -226,7 +226,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             }
             [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.thumbnailOrientation previewImage:preview];
             
-            if (url && bubbleData.attachmentURL && bubbleData.attachmentInfo)
+            if (url && bubbleData.attachmentURL)
             {
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -235,12 +235,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [tap setDelegate:self];
                 [self.attachmentView addGestureRecognizer:tap];
                 
+                // Prepare attachment description
+                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType], @"url" : bubbleData.attachmentURL}];
+                
+                if (bubbleData.attachmentInfo)
+                {
+                    mediaInfoDict[@"info"] = bubbleData.attachmentInfo;
+                }
+                
                 // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = @{
-                                                  @"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType],
-                                                  @"url" : bubbleData.attachmentURL,
-                                                  @"info" : bubbleData.attachmentInfo
-                                                  };
+                self.attachmentView.mediaInfo = mediaInfoDict;
             }
             
             [self startProgressUI];
