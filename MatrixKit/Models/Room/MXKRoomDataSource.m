@@ -59,6 +59,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id redactionListener;
     
     /**
+     The listener to receipts events in the room.
+     */
+    id receiptsListener;
+    
+    /**
      Mapping between events ids and bubbles.
      */
     NSMutableDictionary *eventIdToBubbleMap;
@@ -148,9 +153,26 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     return self;
 }
 
+- (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
+    _unreadCount = 0;
+    NSArray* list = [_room unreadMessages];
+    
+    if (list) {
+        _unreadCount = list.count;
+        
+        if (refreshBingCounter) {
+            _unreadBingCount = 0;
+            
+            for(MXEvent* event in list) {
+                [self checkBing:event];
+            }
+        }
+    }
+}
+
 - (void)markAllAsRead
 {
-    if (_unreadCount || _unreadBingCount)
+    if ([_room markAllAsRead])
     {
         _unreadCount = 0;
         _unreadBingCount = 0;
@@ -196,6 +218,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         [_room removeListener:redactionListener];
         redactionListener = nil;
+        
+        [_room removeListener:receiptsListener];
+        receiptsListener = nil;
     }
     
     if (_room && typingNotifListener)
@@ -293,6 +318,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateReady;
                 
+                [self refreshUnreadCounters:YES];
+                
                 if (NO == _room.isSync)
                 {
                     // Listen to MXSession rooms count changes
@@ -339,6 +366,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     {
         [_room removeListener:liveEventsListener];
         [_room removeListener:redactionListener];
+        [_room removeListener:receiptsListener];
     }
     
     // And register a new one with the requested filter
@@ -365,6 +393,27 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 [self queueEventForProcessing:event withRoomState:roomState direction:MXEventDirectionForwards];
                 [self processQueuedEvents:nil];
             }
+        }
+    }];
+    
+    
+    receiptsListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
+        // the account is shared between several devices.
+        // so, if some messages have been read on one device, the other devices must update the unread counters
+        if ([event.senders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
+        {
+            [self refreshUnreadCounters:YES];
+            
+            // Update the delegate on main thread
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.delegate)
+                {
+                    [self.delegate dataSource:self didCellChange:nil];
+                }
+                
+                // Notify the last message may have changed
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+            });
         }
     }];
     
@@ -1488,6 +1537,35 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)checkBing:(MXEvent*)event
+{
+    // read receipts have no rule
+    if (![event.type isEqualToString:kMXEventTypeStringReceipt]) {
+        // Check if we should bing this event
+        MXPushRule *rule = [self.mxSession.notificationCenter ruleMatchingEvent:event];
+        if (rule)
+        {
+            // Check whether is there an highlight tweak on it
+            for (MXPushRuleAction *ruleAction in rule.actions)
+            {
+                if (ruleAction.actionType == MXPushRuleActionTypeSetTweak)
+                {
+                    if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"highlight"])
+                    {
+                        // Check the highlight tweak "value"
+                        // If not present, highlight. Else check its value before highlighting
+                        if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
+                        {
+                            event.mxkState = MXKEventStateBing;
+                            _unreadBingCount++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 /**
  Start processing pending events.
  
@@ -1512,9 +1590,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }
         
+        
         NSMutableArray *bubblesSnapshot = nil;
-        NSUInteger unreadCount = 0;
-        NSUInteger unreadBingCount = 0;
         NSUInteger serverSyncEventCount = 0;
         
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
@@ -1539,33 +1616,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         serverSyncEventCount ++;
                     }
                     
-                    // Check if we should bing this event
-                    MXPushRule *rule = [self.mxSession.notificationCenter ruleMatchingEvent:queuedEvent.event];
-                    if (rule)
-                    {
-                        // Check whether is there an highlight tweak on it
-                        for (MXPushRuleAction *ruleAction in rule.actions)
-                        {
-                            if (ruleAction.actionType == MXPushRuleActionTypeSetTweak)
-                            {
-                                if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"highlight"])
-                                {
-                                    // Check the highlight tweak "value"
-                                    // If not present, highlight. Else check its value before highlighting
-                                    if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
-                                    {
-                                        queuedEvent.event.mxkState = MXKEventStateBing;
-                                        
-                                        // Count unread bing message only for live events
-                                        if (MXEventDirectionForwards == queuedEvent.direction)
-                                        {
-                                            unreadBingCount++;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    [self checkBing:queuedEvent.event];
                     
                     // Retrieve the MXKCellData class to manage the data
                     Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
@@ -1617,14 +1668,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
                     }
                     
-                    // Count unread messages
-                    if (bubbleData.isIncoming && queuedEvent.direction == MXEventDirectionForwards)
-                    {
-                        unreadCount++;
-                    }
+                   
                 }
             }
-            
             eventsToProcessSnapshot = nil;
         }
         
@@ -1644,15 +1690,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
                     }
                 }
+            
+                [self refreshUnreadCounters:NO];
                 
                 // Check whether self has not been reloaded or destroyed
                 if (self.state == MXKDataSourceStateReady)
                 {
                     bubbles = bubblesSnapshot;
-                    
-                    // Update the total unread count
-                    _unreadCount += unreadCount;
-                    _unreadBingCount += unreadBingCount;
                     
                     if (self.delegate)
                     {
