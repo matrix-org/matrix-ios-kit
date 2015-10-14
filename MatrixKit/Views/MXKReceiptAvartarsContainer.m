@@ -79,7 +79,7 @@
         // add a more indicator
 
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-        label.text = @"...";
+        label.text = [NSString stringWithFormat:@"+%d", userIds.count - MAX_NBR_USERS];
         label.font = [UIFont systemFontOfSize:11];
         label.adjustsFontSizeToFitWidth = YES;
         label.minimumScaleFactor = 0.6;
