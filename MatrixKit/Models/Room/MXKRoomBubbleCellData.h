@@ -65,6 +65,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) MXSession *mxSession;
 
 /**
+ The room state
+ */
+@property (nonatomic, readonly) MXRoomState *mxRoomState;
+
+/**
  The bubble content type
  */
 @property (nonatomic) MXKRoomBubbleCellDataType dataType;

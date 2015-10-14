@@ -19,7 +19,7 @@
 #import "MXKQueuedEvent.h"
 #import "MXKRoomBubbleTableViewCell.h"
 
-#import "MXKRoomBubbleCellDataWithAppendingMode.h"
+#import "MXKRoomBubbleCellDataWithIncomingAppendingMode.h"
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 #import "MXKRoomOutgoingBubbleTableViewCell.h"
 
@@ -109,7 +109,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Set default data and view classes
         // Cell data
-        [self registerCellDataClass:MXKRoomBubbleCellDataWithAppendingMode.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+        [self registerCellDataClass:MXKRoomBubbleCellDataWithIncomingAppendingMode.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
         // For incoming messages
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
@@ -119,6 +119,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Set default MXEvent -> NSString formatter
         self.eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
+        
+        // display the read receips by default
+        self.showBubbleReceipts = YES;
         
         // Check here whether the app user wants to display all the events
         if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory])
@@ -172,7 +175,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)markAllAsRead
 {
-    if ([_room markAllAsRead])
+    if ([_room acknowledgeLatestMessage:YES])
     {
         _unreadCount = 0;
         _unreadBingCount = 0;
@@ -400,21 +403,22 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     receiptsListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
         // the account is shared between several devices.
         // so, if some messages have been read on one device, the other devices must update the unread counters
-        if ([event.senders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
+        if ([event.receiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
         {
             [self refreshUnreadCounters:YES];
-            
-            // Update the delegate on main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (self.delegate)
-                {
-                    [self.delegate dataSource:self didCellChange:nil];
-                }
-                
-                // Notify the last message may have changed
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-            });
         }
+        
+        // Update the delegate on main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+            
+            // Notify the last message may have changed
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+        });
+        
     }];
     
     // Register a listener to handle redaction in live stream
@@ -1827,6 +1831,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     bubbleData.isTyping = ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
     bubbleData.showBubbleDateTime = self.showBubblesDateTime;
+    
+    // Report the read receipts display option
+    bubbleData.showBubbleReceipts = self.showBubbleReceipts;
     
     // Make the bubble display the data
     [cell render:bubbleData];
