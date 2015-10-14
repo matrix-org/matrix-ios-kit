@@ -166,13 +166,13 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Adjust top constraint constant for dateTime labels container, and hide it by default
         if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
         {
-            self.dateTimeLabelContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
+            self.bubbleInfoContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
         }
         else
         {
-            self.dateTimeLabelContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
+            self.bubbleInfoContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
         }
-        self.dateTimeLabelContainer.hidden = YES;
+        self.bubbleInfoContainer.hidden = YES;
         
         // Set message content
         bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
@@ -314,12 +314,12 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [bubbleData prepareBubbleComponentsPosition];
         
         // Handle here timestamp display (only if a container has been defined)
-        if (self.dateTimeLabelContainer)
+        if (self.bubbleInfoContainer)
         {
             if (bubbleData.showBubbleDateTime || bubbleData.showBubbleReceipts)
             {
                 // Add datetime label for each component
-                self.dateTimeLabelContainer.hidden = NO;
+                self.bubbleInfoContainer.hidden = NO;
                 
                 for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
                 {
@@ -329,7 +329,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                         
                         if (bubbleData.showBubbleDateTime)
                         {
-                            UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 15)];
+                            UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.bubbleInfoContainer.frame.size.width , 15)];
                             
                             dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
                             if (bubbleData.isIncoming)
@@ -346,19 +346,19 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             dateTimeLabel.minimumScaleFactor = 0.6;
                             
                             [dateTimeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-                            [self.dateTimeLabelContainer addSubview:dateTimeLabel];
+                            [self.bubbleInfoContainer addSubview:dateTimeLabel];
                             // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
                             NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
                                                                                               attribute:NSLayoutAttributeLeading
                                                                                               relatedBy:NSLayoutRelationEqual
-                                                                                                 toItem:self.dateTimeLabelContainer
+                                                                                                 toItem:self.bubbleInfoContainer
                                                                                               attribute:NSLayoutAttributeLeading
                                                                                              multiplier:1.0
                                                                                                constant:0];
                             NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
                                                                                                attribute:NSLayoutAttributeTrailing
                                                                                                relatedBy:NSLayoutRelationEqual
-                                                                                                  toItem:self.dateTimeLabelContainer
+                                                                                                  toItem:self.bubbleInfoContainer
                                                                                                attribute:NSLayoutAttributeTrailing
                                                                                               multiplier:1.0
                                                                                                 constant:0];
@@ -366,7 +366,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
                                                                                              attribute:NSLayoutAttributeTop
                                                                                              relatedBy:NSLayoutRelationEqual
-                                                                                                toItem:self.dateTimeLabelContainer
+                                                                                                toItem:self.bubbleInfoContainer
                                                                                              attribute:NSLayoutAttributeTop
                                                                                             multiplier:1.0
                                                                                               constant:component.position.y];
@@ -383,9 +383,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             }
                             else
                             {
-                                [self.dateTimeLabelContainer addConstraint:leftConstraint];
-                                [self.dateTimeLabelContainer addConstraint:rightConstraint];
-                                [self.dateTimeLabelContainer addConstraint:topConstraint];
+                                [self.bubbleInfoContainer addConstraint:leftConstraint];
+                                [self.bubbleInfoContainer addConstraint:rightConstraint];
+                                [self.bubbleInfoContainer addConstraint:topConstraint];
                                 [dateTimeLabel addConstraint:heightConstraint];
                             }
                             
@@ -428,23 +428,23 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             
                             if (userIds)
                             {
-                                MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.dateTimeLabelContainer.frame.size.width , 15)];
+                                MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15)];
                                 
                                 [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder];
-                                [self.dateTimeLabelContainer addSubview:avatarsContainer];
+                                [self.bubbleInfoContainer addSubview:avatarsContainer];
                                 
                                 // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
                                 NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
                                                                                                   attribute:NSLayoutAttributeLeading
                                                                                                   relatedBy:NSLayoutRelationEqual
-                                                                                                     toItem:self.dateTimeLabelContainer
+                                                                                                     toItem:self.bubbleInfoContainer
                                                                                                   attribute:NSLayoutAttributeLeading
                                                                                                  multiplier:1.0
                                                                                                    constant:0];
                                 NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
                                                                                                    attribute:NSLayoutAttributeTrailing
                                                                                                    relatedBy:NSLayoutRelationEqual
-                                                                                                      toItem:self.dateTimeLabelContainer
+                                                                                                      toItem:self.bubbleInfoContainer
                                                                                                    attribute:NSLayoutAttributeTrailing
                                                                                                   multiplier:1.0
                                                                                                     constant:0];
@@ -452,7 +452,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                                 NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
                                                                                                  attribute:NSLayoutAttributeTop
                                                                                                  relatedBy:NSLayoutRelationEqual
-                                                                                                    toItem:self.dateTimeLabelContainer
+                                                                                                    toItem:self.bubbleInfoContainer
                                                                                                  attribute:NSLayoutAttributeTop
                                                                                                 multiplier:1.0
                                                                                                   constant:(component.position.y + timeLabelOffset)];
@@ -471,9 +471,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                                 }
                                 else
                                 {
-                                    [self.dateTimeLabelContainer addConstraint:leftConstraint];
-                                    [self.dateTimeLabelContainer addConstraint:rightConstraint];
-                                    [self.dateTimeLabelContainer addConstraint:topConstraint];
+                                    [self.bubbleInfoContainer addConstraint:leftConstraint];
+                                    [self.bubbleInfoContainer addConstraint:rightConstraint];
+                                    [self.bubbleInfoContainer addConstraint:topConstraint];
                                     [avatarsContainer addConstraint:heightConstraint];
                                 }
                             }
@@ -524,9 +524,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     }
     
     // Remove potential dateTime (or unsent) label(s)
-    if (self.dateTimeLabelContainer.subviews.count > 0)
+    if (self.bubbleInfoContainer.subviews.count > 0)
     {
-        for (UIView *view in self.dateTimeLabelContainer.subviews)
+        for (UIView *view in self.bubbleInfoContainer.subviews)
         {
             [view removeFromSuperview];
         }

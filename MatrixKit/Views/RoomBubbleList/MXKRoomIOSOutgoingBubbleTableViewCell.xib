@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -12,6 +12,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="40"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pad-g3-2YJ" id="fCg-ju-gnG">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="39"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ktd-ms-tAu" userLabel="Bubble Image View">
@@ -59,7 +60,7 @@
                             <action selector="showHideDateTime:" destination="pad-g3-2YJ" eventType="touchUpInside" id="Ztw-z5-zlU"/>
                         </connections>
                     </button>
-                    <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a51-cR-7FE" userLabel="DateTimeLabelContainer">
+                    <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a51-cR-7FE" userLabel="bubbleInfoContainer">
                         <rect key="frame" x="8" y="10" width="66" height="29"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </view>
@@ -140,8 +141,8 @@
                 <outlet property="attachmentView" destination="SIW-l4-PfI" id="L4H-ub-pPI"/>
                 <outlet property="bubbleImageView" destination="Ktd-ms-tAu" id="I0r-5F-rhe"/>
                 <outlet property="bubbleImageViewWidthConstraint" destination="ptG-QV-Cix" id="TUH-dw-uqF"/>
-                <outlet property="dateTimeLabelContainer" destination="a51-cR-7FE" id="wrR-cU-DVm"/>
-                <outlet property="dateTimeLabelContainerTopConstraint" destination="fQv-07-Pgx" id="82c-KH-Wop"/>
+                <outlet property="bubbleInfoContainer" destination="a51-cR-7FE" id="wrR-cU-DVm"/>
+                <outlet property="bubbleInfoContainerTopConstraint" destination="fQv-07-Pgx" id="82c-KH-Wop"/>
                 <outlet property="messageTextView" destination="tgO-Rv-C7R" id="LZ5-hQ-AbQ"/>
                 <outlet property="msgTextViewLeadingConstraint" destination="hwr-aa-TB4" id="A1E-ap-Ug6"/>
                 <outlet property="msgTextViewTopConstraint" destination="8Sy-eu-tYs" id="7yx-oJ-KBP"/>

@@ -107,7 +107,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (strong, nonatomic) IBOutlet MXKImageView *attachmentView;
 @property (strong, nonatomic) IBOutlet UIImageView *playIconView;
 @property (strong, nonatomic) IBOutlet UIImageView *fileTypeIconView;
-@property (weak, nonatomic) IBOutlet UIView *dateTimeLabelContainer;
+@property (weak, nonatomic) IBOutlet UIView *bubbleInfoContainer;
 
 @property (weak, nonatomic) IBOutlet UIView *progressView;
 @property (weak, nonatomic) IBOutlet UILabel *statsLabel;
@@ -118,7 +118,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateTimeLabelContainerTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubbleInfoContainerTopConstraint;
 
 - (void)startProgressUI;
 

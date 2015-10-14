@@ -45,9 +45,9 @@
             self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             
-            if (!self.dateTimeLabelContainer.hidden)
+            if (!self.bubbleInfoContainer.hidden)
             {
-                self.dateTimeLabelContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+                self.bubbleInfoContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_INCOMING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             }
         }
         

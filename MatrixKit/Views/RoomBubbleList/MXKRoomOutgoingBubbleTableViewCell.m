@@ -45,14 +45,14 @@
             self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             
-            if (!self.dateTimeLabelContainer.hidden)
+            if (!self.bubbleInfoContainer.hidden)
             {
-                self.dateTimeLabelContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+                self.bubbleInfoContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             }
         }
         
-        // Add unsent label for failed components (only if dateTimeLabelContainer is defined)
-        if (self.dateTimeLabelContainer)
+        // Add unsent label for failed components (only if bubbleInfoContainer is defined)
+        if (self.bubbleInfoContainer)
         {
             for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
             {
@@ -70,12 +70,12 @@
                     
                     [unsentButton addTarget:self action:@selector(onResendToggle:) forControlEvents:UIControlEventTouchUpInside];
                     
-                    [self.dateTimeLabelContainer addSubview:unsentButton];
-                    self.dateTimeLabelContainer.hidden = NO;
-                    self.dateTimeLabelContainer.userInteractionEnabled = YES;
+                    [self.bubbleInfoContainer addSubview:unsentButton];
+                    self.bubbleInfoContainer.hidden = NO;
+                    self.bubbleInfoContainer.userInteractionEnabled = YES;
                     
-                    // ensure that dateTimeLabelContainer is at front to catch the tap event
-                    [self.dateTimeLabelContainer.superview bringSubviewToFront:self.dateTimeLabelContainer];
+                    // ensure that bubbleInfoContainer is at front to catch the tap event
+                    [self.bubbleInfoContainer.superview bringSubviewToFront:self.bubbleInfoContainer];
                 }
             }
         }
@@ -134,7 +134,7 @@
     // Hide potential loading wheel
     [self stopAnimating];
     
-    self.dateTimeLabelContainer.userInteractionEnabled = NO;
+    self.bubbleInfoContainer.userInteractionEnabled = NO;
 }
 
 -(void)startUploadAnimating
