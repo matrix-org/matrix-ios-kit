@@ -254,6 +254,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Retrieve the potential message partially typed during last room display.
         // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
         inputToolbarView.textMessage = roomDataSource.partialTextMessage;
+        
+        [roomDataSource markAllAsRead];
     }
 }
 

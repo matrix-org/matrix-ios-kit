@@ -18,6 +18,9 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKReceiptAvartarsContainer.h"
+#import "MXRoom.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
@@ -311,70 +314,170 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [bubbleData prepareBubbleComponentsPosition];
         
         // Handle here timestamp display (only if a container has been defined)
-        if (bubbleData.showBubbleDateTime && self.dateTimeLabelContainer)
+        if (self.dateTimeLabelContainer)
         {
-            // Add datetime label for each component
-            self.dateTimeLabelContainer.hidden = NO;
-            for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+            if (bubbleData.showBubbleDateTime || bubbleData.showBubbleReceipts)
             {
-                if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
+                // Add datetime label for each component
+                self.dateTimeLabelContainer.hidden = NO;
+                
+                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
                 {
-                    UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 20)];
-                    dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
-                    if (bubbleData.isIncoming)
+                    if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
                     {
-                        dateTimeLabel.textAlignment = NSTextAlignmentRight;
-                    }
-                    else
-                    {
-                        dateTimeLabel.textAlignment = NSTextAlignmentLeft;
-                    }
-                    dateTimeLabel.textColor = [UIColor lightGrayColor];
-                    dateTimeLabel.font = [UIFont systemFontOfSize:11];
-                    dateTimeLabel.adjustsFontSizeToFitWidth = YES;
-                    dateTimeLabel.minimumScaleFactor = 0.6;
-                    [dateTimeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-                    [self.dateTimeLabelContainer addSubview:dateTimeLabel];
-                    // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
-                    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                      attribute:NSLayoutAttributeLeading
-                                                                                      relatedBy:NSLayoutRelationEqual
-                                                                                         toItem:self.dateTimeLabelContainer
-                                                                                      attribute:NSLayoutAttributeLeading
-                                                                                     multiplier:1.0
-                                                                                       constant:0];
-                    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                       attribute:NSLayoutAttributeTrailing
-                                                                                       relatedBy:NSLayoutRelationEqual
-                                                                                          toItem:self.dateTimeLabelContainer
-                                                                                       attribute:NSLayoutAttributeTrailing
-                                                                                      multiplier:1.0
-                                                                                        constant:0];
-                    // Vertical constraints are required for iOS > 8
-                    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                     attribute:NSLayoutAttributeTop
-                                                                                     relatedBy:NSLayoutRelationEqual
-                                                                                        toItem:self.dateTimeLabelContainer
-                                                                                     attribute:NSLayoutAttributeTop
-                                                                                    multiplier:1.0
-                                                                                      constant:component.position.y];
-                    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                        attribute:NSLayoutAttributeHeight
-                                                                                        relatedBy:NSLayoutRelationEqual
-                                                                                           toItem:nil
-                                                                                        attribute:NSLayoutAttributeNotAnAttribute
-                                                                                       multiplier:1.0
-                                                                                         constant:20];
-                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-                    {
-                        [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
-                    }
-                    else
-                    {
-                        [self.dateTimeLabelContainer addConstraint:leftConstraint];
-                        [self.dateTimeLabelContainer addConstraint:rightConstraint];
-                        [self.dateTimeLabelContainer addConstraint:topConstraint];
-                        [dateTimeLabel addConstraint:heightConstraint];
+                        CGFloat timeLabelOffset = 0;
+                        
+                        if (bubbleData.showBubbleDateTime)
+                        {
+                            UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 15)];
+                            
+                            dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
+                            if (bubbleData.isIncoming)
+                            {
+                                dateTimeLabel.textAlignment = NSTextAlignmentRight;
+                            }
+                            else
+                            {
+                                dateTimeLabel.textAlignment = NSTextAlignmentLeft;
+                            }
+                            dateTimeLabel.textColor = [UIColor lightGrayColor];
+                            dateTimeLabel.font = [UIFont systemFontOfSize:11];
+                            dateTimeLabel.adjustsFontSizeToFitWidth = YES;
+                            dateTimeLabel.minimumScaleFactor = 0.6;
+                            
+                            [dateTimeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+                            [self.dateTimeLabelContainer addSubview:dateTimeLabel];
+                            // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
+                            NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                              attribute:NSLayoutAttributeLeading
+                                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                                 toItem:self.dateTimeLabelContainer
+                                                                                              attribute:NSLayoutAttributeLeading
+                                                                                             multiplier:1.0
+                                                                                               constant:0];
+                            NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                               attribute:NSLayoutAttributeTrailing
+                                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                                  toItem:self.dateTimeLabelContainer
+                                                                                               attribute:NSLayoutAttributeTrailing
+                                                                                              multiplier:1.0
+                                                                                                constant:0];
+                            // Vertical constraints are required for iOS > 8
+                            NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                             attribute:NSLayoutAttributeTop
+                                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                                toItem:self.dateTimeLabelContainer
+                                                                                             attribute:NSLayoutAttributeTop
+                                                                                            multiplier:1.0
+                                                                                              constant:component.position.y];
+                            NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                                attribute:NSLayoutAttributeHeight
+                                                                                                relatedBy:NSLayoutRelationEqual
+                                                                                                   toItem:nil
+                                                                                                attribute:NSLayoutAttributeNotAnAttribute
+                                                                                               multiplier:1.0
+                                                                                                 constant:15];
+                            if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+                            {
+                                [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
+                            }
+                            else
+                            {
+                                [self.dateTimeLabelContainer addConstraint:leftConstraint];
+                                [self.dateTimeLabelContainer addConstraint:rightConstraint];
+                                [self.dateTimeLabelContainer addConstraint:topConstraint];
+                                [dateTimeLabel addConstraint:heightConstraint];
+                            }
+                            
+                            timeLabelOffset += 15;
+                        }
+                    
+                        if (!bubbleData.isIncoming && bubbleData.showBubbleReceipts)
+                        {
+                            NSMutableArray* userIds = NULL;
+                            NSArray* receipts = NULL;
+                         
+                            MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
+                            
+                            // get the events receipts
+                            if (room)
+                            {
+                                receipts = [room getEventReceipts:component.event.eventId sorted:YES];
+                            }
+                            
+                            // if some receipts are found
+                            if (receipts)
+                            {
+                                NSString* myUserId = bubbleData.mxSession.myUser.userId;
+                                NSMutableArray* res = [[NSMutableArray alloc] init];
+                                
+                                // remove the oneself receipts
+                                for(MXReceiptData* data in receipts)
+                                {
+                                    if (![data.userId isEqualToString:myUserId])
+                                    {
+                                        [res addObject:data.userId];
+                                    }
+                                }
+                                
+                                if (res.count > 0)
+                                {
+                                    userIds = res;
+                                }
+                            }
+                            
+                            if (userIds)
+                            {
+                                MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.dateTimeLabelContainer.frame.size.width , 15)];
+                                
+                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder];
+                                [self.dateTimeLabelContainer addSubview:avatarsContainer];
+                                
+                                // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
+                                NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                  attribute:NSLayoutAttributeLeading
+                                                                                                  relatedBy:NSLayoutRelationEqual
+                                                                                                     toItem:self.dateTimeLabelContainer
+                                                                                                  attribute:NSLayoutAttributeLeading
+                                                                                                 multiplier:1.0
+                                                                                                   constant:0];
+                                NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                   attribute:NSLayoutAttributeTrailing
+                                                                                                   relatedBy:NSLayoutRelationEqual
+                                                                                                      toItem:self.dateTimeLabelContainer
+                                                                                                   attribute:NSLayoutAttributeTrailing
+                                                                                                  multiplier:1.0
+                                                                                                    constant:0];
+                                // Vertical constraints are required for iOS > 8
+                                NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                 attribute:NSLayoutAttributeTop
+                                                                                                 relatedBy:NSLayoutRelationEqual
+                                                                                                    toItem:self.dateTimeLabelContainer
+                                                                                                 attribute:NSLayoutAttributeTop
+                                                                                                multiplier:1.0
+                                                                                                  constant:(component.position.y + timeLabelOffset)];
+                                
+                                NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                    attribute:NSLayoutAttributeHeight
+                                                                                                    relatedBy:NSLayoutRelationEqual
+                                                                                                       toItem:nil
+                                                                                                    attribute:NSLayoutAttributeNotAnAttribute
+                                                                                                   multiplier:1.0
+                                                                                                     constant:15];
+                                
+                                if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+                                {
+                                    [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
+                                }
+                                else
+                                {
+                                    [self.dateTimeLabelContainer addConstraint:leftConstraint];
+                                    [self.dateTimeLabelContainer addConstraint:rightConstraint];
+                                    [self.dateTimeLabelContainer addConstraint:topConstraint];
+                                    [avatarsContainer addConstraint:heightConstraint];
+                                }
+                            }
+                        }
                     }
                 }
             }

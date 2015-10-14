@@ -89,11 +89,14 @@
         [loadingView removeFromSuperview];
         loadingView = nil;
     }
+    
     if (bottomBarView)
     {
         [bottomBarView removeFromSuperview];
         bottomBarView = nil;
     }
+    
+    pieChartView = NULL;
 }
 
 - (void)startActivityIndicator
@@ -323,7 +326,10 @@
         [UIApplication sharedApplication].statusBarHidden = NO;
     }
     
-    [self stopActivityIndicator];
+    if (pieChartView)
+    {
+        [self stopActivityIndicator];
+    }
 }
 
 - (void)initLayout

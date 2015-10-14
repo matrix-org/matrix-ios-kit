@@ -164,6 +164,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) BOOL showBubblesDateTime;
 
 /**
+ Show the receipts in rendered bubble cell (YES by default)
+ */
+@property (nonatomic) BOOL showBubbleReceipts;
+
+/**
  The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
  */
 @property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;

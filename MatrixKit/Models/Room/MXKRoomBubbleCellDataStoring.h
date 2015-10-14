@@ -111,6 +111,10 @@
  */
 @property (nonatomic) BOOL showBubbleDateTime;
 
+/**
+ Show the receipts in rendered bubble cell (YES by default)
+ */
+@property (nonatomic) BOOL showBubbleReceipts;
 
 #pragma mark - Public methods
 /**
