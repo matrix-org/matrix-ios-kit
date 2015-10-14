@@ -424,7 +424,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             {
                                 MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.dateTimeLabelContainer.frame.size.width , 15)];
                                 
-                                [avatarsContainer setUserIds:userIds roomState:bubbleData.mxRoomState session:bubbleData.mxSession placeholder:self.picturePlaceholder];
+                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder];
                                 [self.dateTimeLabelContainer addSubview:avatarsContainer];
                                 
                                 // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)

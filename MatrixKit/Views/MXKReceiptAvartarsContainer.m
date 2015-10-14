@@ -43,34 +43,33 @@
     
     CGFloat xOff = 0;
     
-    for(index = 0; index < count; )
+    for(index = 0; index < count; index++)
     {
         NSString* userId = [userIds objectAtIndex:index];
         
         // Compute the member avatar URL
         MXRoomMember *roomMember = [roomState memberWithUserId:userId];
+        NSString *avatarUrl = NULL;
         
         if (roomMember)
         {
-            NSString *avatarUrl = [restclient urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:CGSizeMake(side, side) withMethod:MXThumbnailingMethodCrop];
+            avatarUrl = [restclient urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:CGSizeMake(side, side) withMethod:MXThumbnailingMethodCrop];
             
             if (!avatarUrl)
             {
                 avatarUrl = roomMember.avatarUrl;
             }
-            
-            MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-            xOff += side + 2;
-            [self addSubview:imageView];
-            [avatarViews addObject:imageView];
-            
-            [imageView setImageURL:avatarUrl withType:nil andImageOrientation:UIImageOrientationUp previewImage:placeHolder];
-            [imageView.layer setCornerRadius:imageView.frame.size.width / 2];
-            imageView.clipsToBounds = YES;
-            imageView.backgroundColor = [UIColor yellowColor];
-            
-            index ++;
         }
+        
+        MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
+        xOff += side + 2;
+        [self addSubview:imageView];
+        [avatarViews addObject:imageView];
+        
+        [imageView setImageURL:avatarUrl withType:nil andImageOrientation:UIImageOrientationUp previewImage:placeHolder];
+        [imageView.layer setCornerRadius:imageView.frame.size.width / 2];
+        imageView.clipsToBounds = YES;
+        
     }
     
     // more than expected read receipts

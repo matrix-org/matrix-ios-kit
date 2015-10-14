@@ -37,7 +37,6 @@
     if (self)
     {
         roomDataSource = roomDataSource2;
-        _mxRoomState = roomState;
         
         // Create the bubble component based on matrix event
         MXKRoomBubbleComponent *firstComponent = [[MXKRoomBubbleComponent alloc] initWithEvent:event andRoomState:roomState andEventFormatter:roomDataSource.eventFormatter];
