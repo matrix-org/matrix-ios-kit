@@ -27,7 +27,7 @@
         // Build text component related to this event
         _eventFormatter = formatter;
         MXKEventFormatterError error;
-        NSString *eventString = [_eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
+        NSAttributedString *eventString = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
         if (eventString.length)
         {
             // Manage error
@@ -50,8 +50,7 @@
                 }
             }
             
-            _textMessage = eventString;
-            _attributedTextMessage = nil;
+            _attributedTextMessage = eventString;
             
             // Set date time
             if (event.originServerTs != kMXUndefinedTimestamp)
@@ -84,37 +83,18 @@
     // Report the new event
     _event = event;
     
-    // Reseting `attributedTextMessage` is enough to take into account the new event state
-    // as it is only a font color change, there is no need to update `textMessage`
-    // (Actually, we are unable to recompute `textMessage` as we do not have the room state)
-    _attributedTextMessage = nil;
-    
     // text message must be updated here in case of redaction, or for media attachment (see body update during video upload) 
     if (_event.isRedactedEvent || _event.isMediaAttachment)
     {
         // Build text component related to this event (Note: we don't have valid room state here, userId will be used as display name)
         MXKEventFormatterError error;
-        _textMessage = [_eventFormatter stringFromEvent:event withRoomState:nil error:&error];
+        _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:nil error:&error];
     }
 }
 
-- (NSAttributedString*)attributedTextMessage
+- (NSString*)textMessage
 {
-    if (!_attributedTextMessage)
-    {
-        // Retrieve string attributes from formatter
-        NSDictionary *attributes = [_eventFormatter stringAttributesForEvent:_event];
-        if (attributes)
-        {
-            _attributedTextMessage = [[NSAttributedString alloc] initWithString:_textMessage attributes:attributes];
-        }
-        else
-        {
-            _attributedTextMessage = [[NSAttributedString alloc] initWithString:_textMessage];
-        }
-    }
-    
-    return _attributedTextMessage;
+    return [_attributedTextMessage string];
 }
 
 @end

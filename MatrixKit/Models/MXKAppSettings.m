@@ -26,7 +26,7 @@
 static MXKAppSettings *standardAppSettings = nil;
 
 @implementation MXKAppSettings
-@synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory;
+@synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
@@ -181,6 +181,56 @@ static MXKAppSettings *standardAppSettings = nil;
     else
     {
         showUnsupportedEventsInRoomHistory = boolValue;
+    }
+}
+
+- (NSString *)httpLinkScheme
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [[NSUserDefaults standardUserDefaults] stringForKey:@"httpLinkScheme"];
+    }
+    else
+    {
+        return httpLinkScheme;
+    }
+}
+
+- (void)setHttpLinkScheme:(NSString *)stringValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"httpLinkScheme"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        httpLinkScheme = stringValue;
+    }
+}
+
+- (NSString *)httpsLinkScheme
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [[NSUserDefaults standardUserDefaults] stringForKey:@"httpsLinkScheme"];
+    }
+    else
+    {
+        return httpsLinkScheme;
+    }
+}
+
+- (void)setHttpsLinkScheme:(NSString *)stringValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"httpsLinkScheme"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        httpsLinkScheme = stringValue;
     }
 }
 

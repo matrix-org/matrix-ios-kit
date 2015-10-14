@@ -653,11 +653,19 @@
     return displayText;
 }
 
-- (NSDictionary*)stringAttributesForEvent:(MXEvent*)event
+- (NSAttributedString *)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
 {
-    UIColor *textColor;
-    UIFont *font;
+    NSString *rawString = [self stringFromEvent:event withRoomState:roomState error:error];
+    if (*error != MXKEventFormatterErrorNone) {
+        if (rawString == nil) {
+            rawString = @"";
+        }
+        return [[NSAttributedString alloc] initWithString: rawString];
+    }
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: rawString];
+    NSRange wholeString = NSMakeRange(0, str.length);
     
+    UIColor *textColor;
     switch (event.mxkState)
     {
         case MXKEventStateDefault:
@@ -679,7 +687,9 @@
             textColor = _defaultTextColor;
             break;
     }
+    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     
+    UIFont *font;
     if (event.isState || event.eventType == MXEventTypeCallInvite)
     {
         font = [UIFont italicSystemFontOfSize:14];
@@ -688,11 +698,28 @@
     {
         font = [UIFont systemFontOfSize:14];
     }
-    
-    return @{
-             NSForegroundColorAttributeName : textColor,
-             NSFontAttributeName: font
-             };
+    [str addAttribute:NSFontAttributeName value:font range:wholeString];
+
+    if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
+          [[_settings httpsLinkScheme] isEqualToString: @"https"])) {
+        NSError *error = NULL;
+        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+
+        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
+        for (NSTextCheckingResult *match in matches) {
+            NSRange matchRange = [match range];
+            NSURL *matchUrl = [match URL];
+            NSURLComponents *url = [[NSURLComponents new] initWithURL:matchUrl resolvingAgainstBaseURL:NO];
+            if ([url.scheme isEqualToString: @"http"]) {
+                url.scheme = [_settings httpLinkScheme];
+            } else if ([url.scheme isEqualToString: @"https"]) {
+                url.scheme = [_settings httpsLinkScheme];
+            }
+            [str addAttribute:NSLinkAttributeName value: [url URL] range: matchRange];
+        }
+    }
+
+    return str;
 }
 
 

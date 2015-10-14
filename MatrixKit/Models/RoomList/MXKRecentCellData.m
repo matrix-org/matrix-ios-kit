@@ -30,7 +30,7 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize recentsDataSource, roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
+@synthesize recentsDataSource, roomDataSource, lastEvent, roomDisplayname, lastEventAttributedTextMessage, lastEventDate;
 
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKSessionRecentsDataSource *)recentsDataSource2
 {
@@ -53,7 +53,7 @@
     
     // Compute the text message
     MXKEventFormatterError error;
-    lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+    lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
     
     // Manage error
     if (error != MXKEventFormatterErrorNone)
@@ -75,33 +75,25 @@
         }
     }
     
-    if (0 == lastEventTextMessage.length)
+    if (0 == lastEventAttributedTextMessage.length)
     {
-        lastEventTextMessage = @"";
-        
+        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString: @""];
         // Trigger a back pagination to retrieve the actual last message
         [roomDataSource paginateBackMessages:5 success:nil failure:nil];
     }
-    
-    // Compute the attribute text message
-    NSDictionary *attributes = [recentsDataSource.eventFormatter stringAttributesForEvent:lastEvent];
-    if (attributes)
-    {
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage attributes:attributes];
-    }
-    else
-    {
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage];
-    }
-    
+
     // Keep ref on event
     lastEvent = roomDataSource.lastMessage;
+}
+
+- (NSString *)lastEventTextMessage
+{
+    return [lastEventAttributedTextMessage string];
 }
 
 - (void)dealloc
 {
     lastEvent = nil;
-    lastEventTextMessage = nil;
     lastEventAttributedTextMessage = nil;
 }
 
