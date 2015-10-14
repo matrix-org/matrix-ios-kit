@@ -1,6 +1,9 @@
 Changes in MatrixKit in 0.2.4 (2015-10-14)
 ===============================================
- 
+
+Improvements:
+ * MXKAuthenticationViewController: Strip whitespace around usernames.
+
 Bug fixes:
  * MXKAuthenticationViewController: App crashes in authentication screen on iOS 9.
 
