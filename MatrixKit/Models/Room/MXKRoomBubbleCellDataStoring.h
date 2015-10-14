@@ -112,6 +112,11 @@
 @property (nonatomic) BOOL showBubbleDateTime;
 
 /**
+ The date time label is not managed by MatrixKit. (NO by default).
+ */
+@property (nonatomic) BOOL useCustomDateTimeLabel;
+
+/**
  Show the receipts in rendered bubble cell (YES by default)
  */
 @property (nonatomic) BOOL showBubbleReceipts;

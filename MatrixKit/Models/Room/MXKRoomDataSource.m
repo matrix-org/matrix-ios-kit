@@ -123,6 +123,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // display the read receips by default
         self.showBubbleReceipts = YES;
         
+        self.useCustomDateTimeLabel = NO;
+        
         // Check here whether the app user wants to display all the events
         if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory])
         {
@@ -1831,9 +1833,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     bubbleData.isTyping = ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
     bubbleData.showBubbleDateTime = self.showBubblesDateTime;
-    
-    // Report the read receipts display option
+    // display the read receipts
     bubbleData.showBubbleReceipts = self.showBubbleReceipts;
+    // let the caller application manages the time label
+    bubbleData.useCustomDateTimeLabel = self.useCustomDateTimeLabel;
     
     // Make the bubble display the data
     [cell render:bubbleData];

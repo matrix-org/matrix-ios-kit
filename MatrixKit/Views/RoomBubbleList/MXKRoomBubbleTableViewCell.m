@@ -316,7 +316,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Handle here timestamp display (only if a container has been defined)
         if (self.bubbleInfoContainer)
         {
-            if (bubbleData.showBubbleDateTime || bubbleData.showBubbleReceipts)
+            if ((bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel) || bubbleData.showBubbleReceipts)
             {
                 // Add datetime label for each component
                 self.bubbleInfoContainer.hidden = NO;
@@ -327,7 +327,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                     {
                         CGFloat timeLabelOffset = 0;
                         
-                        if (bubbleData.showBubbleDateTime)
+                        if (bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
                         {
                             UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.bubbleInfoContainer.frame.size.width , 15)];
                             

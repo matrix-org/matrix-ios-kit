@@ -27,7 +27,7 @@
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon;
 @synthesize textMessage, attributedTextMessage;
-@synthesize startsWithSenderName, isTyping, showBubbleDateTime, showBubbleReceipts;
+@synthesize startsWithSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
