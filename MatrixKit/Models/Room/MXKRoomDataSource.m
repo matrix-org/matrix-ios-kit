@@ -1694,12 +1694,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
                     }
                 }
-            
-                [self refreshUnreadCounters:NO];
                 
                 // Check whether self has not been reloaded or destroyed
                 if (self.state == MXKDataSourceStateReady)
                 {
+                    [self refreshUnreadCounters:NO];
+                    
                     bubbles = bubblesSnapshot;
                     
                     if (self.delegate)
