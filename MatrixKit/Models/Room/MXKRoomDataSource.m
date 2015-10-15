@@ -473,6 +473,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     
                     // Update the delegate on main thread
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        
                         if (self.delegate)
                         {
                             [self.delegate dataSource:self didCellChange:nil];
@@ -480,6 +481,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         
                         // Notify the last message may have changed
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+                        
                     });
                 }
             });
@@ -512,6 +514,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     if (self.delegate)
     {
+        // Reload all the table
         [self.delegate dataSource:self didCellChange:nil];
     }
 }
@@ -547,6 +550,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 if (self.delegate)
                 {
+                    // refresh all the table
                     [self.delegate dataSource:self didCellChange:nil];
                 }
             }
@@ -591,7 +595,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     return bubbleData;
 }
 
--(id<MXKRoomBubbleCellDataStoring>)cellDataOfEventWithEventId:(NSString *)eventId
+- (id<MXKRoomBubbleCellDataStoring>)cellDataOfEventWithEventId:(NSString *)eventId
 {
     id<MXKRoomBubbleCellDataStoring> bubbleData;
     @synchronized(eventIdToBubbleMap)
@@ -599,6 +603,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         bubbleData = eventIdToBubbleMap[eventId];
     }
     return bubbleData;
+}
+
+- (NSInteger)indexOfCellDataWithEventId:(NSString *)eventId
+{
+    NSInteger index;
+    
+    id<MXKRoomBubbleCellDataStoring> bubbleData;
+    @synchronized(eventIdToBubbleMap)
+    {
+        bubbleData = eventIdToBubbleMap[eventId];
+    }
+    
+    @synchronized(bubbles)
+    {
+        index = [bubbles indexOfObject:bubbleData];
+    }
+    
+    return index;
 }
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth
@@ -1360,7 +1382,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             remainingEvents = [bubbleData removeEvent:eventId];
         }
         
-        // If there is no more events in the bubble, kill it
+        // If there is no more events in the bubble, remove it
         if (0 == remainingEvents)
         {
             [self removeCellData:bubbleData];
@@ -1444,7 +1466,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }
     
-    // If there is no more events in the bubble, kill it
+    // If there is no more events in the bubble, remove it
     if (0 == remainingEvents)
     {
         [self removeCellData:bubbleData];
@@ -1460,8 +1482,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
 }
 
-- (void)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
+- (NSArray<NSIndexPath *> *)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
 {
+    NSMutableArray *deletedRows = [NSMutableArray array];
+    
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
     {
@@ -1471,18 +1495,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }
     
-    Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
-    if ([class instancesRespondToSelector:@selector(mergeWithBubbleCellData:)])
+    // Check whether the adjacent bubbles can merge together
+    @synchronized(bubbles)
     {
-        // Check whether the adjacent bubbles can merge together
-        @synchronized(bubbles)
+        NSUInteger index = [bubbles indexOfObject:cellData];
+        if (index != NSNotFound)
         {
-            NSUInteger index = [bubbles indexOfObject:cellData];
-            if (index != NSNotFound)
+            [bubbles removeObjectAtIndex:index];
+            [deletedRows addObject:[NSIndexPath indexPathForRow:index inSection:0]];
+            
+            if (index != 0 && index < bubbles.count)
             {
-                [bubbles removeObjectAtIndex:index];
-                
-                if (index != 0 && index < bubbles.count)
+                Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+                if ([class instancesRespondToSelector:@selector(mergeWithBubbleCellData:)])
                 {
                     id<MXKRoomBubbleCellDataStoring> cellData1 = bubbles[index-1];
                     id<MXKRoomBubbleCellDataStoring> cellData2 = bubbles[index];
@@ -1490,11 +1515,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     if ([cellData1 mergeWithBubbleCellData:cellData2])
                     {
                         [bubbles removeObjectAtIndex:index];
+                        [deletedRows addObject:[NSIndexPath indexPathForRow:(index + 1) inSection:0]];
                     }
                 }
+                
             }
         }
     }
+    
+    return deletedRows;
 }
 
 - (void)didMXRoomInitialSynced:(NSNotification *)notif

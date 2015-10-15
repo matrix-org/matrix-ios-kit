@@ -213,12 +213,20 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 - (id<MXKRoomBubbleCellDataStoring>)cellDataAtIndex:(NSInteger)index;
 
 /**
- Get the data for the cell at the given index.
+ Get the data for the cell which contains the event with the provided event id.
 
- @param index the index of the cell in the array
+ @param eventId the event identifier
  @return the cell data
  */
 - (id<MXKRoomBubbleCellDataStoring>)cellDataOfEventWithEventId:(NSString*)eventId;
+
+/**
+ Get the index of the cell which contains the event with the provided event id.
+
+ @param eventId the event identifier
+ @return the index of the concerned cell (NSNotFound if none).
+ */
+- (NSInteger)indexOfCellDataWithEventId:(NSString *)eventId;
 
 /**
  Get height of the cell at the given index.
