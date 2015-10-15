@@ -24,7 +24,7 @@
     if (self) {
         // Make a copy as the data can be read at anytime later
         _event = [event copy];
-        _state = [state copy];
+        _state = state;
         _direction = direction;
     }
     return self;
