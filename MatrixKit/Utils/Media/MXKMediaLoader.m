@@ -121,6 +121,9 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaDownloadDidFailNotification
                                                         object:mediaURL
                                                       userInfo:@{kMXKMediaLoaderErrorKey:error}];
+    
+    downloadData = nil;
+    downloadConnection = nil;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
