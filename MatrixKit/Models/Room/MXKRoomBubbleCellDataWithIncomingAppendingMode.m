@@ -22,12 +22,24 @@
 
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
 {
+    // Do not merge outgoing events
     if  ([event.sender isEqualToString:roomDataSource.mxSession.myUser.userId])
     {
         return NO;
     }
     
     return [super addEvent:event andRoomState:roomState];
+}
+
+- (BOOL)mergeWithBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData
+{
+    // Do not merge outgoing events
+    if  ([bubbleCellData.senderId isEqualToString:roomDataSource.mxSession.myUser.userId])
+    {
+        return NO;
+    }
+    
+    return [super mergeWithBubbleCellData:bubbleCellData];
 }
 
 @end
