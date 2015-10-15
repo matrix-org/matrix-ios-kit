@@ -1433,14 +1433,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             if (cell)
             {
                 CGFloat eventTopPosition = cell.frame.origin.y;
-                CGFloat eventBottomPosition;
-                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                CGFloat eventBottomPosition = eventTopPosition + cell.frame.size.height;
                 
-                if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count == 1)
-                {
-                    eventBottomPosition = eventTopPosition + cell.frame.size.height;
-                }
-                else if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count)
+                // Compute accurate event positions in case of bubble with multiple components
+                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count > 1)
                 {
                     // Check and update each component position
                     [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
@@ -1450,7 +1447,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     
                     if ([component.event.eventId isEqualToString:currentEventIdAtTableBottom])
                     {
-                        eventBottomPosition = eventTopPosition + cell.frame.size.height;
+                        eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
                     }
                     else
                     {
@@ -1459,10 +1456,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                             MXKRoomBubbleComponent *previousComponent = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
                             if ([previousComponent.event.eventId isEqualToString:currentEventIdAtTableBottom])
                             {
-                                eventTopPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + previousComponent.position.y;
-                                eventBottomPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant +  + component.position.y;
+                                // Update top position if this is not the first component
+                                if (index)
+                                {
+                                   eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + previousComponent.position.y;
+                                }
+                                
+                                eventBottomPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
                                 break;
                             }
+                            
+                            component = previousComponent;
                         }
                     }
                 }
