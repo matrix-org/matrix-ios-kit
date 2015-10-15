@@ -55,7 +55,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKAlert *currentAlert;
     
     /**
-     Boolean value used to scroll to bottom the bubble history at first display.
+     Boolean value used to scroll to bottom the bubble history after refresh.
      */
     BOOL shouldScrollToBottomOnTableRefresh;
     
@@ -63,6 +63,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      YES if scrolling to bottom is in progress
      */
     BOOL isScrollingToBottom;
+    
+    /**
+     The identifier of the current event displayed at the bottom of the table (just above the toolbar).
+     Use to anchor the message displayed at the bottom during table refresh.
+     */
+    NSString *currentEventIdAtTableBottom;
+    
+    /**
+     Tell whether a device rotation is in progress
+     */
+    BOOL isSizeTransitionInProgress;
     
     /**
      Date of the last observed typing
@@ -183,6 +194,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                               attribute:NSLayoutAttributeBottom
                                                                              multiplier:1.0f
                                                                                constant:0.0f];
+    
     if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
     {
         [NSLayoutConstraint activateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
@@ -220,7 +232,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
         {
-            [self reloadBubblesTable];
+            // Reload the full table
+            [self reloadBubblesTable:YES];
         }
     }];
 }
@@ -244,7 +257,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
     if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
     {
-        [self reloadBubblesTable];
+        // Reload the full table
+        [self reloadBubblesTable:YES];
     }
     _bubblesTableView.hidden = NO;
     shouldScrollToBottomOnTableRefresh = NO;
@@ -285,27 +299,33 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
 {
+    isSizeTransitionInProgress = YES;
+    shouldScrollToBottomOnTableRefresh = [self isBubblesTableScrollViewAtTheBottom];
+    
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
         if (!self.keyboardView)
         {
             [self updateMessageTextViewFrame];
         }
-        // Cell width will be updated, force table refresh to take into account changes of message components
-        [self reloadBubblesTable];
+        
+        // Force full table refresh to take into account cell width change.
+        [self reloadBubblesTable:YES];
+        
+        shouldScrollToBottomOnTableRefresh = NO;
+        isSizeTransitionInProgress = NO;
     });
 }
 
 // The 2 following methods are deprecated since iOS 8
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    isSizeTransitionInProgress = YES;
+    shouldScrollToBottomOnTableRefresh = [self isBubblesTableScrollViewAtTheBottom];
     
-    // Cell width will be updated, force table refresh to take into account changes of message components
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self reloadBubblesTable];
-    });
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -315,6 +335,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self updateMessageTextViewFrame];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Force full table refresh to take into account cell width change.
+        [self reloadBubblesTable:YES];
+        
+        shouldScrollToBottomOnTableRefresh = NO;
+        isSizeTransitionInProgress = NO;
+    });
 }
 
 #pragma mark - Override MXKViewController
@@ -569,6 +597,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 isScrollingToBottom = YES;
                 [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
             }
+        }
+        else
+        {
+            _bubblesTableView.contentOffset = CGPointMake(0, -_bubblesTableView.contentInset.top);
         }
     }
 }
@@ -1149,7 +1181,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                
                                                // Reload table
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable];
+                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
                                                
                                            }
@@ -1157,7 +1189,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                
                                                // Reload table
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable];
+                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
                                                
                                            }];
@@ -1221,6 +1253,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
         }
         
+        // Trigger a full table reload. We could not only insert new cells related to back pagination,
+        // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+        isBackPaginationInProgress = NO;
+        [self reloadBubblesTable:NO];
+        
         // Adjust vertical content offset
         if (shouldScrollToBottom)
         {
@@ -1234,18 +1271,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self.bubblesTableView setContentOffset:contentOffset animated:NO];
         }
         
-        // Reload table
-        isBackPaginationInProgress = NO;
-        [self reloadBubblesTable];
         [self stopActivityIndicator];
         
-    }
-                                 failure:^(NSError *error)
-    {
-        // Reload table
+    } failure:^(NSError *error) {
+        
+        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
         isBackPaginationInProgress = NO;
-        [self reloadBubblesTable];
+        [self reloadBubblesTable:YES];
         [self stopActivityIndicator];
+        
     }];
 }
 
@@ -1364,18 +1398,171 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - bubbles table
 
-- (void)reloadBubblesTable
+- (void)reloadBubblesTable:(BOOL)useBottomAnchor
 {
-    // We will scroll to bottom if the bottom of the table is currently visible
-    BOOL shouldScrollToBottom = (shouldScrollToBottomOnTableRefresh || [self isBubblesTableScrollViewAtTheBottom]);
+    BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
-    // For now, do a simple full reload
-    [_bubblesTableView reloadData];
+    // When no size transition is in progress, check if the bottom of the content is currently visible.
+    // If this is the case, we will scroll automatically to the bottom after table refresh.
+    if (!isSizeTransitionInProgress && !shouldScrollToBottom)
+    {
+        shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
+    }
+    
+    // When scroll to bottom is not active, check whether we should keep the current event displayed at the bottom of the table
+    if (!shouldScrollToBottom && useBottomAnchor && currentEventIdAtTableBottom)
+    {
+        // Update content offset after refresh in order to keep visible the current event displayed at the bottom
+        
+        [_bubblesTableView reloadData];
+        
+        // Retrieve the new cell index of the event displayed previously at the bottom of table
+        NSInteger rowIndex = [roomDataSource indexOfCellDataWithEventId:currentEventIdAtTableBottom];
+        if (rowIndex != NSNotFound)
+        {
+            // Retrieve the corresponding cell
+            UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
+            UITableViewCell *cellTmp;
+            if (!cell)
+            {
+                // Create temporarily the cell (this cell will released at the end, to be reusable)
+                cellTmp = [roomDataSource tableView:_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
+                cell = cellTmp;
+            }
+            
+            if (cell)
+            {
+                CGFloat eventTopPosition = cell.frame.origin.y;
+                CGFloat eventBottomPosition;
+                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                
+                if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count == 1)
+                {
+                    eventBottomPosition = eventTopPosition + cell.frame.size.height;
+                }
+                else if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count)
+                {
+                    // Check and update each component position
+                    [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
+                    
+                    NSInteger index = roomBubbleTableViewCell.bubbleData.bubbleComponents.count - 1;
+                    MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                    
+                    if ([component.event.eventId isEqualToString:currentEventIdAtTableBottom])
+                    {
+                        eventBottomPosition = eventTopPosition + cell.frame.size.height;
+                    }
+                    else
+                    {
+                        while (index--)
+                        {
+                            MXKRoomBubbleComponent *previousComponent = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                            if ([previousComponent.event.eventId isEqualToString:currentEventIdAtTableBottom])
+                            {
+                                eventTopPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + previousComponent.position.y;
+                                eventBottomPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant +  + component.position.y;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Compute the offset of the content displayed at the bottom.
+                CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+                if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
+                {
+                    contentBottomOffsetY = _bubblesTableView.contentSize.height;
+                }
+                
+                // Check whether this event is no more displayed at the bottom
+                if ((contentBottomOffsetY <= eventTopPosition ) || (eventBottomPosition < contentBottomOffsetY))
+                {
+                    // Compute the top content offset to display again this event at the table bottom
+                    CGFloat contentOffsetY = eventBottomPosition - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+                    
+                    // Check if there are enought data to fill the top
+                    if (contentOffsetY < -_bubblesTableView.contentInset.top)
+                    {
+                        // Scroll to the top
+                        contentOffsetY = -_bubblesTableView.contentInset.top;
+                    }
+                    
+                    CGPoint contentOffset = _bubblesTableView.contentOffset;
+                    contentOffset.y = contentOffsetY;
+                    _bubblesTableView.contentOffset = contentOffset;
+                }
+                
+                if (cellTmp && [cellTmp conformsToProtocol:@protocol(MXKCellRendering)])
+                {
+                    // Release here resources, and restore reusable cells
+                    [(id<MXKCellRendering>)cellTmp didEndDisplay];
+                }
+            }
+        }
+    }
+    else
+    {
+        // Do a full reload
+        [_bubblesTableView reloadData];
+    }
     
     if (shouldScrollToBottom)
     {
-        // Scroll to the bottom
         [self scrollBubblesTableViewToBottomAnimated:NO];
+    }
+}
+
+
+
+- (void)upateCurrentEventIdAtTableBottom
+{
+    // Update the identifier of the event displayed at the bottom of the table, except if a rotation or other size transition is in progress.
+    if (! isSizeTransitionInProgress)
+    {
+        // Compute the content offset corresponding to the line displayed at the table bottom (just above the toolbar).
+        CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+        if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
+        {
+            contentBottomOffsetY = _bubblesTableView.contentSize.height;
+        }
+        // Adjust slightly this offset to be above the actual bottom line.
+        contentBottomOffsetY -= 5;
+        
+        // Reset the current event id
+        currentEventIdAtTableBottom = nil;
+        
+        // Consider the visible cells (starting by those displayed at the bottom)
+        NSArray *indexPathsForVisibleRows = [_bubblesTableView indexPathsForVisibleRows];
+        NSInteger index = indexPathsForVisibleRows.count;
+        UITableViewCell *cell;
+        while (index--)
+        {
+            cell = [_bubblesTableView cellForRowAtIndexPath:indexPathsForVisibleRows[index]];
+            if (cell && (cell.frame.origin.y < contentBottomOffsetY) && (contentBottomOffsetY <= cell.frame.origin.y + cell.frame.size.height))
+            {
+                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                
+                // Check which bubble component is displayed at the bottom.
+                // For that update each component position.
+                [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
+                
+                NSInteger componentIndex = roomBubbleTableViewCell.bubbleData.bubbleComponents.count;
+                while (componentIndex --)
+                {
+                    MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[componentIndex];
+                    currentEventIdAtTableBottom = component.event.eventId;
+                    
+                    // Check the component start position.
+                    CGFloat pos = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                    if (pos < contentBottomOffsetY)
+                    {
+                        // We found the component (by default the event id of the first component is considered).
+                        break;
+                    }
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -1384,11 +1571,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (isBackPaginationInProgress)
     {
-        // table will be updated at the end of pagination.
+        // Ignore these changes, the table will be full updated at the end of pagination.
         return;
     }
     
-    [self reloadBubblesTable];
+    [self reloadBubblesTable:YES];
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state
@@ -1998,6 +2185,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     // Consider this callback to reset scrolling to bottom flag
     isScrollingToBottom = NO;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self upateCurrentEventIdAtTableBottom];
+    });
 }
 
 #pragma mark - MXKRoomTitleViewDelegate
