@@ -78,6 +78,18 @@ static NSAttributedString *messageSeparator = nil;
         MXKRoomBubbleCellData *cellData = (MXKRoomBubbleCellData*)bubbleCellData;
         if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText))
         {
+            // Take into account here the rendered bubbles pagination
+            if (roomDataSource.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+            {
+                // bubble components must be sent the same day than self.
+                NSString *selfDateString = [roomDataSource.eventFormatter dateStringFromDate:self.date withTime:NO];
+                NSString *bubbleDateString = [roomDataSource.eventFormatter dateStringFromDate:bubbleCellData.date withTime:NO];
+                if (![bubbleDateString isEqualToString:selfDateString])
+                {
+                    return NO;
+                }
+            }
+            
             // Add all components of the provided message
             for (MXKRoomBubbleComponent* component in cellData.bubbleComponents)
             {
