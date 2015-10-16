@@ -36,7 +36,7 @@
 {
     CGRect globalFrame = self.frame;
     CGFloat side = globalFrame.size.height;
-    int count = MIN(userIds.count, MAX_NBR_USERS);
+    unsigned long count = MIN(userIds.count, MAX_NBR_USERS);
     int index;
     
     MXRestClient* restclient = session.matrixRestClient;
@@ -78,7 +78,7 @@
         // add a more indicator
 
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-        label.text = [NSString stringWithFormat:@"+%d", userIds.count - MAX_NBR_USERS];
+        label.text = [NSString stringWithFormat:@"+%tu", userIds.count - MAX_NBR_USERS];
         label.font = [UIFont systemFontOfSize:11];
         label.adjustsFontSizeToFitWidth = YES;
         label.minimumScaleFactor = 0.6;
