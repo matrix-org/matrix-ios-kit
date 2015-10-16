@@ -60,6 +60,9 @@ static MXKAppSettings *standardAppSettings = nil;
         presenceColorForOnlineUser = [UIColor greenColor];
         presenceColorForUnavailableUser = [UIColor yellowColor];
         presenceColorForOfflineUser = [UIColor redColor];
+
+        httpLinkScheme = @"http";
+        httpsLinkScheme = @"https";
     }
     return self;
 }
@@ -86,6 +89,9 @@ static MXKAppSettings *standardAppSettings = nil;
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOnlineUser"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForUnavailableUser"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOfflineUser"];
+
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpLinkScheme"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
         
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
@@ -104,6 +110,9 @@ static MXKAppSettings *standardAppSettings = nil;
         presenceColorForOnlineUser = [UIColor greenColor];
         presenceColorForUnavailableUser = [UIColor yellowColor];
         presenceColorForOfflineUser = [UIColor redColor];
+
+        httpLinkScheme = @"http";
+        httpsLinkScheme = @"https";
     }
 }
 
