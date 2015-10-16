@@ -197,7 +197,11 @@ static MXKAppSettings *standardAppSettings = nil;
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        return [[NSUserDefaults standardUserDefaults] stringForKey:@"httpLinkScheme"];
+        NSString *ret = [[NSUserDefaults standardUserDefaults] stringForKey:@"httpLinkScheme"];
+        if (ret == nil) {
+            ret = @"http";
+        }
+        return ret;
     }
     else
     {
@@ -222,7 +226,11 @@ static MXKAppSettings *standardAppSettings = nil;
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        return [[NSUserDefaults standardUserDefaults] stringForKey:@"httpsLinkScheme"];
+        NSString *ret = [[NSUserDefaults standardUserDefaults] stringForKey:@"httpsLinkScheme"];
+        if (ret == nil) {
+            ret = @"https";
+        }
+        return ret;
     }
     else
     {
