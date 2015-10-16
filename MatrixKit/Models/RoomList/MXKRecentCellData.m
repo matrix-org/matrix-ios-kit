@@ -30,7 +30,7 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize recentsDataSource, roomDataSource, lastEvent, roomDisplayname, lastEventAttributedTextMessage, lastEventDate;
+@synthesize recentsDataSource, roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
 - (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKSessionRecentsDataSource *)recentsDataSource2
 {
@@ -53,7 +53,7 @@
     
     // Compute the text message
     MXKEventFormatterError error;
-    lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+    lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
     
     // Manage error
     if (error != MXKEventFormatterErrorNone)
@@ -75,25 +75,25 @@
         }
     }
     
-    if (0 == lastEventAttributedTextMessage.length)
+    if (0 == lastEventTextMessage.length)
     {
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString: @""];
+        lastEventTextMessage = @"";
+        
         // Trigger a back pagination to retrieve the actual last message
         [roomDataSource paginateBackMessages:5 success:nil failure:nil];
     }
-
+    
+    // Compute the attribute text message
+    lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent];
+    
     // Keep ref on event
     lastEvent = roomDataSource.lastMessage;
-}
-
-- (NSString *)lastEventTextMessage
-{
-    return [lastEventAttributedTextMessage string];
 }
 
 - (void)dealloc
 {
     lastEvent = nil;
+    lastEventTextMessage = nil;
     lastEventAttributedTextMessage = nil;
 }
 

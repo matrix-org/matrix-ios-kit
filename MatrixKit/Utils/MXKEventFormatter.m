@@ -653,16 +653,9 @@
     return displayText;
 }
 
-- (NSAttributedString *)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event
 {
-    NSString *rawString = [self stringFromEvent:event withRoomState:roomState error:error];
-    if (*error != MXKEventFormatterErrorNone) {
-        if (rawString == nil) {
-            rawString = @"";
-        }
-        return [[NSAttributedString alloc] initWithString: rawString];
-    }
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: rawString];
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
     NSRange wholeString = NSMakeRange(0, str.length);
     
     UIColor *textColor;
