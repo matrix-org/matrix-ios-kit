@@ -84,15 +84,7 @@
     }
     
     // Compute the attribute text message
-    NSDictionary *attributes = [recentsDataSource.eventFormatter stringAttributesForEvent:lastEvent];
-    if (attributes)
-    {
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage attributes:attributes];
-    }
-    else
-    {
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:lastEventTextMessage];
-    }
+    lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent];
     
     // Keep ref on event
     lastEvent = roomDataSource.lastMessage;

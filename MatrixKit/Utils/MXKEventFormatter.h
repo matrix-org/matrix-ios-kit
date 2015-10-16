@@ -124,13 +124,13 @@ typedef enum : NSUInteger {
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
- Return sets of attributes for the displayable string representing the event.
+ Return attributed string for the displayable string representing the event.
  
+ @param text pre-computed text representation of the event
  @param event the event.
- @return sets of attributes to apply on event description.
+ @return NSAttributedString for displaying the event.
  */
-- (NSDictionary*)stringAttributesForEvent:(MXEvent*)event;
-
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event;
 
 #pragma mark - Fake event objects creation
 - (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content;

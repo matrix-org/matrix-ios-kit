@@ -653,11 +653,12 @@
     return displayText;
 }
 
-- (NSDictionary*)stringAttributesForEvent:(MXEvent*)event
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event
 {
-    UIColor *textColor;
-    UIFont *font;
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
+    NSRange wholeString = NSMakeRange(0, str.length);
     
+    UIColor *textColor;
     switch (event.mxkState)
     {
         case MXKEventStateDefault:
@@ -679,7 +680,9 @@
             textColor = _defaultTextColor;
             break;
     }
+    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     
+    UIFont *font;
     if (event.isState || event.eventType == MXEventTypeCallInvite)
     {
         font = [UIFont italicSystemFontOfSize:14];
@@ -688,11 +691,28 @@
     {
         font = [UIFont systemFontOfSize:14];
     }
-    
-    return @{
-             NSForegroundColorAttributeName : textColor,
-             NSFontAttributeName: font
-             };
+    [str addAttribute:NSFontAttributeName value:font range:wholeString];
+
+    if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
+          [[_settings httpsLinkScheme] isEqualToString: @"https"])) {
+        NSError *error = NULL;
+        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+
+        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
+        for (NSTextCheckingResult *match in matches) {
+            NSRange matchRange = [match range];
+            NSURL *matchUrl = [match URL];
+            NSURLComponents *url = [[NSURLComponents new] initWithURL:matchUrl resolvingAgainstBaseURL:NO];
+            if ([url.scheme isEqualToString: @"http"]) {
+                url.scheme = [_settings httpLinkScheme];
+            } else if ([url.scheme isEqualToString: @"https"]) {
+                url.scheme = [_settings httpsLinkScheme];
+            }
+            [str addAttribute:NSLinkAttributeName value: [url URL] range: matchRange];
+        }
+    }
+
+    return str;
 }
 
 
