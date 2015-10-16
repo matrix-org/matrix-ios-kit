@@ -403,23 +403,21 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     
     receiptsListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
+        
         // the account is shared between several devices.
         // so, if some messages have been read on one device, the other devices must update the unread counters
         if ([event.receiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
         {
             [self refreshUnreadCounters:YES];
+            
+            // the unread counter has been updated so refresh the recents
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
         }
         
-        // Update the delegate on main thread
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.delegate)
-            {
-                [self.delegate dataSource:self didCellChange:nil];
-            }
-            
-            // Notify the last message may have changed
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-        });
+        if (self.delegate)
+        {
+            [self.delegate dataSource:self didCellChange:nil];
+        }
         
     }];
     
