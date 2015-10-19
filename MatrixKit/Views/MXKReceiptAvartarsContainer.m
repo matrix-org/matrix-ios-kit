@@ -104,7 +104,7 @@
     if (moreView)
     {
         [moreView removeFromSuperview];
-        moreView = NULL;
+        moreView = nil;
     }
 }
 
