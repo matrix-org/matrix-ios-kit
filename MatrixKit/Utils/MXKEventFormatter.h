@@ -55,9 +55,9 @@ typedef enum : NSUInteger {
 {
 @protected
     /**
-     The date format string used by the date formatter.
+     The date formatter used to build date string without time information (initialized with the first preferred localization of the main bundle by default).
      */
-    NSString *dateFormat;
+    NSDateFormatter *dateFormatter;
 }
 
 /**
@@ -72,11 +72,6 @@ typedef enum : NSUInteger {
  Default is NO.
  */
 @property (nonatomic) BOOL isForSubtitle;
-
-/**
- The date formatter
- */
-@property (nonatomic, readonly) NSDateFormatter *dateFormatter;
 
 /**
  Initialise the event formatter.
