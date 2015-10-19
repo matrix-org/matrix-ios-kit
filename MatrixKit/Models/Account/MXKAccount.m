@@ -25,6 +25,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXSession.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
@@ -60,6 +62,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     // If a server sync is in progress, the pause is delayed at the end of sync (except if resume is called).
     BOOL isPauseRequested;
+    
+    // catchup management
+    MXOnCatchupDone catchupDone;
+    MXOnCatchupFail catchupfails;
+    UIBackgroundTaskIdentifier catchupBgTask;
+    NSTimer* catchupTimer;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -542,6 +550,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     if (mxSession)
     {
+        [self cancelCatchup];
+        
         if (mxSession.state == MXSessionStatePaused)
         {
             // Resume SDK and update user presence
@@ -887,5 +897,104 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     }];
 }
+
+#pragma mark - catchup management
+
+- (void)cancelCatchup
+{
+    if (mxSession)
+    {
+        if (mxSession.state == MXSessionStateCatchingUp)
+        {
+            [mxSession cancel];
+        }
+    }
+    
+    [self onCatchupDoneWithError:[[NSError alloc] init]];
+}
+
+- (void)onCatchupDoneWithError:(NSError*)error
+{
+    if (catchupTimer)
+    {
+        [catchupTimer invalidate];
+        catchupTimer = NULL;
+    }
+    
+    if (catchupfails && error)
+    {
+        catchupfails(error);
+    }
+    
+    if (catchupDone && !error)
+    {
+        catchupDone();
+    }
+    
+    catchupDone = NULL;
+    catchupfails = NULL;
+    
+    if (catchupBgTask)
+    {
+        // Cancel background task
+        [[UIApplication sharedApplication] endBackgroundTask:catchupBgTask];
+        catchupBgTask = UIBackgroundTaskInvalid;
+        NSLog(@"[MXKAccount] cancelCatchup : %08lX stop", (unsigned long)catchupBgTask);
+    }
+}
+
+- (void)onCatchupTimerOut
+{
+    [self cancelCatchup];
+}
+
+- (void)catchup:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
+{
+    isPauseRequested = NO;
+    
+    if (mxSession)
+    {
+        catchupDone = success;
+        catchupfails = failure;
+        
+        
+        catchupBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            if (mxSession)
+            {
+                [mxSession cancel];
+            }
+            
+            [self cancelCatchup];
+        }];
+        
+        // ensure that the catchup will be really done in the expected time
+        // the request could be done but the treatment could be long so add a timer to cancel it
+        // if it takes too much time
+        catchupTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(timeout - 1) / 1000]
+                                                interval:0
+                                                  target:self
+                                                selector:@selector(onCatchupTimerOut)
+                                                userInfo:nil
+                                                 repeats:NO];
+        
+        [[NSRunLoop mainRunLoop] addTimer:catchupTimer forMode:NSDefaultRunLoopMode];
+        
+        
+            [mxSession catchup:timeout success:^{
+                
+                [self onCatchupDoneWithError:NULL];
+                
+            }
+             
+                failure:^(NSError* error) {
+                           
+                    [self onCatchupDoneWithError:error];
+                           
+                }
+
+         ];
+    }
+}
+
 
 @end
