@@ -908,7 +908,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         if (mxSession.state == MXSessionStateCatchingUp)
         {
-            [mxSession cancel];
+            [mxSession pause];
         }
     }
     
