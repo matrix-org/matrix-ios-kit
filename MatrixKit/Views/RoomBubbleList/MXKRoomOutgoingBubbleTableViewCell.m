@@ -80,22 +80,38 @@
             }
         }
         
-        if (self.attachmentView)
+        if (!self.attachmentView.isHidden)
         {
+            // Do not display activity indicator on outgoing attachments (These attachments are supposed to be stored locally)
+            // Some download may append to retrieve the actual thumbnail after posting an image.
+            self.attachmentView.hideActivityIndicator = YES;
+            
             // Check if the image is uploading
             MXKRoomBubbleComponent *component = self.bubbleData.bubbleComponents.firstObject;
-            if (MXKEventStateUploading == component.event.mxkState)
+            if (component.event.mxkState == MXKEventStateUploading)
             {
                 // Retrieve the uploadId embedded in the fake url
                 self.bubbleData.uploadId = component.event.content[@"url"];
                 
-                // And start showing upload progress
+                self.attachmentView.alpha = 0.5;
+                
+                // Start showing upload progress
                 [self startUploadAnimating];
-                self.attachmentView.hideActivityIndicator = YES;
+            }
+            else if (component.event.mxkState == MXKEventStateSending)
+            {
+                self.attachmentView.alpha = 0.5;
+                [self.activityIndicator startAnimating];
+            }
+            else if (component.event.mxkState == MXKEventStateSendingFailed)
+            {
+                self.attachmentView.alpha = 0.5;
+                [self.activityIndicator stopAnimating];
             }
             else
             {
-                self.attachmentView.hideActivityIndicator = NO;
+                self.attachmentView.alpha = 1;
+                [self.activityIndicator stopAnimating];
             }
         }
     }
@@ -142,7 +158,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaUploadProgressNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUploadProgress:) name:kMXKMediaUploadProgressNotification object:nil];
     
-    self.activityIndicator.hidden = NO;
     [self.activityIndicator startAnimating];
     
     MXKMediaLoader *uploader = [MXKMediaManager existingUploaderWithId:self.bubbleData.uploadId];
