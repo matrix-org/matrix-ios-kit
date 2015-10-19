@@ -96,7 +96,7 @@
         bottomBarView = nil;
     }
     
-    pieChartView = NULL;
+    pieChartView = nil;
 }
 
 - (void)startActivityIndicator

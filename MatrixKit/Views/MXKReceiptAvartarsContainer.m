@@ -36,7 +36,7 @@
 {
     CGRect globalFrame = self.frame;
     CGFloat side = globalFrame.size.height;
-    int count = MIN(userIds.count, MAX_NBR_USERS);
+    unsigned long count = MIN(userIds.count, MAX_NBR_USERS);
     int index;
     
     MXRestClient* restclient = session.matrixRestClient;
@@ -104,7 +104,7 @@
     if (moreView)
     {
         [moreView removeFromSuperview];
-        moreView = NULL;
+        moreView = nil;
     }
 }
 
