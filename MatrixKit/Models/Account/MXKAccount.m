@@ -902,6 +902,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)cancelCatchup
 {
+    NSLog(@"[MXKAccount] The catchup is cancelled.");
+
     if (mxSession)
     {
         if (mxSession.state == MXSessionStateCatchingUp)
@@ -934,12 +936,21 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     catchupDone = NULL;
     catchupfails = NULL;
     
-    if (catchupBgTask)
+    if (catchupBgTask != UIBackgroundTaskInvalid)
     {
-        // Cancel background task
-        [[UIApplication sharedApplication] endBackgroundTask:catchupBgTask];
+        UIBackgroundTaskIdentifier localCatchupBgTask = catchupBgTask;
         catchupBgTask = UIBackgroundTaskInvalid;
-        NSLog(@"[MXKAccount] cancelCatchup : %08lX stop", (unsigned long)catchupBgTask);
+        
+        // give some times to perform other stuff like store saving...
+        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            
+            if (localCatchupBgTask != UIBackgroundTaskInvalid)
+            {
+                // Cancel background task
+                [[UIApplication sharedApplication] endBackgroundTask:localCatchupBgTask];
+                NSLog(@"[MXKAccount] cancelCatchup : %08lX stop", (unsigned long)localCatchupBgTask);
+            }
+        });
     }
 }
 
@@ -952,19 +963,23 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     isPauseRequested = NO;
     
-    if (mxSession)
+    // only work when the application is suspended
+    if (mxSession && mxSession.state == MXSessionStatePaused)
     {
+        NSLog(@"[MXKAccount] starts a catchup");
+        
         catchupDone = success;
         catchupfails = failure;
         
+        if (catchupBgTask != UIBackgroundTaskInvalid)
+        {
+             [[UIApplication sharedApplication] endBackgroundTask:catchupBgTask];
+        }
         
         catchupBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            if (mxSession)
-            {
-                [mxSession cancel];
-            }
-            
+            NSLog(@"[MXKAccount] the catchup fails because of the bg task timeout");
             [self cancelCatchup];
+            
         }];
         
         // ensure that the catchup will be really done in the expected time
@@ -979,20 +994,24 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         [[NSRunLoop mainRunLoop] addTimer:catchupTimer forMode:NSDefaultRunLoopMode];
         
-        
             [mxSession catchup:timeout success:^{
-                
+                NSLog(@"[MXKAccount] the catchup succeeds");
                 [self onCatchupDoneWithError:NULL];
                 
             }
-             
                 failure:^(NSError* error) {
-                           
-                    [self onCatchupDoneWithError:error];
-                           
-                }
+
+                NSLog(@"[MXKAccount] the catchup fails");
+                [self onCatchupDoneWithError:error];
+                       
+            }
 
          ];
+    }
+    else
+    {
+        NSLog(@"[MXKAccount] cannot start catchup (invalid state");
+        failure([[NSError alloc] init]);
     }
 }
 
