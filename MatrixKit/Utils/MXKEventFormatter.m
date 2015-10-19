@@ -37,11 +37,12 @@
     {
         mxSession = matrixSession;
         
-        dateFormat = @"MMM dd";
-        _dateFormatter = [[NSDateFormatter alloc] init];
-        [_dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
-        [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-        [_dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+        // Prepare internal date formatter
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
+        [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
+        // Set default date format
+        [dateFormatter setDateFormat:@"MMM dd"];
         
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -739,19 +740,20 @@
 
 - (NSString*)dateStringFromDate:(NSDate *)date withTime:(BOOL)time
 {
-    // Get first date string without time
+    // Get first date string without time (if a date format is defined, else only time string is returned)
     NSString *dateString = nil;
-    if (dateFormat)
+    if (dateFormatter.dateFormat)
     {
-        [_dateFormatter setDateFormat:dateFormat];
-        dateString = [_dateFormatter stringFromDate:date];
+        dateString = [dateFormatter stringFromDate:date];
     }
     
     if (time)
     {
-        // Remove data format to get time string in short style.
-        [_dateFormatter setDateFormat:nil];
-        NSString *timeString = [_dateFormatter stringFromDate:date];
+        // Create a time formatter to get time string by considered the current system time formatting.
+        NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+        [timeFormatter setDateStyle:NSDateFormatterNoStyle];
+        [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
+        NSString *timeString = [timeFormatter stringFromDate:date];
         if (dateString.length)
         {
             // Add time string

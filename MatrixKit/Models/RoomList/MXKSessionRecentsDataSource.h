@@ -22,7 +22,7 @@
 #import "MXKEventFormatter.h"
 
 /**
- Identifier to use for cells that display a room is the recents list.
+ Identifier to use for cells that display a room in the recents list.
  */
 extern NSString *const kMXKRecentCellIdentifier;
 

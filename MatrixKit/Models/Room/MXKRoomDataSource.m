@@ -87,6 +87,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
      Snapshot of the queued events.
      */
     NSMutableArray *eventsToProcessSnapshot;
+    
+    /**
+     Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
+     */
+    id UIApplicationSignificantTimeChangeNotificationObserver;
 }
 
 @end
@@ -154,6 +159,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringCallInvite
                                              ];
         }
+        
+        // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
+        UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            if (self.showBubblesDateTime && self.delegate)
+            {
+                // Delay the refresh because new time formatter are not ready.
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    // Reload all the table
+                    [self.delegate dataSource:self didCellChange:nil];
+                });
+            }
+        }];
     }
     return self;
 }
@@ -286,6 +304,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)destroy
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
+    
+    if (UIApplicationSignificantTimeChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
+        UIApplicationSignificantTimeChangeNotificationObserver = nil;
+    }
     
     [self reset];
     

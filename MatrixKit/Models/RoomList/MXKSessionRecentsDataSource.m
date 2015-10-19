@@ -34,6 +34,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
      These changes are reported to the delegate only if no server sync is in progress.
      */
     NSMutableArray *internalCellDataArray;
+    
+    /**
+     Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
+     */
+    id UIApplicationSignificantTimeChangeNotificationObserver;
 }
 
 @end
@@ -57,12 +62,39 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         _eventFormatter.isForSubtitle = YES;
+        
+        // Observe UIApplicationSignificantTimeChangeNotification to refresh display on time formatting change.
+        UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            // Delay the refresh because new time formatter are not ready.
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                // Force update on each recents
+                for (id<MXKRecentCellDataStoring> cellData in cellDataArray)
+                {
+                    [cellData update];
+                }
+                
+                if (self.delegate)
+                {
+                    // Reload all the table
+                    [self.delegate dataSource:self didCellChange:nil];
+                }
+            });
+            
+        }];
     }
     return self;
 }
 
 - (void)destroy
 {
+    if (UIApplicationSignificantTimeChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
+        UIApplicationSignificantTimeChangeNotificationObserver = nil;
+    }
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
