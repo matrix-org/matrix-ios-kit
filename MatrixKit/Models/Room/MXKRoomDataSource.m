@@ -1751,7 +1751,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     // The view controller is going to display all messages
     // Automatically reset the counters
-    [self markAllAsRead];
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+    {
+        [self markAllAsRead];
+    }
     
     NSInteger count;
     @synchronized(bubbles)
