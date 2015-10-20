@@ -78,7 +78,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
 @synthesize userTintColor;
-@synthesize sendPresenceAfterInit;
+@synthesize hideUserPresence;
 
 + (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
 {
@@ -114,7 +114,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
-        sendPresenceAfterInit = YES;
     }
     return self;
 }
@@ -166,7 +165,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
-        sendPresenceAfterInit = YES;
     }
     
     return self;
@@ -352,7 +350,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     userPresence = presence;
     
-    if (mxSession)
+    if (mxSession && !hideUserPresence)
     {
         // Update user presence on server side
         [mxSession.myUser setPresence:userPresence
@@ -369,6 +367,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                               failure:^(NSError *error) {
                                   NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
                               }];
+    }
+    else if (hideUserPresence)
+    {
+        NSLog(@"[MXKAccount] %@: set user presence is disabled.", mxCredentials.userId);
     }
 }
 
@@ -772,14 +774,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
-        if (sendPresenceAfterInit)
-        {
-            [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-        }
-        else
-        {
-            NSLog(@"[MXKAccount] %@: The presence event is not sent at launch.", mxCredentials.userId);
-        }
+        [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
+        
     } failure:^(NSError *error) {
         
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
