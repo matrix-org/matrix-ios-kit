@@ -31,6 +31,8 @@
 
 #import "MXKConstants.h"
 
+//#import "MXKRoomAttachmentsViewController.h"
+
 #import "NSBundle+MatrixKit.h"
 
 NSString *const kCmdChangeDisplayName = @"/nick";
@@ -1618,7 +1620,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
         
         // Check if there is a download in progress, then offer to cancel it
-        NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+        NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
         if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
         {
             if (currentAlert)
@@ -1654,7 +1656,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             // Check if there is an upload in progress, then offer to cancel it
             // Upload id is stored in attachment url (nasty trick)
-            NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
+            NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
             if ([MXKMediaManager existingUploaderWithId:uploadId])
             {
                 if (currentAlert)
@@ -1880,7 +1882,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             if (selectedEvent.mxkState == MXKEventStateUploading)
             {
                 // Upload id is stored in attachment url (nasty trick)
-                NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
+                NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
                 if ([MXKMediaManager existingUploaderWithId:uploadId])
                 {
                     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
@@ -1903,7 +1905,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 // Check whether download is in progress
                 if (selectedEvent.isMediaAttachment)
                 {
-                    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+                    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
                     if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
                     {
                         [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
@@ -2037,7 +2039,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
     
     // Check whether the attachment is already available
-    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
     if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
     {
         // Done
@@ -2050,7 +2052,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Trigger download if it is not already in progress
         MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-        NSString *attachmentURL = roomBubbleTableViewCell.bubbleData.attachmentURL;
+        NSString *attachmentURL = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
         if (!loader)
         {
             loader = [MXKMediaManager downloadMediaFromURL:attachmentURL andSaveAtFilePath:cacheFilePath];
@@ -2123,7 +2125,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
     
     // Retrieve the cache file path
-    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
     
     // The original file name is available in attachment body (if any).
     // This attachment body is reported in bubble text message.
@@ -2419,12 +2421,35 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self dismissKeyboard];
     
     MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    MXKImageView *attachment = roomBubbleTableViewCell.attachmentView;
+    MXKImageView *attachmentView = roomBubbleTableViewCell.attachmentView;
     
     // Retrieve attachment information
-    NSDictionary *content = attachment.mediaInfo;
-    NSUInteger msgtype = ((NSNumber*)content[@"msgtype"]).unsignedIntValue;
-    if (msgtype == MXKRoomBubbleCellDataTypeImage)
+    NSDictionary *content = attachmentView.mediaInfo;
+    NSUInteger attachmentType = ((NSNumber*)content[@"attachmenttype"]).unsignedIntValue;
+    
+//    if (attachmentType == MXKAttachmentTypeImage || attachmentType == MXKAttachmentTypeVideo)
+//    {
+//        MXKRoomBubbleCellData *bubbleData = roomBubbleTableViewCell.bubbleData;
+//        // Retrieve the event id of the first attachment displayed in the selected bubble (Note: only one attachment is presently displayed by bubble).
+//        NSString *attachmentEventId;
+//        if (bubbleData.isAttachmentWithThumbnail)
+//        {
+//            if (roomBubbleTableViewCell.bubbleData.events.count)
+//            {
+//                attachmentEventId = [roomBubbleTableViewCell.bubbleData.events[0] eventId];
+//            }
+//        }
+//        
+//        // Present an attachment viewer
+//        MXKRoomAttachmentsViewController *attachmentViewer = [MXKRoomAttachmentsViewController roomAttachmentsViewController];
+//        attachmentViewer.hidesBottomBarWhenPushed = YES;
+//        // TODO provide attachments array
+//
+//        //    [self presentViewController:attachmentViewer animated:YES completion:nil];
+//        [self.navigationController pushViewController:attachmentViewer animated:YES];
+//    }
+    
+    if (attachmentType == MXKAttachmentTypeImage)
     {
         NSString *url = content[@"url"];
         if (url.length)
@@ -2490,7 +2515,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 UIImageView *previewImage = [[UIImageView alloc] initWithFrame:animatedGifViewer.frame];
                 previewImage.contentMode = animatedGifViewer.contentMode;
                 previewImage.autoresizingMask = animatedGifViewer.autoresizingMask;
-                previewImage.image = attachment.image;
+                previewImage.image = attachmentView.image;
                 previewImage.center = highResImageView.center;
                 [highResImageView addSubview:previewImage];
                 
@@ -2504,7 +2529,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 id downloadProgressObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                     
-                    if ([notif.object isEqualToString:roomBubbleTableViewCell.bubbleData.attachmentURL])
+                    if ([notif.object isEqualToString:roomBubbleTableViewCell.bubbleData.attachment.actualURL])
                     {
                         if (notif.userInfo)
                         {
@@ -2544,7 +2569,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Show the image in fullscreen
                 highResImageView.mediaFolder = roomDataSource.roomId;
-                [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachment.image];
+                [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachmentView.image];
             }
             
             // Add tap recognizer to hide attachment
@@ -2555,7 +2580,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             highResImageView.userInteractionEnabled = YES;
         }
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeVideo)
+    else if (attachmentType == MXKAttachmentTypeVideo)
     {
         NSString *url =content[@"url"];
         if (url.length)
@@ -2596,7 +2621,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         NSLog(@"[MXKRoomVC] Video Download failed: %@", error);
                         // Notify MatrixKit user
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-
+                        
                         [self hideAttachmentView];
                         
                     }];
@@ -2604,13 +2629,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
         }
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeAudio)
+    else if (attachmentType == MXKAttachmentTypeAudio)
     {
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeLocation)
+    else if (attachmentType == MXKAttachmentTypeLocation)
     {
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeFile)
+    else if (attachmentType == MXKAttachmentTypeFile)
     {
         [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
             
@@ -2633,7 +2658,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }
                 }
             }
-
+            
         } failure:nil];
     }
 }

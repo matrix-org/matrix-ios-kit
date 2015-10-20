@@ -24,9 +24,8 @@
 
 - (BOOL)isMediaMessage
 {
-
     // For now, support only image as media
-    return (MXKRoomBubbleCellDataTypeImage == self.dataType);
+    return (self.attachment && self.attachment.type == MXKAttachmentTypeImage);
 }
 
 - (NSUInteger)messageHash
