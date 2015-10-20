@@ -114,7 +114,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
-        
         sendPresenceAfterInit = YES;
     }
     return self;
@@ -167,6 +166,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+        sendPresenceAfterInit = YES;
     }
     
     return self;
@@ -911,17 +911,20 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)cancelCatchup
 {
-    NSLog(@"[MXKAccount] The catchup is cancelled.");
-
-    if (mxSession)
+    if (catchupBgTask != UIBackgroundTaskInvalid)
     {
-        if (mxSession.state == MXSessionStateCatchingUp)
+        NSLog(@"[MXKAccount] The catchup is cancelled.");
+
+        if (mxSession)
         {
-            [mxSession pause];
+            if (mxSession.state == MXSessionStateCatchingUp)
+            {
+                [mxSession pause];
+            }
         }
+        
+        [self onCatchupDoneWithError:[[NSError alloc] init]];
     }
-    
-    [self onCatchupDoneWithError:[[NSError alloc] init]];
 }
 
 - (void)onCatchupDoneWithError:(NSError*)error
@@ -957,7 +960,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             {
                 // Cancel background task
                 [[UIApplication sharedApplication] endBackgroundTask:localCatchupBgTask];
-                NSLog(@"[MXKAccount] cancelCatchup : %08lX stop", (unsigned long)localCatchupBgTask);
+                NSLog(@"[MXKAccount] onCatchupDoneWithError : %08lX stop", (unsigned long)localCatchupBgTask);
             }
         });
     }

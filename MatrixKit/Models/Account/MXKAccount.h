@@ -129,8 +129,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  
  The presence event must not be sent if the application is launched by a push notification.
  */
-@property (nonatomic,getter=isDisabled) BOOL sendPresenceAfterInit;
-
+@property (nonatomic) BOOL sendPresenceAfterInit;
 
 /**
  Register the MXKAccountOnCertificateChange block that will be used to handle certificate change during account use.
