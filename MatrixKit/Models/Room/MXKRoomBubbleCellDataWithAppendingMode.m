@@ -24,8 +24,8 @@ static NSAttributedString *messageSeparator = nil;
 
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
 {
-    // We group together text messages from the same user
-    if ([event.sender isEqualToString:self.senderId] && (self.dataType == MXKRoomBubbleCellDataTypeText))
+    // We group together text messages from the same user (attachments are not merged).
+    if ([event.sender isEqualToString:self.senderId] && (self.attachment == nil))
     {
         // Attachments (image, video ...) cannot be added here
         if ([roomDataSource.eventFormatter isSupportedAttachment:event])
@@ -76,7 +76,8 @@ static NSAttributedString *messageSeparator = nil;
     if ([self hasSameSenderAsBubbleCellData:bubbleCellData])
     {
         MXKRoomBubbleCellData *cellData = (MXKRoomBubbleCellData*)bubbleCellData;
-        if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText))
+        // Only text messages are merged (Attachments are not merged).
+        if ((self.attachment == nil) && (cellData.attachment == nil))
         {
             // Take into account here the rendered bubbles pagination
             if (roomDataSource.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
@@ -141,7 +142,7 @@ static NSAttributedString *messageSeparator = nil;
     [super prepareBubbleComponentsPosition];
     
     // Check whether the position of other components need to be refreshed
-    if (self.dataType != MXKRoomBubbleCellDataTypeText || !shouldUpdateComponentsPosition || bubbleComponents.count < 2)
+    if (self.attachment || !shouldUpdateComponentsPosition || bubbleComponents.count < 2)
     {
         return;
     }

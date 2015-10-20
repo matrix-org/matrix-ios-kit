@@ -51,37 +51,23 @@
             senderAvatarUrl = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
             isIncoming = ([event.sender isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
             
-            // Set message type (consider text by default), and check attachment if any
-            _dataType = MXKRoomBubbleCellDataTypeText;
+            // Check attachment if any
             if ([roomDataSource.eventFormatter isSupportedAttachment:event])
             {
                 // Note: event.eventType is equal here to MXEventTypeRoomMessage
-                
-                // Set default thumbnail orientation
-                _thumbnailOrientation = UIImageOrientationUp;
-                
-                NSString *msgtype =  event.content[@"msgtype"];
-                if ([msgtype isEqualToString:kMXMessageTypeImage])
+                _attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                if (_attachment && _attachment.type == MXKAttachmentTypeImage && _attachment.thumbnailURL == nil)
                 {
-                    [self handleImageMessage:event];
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeAudio])
-                {
-                    // Not supported yet
-                    //_dataType = MXKRoomBubbleCellDataTypeAudio;
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeVideo])
-                {
-                    [self handleVideoMessage:event];
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-                {
-                    // Not supported yet
-                    // _dataType = MXKRoomBubbleCellDataTypeLocation;
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeFile])
-                {
-                    [self handleFileMessage:event];
+                    // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+                    _attachment.thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:_attachment.contentURL
+                                                                                                  toFitViewSize:self.contentSize
+                                                                                                     withMethod:MXThumbnailingMethodScale];
+                    
+                    // Check the current thumbnail orientation. Rotate the current content size (if need)
+                    if (_attachment.thumbnailOrientation == UIImageOrientationLeft || _attachment.thumbnailOrientation == UIImageOrientationRight)
+                    {
+                        _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
+                    }
                 }
             }
             
@@ -125,33 +111,42 @@
             // Handle here attachment update.
             // The case of update of attachment event happens when an echo is replaced by its true event
             // received back by the events stream.
-            if (_dataType != MXKRoomBubbleCellDataTypeText)
+            if (_attachment)
             {
-                // Check the attachment url, to update it with the actual one
-                if (! [_attachmentURL isEqualToString:event.content[@"url"]])
+                // Check the current content url, to update it with the actual one
+                if (! [_attachment.contentURL isEqualToString:event.content[@"url"]])
                 {
-                    NSString *msgtype =  event.content[@"msgtype"];
+                    MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
                     
-                    // Check event type
-                    if ([msgtype isEqualToString:kMXMessageTypeImage] && _dataType == MXKRoomBubbleCellDataTypeImage)
+                    // Sanity check on attachment type
+                    if (updatedAttachment && _attachment.type == updatedAttachment.type)
                     {
                         // Store the echo image as preview to prevent the cell from flashing
-                        _previewURL = _attachmentURL;
-                        [self handleImageMessage:event];
-                    }
-                    else if ([msgtype isEqualToString:kMXMessageTypeVideo] && _dataType == MXKRoomBubbleCellDataTypeVideo)
-                    {
-                        // Store the echo image as preview to prevent the cell from flashing
-                        _previewURL = _attachmentURL;
-                        [self handleVideoMessage:event];
-                    }
-                    else if ([msgtype isEqualToString:kMXMessageTypeFile] && _dataType == MXKRoomBubbleCellDataTypeFile)
-                    {
-                        [self handleFileMessage:event];
+                        updatedAttachment.previewURL = _attachment.actualURL;
+                        
+                        // Update the current attachmnet description
+                        _attachment = updatedAttachment;
+                        
+                        if (_attachment.type == MXKAttachmentTypeImage && _attachment.thumbnailURL == nil)
+                        {
+                            // Reset content size
+                            _contentSize = CGSizeZero;
+                            
+                            // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+                            _attachment.thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:_attachment.contentURL
+                                                                                                          toFitViewSize:self.contentSize
+                                                                                                             withMethod:MXThumbnailingMethodScale];
+                            
+                            // Check the current thumbnail orientation. Rotate the current content size (if need)
+                            if (_attachment.thumbnailOrientation == UIImageOrientationLeft || _attachment.thumbnailOrientation == UIImageOrientationRight)
+                            {
+                                _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
+                            }
+                        }
                     }
                     else
                     {
-                        NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of event type");
+                        NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of attachment type");
                     }
                 }
             }
@@ -237,7 +232,7 @@
     if (bubbleComponents.count)
     {
         MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
-        CGFloat positionY = (_dataType == MXKRoomBubbleCellDataTypeText || _dataType == MXKRoomBubbleCellDataTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
+        CGFloat positionY = (_attachment == nil || _attachment.type == MXKAttachmentTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -279,116 +274,6 @@
         return [dummyTextView sizeThatFits:dummyTextView.frame.size];
     }
     return CGSizeZero;
-}
-
-#pragma mark - Privates
-
-- (void)handleImageMessage:(MXEvent*)event
-{
-    _dataType = MXKRoomBubbleCellDataTypeImage;
-    // Retrieve content url/info
-    NSString *contentURL = event.content[@"url"];
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-    if (nil == _attachmentURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _attachmentURL = contentURL;
-    }
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
-    _attachmentInfo = event.content[@"info"];
-    
-    // Handle legacy thumbnail url/info (Not defined anymore in recent attachments)
-    _thumbnailURL = event.content[@"thumbnail_url"];
-    _thumbnailInfo = event.content[@"thumbnail_info"];
-    if (!_thumbnailURL)
-    {
-        // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        _thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:contentURL toFitViewSize:self.contentSize withMethod:MXThumbnailingMethodScale];
-        
-        // Check whether the image has been uploaded with an orientation
-        if (_attachmentInfo[@"rotation"])
-        {
-            // Currently the matrix content server provides thumbnails by ignoring the original image orientation.
-            // We store here the actual orientation to apply it on downloaded thumbnail.
-            _thumbnailOrientation = [MXKTools imageOrientationForRotationAngleInDegree:[_attachmentInfo[@"rotation"] integerValue]];
-            
-            // Rotate the current content size (if need)
-            if (_thumbnailOrientation == UIImageOrientationLeft || _thumbnailOrientation == UIImageOrientationRight)
-            {
-                _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
-            }
-        }
-    }
-}
-
-- (void)handleVideoMessage:(MXEvent*)event
-{
-    _dataType = MXKRoomBubbleCellDataTypeVideo;
-    
-    // Retrieve content url/info
-    NSString *contentURL = event.content[@"url"];
-    
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-    if (nil == _attachmentURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _attachmentURL = contentURL;
-    }
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
-    _attachmentInfo = event.content[@"info"];
-    
-    if (_attachmentInfo)
-    {
-        // Get video thumbnail info
-        _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
-        _thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:_thumbnailURL];
-        if (nil == _thumbnailURL)
-        {
-            _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
-        }
-        
-        _thumbnailInfo = _attachmentInfo[@"thumbnail_info"];
-    }
-}
-
-- (void)handleFileMessage:(MXEvent*)event
-{
-    _dataType = MXKRoomBubbleCellDataTypeFile;
-    
-    // Retrieve content url/info
-    NSString *contentURL = event.content[@"url"];
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-    if (nil == _attachmentURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _attachmentURL = contentURL;
-    }
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
-    _attachmentInfo = event.content[@"info"];
 }
 
 #pragma mark - Properties
@@ -465,7 +350,7 @@
 
 - (BOOL)isAttachmentWithThumbnail
 {
-    return (_dataType == MXKRoomBubbleCellDataTypeImage || _dataType == MXKRoomBubbleCellDataTypeVideo);
+    return (_attachment && (_attachment.type == MXKAttachmentTypeImage || _attachment.type == MXKAttachmentTypeVideo));
 }
 
 - (BOOL)isAttachmentWithIcon
@@ -476,15 +361,12 @@
 
 - (void)setMaxTextViewWidth:(CGFloat)inMaxTextViewWidth
 {
-    if (_dataType == MXKRoomBubbleCellDataTypeText || _dataType == MXKRoomBubbleCellDataTypeFile)
+    // Check change
+    if (inMaxTextViewWidth != _maxTextViewWidth)
     {
-        // Check change
-        if (inMaxTextViewWidth != _maxTextViewWidth)
-        {
-            _maxTextViewWidth = inMaxTextViewWidth;
-            // Reset content size
-            _contentSize = CGSizeZero;
-        }
+        _maxTextViewWidth = inMaxTextViewWidth;
+        // Reset content size
+        _contentSize = CGSizeZero;
     }
 }
 
@@ -492,8 +374,9 @@
 {
     if (CGSizeEqualToSize(_contentSize, CGSizeZero))
     {
-        if (_dataType == MXKRoomBubbleCellDataTypeText)
+        if (_attachment == nil)
         {
+            // Here the bubble is a text message
             if ([NSThread currentThread] != [NSThread mainThread])
             {
                 dispatch_sync(dispatch_get_main_queue(), ^{
@@ -505,21 +388,24 @@
                 _contentSize = [self textContentSize:self.attributedTextMessage];
             }
         }
-        else if (_dataType == MXKRoomBubbleCellDataTypeImage || _dataType == MXKRoomBubbleCellDataTypeVideo)
+        else if (self.isAttachmentWithThumbnail)
         {
             CGFloat width, height;
+            
+            // Set default content size
             width = height = MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH;
-            if (_thumbnailInfo || _attachmentInfo)
+            
+            if (_attachment.thumbnailInfo || _attachment.contentInfo)
             {
-                if (_thumbnailInfo && _thumbnailInfo[@"w"] && _thumbnailInfo[@"h"])
+                if (_attachment.thumbnailInfo && _attachment.thumbnailInfo[@"w"] && _attachment.thumbnailInfo[@"h"])
                 {
-                    width = [_thumbnailInfo[@"w"] integerValue];
-                    height = [_thumbnailInfo[@"h"] integerValue];
+                    width = [_attachment.thumbnailInfo[@"w"] integerValue];
+                    height = [_attachment.thumbnailInfo[@"h"] integerValue];
                 }
-                else if (_attachmentInfo[@"w"] && _attachmentInfo[@"h"])
+                else if (_attachment.contentInfo[@"w"] && _attachment.contentInfo[@"h"])
                 {
-                    width = [_attachmentInfo[@"w"] integerValue];
-                    height = [_attachmentInfo[@"h"] integerValue];
+                    width = [_attachment.contentInfo[@"w"] integerValue];
+                    height = [_attachment.contentInfo[@"h"] integerValue];
                 }
                 
                 if (width > MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH || height > MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH)
@@ -540,7 +426,7 @@
             }
             
             // Check here thumbnail orientation
-            if (_thumbnailOrientation == UIImageOrientationLeft || _thumbnailOrientation == UIImageOrientationRight)
+            if (_attachment.thumbnailOrientation == UIImageOrientationLeft || _attachment.thumbnailOrientation == UIImageOrientationRight)
             {
                 _contentSize = CGSizeMake(height, width);
             }
@@ -549,7 +435,7 @@
                 _contentSize = CGSizeMake(width, height);
             }
         }
-        else if (_dataType == MXKRoomBubbleCellDataTypeFile)
+        else if (_attachment.type == MXKAttachmentTypeFile)
         {
             // Presently we displayed only the file name for attached file (no icon yet)
             // Return suitable content size of a text view to display the file name (available in text message). 

@@ -93,7 +93,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)highlightTextMessageForEvent:(NSString*)eventId
 {
-    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+    if (bubbleData.attachment == nil)
     {
         if (eventId.length)
         {
@@ -164,7 +164,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.messageTextView.userInteractionEnabled = YES;
         
         // Adjust top constraint constant for dateTime labels container, and hide it by default
-        if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
+        if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
         {
             self.bubbleInfoContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
         }
@@ -177,7 +177,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Set message content
         bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
-        if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText && bubbleData.dataType != MXKRoomBubbleCellDataTypeFile)
+        if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
         {
             self.messageTextView.hidden = YES;
             self.attachmentView.hidden = NO;
@@ -191,18 +191,18 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.attachmentView.frame = frame;
             
             NSString *mimetype = nil;
-            if (bubbleData.thumbnailInfo)
+            if (bubbleData.attachment.thumbnailInfo)
             {
-                mimetype = bubbleData.thumbnailInfo[@"mimetype"];
+                mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
             }
-            else if (bubbleData.attachmentInfo)
+            else if (bubbleData.attachment.contentInfo)
             {
-                mimetype = bubbleData.attachmentInfo[@"mimetype"];
+                mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
             }
             
-            NSString *url = bubbleData.thumbnailURL;
+            NSString *url = bubbleData.attachment.thumbnailURL;
             
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
+            if (bubbleData.attachment.type == MXKAttachmentTypeVideo)
             {
                 self.playIconView.hidden = NO;
                 self.fileTypeIconView.hidden = YES;
@@ -222,14 +222,14 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             }
             
             UIImage *preview = nil;
-            if (bubbleData.previewURL)
+            if (bubbleData.attachment.previewURL)
             {
-                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
+                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.attachment.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
                 preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
             }
-            [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.thumbnailOrientation previewImage:preview];
+            [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.attachment.thumbnailOrientation previewImage:preview];
             
-            if (url && bubbleData.attachmentURL)
+            if (url && bubbleData.attachment.actualURL)
             {
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -239,11 +239,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [self.attachmentView addGestureRecognizer:tap];
                 
                 // Prepare attachment description
-                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType], @"url" : bubbleData.attachmentURL}];
+                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type], @"url" : bubbleData.attachment.actualURL}];
                 
-                if (bubbleData.attachmentInfo)
+                if (bubbleData.attachment.contentInfo)
                 {
-                    mediaInfoDict[@"info"] = bubbleData.attachmentInfo;
+                    mediaInfoDict[@"info"] = bubbleData.attachment.contentInfo;
                 }
                 
                 // Store attachment content description used in showAttachmentView:
@@ -277,7 +277,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.messageTextView.frame = frame;
             
             // Underline attached file name
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeFile && bubbleData.attachmentURL && bubbleData.attachmentInfo)
+            if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
@@ -293,9 +293,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 
                 // Store attachment content description used in showAttachmentView:
                 self.attachmentView.mediaInfo = @{
-                                                  @"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType],
-                                                  @"url" : bubbleData.attachmentURL,
-                                                  @"info" : bubbleData.attachmentInfo
+                                                  @"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type],
+                                                  @"url" : bubbleData.attachment.actualURL,
+                                                  @"info" : bubbleData.attachment.contentInfo
                                                   };
             }
             else
@@ -501,7 +501,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
-    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
+    if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
     {
         rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
     }
@@ -585,7 +585,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         NSString* url = notif.object;
         
-        if ([url isEqualToString:bubbleData.attachmentURL])
+        if ([url isEqualToString:bubbleData.attachment.actualURL])
         {
             [self updateProgressUI:notif.userInfo];
         }
@@ -599,7 +599,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         NSString* url = notif.object;
         
-        if ([url isEqualToString:bubbleData.attachmentURL])
+        if ([url isEqualToString:bubbleData.attachment.actualURL])
         {
             [self stopProgressUI];
             
@@ -621,10 +621,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // there is an attachment URL
-    if (bubbleData.attachmentURL)
+    if (bubbleData.attachment.actualURL)
     {
         // check if there is a download in progress
-        MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachmentCacheFilePath];
+        MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
         
         NSDictionary *dict = loader.statisticsDict;
         

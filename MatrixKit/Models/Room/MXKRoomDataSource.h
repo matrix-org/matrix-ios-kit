@@ -114,7 +114,6 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 /**
  The id of the room managed by the data source.
-
  */
 @property (nonatomic, readonly) NSString *roomId;
 
