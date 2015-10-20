@@ -78,6 +78,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
 @synthesize userTintColor;
+@synthesize sendPresenceAfterInit;
 
 + (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
 {
@@ -113,6 +114,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
+        
+        sendPresenceAfterInit = YES;
     }
     return self;
 }
@@ -769,8 +772,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
-        [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-        
+        if (sendPresenceAfterInit)
+        {
+            [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
+        }
+        else
+        {
+            NSLog(@"[MXKAccount] %@: The presence event is not sent at launch.", mxCredentials.userId);
+        }
     } failure:^(NSError *error) {
         
         NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
