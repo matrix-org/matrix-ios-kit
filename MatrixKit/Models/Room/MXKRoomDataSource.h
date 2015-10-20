@@ -20,6 +20,13 @@
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
 
+
+/**
+ define the threshold which triggers a bubbles count flush.
+ */
+
+#define MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD 30
+
 /**
  List the supported pagination of the rendered room bubble cells
  */
@@ -178,6 +185,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 @property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;
 
+/**
+ Max nbr of cached bubbles when there is no delegate.
+ The default value is 30.
+ */
+@property (nonatomic) unsigned long maxBackgroundCachedBubblesCount;
 
 #pragma mark - Life cycle
 /**

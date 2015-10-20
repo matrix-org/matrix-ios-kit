@@ -203,7 +203,7 @@ static Class _roomDataSourceClass;
         case MXKRoomDataSourceManagerReleasePolicyNeverRelease:
             
             // Keep the instance for life (reduce memory usage by flushing room data if the number of bubbles is over 30).
-            [roomDataSource limitMemoryUsage:30];
+            [roomDataSource limitMemoryUsage:MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD];
             // The close here consists in no more sending actions to the currrent view controller, the room data source delegate
             roomDataSource.delegate = nil;
             break;

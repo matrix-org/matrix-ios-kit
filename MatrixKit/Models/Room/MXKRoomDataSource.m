@@ -130,6 +130,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         self.useCustomDateTimeLabel = NO;
         
+        _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
+        
         // Check here whether the app user wants to display all the events
         if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory])
         {
@@ -1865,6 +1867,25 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     if (self.delegate)
                     {
                         [self.delegate dataSource:self didCellChange:nil];
+                    }
+                    else if (0 == pendingLocalEchoes.count)
+                    {
+                        NSInteger count;
+                        @synchronized(bubbles)
+                        {
+                            count = bubbles.count;
+                        }
+                        
+                        // loop until the bubbles count is reduced as expected.
+                        while (count > _maxBackgroundCachedBubblesCount)
+                        {
+                            [self removeCellData:[bubblesSnapshot objectAtIndex:0]];
+                            
+                            @synchronized(bubbles)
+                            {
+                                count = bubbles.count;
+                            }
+                        }
                     }
                     
                     // Notify the last message, unreadCount and/or unreadBingCount have changed
