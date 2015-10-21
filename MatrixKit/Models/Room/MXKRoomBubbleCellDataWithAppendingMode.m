@@ -147,32 +147,30 @@ static NSAttributedString *messageSeparator = nil;
     
     @synchronized(bubbleComponents)
     {
-        // Check whether the position of other components need to be refreshed
-        if (self.attachment || !shouldUpdateComponentsPosition || bubbleComponents.count < 2)
+        // Check whether the position of other components need to be refreshed        
+        if (!self.attachment && shouldUpdateComponentsPosition && bubbleComponents.count > 1)
         {
-            return;
-        }
-        
-        // Compute height of the first text component
-        MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-        CGFloat componentHeight = [self rawTextHeight:component.attributedTextMessage];
-        
-        // Set position for each other component
-        CGFloat positionY = component.position.y;
-        CGFloat cumulatedHeight = 0;
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
-        for (NSUInteger index = 1; index < bubbleComponents.count; index++)
-        {
-            cumulatedHeight += componentHeight;
-            positionY += componentHeight;
+            // Compute height of the first text component
+            MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
+            CGFloat componentHeight = [self rawTextHeight:component.attributedTextMessage];
             
-            component = [bubbleComponents objectAtIndex:index];
-            component.position = CGPointMake(0, positionY);
-            
-            // Compute height of the current component
-            [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-            [attributedString appendAttributedString:component.attributedTextMessage];
-            componentHeight = [self rawTextHeight:attributedString] - cumulatedHeight;
+            // Set position for each other component
+            CGFloat positionY = component.position.y;
+            CGFloat cumulatedHeight = 0;
+            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+            for (NSUInteger index = 1; index < bubbleComponents.count; index++)
+            {
+                cumulatedHeight += componentHeight;
+                positionY += componentHeight;
+                
+                component = [bubbleComponents objectAtIndex:index];
+                component.position = CGPointMake(0, positionY);
+                
+                // Compute height of the current component
+                [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                [attributedString appendAttributedString:component.attributedTextMessage];
+                componentHeight = [self rawTextHeight:attributedString] - cumulatedHeight;
+            }
         }
     }
 
