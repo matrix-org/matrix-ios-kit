@@ -180,7 +180,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
     _unreadCount = 0;
-    NSArray* list = [_room unreadMessages];
+    NSArray* list = [_room unreadEvents];
     
     if (list) {
         _unreadCount = list.count;
@@ -197,7 +197,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)markAllAsRead
 {
-    if ([_room acknowledgeLatestMessage:YES])
+    if ([_room acknowledgeLatestEvent:YES])
     {
         _unreadCount = 0;
         _unreadBingCount = 0;
