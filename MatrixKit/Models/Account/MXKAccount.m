@@ -972,7 +972,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     isPauseRequested = NO;
     
     // only work when the application is suspended
-    if (mxSession && mxSession.state == MXSessionStatePaused)
+    
+    // TODO enable it when V2 will be released
+    // the events request put the user as "SEEN" so, the notifications are randomly cleared as soon as the server
+    if (false)//(mxSession && mxSession.state == MXSessionStatePaused)
     {
         NSLog(@"[MXKAccount] starts a catchup");
         
