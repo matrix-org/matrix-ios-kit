@@ -19,8 +19,6 @@
 
 #import "MXKRoomBubbleComponent.h"
 
-#import "MXKAttachment.h"
-
 /**
  `MXKRoomBubbleCellData` instances compose data for `MXKRoomBubbleTableViewCell` cells.
  
@@ -50,11 +48,6 @@
  The matrix session.
  */
 @property (nonatomic, readonly) MXSession *mxSession;
-
-/**
- The bubble attachment (if any).
- */
-@property (nonatomic) MXKAttachment *attachment;
 
 /**
  Returns bubble components list (`MXKRoomBubbleComponent` instances).

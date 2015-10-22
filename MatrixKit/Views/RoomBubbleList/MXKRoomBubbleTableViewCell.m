@@ -533,6 +533,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     }
     
     [self stopProgressUI];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // Remove long tap gesture on the progressView
     while (self.progressView.gestureRecognizers.count)
@@ -625,21 +626,22 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         // check if there is a download in progress
         MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
-        
-        NSDictionary *dict = loader.statisticsDict;
-        
-        if (dict)
+        if (loader)
         {
-            isHidden = NO;
+            NSDictionary *dict = loader.statisticsDict;
+            if (dict)
+            {
+                isHidden = NO;
+                
+                // defines the text to display
+                [self updateProgressUI:dict];
+            }
             
-            // defines the text to display
-            [self updateProgressUI:dict];
+            // anyway listen to the progress event
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
         }
-        
-        // anyway listen to the progress event
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
     }
     
     self.progressView.hidden = isHidden;

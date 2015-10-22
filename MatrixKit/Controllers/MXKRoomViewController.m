@@ -31,7 +31,7 @@
 
 #import "MXKConstants.h"
 
-//#import "MXKRoomAttachmentsViewController.h"
+#import "MXKRoomAttachmentsViewController.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -124,12 +124,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSString *selectedText;
     
     /**
-     Observe Attachment download
-     */
-    id onAttachmentDownloadFailureObs;
-    id onAttachmentDownloadEndObs;
-    
-    /**
      The document interaction Controller used to share attachment
      */
     UIDocumentInteractionController *documentInteractionController;
@@ -139,12 +133,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      */
     NSString *documentCopyPath;
     
-    // Attachment handling
-    MXKImageView *highResImageView;
-    NSString *AVAudioSessionCategory;
-    MPMoviePlayerController *videoPlayer;
-    MPMoviePlayerController *tmpVideoPlayer;
-    UIWebView *animatedGifViewer;
+    /**
+     The attachments viewer for image and video.
+     */
+     MXKRoomAttachmentsViewController *attachmentsViewer;
 }
 
 @end
@@ -426,18 +418,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         UIMenuControllerDidHideMenuNotificationObserver = nil;
     }
     
-    if (onAttachmentDownloadEndObs)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-        onAttachmentDownloadEndObs = nil;
-    }
-    
-    if (onAttachmentDownloadFailureObs)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-        onAttachmentDownloadFailureObs = nil;
-    }
-    
     if (documentInteractionController)
     {
         [documentInteractionController dismissPreviewAnimated:NO];
@@ -612,8 +592,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)dismissTemporarySubViews
 {
     [self dismissKeyboard];
-    
-    [self hideAttachmentView];
     
     if (currentAlert)
     {
@@ -1696,6 +1674,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         MXEvent *selectedEvent = userInfo[kMXKRoomBubbleCellEventKey];
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+        MXKAttachment *attachment = roomBubbleTableViewCell.bubbleData.attachment;
         
         if (selectedEvent)
         {
@@ -1734,7 +1713,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             // Add actions for text message
-            if (!selectedEvent.isMediaAttachment)
+            if (!attachment)
             {
                 // Highlight the select event
                 [roomBubbleTableViewCell highlightTextMessageForEvent:selectedEvent.eventId];
@@ -1789,20 +1768,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }];
                 }
             }
-            else // Add action for medias
+            else // Add action for attachment
             {
-                NSString *msgtype = selectedEvent.content[@"msgtype"];
-                
-                if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo])
+                if (attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeVideo)
                 {
                     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
-                        [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                        [attachment prepare:^{
                             
-                            BOOL isImage = [msgtype isEqualToString:kMXMessageTypeImage];
-                            NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
+                            BOOL isImage = (attachment.type == MXKAttachmentTypeImage);
+                            NSURL* url = [NSURL fileURLWithPath:attachment.cacheFilePath];
                             
                             [strongSelf startActivityIndicator];
                             [MXKMediaManager saveMediaToPhotosLibrary:url
@@ -1822,6 +1799,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                   
                                                               }];
                         } failure:nil];
+                        
+                        // Start animation in case of download during attachment preparing
+                        [roomBubbleTableViewCell startProgressUI];
                     }];
                 }
                 
@@ -1829,19 +1809,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                    [attachment prepare:^{
                         
-                        if ([msgtype isEqualToString:kMXMessageTypeImage])
+                        if (attachment.type == MXKAttachmentTypeImage)
                         {
-                            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:cacheFilePath]];
+                            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:attachment.cacheFilePath]];
                         }
                         else
                         {
-                            NSData* data = [NSData dataWithContentsOfFile:cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+                            NSData* data = [NSData dataWithContentsOfFile:attachment.cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
                             
                             if (data)
                             {
-                                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[cacheFilePath pathExtension] , NULL);
+                                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[attachment.cacheFilePath pathExtension] , NULL);
                                 
                                 if (UTI)
                                 {
@@ -1851,13 +1831,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         }
                         
                     } failure:nil];
+                    
+                    // Start animation in case of download during attachment preparing
+                    [roomBubbleTableViewCell startProgressUI];
                 }];
                 
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                    [attachment prepare:^{
                         
                         // Prepare the file URL by considering the original file name (if any)
                         NSURL *fileURL = [strongSelf attachmentURLWithOriginalFileNameInCell:cell];
@@ -1875,6 +1858,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                             }
                         }
                     } failure:nil];
+                    
+                    // Start animation in case of download during attachment preparing
+                    [roomBubbleTableViewCell startProgressUI];
                 }];
             }
             
@@ -2032,91 +2018,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     return (selectedText.length != 0);
 }
 
-#pragma mark - Download attachment
-
-- (void)downloadAttachmentInCell:(id<MXKCellRendering>)cell success:(void (^)(NSString *cacheFilePath))success failure:(void (^)(NSError *error))failure
-{
-    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    
-    // Check whether the attachment is already available
-    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
-    {
-        // Done
-        if (success)
-        {
-            success (cacheFilePath);
-        }
-    }
-    else
-    {
-        // Trigger download if it is not already in progress
-        MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-        NSString *attachmentURL = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
-        if (!loader)
-        {
-            loader = [MXKMediaManager downloadMediaFromURL:attachmentURL andSaveAtFilePath:cacheFilePath];
-        }
-        
-        if (loader)
-        {
-            [roomBubbleTableViewCell startProgressUI];
-            
-            // Add observers
-            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                
-                // Sanity check
-                if ([notif.object isKindOfClass:[NSString class]])
-                {
-                    NSString* url = notif.object;
-                    NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
-                    
-                    if ([url isEqualToString:attachmentURL] && cacheFilePath.length)
-                    {
-                        // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-                        onAttachmentDownloadEndObs = nil;
-                        onAttachmentDownloadFailureObs = nil;
-                        
-                        if (success)
-                        {
-                            success (cacheFilePath);
-                        }
-                    }
-                }
-            }];
-            
-            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                
-                // Sanity check
-                if ([notif.object isKindOfClass:[NSString class]])
-                {
-                    NSString* url = notif.object;
-                    NSError* error = notif.userInfo[kMXKMediaLoaderErrorKey];
-                    
-                    if ([url isEqualToString:attachmentURL])
-                    {
-                        // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-                        onAttachmentDownloadEndObs = nil;
-                        onAttachmentDownloadFailureObs = nil;
-                        
-                        if (failure)
-                        {
-                            failure (error);
-                        }
-                    }
-                }
-            }];
-        }
-        else if (failure)
-        {
-            failure (nil);
-        }
-    }
-}
+#pragma mark - Attachment handling
 
 - (NSURL*)attachmentURLWithOriginalFileNameInCell:(id<MXKCellRendering>)cell
 {
@@ -2421,223 +2323,28 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self dismissKeyboard];
     
     MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    MXKImageView *attachmentView = roomBubbleTableViewCell.attachmentView;
+    MXKAttachment *selectedAttachment = roomBubbleTableViewCell.bubbleData.attachment;
     
-    // Retrieve attachment information
-    NSDictionary *content = attachmentView.mediaInfo;
-    NSUInteger attachmentType = ((NSNumber*)content[@"attachmenttype"]).unsignedIntValue;
-    
-//    if (attachmentType == MXKAttachmentTypeImage || attachmentType == MXKAttachmentTypeVideo)
-//    {
-//        MXKRoomBubbleCellData *bubbleData = roomBubbleTableViewCell.bubbleData;
-//        // Retrieve the event id of the first attachment displayed in the selected bubble (Note: only one attachment is presently displayed by bubble).
-//        NSString *attachmentEventId;
-//        if (bubbleData.isAttachmentWithThumbnail)
-//        {
-//            if (roomBubbleTableViewCell.bubbleData.events.count)
-//            {
-//                attachmentEventId = [roomBubbleTableViewCell.bubbleData.events[0] eventId];
-//            }
-//        }
-//        
-//        // Present an attachment viewer
-//        MXKRoomAttachmentsViewController *attachmentViewer = [MXKRoomAttachmentsViewController roomAttachmentsViewController];
-//        attachmentViewer.hidesBottomBarWhenPushed = YES;
-//        // TODO provide attachments array
-//
-//        //    [self presentViewController:attachmentViewer animated:YES completion:nil];
-//        [self.navigationController pushViewController:attachmentViewer animated:YES];
-//    }
-    
-    if (attachmentType == MXKAttachmentTypeImage)
+    if (roomBubbleTableViewCell.bubbleData.isAttachmentWithThumbnail)
     {
-        NSString *url = content[@"url"];
-        if (url.length)
-        {
-            NSString *mimetype = nil;
-            if (content[@"info"])
-            {
-                mimetype = content[@"info"][@"mimetype"];
-            }
-            
-            // Use another MXKImageView that will show the attachment in fullscreen
-            highResImageView = [[MXKImageView alloc] initWithFrame:self.view.frame];
-            highResImageView.stretchable = YES;
-            
-            [highResImageView showFullScreen];
-            
-            if ([mimetype isEqualToString:@"image/gif"])
-            {
-                // Animated gif is displayed in webview
-                CGFloat minSize = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
-                CGFloat width, height;
-                if (content[@"info"][@"w"] && content[@"info"][@"h"])
-                {
-                    width = [content[@"info"][@"w"] integerValue];
-                    height = [content[@"info"][@"h"] integerValue];
-                    if (width > minSize || height > minSize)
-                    {
-                        if (width > height)
-                        {
-                            height = (height * minSize) / width;
-                            height = floorf(height / 2) * 2;
-                            width = minSize;
-                        }
-                        else
-                        {
-                            width = (width * minSize) / height;
-                            width = floorf(width / 2) * 2;
-                            height = minSize;
-                        }
-                    }
-                    else
-                    {
-                        width = minSize;
-                        height = minSize;
-                    }
-                }
-                else
-                {
-                    width = minSize;
-                    height = minSize;
-                }
-                
-                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
-                animatedGifViewer.center = highResImageView.center;
-                animatedGifViewer.opaque = NO;
-                animatedGifViewer.backgroundColor = highResImageView.backgroundColor;
-                animatedGifViewer.contentMode = UIViewContentModeScaleAspectFit;
-                animatedGifViewer.scalesPageToFit = YES;
-                animatedGifViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
-                animatedGifViewer.userInteractionEnabled = NO;
-                [highResImageView addSubview:animatedGifViewer];
-                
-                UIImageView *previewImage = [[UIImageView alloc] initWithFrame:animatedGifViewer.frame];
-                previewImage.contentMode = animatedGifViewer.contentMode;
-                previewImage.autoresizingMask = animatedGifViewer.autoresizingMask;
-                previewImage.image = attachmentView.image;
-                previewImage.center = highResImageView.center;
-                [highResImageView addSubview:previewImage];
-                
-                MXKPieChartView *pieChartView = [[MXKPieChartView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-                pieChartView.progress = 0;
-                pieChartView.progressColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.25];
-                pieChartView.unprogressColor = [UIColor clearColor];
-                pieChartView.autoresizingMask = animatedGifViewer.autoresizingMask;
-                pieChartView.center = highResImageView.center;
-                [highResImageView addSubview:pieChartView];
-                
-                id downloadProgressObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                    
-                    if ([notif.object isEqualToString:roomBubbleTableViewCell.bubbleData.attachment.actualURL])
-                    {
-                        if (notif.userInfo)
-                        {
-                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
-                            
-                            if (progressNumber)
-                            {
-                                pieChartView.progress = progressNumber.floatValue;
-                            }
-                        }
-                    }
-                    
-                }];
-                
-                [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
-                    
-                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
-                    
-                    [animatedGifViewer loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:cacheFilePath]]];
-                    
-                    [pieChartView removeFromSuperview];
-                    [previewImage removeFromSuperview];
-                    
-                } failure:^(NSError *error) {
-                    
-                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
-                    
-                    NSLog(@"[MXKRoomVC] gif download failed: %@", error);
-                    // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                    
-                    [self hideAttachmentView];
-                    
-                }];
-            }
-            else
-            {
-                // Show the image in fullscreen
-                highResImageView.mediaFolder = roomDataSource.roomId;
-                [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachmentView.image];
-            }
-            
-            // Add tap recognizer to hide attachment
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideAttachmentView)];
-            [tap setNumberOfTouchesRequired:1];
-            [tap setNumberOfTapsRequired:1];
-            [highResImageView addGestureRecognizer:tap];
-            highResImageView.userInteractionEnabled = YES;
-        }
+        NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+        
+        // Present an attachment viewer
+        attachmentsViewer = [MXKRoomAttachmentsViewController roomAttachmentsViewController];
+        attachmentsViewer.hidesBottomBarWhenPushed = YES;
+        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+
+        [self.navigationController pushViewController:attachmentsViewer animated:YES];
     }
-    else if (attachmentType == MXKAttachmentTypeVideo)
-    {
-        NSString *url =content[@"url"];
-        if (url.length)
-        {
-            AVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
-            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-            videoPlayer = [[MPMoviePlayerController alloc] init];
-            if (videoPlayer != nil)
-            {
-                videoPlayer.scalingMode = MPMovieScalingModeAspectFit;
-                [self.view addSubview:videoPlayer.view];
-                [videoPlayer setFullscreen:YES animated:NO];
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(moviePlayerPlaybackDidFinishNotification:)
-                                                             name:MPMoviePlayerPlaybackDidFinishNotification
-                                                           object:nil];
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(moviePlayerWillExitFullscreen:)
-                                                             name:MPMoviePlayerWillExitFullscreenNotification
-                                                           object:videoPlayer];
-                
-                // check if the file is a local one
-                // could happen because a media upload has failed
-                if ([[NSFileManager defaultManager] fileExistsAtPath:url])
-                {
-                    videoPlayer.contentURL = [NSURL fileURLWithPath:url];
-                    [videoPlayer play];
-                }
-                else
-                {
-                    [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
-                        
-                        videoPlayer.contentURL = [NSURL fileURLWithPath:cacheFilePath];
-                        [videoPlayer play];
-                        
-                    } failure:^(NSError *error) {
-                        
-                        NSLog(@"[MXKRoomVC] Video Download failed: %@", error);
-                        // Notify MatrixKit user
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                        
-                        [self hideAttachmentView];
-                        
-                    }];
-                }
-            }
-        }
-    }
-    else if (attachmentType == MXKAttachmentTypeAudio)
+    else if (selectedAttachment.type == MXKAttachmentTypeAudio)
     {
     }
-    else if (attachmentType == MXKAttachmentTypeLocation)
+    else if (selectedAttachment.type == MXKAttachmentTypeLocation)
     {
     }
-    else if (attachmentType == MXKAttachmentTypeFile)
+    else if (selectedAttachment.type == MXKAttachmentTypeFile)
     {
-        [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+        [selectedAttachment prepare:^{
             
             // Prepare the file URL by considering the original file name (if any)
             NSURL *fileURL = [self attachmentURLWithOriginalFileNameInCell:cell];
@@ -2660,70 +2367,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
         } failure:nil];
-    }
-}
-
-- (void)hideAttachmentView
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerWillExitFullscreenNotification object:nil];
-    
-    if (animatedGifViewer)
-    {
-        [animatedGifViewer removeFromSuperview];
-        animatedGifViewer = nil;
-    }
-    
-    if (highResImageView)
-    {
-        for (UIGestureRecognizer *gestureRecognizer in highResImageView.gestureRecognizers)
-        {
-            [highResImageView removeGestureRecognizer:gestureRecognizer];
-        }
-        [highResImageView removeFromSuperview];
-        highResImageView = nil;
-    }
-    
-    // Restore audio category
-    if (AVAudioSessionCategory)
-    {
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategory error:nil];
-    }
-    if (videoPlayer)
-    {
-        [videoPlayer stop];
-        [videoPlayer setFullscreen:NO];
-        [videoPlayer.view removeFromSuperview];
-        videoPlayer = nil;
-    }
-}
-
-- (void)moviePlayerWillExitFullscreen:(NSNotification*)notification
-{
-    if (notification.object == videoPlayer)
-    {
-        [self hideAttachmentView];
-    }
-}
-
-- (void)moviePlayerPlaybackDidFinishNotification:(NSNotification *)notification
-{
-    NSDictionary *notificationUserInfo = [notification userInfo];
-    NSNumber *resultValue = [notificationUserInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
-    MPMovieFinishReason reason = [resultValue intValue];
-    
-    // error cases
-    if (reason == MPMovieFinishReasonPlaybackError)
-    {
-        NSError *mediaPlayerError = [notificationUserInfo objectForKey:@"error"];
-        if (mediaPlayerError)
-        {
-            NSLog(@"[RoomVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
-            [self hideAttachmentView];
-            
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
-        }
+        
+        // Start animation in case of download
+        [roomBubbleTableViewCell startProgressUI];
     }
 }
 

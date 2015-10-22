@@ -74,6 +74,17 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) NSString *previewURL;
 
+/**
+ */
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
+- (void)destroy;
+
+/**
+ Download the attachment data if it is not already cached.
+ 
+ @param onAttachmentReady block called when attachment is available at 'cacheFilePath'.
+ @param onFailure the block called on failure.
+ */
+- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure;
 
 @end

@@ -19,6 +19,17 @@
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
 
+@interface MXKAttachment ()
+{
+    /**
+     Observe Attachment download
+     */
+    id onAttachmentDownloadEndObs;
+    id onAttachmentDownloadFailureObs;
+}
+
+@end
+
 @implementation MXKAttachment
 
 - (instancetype)initWithEvent:(MXEvent *)mxEvent andMatrixSession:(MXSession*)mxSession
@@ -63,6 +74,98 @@
         
     }
     return self;
+}
+
+- (void)destroy
+{
+    if (onAttachmentDownloadEndObs)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
+        onAttachmentDownloadEndObs = nil;
+    }
+
+    if (onAttachmentDownloadFailureObs)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
+        onAttachmentDownloadFailureObs = nil;
+    }
+}
+
+- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:_cacheFilePath])
+    {
+        // Done
+        if (onAttachmentReady)
+        {
+            onAttachmentReady ();
+        }
+    }
+    else
+    {
+        // Trigger download if it is not already in progress
+        MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:_cacheFilePath];
+        if (!loader)
+        {
+            loader = [MXKMediaManager downloadMediaFromURL:_actualURL andSaveAtFilePath:_cacheFilePath];
+        }
+        
+        if (loader)
+        {
+            // Add observers
+            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // Sanity check
+                if ([notif.object isKindOfClass:[NSString class]])
+                {
+                    NSString* url = notif.object;
+                    NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
+                    
+                    if ([url isEqualToString:_actualURL] && cacheFilePath.length)
+                    {
+                        // Remove the observers
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
+                        onAttachmentDownloadEndObs = nil;
+                        onAttachmentDownloadFailureObs = nil;
+                        
+                        if (onAttachmentReady)
+                        {
+                            onAttachmentReady ();
+                        }
+                    }
+                }
+            }];
+            
+            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // Sanity check
+                if ([notif.object isKindOfClass:[NSString class]])
+                {
+                    NSString* url = notif.object;
+                    NSError* error = notif.userInfo[kMXKMediaLoaderErrorKey];
+                    
+                    if ([url isEqualToString:_actualURL])
+                    {
+                        // Remove the observers
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
+                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
+                        onAttachmentDownloadEndObs = nil;
+                        onAttachmentDownloadFailureObs = nil;
+                        
+                        if (onFailure)
+                        {
+                            onFailure (error);
+                        }
+                    }
+                }
+            }];
+        }
+        else if (onFailure)
+        {
+            onFailure (nil);
+        }
+    }
 }
 
 #pragma mark -

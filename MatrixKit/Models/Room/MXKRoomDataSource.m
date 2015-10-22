@@ -390,6 +390,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     return lastMessage;
 }
 
+- (NSArray *)attachmentsWithThumbnail
+{
+    NSMutableArray *attachments = [NSMutableArray array];
+    
+    @synchronized(bubbles)
+    {
+        for (id<MXKRoomBubbleCellDataStoring> bubbleData in bubbles)
+        {
+            if (bubbleData.isAttachmentWithThumbnail)
+            {
+                [attachments addObject:bubbleData.attachment];
+            }
+        }
+    }
+    
+    return attachments;
+}
+
 - (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages
 {
     // Remove the previous live listener
@@ -1469,7 +1487,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the event from the pending local echo list
     [self removePendingLocalEcho:localEcho];
     
-    // Remove the event from its cell data
+    // Update the event in its cell data
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
     
     NSUInteger remainingEvents;
