@@ -189,15 +189,21 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     else
     {
+        // default value
+        _unreadCount = 0;
+        
         NSArray* list = [_room unreadEvents];
         
-        if (list) {
+        if (list)
+        {
             _unreadCount = list.count;
             
-            if (refreshBingCounter) {
+            if (refreshBingCounter)
+            {
                 _unreadBingCount = 0;
                 
-                for(MXEvent* event in list) {
+                for(MXEvent* event in list)
+                {
                     [self checkBing:event];
                 }
             }
