@@ -179,17 +179,33 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 - (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
-    _unreadCount = 0;
-    NSArray* list = [_room unreadMessages];
-    
-    if (list) {
-        _unreadCount = list.count;
+    // always highlight invitation message.
+    // if the room is joined from another device
+    // this state will be updated so the standard read receipts management will be applied.
+    if (MXMembershipInvite == _room.state.membership)
+    {
+        _unreadCount = 1;
+        _unreadBingCount = 0;
+    }
+    else
+    {
+        // default value
+        _unreadCount = 0;
         
-        if (refreshBingCounter) {
-            _unreadBingCount = 0;
+        NSArray* list = [_room unreadEvents];
+        
+        if (list)
+        {
+            _unreadCount = list.count;
             
-            for(MXEvent* event in list) {
-                [self checkBing:event];
+            if (refreshBingCounter)
+            {
+                _unreadBingCount = 0;
+                
+                for(MXEvent* event in list)
+                {
+                    [self checkBing:event];
+                }
             }
         }
     }
@@ -197,7 +213,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)markAllAsRead
 {
-    if ([_room acknowledgeLatestMessage:YES])
+    if ([_room acknowledgeLatestEvent:YES])
     {
         _unreadCount = 0;
         _unreadBingCount = 0;
