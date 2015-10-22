@@ -26,6 +26,16 @@
      */
     id onAttachmentDownloadEndObs;
     id onAttachmentDownloadFailureObs;
+    
+    /**
+     The original file name is available in event body (if any).
+     */
+    NSString *originalFileName;
+    
+    /**
+     The local path used to store the attachment with its original name
+     */
+    NSString* documentCopyPath;
 }
 
 @end
@@ -72,8 +82,14 @@
             return nil;
         }
         
+        originalFileName = [_event.content[@"body"] isKindOfClass:[NSString class]] ? _event.content[@"body"] : nil;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self destroy];
 }
 
 - (void)destroy
@@ -89,9 +105,16 @@
         [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
         onAttachmentDownloadFailureObs = nil;
     }
+    
+    // Remove the temporary file created to prepare attachment sharing
+    if (documentCopyPath)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        documentCopyPath = nil;
+    }
 }
 
-- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure
+- (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:_cacheFilePath])
     {
@@ -165,6 +188,113 @@
         {
             onFailure (nil);
         }
+    }
+}
+
+- (void)save:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure
+{
+    if (_type == MXKAttachmentTypeImage || _type == MXKAttachmentTypeVideo)
+    {
+        [self prepare:^{
+            
+            NSURL* url = [NSURL fileURLWithPath:_cacheFilePath];
+            
+            [MXKMediaManager saveMediaToPhotosLibrary:url
+                                              isImage:(_type == MXKAttachmentTypeImage)
+                                              success:onSuccess
+                                              failure:onFailure];
+        } failure:onFailure];
+    }
+    else
+    {
+        // Not supported
+        if (onFailure)
+        {
+            onFailure(nil);
+        }
+    }
+}
+
+- (void)copy:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure
+{
+    [self prepare:^{
+        
+        if (_type == MXKAttachmentTypeImage)
+        {
+            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:_cacheFilePath]];
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        }
+        else
+        {
+            NSData* data = [NSData dataWithContentsOfFile:_cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+            
+            if (data)
+            {
+                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[_cacheFilePath pathExtension] , NULL);
+                
+                if (UTI)
+                {
+                    [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
+                    if (onSuccess)
+                    {
+                        onSuccess();
+                    }
+                }
+            }
+        }
+        
+        // Unexpected error
+        if (onFailure)
+        {
+            onFailure(nil);
+        }
+        
+    } failure:onFailure];
+}
+
+- (void)prepareShare:(void (^)(NSURL *fileURL))onReadyToShare failure:(void (^)(NSError *error))onFailure
+{
+    // First download data if it is not already done
+    [self prepare:^{
+        
+        // Prepare the file URL by considering the original file name (if any)
+        NSURL *fileUrl;
+        
+        // Check whether the original name retrieved from event body has extension
+        if (originalFileName && [originalFileName pathExtension].length)
+        {
+            // Copy the cached file to restore its original name
+            // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
+            documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:originalFileName];
+            
+            [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+            if ([[NSFileManager defaultManager] copyItemAtPath:_cacheFilePath toPath:documentCopyPath error:nil])
+            {
+                fileUrl = [NSURL fileURLWithPath:documentCopyPath];
+            }
+        }
+        
+        if (!fileUrl)
+        {
+            // Use the cached file by default
+            fileUrl = [NSURL fileURLWithPath:_cacheFilePath];
+        }
+        
+        onReadyToShare (fileUrl);
+        
+    } failure:onFailure];
+}
+
+- (void)onShareEnded
+{
+    // Remove the temporary file created to prepare attachment sharing
+    if (documentCopyPath)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
+        documentCopyPath = nil;
     }
 }
 

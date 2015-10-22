@@ -16,6 +16,8 @@
 
 #import "MXKRoomAttachmentsViewController.h"
 
+#import "MXKAlert.h"
+
 #import "MXKMediaCollectionViewCell.h"
 
 #import "MXKMediaManager.h"
@@ -28,8 +30,19 @@
 
 @interface MXKRoomAttachmentsViewController ()
 {
+    /**
+     Current alert (if any).
+     */
+    MXKAlert *currentAlert;
+
+    /**
+     Navigation bar handling
+     */
     NSTimer *navigationBarDisplayTimer;
     
+    /**
+     SplitViewController handling
+     */
     BOOL shouldRestoreBottomBar;
     UISplitViewControllerDisplayMode savedSplitViewControllerDisplayMode;
     
@@ -43,6 +56,12 @@
      */
     NSMutableArray *attachments;
     NSUInteger currentAttachmentIndex;
+    
+    /**
+     The document interaction Controller used to share attachment
+     */
+    UIDocumentInteractionController *documentInteractionController;
+    MXKAttachment *currentSharedAttachment;
 }
 
 @end
@@ -93,6 +112,7 @@
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
+    [navigationBarDisplayTimer invalidate];
     navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
     
     // Handle here the case of splitviewcontroller use on iOS 8 and later.
@@ -125,6 +145,12 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    if (currentAlert)
+    {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
     // Restore audio category
     if (savedAVAudioSessionCategory)
     {
@@ -151,6 +177,7 @@
 
 - (void)dealloc
 {
+    [self destroy];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
@@ -162,6 +189,7 @@
     
     // Show temporarily the navigation bar (required in case of splitviewcontroller use)
     self.navigationController.navigationBarHidden = NO;
+    [navigationBarDisplayTimer invalidate];
     navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -185,6 +213,7 @@
     
     // Show temporarily the navigation bar (required in case of splitviewcontroller use)
     self.navigationController.navigationBarHidden = NO;
+    [navigationBarDisplayTimer invalidate];
     navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -206,6 +235,19 @@
 
 - (void)destroy
 {
+    if (documentInteractionController)
+    {
+        [documentInteractionController dismissPreviewAnimated:NO];
+        [documentInteractionController dismissMenuAnimated:NO];
+        documentInteractionController = nil;
+    }
+    
+    if (currentSharedAttachment)
+    {
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
+    }
+    
     [super destroy];
 }
 
@@ -224,6 +266,7 @@
         if ([attachment.event.eventId isEqualToString:eventId])
         {
             currentAttachmentIndex = index;
+            break;
         }
     }
     
@@ -407,12 +450,17 @@
             cell.centerIcon.hidden = NO;
         }
         
-        // Prepare tap gesture on main image view
-        UITapGestureRecognizer *mxkImageViewTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onCollectionViewCellTap:)];
-        [mxkImageViewTapGesture setNumberOfTouchesRequired:1];
-        [mxkImageViewTapGesture setNumberOfTapsRequired:1];
+        // Add gesture recognizers on collection cell to handle tap and long press on collection cell.
+        // Note: tap gesture recognizer is required here because mxkImageView enables user interaction to allow image stretching.
+        // [collectionView:didSelectItemAtIndexPath] is not triggered when mxkImageView is displayed.
+        UITapGestureRecognizer *cellTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onCollectionViewCellTap:)];
+        [cellTapGesture setNumberOfTouchesRequired:1];
+        [cellTapGesture setNumberOfTapsRequired:1];
         cell.tag = indexPath.item;
-        [cell addGestureRecognizer:mxkImageViewTapGesture];
+        [cell addGestureRecognizer:cellTapGesture];
+        
+        UILongPressGestureRecognizer *cellLongPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onCollectionViewCellLongPress:)];
+        [cell addGestureRecognizer:cellLongPressGesture];
     }
     
     return cell;
@@ -481,6 +529,9 @@
                         selectedCell.moviePlayer.view.hidden = NO;
                         selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:attachmentURL];
                         [selectedCell.moviePlayer play];
+                        
+                        // Do not animate the navigation bar on video playback
+                        return;
                     }
                     else if (selectedCell.notificationObserver == nil)
                     {
@@ -525,6 +576,8 @@
                                 [selectedCell.moviePlayer play];
                                 
                                 [pieChartView removeFromSuperview];
+                                
+                                [self hideNavigationBar:nil];
                             }
                             
                         } failure:^(NSError *error) {
@@ -540,10 +593,10 @@
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                             
                         }];
+                        
+                        // Do not animate the navigation bar on video playback preparing
+                        return;
                     }
-                    
-                    // Do not animate the navigation bar on video playback
-                    return;
                 }
             }
         }
@@ -553,6 +606,7 @@
     if (self.navigationController.navigationBarHidden)
     {
         self.navigationController.navigationBarHidden = NO;
+        [navigationBarDisplayTimer invalidate];
         navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
     }
     else
@@ -642,14 +696,30 @@
 
 #pragma mark - Gesture recognizer
 
-- (void)onCollectionViewCellTap:(id)sender
+- (void)onCollectionViewCellTap:(UIGestureRecognizer*)gestureRecognizer
 {
     MXKMediaCollectionViewCell *selectedCell;
     
-    if ([sender isKindOfClass:[UIGestureRecognizer class]])
+    UIView *view = gestureRecognizer.view;
+    if ([view isKindOfClass:[MXKMediaCollectionViewCell class]])
     {
-        UIView *view = ((UIGestureRecognizer*)sender).view;
-        
+        selectedCell = (MXKMediaCollectionViewCell*)view;
+    }
+    
+    // Notify the collection view delegate a cell has been selected.
+    if (selectedCell && selectedCell.tag < attachments.count)
+    {
+        [self collectionView:self.attachmentsCollection didSelectItemAtIndexPath:[NSIndexPath indexPathForItem:selectedCell.tag inSection:0]];
+    }
+}
+
+- (void)onCollectionViewCellLongPress:(UIGestureRecognizer*)gestureRecognizer
+{
+    MXKMediaCollectionViewCell *selectedCell;
+    
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan)
+    {
+        UIView *view = gestureRecognizer.view;
         if ([view isKindOfClass:[MXKMediaCollectionViewCell class]])
         {
             selectedCell = (MXKMediaCollectionViewCell*)view;
@@ -659,7 +729,167 @@
     // Notify the collection view delegate a cell has been selected.
     if (selectedCell && selectedCell.tag < attachments.count)
     {
-        [self collectionView:self.attachmentsCollection didSelectItemAtIndexPath:[NSIndexPath indexPathForItem:selectedCell.tag inSection:0]];
+        MXKAttachment *attachment = attachments[selectedCell.tag];
+        
+        if (currentAlert)
+        {
+            [currentAlert dismiss:NO];
+            currentAlert = nil;
+        }
+        
+        __weak __typeof(self) weakSelf = self;
+        currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
+        
+        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            strongSelf->currentAlert = nil;
+            
+            [strongSelf startActivityIndicator];
+            
+            [attachment save:^{
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf stopActivityIndicator];
+                
+            } failure:^(NSError *error) {
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf stopActivityIndicator];
+                
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
+            }];
+            
+        }];
+        
+        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            strongSelf->currentAlert = nil;
+            
+            [strongSelf startActivityIndicator];
+            
+            [attachment copy:^{
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf stopActivityIndicator];
+                
+            } failure:^(NSError *error) {
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf stopActivityIndicator];
+                
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
+            }];
+        }];
+        
+        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            strongSelf->currentAlert = nil;
+            
+            [strongSelf startActivityIndicator];
+            
+            [attachment prepareShare:^(NSURL *fileURL) {
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf stopActivityIndicator];
+                
+                strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                [strongSelf->documentInteractionController setDelegate:strongSelf];
+                currentSharedAttachment = attachment;
+                
+                if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
+                {
+                    strongSelf->documentInteractionController = nil;
+                    [attachment onShareEnded];
+                    currentSharedAttachment = nil;
+                }
+                
+            } failure:^(NSError *error) {
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf stopActivityIndicator];
+                
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
+            }];
+            
+        }];
+        
+        if ([MXKMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath])
+        {
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+                
+                // Get again the loader
+                MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath];
+                if (loader)
+                {
+                    [loader cancel];
+                }
+            }];
+        }
+        
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            strongSelf->currentAlert = nil;
+            
+        }];
+        
+        currentAlert.sourceView = _attachmentsCollection;
+        [currentAlert showInViewController:self];
+    }
+}
+
+#pragma mark - UIDocumentInteractionControllerDelegate
+
+- (UIViewController *)documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller
+{
+    return self;
+}
+
+// Preview presented/dismissed on document.  Use to set up any HI underneath.
+- (void)documentInteractionControllerWillBeginPreview:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = controller;
+}
+
+- (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = nil;
+    if (currentSharedAttachment)
+    {
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
+    }
+}
+
+- (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = nil;
+    if (currentSharedAttachment)
+    {
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
+    }
+}
+
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
+{
+    documentInteractionController = nil;
+    if (currentSharedAttachment)
+    {
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 
