@@ -295,13 +295,11 @@
         CGFloat scaleY = imageSize.height / imageView.frame.size.height;
         
         if (scaleX < scaleY)
-            
         {
             scaleX = scaleY;
         }
         
         if (scaleX < 1.0)
-            
         {
             scaleX = 1.0;
         }
