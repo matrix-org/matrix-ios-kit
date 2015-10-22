@@ -179,7 +179,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 - (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
-    //
+    // always highlight invitation message.
+    // if the room is joined from another device
+    // this state will be updated so the standard read receipts management will be applied.
     if (MXMembershipInvite == _room.state.membership)
     {
         _unreadCount = 1;
