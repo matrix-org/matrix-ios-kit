@@ -187,7 +187,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     else
     {
-        NSArray* list = [_room unreadMessages];
+        NSArray* list = [_room unreadEvents];
         
         if (list) {
             _unreadCount = list.count;
