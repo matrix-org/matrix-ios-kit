@@ -129,6 +129,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic, readonly) MXEvent *lastMessage;
 
 /**
+ The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
+ */
+@property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
+
+/**
  The number of unread messages.
  It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
  */

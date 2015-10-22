@@ -19,6 +19,8 @@
 
 #import "MXKRoomDataSource.h"
 
+#import "MXKAttachment.h"
+
 #import "MXEvent+MatrixKit.h"
 
 @class MXKRoomDataSource;
@@ -65,6 +67,11 @@
  The list of events (`MXEvent` instances) handled by this bubble.
  */
 @property (nonatomic, readonly) NSArray *events;
+
+/**
+ The bubble attachment (if any).
+ */
+@property (nonatomic) MXKAttachment *attachment;
 
 /**
  The bubble date
