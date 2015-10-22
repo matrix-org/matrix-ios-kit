@@ -85,6 +85,35 @@ typedef enum : NSUInteger {
  @param onAttachmentReady block called when attachment is available at 'cacheFilePath'.
  @param onFailure the block called on failure.
  */
-- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure;
+- (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure;
+
+/**
+ Save the attachment in user's photo library. This operation is available only for images and video.
+ 
+ @param onSuccess
+ @param onFailure
+ */
+- (void)save:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure;
+
+/**
+ Copy the attachment data in general pasteboard.
+ 
+ @param onSuccess
+ @param onFailure
+ */
+- (void)copy:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure;
+
+/**
+ Prepare the attachment data to share it. The original name of the attachment (if any) is used
+ to name the prepared file.
+ 
+ The developer must call 'onShareEnd' when share operation is ended in order to release potential
+ resources allocated here.
+ 
+ @param onReadyToShare the block called when attachment is ready to share at the provided file URL.
+ @param onFailure the block called on failure.
+ */
+- (void)prepareShare:(void (^)(NSURL *fileURL))onReadyToShare failure:(void (^)(NSError *error))onFailure;
+- (void)onShareEnded;
 
 @end

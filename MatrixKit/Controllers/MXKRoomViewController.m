@@ -129,9 +129,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     UIDocumentInteractionController *documentInteractionController;
     
     /**
-     The path of the temporary document defined with the original attachment name
+     The current shared attachment.
      */
-    NSString *documentCopyPath;
+    MXKAttachment *currentSharedAttachment;
     
     /**
      The attachments viewer for image and video.
@@ -425,10 +425,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         documentInteractionController = nil;
     }
     
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
     
     [self dismissTemporarySubViews];
@@ -1773,32 +1773,26 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 if (attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeVideo)
                 {
                     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
-                        [attachment prepare:^{
+                        [strongSelf startActivityIndicator];
+                        
+                        [attachment save:^{
                             
-                            BOOL isImage = (attachment.type == MXKAttachmentTypeImage);
-                            NSURL* url = [NSURL fileURLWithPath:attachment.cacheFilePath];
+                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            [strongSelf stopActivityIndicator];
                             
-                            [strongSelf startActivityIndicator];
-                            [MXKMediaManager saveMediaToPhotosLibrary:url
-                                                              isImage:isImage
-                                                              success:^() {
-                                                                  
-                                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                                  [strongSelf stopActivityIndicator];
-                                                                  
-                                                              } failure:^(NSError *error) {
-                                                                  
-                                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                                  [strongSelf stopActivityIndicator];
-                                                                  
-                                                                  // Notify MatrixKit user
-                                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                  
-                                                              }];
-                        } failure:nil];
+                        } failure:^(NSError *error) {
+                            
+                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            [strongSelf stopActivityIndicator];
+                            
+                            // Notify MatrixKit user
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                            
+                        }];
                         
                         // Start animation in case of download during attachment preparing
                         [roomBubbleTableViewCell startProgressUI];
@@ -1806,58 +1800,56 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 }
                 
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    [attachment prepare:^{
+                    [strongSelf startActivityIndicator];
+                    
+                    [attachment copy:^{
                         
-                        if (attachment.type == MXKAttachmentTypeImage)
-                        {
-                            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:attachment.cacheFilePath]];
-                        }
-                        else
-                        {
-                            NSData* data = [NSData dataWithContentsOfFile:attachment.cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
-                            
-                            if (data)
-                            {
-                                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[attachment.cacheFilePath pathExtension] , NULL);
-                                
-                                if (UTI)
-                                {
-                                    [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
-                                }
-                            }
-                        }
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        [strongSelf stopActivityIndicator];
                         
-                    } failure:nil];
+                    } failure:^(NSError *error) {
+                        
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        [strongSelf stopActivityIndicator];
+                        
+                        // Notify MatrixKit user
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                        
+                    }];
                     
                     // Start animation in case of download during attachment preparing
                     [roomBubbleTableViewCell startProgressUI];
                 }];
                 
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    [attachment prepare:^{
+                    [attachment prepareShare:^(NSURL *fileURL) {
                         
-                        // Prepare the file URL by considering the original file name (if any)
-                        NSURL *fileURL = [strongSelf attachmentURLWithOriginalFileNameInCell:cell];
-                        
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [strongSelf->documentInteractionController setDelegate:strongSelf];
+                        currentSharedAttachment = attachment;
                         
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
                         {
                             strongSelf->documentInteractionController = nil;
-                            if (strongSelf->documentCopyPath)
-                            {
-                                [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentCopyPath error:nil];
-                                strongSelf->documentCopyPath = nil;
-                            }
+                            [attachment onShareEnded];
+                            currentSharedAttachment = nil;
                         }
-                    } failure:nil];
+                        
+                    } failure:^(NSError *error) {
+                        
+                        // Notify MatrixKit user
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                        
+                    }];
                     
                     // Start animation in case of download during attachment preparing
                     [roomBubbleTableViewCell startProgressUI];
@@ -2016,42 +2008,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (BOOL)canBecomeFirstResponder
 {
     return (selectedText.length != 0);
-}
-
-#pragma mark - Attachment handling
-
-- (NSURL*)attachmentURLWithOriginalFileNameInCell:(id<MXKCellRendering>)cell
-{
-    NSURL *fileUrl;
-    
-    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    
-    // Retrieve the cache file path
-    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
-    
-    // The original file name is available in attachment body (if any).
-    // This attachment body is reported in bubble text message.
-    NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
-    if ([attachmentBody pathExtension].length)
-    {
-        // Copy the cached file to restore its original name
-        // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-        documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
-        
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:documentCopyPath error:nil])
-        {
-            fileUrl = [NSURL fileURLWithPath:documentCopyPath];
-        }
-    }
-    
-    if (!fileUrl)
-    {
-        // Use the cached file by default
-        fileUrl = [NSURL fileURLWithPath:cacheFilePath];
-    }
-    
-    return fileUrl;
 }
 
 #pragma mark - UITableView delegate
@@ -2344,25 +2300,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     else if (selectedAttachment.type == MXKAttachmentTypeFile)
     {
-        [selectedAttachment prepare:^{
-            
-            // Prepare the file URL by considering the original file name (if any)
-            NSURL *fileURL = [self attachmentURLWithOriginalFileNameInCell:cell];
+        [selectedAttachment prepareShare:^(NSURL *fileURL) {
             
             documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-            
             [documentInteractionController setDelegate:self];
+            currentSharedAttachment = selectedAttachment;
             
             if (![documentInteractionController presentPreviewAnimated:YES])
             {
                 if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
                 {
                     documentInteractionController = nil;
-                    if (documentCopyPath)
-                    {
-                        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-                        documentCopyPath = nil;
-                    }
+                    [selectedAttachment onShareEnded];
+                    currentSharedAttachment = nil;
                 }
             }
             
@@ -2389,30 +2339,30 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 

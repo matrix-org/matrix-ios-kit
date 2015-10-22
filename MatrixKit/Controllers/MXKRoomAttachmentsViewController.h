@@ -25,7 +25,7 @@ limitations under the License.
  This view controller displays attachments of a room. Only one matrix session is handled by this view controller.
  Only one attachment is displayed at once, the user is able to swipe one by one the room attachments.
  */
-@interface MXKRoomAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface MXKRoomAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate>
 
 @property (nonatomic) IBOutlet UICollectionView *attachmentsCollection;
 
