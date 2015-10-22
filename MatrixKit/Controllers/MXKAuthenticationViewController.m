@@ -671,7 +671,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     mxCurrentOperation = nil;
     
-    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorCancelled)
+    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
     {
         // Ignore this error
         return;
