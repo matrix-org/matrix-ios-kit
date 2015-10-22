@@ -78,6 +78,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
 @synthesize userTintColor;
+@synthesize hideUserPresence;
 
 + (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
 {
@@ -349,7 +350,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     userPresence = presence;
     
-    if (mxSession)
+    if (mxSession && !hideUserPresence)
     {
         // Update user presence on server side
         [mxSession.myUser setPresence:userPresence
@@ -366,6 +367,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                               failure:^(NSError *error) {
                                   NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
                               }];
+    }
+    else if (hideUserPresence)
+    {
+        NSLog(@"[MXKAccount] %@: set user presence is disabled.", mxCredentials.userId);
     }
 }
 
@@ -902,17 +907,20 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)cancelCatchup
 {
-    NSLog(@"[MXKAccount] The catchup is cancelled.");
-
-    if (mxSession)
+    if (catchupBgTask != UIBackgroundTaskInvalid)
     {
-        if (mxSession.state == MXSessionStateCatchingUp)
+        NSLog(@"[MXKAccount] The catchup is cancelled.");
+
+        if (mxSession)
         {
-            [mxSession pause];
+            if (mxSession.state == MXSessionStateCatchingUp)
+            {
+                [mxSession pause];
+            }
         }
+        
+        [self onCatchupDoneWithError:[[NSError alloc] init]];
     }
-    
-    [self onCatchupDoneWithError:[[NSError alloc] init]];
 }
 
 - (void)onCatchupDoneWithError:(NSError*)error
@@ -948,7 +956,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             {
                 // Cancel background task
                 [[UIApplication sharedApplication] endBackgroundTask:localCatchupBgTask];
-                NSLog(@"[MXKAccount] cancelCatchup : %08lX stop", (unsigned long)localCatchupBgTask);
+                NSLog(@"[MXKAccount] onCatchupDoneWithError : %08lX stop", (unsigned long)localCatchupBgTask);
             }
         });
     }
@@ -964,7 +972,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     isPauseRequested = NO;
     
     // only work when the application is suspended
-    if (mxSession && mxSession.state == MXSessionStatePaused)
+    
+    // TODO enable it when V2 will be released
+    // the events request put the user as "SEEN" so, the notifications are randomly cleared as soon as the server
+    if (false)//(mxSession && mxSession.state == MXSessionStatePaused)
     {
         NSLog(@"[MXKAccount] starts a catchup");
         
