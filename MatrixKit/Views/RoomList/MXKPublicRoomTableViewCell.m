@@ -51,10 +51,10 @@
     }
 }
 
-- (void)setFocused:(BOOL)focused
+- (void)setHighlightedPublicRoom:(BOOL)highlightedPublicRoom
 {
     // Highlight?
-    if (focused)
+    if (highlightedPublicRoom)
     {
         _roomDisplayName.font = [UIFont boldSystemFontOfSize:20];
         _roomTopic.font = [UIFont boldSystemFontOfSize:17];
@@ -66,7 +66,7 @@
         _roomTopic.font = [UIFont systemFontOfSize:16];
         self.backgroundColor = [UIColor clearColor];
     }
-    _focused = focused;
+    _highlightedPublicRoom = highlightedPublicRoom;
 }
 
 @end
