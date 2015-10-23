@@ -297,6 +297,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
+    
+    [self removeReconnectingView];
 }
 
 - (void)dealloc
@@ -2078,12 +2080,23 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    // Consider this callback to reset scrolling to bottom flag
-    isScrollingToBottom = NO;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self upateCurrentEventIdAtTableBottom];
-    });
+    if (scrollView == _bubblesTableView)
+    {
+        // Consider this callback to reset scrolling to bottom flag
+        isScrollingToBottom = NO;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self upateCurrentEventIdAtTableBottom];
+        });
+        
+        // when the content size if smaller that the frame
+        // scrollViewDidEndDecelerating is not called
+        // so test it when the content offset goes back to the screen top.
+        if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
+        {
+            [self managePullToKick:scrollView];
+        }
+    }
 }
 
 #pragma mark - MXKRoomTitleViewDelegate
@@ -2437,9 +2450,36 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
+/**
+ Detect if the current connection must be restarted.
+ The spinner is displayed until the overscroll ends (and scrollViewDidEndDecelerating is called).
+ */
+- (void)detectPullToKick:(UIScrollView *)scrollView
+{
+    if (!reconnectingView)
+    {
+        // detect if the user scrolls over the tableview bottom
+        restartConnection = (
+                             ((scrollView.contentSize.height < scrollView.frame.size.height) && (scrollView.contentOffset.y > 64))
+                             ||
+                             ((scrollView.contentSize.height > scrollView.frame.size.height) &&  (scrollView.contentOffset.y + scrollView.frame.size.height) > (scrollView.contentSize.height + 64)));
+        
+        if (restartConnection)
+        {
+            // wait that list decelerate to display / hide it
+            [self addReconnectingView];
+        }
+    }
+}
+
+
+/**
+ Restarts the current connection if it is required.
+ The 0.3s delay is added to avoid flickering if the connection does not require to be restarted.
+ */
 - (void)managePullToKick:(UIScrollView *)scrollView
 {
-    // the connection must be kicked
+    // the current connection must be restarted
     if (restartConnection)
     {
         // display at least 0.3s the spinner to show to the user that something is pending
@@ -2455,21 +2495,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             // else wait that onSyncNotification is called.
         });
-    }
-}
-
-- (void)detectPullToKick:(UIScrollView *)scrollView
-{
-    if (!reconnectingView)
-    {
-        // detect if the user scrolls over the tableview bottom
-        restartConnection = (
-            ((scrollView.contentSize.height < scrollView.frame.size.height) && (scrollView.contentOffset.y > 64))
-            ||
-                       ((scrollView.contentSize.height > scrollView.frame.size.height) &&  (scrollView.contentOffset.y + scrollView.frame.size.height) > (scrollView.contentSize.height + 64)));
-        
-        // wait that list decelerate to display / hide it
-        [self addReconnectingView];
     }
 }
 
