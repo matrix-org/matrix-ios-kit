@@ -1200,7 +1200,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                }
                                                else
                                                {
-                                                   NSLog(@"triggerInitialBackPagination : the viewcontroller is no visible");
+                                                   NSLog(@"triggerInitialBackPagination : the viewcontroller is not visible");
                                                }
                                                
                                                [self stopActivityIndicator];
