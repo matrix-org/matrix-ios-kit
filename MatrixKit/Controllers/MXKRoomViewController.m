@@ -250,7 +250,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     
@@ -259,21 +259,27 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Finalize view controller appearance
     [self updateViewControllerAppearanceOnRoomDataSourceState];
+    
+    // no need to reload the tableview at this stage
+    // IOS is going to load it after calling this method
+    // so give a breath to scroll to the bottom if required
+    if (shouldScrollToBottomOnTableRefresh)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self scrollBubblesTableViewToBottomAnimated:NO];
+            // Hide bubbles table by default in order to hide initial scrolling to the bottom
+            _bubblesTableView.hidden = NO;
+        });
+    }
+    else
+    {
+        _bubblesTableView.hidden = NO;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // Refresh bubbles table if data are available.
-    // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
-    if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
-    {
-        // Reload the full table
-        [self reloadBubblesTable:YES];
-    }
-    _bubblesTableView.hidden = NO;
-    shouldScrollToBottomOnTableRefresh = NO;
     
     if (_saveProgressTextInput && roomDataSource)
     {
@@ -283,6 +289,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         [roomDataSource markAllAsRead];
     }
+    
+    shouldScrollToBottomOnTableRefresh = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -299,6 +307,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
     [self removeReconnectingView];
+    
+
 }
 
 - (void)dealloc
