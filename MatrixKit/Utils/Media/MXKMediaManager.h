@@ -44,8 +44,8 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
 + (BOOL)writeMediaData:(NSData *)mediaData toFilePath:(NSString*)filePath;
 
 /**
- Load an image from its local storage path.
- The images are cached in a LRU cache.
+ Load an image in memory cache.
+ The images are cached in a LRU cache if they are not yet loaded.
  So, it should be faster than calling loadPictureFromFilePath;
  
  @param filePath picture file path.
