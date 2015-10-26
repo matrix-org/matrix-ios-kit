@@ -544,7 +544,8 @@
     else
     {
         // Retrieve the image from cache
-        UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _isThumbnail ? [MXKMediaManager loadThumbnailFromFilePath : cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        
         if (image)
         {
             if (imageOrientation != UIImageOrientationUp)

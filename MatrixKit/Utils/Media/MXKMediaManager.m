@@ -24,6 +24,8 @@
 
 #import "MXKTools.h"
 
+#import "MXKLRUCache.h"
+
 NSString *const kMXKMediaManagerAvatarThumbnailFolder = @"kMXKMediaManagerAvatarThumbnailFolder";
 NSString *const kMXKMediaManagerDefaultCacheFolder = @"kMXKMediaManagerDefaultCacheFolder";
 
@@ -81,6 +83,33 @@ static NSMutableDictionary* uploadTableById = nil;
     }
     return NO;
 }
+
+static MXKLRUCache* thumbnailsLruCache = nil;
+
++ (UIImage*)loadThumbnailFromFilePath:(NSString*)filePath
+{
+    if (!thumbnailsLruCache)
+    {
+        thumbnailsLruCache = [[MXKLRUCache alloc] initWithCapacity:20];
+    }
+    
+    UIImage* image = (UIImage*)[thumbnailsLruCache get:filePath];
+    
+    if (image)
+    {
+        return image;
+    }
+    
+    image = [MXKMediaManager loadPictureFromFilePath:filePath];
+    
+    if (image)
+    {
+        [thumbnailsLruCache put:filePath object:image];
+    }
+    
+    return image;
+}
+
 
 + (UIImage*)loadPictureFromFilePath:(NSString*)filePath
 {

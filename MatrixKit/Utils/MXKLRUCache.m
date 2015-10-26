@@ -45,23 +45,24 @@
     // sorted by regCount
     NSMutableArray<MXKLRUCacheItem *> *cachedObjects;
     
-    /**
-     The cached keys
-     */
+    // the cached objects keys
     NSMutableArray<NSString*> *cachedKeys;
+    
+    //
+    NSUInteger capacity;
 }
 @end
 
 @implementation MXKLRUCache
 
-- (id)initWith:(NSUInteger)aCount
+- (id)initWithCapacity:(NSUInteger)aCapacity
 {
     self = [super init];
     if (self)
     {
-        _count = aCount;
-        cachedObjects = [[NSMutableArray alloc] initWithCapacity:aCount];
-        cachedKeys = [[NSMutableArray alloc] initWithCapacity:aCount];
+        capacity = aCapacity;
+        cachedObjects = [[NSMutableArray alloc] initWithCapacity:capacity];
+        cachedKeys = [[NSMutableArray alloc] initWithCapacity:capacity];
     }
     return self;
 }
@@ -138,7 +139,7 @@
                 item.key = key;
 
                 // remove the less used object
-                if (cachedKeys.count >= _count)
+                if (cachedKeys.count >= capacity)
                 {
                     [cachedObjects removeLastObject];
                     [cachedKeys removeLastObject];

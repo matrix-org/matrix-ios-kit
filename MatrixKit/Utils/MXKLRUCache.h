@@ -23,15 +23,10 @@
 
 /**
  Create a LRU cache with a max number of cached object
- @param count the maximum number of cached items
+ @param capacity the maximum number of cached items
  */
  
-- (id)initWith:(NSUInteger)count;
-
-/**
- Defines the maximum number of cached items
- */
-@property (readonly) NSUInteger count;
+- (id)initWithCapacity:(NSUInteger)capacity;
 
 /**
  Retrieve an object from its key.
