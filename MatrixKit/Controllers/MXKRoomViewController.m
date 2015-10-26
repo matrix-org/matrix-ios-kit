@@ -152,6 +152,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      The restart the event connnection
      */
     BOOL restartConnection;
+    
+    /**
+     the View controller is visible
+     */
+    BOOL isVisible;
 }
 
 @end
@@ -265,6 +270,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     [super viewDidAppear:animated];
     
+    isVisible = YES;
+    
     // Refresh bubbles table if data are available.
     // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
     if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
@@ -288,6 +295,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    isVisible = NO;
     
     if (_saveProgressTextInput && roomDataSource)
     {
@@ -1182,7 +1191,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                
                                                // Reload table
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable:YES];
+                                               
+                                               // refresh the viewcontroller only if it is displayed
+                                               // it is also refreshed in viewDidAppear
+                                               if (isVisible)
+                                               {
+                                                   [self reloadBubblesTable:YES];
+                                               }
+                                               else
+                                               {
+                                                   NSLog(@"triggerInitialBackPagination : the viewcontroller is no visible");
+                                               }
+                                               
                                                [self stopActivityIndicator];
                                                
                                            }
