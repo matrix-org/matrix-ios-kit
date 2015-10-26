@@ -256,6 +256,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     [super viewWillAppear:animated];
 
+    isVisible = YES;
+    
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     
@@ -264,13 +266,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Finalize view controller appearance
     [self updateViewControllerAppearanceOnRoomDataSourceState];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    isVisible = YES;
     
     // Refresh bubbles table if data are available.
     // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
@@ -279,6 +274,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Reload the full table
         [self reloadBubblesTable:YES];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
     _bubblesTableView.hidden = NO;
     shouldScrollToBottomOnTableRefresh = NO;
     
