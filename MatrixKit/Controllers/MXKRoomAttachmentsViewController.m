@@ -437,14 +437,14 @@
                 // Load high res image
                 cell.mxkImageView.mediaFolder = attachment.event.roomId;
                 cell.mxkImageView.stretchable = YES;
-                cell.mxkImageView.isThumbnail = NO;
+                cell.mxkImageView.enableInMemoryCache = NO;
                 
                 [cell.mxkImageView setImageURL:attachmentURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
             }
         }
         else if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
         {
-            cell.mxkImageView.isThumbnail = YES;
+            cell.mxkImageView.enableInMemoryCache = YES;
             // Display video thumbnail, the video is played only when user selects this cell
             [cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:attachment.thumbnailOrientation previewImage:nil];
             
@@ -628,7 +628,7 @@
         mediaCollectionViewCell.customView.hidden = YES;
         
         // Cancel potential image download
-        mediaCollectionViewCell.mxkImageView.isThumbnail = NO;
+        mediaCollectionViewCell.mxkImageView.enableInMemoryCache = NO;
         [mediaCollectionViewCell.mxkImageView setImageURL:nil withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
         // TODO; we should here reset mxkImageView.stretchable flag
         // But we observed wrong behavior in case of reused cell: The stretching mechanism was disabled for unknown reason.

@@ -52,10 +52,10 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 @property (nonatomic) BOOL stretchable;
 @property (nonatomic, readonly) BOOL fullScreen;
 
-// the image is a thumbnail
-// The medias manager uses a LRU cache for the thumbnails
+// the image is cached in memory.
+// The medias manager uses a LRU cache.
 // to avoid loading from the file system.
-@property (nonatomic) BOOL isThumbnail;
+@property (nonatomic) BOOL enableInMemoryCache;
 
 // mediaManager folder where the image is stored
 @property (nonatomic) NSString* mediaFolder;

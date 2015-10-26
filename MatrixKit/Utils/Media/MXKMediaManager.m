@@ -84,16 +84,16 @@ static NSMutableDictionary* uploadTableById = nil;
     return NO;
 }
 
-static MXKLRUCache* thumbnailsLruCache = nil;
+static MXKLRUCache* imagesCacheLruCache = nil;
 
-+ (UIImage*)loadThumbnailFromFilePath:(NSString*)filePath
++ (UIImage*)loadFromMemoryCacheWithFilePath:(NSString*)filePath
 {
-    if (!thumbnailsLruCache)
+    if (!imagesCacheLruCache)
     {
-        thumbnailsLruCache = [[MXKLRUCache alloc] initWithCapacity:20];
+        imagesCacheLruCache = [[MXKLRUCache alloc] initWithCapacity:20];
     }
     
-    UIImage* image = (UIImage*)[thumbnailsLruCache get:filePath];
+    UIImage* image = (UIImage*)[imagesCacheLruCache get:filePath];
     
     if (image)
     {
@@ -104,7 +104,7 @@ static MXKLRUCache* thumbnailsLruCache = nil;
     
     if (image)
     {
-        [thumbnailsLruCache put:filePath object:image];
+        [imagesCacheLruCache put:filePath object:image];
     }
     
     return image;

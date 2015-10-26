@@ -71,7 +71,7 @@
             thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-        self.pictureView.isThumbnail = YES;
+        self.pictureView.enableInMemoryCache = YES;
         [self.pictureView setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         
         // Shade invited users

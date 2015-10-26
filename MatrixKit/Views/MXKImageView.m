@@ -544,7 +544,7 @@
     else
     {
         // Retrieve the image from cache
-        UIImage* image = _isThumbnail ? [MXKMediaManager loadThumbnailFromFilePath : cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadFromMemoryCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
         
         if (image)
         {
