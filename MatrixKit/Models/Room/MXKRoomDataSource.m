@@ -89,9 +89,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSMutableArray *eventsToProcessSnapshot;
     
     /**
+     Snapshot of the bubbles used during events processing.
+     */
+    NSMutableArray *bubblesSnapshot;
+    
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
+    
+    /**
+     Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync v2.
+     */
+    id roomSyncWithLimitedTimelineNotification;
 }
 
 @end
@@ -172,6 +182,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Reload all the table
                     [self.delegate dataSource:self didCellChange:nil];
                 });
+            }
+        }];
+        
+        roomSyncWithLimitedTimelineNotification = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            NSString* identifier = notif.userInfo[kMXRoomNotificationRoomIdKey];
+            if (identifier && [_roomId isEqualToString:identifier])
+            {
+                // The existing room history has been flushed during server sync v2 because a gap has been observed between local and server storage. 
+                [self reload];
             }
         }];
     }
@@ -282,6 +302,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     @synchronized(eventsToProcessSnapshot)
     {
         eventsToProcessSnapshot = nil;
+        bubblesSnapshot = nil;
         
         [bubbles removeAllObjects];
         [eventIdToBubbleMap removeAllObjects];
@@ -327,6 +348,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     {
         [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
         UIApplicationSignificantTimeChangeNotificationObserver = nil;
+    }
+    
+    if (roomSyncWithLimitedTimelineNotification)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomSyncWithLimitedTimelineNotification];
+        roomSyncWithLimitedTimelineNotification = nil;
     }
     
     [self reset];
@@ -1665,6 +1692,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     @synchronized(eventsToProcess)
     {
+        
         [eventsToProcess addObject:queuedEvent];
     }
 }
@@ -1721,9 +1749,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 eventsToProcess = [NSMutableArray array];
             }
         }
-        
-        
-        NSMutableArray *bubblesSnapshot = nil;
+
         NSUInteger serverSyncEventCount = 0;
         
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
@@ -1881,19 +1907,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // Synchronously wait for the end of the block execution to
             dispatch_sync(dispatch_get_main_queue(), ^{
                 
-                if (_serverSyncEventCount)
-                {
-                    _serverSyncEventCount -= serverSyncEventCount;
-                    if (!_serverSyncEventCount)
-                    {
-                        // Notify that sync process ends
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
-                    }
-                }
-                
                 // Check whether self has not been reloaded or destroyed
-                if (self.state == MXKDataSourceStateReady)
+                if (self.state == MXKDataSourceStateReady && bubblesSnapshot)
                 {
+                    if (_serverSyncEventCount)
+                    {
+                        _serverSyncEventCount -= serverSyncEventCount;
+                        if (!_serverSyncEventCount)
+                        {
+                            // Notify that sync process ends
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
+                        }
+                    }
+                    
                     [self refreshUnreadCounters:NO];
                     
                     bubbles = bubblesSnapshot;
@@ -1913,7 +1939,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         // loop until the bubbles count is reduced as expected.
                         while (count > _maxBackgroundCachedBubblesCount)
                         {
-                            [self removeCellData:[bubblesSnapshot objectAtIndex:0]];
+                            [self removeCellData:[bubbles objectAtIndex:0]];
                             
                             @synchronized(bubbles)
                             {
@@ -1938,21 +1964,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // No new event has been added, we just inform about the end if requested.
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (_serverSyncEventCount)
-                {
-                    _serverSyncEventCount -= serverSyncEventCount;
-                    
-                    if (!_serverSyncEventCount)
-                    {
-                        // Notify that sync process ends
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
-                    }
-                }
-                
                 if (onComplete)
                 {
                     onComplete();
                 }
+                
             });
         }
     });
