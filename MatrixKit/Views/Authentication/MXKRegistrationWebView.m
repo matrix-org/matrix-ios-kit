@@ -17,7 +17,7 @@
 #import "MXKRegistrationWebView.h"
 
 // Generic method to make a bridge between JS and the UIWebView
-NSString *kMXKJavascriptSendObjectMessage = @"window.matrixRegistration.sendObjectMessage = function(parameters) {   \
+NSString *kMXKJavascriptSendObjectMessage = @"window.sendObjectMessage = function(parameters) {   \
 var iframe = document.createElement('iframe');                              \
 iframe.setAttribute('src', 'js:' + JSON.stringify(parameters));             \
 \
@@ -28,11 +28,19 @@ iframe = null;                                                              \
 
 // The function the fallback page calls when the registration is complete
 NSString *kMXKJavascriptOnRegistered = @"window.matrixRegistration.onRegistered = function(homeserverUrl, userId, accessToken) {   \
-matrixRegistration.sendObjectMessage({  \
+sendObjectMessage({  \
 'action': 'onRegistered',           \
 'homeServer': homeserverUrl,        \
 'userId': userId,                   \
 'accessToken': accessToken          \
+});                                     \
+};";
+
+// The function the fallback page calls when the login is complete
+NSString *kMXKJavascriptOnLogin = @"window.matrixLogin.onLogin = function(response) {   \
+sendObjectMessage({  \
+'action': 'onLogin',           \
+'response': response        \
 });                                     \
 };";
 
@@ -82,6 +90,7 @@ matrixRegistration.sendObjectMessage({  \
     
     [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptSendObjectMessage];
     [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptOnRegistered];
+    [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptOnLogin];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
@@ -106,6 +115,21 @@ matrixRegistration.sendObjectMessage({  \
                 MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:parameters[@"homeServer"] userId:parameters[@"userId"] accessToken:parameters[@"accessToken"]];
                 // And inform the client
                 onSuccess(credentials);
+            }
+            else if ([@"onLogin" isEqualToString:parameters[@"action"]])
+            {
+                // Translate the JS login event to MXCredentials
+                NSString *homeServer = parameters[@"response"][@"home_server"];
+                NSString *userId = parameters[@"response"][@"user_id"];
+                NSString *accessToken = parameters[@"response"][@"access_token"];
+                
+                // Sanity check
+                if (homeServer.length && userId.length && accessToken.length)
+                {
+                    MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:homeServer userId:userId accessToken:accessToken];
+                    // And inform the client
+                    onSuccess(credentials);
+                }                
             }
         }
         return NO;

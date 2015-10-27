@@ -34,7 +34,7 @@
 "login_prompt_email_token" = "Please enter your email validation token:";
 "login_error_title" = "Login Failed";
 "login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
-"login_error_do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
+"login_error_do_not_support_login_flows" = "Currently we do not support any or all login flows defined by this Home Server";
 "login_error_registration_is_not_supported" = "Registration is not currently supported";
 "login_error_forbidden" = "Invalid username/password";
 "login_error_unknown_token" = "The access token specified was not recognised";
@@ -43,6 +43,7 @@
 "login_error_limit_exceeded" = "Too many requests have been sent";
 "login_error_user_in_use" = "This user name is already used";
 "login_error_login_email_not_yet" = "The email link which has not been clicked yet";
+"login_use_fallback" = "Use fallback page";
 
 // Action
 "no" = "No";

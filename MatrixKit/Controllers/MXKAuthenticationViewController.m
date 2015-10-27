@@ -503,7 +503,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [_authenticationActivityIndicator stopAnimating];
     mxCurrentOperation = nil;
     
+    // Check whether fallback is defined
+    NSString *authenticationFallback = nil;
+    if (_authType == MXKAuthenticationTypeLogin)
+    {
+        authenticationFallback = [mxRestClient loginFallback];
+    }
+    else
+    {
+        authenticationFallback = [mxRestClient registerFallback];
+    }
+    
+    // List supported flows
     [supportedFlows removeAllObjects];
+    
     for (MXLoginFlow* flow in flows)
     {
         // Check whether flow type is defined (this type has been deprecated since C-S API v2)
@@ -519,6 +532,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     {
                         if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
                         {
+                            NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), stage);
                             isSupported = NO;
                             break;
                         }
@@ -529,6 +543,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 {
                     [supportedFlows addObject:flow];
                 }
+            }
+            else
+            {
+                NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), flow.type);
             }
         }
         else
@@ -541,6 +559,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 {
                     if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
                     {
+                        NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), stage);
                         isSupported = NO;
                         break;
                     }
@@ -554,11 +573,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
     }
     
-    if (supportedFlows.count)
+    // We switch directly to the fallback page (if any), when at least one flow is not supported.
+    if ((supportedFlows.count != flows.count) && authenticationFallback.length)
     {
-        // FIXME display supported flows
-        // Currently we select the first one
-        self.selectedFlow = [supportedFlows firstObject];
+        NSLog(@"[MXKAuthenticationVC] Switch to fallback page");
+        [self showRegistrationFallBackView:authenticationFallback];
+    }
+    else
+    {
+        if (supportedFlows.count)
+        {
+            // FIXME display supported flows
+            // Currently we select the first one
+            self.selectedFlow = [supportedFlows firstObject];
+        }
     }
     
     if (!self.selectedFlow)
@@ -571,16 +599,19 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         else
         {
             _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
-
-            // Check whether fallback is defined
-            NSString *registerFallback = [mxRestClient registerFallback];
-            if (registerFallback.length)
-            {
-                // No registration flow are supported, we switch directly to the fallback page
-                [self showRegistrationFallBackView:registerFallback];
-            }
         }
         NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
+        
+        if (authenticationFallback.length)
+        {
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+        }
+        else
+        {
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+        }
         
         _noFlowLabel.hidden = NO;
         _retryButton.hidden = NO;
@@ -699,6 +730,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
     }
+    [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+    [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
     _retryButton.hidden = NO;
     
     // Handle specific error code here
@@ -763,31 +796,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                         success:^(MXCredentials *credentials){
                                             [_authenticationActivityIndicator stopAnimating];
                                             
-                                            // Sanity check: check whether the user is not already logged in with this id
-                                            if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
-                                            {
-                                                //Alert user
-                                                __weak typeof(self) weakSelf = self;
-                                                alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
-                                                [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
-                                                    // We remove the authentication view controller.
-                                                    [weakSelf withdrawViewControllerAnimated:YES completion:nil];
-                                                }];
-                                                [alert showInViewController:self];
-                                            }
-                                            else
-                                            {
-                                                // Report the new account in account manager
-                                                MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-                                                account.identityServerURL = _identityServerTextField.text;
-                                                
-                                                [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-                                                
-                                                if (_delegate)
-                                                {
-                                                    [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-                                                }
-                                            }
+                                            [self onSuccessfulLogin:credentials];
                                         }
                                         failure:^(NSError *error){
                                             [self onFailureDuringAuthRequest:error];
@@ -825,7 +834,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         // Hide fallback webview
         [self hideRegistrationFallbackView];
-        self.authType = MXKAuthenticationTypeLogin;
     }
 }
 
@@ -892,6 +900,35 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
      {}];
     [alert showInViewController:self];
+}
+
+- (void)onSuccessfulLogin:(MXCredentials*)credentials
+{
+    // Sanity check: check whether the user is not already logged in with this id
+    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
+    {
+        //Alert user
+        __weak typeof(self) weakSelf = self;
+        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
+        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+            // We remove the authentication view controller.
+            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
+        }];
+        [alert showInViewController:self];
+    }
+    else
+    {
+        // Report the new account in account manager
+        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+        account.identityServerURL = _identityServerTextField.text;
+        
+        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
+        
+        if (_delegate)
+        {
+            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+        }
+    }
 }
 
 #pragma mark - Keyboard handling
@@ -997,16 +1034,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         
         // TODO handle unrecognized certificate (if any) during registration through fallback webview.
         
-        // Report the new account in accounts manager
-        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-        account.identityServerURL = _identityServerTextField.text;
-        
-        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-        
-        if (_delegate)
-        {
-            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-        }
+        [self onSuccessfulLogin:credentials];
     }];
 }
 
