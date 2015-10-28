@@ -44,6 +44,7 @@
 "login_error_user_in_use" = "This user name is already used";
 "login_error_login_email_not_yet" = "The email link which has not been clicked yet";
 "login_use_fallback" = "Use fallback page";
+"login_leave_fallback" = "Cancel";
 
 // Action
 "no" = "No";

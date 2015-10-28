@@ -64,6 +64,15 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
      Customized block used to handle unrecognized certificate (nil by default).
      */
     MXHTTPClientOnUnrecognizedCertificate onUnrecognizedCertificateCustomBlock;
+    
+    /**
+     The current authentication fallback URL (if any).
+     */
+    NSString *authenticationFallback;
+    
+    /**
+     */
+    UIBarButtonItem *cancelFallbackBarButton;
 }
 
 /**
@@ -264,6 +273,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     loginAuthInputsViewMap = nil;
     registerAuthInputsViewMap = nil;
+
+    authenticationFallback = nil;
+    cancelFallbackBarButton = nil;
     
     [super destroy];
 }
@@ -349,6 +361,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     mxCurrentOperation = nil;
     
     [_authenticationActivityIndicator stopAnimating];
+    
+    // Reset potential authentication fallback url
+    authenticationFallback = nil;
     
     if (mxRestClient)
     {
@@ -504,7 +519,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     mxCurrentOperation = nil;
     
     // Check whether fallback is defined
-    NSString *authenticationFallback = nil;
     if (_authType == MXKAuthenticationTypeLogin)
     {
         authenticationFallback = [mxRestClient loginFallback];
@@ -573,11 +587,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
     }
     
-    // We switch directly to the fallback page (if any), when at least one flow is not supported.
+    // We will suggest using the fallback page (if any), when at least one flow is not supported.
     if ((supportedFlows.count != flows.count) && authenticationFallback.length)
     {
-        NSLog(@"[MXKAuthenticationVC] Switch to fallback page");
-        [self showAuthenticationFallBackView:authenticationFallback];
+        NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
     }
     else
     {
@@ -828,7 +841,14 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else if (sender == _retryButton)
     {
-        [self refreshSupportedAuthFlow];
+        if (authenticationFallback)
+        {
+            [self showAuthenticationFallBackView:authenticationFallback];
+        }
+        else
+        {
+            [self refreshSupportedAuthFlow];
+        }
     }
     else if (sender == _cancelAuthFallbackButton)
     {
@@ -1027,6 +1047,19 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _authenticationScrollView.hidden = YES;
     _authFallbackContentView.hidden = NO;
     
+    // Add a cancel button in case of navigation controller use.
+    if (self.navigationController)
+    {
+        if (!cancelFallbackBarButton)
+        {
+            cancelFallbackBarButton = [[UIBarButtonItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_leave_fallback"] style:UIBarButtonItemStylePlain target:self action:@selector(hideRegistrationFallbackView)];
+        }
+        
+        // Add cancel button in right bar items
+        NSArray *rightBarButtonItems = self.navigationItem.rightBarButtonItems;
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:cancelFallbackBarButton] : @[cancelFallbackBarButton];
+    }
+    
     [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
         
         // Workaround: HS does not return the right URL. Use the one we used to make the request
@@ -1040,6 +1073,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)hideRegistrationFallbackView
 {
+    if (cancelFallbackBarButton)
+    {
+        NSMutableArray *rightBarButtonItems = [NSMutableArray arrayWithArray: self.navigationItem.rightBarButtonItems];
+        [rightBarButtonItems removeObject:cancelFallbackBarButton];
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    }
+    
     [_authFallbackWebView stopLoading];
     _authenticationScrollView.hidden = NO;
     _authFallbackContentView.hidden = YES;
