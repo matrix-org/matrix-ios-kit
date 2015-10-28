@@ -380,7 +380,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (self.roomDataSource && (self.roomDataSource.state == MXKDataSourceStatePreparing || self.roomDataSource.serverSyncEventCount))
     {
         // dataSource is not ready, keep running the loading wheel
-        [self.activityIndicator startAnimating];
+        [self startActivityIndicator];
     }
 }
 
