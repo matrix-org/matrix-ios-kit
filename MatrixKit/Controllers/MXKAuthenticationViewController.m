@@ -175,8 +175,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _identityServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_title"];
     _identityServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
     _identityServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_info"];
-    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
-    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
+    [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
+    [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
     
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
@@ -577,7 +577,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if ((supportedFlows.count != flows.count) && authenticationFallback.length)
     {
         NSLog(@"[MXKAuthenticationVC] Switch to fallback page");
-        [self showRegistrationFallBackView:authenticationFallback];
+        [self showAuthenticationFallBackView:authenticationFallback];
     }
     else
     {
@@ -830,7 +830,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         [self refreshSupportedAuthFlow];
     }
-    else if (sender == _cancelRegistrationFallbackButton)
+    else if (sender == _cancelAuthFallbackButton)
     {
         // Hide fallback webview
         [self hideRegistrationFallbackView];
@@ -1020,14 +1020,14 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-#pragma mark - Registration Fallback
+#pragma mark - Authentication Fallback
 
-- (void)showRegistrationFallBackView:(NSString*)fallbackPage
+- (void)showAuthenticationFallBackView:(NSString*)fallbackPage
 {
     _authenticationScrollView.hidden = YES;
-    _registrationFallbackContentView.hidden = NO;
+    _authFallbackContentView.hidden = NO;
     
-    [_registrationFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
+    [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
         
         // Workaround: HS does not return the right URL. Use the one we used to make the request
         credentials.homeServer = mxRestClient.homeserver;
@@ -1040,9 +1040,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)hideRegistrationFallbackView
 {
-    [_registrationFallbackWebView stopLoading];
+    [_authFallbackWebView stopLoading];
     _authenticationScrollView.hidden = NO;
-    _registrationFallbackContentView.hidden = YES;
+    _authFallbackContentView.hidden = YES;
 }
 
 @end

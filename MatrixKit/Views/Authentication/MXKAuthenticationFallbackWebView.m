@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import "MXKRegistrationWebView.h"
+#import "MXKAuthenticationFallbackWebView.h"
 
 // Generic method to make a bridge between JS and the UIWebView
 NSString *kMXKJavascriptSendObjectMessage = @"window.sendObjectMessage = function(parameters) {   \
@@ -44,9 +44,9 @@ sendObjectMessage({  \
 });                                     \
 };";
 
-@interface MXKRegistrationWebView ()
+@interface MXKAuthenticationFallbackWebView ()
 {
-    // The block called when the registration is successful
+    // The block called when the login or the registration is successful
     void (^onSuccess)(MXCredentials *);
     
     // Activity indicator
@@ -54,7 +54,7 @@ sendObjectMessage({  \
 }
 @end
 
-@implementation MXKRegistrationWebView
+@implementation MXKAuthenticationFallbackWebView
 
 - (void)dealloc
 {
@@ -68,6 +68,7 @@ sendObjectMessage({  \
 - (void)openFallbackPage:(NSString *)fallbackPage success:(void (^)(MXCredentials *))success
 {
     self.delegate = self;
+    
     onSuccess = success;
     
     // Add activity indicator
@@ -75,6 +76,15 @@ sendObjectMessage({  \
     activityIndicator.center = self.center;
     [self addSubview:activityIndicator];
     [activityIndicator startAnimating];
+
+    // Delete CAS OM cookies to prevent auto login
+    for(NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
+    {
+        if([[cookie domain] isEqualToString:@"cas.openmarket.com"])
+        {
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+        }
+    }
     
     [self loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:fallbackPage]]];
 }
