@@ -77,13 +77,10 @@ sendObjectMessage({  \
     [self addSubview:activityIndicator];
     [activityIndicator startAnimating];
 
-    // Delete CAS OM cookies to prevent auto login
+    // Delete cookies to launch login process from scratch
     for(NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
     {
-        if([[cookie domain] isEqualToString:@"cas.openmarket.com"])
-        {
-            [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
-        }
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
     }
     
     [self loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:fallbackPage]]];

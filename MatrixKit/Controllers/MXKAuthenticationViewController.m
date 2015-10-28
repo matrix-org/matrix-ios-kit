@@ -71,6 +71,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     NSString *authenticationFallback;
     
     /**
+     The cancel button added in navigation bar when fallback page is opened.
      */
     UIBarButtonItem *cancelFallbackBarButton;
 }
