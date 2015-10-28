@@ -19,7 +19,7 @@
 #import "MXKViewController.h"
 
 #import "MXKAuthInputsView.h"
-#import "MXKRegistrationWebView.h"
+#import "MXKAuthenticationFallbackWebView.h"
 
 extern NSString *const MXKAuthErrorDomain;
 
@@ -88,9 +88,9 @@ extern NSString *const MXKAuthErrorDomain;
 @property (weak, nonatomic) IBOutlet UILabel *noFlowLabel;
 @property (weak, nonatomic) IBOutlet UIButton *retryButton;
 
-@property (weak, nonatomic) IBOutlet UIView *registrationFallbackContentView;
-@property (weak, nonatomic) IBOutlet MXKRegistrationWebView *registrationFallbackWebView;
-@property (weak, nonatomic) IBOutlet UIButton *cancelRegistrationFallbackButton;
+@property (weak, nonatomic) IBOutlet UIView *authFallbackContentView;
+@property (weak, nonatomic) IBOutlet MXKAuthenticationFallbackWebView *authFallbackWebView;
+@property (weak, nonatomic) IBOutlet UIButton *cancelAuthFallbackButton;
 
 /**
  The current authentication type
