@@ -15,6 +15,7 @@
  */
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKLRUCache.h"
 
 @implementation NSBundle (MatrixKit)
 
@@ -25,11 +26,31 @@
     return [NSBundle bundleWithPath:assetPath];
 }
 
+// use a cache to avoid loading images from file system.
+// It often triggers an UI lag.
+static MXKLRUCache *imagesResourceCache = nil;
+
 + (UIImage *)mxk_imageFromMXKAssetsBundleWithName:(NSString *)name
 {
-    NSString *imagePath = [[NSBundle mxk_assetsBundle] pathForResource:name ofType:@"png" inDirectory:@"Images"];
+    // use a cache to avoid loading the image at each call
+    if (!imagesResourceCache)
+    {
+        imagesResourceCache = [[MXKLRUCache alloc] initWithCapacity:20];
+    }
     
-    return  [UIImage imageWithContentsOfFile:imagePath];
+    NSString *imagePath = [[NSBundle mxk_assetsBundle] pathForResource:name ofType:@"png" inDirectory:@"Images"];
+    UIImage* image = (UIImage*)[imagesResourceCache get:imagePath];
+    
+    // the image does not exist
+    if (!image)
+    {
+        // retrieve it
+        image = [UIImage imageWithContentsOfFile:imagePath];
+        // and store it in the cache.
+        [imagesResourceCache put:imagePath object:image];
+    }
+    
+    return image;
 }
 
 + (NSURL*)mxk_audioURLFromMXKAssetsBundleWithName:(NSString *)name
