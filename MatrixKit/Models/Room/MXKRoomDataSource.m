@@ -99,6 +99,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id UIApplicationSignificantTimeChangeNotificationObserver;
     
     /**
+     Observe NSCurrentLocaleDidChangeNotification to trigger cell change on time formatting change.
+     */
+    id NSCurrentLocaleDidChangeNotificationObserver;
+    
+    /**
      Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync v2.
      */
     id roomSyncWithLimitedTimelineNotification;
@@ -171,18 +176,17 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringCallInvite
                                              ];
         }
-        
+
         // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
+        // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
         UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            if (self.showBubblesDateTime && self.delegate)
-            {
-                // Delay the refresh because new time formatter are not ready.
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    // Reload all the table
-                    [self.delegate dataSource:self didCellChange:nil];
-                });
-            }
+            [self onDateTimeFormatUpdate];
+        }];
+        
+        // Observe NSCurrentLocaleDidChangeNotification to refresh bubbles if date/time are shown.
+        // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
+        NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            [self onDateTimeFormatUpdate];
         }];
         
         roomSyncWithLimitedTimelineNotification = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -196,6 +200,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }];
     }
     return self;
+}
+
+- (void)onDateTimeFormatUpdate
+{
+    // update the date and the time formatters
+    [self.eventFormatter initDateTimeFormatters];
+    
+    // refresh the UI if it is required
+    if (self.showBubblesDateTime && self.delegate)
+    {
+        // Reload all the table
+        [self.delegate dataSource:self didCellChange:nil];
+    }
 }
 
 - (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
@@ -343,6 +360,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)destroy
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
+    
+    if (NSCurrentLocaleDidChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
+        NSCurrentLocaleDidChangeNotificationObserver = nil;
+    }
     
     if (UIApplicationSignificantTimeChangeNotificationObserver)
     {

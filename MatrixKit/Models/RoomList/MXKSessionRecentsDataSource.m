@@ -34,11 +34,16 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
      These changes are reported to the delegate only if no server sync is in progress.
      */
     NSMutableArray *internalCellDataArray;
-    
+
     /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
+    
+    /**
+     Observe NSCurrentLocaleDidChangeNotification to trigger cell change on time formatting change.
+     */
+    id NSCurrentLocaleDidChangeNotificationObserver;
 }
 
 @end
@@ -62,33 +67,49 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         _eventFormatter.isForSubtitle = YES;
-        
-        // Observe UIApplicationSignificantTimeChangeNotification to refresh display on time formatting change.
+
+        // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
+        // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
         UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            // Delay the refresh because new time formatter are not ready.
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
-                // Force update on each recents
-                for (id<MXKRecentCellDataStoring> cellData in cellDataArray)
-                {
-                    [cellData update];
-                }
-                
-                if (self.delegate)
-                {
-                    // Reload all the table
-                    [self.delegate dataSource:self didCellChange:nil];
-                }
-            });
-            
+            [self onDateTimeFormatUpdate];
+        }];
+        
+        
+        // Observe NSCurrentLocaleDidChangeNotification to refresh bubbles if date/time are shown.
+        // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
+        NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            [self onDateTimeFormatUpdate];
         }];
     }
     return self;
 }
 
+- (void)onDateTimeFormatUpdate
+{
+    // update the date and time formatters
+    [_eventFormatter initDateTimeFormatters];
+    
+    // Force update on each recents
+    for (id<MXKRecentCellDataStoring> cellData in cellDataArray)
+    {
+        [cellData update];
+    }
+    
+    if (self.delegate)
+    {
+        // Reload all the table
+        [self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
 - (void)destroy
 {
+    if (NSCurrentLocaleDidChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
+        NSCurrentLocaleDidChangeNotificationObserver = nil;
+    }
+    
     if (UIApplicationSignificantTimeChangeNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];

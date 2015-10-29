@@ -55,9 +55,14 @@ typedef enum : NSUInteger {
 {
 @protected
     /**
-     The date formatter used to build date string without time information (initialized with the first preferred localization of the main bundle by default).
+     The date formatter used to build date string without time information.
      */
     NSDateFormatter *dateFormatter;
+    
+    /**
+     The time formatter used to build time string without date information.
+     */
+    NSDateFormatter *timeFormatter;
 }
 
 /**
@@ -80,6 +85,13 @@ typedef enum : NSUInteger {
  @return the newly created instance.
  */
 - (instancetype)initWithMatrixSession:(MXSession*)mxSession;
+
+/**
+ Initialise the date and time formatters.
+ This formatter could require to be updated after updating the device settings.
+ e.g the time format switches from 24H format to AM/PM.
+ */
+- (void)initDateTimeFormatters;
 
 /**
  Checks whether the event is related to an attachment and if it is supported.
