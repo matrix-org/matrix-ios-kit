@@ -2439,10 +2439,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (!reconnectingView)
     {
-        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [spinner sizeToFit];
-         spinner.hidesWhenStopped = NO;
-        spinner.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0];
+        spinner.hidesWhenStopped = NO;
+        spinner.backgroundColor = [UIColor clearColor];
         [spinner startAnimating];
         
         // no need to manage constraints here
@@ -2470,9 +2470,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // detect if the user scrolls over the tableview bottom
         restartConnection = (
-                             ((scrollView.contentSize.height < scrollView.frame.size.height) && (scrollView.contentOffset.y > 64))
+                             ((scrollView.contentSize.height < scrollView.frame.size.height) && (scrollView.contentOffset.y > 128))
                              ||
-                             ((scrollView.contentSize.height > scrollView.frame.size.height) &&  (scrollView.contentOffset.y + scrollView.frame.size.height) > (scrollView.contentSize.height + 64)));
+                             ((scrollView.contentSize.height > scrollView.frame.size.height) &&  (scrollView.contentOffset.y + scrollView.frame.size.height) > (scrollView.contentSize.height + 128)));
         
         if (restartConnection)
         {

@@ -537,10 +537,10 @@
 {
     if (!reconnectingView)
     {
-        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [spinner sizeToFit];
         spinner.hidesWhenStopped = NO;
-        spinner.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0];
+        spinner.backgroundColor = [UIColor clearColor];
         [spinner startAnimating];
         
         // no need to manage constraints here
@@ -567,7 +567,7 @@
     if (!reconnectingView)
     {
         // detect if the user scrolls over the tableview top
-        restartConnection = (scrollView.contentOffset.y < -64);
+        restartConnection = (scrollView.contentOffset.y < 128);
         
         if (restartConnection)
         {
