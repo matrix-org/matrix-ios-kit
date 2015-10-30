@@ -187,8 +187,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         roomSyncWithLimitedTimelineNotification = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
-            NSString* identifier = notif.userInfo[kMXRoomNotificationRoomIdKey];
-            if (identifier && [_roomId isEqualToString:identifier])
+            MXRoom *room = notif.object;
+            if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
             {
                 // The existing room history has been flushed during server sync v2 because a gap has been observed between local and server storage. 
                 [self reload];
@@ -291,7 +291,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     currentTypingUsers = nil;
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
     
     @synchronized(eventsToProcess)
     {
@@ -397,7 +397,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 if (NO == _room.isSync)
                 {
                     // Listen to MXSession rooms count changes
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXSessionInitialSyncedRoomNotification object:nil];
+                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
                 }
             }
             else
@@ -750,7 +750,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
     // Check current state
-    if (state != MXKDataSourceStateReady)
+    if ((state != MXKDataSourceStateReady) || (_room.isSync == NO))
     {
         if (failure)
         {
@@ -1653,12 +1653,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)didMXRoomInitialSynced:(NSNotification *)notif
 {
     // Refresh the room data source when the room has been initialSync'ed
-    MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[kMXSessionNotificationRoomIdKey]])
+    MXRoom *room = notif.object;
+    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
     { 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
         
         [self reload];
     }
