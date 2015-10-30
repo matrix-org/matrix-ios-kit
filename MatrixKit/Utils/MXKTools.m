@@ -195,45 +195,68 @@
     }
 }
 
+
+// cache the value to improve the UX.
+static NSMutableDictionary *fileExtensionByContentType = nil;
+
 // return the file extension from a contentType
 + (NSString*)fileExtensionFromContentType:(NSString*)contentType
 {
-    if (!contentType)
+    // sanity checks
+    if (!contentType || (0 == contentType.length))
     {
         return @"";
     }
     
-    CFStringRef mimeType = (__bridge CFStringRef)contentType;
-    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+    NSString* fileExt = nil;
     
-    NSString* extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension);
-    
-    CFRelease(uti);
-    
-    if (extension)
+    if (!fileExtensionByContentType)
     {
-        return [NSString stringWithFormat:@".%@", extension];
+        fileExtensionByContentType  = [[NSMutableDictionary alloc] init];
     }
     
-    // else undefined type
-    if ([contentType isEqualToString:@"application/jpeg"])
+    fileExt = fileExtensionByContentType[contentType];
+    
+    if (!fileExt)
     {
-        return @".jpg";
-    }
-    else  if ([contentType isEqualToString:@"audio/x-alaw-basic"])
-    {
-        return @".alaw";
-    }
-    else  if ([contentType isEqualToString:@"audio/x-caf"])
-    {
-        return @".caf";
-    }
-    else  if ([contentType isEqualToString:@"audio/aac"])
-    {
-        return @".aac";
+        fileExt = @"";
+        
+        // else undefined type
+        if ([contentType isEqualToString:@"application/jpeg"])
+        {
+            fileExt = @".jpg";
+        }
+        else if ([contentType isEqualToString:@"audio/x-alaw-basic"])
+        {
+            fileExt = @".alaw";
+        }
+        else if ([contentType isEqualToString:@"audio/x-caf"])
+        {
+            fileExt = @".caf";
+        }
+        else if ([contentType isEqualToString:@"audio/aac"])
+        {
+            fileExt =  @".aac";
+        }
+        else
+        {
+            CFStringRef mimeType = (__bridge CFStringRef)contentType;
+            CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+            
+            NSString* extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension);
+            
+            CFRelease(uti);
+            
+            if (extension)
+            {
+                fileExt = [NSString stringWithFormat:@".%@", extension];
+            }
+        }
+        
+        [fileExtensionByContentType setObject:fileExt forKey:contentType];
     }
     
-    return @"";
+    return fileExt;
 }
 
 #pragma mark - Hex color to UIColor conversion
