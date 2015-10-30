@@ -219,6 +219,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)limitMemoryUsage:(NSInteger)maxBubbleNb;
 
+/**
+ Force data reload.
+ */
+- (void)reload;
+
 #pragma mark - Public methods
 /**
  Get the data for the cell at the given index.
