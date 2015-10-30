@@ -483,9 +483,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         userUpdateListener = nil;
     }
     
-    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
-    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
-    
     if (mxSession)
     {
         // Reset room data stored in memory
@@ -973,8 +970,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     // only work when the application is suspended
     
-    // TODO enable it when V2 will be released
-    // the events request put the user as "SEEN" so, the notifications are randomly cleared as soon as the server
+    // FIXME SYNCV2 enable it when V2 will be released
     if (false)//(mxSession && mxSession.state == MXSessionStatePaused)
     {
         NSLog(@"[MXKAccount] starts a catchup");
