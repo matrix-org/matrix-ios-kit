@@ -417,9 +417,14 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 [self refreshUnreadCounters:YES];
                 
-                if (NO == _room.isSync)
+                // Check user membership in this room
+                MXMembership membership = self.room.state.membership;
+                if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
                 {
-                    // Listen to MXSession rooms count changes
+                    // Here the initial sync is not ended or the room is a pending invitation.
+                    // Note: In case of invitation, a full sync will be triggered if the user joins this room.
+                    
+                    // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
                 }
             }
@@ -772,9 +777,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 #pragma mark - Pagination
 - (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    // Check current state
-    if ((state != MXKDataSourceStateReady) || (_room.isSync == NO))
+    // Check the current data source state, and the actual user membership for this room.
+    if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
     {
+        // Back pagination is not available here.
         if (failure)
         {
             failure(nil);
