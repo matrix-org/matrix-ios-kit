@@ -179,30 +179,22 @@ static MXKContactManager* sharedMXKContactManager = nil;
         // Update matrix contact list in case of new synced one-to-one room
         if (!mxSessionNewSyncedRoomObserver)
         {
-            mxSessionNewSyncedRoomObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionInitialSyncedRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            mxSessionNewSyncedRoomObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomInitialSyncNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
-                MXSession *mxSession = notif.object;
-                if ([mxSessionArray indexOfObject:mxSession] != NSNotFound)
+                MXRoom *room = notif.object;
+                NSArray *roomMembers = room.state.members;
+                
+                // Consider only 1:1 chat
+                if (roomMembers.count == 2)
                 {
-                    NSString *roomId = [notif.userInfo objectForKey:kMXSessionNotificationRoomIdKey];
-                    if (roomId.length)
+                    // Retrieve the one-to-one contact in members list.
+                    MXRoomMember *oneToOneContact = [roomMembers objectAtIndex:0];
+                    if ([oneToOneContact.userId isEqualToString:room.mxSession.myUser.userId])
                     {
-                        MXRoom *room = [mxSession roomWithRoomId:roomId];
-                        NSArray *roomMembers = room.state.members;
-                        
-                        // Consider only 1:1 chat
-                        if (roomMembers.count == 2)
-                        {
-                            // Retrieve the one-to-one contact in members list.
-                            MXRoomMember *oneToOneContact = [roomMembers objectAtIndex:0];
-                            if ([oneToOneContact.userId isEqualToString:mxSession.myUser.userId])
-                            {
-                                oneToOneContact = [roomMembers objectAtIndex:1];
-                            }
-                            
-                            [self updateMatrixContactWithID:oneToOneContact.userId];
-                        }
+                        oneToOneContact = [roomMembers objectAtIndex:1];
                     }
+                    
+                    [self updateMatrixContactWithID:oneToOneContact.userId];
                 }
             }];
         }
