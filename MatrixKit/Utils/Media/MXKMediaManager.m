@@ -444,6 +444,45 @@ static MXKLRUCache* imagesCacheLruCache = nil;
     return path;
 }
 
+static NSMutableDictionary* fileBaseFromMimeType = nil;
+
++ (NSString*)filebase:(NSString*)mimeType
+{
+    // sanity checks
+    if (!mimeType || !mimeType.length)
+    {
+        return @"";
+    }
+    
+    NSString* fileBase;
+
+    if (!fileBaseFromMimeType)
+    {
+        fileBaseFromMimeType = [[NSMutableDictionary alloc] init];
+    }
+    
+    fileBase = fileBaseFromMimeType[mimeType];
+    
+    if (!fileBase)
+    {
+        fileBase = @"";
+        
+        if ([mimeType rangeOfString:@"/"].location != NSNotFound)
+        {
+            NSArray *components = [mimeType componentsSeparatedByString:@"/"];
+            fileBase = [components objectAtIndex:0];
+            if (fileBase.length > 3)
+            {
+                fileBase = [fileBase substringToIndex:3];
+            }
+        }
+        
+        [fileBaseFromMimeType setObject:fileBase forKey:mimeType];
+    }
+    
+    return fileBase;
+}
+
 + (NSString*)cachePathForMediaWithURL:(NSString*)url andType:(NSString *)mimeType inFolder:(NSString*)folder
 {
     NSString* fileBase = @"";
@@ -459,16 +498,7 @@ static MXKLRUCache* imagesCacheLruCache = nil;
         extension = [MXKTools fileExtensionFromContentType:mimeType];
         
         // use the mime type to extract a base filename
-        
-        if ([mimeType rangeOfString:@"/"].location != NSNotFound)
-        {
-            NSArray *components = [mimeType componentsSeparatedByString:@"/"];
-            fileBase = [components objectAtIndex:0];
-            if (fileBase.length > 3)
-            {
-                fileBase = [fileBase substringToIndex:3];
-            }
-        }
+        fileBase = [MXKMediaManager filebase:mimeType];
     }
     
     if (!extension.length)
