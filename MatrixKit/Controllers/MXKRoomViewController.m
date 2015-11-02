@@ -2077,6 +2077,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [self detectPullToKick:scrollView];
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self upateCurrentEventIdAtTableBottom];
+        });
     }
 }
 
@@ -2084,6 +2088,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (scrollView == _bubblesTableView)
     {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self upateCurrentEventIdAtTableBottom];
+        });
+        
         [self managePullToKick:scrollView];
     }
 }
@@ -2094,10 +2102,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Consider this callback to reset scrolling to bottom flag
         isScrollingToBottom = NO;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self upateCurrentEventIdAtTableBottom];
-        });
         
         // when the content size if smaller that the frame
         // scrollViewDidEndDecelerating is not called
