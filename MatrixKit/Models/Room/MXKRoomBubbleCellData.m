@@ -298,13 +298,21 @@
 // CAUTION: This method runs only on main thread
 - (CGSize)textContentSize: (NSAttributedString*)attributedText
 {
+    static UITextView* measurementTextView = nil;
+    
     if (attributedText.length)
     {
-        // Use a TextView template
-        UITextView *dummyTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT)];
-        dummyTextView.attributedText = attributedText;
-        return [dummyTextView sizeThatFits:dummyTextView.frame.size];
+        if (!measurementTextView)
+        {
+            measurementTextView = [[UITextView alloc] init];
+        }
+        
+        measurementTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
+        measurementTextView.attributedText = attributedText;
+            
+        return [measurementTextView sizeThatFits:measurementTextView.frame.size];
     }
+    
     return CGSizeZero;
 }
 
