@@ -2077,21 +2077,31 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [self detectPullToKick:scrollView];
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self upateCurrentEventIdAtTableBottom];
-        });
     }
 }
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (scrollView == _bubblesTableView)
+    {
+        // if the user scrolls the history content without animation
+        // upateCurrentEventIdAtTableBottom must be called here (without dispatch).
+        // else it will be done in scrollViewDidEndDecelerating
+        if (!decelerate)
+        {
+            [self upateCurrentEventIdAtTableBottom];
+        }
+    }
+}
+
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     if (scrollView == _bubblesTableView)
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self upateCurrentEventIdAtTableBottom];
-        });
-        
+        // do not dispatch the upateCurrentEventIdAtTableBottom call
+        // else it might triggers weird UI lags.
+        [self upateCurrentEventIdAtTableBottom];
         [self managePullToKick:scrollView];
     }
 }
