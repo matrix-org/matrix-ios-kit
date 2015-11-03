@@ -324,11 +324,20 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 
                 for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
                 {
-                    if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
+                    if (component.event.mxkState != MXKEventStateSendingFailed)
                     {
+                        // ensure that older subviews are removed
+                        // They should be (they are removed when the is not anymore used).
+                        // But, it seems that is not always true.
+                        NSArray* views = [self.bubbleInfoContainer subviews];
+                        for(UIView* view in views)
+                        {
+                            [view removeFromSuperview];
+                        }
+                        
                         CGFloat timeLabelOffset = 0;
                         
-                        if (bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
+                        if (component.date && bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
                         {
                             UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.bubbleInfoContainer.frame.size.width , 15)];
                             
