@@ -96,10 +96,12 @@
 {
     CGFloat rowHeight = [super originalHeightForCellData:cellData withMaximumWidth:maxWidth];
     
+    CGFloat height = self.cellWithOriginalXib.frame.size.height;
+    
     // Use the xib height as the minimal height
-    if (rowHeight < self.cellWithOriginalXib.frame.size.height)
+    if (rowHeight < height)
     {
-        rowHeight = self.cellWithOriginalXib.frame.size.height;
+        rowHeight = height;
     }
     
     return rowHeight;

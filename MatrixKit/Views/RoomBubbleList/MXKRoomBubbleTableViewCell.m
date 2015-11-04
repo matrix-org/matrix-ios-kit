@@ -127,14 +127,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     bubbleData = (MXKRoomBubbleCellData*)cellData;
     if (bubbleData)
     {
+        MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
+        
         // set the media folders
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         self.attachmentView.mediaFolder = bubbleData.roomId;
         
         // Handle sender's picture and adjust view's constraints
         self.pictureView.hidden = NO;
-        self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
-        self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant ;
         // Handle user's picture
         NSString *avatarThumbURL = nil;
         if (bubbleData.senderAvatarUrl)
@@ -176,7 +178,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.bubbleInfoContainer.hidden = YES;
         
         // Set message content
-        bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
+        bubbleData.maxTextViewWidth = self.frame.size.width - (cellWithOriginalXib.msgTextViewLeadingConstraint.constant + cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
         if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
         {
@@ -506,18 +508,20 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
+    MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
+    
     // Compute height of message content (The maximum width available for the textview must be updated dynamically)
-    bubbleData.maxTextViewWidth = maxWidth - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
+    bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
     if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
     {
-        rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        rowHeight += cell.msgTextViewTopConstraint.constant;
     }
     else
     {
-        rowHeight += self.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        rowHeight += cell.attachViewTopConstraint.constant ;
     }
     
     return rowHeight;

@@ -42,8 +42,11 @@
         if (self.bubbleData.shouldHideSenderInformation)
         {
             self.pictureView.hidden = YES;
-            self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+            
+            MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
+        
+            self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+            self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             
             if (!self.bubbleInfoContainer.hidden)
             {
@@ -132,10 +135,12 @@
     }
     else
     {
+        CGFloat height = self.cellWithOriginalXib.frame.size.height;
+        
         // We consider a minimun cell height in order to display correctly user's picture
-        if (rowHeight < self.cellWithOriginalXib.frame.size.height)
+        if (rowHeight < height)
         {
-            rowHeight = self.cellWithOriginalXib.frame.size.height;
+            rowHeight = height;
         }
     }
     
