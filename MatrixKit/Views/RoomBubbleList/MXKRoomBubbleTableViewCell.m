@@ -274,13 +274,15 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.fileTypeIconView.hidden = YES;
             self.messageTextView.hidden = NO;
             
+            NSAttributedString* newText = nil;
+            
             // Underline attached file name
             if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
-                self.messageTextView.attributedText = updatedText;
+                newText = updatedText;
                 
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -298,15 +300,31 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             }
             else
             {
-                self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+                newText = bubbleData.attributedTextMessage;
+            }
+            
+            // update the text only if it is required
+            // updating a text is quite long (even with the same text).
+            // there is an heuristic herer : assume that the strings are equals if their texts are equal
+            // (it is faster than coparing two attributed strings)
+            if ((newText.length != self.messageTextView.attributedText.length) || ![newText.string isEqual:self.messageTextView.attributedText.string])
+            {
+                self.messageTextView.attributedText = newText;
             }
             
             // update the frame size from the content size
             // the content size is cached so it saved few ms
             // and avoid using sizeToFit
-            CGRect frame = self.messageTextView.frame;
-            frame.size = contentSize;
-            self.messageTextView.frame = frame;
+            CGRect newFrame, curframe;
+            newFrame = curframe = CGRectIntegral(self.messageTextView.frame);
+            newFrame.size = contentSize;
+            
+            // update the frame only if it is required
+            // setting a frame is quite slow so avoid useless update.
+            if (!CGRectEqualToRect(curframe, CGRectIntegral(newFrame)))
+            {
+                self.messageTextView.frame = newFrame;
+            }
             
             // Add a long gesture recognizer on text view in order to display event details
             UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
