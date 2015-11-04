@@ -556,7 +556,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     // Remove potential dateTime (or unsent) label(s)
     if (self.bubbleInfoContainer.subviews.count > 0)
     {
-        for (UIView *view in self.bubbleInfoContainer.subviews)
+        NSArray* subviews = self.bubbleInfoContainer.subviews;
+             
+        for (UIView *view in subviews)
         {
             [view removeFromSuperview];
         }
