@@ -305,9 +305,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             
             // update the text only if it is required
             // updating a text is quite long (even with the same text).
-            // there is an heuristic herer : assume that the strings are equals if their texts are equal
-            // (it is faster than coparing two attributed strings)
-            if ((newText.length != self.messageTextView.attributedText.length) || ![newText.string isEqual:self.messageTextView.attributedText.string])
+            if (![self.messageTextView.attributedText isEqualToAttributedString:newText])
             {
                 self.messageTextView.attributedText = newText;
             }
