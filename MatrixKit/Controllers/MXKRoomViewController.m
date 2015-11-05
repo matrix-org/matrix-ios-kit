@@ -91,6 +91,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     BOOL isBackPaginationInProgress;
     
     /**
+     The back pagination spinner view.
+     */
+    UIView* backPaginationActivityView;
+    
+    /**
      Store current number of bubbles before back pagination.
      */
     NSInteger backPaginationSavedBubblesNb;
@@ -312,8 +317,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
     [self removeReconnectingView];
-    
-
 }
 
 - (void)dealloc
@@ -1211,6 +1214,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                            }];
 }
 
+/**
+ This method handles the back pagination and the related animation when the user bounces at the top of the tableview.
+ It is not a public method because it is implemented by considering some priori knowledges like the current table content offset.
+ 
+ If a developer wants to customize the back pagination, he should override [scrollViewWillEndDragging: withVelocity: targetContentOffset:]
+ to call his own back pagination handler.
+ */
 - (void)triggerBackPagination
 {
     // Paginate only if possible
@@ -1228,73 +1238,91 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
     isBackPaginationInProgress = YES;
-    [self startActivityIndicator];
+    
+    if (!backPaginationActivityView)
+    {
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        spinner.hidesWhenStopped = NO;
+        spinner.backgroundColor = [UIColor clearColor];
+        [spinner startAnimating];
+        
+        // no need to manage constraints here
+        // IOS defines them.
+        // since IOS7 the spinner is centered so need to create a background and add it.
+        _bubblesTableView.tableHeaderView = backPaginationActivityView = spinner;
+    }
     
     // Trigger back pagination
     [roomDataSource paginateBackMessages:10 success:^{
         
-        // We will scroll to bottom if the displayed content does not reach the bottom (after adding back pagination)
-        BOOL shouldScrollToBottom = NO;
-        CGFloat maxPositionY = self.bubblesTableView.contentOffset.y + (self.bubblesTableView.frame.size.height - self.bubblesTableView.contentInset.bottom);
-        // Compute the height of the blank part at the bottom
-        if (maxPositionY > self.bubblesTableView.contentSize.height)
-        {
-            CGFloat blankAreaHeight = maxPositionY - self.bubblesTableView.contentSize.height;
-            // Scroll to bottom if this blank area is greater than max scrolling offet
-            shouldScrollToBottom = (blankAreaHeight >= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET);
-        }
+        // Delay the response handling to keep visible the spinner a minimum of time
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        CGFloat verticalOffset = 0;
-        if (shouldScrollToBottom == NO)
-        {
-            NSInteger addedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0] - backPaginationSavedBubblesNb;
-            if (addedBubblesNb >= 0)
+            // We will scroll to bottom if the displayed content does not reach the bottom (after adding back pagination)
+            BOOL shouldScrollToBottom = NO;
+            CGFloat maxPositionY = self.bubblesTableView.contentOffset.y + (self.bubblesTableView.frame.size.height - self.bubblesTableView.contentInset.bottom);
+            // Compute the height of the blank part at the bottom
+            if (maxPositionY > self.bubblesTableView.contentSize.height)
             {
-                
-                // We will adjust the vertical offset in order to make visible only a few part of added messages (at the top of the table)
-                NSIndexPath *indexPath;
-                // Compute the cumulative height of the added messages
-                for (NSUInteger index = 0; index < addedBubblesNb; index++)
-                {
-                    indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                    verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
-                }
-                
-                // Add delta of the height of the first existing message
-                indexPath = [NSIndexPath indexPathForRow:addedBubblesNb inSection:0];
-                verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
-                
-                // Deduce the vertical offset from this height
-                verticalOffset -= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET;
+                CGFloat blankAreaHeight = maxPositionY - self.bubblesTableView.contentSize.height;
+                // Scroll to bottom if this blank area is greater than max scrolling offet
+                shouldScrollToBottom = (blankAreaHeight >= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET);
             }
-        }
-        
-        // Trigger a full table reload. We could not only insert new cells related to back pagination,
-        // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-        isBackPaginationInProgress = NO;
-        [self reloadBubblesTable:NO];
-        
-        // Adjust vertical content offset
-        if (shouldScrollToBottom)
-        {
-            [self scrollBubblesTableViewToBottomAnimated:NO];
-        }
-        else if (verticalOffset > 0)
-        {
-            // Adjust vertical offset in order to limit scrolling down
-            CGPoint contentOffset = self.bubblesTableView.contentOffset;
-            contentOffset.y = verticalOffset - self.bubblesTableView.contentInset.top;
-            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
-        }
-        
-        [self stopActivityIndicator];
+            
+            CGFloat verticalOffset = 0;
+            if (shouldScrollToBottom == NO)
+            {
+                NSInteger addedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0] - backPaginationSavedBubblesNb;
+                if (addedBubblesNb >= 0)
+                {
+                    
+                    // We will adjust the vertical offset in order to make visible only a few part of added messages (at the top of the table)
+                    NSIndexPath *indexPath;
+                    // Compute the cumulative height of the added messages
+                    for (NSUInteger index = 0; index < addedBubblesNb; index++)
+                    {
+                        indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                        verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+                    }
+                    
+                    // Add delta of the height of the first existing message
+                    indexPath = [NSIndexPath indexPathForRow:addedBubblesNb inSection:0];
+                    verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+                    
+                    // Deduce the vertical offset from this height
+                    verticalOffset -= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET;
+                }
+            }
+            
+            // Trigger a full table reload. We could not only insert new cells related to back pagination,
+            // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+            isBackPaginationInProgress = NO;
+            _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+            
+            [self reloadBubblesTable:NO];
+            
+            // Adjust vertical content offset
+            if (shouldScrollToBottom)
+            {
+                [self scrollBubblesTableViewToBottomAnimated:NO];
+            }
+            else if (verticalOffset > 0)
+            {
+                // Adjust vertical offset in order to limit scrolling down
+                CGPoint contentOffset = self.bubblesTableView.contentOffset;
+                contentOffset.y = verticalOffset - self.bubblesTableView.contentInset.top;
+                [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            }
+            
+        });
         
     } failure:^(NSError *error) {
         
         // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
         isBackPaginationInProgress = NO;
+        _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+        
         [self reloadBubblesTable:YES];
-        [self stopActivityIndicator];
         
     }];
 }
