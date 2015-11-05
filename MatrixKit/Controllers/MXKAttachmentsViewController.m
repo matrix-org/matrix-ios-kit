@@ -294,7 +294,7 @@
         else
         {
             // Compute the attachment index
-            NSUInteger currentAttachmentIndex = (isBackPaginationInProgress ? currentVisibleItemIndex-- : currentVisibleItemIndex);
+            NSUInteger currentAttachmentIndex = (isBackPaginationInProgress ? currentVisibleItemIndex - 1 : currentVisibleItemIndex);
             
             if (currentVisibleItemIndex < attachments.count)
             {
