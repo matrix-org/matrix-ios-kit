@@ -47,6 +47,7 @@
 
 - (void)update
 {
+    // Keep ref on event
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
     lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
@@ -79,15 +80,17 @@
     {
         lastEventTextMessage = @"";
         
-        // Trigger a back pagination to retrieve the actual last message
-        [roomDataSource paginateBackMessages:5 success:nil failure:nil];
+        // Trigger a back pagination to retrieve the actual last message.
+        // Trigger asynchronously this back pagination to not block the UI thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+        
+            [roomDataSource paginateBackMessages:5 success:nil failure:nil];
+            
+        });
     }
     
     // Compute the attribute text message
     lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent];
-    
-    // Keep ref on event
-    lastEvent = roomDataSource.lastMessage;
 }
 
 - (void)dealloc
