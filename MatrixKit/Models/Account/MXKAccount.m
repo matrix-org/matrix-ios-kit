@@ -1017,7 +1017,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     else
     {
-        NSLog(@"[MXKAccount] cannot start catchup (invalid state");
+        NSLog(@"[MXKAccount] cannot start catchup (invalid state)");
         failure([[NSError alloc] init]);
     }
 }
