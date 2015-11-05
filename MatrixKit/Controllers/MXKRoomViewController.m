@@ -134,7 +134,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     /**
      The attachments viewer for image and video.
      */
-     MXKRoomAttachmentsViewController *attachmentsViewer;
+     MXKAttachmentsViewController *attachmentsViewer;
     
     /**
      The reconnection animated view.
@@ -2434,7 +2434,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
         
         // Present an attachment viewer
-        attachmentsViewer = [MXKRoomAttachmentsViewController roomAttachmentsViewController];
+        attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
         attachmentsViewer.delegate = self;
         attachmentsViewer.complete = (roomDataSource.room.canPaginate == NO);
         attachmentsViewer.hidesBottomBarWhenPushed = YES;
@@ -2473,8 +2473,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-//MXKRoomAttachmentsViewControllerDelegate
-- (BOOL)roomAttachmentsViewController:(MXKRoomAttachmentsViewController*)roomAttachmentsViewController paginateAttachmentBefore:(NSString*)eventId
+// MXKAttachmentsViewControllerDelegate
+- (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId
 {
     [self triggerAttachmentBackPagination:eventId];
     

@@ -19,13 +19,13 @@ limitations under the License.
 #import "MXKViewController.h"
 #import "MXKAttachment.h"
 
-@protocol MXKRoomAttachmentsViewControllerDelegate;
+@protocol MXKAttachmentsViewControllerDelegate;
 
 /**
- This view controller displays attachments of a room. Only one matrix session is handled by this view controller.
- Only one attachment is displayed at once, the user is able to swipe one by one the room attachments.
+ This view controller is used to display attachments of a room.
+ Only one attachment is displayed at once, the user is able to swipe one by one the attachment.
  */
-@interface MXKRoomAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate>
+@interface MXKAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate>
 
 @property (nonatomic) IBOutlet UICollectionView *attachmentsCollection;
 
@@ -42,12 +42,12 @@ limitations under the License.
 /**
  The delegate notified when inputs are ready.
  */
-@property (nonatomic) id<MXKRoomAttachmentsViewControllerDelegate> delegate;
+@property (nonatomic) id<MXKAttachmentsViewControllerDelegate> delegate;
 
 #pragma mark - Class methods
 
 /**
- Returns the `UINib` object initialized for a `MXKRoomAttachmentsViewController`.
+ Returns the `UINib` object initialized for a `MXKAttachmentsViewController`.
 
  @return The initialized `UINib` object or `nil` if there were errors during initialization
  or the nib file could not be located.
@@ -59,12 +59,12 @@ limitations under the License.
 + (UINib *)nib;
 
 /**
- Creates and returns a new `MXKRoomAttachmentsViewController` object.
+ Creates and returns a new `MXKAttachmentsViewController` object.
 
  @discussion This is the designated initializer for programmatic instantiation.
- @return An initialized `MXKRoomAttachmentsViewController` object if successful, `nil` otherwise.
+ @return An initialized `MXKAttachmentsViewController` object if successful, `nil` otherwise.
  */
-+ (instancetype)roomAttachmentsViewController;
++ (instancetype)attachmentsViewController;
 
 /**
  Display attachments of a room.
@@ -82,19 +82,19 @@ limitations under the License.
 
 @end
 
-@protocol MXKRoomAttachmentsViewControllerDelegate <NSObject>
+@protocol MXKAttachmentsViewControllerDelegate <NSObject>
 
 /**
- Ask the delegate for older attachments.
+ Ask the delegate for more attachments.
  This method is called only if 'complete' is NO.
  
  When some attachments are available, the delegate update the attachmnet list by using
- [MXKRoomAttachmentsViewController displayAttachments: focusOn:].
+ [MXKAttachmentsViewController displayAttachments: focusOn:].
  When no new attachment is available, the delegate must update the property 'complete'.
  
- @param roomAttachmentsViewController the attachments view controller.
+ @param attachmentsViewController the attachments view controller.
  @param eventId the event identifier of the current first attachment.
  @return a boolean which tells whether some new attachments may be added or not.
  */
-- (BOOL)roomAttachmentsViewController:(MXKRoomAttachmentsViewController*)roomAttachmentsViewController paginateAttachmentBefore:(NSString*)eventId;
+- (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId;
 @end

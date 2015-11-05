@@ -21,7 +21,7 @@ limitations under the License.
 #import "MXKRoomTitleView.h"
 #import "MXKRoomInputToolbarView.h"
 
-#import "MXKRoomAttachmentsViewController.h"
+#import "MXKAttachmentsViewController.h"
 
 extern NSString *const kCmdChangeDisplayName;
 extern NSString *const kCmdEmote;
@@ -35,7 +35,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 /**
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
  */
-@interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate, MXKRoomAttachmentsViewControllerDelegate>
+@interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate, MXKAttachmentsViewControllerDelegate>
 
 /**
  The current data source associated to the view controller.

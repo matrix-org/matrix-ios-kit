@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import "MXKRoomAttachmentsViewController.h"
+#import "MXKAttachmentsViewController.h"
 
 #import "MXKAlert.h"
 
@@ -28,7 +28,7 @@
 
 #import "NSBundle+MatrixKit.h"
 
-@interface MXKRoomAttachmentsViewController ()
+@interface MXKAttachmentsViewController ()
 {
     /**
      Current alert (if any).
@@ -75,21 +75,21 @@
 
 @end
 
-@implementation MXKRoomAttachmentsViewController
+@implementation MXKAttachmentsViewController
 @synthesize attachments;
 
 #pragma mark - Class methods
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRoomAttachmentsViewController class])
-                          bundle:[NSBundle bundleForClass:[MXKRoomAttachmentsViewController class]]];
+    return [UINib nibWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
+                          bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
 }
 
-+ (instancetype)roomAttachmentsViewController
++ (instancetype)attachmentsViewController
 {
-    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRoomAttachmentsViewController class])
-                                          bundle:[NSBundle bundleForClass:[MXKRoomAttachmentsViewController class]]];
+    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
+                                          bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
 }
 
 #pragma mark -
@@ -539,7 +539,7 @@
                         cell.notificationObserver = nil;
                     }
                     
-                    NSLog(@"[MXKRoomAttachmentsVC] gif download failed: %@", error);
+                    NSLog(@"[MXKAttachmentsVC] gif download failed: %@", error);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -715,7 +715,7 @@
                                 selectedCell.notificationObserver = nil;
                             }
                             
-                            NSLog(@"[MXKRoomAttachmentsVC] video download failed: %@", error);
+                            NSLog(@"[MXKAttachmentsVC] video download failed: %@", error);
                             // Notify MatrixKit user
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                             
@@ -811,7 +811,7 @@
     if (scrollView == self.attachmentsCollection && isBackPaginationInProgress)
     {
         MXKAttachment *attachment = self.attachments.firstObject;
-        self.complete = ![self.delegate roomAttachmentsViewController:self paginateAttachmentBefore:attachment.event.eventId];
+        self.complete = ![self.delegate attachmentsViewController:self paginateAttachmentBefore:attachment.event.eventId];
     }
 }
 
@@ -836,7 +836,7 @@
         NSError *mediaPlayerError = [notificationUserInfo objectForKey:@"error"];
         if (mediaPlayerError)
         {
-            NSLog(@"[MXKRoomAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
+            NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
             
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
