@@ -55,13 +55,22 @@
      The attachments array (MXAttachment instances).
      */
     NSMutableArray *attachments;
-    NSUInteger currentAttachmentIndex;
+    
+    /**
+     The index of the current visible collection item
+     */
+    NSUInteger currentVisibleItemIndex;
     
     /**
      The document interaction Controller used to share attachment
      */
     UIDocumentInteractionController *documentInteractionController;
     MXKAttachment *currentSharedAttachment;
+    
+    /**
+     Tells whether back pagination is in progress.
+     */
+    BOOL isBackPaginationInProgress;
 }
 
 @end
@@ -112,8 +121,7 @@
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
-    [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
+    [self hideNavigationBar];
     
     // Handle here the case of splitviewcontroller use on iOS 8 and later.
     if (self.splitViewController && [self.splitViewController respondsToSelector:@selector(displayMode)])
@@ -141,6 +149,7 @@
     
     // Adjust content offset and make visible the attachmnet collections
     [self refreshAttachmentCollectionContentOffset];
+    _attachmentsCollection.hidden = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -185,12 +194,12 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     // Store index of the current displayed attachment, to restore it after refreshing
-    currentAttachmentIndex = _attachmentsCollection.contentOffset.x / [[UIScreen mainScreen] bounds].size.width;
+    [self refreshCurrentVisibleItemIndex];
     
     // Show temporarily the navigation bar (required in case of splitviewcontroller use)
     self.navigationController.navigationBarHidden = NO;
     [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
+    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
@@ -209,12 +218,12 @@
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
     // Store index of the current displayed attachment, to restore it after refreshing
-    currentAttachmentIndex = _attachmentsCollection.contentOffset.x / [[UIScreen mainScreen] bounds].size.width;
+    [self refreshCurrentVisibleItemIndex];
     
     // Show temporarily the navigation bar (required in case of splitviewcontroller use)
     self.navigationController.navigationBarHidden = NO;
     [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
+    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -255,27 +264,88 @@
 
 - (void)displayAttachments:(NSArray*)attachmentArray focusOn:(NSString*)eventId
 {
-    attachments = [NSMutableArray arrayWithArray:attachmentArray];
+    NSString *currentAttachmentEventId = eventId;
     
-    currentAttachmentIndex = 0;
-    
-    for (NSUInteger index = 0; index < attachments.count; index++)
+    if (currentAttachmentEventId.length == 0 && attachments)
     {
-        MXKAttachment *attachment = attachments[index];
+        [self refreshCurrentVisibleItemIndex];
         
-        if ([attachment.event.eventId isEqualToString:eventId])
+        if (isBackPaginationInProgress && currentVisibleItemIndex == 0)
         {
-            currentAttachmentIndex = index;
-            break;
+            // Here the spinner were displayed, we update the viewer by displaying the first added attachment
+            // (the one just added before the first item of the current attachments array).
+            if (attachments.count)
+            {
+                // Retrieve the event id of the first item in the current attachments array
+                MXKAttachment *attachment = attachments[0];
+                NSString *firstAttachmentEventId = attachment.event.eventId;
+                
+                // Look for the attachment added before this attachment in new array.
+                for (attachment in attachmentArray)
+                {
+                    if ([attachment.event.eventId isEqualToString:firstAttachmentEventId])
+                    {
+                        break;
+                    }
+                    currentAttachmentEventId = attachment.event.eventId;
+                }
+            }
+        }
+        else
+        {
+            // Compute the attachment index
+            NSUInteger currentAttachmentIndex = (isBackPaginationInProgress ? currentVisibleItemIndex-- : currentVisibleItemIndex);
+            
+            if (currentVisibleItemIndex < attachments.count)
+            {
+                MXKAttachment *attachment = attachments[currentAttachmentIndex];
+                currentAttachmentEventId = attachment.event.eventId;
+            }
         }
     }
     
+    // Stop back pagination (Do not call here 'stopBackPaginationActivity' because a full collection reload is planned at the end).
+    isBackPaginationInProgress = NO;
+    
+    // Set/reset the attachments array
+    attachments = [NSMutableArray arrayWithArray:attachmentArray];
+    
+    // Update the index of the current displayed attachment according to the new attachments array
+    currentVisibleItemIndex = 0;
+    if (currentAttachmentEventId)
+    {
+        for (NSUInteger index = 0; index < attachments.count; index++)
+        {
+            MXKAttachment *attachment = attachments[index];
+            
+            if ([attachment.event.eventId isEqualToString:currentAttachmentEventId])
+            {
+                currentVisibleItemIndex = index;
+                break;
+            }
+        }
+    }
+    
+    // Refresh
     [_attachmentsCollection reloadData];
+    
+    // Adjust content offset
+    [self refreshAttachmentCollectionContentOffset];
+}
+
+- (void)setComplete:(BOOL)complete
+{
+    _complete = complete;
+    
+    if (complete)
+    {
+        [self stopBackPaginationActivity];
+    }
 }
 
 #pragma mark - Privates
 
-- (IBAction)hideNavigationBar:(id)sender
+- (IBAction)hideNavigationBar
 {
     self.navigationController.navigationBarHidden = YES;
     
@@ -283,31 +353,74 @@
     navigationBarDisplayTimer = nil;
 }
 
+- (void)refreshCurrentVisibleItemIndex
+{
+    currentVisibleItemIndex = _attachmentsCollection.contentOffset.x / [[UIScreen mainScreen] bounds].size.width;
+}
+
 - (void)refreshAttachmentCollectionContentOffset
 {
     // Set the content offset to display the current attachment
     CGPoint contentOffset = _attachmentsCollection.contentOffset;
-    contentOffset.x = currentAttachmentIndex * [[UIScreen mainScreen] bounds].size.width;
+    contentOffset.x = currentVisibleItemIndex * [[UIScreen mainScreen] bounds].size.width;
     _attachmentsCollection.contentOffset = contentOffset;
-    
-    // Show the collection
-    _attachmentsCollection.hidden = NO;
+}
+
+- (void)stopBackPaginationActivity
+{
+    if (isBackPaginationInProgress)
+    {
+        isBackPaginationInProgress = NO;
+        
+        [self.attachmentsCollection deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
+    }
 }
 
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    if (isBackPaginationInProgress)
+    {
+        return (attachments.count + 1);
+    }
+    
     return attachments.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    MXKMediaCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[MXKMediaCollectionViewCell defaultReuseIdentifier] forIndexPath:indexPath];
+    MXKMediaCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[MXKMediaCollectionViewCell defaultReuseIdentifier]
+                                                                                 forIndexPath:indexPath];
     
-    if (indexPath.item < attachments.count)
+    NSInteger item = indexPath.item;
+    
+    if (isBackPaginationInProgress)
     {
-        MXKAttachment *attachment = attachments[indexPath.item];
+        if (item == 0)
+        {
+            cell.mxkImageView.hidden = YES;
+            cell.customView.hidden = NO;
+            
+            // Add back pagination spinner
+            UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+            spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+            spinner.hidesWhenStopped = NO;
+            spinner.backgroundColor = [UIColor clearColor];
+            [spinner startAnimating];
+            
+            spinner.center = cell.customView.center;
+            [cell.customView addSubview:spinner];
+            
+            return cell;
+        }
+        
+        item --;
+    }
+    
+    if (item < attachments.count)
+    {
+        MXKAttachment *attachment = attachments[item];
         NSString *attachmentURL = attachment.actualURL;
         NSString *mimeType = attachment.contentInfo[@"mimetype"];
         
@@ -458,7 +571,7 @@
         UITapGestureRecognizer *cellTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onCollectionViewCellTap:)];
         [cellTapGesture setNumberOfTouchesRequired:1];
         [cellTapGesture setNumberOfTapsRequired:1];
-        cell.tag = indexPath.item;
+        cell.tag = item;
         [cell addGestureRecognizer:cellTapGesture];
         
         UILongPressGestureRecognizer *cellLongPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onCollectionViewCellLongPress:)];
@@ -472,10 +585,22 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Check whether the selected attachment is a video
-    if (indexPath.item < attachments.count)
+    NSInteger item = indexPath.item;
+    
+    if (isBackPaginationInProgress)
     {
-        MXKAttachment *attachment = attachments[indexPath.item];
+        if (item == 0)
+        {
+            return;
+        }
+        
+        item --;
+    }
+    
+    // Check whether the selected attachment is a video
+    if (item < attachments.count)
+    {
+        MXKAttachment *attachment = attachments[item];
         NSString *attachmentURL = attachment.actualURL;
         
         if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
@@ -579,7 +704,7 @@
                                 
                                 [pieChartView removeFromSuperview];
                                 
-                                [self hideNavigationBar:nil];
+                                [self hideNavigationBar];
                             }
                             
                         } failure:^(NSError *error) {
@@ -609,11 +734,11 @@
     {
         self.navigationController.navigationBarHidden = NO;
         [navigationBarDisplayTimer invalidate];
-        navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar:) userInfo:self repeats:NO];
+        navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
     }
     else
     {
-        [self hideNavigationBar:nil];
+        [self hideNavigationBar];
     }
 }
 
@@ -668,6 +793,28 @@
     cell.tag = -1;
 }
 
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    // Detect horizontal bounce at the beginning of the collection to trigger pagination
+    if (scrollView == self.attachmentsCollection && !isBackPaginationInProgress && !self.complete && self.delegate)
+    {
+        if (scrollView.contentOffset.x < -30)
+        {
+            isBackPaginationInProgress = YES;
+            [self.attachmentsCollection insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
+        }
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == self.attachmentsCollection && isBackPaginationInProgress)
+    {
+        MXKAttachment *attachment = self.attachments.firstObject;
+        self.complete = ![self.delegate roomAttachmentsViewController:self paginateAttachmentBefore:attachment.event.eventId];
+    }
+}
+
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -712,7 +859,7 @@
     // Notify the collection view delegate a cell has been selected.
     if (selectedCell && selectedCell.tag < attachments.count)
     {
-        [self collectionView:self.attachmentsCollection didSelectItemAtIndexPath:[NSIndexPath indexPathForItem:selectedCell.tag inSection:0]];
+        [self collectionView:self.attachmentsCollection didSelectItemAtIndexPath:[NSIndexPath indexPathForItem:(isBackPaginationInProgress ? selectedCell.tag + 1: selectedCell.tag) inSection:0]];
     }
 }
 

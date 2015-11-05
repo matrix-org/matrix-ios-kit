@@ -35,9 +35,9 @@ limitations under the License.
 @property (nonatomic, readonly) NSArray *attachments;
 
 /**
- Tell whether all attachments have been retrieved from the room history (In that case no attachment can be added at the end of attachments array).
+ Tell whether all attachments have been retrieved from the room history (In that case no attachment can be added at the beginning of attachments array).
  */
-@property (nonatomic) BOOL *complete;
+@property (nonatomic) BOOL complete;
 
 /**
  The delegate notified when inputs are ready.
@@ -67,10 +67,16 @@ limitations under the License.
 + (instancetype)roomAttachmentsViewController;
 
 /**
- Display attachments of a room by focusing on the attachment related to the provided event id.
+ Display attachments of a room.
+ 
+ The provided event id is used to select the attachment to display first. Use nil to unchange the current displayed attachment.
+ By default the first attachment is displayed.
+ If the back pagination spinner is currently displayed and provided event id is nil,
+ the viewer will display the first added attachment during back pagination.
 
  @param attachmentArray the array of attachments (MXKAttachment instances).
- @param eventId the identifier of the current selected attachment.
+ @param eventId the identifier of the attachment to display first.
+ 
  */
 - (void)displayAttachments:(NSArray*)attachmentArray focusOn:(NSString*)eventId;
 
@@ -79,15 +85,16 @@ limitations under the License.
 @protocol MXKRoomAttachmentsViewControllerDelegate <NSObject>
 
 /**
- Tells the delegate that the end of attachments array has been reached. 
+ Ask the delegate for older attachments.
  This method is called only if 'complete' is NO.
  
- The delegate provides the older attachments by using [MXKRoomAttachmentsViewController insertAttachment: atIndex:].
+ When some attachments are available, the delegate update the attachmnet list by using
+ [MXKRoomAttachmentsViewController displayAttachments: focusOn:].
  When no new attachment is available, the delegate must update the property 'complete'.
  
  @param roomAttachmentsViewController the attachments view controller.
- @param eventId the event identifier of the last attachment.
+ @param eventId the event identifier of the current first attachment.
  @return a boolean which tells whether some new attachments may be added or not.
  */
-- (BOOL)roomAttachmentsViewController:(MXKRoomAttachmentsViewController*)roomAttachmentsViewController paginateAttachmentAfter:(NSString*)eventId;
+- (BOOL)roomAttachmentsViewController:(MXKRoomAttachmentsViewController*)roomAttachmentsViewController paginateAttachmentBefore:(NSString*)eventId;
 @end

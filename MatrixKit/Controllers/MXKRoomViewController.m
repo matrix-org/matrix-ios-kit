@@ -31,8 +31,6 @@
 
 #import "MXKConstants.h"
 
-#import "MXKRoomAttachmentsViewController.h"
-
 #import "NSBundle+MatrixKit.h"
 
 NSString *const kCmdChangeDisplayName = @"/nick";
@@ -274,6 +272,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     else
     {
         _bubblesTableView.hidden = NO;
+    }
+    
+    // Remove potential attachments viewer
+    if (attachmentsViewer)
+    {
+        [attachmentsViewer destroy];
+        attachmentsViewer = nil;
     }
 }
 
@@ -1294,6 +1299,74 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }];
 }
 
+- (void)triggerAttachmentBackPagination:(NSString*)eventId
+{
+    // Paginate only if possible
+    if (NO == roomDataSource.room.canPaginate && attachmentsViewer)
+    {
+        return;
+    }
+    
+    isBackPaginationInProgress = YES;
+    
+    // Trigger back pagination to find previous attachments
+    [roomDataSource paginateBackMessages:30 success:^{
+        
+        // Check whether attachments viewer is still visible
+        if (attachmentsViewer)
+        {
+            // Check whether some older attachments have been added.
+            BOOL isDone = NO;
+            NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+            if (attachmentsWithThumbnail.count)
+            {
+                MXKAttachment *attachment = attachmentsWithThumbnail.firstObject;
+                isDone = ![attachment.event.eventId isEqualToString:eventId];
+            }
+            
+            // Check whether pagination is still available
+            attachmentsViewer.complete = (roomDataSource.room.canPaginate == NO);
+            
+            if (isDone || attachmentsViewer.complete)
+            {
+                // Refresh the current attachments list.
+                [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+                
+                // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
+                // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+                isBackPaginationInProgress = NO;
+                [self reloadBubblesTable:YES];
+                
+                // Done
+                return;
+            }
+            
+            // Here a new back pagination is required
+            [self triggerAttachmentBackPagination:eventId];
+        }
+        else
+        {
+            // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
+            // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+            isBackPaginationInProgress = NO;
+            [self reloadBubblesTable:YES];
+        }
+        
+    } failure:^(NSError *error) {
+        
+        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
+        isBackPaginationInProgress = NO;
+        [self reloadBubblesTable:YES];
+        
+        if (attachmentsViewer)
+        {
+            // Force attachments update to cancel potential loading wheel
+            [attachmentsViewer displayAttachments:attachmentsViewer.attachments focusOn:nil];
+        }
+        
+    }];
+}
+
 #pragma mark - Post messages
 
 - (void)sendTextMessage:(NSString*)msgTxt
@@ -1588,6 +1661,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Ignore these changes, the table will be full updated at the end of pagination.
         return;
+    }
+    
+    if (attachmentsViewer)
+    {
+        // Refresh the current attachments list without changing the current displayed attachment (see focus = nil).
+        NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
     }
     
     [self reloadBubblesTable:YES];
@@ -2355,6 +2435,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         // Present an attachment viewer
         attachmentsViewer = [MXKRoomAttachmentsViewController roomAttachmentsViewController];
+        attachmentsViewer.delegate = self;
+        attachmentsViewer.complete = (roomDataSource.room.canPaginate == NO);
         attachmentsViewer.hidesBottomBarWhenPushed = YES;
         [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
 
@@ -2389,6 +2471,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Start animation in case of download
         [roomBubbleTableViewCell startProgressUI];
     }
+}
+
+//MXKRoomAttachmentsViewControllerDelegate
+- (BOOL)roomAttachmentsViewController:(MXKRoomAttachmentsViewController*)roomAttachmentsViewController paginateAttachmentBefore:(NSString*)eventId
+{
+    [self triggerAttachmentBackPagination:eventId];
+    
+    return self.roomDataSource.room.canPaginate;
 }
 
 #pragma mark - UIDocumentInteractionControllerDelegate
