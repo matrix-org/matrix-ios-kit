@@ -37,13 +37,8 @@
     {
         mxSession = matrixSession;
         
-        // Prepare internal date formatter
-        dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
-        [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-        // Set default date format
-        [dateFormatter setDateFormat:@"MMM dd"];
-        
+        [self initDateTimeFormatters];
+
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
         _bingTextColor = [UIColor blueColor];
@@ -54,6 +49,21 @@
         _settings = [MXKAppSettings standardAppSettings];
     }
     return self;
+}
+
+- (void)initDateTimeFormatters
+{
+    // Prepare internal date formatter
+    dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
+    [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
+    // Set default date format
+    [dateFormatter setDateFormat:@"MMM dd"];
+    
+    // Create a time formatter to get time string by considered the current system time formatting.
+    timeFormatter = [[NSDateFormatter alloc] init];
+    [timeFormatter setDateStyle:NSDateFormatterNoStyle];
+    [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
 }
 
 // Checks whether the event is related to an attachment and if it is supported
@@ -749,10 +759,6 @@
     
     if (time)
     {
-        // Create a time formatter to get time string by considered the current system time formatting.
-        NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
-        [timeFormatter setDateStyle:NSDateFormatterNoStyle];
-        [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
         NSString *timeString = [timeFormatter stringFromDate:date];
         if (dateString.length)
         {

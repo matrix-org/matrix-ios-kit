@@ -544,7 +544,8 @@
     else
     {
         // Retrieve the image from cache
-        UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadFromMemoryCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        
         if (image)
         {
             if (imageOrientation != UIImageOrientationUp)

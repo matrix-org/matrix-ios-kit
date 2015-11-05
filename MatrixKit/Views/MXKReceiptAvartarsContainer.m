@@ -65,7 +65,7 @@
         xOff += side + 2;
         [self addSubview:imageView];
         [avatarViews addObject:imageView];
-        
+        imageView.enableInMemoryCache = YES;
         [imageView setImageURL:avatarUrl withType:nil andImageOrientation:UIImageOrientationUp previewImage:placeHolder];
         [imageView.layer setCornerRadius:imageView.frame.size.width / 2];
         imageView.clipsToBounds = YES;

@@ -311,6 +311,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
         NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
         callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        callerImageView.enableInMemoryCache = YES;
         [callerImageView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];
         callerImageView.clipsToBounds = YES;

@@ -149,7 +149,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  The events are processed asynchronously. This property counts the number of queued events
  during server sync for which the process is pending.
  */
-@property (nonatomic, readonly) NSUInteger serverSyncEventCount;
+@property (nonatomic, readonly) NSInteger serverSyncEventCount;
 
 /**
  The current text message partially typed in text input (use nil to reset it).
@@ -218,6 +218,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @param maxBubbleNb The room bubble data are released only if the number of bubbles is over this limit.
  */
 - (void)limitMemoryUsage:(NSInteger)maxBubbleNb;
+
+/**
+ Force data reload.
+ */
+- (void)reload;
 
 #pragma mark - Public methods
 /**

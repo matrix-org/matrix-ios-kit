@@ -19,7 +19,7 @@
 #import "MXKQueuedEvent.h"
 #import "MXKRoomBubbleTableViewCell.h"
 
-#import "MXKRoomBubbleCellDataWithIncomingAppendingMode.h"
+#import "MXKRoomBubbleCellData.h"
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 #import "MXKRoomOutgoingBubbleTableViewCell.h"
 
@@ -89,9 +89,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSMutableArray *eventsToProcessSnapshot;
     
     /**
+     Snapshot of the bubbles used during events processing.
+     */
+    NSMutableArray *bubblesSnapshot;
+    
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
+    
+    /**
+     Observe NSCurrentLocaleDidChangeNotification to trigger cell change on time formatting change.
+     */
+    id NSCurrentLocaleDidChangeNotificationObserver;
+    
+    /**
+     Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync v2.
+     */
+    id roomSyncWithLimitedTimelineNotification;
 }
 
 @end
@@ -114,10 +129,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Set default data and view classes
         // Cell data
-        [self registerCellDataClass:MXKRoomBubbleCellDataWithIncomingAppendingMode.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+        [self registerCellDataClass:MXKRoomBubbleCellData.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+        
         // For incoming messages
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
         [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
+        
         // And outgoing messages
         [self registerCellViewClass:MXKRoomOutgoingBubbleTableViewCell.class forCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
         [self registerCellViewClass:MXKRoomOutgoingBubbleTableViewCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
@@ -161,35 +178,73 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringCallInvite
                                              ];
         }
-        
+
         // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
+        // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
         UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            [self onDateTimeFormatUpdate];
+        }];
+        
+        // Observe NSCurrentLocaleDidChangeNotification to refresh bubbles if date/time are shown.
+        // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
+        NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            [self onDateTimeFormatUpdate];
+        }];
+        
+        roomSyncWithLimitedTimelineNotification = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
-            if (self.showBubblesDateTime && self.delegate)
+            MXRoom *room = notif.object;
+            if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
             {
-                // Delay the refresh because new time formatter are not ready.
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    // Reload all the table
-                    [self.delegate dataSource:self didCellChange:nil];
-                });
+                // The existing room history has been flushed during server sync v2 because a gap has been observed between local and server storage. 
+                [self reload];
             }
         }];
     }
     return self;
 }
 
-- (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
-    _unreadCount = 0;
-    NSArray* list = [_room unreadMessages];
+- (void)onDateTimeFormatUpdate
+{
+    // update the date and the time formatters
+    [self.eventFormatter initDateTimeFormatters];
     
-    if (list) {
-        _unreadCount = list.count;
+    // refresh the UI if it is required
+    if (self.showBubblesDateTime && self.delegate)
+    {
+        // Reload all the table
+        [self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
+- (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
+    // always highlight invitation message.
+    // if the room is joined from another device
+    // this state will be updated so the standard read receipts management will be applied.
+    if (MXMembershipInvite == _room.state.membership)
+    {
+        _unreadCount = 1;
+        _unreadBingCount = 0;
+    }
+    else
+    {
+        // default value
+        _unreadCount = 0;
         
-        if (refreshBingCounter) {
-            _unreadBingCount = 0;
+        NSArray* list = [_room unreadEvents];
+        
+        if (list)
+        {
+            _unreadCount = list.count;
             
-            for(MXEvent* event in list) {
-                [self checkBing:event];
+            if (refreshBingCounter)
+            {
+                _unreadBingCount = 0;
+                
+                for(MXEvent* event in list)
+                {
+                    [self checkBing:event];
+                }
             }
         }
     }
@@ -197,7 +252,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)markAllAsRead
 {
-    if ([_room acknowledgeLatestMessage:YES])
+    if ([_room acknowledgeLatestEvent:YES])
     {
         _unreadCount = 0;
         _unreadBingCount = 0;
@@ -255,7 +310,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     currentTypingUsers = nil;
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
     
     @synchronized(eventsToProcess)
     {
@@ -266,6 +321,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     @synchronized(eventsToProcessSnapshot)
     {
         eventsToProcessSnapshot = nil;
+        bubblesSnapshot = nil;
         
         [bubbles removeAllObjects];
         [eventIdToBubbleMap removeAllObjects];
@@ -307,10 +363,22 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
+    if (NSCurrentLocaleDidChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
+        NSCurrentLocaleDidChangeNotificationObserver = nil;
+    }
+    
     if (UIApplicationSignificantTimeChangeNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
         UIApplicationSignificantTimeChangeNotificationObserver = nil;
+    }
+    
+    if (roomSyncWithLimitedTimelineNotification)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomSyncWithLimitedTimelineNotification];
+        roomSyncWithLimitedTimelineNotification = nil;
     }
     
     [self reset];
@@ -351,10 +419,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 [self refreshUnreadCounters:YES];
                 
-                if (NO == _room.isSync)
+                // Check user membership in this room
+                MXMembership membership = self.room.state.membership;
+                if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
                 {
-                    // Listen to MXSession rooms count changes
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXSessionInitialSyncedRoomNotification object:nil];
+                    // Here the initial sync is not ended or the room is a pending invitation.
+                    // Note: In case of invitation, a full sync will be triggered if the user joins this room.
+                    
+                    // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
+                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
                 }
             }
             else
@@ -706,9 +779,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 #pragma mark - Pagination
 - (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    // Check current state
-    if (state != MXKDataSourceStateReady)
+    // Check the current data source state, and the actual user membership for this room.
+    if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
     {
+        // Back pagination is not available here.
         if (failure)
         {
             failure(nil);
@@ -775,11 +849,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
         
         bubblesTotalHeight += bubbleHeight;
-        if (bubblesTotalHeight > rect.size.height)
+    
+        // each bubble height must be precomputed to avoid lags while scrolling.
+        // Indeed, cellForRowAtIndexPath calls cellHeightAtIndex while creating a cell.
+        // But it is not precomputed, the scroll will have lags while creating the invisible cell.
+        // as we can assume that the user is going to scroll back.
+        /*if (bubblesTotalHeight > rect.size.height)
         {
             // No need to compute more cells heights, there are enough to fill the rect
             break;
-        }
+        }*/
         
         // Compute the minimal height an event takes
         id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
@@ -1610,12 +1689,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)didMXRoomInitialSynced:(NSNotification *)notif
 {
     // Refresh the room data source when the room has been initialSync'ed
-    MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession && [_roomId isEqualToString:notif.userInfo[kMXSessionNotificationRoomIdKey]])
+    MXRoom *room = notif.object;
+    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
     { 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInitialSyncedRoomNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
         
         [self reload];
     }
@@ -1705,9 +1784,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 eventsToProcess = [NSMutableArray array];
             }
         }
-        
-        
-        NSMutableArray *bubblesSnapshot = nil;
+
         NSUInteger serverSyncEventCount = 0;
         
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
@@ -1726,132 +1803,135 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
-                    // Count events received while the server sync was in progress
-                    if (queuedEvent.serverSyncEvent)
+                    @autoreleasepool
                     {
-                        serverSyncEventCount ++;
-                    }
-                    
-                    [self checkBing:queuedEvent.event];
-                    
-                    // Retrieve the MXKCellData class to manage the data
-                    Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
-                    NSAssert([class conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)], @"MXKRoomDataSource only manages MXKCellData that conforms to MXKRoomBubbleCellDataStoring protocol");
-                    
-                    BOOL eventManaged = NO;
-                    id<MXKRoomBubbleCellDataStoring> bubbleData;
-                    if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
-                    {
-                        // Try to concatenate the event to the last or the oldest bubble?
-                        if (queuedEvent.direction == MXEventDirectionBackwards)
+                        // Count events received while the server sync was in progress
+                        if (queuedEvent.serverSyncEvent)
                         {
-                            bubbleData = bubblesSnapshot.firstObject;
+                            serverSyncEventCount ++;
                         }
-                        else
+
+                        [self checkBing:queuedEvent.event];
+
+                        // Retrieve the MXKCellData class to manage the data
+                        Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+                        NSAssert([class conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)], @"MXKRoomDataSource only manages MXKCellData that conforms to MXKRoomBubbleCellDataStoring protocol");
+
+                        BOOL eventManaged = NO;
+                        id<MXKRoomBubbleCellDataStoring> bubbleData;
+                        if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
                         {
-                            bubbleData = bubblesSnapshot.lastObject;
-                        }
-                        
-                        @synchronized (bubbleData)
-                        {
-                            eventManaged = [bubbleData addEvent:queuedEvent.event andRoomState:queuedEvent.state];
-                        }
-                    }
-                    
-                    if (NO == eventManaged)
-                    {
-                        // The event has not been concatenated to an existing cell, create a new bubble for this event
-                        bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
-                        if (!bubbleData)
-                        {
-                            // The event is ignored
-                            continue;
-                        }
-                        
-                        if (queuedEvent.direction == MXEventDirectionBackwards)
-                        {
-                            // The new bubble data will be inserted at first position.
-                            // We have to update the 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags of the current first bubble.
-                            
-                            // Pagination handling
-                            if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+                            // Try to concatenate the event to the last or the oldest bubble?
+                            if (queuedEvent.direction == MXEventDirectionBackwards)
                             {
-                                // A new pagination starts with this new bubble data
-                                bubbleData.isPaginationFirstBubble = YES;
-                                
-                                // Check whether the current first bubble belongs to the same pagination
+                                bubbleData = bubblesSnapshot.firstObject;
+                            }
+                            else
+                            {
+                                bubbleData = bubblesSnapshot.lastObject;
+                            }
+
+                            @synchronized (bubbleData)
+                            {
+                                eventManaged = [bubbleData addEvent:queuedEvent.event andRoomState:queuedEvent.state];
+                            }
+                        }
+
+                        if (NO == eventManaged)
+                        {
+                            // The event has not been concatenated to an existing cell, create a new bubble for this event
+                            bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
+                            if (!bubbleData)
+                            {
+                                // The event is ignored
+                                continue;
+                            }
+
+                            if (queuedEvent.direction == MXEventDirectionBackwards)
+                            {
+                                // The new bubble data will be inserted at first position.
+                                // We have to update the 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags of the current first bubble.
+
+                                // Pagination handling
+                                if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+                                {
+                                    // A new pagination starts with this new bubble data
+                                    bubbleData.isPaginationFirstBubble = YES;
+
+                                    // Check whether the current first bubble belongs to the same pagination
+                                    if (bubblesSnapshot.count)
+                                    {
+                                        id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
+                                        NSString *firstBubbleDateString = [self.eventFormatter dateStringFromDate:previousFirstBubbleData.date withTime:NO];
+                                        NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                        previousFirstBubbleData.isPaginationFirstBubble = ![firstBubbleDateString isEqualToString:bubbleDateString];
+                                    }
+                                }
+                                else
+                                {
+                                    bubbleData.isPaginationFirstBubble = NO;
+                                }
+
+                                // Sender information are required for this new first bubble data
+                                bubbleData.shouldHideSenderInformation = NO;
+
+                                // Check whether this information is relevant for the current first bubble.
                                 if (bubblesSnapshot.count)
                                 {
                                     id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
-                                    NSString *firstBubbleDateString = [self.eventFormatter dateStringFromDate:previousFirstBubbleData.date withTime:NO];
-                                    NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
-                                    previousFirstBubbleData.isPaginationFirstBubble = ![firstBubbleDateString isEqualToString:bubbleDateString];
+
+                                    if (previousFirstBubbleData.isPaginationFirstBubble == NO)
+                                    {
+                                        // Check whether the curent first bubble has been sent by the same user.
+                                        previousFirstBubbleData.shouldHideSenderInformation = [previousFirstBubbleData hasSameSenderAsBubbleCellData:bubbleData];
+                                    }
                                 }
+
+                                // Insert the new bubble data in first position
+                                [bubblesSnapshot insertObject:bubbleData atIndex:0];
                             }
                             else
                             {
-                                bubbleData.isPaginationFirstBubble = NO;
-                            }
-                            
-                            // Sender information are required for this new first bubble data
-                            bubbleData.shouldHideSenderInformation = NO;
-                            
-                            // Check whether this information is relevant for the current first bubble.
-                            if (bubblesSnapshot.count)
-                            {
-                                id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
-                                
-                                if (previousFirstBubbleData.isPaginationFirstBubble == NO)
+                                // The new bubble data will be added at the last position
+                                // We have to update its 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags according to the previous last bubble.
+
+                                // Pagination handling
+                                if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
                                 {
-                                    // Check whether the curent first bubble has been sent by the same user.
-                                    previousFirstBubbleData.shouldHideSenderInformation = [previousFirstBubbleData hasSameSenderAsBubbleCellData:bubbleData];
+                                    // Check whether a new pagination starts at this bubble
+                                    bubbleData.isPaginationFirstBubble = YES;
+                                    if (bubblesSnapshot.count)
+                                    {
+                                        id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot.lastObject;
+                                        NSString *lastBubbleDateString = [self.eventFormatter dateStringFromDate:previousLastBubbleData.date withTime:NO];
+                                        NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                        bubbleData.isPaginationFirstBubble = ![bubbleDateString isEqualToString:lastBubbleDateString];
+                                    }
                                 }
-                            }
-                            
-                            // Insert the new bubble data in first position
-                            [bubblesSnapshot insertObject:bubbleData atIndex:0];
-                        }
-                        else
-                        {
-                            // The new bubble data will be added at the last position
-                            // We have to update its 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags according to the previous last bubble.
-                            
-                            // Pagination handling
-                            if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
-                            {
-                                // Check whether a new pagination starts at this bubble
-                                bubbleData.isPaginationFirstBubble = YES;
-                                if (bubblesSnapshot.count)
+                                else
                                 {
+                                    bubbleData.isPaginationFirstBubble = NO;
+                                }
+
+                                // Check whether the sender information is relevant for this new bubble.
+                                bubbleData.shouldHideSenderInformation = NO;
+                                if (bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
+                                {
+                                    // Check whether the previous bubble has been sent by the same user.
                                     id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot.lastObject;
-                                    NSString *lastBubbleDateString = [self.eventFormatter dateStringFromDate:previousLastBubbleData.date withTime:NO];
-                                    NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
-                                    bubbleData.isPaginationFirstBubble = ![bubbleDateString isEqualToString:lastBubbleDateString];
+                                    bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousLastBubbleData];
                                 }
+
+                                // Insert the new bubble in last position
+                                [bubblesSnapshot addObject:bubbleData];
                             }
-                            else
-                            {
-                                bubbleData.isPaginationFirstBubble = NO;
-                            }
-                            
-                            // Check whether the sender information is relevant for this new bubble.
-                            bubbleData.shouldHideSenderInformation = NO;
-                            if (bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
-                            {
-                                // Check whether the previous bubble has been sent by the same user.
-                                id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot.lastObject;
-                                bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousLastBubbleData];
-                            }
-                            
-                            // Insert the new bubble in last position
-                            [bubblesSnapshot addObject:bubbleData];
                         }
-                    }
-                    
-                    // Store event-bubble link to the map
-                    @synchronized (eventIdToBubbleMap)
-                    {
-                        eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
+                        
+                        // Store event-bubble link to the map
+                        @synchronized (eventIdToBubbleMap)
+                        {
+                            eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
+                        }
                     }
                 }
             }
@@ -1865,19 +1945,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // Synchronously wait for the end of the block execution to
             dispatch_sync(dispatch_get_main_queue(), ^{
                 
-                if (_serverSyncEventCount)
-                {
-                    _serverSyncEventCount -= serverSyncEventCount;
-                    if (!_serverSyncEventCount)
-                    {
-                        // Notify that sync process ends
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
-                    }
-                }
-                
                 // Check whether self has not been reloaded or destroyed
-                if (self.state == MXKDataSourceStateReady)
+                if (self.state == MXKDataSourceStateReady && bubblesSnapshot)
                 {
+                    if (_serverSyncEventCount)
+                    {
+                        _serverSyncEventCount -= serverSyncEventCount;
+                        if (!_serverSyncEventCount)
+                        {
+                            // Notify that sync process ends
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
+                        }
+                    }
+                    
                     [self refreshUnreadCounters:NO];
                     
                     bubbles = bubblesSnapshot;
@@ -1897,7 +1977,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         // loop until the bubbles count is reduced as expected.
                         while (count > _maxBackgroundCachedBubblesCount)
                         {
-                            [self removeCellData:[bubblesSnapshot objectAtIndex:0]];
+                            [self removeCellData:[bubbles objectAtIndex:0]];
                             
                             @synchronized(bubbles)
                             {
@@ -1922,21 +2002,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // No new event has been added, we just inform about the end if requested.
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (_serverSyncEventCount)
-                {
-                    _serverSyncEventCount -= serverSyncEventCount;
-                    
-                    if (!_serverSyncEventCount)
-                    {
-                        // Notify that sync process ends
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
-                    }
-                }
-                
                 if (onComplete)
                 {
                     onComplete();
                 }
+                
             });
         }
     });

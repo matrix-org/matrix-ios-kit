@@ -29,6 +29,21 @@
      */
     UIBarButtonItem *searchButton;
     BOOL ignoreSearchRequest;
+    
+    /**
+     The reconnection animated view.
+     */
+    UIView* reconnectingView;
+    
+    /**
+     The latest server sync date
+     */
+    NSDate* latestServerSync;
+    
+    /**
+     The restart the event connnection
+     */
+    BOOL restartConnection;
 }
 
 @end
@@ -135,6 +150,9 @@
 
     // Observe server sync at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    
+    // Observe the server sync
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -151,6 +169,9 @@
     }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
+    
+    [self removeReconnectingView];
 }
 
 - (void)dealloc
@@ -432,6 +453,35 @@
     }
 }
 
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    // Detect vertical bounce at the top of the tableview to trigger pagination
+    if (scrollView == _recentsTableView)
+    {
+        [self detectPullToKick:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == _recentsTableView)
+    {
+        [self managePullToKick:scrollView];
+    }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (scrollView == _recentsTableView)
+    {
+        if (scrollView.contentOffset.y == 0)
+        {
+            [self managePullToKick:scrollView];
+        }
+    }
+}
+
+
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
@@ -466,6 +516,91 @@
     
     // Refresh display
     [self.dataSource searchWithPatterns:nil];
+}
+
+#pragma mark - resync management
+
+- (void)onSyncNotification
+{
+    latestServerSync = [NSDate date];
+    [self removeReconnectingView];
+}
+
+- (BOOL)canReconnect
+{
+    // avoid restarting connection if some data has been received within 1 second (1000 : latestServerSync is null)
+    NSTimeInterval interval = latestServerSync ? [[NSDate date] timeIntervalSinceDate:latestServerSync] : 1000;
+    return  (interval > 1) && [self.mainSession reconnect];
+}
+
+- (void)addReconnectingView
+{
+    if (!reconnectingView)
+    {
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [spinner sizeToFit];
+        spinner.hidesWhenStopped = NO;
+        spinner.backgroundColor = [UIColor clearColor];
+        [spinner startAnimating];
+        
+        // no need to manage constraints here
+        // IOS defines them.
+        // since IOS7 the spinner is centered so need to create a background and add it.
+        _recentsTableView.tableHeaderView = reconnectingView = spinner;
+    }
+}
+
+- (void)removeReconnectingView
+{
+    if (reconnectingView && !restartConnection)
+    {
+        _recentsTableView.tableHeaderView = reconnectingView = nil;
+    }
+}
+
+/**
+ Detect if the current connection must be restarted.
+ The spinner is displayed until the overscroll ends (and scrollViewDidEndDecelerating is called).
+ */
+- (void)detectPullToKick:(UIScrollView *)scrollView
+{
+    if (!reconnectingView)
+    {
+        // detect if the user scrolls over the tableview top
+        restartConnection = (scrollView.contentOffset.y < 128);
+        
+        if (restartConnection)
+        {
+            // wait that list decelerate to display / hide it
+            [self addReconnectingView];
+        }
+    }
+}
+
+
+/**
+ Restarts the current connection if it is required.
+ The 0.3s delay is added to avoid flickering if the connection does not require to be restarted.
+ */
+- (void)managePullToKick:(UIScrollView *)scrollView
+{
+    // the current connection must be restarted
+    if (restartConnection)
+    {
+        // display at least 0.3s the spinner to show to the user that something is pending
+        // else the UI is flickering
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            restartConnection = NO;
+            
+            if (![self canReconnect])
+            {
+                // if the event stream has not been restarted
+                // hide the spinner
+                [self removeReconnectingView];
+            }
+            // else wait that onSyncNotification is called.
+        });
+    }
 }
 
 @end

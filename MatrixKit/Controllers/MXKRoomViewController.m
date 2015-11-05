@@ -137,6 +137,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      The attachments viewer for image and video.
      */
      MXKRoomAttachmentsViewController *attachmentsViewer;
+    
+    /**
+     The reconnection animated view.
+     */
+    UIView* reconnectingView;
+    
+    /**
+     The latest server sync date
+     */
+    NSDate* latestServerSync;
+    
+    /**
+     The restart the event connnection
+     */
+    BOOL restartConnection;
 }
 
 @end
@@ -235,27 +250,36 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     
+    // Observe the server sync
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
+    
     // Finalize view controller appearance
     [self updateViewControllerAppearanceOnRoomDataSourceState];
+    
+    // no need to reload the tableview at this stage
+    // IOS is going to load it after calling this method
+    // so give a breath to scroll to the bottom if required
+    if (shouldScrollToBottomOnTableRefresh)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self scrollBubblesTableViewToBottomAnimated:NO];
+            // Hide bubbles table by default in order to hide initial scrolling to the bottom
+            _bubblesTableView.hidden = NO;
+        });
+    }
+    else
+    {
+        _bubblesTableView.hidden = NO;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // Refresh bubbles table if data are available.
-    // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
-    if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
-    {
-        // Reload the full table
-        [self reloadBubblesTable:YES];
-    }
-    _bubblesTableView.hidden = NO;
-    shouldScrollToBottomOnTableRefresh = NO;
     
     if (_saveProgressTextInput && roomDataSource)
     {
@@ -265,6 +289,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         [roomDataSource markAllAsRead];
     }
+    
+    shouldScrollToBottomOnTableRefresh = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -278,6 +304,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
+    
+    [self removeReconnectingView];
+    
+
 }
 
 - (void)dealloc
@@ -349,7 +380,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (self.roomDataSource && (self.roomDataSource.state == MXKDataSourceStatePreparing || self.roomDataSource.serverSyncEventCount))
     {
         // dataSource is not ready, keep running the loading wheel
-        [self.activityIndicator startAnimating];
+        [self startActivityIndicator];
     }
 }
 
@@ -2042,17 +2073,54 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [self triggerBackPagination];
         }
+        else
+        {
+            [self detectPullToKick:scrollView];
+        }
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (scrollView == _bubblesTableView)
+    {
+        // if the user scrolls the history content without animation
+        // upateCurrentEventIdAtTableBottom must be called here (without dispatch).
+        // else it will be done in scrollViewDidEndDecelerating
+        if (!decelerate)
+        {
+            [self upateCurrentEventIdAtTableBottom];
+        }
+    }
+}
+
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == _bubblesTableView)
+    {
+        // do not dispatch the upateCurrentEventIdAtTableBottom call
+        // else it might triggers weird UI lags.
+        [self upateCurrentEventIdAtTableBottom];
+        [self managePullToKick:scrollView];
     }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    // Consider this callback to reset scrolling to bottom flag
-    isScrollingToBottom = NO;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self upateCurrentEventIdAtTableBottom];
-    });
+    if (scrollView == _bubblesTableView)
+    {
+        // Consider this callback to reset scrolling to bottom flag
+        isScrollingToBottom = NO;
+        
+        // when the content size if smaller that the frame
+        // scrollViewDidEndDecelerating is not called
+        // so test it when the content offset goes back to the screen top.
+        if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
+        {
+            [self managePullToKick:scrollView];
+        }
+    }
 }
 
 #pragma mark - MXKRoomTitleViewDelegate
@@ -2363,6 +2431,94 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [currentSharedAttachment onShareEnded];
         currentSharedAttachment = nil;
+    }
+}
+
+#pragma mark - resync management
+
+- (void)onSyncNotification
+{
+    latestServerSync = [NSDate date];
+    [self removeReconnectingView];
+}
+
+- (BOOL)canReconnect
+{
+    // avoid restarting connection if some data has been received within 1 second (1000 : latestServerSync is null)
+    NSTimeInterval interval = latestServerSync ? [[NSDate date] timeIntervalSinceDate:latestServerSync] : 1000;
+    return  (interval > 1) && [self.mainSession reconnect];
+}
+
+- (void)addReconnectingView
+{
+    if (!reconnectingView)
+    {
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [spinner sizeToFit];
+        spinner.hidesWhenStopped = NO;
+        spinner.backgroundColor = [UIColor clearColor];
+        [spinner startAnimating];
+        
+        // no need to manage constraints here
+        // IOS defines them.
+        // since IOS7 the spinner is centered so need to create a background and add it.
+        _bubblesTableView.tableFooterView = reconnectingView = spinner;
+    }
+}
+
+- (void)removeReconnectingView
+{
+    if (reconnectingView && !restartConnection)
+    {
+        _bubblesTableView.tableFooterView = reconnectingView = nil;
+    }
+}
+
+/**
+ Detect if the current connection must be restarted.
+ The spinner is displayed until the overscroll ends (and scrollViewDidEndDecelerating is called).
+ */
+- (void)detectPullToKick:(UIScrollView *)scrollView
+{
+    if (!reconnectingView)
+    {
+        // detect if the user scrolls over the tableview bottom
+        restartConnection = (
+                             ((scrollView.contentSize.height < scrollView.frame.size.height) && (scrollView.contentOffset.y > 128))
+                             ||
+                             ((scrollView.contentSize.height > scrollView.frame.size.height) &&  (scrollView.contentOffset.y + scrollView.frame.size.height) > (scrollView.contentSize.height + 128)));
+        
+        if (restartConnection)
+        {
+            // wait that list decelerate to display / hide it
+            [self addReconnectingView];
+        }
+    }
+}
+
+
+/**
+ Restarts the current connection if it is required.
+ The 0.3s delay is added to avoid flickering if the connection does not require to be restarted.
+ */
+- (void)managePullToKick:(UIScrollView *)scrollView
+{
+    // the current connection must be restarted
+    if (restartConnection)
+    {
+        // display at least 0.3s the spinner to show to the user that something is pending
+        // else the UI is flickering
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            restartConnection = NO;
+            
+            if (![self canReconnect])
+            {
+                // if the event stream has not been restarted
+                // hide the spinner
+                [self removeReconnectingView];
+            }
+            // else wait that onSyncNotification is called.
+        });
     }
 }
 

@@ -127,14 +127,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     bubbleData = (MXKRoomBubbleCellData*)cellData;
     if (bubbleData)
     {
+        MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
+        
         // set the media folders
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         self.attachmentView.mediaFolder = bubbleData.roomId;
         
         // Handle sender's picture and adjust view's constraints
         self.pictureView.hidden = NO;
-        self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
-        self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant ;
         // Handle user's picture
         NSString *avatarThumbURL = nil;
         if (bubbleData.senderAvatarUrl)
@@ -142,6 +144,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
+        self.pictureView.enableInMemoryCache = YES;
         [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
         self.pictureView.clipsToBounds = YES;
@@ -175,7 +178,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.bubbleInfoContainer.hidden = YES;
         
         // Set message content
-        bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
+        bubbleData.maxTextViewWidth = self.frame.size.width - (cellWithOriginalXib.msgTextViewLeadingConstraint.constant + cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
         if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
         {
@@ -227,6 +230,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.attachment.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
                 preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
             }
+            
+            self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.attachment.thumbnailOrientation previewImage:preview];
             
             if (url && bubbleData.attachment.actualURL)
@@ -269,12 +274,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.fileTypeIconView.hidden = YES;
             self.messageTextView.hidden = NO;
             
-            // On iOS7, the width of the textview with messages ended with 'w' and 'm' is wrong.
-            // Trick: reset text view size before forcing resize with the actual message.
-            CGRect frame = self.messageTextView.frame;
-            frame.size.width = bubbleData.maxTextViewWidth;
-            frame.size.height = 0;
-            self.messageTextView.frame = frame;
+            NSAttributedString* newText = nil;
             
             // Underline attached file name
             if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
@@ -282,7 +282,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
-                self.messageTextView.attributedText = updatedText;
+                newText = updatedText;
                 
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -300,10 +300,29 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             }
             else
             {
-                self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+                newText = bubbleData.attributedTextMessage;
             }
             
-            [self.messageTextView sizeToFit];
+            // update the text only if it is required
+            // updating a text is quite long (even with the same text).
+            if (![self.messageTextView.attributedText isEqualToAttributedString:newText])
+            {
+                self.messageTextView.attributedText = newText;
+            }
+            
+            // update the frame size from the content size
+            // the content size is cached so it saved few ms
+            // and avoid using sizeToFit
+            CGRect newFrame, curframe;
+            newFrame = curframe = CGRectIntegral(self.messageTextView.frame);
+            newFrame.size = contentSize;
+            
+            // update the frame only if it is required
+            // setting a frame is quite slow so avoid useless update.
+            if (!CGRectEqualToRect(curframe, CGRectIntegral(newFrame)))
+            {
+                self.messageTextView.frame = newFrame;
+            }
             
             // Add a long gesture recognizer on text view in order to display event details
             UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
@@ -321,13 +340,22 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 // Add datetime label for each component
                 self.bubbleInfoContainer.hidden = NO;
                 
+                // ensure that older subviews are removed
+                // They should be (they are removed when the is not anymore used).
+                // But, it seems that is not always true.
+                NSArray* views = [self.bubbleInfoContainer subviews];
+                for(UIView* view in views)
+                {
+                    [view removeFromSuperview];
+                }
+                
                 for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
                 {
-                    if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
+                    if (component.event.mxkState != MXKEventStateSendingFailed)
                     {
                         CGFloat timeLabelOffset = 0;
                         
-                        if (bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
+                        if (component.date && bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
                         {
                             UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.bubbleInfoContainer.frame.size.width , 15)];
                             
@@ -496,18 +524,20 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
+    MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
+    
     // Compute height of message content (The maximum width available for the textview must be updated dynamically)
-    bubbleData.maxTextViewWidth = maxWidth - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
+    bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
     if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
     {
-        rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        rowHeight += cell.msgTextViewTopConstraint.constant;
     }
     else
     {
-        rowHeight += self.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        rowHeight += cell.attachViewTopConstraint.constant ;
     }
     
     return rowHeight;
@@ -526,7 +556,9 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     // Remove potential dateTime (or unsent) label(s)
     if (self.bubbleInfoContainer.subviews.count > 0)
     {
-        for (UIView *view in self.bubbleInfoContainer.subviews)
+        NSArray* subviews = self.bubbleInfoContainer.subviews;
+             
+        for (UIView *view in subviews)
         {
             [view removeFromSuperview];
         }
