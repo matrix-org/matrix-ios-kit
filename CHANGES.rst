@@ -1,3 +1,41 @@
+Changes in MatrixKit in 0.2.5 (2015-11-06)
+===============================================
+
+Improvements:
+ * MXKAuthInputsView: Disable auto correction in login text fields.
+ * MXKAccount: Support unrecognized certificate during authentication challenge from a server.
+ * MXKRoomViewController: Display read receipts.
+ * MXKRoomViewController: Remove blank page while opening a room view controller.
+ * MXKRoomViewController: Improve scrolling by reducing lags effect.
+ * MXKRoomViewController: Add a spinner in the table header in case of back pagination.
+ * MXKRoomViewController: Improve chat history display: When a refresh is triggered whereas the user reads through the history, we anchor the event displayed at the bottom of the history. This is useful in case of screen rotation, event redactions and back pagination triggered by a third part.
+ * MXKRoomDataSource: Disable merging mechanism on successive messages from the same sender. Only one event is displayed by bubble. This change was done to reduce scrolling lags.
+ * MXKRoomDataSource: Room invitations are displayed as unread messages.
+ * MXKAttachment: Add MXKAttachment class to handle room attachments
+ * MXKAttachmentsViewController: Add MXKAttachmentsViewController class to display room attachments in a viewer.
+ * MXKAppSettings: Define HTTP and HTTPS schemes.
+ * MXKRecentListViewController: Display multiple accounts in a consistent order.
+ * MXKAuthenticationViewController: Support login fallback option.
+ * Optimization: Thumbnail images are stored in a memory cache (LRU cache) to reduce file system access.
+ * MXKRoomDataSourceManager: Memory warnings are now handled by MXKRoomDataSourceManager instances to reload unused data source. Matrix session reload is not triggered anymore (fix blank recents on memory warnings).
+
+Bug fixes:
+ * SYIOS-126: Timezone changes are not reflected into the app.
+ * SYIOS-143: When you send a panorama, it doesn't tell you the resolutions it's targetting, and the predicted res and sizing are tiny. keyboard.
+ * SYIOS-152: Time stamps don't obey the system formatting.
+ * SYIOS-163: Add ability to see if an image has been sent or not.
+ * SYIOS-170: Public Room: room history is wrong when user joins for the second time.
+ * SYIOS-171 Cannot create public room in iOS console.
+ * MXKRoomBubbleCellData: App crashes during bubble components update.
+ * MXKRoomViewController: White stripe on animated gif.
+ * MXKTableViewController: Infinite loop on view controller presentation.
+ * MXKViewController: In Recents, keyboard gap remains despite there being no.
+ * MXKRoomBubbleTableViewCell: Attached images without width and height appear as tiny in chat history.
+ * MXKRoomBubbleTableViewCell: The app failed to show in full screen attached image without width and height.
+ * MXKImageView: Infinite loading wheel in case of failure during downloading.
+ * MXKRecentCellData: Should fix App freeze on last message refresh.
+ * MXKContact: Bug Fix App crashed on a fake contact.
+
 Changes in MatrixKit in 0.2.4 (2015-10-14)
 ===============================================
 

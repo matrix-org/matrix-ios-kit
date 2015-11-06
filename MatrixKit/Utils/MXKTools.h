@@ -31,6 +31,11 @@
 #pragma mark - File
 
 /**
+ Round file size.
+ */
++ (long long)roundFileSize:(long long)filesize;
+
+/**
  Return file size in string format.
  */
 + (NSString*)fileSizeToString:(long)fileSize;
@@ -106,13 +111,33 @@
 + (UIImage*)forceImageOrientationUp:(UIImage*)imageSrc;
 
 /**
+ Compute image size to fit in specific box size (in aspect fit mode)
+ 
+ @param originalSize the original size
+ @param maxSize the box size
+ @param canExpand tell whether the image can be expand or not
+ @return the resized size.
+ */
++ (CGSize)resizeImageSize:(CGSize)originalSize toFitInSize:(CGSize)maxSize canExpand:(BOOL)canExpand;
+
+/**
+ Compute image size to fill specific box size (in aspect fill mode)
+ 
+ @param originalSize the original size
+ @param maxSize the box size
+ @param canExpand tell whether the image can be expand or not
+ @return the resized size.
+ */
++ (CGSize)resizeImageSize:(CGSize)originalSize toFillWithSize:(CGSize)maxSize canExpand:(BOOL)canExpand;
+
+/**
  Resize image.
  
  @param image
  @param size to fit in.
  @return resized image.
  */
-+ (UIImage *)resize:(UIImage *)image toFitInSize:(CGSize)size;
++ (UIImage *)resizeImage:(UIImage *)image toFitInSize:(CGSize)size;
 
 /**
  Paint an image with a color.

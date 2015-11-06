@@ -37,12 +37,8 @@
     {
         mxSession = matrixSession;
         
-        dateFormat = @"MMM dd";
-        _dateFormatter = [[NSDateFormatter alloc] init];
-        [_dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
-        [_dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-        [_dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-        
+        [self initDateTimeFormatters];
+
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
         _bingTextColor = [UIColor blueColor];
@@ -53,6 +49,21 @@
         _settings = [MXKAppSettings standardAppSettings];
     }
     return self;
+}
+
+- (void)initDateTimeFormatters
+{
+    // Prepare internal date formatter
+    dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]]];
+    [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
+    // Set default date format
+    [dateFormatter setDateFormat:@"MMM dd"];
+    
+    // Create a time formatter to get time string by considered the current system time formatting.
+    timeFormatter = [[NSDateFormatter alloc] init];
+    [timeFormatter setDateStyle:NSDateFormatterNoStyle];
+    [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
 }
 
 // Checks whether the event is related to an attachment and if it is supported
@@ -107,7 +118,7 @@
 - (NSString*)senderDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderDisplayName = [roomState memberName:event.userId];
+    NSString *senderDisplayName = [roomState memberName:event.sender];
     // Check whether this sender name is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"displayname"] length])
     {
@@ -120,7 +131,7 @@
 - (NSString*)senderAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderAvatarUrl = [roomState memberWithUserId:event.userId].avatarUrl;
+    NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"avatar_url"] length])
     {
@@ -181,7 +192,7 @@
     
     // Prepare display name for concerned users
     NSString *senderDisplayName;
-    senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.userId;
+    senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.sender;
     NSString *targetDisplayName = nil;
     if (event.stateKey)
     {
@@ -279,15 +290,15 @@
                     {
                         if (!prevDisplayname)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.userId, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.sender, displayname];
                         }
                         else if (!displayname)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.userId];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.sender];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.userId, prevDisplayname, displayname];
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.sender, prevDisplayname, displayname];
                         }
                     }
                     
@@ -328,7 +339,7 @@
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
-                    if ([event.userId isEqualToString:event.stateKey])
+                    if ([event.sender isEqualToString:event.stateKey])
                     {
                         displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
                     }
@@ -592,7 +603,7 @@
         case MXEventTypeCallInvite:
         {
             // outgoing call?
-            if ([event.userId isEqualToString:mxSession.myUser.userId])
+            if ([event.sender isEqualToString:mxSession.myUser.userId])
             {
                 displayText = [NSBundle mxk_localizedStringForKey:@"notice_outgoing_call"];
             }
@@ -653,11 +664,12 @@
     return displayText;
 }
 
-- (NSDictionary*)stringAttributesForEvent:(MXEvent*)event
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event
 {
-    UIColor *textColor;
-    UIFont *font;
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
+    NSRange wholeString = NSMakeRange(0, str.length);
     
+    UIColor *textColor;
     switch (event.mxkState)
     {
         case MXKEventStateDefault:
@@ -679,7 +691,9 @@
             textColor = _defaultTextColor;
             break;
     }
+    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     
+    UIFont *font;
     if (event.isState || event.eventType == MXEventTypeCallInvite)
     {
         font = [UIFont italicSystemFontOfSize:14];
@@ -688,11 +702,28 @@
     {
         font = [UIFont systemFontOfSize:14];
     }
-    
-    return @{
-             NSForegroundColorAttributeName : textColor,
-             NSFontAttributeName: font
-             };
+    [str addAttribute:NSFontAttributeName value:font range:wholeString];
+
+    if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
+          [[_settings httpsLinkScheme] isEqualToString: @"https"])) {
+        NSError *error = NULL;
+        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+
+        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
+        for (NSTextCheckingResult *match in matches) {
+            NSRange matchRange = [match range];
+            NSURL *matchUrl = [match URL];
+            NSURLComponents *url = [[NSURLComponents new] initWithURL:matchUrl resolvingAgainstBaseURL:NO];
+            if ([url.scheme isEqualToString: @"http"]) {
+                url.scheme = [_settings httpLinkScheme];
+            } else if ([url.scheme isEqualToString: @"https"]) {
+                url.scheme = [_settings httpsLinkScheme];
+            }
+            [str addAttribute:NSLinkAttributeName value: [url URL] range: matchRange];
+        }
+    }
+
+    return str;
 }
 
 
@@ -709,7 +740,7 @@
     event.eventId = eventId;
     event.type = kMXEventTypeStringRoomMessage;
     event.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-    event.userId = mxSession.myUser.userId;
+    event.sender = mxSession.myUser.userId;
     event.content = content;
     
     return event;
@@ -719,19 +750,16 @@
 
 - (NSString*)dateStringFromDate:(NSDate *)date withTime:(BOOL)time
 {
-    // Get first date string without time
+    // Get first date string without time (if a date format is defined, else only time string is returned)
     NSString *dateString = nil;
-    if (dateFormat)
+    if (dateFormatter.dateFormat)
     {
-        [_dateFormatter setDateFormat:dateFormat];
-        dateString = [_dateFormatter stringFromDate:date];
+        dateString = [dateFormatter stringFromDate:date];
     }
     
     if (time)
     {
-        // Remove data format to get time string in short style.
-        [_dateFormatter setDateFormat:nil];
-        NSString *timeString = [_dateFormatter stringFromDate:date];
+        NSString *timeString = [timeFormatter stringFromDate:date];
         if (dateString.length)
         {
             // Add time string

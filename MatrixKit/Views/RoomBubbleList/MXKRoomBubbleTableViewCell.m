@@ -18,6 +18,9 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKReceiptAvartarsContainer.h"
+#import "MXRoom.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
@@ -90,7 +93,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)highlightTextMessageForEvent:(NSString*)eventId
 {
-    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText)
+    if (bubbleData.attachment == nil)
     {
         if (eventId.length)
         {
@@ -124,14 +127,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     bubbleData = (MXKRoomBubbleCellData*)cellData;
     if (bubbleData)
     {
+        MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
+        
         // set the media folders
         self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         self.attachmentView.mediaFolder = bubbleData.roomId;
         
         // Handle sender's picture and adjust view's constraints
         self.pictureView.hidden = NO;
-        self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant;
-        self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant ;
         // Handle user's picture
         NSString *avatarThumbURL = nil;
         if (bubbleData.senderAvatarUrl)
@@ -139,10 +144,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
+        self.pictureView.enableInMemoryCache = YES;
         [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
         self.pictureView.clipsToBounds = YES;
-        self.pictureView.backgroundColor = [UIColor redColor];
+        self.pictureView.backgroundColor = [UIColor blackColor];
         
         // Listen to avatar tap
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
@@ -161,23 +167,25 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         self.messageTextView.userInteractionEnabled = YES;
         
         // Adjust top constraint constant for dateTime labels container, and hide it by default
-        if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
+        if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
         {
-            self.dateTimeLabelContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
+            self.bubbleInfoContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
         }
         else
         {
-            self.dateTimeLabelContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
+            self.bubbleInfoContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
         }
-        self.dateTimeLabelContainer.hidden = YES;
+        self.bubbleInfoContainer.hidden = YES;
         
         // Set message content
-        bubbleData.maxTextViewWidth = self.frame.size.width - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
+        bubbleData.maxTextViewWidth = self.frame.size.width - (cellWithOriginalXib.msgTextViewLeadingConstraint.constant + cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
         CGSize contentSize = bubbleData.contentSize;
-        if (bubbleData.dataType != MXKRoomBubbleCellDataTypeText && bubbleData.dataType != MXKRoomBubbleCellDataTypeFile)
+        if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
         {
             self.messageTextView.hidden = YES;
             self.attachmentView.hidden = NO;
+            
+            self.attachmentView.backgroundColor = [UIColor clearColor];
             
             // Update image view frame in order to center loading wheel (if any)
             CGRect frame = self.attachmentView.frame;
@@ -186,18 +194,18 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.attachmentView.frame = frame;
             
             NSString *mimetype = nil;
-            if (bubbleData.thumbnailInfo)
+            if (bubbleData.attachment.thumbnailInfo)
             {
-                mimetype = bubbleData.thumbnailInfo[@"mimetype"];
+                mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
             }
-            else if (bubbleData.attachmentInfo)
+            else if (bubbleData.attachment.contentInfo)
             {
-                mimetype = bubbleData.attachmentInfo[@"mimetype"];
+                mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
             }
             
-            NSString *url = bubbleData.thumbnailURL;
+            NSString *url = bubbleData.attachment.thumbnailURL;
             
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeVideo)
+            if (bubbleData.attachment.type == MXKAttachmentTypeVideo)
             {
                 self.playIconView.hidden = NO;
                 self.fileTypeIconView.hidden = YES;
@@ -217,14 +225,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             }
             
             UIImage *preview = nil;
-            if (bubbleData.previewURL)
+            if (bubbleData.attachment.previewURL)
             {
-                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
+                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.attachment.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
                 preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
             }
-            [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.thumbnailOrientation previewImage:preview];
             
-            if (url && bubbleData.attachmentURL && bubbleData.attachmentInfo)
+            self.attachmentView.enableInMemoryCache = YES;
+            [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.attachment.thumbnailOrientation previewImage:preview];
+            
+            if (url && bubbleData.attachment.actualURL)
             {
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -233,12 +243,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [tap setDelegate:self];
                 [self.attachmentView addGestureRecognizer:tap];
                 
+                // Prepare attachment description
+                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type], @"url" : bubbleData.attachment.actualURL}];
+                
+                if (bubbleData.attachment.contentInfo)
+                {
+                    mediaInfoDict[@"info"] = bubbleData.attachment.contentInfo;
+                }
+                
                 // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = @{
-                                                  @"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType],
-                                                  @"url" : bubbleData.attachmentURL,
-                                                  @"info" : bubbleData.attachmentInfo
-                                                  };
+                self.attachmentView.mediaInfo = mediaInfoDict;
             }
             
             [self startProgressUI];
@@ -260,20 +274,15 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.fileTypeIconView.hidden = YES;
             self.messageTextView.hidden = NO;
             
-            // On iOS7, the width of the textview with messages ended with 'w' and 'm' is wrong.
-            // Trick: reset text view size before forcing resize with the actual message.
-            CGRect frame = self.messageTextView.frame;
-            frame.size.width = bubbleData.maxTextViewWidth;
-            frame.size.height = 0;
-            self.messageTextView.frame = frame;
+            NSAttributedString* newText = nil;
             
             // Underline attached file name
-            if (bubbleData.dataType == MXKRoomBubbleCellDataTypeFile && bubbleData.attachmentURL && bubbleData.attachmentInfo)
+            if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
-                self.messageTextView.attributedText = updatedText;
+                newText = updatedText;
                 
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -284,17 +293,36 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 
                 // Store attachment content description used in showAttachmentView:
                 self.attachmentView.mediaInfo = @{
-                                                  @"msgtype" : [NSNumber numberWithUnsignedInt:bubbleData.dataType],
-                                                  @"url" : bubbleData.attachmentURL,
-                                                  @"info" : bubbleData.attachmentInfo
+                                                  @"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type],
+                                                  @"url" : bubbleData.attachment.actualURL,
+                                                  @"info" : bubbleData.attachment.contentInfo
                                                   };
             }
             else
             {
-                self.messageTextView.attributedText = bubbleData.attributedTextMessage;
+                newText = bubbleData.attributedTextMessage;
             }
             
-            [self.messageTextView sizeToFit];
+            // update the text only if it is required
+            // updating a text is quite long (even with the same text).
+            if (![self.messageTextView.attributedText isEqualToAttributedString:newText])
+            {
+                self.messageTextView.attributedText = newText;
+            }
+            
+            // update the frame size from the content size
+            // the content size is cached so it saved few ms
+            // and avoid using sizeToFit
+            CGRect newFrame, curframe;
+            newFrame = curframe = CGRectIntegral(self.messageTextView.frame);
+            newFrame.size = contentSize;
+            
+            // update the frame only if it is required
+            // setting a frame is quite slow so avoid useless update.
+            if (!CGRectEqualToRect(curframe, CGRectIntegral(newFrame)))
+            {
+                self.messageTextView.frame = newFrame;
+            }
             
             // Add a long gesture recognizer on text view in order to display event details
             UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
@@ -305,70 +333,179 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [bubbleData prepareBubbleComponentsPosition];
         
         // Handle here timestamp display (only if a container has been defined)
-        if (bubbleData.showBubbleDateTime && self.dateTimeLabelContainer)
+        if (self.bubbleInfoContainer)
         {
-            // Add datetime label for each component
-            self.dateTimeLabelContainer.hidden = NO;
-            for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+            if ((bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel) || bubbleData.showBubbleReceipts)
             {
-                if (component.date && (component.event.mxkState != MXKEventStateSendingFailed))
+                // Add datetime label for each component
+                self.bubbleInfoContainer.hidden = NO;
+                
+                // ensure that older subviews are removed
+                // They should be (they are removed when the is not anymore used).
+                // But, it seems that is not always true.
+                NSArray* views = [self.bubbleInfoContainer subviews];
+                for(UIView* view in views)
                 {
-                    UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.dateTimeLabelContainer.frame.size.width , 20)];
-                    dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
-                    if (bubbleData.isIncoming)
+                    [view removeFromSuperview];
+                }
+                
+                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+                {
+                    if (component.event.mxkState != MXKEventStateSendingFailed)
                     {
-                        dateTimeLabel.textAlignment = NSTextAlignmentRight;
-                    }
-                    else
-                    {
-                        dateTimeLabel.textAlignment = NSTextAlignmentLeft;
-                    }
-                    dateTimeLabel.textColor = [UIColor lightGrayColor];
-                    dateTimeLabel.font = [UIFont systemFontOfSize:11];
-                    dateTimeLabel.adjustsFontSizeToFitWidth = YES;
-                    dateTimeLabel.minimumScaleFactor = 0.6;
-                    [dateTimeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-                    [self.dateTimeLabelContainer addSubview:dateTimeLabel];
-                    // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
-                    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                      attribute:NSLayoutAttributeLeading
-                                                                                      relatedBy:NSLayoutRelationEqual
-                                                                                         toItem:self.dateTimeLabelContainer
-                                                                                      attribute:NSLayoutAttributeLeading
-                                                                                     multiplier:1.0
-                                                                                       constant:0];
-                    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                       attribute:NSLayoutAttributeTrailing
-                                                                                       relatedBy:NSLayoutRelationEqual
-                                                                                          toItem:self.dateTimeLabelContainer
-                                                                                       attribute:NSLayoutAttributeTrailing
-                                                                                      multiplier:1.0
-                                                                                        constant:0];
-                    // Vertical constraints are required for iOS > 8
-                    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                     attribute:NSLayoutAttributeTop
-                                                                                     relatedBy:NSLayoutRelationEqual
-                                                                                        toItem:self.dateTimeLabelContainer
-                                                                                     attribute:NSLayoutAttributeTop
-                                                                                    multiplier:1.0
-                                                                                      constant:component.position.y];
-                    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
-                                                                                        attribute:NSLayoutAttributeHeight
-                                                                                        relatedBy:NSLayoutRelationEqual
-                                                                                           toItem:nil
-                                                                                        attribute:NSLayoutAttributeNotAnAttribute
-                                                                                       multiplier:1.0
-                                                                                         constant:20];
-                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-                    {
-                        [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
-                    }
-                    else
-                    {
-                        [self.dateTimeLabelContainer addConstraint:leftConstraint];
-                        [self.dateTimeLabelContainer addConstraint:rightConstraint];
-                        [self.dateTimeLabelContainer addConstraint:topConstraint];
-                        [dateTimeLabel addConstraint:heightConstraint];
+                        CGFloat timeLabelOffset = 0;
+                        
+                        if (component.date && bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
+                        {
+                            UILabel *dateTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, component.position.y, self.bubbleInfoContainer.frame.size.width , 15)];
+                            
+                            dateTimeLabel.text = [bubbleData.eventFormatter dateStringFromDate:component.date withTime:YES];
+                            if (bubbleData.isIncoming)
+                            {
+                                dateTimeLabel.textAlignment = NSTextAlignmentRight;
+                            }
+                            else
+                            {
+                                dateTimeLabel.textAlignment = NSTextAlignmentLeft;
+                            }
+                            dateTimeLabel.textColor = [UIColor lightGrayColor];
+                            dateTimeLabel.font = [UIFont systemFontOfSize:11];
+                            dateTimeLabel.adjustsFontSizeToFitWidth = YES;
+                            dateTimeLabel.minimumScaleFactor = 0.6;
+                            
+                            [dateTimeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+                            [self.bubbleInfoContainer addSubview:dateTimeLabel];
+                            // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
+                            NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                              attribute:NSLayoutAttributeLeading
+                                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                                 toItem:self.bubbleInfoContainer
+                                                                                              attribute:NSLayoutAttributeLeading
+                                                                                             multiplier:1.0
+                                                                                               constant:0];
+                            NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                               attribute:NSLayoutAttributeTrailing
+                                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                                  toItem:self.bubbleInfoContainer
+                                                                                               attribute:NSLayoutAttributeTrailing
+                                                                                              multiplier:1.0
+                                                                                                constant:0];
+                            // Vertical constraints are required for iOS > 8
+                            NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                             attribute:NSLayoutAttributeTop
+                                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                                toItem:self.bubbleInfoContainer
+                                                                                             attribute:NSLayoutAttributeTop
+                                                                                            multiplier:1.0
+                                                                                              constant:component.position.y];
+                            NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:dateTimeLabel
+                                                                                                attribute:NSLayoutAttributeHeight
+                                                                                                relatedBy:NSLayoutRelationEqual
+                                                                                                   toItem:nil
+                                                                                                attribute:NSLayoutAttributeNotAnAttribute
+                                                                                               multiplier:1.0
+                                                                                                 constant:15];
+                            if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+                            {
+                                [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
+                            }
+                            else
+                            {
+                                [self.bubbleInfoContainer addConstraint:leftConstraint];
+                                [self.bubbleInfoContainer addConstraint:rightConstraint];
+                                [self.bubbleInfoContainer addConstraint:topConstraint];
+                                [dateTimeLabel addConstraint:heightConstraint];
+                            }
+                            
+                            timeLabelOffset += 15;
+                        }
+                    
+                        if (!bubbleData.isIncoming && bubbleData.showBubbleReceipts)
+                        {
+                            NSMutableArray* userIds = nil;
+                            NSArray* receipts = nil;
+                         
+                            MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
+                            
+                            // get the events receipts
+                            if (room)
+                            {
+                                receipts = [room getEventReceipts:component.event.eventId sorted:YES];
+                            }
+                            
+                            // if some receipts are found
+                            if (receipts)
+                            {
+                                NSString* myUserId = bubbleData.mxSession.myUser.userId;
+                                NSMutableArray* res = [[NSMutableArray alloc] init];
+                                
+                                // remove the oneself receipts
+                                for(MXReceiptData* data in receipts)
+                                {
+                                    if (![data.userId isEqualToString:myUserId])
+                                    {
+                                        [res addObject:data.userId];
+                                    }
+                                }
+                                
+                                if (res.count > 0)
+                                {
+                                    userIds = res;
+                                }
+                            }
+                            
+                            if (userIds)
+                            {
+                                MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15)];
+                                
+                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder];
+                                [self.bubbleInfoContainer addSubview:avatarsContainer];
+                                
+                                // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
+                                NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                  attribute:NSLayoutAttributeLeading
+                                                                                                  relatedBy:NSLayoutRelationEqual
+                                                                                                     toItem:self.bubbleInfoContainer
+                                                                                                  attribute:NSLayoutAttributeLeading
+                                                                                                 multiplier:1.0
+                                                                                                   constant:0];
+                                NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                   attribute:NSLayoutAttributeTrailing
+                                                                                                   relatedBy:NSLayoutRelationEqual
+                                                                                                      toItem:self.bubbleInfoContainer
+                                                                                                   attribute:NSLayoutAttributeTrailing
+                                                                                                  multiplier:1.0
+                                                                                                    constant:0];
+                                // Vertical constraints are required for iOS > 8
+                                NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                 attribute:NSLayoutAttributeTop
+                                                                                                 relatedBy:NSLayoutRelationEqual
+                                                                                                    toItem:self.bubbleInfoContainer
+                                                                                                 attribute:NSLayoutAttributeTop
+                                                                                                multiplier:1.0
+                                                                                                  constant:(component.position.y + timeLabelOffset)];
+                                
+                                NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:avatarsContainer
+                                                                                                    attribute:NSLayoutAttributeHeight
+                                                                                                    relatedBy:NSLayoutRelationEqual
+                                                                                                       toItem:nil
+                                                                                                    attribute:NSLayoutAttributeNotAnAttribute
+                                                                                                   multiplier:1.0
+                                                                                                     constant:15];
+                                
+                                if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+                                {
+                                    [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
+                                }
+                                else
+                                {
+                                    [self.bubbleInfoContainer addConstraint:leftConstraint];
+                                    [self.bubbleInfoContainer addConstraint:rightConstraint];
+                                    [self.bubbleInfoContainer addConstraint:topConstraint];
+                                    [avatarsContainer addConstraint:heightConstraint];
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -387,18 +524,20 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
+    MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
+    
     // Compute height of message content (The maximum width available for the textview must be updated dynamically)
-    bubbleData.maxTextViewWidth = maxWidth - (self.class.cellWithOriginalXib.msgTextViewLeadingConstraint.constant + self.class.cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
+    bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
     CGFloat rowHeight = bubbleData.contentSize.height;
     
     // Add top margin
-    if (bubbleData.dataType == MXKRoomBubbleCellDataTypeText || bubbleData.dataType == MXKRoomBubbleCellDataTypeFile)
+    if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
     {
-        rowHeight += self.cellWithOriginalXib.msgTextViewTopConstraint.constant;
+        rowHeight += cell.msgTextViewTopConstraint.constant;
     }
     else
     {
-        rowHeight += self.cellWithOriginalXib.attachViewTopConstraint.constant ;
+        rowHeight += cell.attachViewTopConstraint.constant ;
     }
     
     return rowHeight;
@@ -415,15 +554,18 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     }
     
     // Remove potential dateTime (or unsent) label(s)
-    if (self.dateTimeLabelContainer.subviews.count > 0)
+    if (self.bubbleInfoContainer.subviews.count > 0)
     {
-        for (UIView *view in self.dateTimeLabelContainer.subviews)
+        NSArray* subviews = self.bubbleInfoContainer.subviews;
+             
+        for (UIView *view in subviews)
         {
             [view removeFromSuperview];
         }
     }
     
     [self stopProgressUI];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // Remove long tap gesture on the progressView
     while (self.progressView.gestureRecognizers.count)
@@ -476,7 +618,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         NSString* url = notif.object;
         
-        if ([url isEqualToString:bubbleData.attachmentURL])
+        if ([url isEqualToString:bubbleData.attachment.actualURL])
         {
             [self updateProgressUI:notif.userInfo];
         }
@@ -490,7 +632,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         NSString* url = notif.object;
         
-        if ([url isEqualToString:bubbleData.attachmentURL])
+        if ([url isEqualToString:bubbleData.attachment.actualURL])
         {
             [self stopProgressUI];
             
@@ -512,25 +654,26 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // there is an attachment URL
-    if (bubbleData.attachmentURL)
+    if (bubbleData.attachment.actualURL)
     {
         // check if there is a download in progress
-        MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachmentCacheFilePath];
-        
-        NSDictionary *dict = loader.statisticsDict;
-        
-        if (dict)
+        MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
+        if (loader)
         {
-            isHidden = NO;
+            NSDictionary *dict = loader.statisticsDict;
+            if (dict)
+            {
+                isHidden = NO;
+                
+                // defines the text to display
+                [self updateProgressUI:dict];
+            }
             
-            // defines the text to display
-            [self updateProgressUI:dict];
+            // anyway listen to the progress event
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
         }
-        
-        // anyway listen to the progress event
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
     }
     
     self.progressView.hidden = isHidden;

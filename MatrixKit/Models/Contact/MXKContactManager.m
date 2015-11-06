@@ -155,21 +155,21 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                    if (event.eventType == MXEventTypePresence)
                                    {
                                        // Check whether the concerned matrix user belongs to at least one contact.
-                                       BOOL isMatched = ([matrixContactByMatrixID objectForKey:event.userId] != nil);
+                                       BOOL isMatched = ([matrixContactByMatrixID objectForKey:event.sender] != nil);
                                        if (!isMatched)
                                        {
                                            NSArray *matrixIDs = [matrixIDBy3PID allValues];
-                                           isMatched = ([matrixIDs indexOfObject:event.userId] != NSNotFound);
+                                           isMatched = ([matrixIDs indexOfObject:event.sender] != NSNotFound);
                                        }
                                        
                                        if (isMatched) {
-                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerMatrixUserPresenceChangeNotification object:event.userId userInfo:@{kMXKContactManagerMatrixPresenceKey:event.content[@"presence"]}];
+                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerMatrixUserPresenceChangeNotification object:event.sender userInfo:@{kMXKContactManagerMatrixPresenceKey:event.content[@"presence"]}];
                                        }
                                    }
                                    else //if (event.eventType == MXEventTypeRoomMember)
                                    {
                                        // Update matrix contact list on membership change
-                                       [self updateMatrixContactWithID:event.userId];
+                                       [self updateMatrixContactWithID:event.sender];
                                    }
                                }
                            }];
@@ -179,30 +179,22 @@ static MXKContactManager* sharedMXKContactManager = nil;
         // Update matrix contact list in case of new synced one-to-one room
         if (!mxSessionNewSyncedRoomObserver)
         {
-            mxSessionNewSyncedRoomObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionInitialSyncedRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            mxSessionNewSyncedRoomObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomInitialSyncNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
-                MXSession *mxSession = notif.object;
-                if ([mxSessionArray indexOfObject:mxSession] != NSNotFound)
+                MXRoom *room = notif.object;
+                NSArray *roomMembers = room.state.members;
+                
+                // Consider only 1:1 chat
+                if (roomMembers.count == 2)
                 {
-                    NSString *roomId = [notif.userInfo objectForKey:kMXSessionNotificationRoomIdKey];
-                    if (roomId.length)
+                    // Retrieve the one-to-one contact in members list.
+                    MXRoomMember *oneToOneContact = [roomMembers objectAtIndex:0];
+                    if ([oneToOneContact.userId isEqualToString:room.mxSession.myUser.userId])
                     {
-                        MXRoom *room = [mxSession roomWithRoomId:roomId];
-                        NSArray *roomMembers = room.state.members;
-                        
-                        // Consider only 1:1 chat
-                        if (roomMembers.count == 2)
-                        {
-                            // Retrieve the one-to-one contact in members list.
-                            MXRoomMember *oneToOneContact = [roomMembers objectAtIndex:0];
-                            if ([oneToOneContact.userId isEqualToString:mxSession.myUser.userId])
-                            {
-                                oneToOneContact = [roomMembers objectAtIndex:1];
-                            }
-                            
-                            [self updateMatrixContactWithID:oneToOneContact.userId];
-                        }
+                        oneToOneContact = [roomMembers objectAtIndex:1];
                     }
+                    
+                    [self updateMatrixContactWithID:oneToOneContact.userId];
                 }
             }];
         }
@@ -297,7 +289,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     
     if (identityServer)
     {
-        _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil];
+        _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
         _identityRESTClient.identityServer = identityServer;
         
         if (self.enableFullMatrixIdSyncOnLocalContactsDidLoad) {
@@ -320,13 +312,13 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         if (self.identityServer)
         {
-            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil];
+            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
             _identityRESTClient.identityServer = self.identityServer;
         }
         else if (mxSessionArray.count)
         {
             MXSession *mxSession = [mxSessionArray firstObject];
-            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil];
+            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
             _identityRESTClient.identityServer = mxSession.matrixRestClient.identityServer;
         }
     }
@@ -852,36 +844,42 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         if ([mxSession privateOneToOneRoomWithUserId:matrixId])
         {
-            // Update or create a contact for this user
+            // Retrieve the user object related to this contact
             MXUser* user = [mxSession userWithUserId:matrixId];
-            MXKContact* contact = [matrixContactByMatrixID objectForKey:matrixId];
             
-            // already defined
-            if (contact)
+            // This user may not exist (if the oneToOne room is a pending invitation to him).
+            if (user)
             {
-                NSString *userDisplayName = (user.displayname.length > 0) ? user.displayname : user.userId;
-                if (![contact.displayName isEqualToString:userDisplayName])
+                // Update or create a contact for this user
+                MXKContact* contact = [matrixContactByMatrixID objectForKey:matrixId];
+                
+                // already defined
+                if (contact)
                 {
-                    contact.displayName = userDisplayName;
+                    NSString *userDisplayName = (user.displayname.length > 0) ? user.displayname : user.userId;
+                    if (![contact.displayName isEqualToString:userDisplayName])
+                    {
+                        contact.displayName = userDisplayName;
+                        
+                        [self cacheMatrixContacts];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                    }
+                }
+                else
+                {
+                    contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) andMatrixID:user.userId];
+                    [matrixContactByMatrixID setValue:contact forKey:matrixId];
+                    
+                    // update the matrix contacts list
+                    [matrixContactByContactID setValue:contact forKey:contact.contactID];
                     
                     [self cacheMatrixContacts];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
                 }
-            }
-            else
-            {
-                contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) andMatrixID:user.userId];
-                [matrixContactByMatrixID setValue:contact forKey:matrixId];
                 
-                // update the matrix contacts list
-                [matrixContactByContactID setValue:contact forKey:contact.contactID];
-                
-                [self cacheMatrixContacts];
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                // Done
+                return;
             }
-            
-            // Done
-            return;
         }
     }
     

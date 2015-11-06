@@ -34,7 +34,7 @@
 "login_prompt_email_token" = "Please enter your email validation token:";
 "login_error_title" = "Login Failed";
 "login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
-"login_error_do_not_support_login_flows" = "Currently we do not support login flows defined by this Home Server";
+"login_error_do_not_support_login_flows" = "Currently we do not support any or all login flows defined by this Home Server";
 "login_error_registration_is_not_supported" = "Registration is not currently supported";
 "login_error_forbidden" = "Invalid username/password";
 "login_error_unknown_token" = "The access token specified was not recognised";
@@ -43,6 +43,8 @@
 "login_error_limit_exceeded" = "Too many requests have been sent";
 "login_error_user_in_use" = "This user name is already used";
 "login_error_login_email_not_yet" = "The email link which has not been clicked yet";
+"login_use_fallback" = "Use fallback page";
+"login_leave_fallback" = "Cancel";
 
 // Action
 "no" = "No";
@@ -158,6 +160,7 @@
 "power_level" = "Power Level";
 "network_error_not_reachable" = "Please check your network connectivity";
 "user_id_placeholder" = "ex: @bob:homeserver";
+"ssl_homeserver_url" = "Home Server URL: %@";
 
 /* -*- 
    Automatic localization for en
@@ -295,3 +298,14 @@
 "incoming_voice_call" = "Incoming Voice Call";
 "call_invite_expired" = "Call Invite Expired";
 
+// unrecognized SSL certificate
+"ssl_trust" = "Trust";
+"ssl_logout_account" = "Logout";
+"ssl_remain_offline" = "Ignore";
+"ssl_fingerprint_hash" = "Fingerprint (%@):";
+"ssl_could_not_verify" = "Could not verify identity of remote server.";
+"ssl_cert_not_trust" = "This could mean that someone is maliciously intercepting your traffic, or that your phone does not trust the certificate provided by the remote server.";
+"ssl_cert_new_account_expl" = "If the server administrator has said that this is expected, ensure that the fingerprint below matches the fingerprint provided by them.";
+"ssl_unexpected_existing_expl" = "The certificate has changed from one that was trusted by your phone. This is HIGHLY UNUSUAL. It is recommended that you DO NOT ACCEPT this new certificate.";
+"ssl_expected_existing_expl" = "The certificate has changed from a previously trusted one to one that is not trusted. The server may have renewed its certificate. Contact the server administrator for the expected fingerprint.";
+"ssl_only_accept" = "ONLY accept the certificate if the server administrator has published a fingerprint that matches the one above.";

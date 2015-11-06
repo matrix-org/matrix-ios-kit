@@ -102,16 +102,7 @@
 {
     if (!_attributedTextMessage)
     {
-        // Retrieve string attributes from formatter
-        NSDictionary *attributes = [_eventFormatter stringAttributesForEvent:_event];
-        if (attributes)
-        {
-            _attributedTextMessage = [[NSAttributedString alloc] initWithString:_textMessage attributes:attributes];
-        }
-        else
-        {
-            _attributedTextMessage = [[NSAttributedString alloc] initWithString:_textMessage];
-        }
+        _attributedTextMessage = [_eventFormatter attributedStringFromString:_textMessage forEvent:_event];
     }
     
     return _attributedTextMessage;

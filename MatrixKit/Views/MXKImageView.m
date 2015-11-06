@@ -56,17 +56,20 @@
 
 #define CUSTOM_IMAGE_VIEW_BUTTON_WIDTH 100
 
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.backgroundColor = [UIColor blackColor];
+    self.contentMode = UIViewContentModeScaleAspectFit;
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    
     if (self)
     {
-        leftButtonTitle = nil;
-        leftHandler = nil;
-        rightButtonTitle = nil;
-        rightHandler = nil;
-        
         self.backgroundColor = [UIColor blackColor];
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
@@ -86,11 +89,14 @@
         [loadingView removeFromSuperview];
         loadingView = nil;
     }
+    
     if (bottomBarView)
     {
         [bottomBarView removeFromSuperview];
         bottomBarView = nil;
     }
+    
+    pieChartView = nil;
 }
 
 - (void)startActivityIndicator
@@ -195,6 +201,7 @@
 {
     currentImage = anImage;
     imageView.image = anImage;
+
     [self initScrollZoomFactors];
 }
 
@@ -288,13 +295,11 @@
         CGFloat scaleY = imageSize.height / imageView.frame.size.height;
         
         if (scaleX < scaleY)
-            
         {
             scaleX = scaleY;
         }
         
         if (scaleX < 1.0)
-            
         {
             scaleX = 1.0;
         }
@@ -319,7 +324,10 @@
         [UIApplication sharedApplication].statusBarHidden = NO;
     }
     
-    [self stopActivityIndicator];
+    if (pieChartView)
+    {
+        [self stopActivityIndicator];
+    }
 }
 
 - (void)initLayout
@@ -334,6 +342,7 @@
         
         imageView = [[UIImageView alloc] init];
         imageView.backgroundColor = [UIColor clearColor];
+        imageView.userInteractionEnabled = YES;
         imageView.contentMode = self.contentMode;
         [scrollView addSubview:imageView];
     }
@@ -535,7 +544,8 @@
     else
     {
         // Retrieve the image from cache
-        UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadFromMemoryCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        
         if (image)
         {
             if (imageOrientation != UIImageOrientationUp)
@@ -574,23 +584,28 @@
     {
         NSString* url = notif.object;
         NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
-        
-        if ([url isEqualToString:imageURL] && cacheFilePath.length)
+
+        if ([url isEqualToString:imageURL])
         {
             [self stopActivityIndicator];
-            // update the image
-            UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
-            if (image)
+
+            if (cacheFilePath.length)
             {
-                if (imageOrientation != UIImageOrientationUp)
+                // update the image
+                UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+                if (image)
                 {
-                    self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
-                }
-                else
-                {
-                    self.image = image;
+                    if (imageOrientation != UIImageOrientationUp)
+                    {
+                        self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
+                    }
+                    else
+                    {
+                        self.image = image;
+                    }
                 }
             }
+
             // remove the observers
             [[NSNotificationCenter defaultCenter] removeObserver:self];
         }

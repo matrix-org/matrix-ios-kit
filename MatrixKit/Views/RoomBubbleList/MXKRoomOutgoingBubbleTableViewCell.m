@@ -42,17 +42,20 @@
         if (self.bubbleData.shouldHideSenderInformation)
         {
             self.pictureView.hidden = YES;
-            self.msgTextViewTopConstraint.constant = self.class.cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            self.attachViewTopConstraint.constant = self.class.cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             
-            if (!self.dateTimeLabelContainer.hidden)
+            MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
+        
+            self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+            self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+            
+            if (!self.bubbleInfoContainer.hidden)
             {
-                self.dateTimeLabelContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
+                self.bubbleInfoContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
             }
         }
         
-        // Add unsent label for failed components (only if dateTimeLabelContainer is defined)
-        if (self.dateTimeLabelContainer)
+        // Add unsent label for failed components (only if bubbleInfoContainer is defined)
+        if (self.bubbleInfoContainer)
         {
             for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
             {
@@ -70,32 +73,48 @@
                     
                     [unsentButton addTarget:self action:@selector(onResendToggle:) forControlEvents:UIControlEventTouchUpInside];
                     
-                    [self.dateTimeLabelContainer addSubview:unsentButton];
-                    self.dateTimeLabelContainer.hidden = NO;
-                    self.dateTimeLabelContainer.userInteractionEnabled = YES;
+                    [self.bubbleInfoContainer addSubview:unsentButton];
+                    self.bubbleInfoContainer.hidden = NO;
+                    self.bubbleInfoContainer.userInteractionEnabled = YES;
                     
-                    // ensure that dateTimeLabelContainer is at front to catch the tap event
-                    [self.dateTimeLabelContainer.superview bringSubviewToFront:self.dateTimeLabelContainer];
+                    // ensure that bubbleInfoContainer is at front to catch the tap event
+                    [self.bubbleInfoContainer.superview bringSubviewToFront:self.bubbleInfoContainer];
                 }
             }
         }
         
-        if (self.attachmentView)
+        if (!self.attachmentView.isHidden)
         {
+            // Do not display activity indicator on outgoing attachments (These attachments are supposed to be stored locally)
+            // Some download may append to retrieve the actual thumbnail after posting an image.
+            self.attachmentView.hideActivityIndicator = YES;
+            
             // Check if the image is uploading
             MXKRoomBubbleComponent *component = self.bubbleData.bubbleComponents.firstObject;
-            if (MXKEventStateUploading == component.event.mxkState)
+            if (component.event.mxkState == MXKEventStateUploading)
             {
                 // Retrieve the uploadId embedded in the fake url
                 self.bubbleData.uploadId = component.event.content[@"url"];
                 
-                // And start showing upload progress
+                self.attachmentView.alpha = 0.5;
+                
+                // Start showing upload progress
                 [self startUploadAnimating];
-                self.attachmentView.hideActivityIndicator = YES;
+            }
+            else if (component.event.mxkState == MXKEventStateSending)
+            {
+                self.attachmentView.alpha = 0.5;
+                [self.activityIndicator startAnimating];
+            }
+            else if (component.event.mxkState == MXKEventStateSendingFailed)
+            {
+                self.attachmentView.alpha = 0.5;
+                [self.activityIndicator stopAnimating];
             }
             else
             {
-                self.attachmentView.hideActivityIndicator = NO;
+                self.attachmentView.alpha = 1;
+                [self.activityIndicator stopAnimating];
             }
         }
     }
@@ -116,10 +135,12 @@
     }
     else
     {
+        CGFloat height = self.cellWithOriginalXib.frame.size.height;
+        
         // We consider a minimun cell height in order to display correctly user's picture
-        if (rowHeight < self.cellWithOriginalXib.frame.size.height)
+        if (rowHeight < height)
         {
-            rowHeight = self.cellWithOriginalXib.frame.size.height;
+            rowHeight = height;
         }
     }
     
@@ -134,7 +155,7 @@
     // Hide potential loading wheel
     [self stopAnimating];
     
-    self.dateTimeLabelContainer.userInteractionEnabled = NO;
+    self.bubbleInfoContainer.userInteractionEnabled = NO;
 }
 
 -(void)startUploadAnimating
@@ -142,7 +163,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaUploadProgressNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUploadProgress:) name:kMXKMediaUploadProgressNotification object:nil];
     
-    self.activityIndicator.hidden = NO;
     [self.activityIndicator startAnimating];
     
     MXKMediaLoader *uploader = [MXKMediaManager existingUploaderWithId:self.bubbleData.uploadId];

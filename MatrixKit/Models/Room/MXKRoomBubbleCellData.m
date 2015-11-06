@@ -25,9 +25,9 @@
 #import "MXKMediaManager.h"
 
 @implementation MXKRoomBubbleCellData
-@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon;
+@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
 @synthesize textMessage, attributedTextMessage;
-@synthesize startsWithSenderName, isTyping, showBubbleDateTime;
+@synthesize startsWithSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
@@ -45,43 +45,29 @@
             bubbleComponents = [NSMutableArray array];
             [bubbleComponents addObject:firstComponent];
             
-            senderId = event.userId;
+            senderId = event.sender;
             roomId = event.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
             senderAvatarUrl = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
-            isIncoming = ([event.userId isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
+            isIncoming = ([event.sender isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
             
-            // Set message type (consider text by default), and check attachment if any
-            _dataType = MXKRoomBubbleCellDataTypeText;
+            // Check attachment if any
             if ([roomDataSource.eventFormatter isSupportedAttachment:event])
             {
                 // Note: event.eventType is equal here to MXEventTypeRoomMessage
-                
-                // Set default thumbnail orientation
-                _thumbnailOrientation = UIImageOrientationUp;
-                
-                NSString *msgtype =  event.content[@"msgtype"];
-                if ([msgtype isEqualToString:kMXMessageTypeImage])
+                attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                if (attachment && attachment.type == MXKAttachmentTypeImage && attachment.thumbnailURL == nil)
                 {
-                    [self handleImageMessage:event];
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeAudio])
-                {
-                    // Not supported yet
-                    //_dataType = MXKRoomBubbleCellDataTypeAudio;
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeVideo])
-                {
-                    [self handleVideoMessage:event];
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-                {
-                    // Not supported yet
-                    // _dataType = MXKRoomBubbleCellDataTypeLocation;
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeFile])
-                {
-                    [self handleFileMessage:event];
+                    // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+                    attachment.thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:attachment.contentURL
+                                                                                                  toFitViewSize:self.contentSize
+                                                                                                     withMethod:MXThumbnailingMethodScale];
+                    
+                    // Check the current thumbnail orientation. Rotate the current content size (if need)
+                    if (attachment.thumbnailOrientation == UIImageOrientationLeft || attachment.thumbnailOrientation == UIImageOrientationRight)
+                    {
+                        _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
+                    }
                 }
             }
             
@@ -108,76 +94,100 @@
 
 - (NSUInteger)updateEvent:(NSString *)eventId withEvent:(MXEvent *)event
 {
-    // Retrieve the component storing the event and update it
-    for (NSUInteger index = 0; index < bubbleComponents.count; index++)
+    NSUInteger count = 0;
+
+    @synchronized(bubbleComponents)
     {
-        MXKRoomBubbleComponent *roomBubbleComponent = [bubbleComponents objectAtIndex:index];
-        if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
+        // Retrieve the component storing the event and update it
+        for (NSUInteger index = 0; index < bubbleComponents.count; index++)
         {
-            [roomBubbleComponent updateWithEvent:event];
-            if (!roomBubbleComponent.textMessage.length)
+            MXKRoomBubbleComponent *roomBubbleComponent = [bubbleComponents objectAtIndex:index];
+            if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
             {
-                [bubbleComponents removeObjectAtIndex:index];
-            }
-            // flush the current attributed string to force refresh
-            self.attributedTextMessage = nil;
-            
-            // Handle here attachment update.
-            // The case of update of attachment event happens when an echo is replaced by its true event
-            // received back by the events stream.
-            if (_dataType != MXKRoomBubbleCellDataTypeText)
-            {
-                // Check the attachment url, to update it with the actual one
-                if (! [_attachmentURL isEqualToString:event.content[@"url"]])
+                [roomBubbleComponent updateWithEvent:event];
+                if (!roomBubbleComponent.textMessage.length)
                 {
-                    NSString *msgtype =  event.content[@"msgtype"];
-                    
-                    // Check event type
-                    if ([msgtype isEqualToString:kMXMessageTypeImage] && _dataType == MXKRoomBubbleCellDataTypeImage)
+                    [bubbleComponents removeObjectAtIndex:index];
+                }
+                // flush the current attributed string to force refresh
+                self.attributedTextMessage = nil;
+                
+                // Handle here attachment update.
+                // The case of update of attachment event happens when an echo is replaced by its true event
+                // received back by the events stream.
+                if (attachment)
+                {
+                    // Check the current content url, to update it with the actual one
+                    if (! [attachment.contentURL isEqualToString:event.content[@"url"]])
                     {
-                        // Store the echo image as preview to prevent the cell from flashing
-                        _previewURL = _attachmentURL;
-                        [self handleImageMessage:event];
-                    }
-                    else if ([msgtype isEqualToString:kMXMessageTypeVideo] && _dataType == MXKRoomBubbleCellDataTypeVideo)
-                    {
-                        // Store the echo image as preview to prevent the cell from flashing
-                        _previewURL = _attachmentURL;
-                        [self handleVideoMessage:event];
-                    }
-                    else if ([msgtype isEqualToString:kMXMessageTypeFile] && _dataType == MXKRoomBubbleCellDataTypeFile)
-                    {
-                        [self handleFileMessage:event];
-                    }
-                    else
-                    {
-                        NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of event type");
+                        MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                        
+                        // Sanity check on attachment type
+                        if (updatedAttachment && attachment.type == updatedAttachment.type)
+                        {
+                            // Store the echo image as preview to prevent the cell from flashing
+                            updatedAttachment.previewURL = attachment.actualURL;
+                            
+                            // Update the current attachmnet description
+                            attachment = updatedAttachment;
+                            
+                            if (attachment.type == MXKAttachmentTypeImage && attachment.thumbnailURL == nil)
+                            {
+                                // Reset content size
+                                _contentSize = CGSizeZero;
+                                
+                                // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+                                attachment.thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:attachment.contentURL
+                                                                                                              toFitViewSize:self.contentSize
+                                                                                                                 withMethod:MXThumbnailingMethodScale];
+                                
+                                // Check the current thumbnail orientation. Rotate the current content size (if need)
+                                if (attachment.thumbnailOrientation == UIImageOrientationLeft || attachment.thumbnailOrientation == UIImageOrientationRight)
+                                {
+                                    _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of attachment type");
+                        }
                     }
                 }
+                
+                break;
             }
-            
-            break;
         }
+        
+        count = bubbleComponents.count;
     }
     
-    return bubbleComponents.count;
+    return count;
 }
 
 - (NSUInteger)removeEvent:(NSString *)eventId
 {
-    for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+    NSUInteger count = 0;
+    
+    @synchronized(bubbleComponents)
     {
-        if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
+        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
         {
-            [bubbleComponents removeObject:roomBubbleComponent];
-            
-            // flush the current attributed string to force refresh
-            self.attributedTextMessage = nil;
-            
-            break;
+            if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
+            {
+                [bubbleComponents removeObject:roomBubbleComponent];
+                
+                // flush the current attributed string to force refresh
+                self.attributedTextMessage = nil;
+                
+                break;
+            }
         }
+        
+        count = bubbleComponents.count;
     }
-    return bubbleComponents.count;
+
+    return count;
 }
 
 - (BOOL)hasSameSenderAsBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData
@@ -206,14 +216,30 @@
     return YES;
 }
 
+- (MXKRoomBubbleComponent*) getFirstBubbleComponent
+{
+    MXKRoomBubbleComponent* first = nil;
+    
+    @synchronized(bubbleComponents)
+    {
+        if (bubbleComponents.count)
+        {
+            first = [bubbleComponents firstObject];
+        }
+    }
+    
+    return first;
+}
+
 - (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor
 {
     NSAttributedString *customAttributedTextMsg;
     
-    if (bubbleComponents.count)
+    // By default only one component is supported, consider here the first component
+    MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
+    
+    if (firstComponent)
     {
-        // By default only one component is supported, consider here the first component
-        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
         customAttributedTextMsg = firstComponent.attributedTextMessage;
         
         // Sanity check
@@ -225,7 +251,7 @@
             customAttributedTextMsg = customComponentString;
         }
     }
-    
+
     return customAttributedTextMsg;
 }
 
@@ -234,10 +260,11 @@
 - (void)prepareBubbleComponentsPosition
 {
     // Consider here only the first component if any
-    if (bubbleComponents.count)
+    MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
+    
+    if (firstComponent)
     {
-        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
-        CGFloat positionY = (_dataType == MXKRoomBubbleCellDataTypeText || _dataType == MXKRoomBubbleCellDataTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
+        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -271,124 +298,22 @@
 // CAUTION: This method runs only on main thread
 - (CGSize)textContentSize: (NSAttributedString*)attributedText
 {
+    static UITextView* measurementTextView = nil;
+    
     if (attributedText.length)
     {
-        // Use a TextView template
-        UITextView *dummyTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT)];
-        dummyTextView.attributedText = attributedText;
-        return [dummyTextView sizeThatFits:dummyTextView.frame.size];
-    }
-    return CGSizeZero;
-}
-
-#pragma mark - Privates
-
-- (void)handleImageMessage:(MXEvent*)event
-{
-    _dataType = MXKRoomBubbleCellDataTypeImage;
-    // Retrieve content url/info
-    NSString *contentURL = event.content[@"url"];
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-    if (nil == _attachmentURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _attachmentURL = contentURL;
-    }
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
-    _attachmentInfo = event.content[@"info"];
-    
-    // Handle legacy thumbnail url/info (Not defined anymore in recent attachments)
-    _thumbnailURL = event.content[@"thumbnail_url"];
-    _thumbnailInfo = event.content[@"thumbnail_info"];
-    if (!_thumbnailURL)
-    {
-        // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        _thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:contentURL toFitViewSize:self.contentSize withMethod:MXThumbnailingMethodScale];
-        
-        // Check whether the image has been uploaded with an orientation
-        if (_attachmentInfo[@"rotation"])
+        if (!measurementTextView)
         {
-            // Currently the matrix content server provides thumbnails by ignoring the original image orientation.
-            // We store here the actual orientation to apply it on downloaded thumbnail.
-            _thumbnailOrientation = [MXKTools imageOrientationForRotationAngleInDegree:[_attachmentInfo[@"rotation"] integerValue]];
+            measurementTextView = [[UITextView alloc] init];
+        }
+        
+        measurementTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
+        measurementTextView.attributedText = attributedText;
             
-            // Rotate the current content size (if need)
-            if (_thumbnailOrientation == UIImageOrientationLeft || _thumbnailOrientation == UIImageOrientationRight)
-            {
-                _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
-            }
-        }
-    }
-}
-
-- (void)handleVideoMessage:(MXEvent*)event
-{
-    _dataType = MXKRoomBubbleCellDataTypeVideo;
-    
-    // Retrieve content url/info
-    NSString *contentURL = event.content[@"url"];
-    
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-    if (nil == _attachmentURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _attachmentURL = contentURL;
+        return [measurementTextView sizeThatFits:measurementTextView.frame.size];
     }
     
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
-    _attachmentInfo = event.content[@"info"];
-    
-    if (_attachmentInfo)
-    {
-        // Get video thumbnail info
-        _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
-        _thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:_thumbnailURL];
-        if (nil == _thumbnailURL)
-        {
-            _thumbnailURL = _attachmentInfo[@"thumbnail_url"];
-        }
-        
-        _thumbnailInfo = _attachmentInfo[@"thumbnail_info"];
-    }
-}
-
-- (void)handleFileMessage:(MXEvent*)event
-{
-    _dataType = MXKRoomBubbleCellDataTypeFile;
-    
-    // Retrieve content url/info
-    NSString *contentURL = event.content[@"url"];
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _attachmentURL = [roomDataSource.mxSession.matrixRestClient urlOfContent:contentURL];
-    if (nil == _attachmentURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _attachmentURL = contentURL;
-    }
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _attachmentCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_attachmentURL andType:mimetype inFolder:event.roomId];
-    _attachmentInfo = event.content[@"info"];
+    return CGSizeZero;
 }
 
 #pragma mark - Properties
@@ -400,7 +325,14 @@
 
 - (NSArray*)bubbleComponents
 {
-    return [bubbleComponents copy];
+    NSArray* copy;
+    
+    @synchronized(bubbleComponents)
+    {
+        copy = [bubbleComponents copy];
+    }
+    
+    return copy;
 }
 
 - (NSString*)textMessage
@@ -418,35 +350,48 @@
 
 - (NSAttributedString*)attributedTextMessage
 {
-    if (!attributedTextMessage.length && bubbleComponents.count)
+    if (!attributedTextMessage.length)
     {
         // By default only one component is supported, consider here the first component
-        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
-        attributedTextMessage = firstComponent.attributedTextMessage;
+        MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
+        
+        if (firstComponent)
+        {
+            attributedTextMessage = firstComponent.attributedTextMessage;
+        }
     }
-    
+
     return attributedTextMessage;
 }
 
 - (BOOL)startsWithSenderName
 {
-    if (bubbleComponents.count)
+    BOOL res = NO;
+
+    // Consider the first component
+    MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
+    
+    if (firstComponent)
     {
-        // Consider the first component
-        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
-        return (firstComponent.event.isEmote || [firstComponent.textMessage hasPrefix:senderDisplayName]);
+        res = (firstComponent.event.isEmote || [firstComponent.textMessage hasPrefix:senderDisplayName]);
     }
-    return NO;
+    
+    return res;
 }
 
 - (NSArray*)events
 {
-    NSMutableArray* eventsArray = [NSMutableArray arrayWithCapacity:bubbleComponents.count];
-    for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+    NSMutableArray* eventsArray;
+    
+    @synchronized(bubbleComponents)
     {
-        if (roomBubbleComponent.event)
+        eventsArray = [NSMutableArray arrayWithCapacity:bubbleComponents.count];
+        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
         {
-            [eventsArray addObject:roomBubbleComponent.event];
+            if (roomBubbleComponent.event)
+            {
+                [eventsArray addObject:roomBubbleComponent.event];
+            }
         }
     }
     return eventsArray;
@@ -454,18 +399,19 @@
 
 - (NSDate*)date
 {
-    // Consider the first component data as the bubble date
-    if (bubbleComponents.count)
+    MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
+    
+    if (firstComponent)
     {
-        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
-        return firstComponent.date;
+        return firstComponent.date;;
     }
+    
     return nil;
 }
 
 - (BOOL)isAttachmentWithThumbnail
 {
-    return (_dataType == MXKRoomBubbleCellDataTypeImage || _dataType == MXKRoomBubbleCellDataTypeVideo);
+    return (attachment && (attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeVideo));
 }
 
 - (BOOL)isAttachmentWithIcon
@@ -476,15 +422,12 @@
 
 - (void)setMaxTextViewWidth:(CGFloat)inMaxTextViewWidth
 {
-    if (_dataType == MXKRoomBubbleCellDataTypeText || _dataType == MXKRoomBubbleCellDataTypeFile)
+    // Check change
+    if (inMaxTextViewWidth != _maxTextViewWidth)
     {
-        // Check change
-        if (inMaxTextViewWidth != _maxTextViewWidth)
-        {
-            _maxTextViewWidth = inMaxTextViewWidth;
-            // Reset content size
-            _contentSize = CGSizeZero;
-        }
+        _maxTextViewWidth = inMaxTextViewWidth;
+        // Reset content size
+        _contentSize = CGSizeZero;
     }
 }
 
@@ -492,8 +435,9 @@
 {
     if (CGSizeEqualToSize(_contentSize, CGSizeZero))
     {
-        if (_dataType == MXKRoomBubbleCellDataTypeText)
+        if (attachment == nil)
         {
+            // Here the bubble is a text message
             if ([NSThread currentThread] != [NSThread mainThread])
             {
                 dispatch_sync(dispatch_get_main_queue(), ^{
@@ -505,21 +449,24 @@
                 _contentSize = [self textContentSize:self.attributedTextMessage];
             }
         }
-        else if (_dataType == MXKRoomBubbleCellDataTypeImage || _dataType == MXKRoomBubbleCellDataTypeVideo)
+        else if (self.isAttachmentWithThumbnail)
         {
             CGFloat width, height;
-            width = height = 40;
-            if (_thumbnailInfo || _attachmentInfo)
+            
+            // Set default content size
+            width = height = MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH;
+            
+            if (attachment.thumbnailInfo || attachment.contentInfo)
             {
-                if (_thumbnailInfo && _thumbnailInfo[@"w"] && _thumbnailInfo[@"h"])
+                if (attachment.thumbnailInfo && attachment.thumbnailInfo[@"w"] && attachment.thumbnailInfo[@"h"])
                 {
-                    width = [_thumbnailInfo[@"w"] integerValue];
-                    height = [_thumbnailInfo[@"h"] integerValue];
+                    width = [attachment.thumbnailInfo[@"w"] integerValue];
+                    height = [attachment.thumbnailInfo[@"h"] integerValue];
                 }
-                else if (_attachmentInfo[@"w"] && _attachmentInfo[@"h"])
+                else if (attachment.contentInfo[@"w"] && attachment.contentInfo[@"h"])
                 {
-                    width = [_attachmentInfo[@"w"] integerValue];
-                    height = [_attachmentInfo[@"h"] integerValue];
+                    width = [attachment.contentInfo[@"w"] integerValue];
+                    height = [attachment.contentInfo[@"h"] integerValue];
                 }
                 
                 if (width > MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH || height > MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH)
@@ -540,7 +487,7 @@
             }
             
             // Check here thumbnail orientation
-            if (_thumbnailOrientation == UIImageOrientationLeft || _thumbnailOrientation == UIImageOrientationRight)
+            if (attachment.thumbnailOrientation == UIImageOrientationLeft || attachment.thumbnailOrientation == UIImageOrientationRight)
             {
                 _contentSize = CGSizeMake(height, width);
             }
@@ -549,7 +496,7 @@
                 _contentSize = CGSizeMake(width, height);
             }
         }
-        else if (_dataType == MXKRoomBubbleCellDataTypeFile)
+        else if (attachment.type == MXKAttachmentTypeFile)
         {
             // Presently we displayed only the file name for attached file (no icon yet)
             // Return suitable content size of a text view to display the file name (available in text message). 
@@ -574,12 +521,14 @@
 
 - (MXKEventFormatter *)eventFormatter
 {
+    MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
+    
     // Retrieve event formatter from the first component
-    if (bubbleComponents.count)
+    if (firstComponent)
     {
-        MXKRoomBubbleComponent *firstComponent = [bubbleComponents firstObject];
         return firstComponent.eventFormatter;
     }
+    
     return nil;
 }
 

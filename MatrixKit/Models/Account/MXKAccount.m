@@ -25,10 +25,14 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXSession.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
 NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
+
+static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 @interface MXKAccount ()
 {
@@ -58,6 +62,12 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     
     // If a server sync is in progress, the pause is delayed at the end of sync (except if resume is called).
     BOOL isPauseRequested;
+    
+    // catchup management
+    MXOnCatchupDone catchupDone;
+    MXOnCatchupFail catchupfails;
+    UIBackgroundTaskIdentifier catchupBgTask;
+    NSTimer* catchupTimer;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -68,6 +78,12 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 @synthesize mxCredentials, mxSession, mxRestClient;
 @synthesize userPresence;
 @synthesize userTintColor;
+@synthesize hideUserPresence;
+
++ (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
+{
+    _onCertificateChangeBlock = onCertificateChangeBlock;
+}
 
 + (UIColor*)presenceColor:(MXPresence)presence
 {
@@ -95,7 +111,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         
         // Report credentials and alloc REST client.
         mxCredentials = credentials;
-        mxRestClient = [[MXRestClient alloc] initWithCredentials:credentials];
+        [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
     }
@@ -129,7 +145,9 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
                                                            userId:userId
                                                       accessToken:accessToken];
         
-        mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials];
+        mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
+        
+        [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
         
@@ -157,6 +175,11 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     [coder encodeObject:mxCredentials.homeServer forKey:@"homeserverurl"];
     [coder encodeObject:mxCredentials.userId forKey:@"userid"];
     [coder encodeObject:mxCredentials.accessToken forKey:@"accesstoken"];
+    
+    if (mxCredentials.allowedCertificate)
+    {
+        [coder encodeObject:mxCredentials.allowedCertificate forKey:@"allowedCertificate"];
+    }
     
     if (self.identityServerURL)
     {
@@ -327,7 +350,7 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 {
     userPresence = presence;
     
-    if (mxSession)
+    if (mxSession && !hideUserPresence)
     {
         // Update user presence on server side
         [mxSession.myUser setPresence:userPresence
@@ -344,6 +367,10 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
                               failure:^(NSError *error) {
                                   NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
                               }];
+    }
+    else if (hideUserPresence)
+    {
+        NSLog(@"[MXKAccount] %@: set user presence is disabled.", mxCredentials.userId);
     }
 }
 
@@ -456,9 +483,6 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         userUpdateListener = nil;
     }
     
-    //FIXME uncomment this line when presence will be handled correctly on multiple devices.
-    //    [self setUserPresence:MXPresenceOffline andStatusMessage:nil completion:nil];
-    
     if (mxSession)
     {
         // Reset room data stored in memory
@@ -528,6 +552,8 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
     
     if (mxSession)
     {
+        [self cancelCatchup];
+        
         if (mxSession.state == MXSessionStatePaused)
         {
             // Resume SDK and update user presence
@@ -625,7 +651,33 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
     } failure:^(NSError *error) {
-        NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+
+        // Ignore error if the client try to disable an unknown token
+        if (!enabled)
+        {
+            // Check whether the token was unknown
+            MXError *mxError = [[MXError alloc] initWithNSError:error];
+            if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
+            {
+                NSLog(@"[MXKAccount] APNS was already disabled for %@! (%@)", self.mxCredentials.userId, error);
+                
+                // Ignore the error
+                if (success)
+                {
+                    success();
+                }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+                
+                return;
+            }
+            
+            NSLog(@"[MXKAccount] Failed to disable APNS %@! (%@)", self.mxCredentials.userId, error);
+        }
+        else
+        {
+            NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+        }
         
         if (failure)
         {
@@ -803,5 +855,172 @@ NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
         }
     }
 }
+
+- (void)prepareRESTClient
+{
+    if (!mxCredentials)
+    {
+        return;
+    }
+    
+    mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
+        
+        // Check whether the provided certificate is the one trusted by the user during login/registration step.
+        if (mxCredentials.allowedCertificate && [mxCredentials.allowedCertificate isEqualToData:certificate])
+        {
+            return YES;
+        }
+        
+        // Check whether the user has already ignored this certificate change.
+        if (mxCredentials.ignoredCertificate && [mxCredentials.ignoredCertificate isEqualToData:certificate])
+        {
+            return NO;
+        }
+        
+        if (_onCertificateChangeBlock)
+        {
+            if (_onCertificateChangeBlock (self, certificate))
+            {
+                // Update the certificate in credentials
+                mxCredentials.allowedCertificate = certificate;
+                
+                // Archive updated field
+                [[MXKAccountManager sharedManager] saveAccounts];
+                
+                return YES;
+            }
+            
+            mxCredentials.ignoredCertificate = certificate;
+            
+            // Archive updated field
+            [[MXKAccountManager sharedManager] saveAccounts];
+        }
+        return NO;
+    
+    }];
+}
+
+#pragma mark - catchup management
+
+- (void)cancelCatchup
+{
+    if (catchupBgTask != UIBackgroundTaskInvalid)
+    {
+        NSLog(@"[MXKAccount] The catchup is cancelled.");
+
+        if (mxSession)
+        {
+            if (mxSession.state == MXSessionStateCatchingUp)
+            {
+                [mxSession pause];
+            }
+        }
+        
+        [self onCatchupDoneWithError:[[NSError alloc] init]];
+    }
+}
+
+- (void)onCatchupDoneWithError:(NSError*)error
+{
+    if (catchupTimer)
+    {
+        [catchupTimer invalidate];
+        catchupTimer = NULL;
+    }
+    
+    if (catchupfails && error)
+    {
+        catchupfails(error);
+    }
+    
+    if (catchupDone && !error)
+    {
+        catchupDone();
+    }
+    
+    catchupDone = NULL;
+    catchupfails = NULL;
+    
+    if (catchupBgTask != UIBackgroundTaskInvalid)
+    {
+        UIBackgroundTaskIdentifier localCatchupBgTask = catchupBgTask;
+        catchupBgTask = UIBackgroundTaskInvalid;
+        
+        // give some times to perform other stuff like store saving...
+        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            
+            if (localCatchupBgTask != UIBackgroundTaskInvalid)
+            {
+                // Cancel background task
+                [[UIApplication sharedApplication] endBackgroundTask:localCatchupBgTask];
+                NSLog(@"[MXKAccount] onCatchupDoneWithError : %08lX stop", (unsigned long)localCatchupBgTask);
+            }
+        });
+    }
+}
+
+- (void)onCatchupTimerOut
+{
+    [self cancelCatchup];
+}
+
+- (void)catchup:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
+{
+    isPauseRequested = NO;
+    
+    // only work when the application is suspended
+    
+    // FIXME SYNCV2 enable it when V2 will be released
+    if (false)//(mxSession && mxSession.state == MXSessionStatePaused)
+    {
+        NSLog(@"[MXKAccount] starts a catchup");
+        
+        catchupDone = success;
+        catchupfails = failure;
+        
+        if (catchupBgTask != UIBackgroundTaskInvalid)
+        {
+             [[UIApplication sharedApplication] endBackgroundTask:catchupBgTask];
+        }
+        
+        catchupBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            NSLog(@"[MXKAccount] the catchup fails because of the bg task timeout");
+            [self cancelCatchup];
+            
+        }];
+        
+        // ensure that the catchup will be really done in the expected time
+        // the request could be done but the treatment could be long so add a timer to cancel it
+        // if it takes too much time
+        catchupTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(timeout - 1) / 1000]
+                                                interval:0
+                                                  target:self
+                                                selector:@selector(onCatchupTimerOut)
+                                                userInfo:nil
+                                                 repeats:NO];
+        
+        [[NSRunLoop mainRunLoop] addTimer:catchupTimer forMode:NSDefaultRunLoopMode];
+        
+            [mxSession catchup:timeout success:^{
+                NSLog(@"[MXKAccount] the catchup succeeds");
+                [self onCatchupDoneWithError:NULL];
+                
+            }
+                failure:^(NSError* error) {
+
+                NSLog(@"[MXKAccount] the catchup fails");
+                [self onCatchupDoneWithError:error];
+                       
+            }
+
+         ];
+    }
+    else
+    {
+        NSLog(@"[MXKAccount] cannot start catchup (invalid state)");
+        failure([[NSError alloc] init]);
+    }
+}
+
 
 @end

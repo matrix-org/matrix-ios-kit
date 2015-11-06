@@ -539,7 +539,27 @@
     {
         if ([displayedRecentsDataSourceArray indexOfObject:recentsDataSource] == NSNotFound)
         {
-            [displayedRecentsDataSourceArray addObject:recentsDataSource];
+            // Add this new recents data source.
+            if (!displayedRecentsDataSourceArray.count)
+            {
+                [displayedRecentsDataSourceArray addObject:recentsDataSource];
+            }
+            else
+            {
+                // To display multiple accounts in a consistent order, we sort the recents data source by considering the account user id (alphabetic order).
+                NSUInteger index;
+                for (index = 0; index < displayedRecentsDataSourceArray.count; index++)
+                {
+                    MXKSessionRecentsDataSource *currentRecentsDataSource = displayedRecentsDataSourceArray[index];
+                    if ([currentRecentsDataSource.mxSession.myUser.userId compare:recentsDataSource.mxSession.myUser.userId] == NSOrderedDescending)
+                    {
+                        break;
+                    }
+                }
+                
+                // Insert this data source
+                [displayedRecentsDataSourceArray insertObject:recentsDataSource atIndex:index];
+            }
             
             // Check whether a search session is in progress
             if (searchPatternsList)

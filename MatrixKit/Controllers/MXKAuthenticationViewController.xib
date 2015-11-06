@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKAuthenticationViewController">
             <connections>
+                <outlet property="authFallbackContentView" destination="q1e-Wg-6t7" id="mR6-hS-5YB"/>
+                <outlet property="authFallbackWebView" destination="Vhh-m0-nXN" id="YWJ-8T-74t"/>
                 <outlet property="authInputContainerViewHeightConstraint" destination="e04-1Y-4gZ" id="5qa-cu-M8v"/>
                 <outlet property="authInputsContainerView" destination="xWb-IJ-v7F" id="DEo-Ji-wPT"/>
                 <outlet property="authScrollViewBottomConstraint" destination="g7o-eO-7Yr" id="kVv-Xp-aTT"/>
                 <outlet property="authSwitchButton" destination="FNe-kn-VlD" id="EhA-sr-kiZ"/>
                 <outlet property="authenticationActivityIndicator" destination="30E-gm-z6O" id="DDw-QJ-ND8"/>
                 <outlet property="authenticationScrollView" destination="OHV-KQ-Ww0" id="gyc-zq-fA1"/>
-                <outlet property="cancelRegistrationFallbackButton" destination="9qj-5c-Sfb" id="S9V-QO-TJA"/>
+                <outlet property="cancelAuthFallbackButton" destination="9qj-5c-Sfb" id="IH4-cc-kKx"/>
                 <outlet property="contentView" destination="rhx-dD-4EJ" id="XXc-2j-Gi6"/>
                 <outlet property="contentViewHeightConstraint" destination="6v6-fz-e8o" id="wHX-YX-3gE"/>
-                <outlet property="createAccountLabel" destination="Bcs-TE-KZc" id="fo9-a2-pNC"/>
                 <outlet property="homeServerInfoLabel" destination="aLk-0i-Z0d" id="RRa-xP-oDQ"/>
                 <outlet property="homeServerLabel" destination="kHf-s1-cZa" id="nSI-4K-aQq"/>
                 <outlet property="homeServerTextField" destination="G8l-AP-iRs" id="F4s-Sf-TTZ"/>
@@ -25,9 +26,8 @@
                 <outlet property="identityServerLabel" destination="5CT-Ht-Z3v" id="9h4-6J-n3X"/>
                 <outlet property="identityServerTextField" destination="PZC-Hd-Q6a" id="vKg-sd-dzJ"/>
                 <outlet property="noFlowLabel" destination="54b-4O-ip9" id="f18-H1-cQm"/>
-                <outlet property="registrationFallbackContentView" destination="q1e-Wg-6t7" id="exK-lW-ddp"/>
-                <outlet property="registrationFallbackWebView" destination="Vhh-m0-nXN" id="00Z-N0-Vib"/>
                 <outlet property="retryButton" destination="wIH-Kd-r7q" id="42j-Ad-zVS"/>
+                <outlet property="subTitleLabel" destination="Bcs-TE-KZc" id="Gk1-7I-jnR"/>
                 <outlet property="submitButton" destination="k3J-Eg-itz" id="fiZ-wK-6YM"/>
                 <outlet property="view" destination="5rn-KE-plm" id="bFJ-yJ-vc0"/>
                 <outlet property="welcomeImageView" destination="d8r-TX-pwX" id="vzD-zK-EeC"/>
@@ -144,7 +144,7 @@
                                     </constraints>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your home server stores all your conservation and account data." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="aLk-0i-Z0d" userLabel="HomeServerInfoLabel">
-                                    <rect key="frame" x="107" y="438" width="387" height="16"/>
+                                    <rect key="frame" x="105" y="438" width="390" height="16"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
@@ -243,7 +243,7 @@
                         <constraint firstItem="rhx-dD-4EJ" firstAttribute="leading" secondItem="OHV-KQ-Ww0" secondAttribute="leading" id="h1J-cn-QL1"/>
                     </constraints>
                 </scrollView>
-                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-Wg-6t7" userLabel="RegistrationFallbackContentView">
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-Wg-6t7" userLabel="Authentication Fallback ContentView">
                     <rect key="frame" x="0.0" y="20" width="600" height="580"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9qj-5c-Sfb">
@@ -259,7 +259,7 @@
                                 <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="Pxo-2q-AdE"/>
                             </connections>
                         </button>
-                        <webView contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhh-m0-nXN" userLabel="registrationWebView" customClass="MXKRegistrationWebView">
+                        <webView contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhh-m0-nXN" userLabel="fallback WebView" customClass="MXKAuthenticationFallbackWebView">
                             <rect key="frame" x="0.0" y="40" width="600" height="540"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </webView>

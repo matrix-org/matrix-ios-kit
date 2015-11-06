@@ -24,6 +24,7 @@
 #import "MXKAccountManager.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "NSData+MatrixKit.h"
 
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
@@ -40,11 +41,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     MXHTTPOperation *mxCurrentOperation;
     
     /**
-     Array of flows supported by the home server and implemented by the view controller (for the current auth type).
-     */
-    NSMutableArray *supportedFlows;
-    
-    /**
      The current view in which auth inputs are displayed (`MXKAuthInputsView-inherited` instance).
      */
     MXKAuthInputsView *currentAuthInputsView;
@@ -53,11 +49,42 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
      Reference to any opened alert view.
      */
     MXKAlert *alert;
+    
+    /**
+     The mapping between flow type and MXKAuthInputsView classes used when logging in.
+     */
+    NSMutableDictionary *loginAuthInputsViewMap;
+    
+    /**
+     The mapping between flow type and MXKAuthInputsView classes used when registering.
+     */
+    NSMutableDictionary *registerAuthInputsViewMap;
+    
+    /**
+     Customized block used to handle unrecognized certificate (nil by default).
+     */
+    MXHTTPClientOnUnrecognizedCertificate onUnrecognizedCertificateCustomBlock;
+    
+    /**
+     The current authentication fallback URL (if any).
+     */
+    NSString *authenticationFallback;
+    
+    /**
+     The cancel button added in navigation bar when fallback page is opened.
+     */
+    UIBarButtonItem *cancelFallbackBarButton;
 }
+
+/**
+ The current selected login flow
+ */
+@property (nonatomic) MXLoginFlow *selectedFlow;
 
 @end
 
 @implementation MXKAuthenticationViewController
+@synthesize selectedFlow;
 
 #pragma mark - Class methods
 
@@ -147,29 +174,30 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _homeServerTextField.text = _defaultHomeServerUrl;
     _identityServerTextField.text = _defaultIdentityServerUrl;
     
-    // Create here REST client
-    if (_homeServerTextField.text.length)
-    {
-        mxRestClient = [[MXRestClient alloc] initWithHomeServer:_homeServerTextField.text];
-        if (_identityServerTextField.text.length)
-        {
-            [mxRestClient setIdentityServer:_identityServerTextField.text];
-        }
-    }
+    // Create here REST client (if homeserver is defined)
+    [self updateRESTClient];
     
     // Localize labels
-    _createAccountLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
+    _subTitleLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
     _homeServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_title"];
     _homeServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
     _homeServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_info"];
     _identityServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_title"];
     _identityServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
     _identityServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_info"];
-    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
-    [_cancelRegistrationFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
+    [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
+    [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
     
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
+    
+    // Initialize supported flows by defining authInputs views
+    loginAuthInputsViewMap = [NSMutableDictionary dictionary];
+    loginAuthInputsViewMap[kMXLoginFlowTypePassword] = MXKAuthInputsPasswordBasedView.class;
+//    loginAuthInputsViewMap[kMXLoginFlowTypeEmailCode] = MXKAuthInputsEmailCodeBasedView.class;
+    
+    registerAuthInputsViewMap = [NSMutableDictionary dictionary];
+    // No registration flow is supported yet
 }
 
 - (void)dealloc
@@ -244,34 +272,40 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [mxRestClient close];
     mxRestClient = nil;
     
+    loginAuthInputsViewMap = nil;
+    registerAuthInputsViewMap = nil;
+
+    authenticationFallback = nil;
+    cancelFallbackBarButton = nil;
+    
     [super destroy];
 }
 
-#pragma mark -
+#pragma mark - Class methods
 
-+ (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
+- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forFlowType:(MXLoginFlowType)flowType andAuthType:(MXKAuthenticationType)authType
 {
-    if (authType == MXKAuthenticationTypeLogin)
+    if (flowType)
     {
-        if ([flowType isEqualToString:kMXLoginFlowTypePassword]
-            /*|| [flowType isEqualToString:kMXLoginFlowTypeEmailCode]*/)
+        // Sanity check: accept only MXKAuthInputsView classes or sub-classes
+        NSParameterAssert([authInputsViewClass isSubclassOfClass:MXKAuthInputsView.class]);
+        
+        if (authType == MXKAuthenticationTypeLogin)
         {
-            return YES;
+            loginAuthInputsViewMap[flowType] = authInputsViewClass;
+        }
+        else
+        {
+            registerAuthInputsViewMap[flowType] = authInputsViewClass;
         }
     }
-    else
-    { // AuthenticationTypeRegister
-        // No registration flow is supported yet
-    }
-    
-    return NO;
 }
 
 - (void)setAuthType:(MXKAuthenticationType)authType
 {
     if (authType == MXKAuthenticationTypeLogin)
     {
-        _createAccountLabel.hidden = YES;
+        _subTitleLabel.hidden = YES;
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
@@ -279,7 +313,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else
     {
-        _createAccountLabel.hidden = NO;
+        _subTitleLabel.hidden = NO;
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
         [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
@@ -292,7 +326,313 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self refreshSupportedAuthFlow];
 }
 
-- (void)setSelectedFlow:(MXLoginFlow *)selectedFlow
+- (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl
+{
+    _defaultHomeServerUrl = defaultHomeServerUrl;
+    
+    if (!_homeServerTextField.text.length)
+    {
+        _homeServerTextField.text = _defaultHomeServerUrl;
+        
+        // Update UI
+        [self textFieldDidEndEditing:_homeServerTextField];
+    }
+}
+
+- (void)setDefaultIdentityServerUrl:(NSString *)defaultIdentityServerUrl
+{
+    _defaultIdentityServerUrl = defaultIdentityServerUrl;
+    
+    if (!_identityServerTextField.text.length)
+    {
+        _identityServerTextField.text = _defaultIdentityServerUrl;
+        
+        // Update UI
+        [self textFieldDidEndEditing:_identityServerTextField];
+    }
+}
+
+- (void)refreshSupportedAuthFlow
+{
+    // Remove reachability observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
+    
+    // Cancel potential request in progress
+    [mxCurrentOperation cancel];
+    mxCurrentOperation = nil;
+    
+    [_authenticationActivityIndicator stopAnimating];
+    
+    // Reset potential authentication fallback url
+    authenticationFallback = nil;
+    
+    if (mxRestClient)
+    {
+        [_authenticationActivityIndicator startAnimating];
+        self.selectedFlow = nil;
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
+            mxCurrentOperation = [mxRestClient getLoginFlow:^(NSDictionary *JSONResponse) {
+                
+                NSArray *flows = [MXLoginFlow modelsFromJSON:JSONResponse[@"flows"]];
+                [self handleHomeServerFlows:flows];
+                
+            } failure:^(NSError *error) {
+                
+                NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
+                [self onFailureDuringMXOperation:error];
+                
+            }];
+        }
+        else
+        {
+            mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSDictionary *JSONResponse){
+                
+                NSArray *flows = [MXLoginFlow modelsFromJSON:JSONResponse[@"flows"]];
+                [self handleHomeServerFlows:flows];
+                
+            } failure:^(NSError *error){
+                
+                NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
+                [self onFailureDuringMXOperation:error];
+                
+            }];
+        }
+    }
+}
+
+- (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock
+{
+    onUnrecognizedCertificateCustomBlock = onUnrecognizedCertificateBlock;
+}
+
+#pragma mark - Privates
+
+- (void)updateRESTClient
+{
+    NSString *homeserverURL = _homeServerTextField.text;
+    
+    if (homeserverURL.length)
+    {
+        // Check change
+        if ([homeserverURL isEqualToString:mxRestClient.homeserver] == NO)
+        {
+            mxRestClient = [[MXRestClient alloc] initWithHomeServer:homeserverURL andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
+                
+                // Check first if the app developer provided its own certificate handler.
+                if (onUnrecognizedCertificateCustomBlock)
+                {
+                    return onUnrecognizedCertificateCustomBlock (certificate);
+                }
+                
+                // Else prompt the user by displaying a fingerprint (SHA256) of the certificate.
+                __block BOOL isTrusted;
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                
+                NSString *title = [NSBundle mxk_localizedStringForKey:@"ssl_could_not_verify"];
+                NSString *homeserverURLStr = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"ssl_homeserver_url"], homeserverURL];
+                NSString *fingerprint = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"ssl_fingerprint_hash"], @"SHA256"];
+                NSString *certFingerprint = [certificate SHA256AsHexString];
+                
+                NSString *msg = [NSString stringWithFormat:@"%@\n\n%@\n\n%@\n\n%@\n\n%@\n\n%@", [NSBundle mxk_localizedStringForKey:@"ssl_cert_not_trust"], [NSBundle mxk_localizedStringForKey:@"ssl_cert_new_account_expl"], homeserverURLStr, fingerprint, certFingerprint, [NSBundle mxk_localizedStringForKey:@"ssl_only_accept"]];
+                
+                alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
+                alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert){
+                    
+                    isTrusted = NO;
+                    dispatch_semaphore_signal(semaphore);
+                    
+                }];
+                [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ssl_trust"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert){
+                    
+                    isTrusted = YES;
+                    dispatch_semaphore_signal(semaphore);
+                    
+                }];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [alert showInViewController:self];
+                });
+                
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                
+                if (!isTrusted)
+                {
+                    // Cancel request in progress
+                    [mxCurrentOperation cancel];
+                    mxCurrentOperation = nil;
+                    [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
+
+                    [_authenticationActivityIndicator stopAnimating];
+                }
+                
+                return isTrusted;
+            }];
+            
+            if (_identityServerTextField.text.length)
+            {
+                [mxRestClient setIdentityServer:_identityServerTextField.text];
+            }
+        }
+    }
+    else
+    {
+        [mxRestClient close];
+        mxRestClient = nil;
+    }
+}
+
+- (void)setUserInteractionEnabled:(BOOL)isEnabled
+{
+    _submitButton.enabled = (isEnabled && currentAuthInputsView.areAllRequiredFieldsFilled);
+    _authSwitchButton.enabled = isEnabled;
+    
+    _homeServerTextField.enabled = isEnabled;
+    _identityServerTextField.enabled = isEnabled;
+}
+
+- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
+{
+    // Sanity check
+    if (flowType)
+    {
+        NSDictionary *authInputsViewMap;
+        
+        if (authType == MXKAuthenticationTypeLogin)
+        {
+            authInputsViewMap = loginAuthInputsViewMap;
+        }
+        else
+        {
+            authInputsViewMap = registerAuthInputsViewMap;
+        }
+        
+        // A flow is supported only if an authInputsView class is registered.
+        return (authInputsViewMap[flowType] != nil);
+    }
+    
+    return NO;
+}
+
+- (void)handleHomeServerFlows:(NSArray *)flows
+{
+    [_authenticationActivityIndicator stopAnimating];
+    mxCurrentOperation = nil;
+    
+    // Check whether fallback is defined
+    if (_authType == MXKAuthenticationTypeLogin)
+    {
+        authenticationFallback = [mxRestClient loginFallback];
+    }
+    else
+    {
+        authenticationFallback = [mxRestClient registerFallback];
+    }
+    
+    // List supported flows
+    [supportedFlows removeAllObjects];
+    
+    for (MXLoginFlow* flow in flows)
+    {
+        // Check whether flow type is defined (this type has been deprecated since C-S API v2)
+        if (flow.type)
+        {
+            if ([self isImplementedFlowType:flow.type forAuthType:_authType])
+            {
+                // Check here all stages
+                BOOL isSupported = YES;
+                if (flow.stages.count)
+                {
+                    for (NSString *stage in flow.stages)
+                    {
+                        if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
+                        {
+                            NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), stage);
+                            isSupported = NO;
+                            break;
+                        }
+                    }
+                }
+                
+                if (isSupported)
+                {
+                    [supportedFlows addObject:flow];
+                }
+            }
+            else
+            {
+                NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), flow.type);
+            }
+        }
+        else
+        {
+            // Check here all stages
+            BOOL isSupported = YES;
+            if (flow.stages.count)
+            {
+                for (NSString *stage in flow.stages)
+                {
+                    if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
+                    {
+                        NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), stage);
+                        isSupported = NO;
+                        break;
+                    }
+                }
+            }
+            
+            if (isSupported)
+            {
+                [supportedFlows addObject:flow];
+            }
+        }
+    }
+    
+    // We will suggest using the fallback page (if any), when at least one flow is not supported.
+    if ((supportedFlows.count != flows.count) && authenticationFallback.length)
+    {
+        NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
+    }
+    else
+    {
+        if (supportedFlows.count)
+        {
+            // FIXME display supported flows
+            // Currently we select the first one
+            self.selectedFlow = [supportedFlows firstObject];
+        }
+    }
+    
+    if (!self.selectedFlow)
+    {
+        // Notify user that no flow is supported
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
+        }
+        else
+        {
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
+        }
+        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
+        
+        if (authenticationFallback.length)
+        {
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+        }
+        else
+        {
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+        }
+        
+        _noFlowLabel.hidden = NO;
+        _retryButton.hidden = NO;
+    }
+}
+
+- (void)setSelectedFlow:(MXLoginFlow *)inSelectedFlow
 {
     // Hide views which depend on auth flow
     _submitButton.hidden = YES;
@@ -303,20 +643,31 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     currentAuthInputsView.delegate = nil;
     currentAuthInputsView = nil;
     
+    // C-S API v2: Consider the first flow from stages as current type
+    if (inSelectedFlow.type == nil && inSelectedFlow.stages.count)
+    {
+        inSelectedFlow.type = inSelectedFlow.stages.firstObject;
+    }
     
     // Create the right auth inputs view
-    if ([selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
+    NSDictionary *authInputsViewMap;
+    if (self.authType == MXKAuthenticationTypeLogin)
     {
-        currentAuthInputsView = [MXKAuthInputsPasswordBasedView authInputsView];
+        authInputsViewMap = loginAuthInputsViewMap;
     }
-    else if ([selectedFlow.type isEqualToString:kMXLoginFlowTypeEmailCode])
+    else
     {
-        currentAuthInputsView = [MXKAuthInputsEmailCodeBasedView authInputsView];
+        authInputsViewMap = registerAuthInputsViewMap;
+    }
+    
+    Class class = authInputsViewMap[inSelectedFlow.type];
+    if (class)
+    {
+        currentAuthInputsView = [class authInputsView];
     }
     
     if (currentAuthInputsView)
     {
-        
         [_authInputsContainerView addSubview:currentAuthInputsView];
         
         currentAuthInputsView.delegate = self;
@@ -358,141 +709,14 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Refresh content view height
     _contentViewHeightConstraint.constant = _authSwitchButton.frame.origin.y + _authSwitchButton.frame.size.height + 15;
     
-    _selectedFlow = selectedFlow;
-}
-
-- (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl
-{
-    _defaultHomeServerUrl = defaultHomeServerUrl;
-    
-    if (!_homeServerTextField.text.length)
-    {
-        _homeServerTextField.text = _defaultHomeServerUrl;
-        
-        // Update UI
-        [self textFieldDidEndEditing:_homeServerTextField];
-    }
-}
-
-- (void)setDefaultIdentityServerUrl:(NSString *)defaultIdentityServerUrl
-{
-    _defaultIdentityServerUrl = defaultIdentityServerUrl;
-    
-    if (!_identityServerTextField.text.length)
-    {
-        _identityServerTextField.text = _defaultIdentityServerUrl;
-        
-        // Update UI
-        [self textFieldDidEndEditing:_identityServerTextField];
-    }
-}
-
-- (void)setUserInteractionEnabled:(BOOL)isEnabled
-{
-    _submitButton.enabled = (isEnabled && currentAuthInputsView.areAllRequiredFieldsFilled);
-    _authSwitchButton.enabled = isEnabled;
-    
-    _homeServerTextField.enabled = isEnabled;
-    _identityServerTextField.enabled = isEnabled;
-}
-
-- (void)refreshSupportedAuthFlow
-{
-    // Remove reachability observer
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
-    
-    // Cancel potential request in progress
-    [mxCurrentOperation cancel];
-    mxCurrentOperation = nil;
-    
-    if (mxRestClient)
-    {
-        [_authenticationActivityIndicator startAnimating];
-        self.selectedFlow = nil;
-        if (_authType == MXKAuthenticationTypeLogin)
-        {
-            mxCurrentOperation = [mxRestClient getLoginFlow:^(NSArray *flows) {
-                                      [self handleHomeServerFlows:flows];
-                                  } failure:^(NSError *error) {
-                                      NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
-                                      [self onFailureDuringMXOperation:error];
-                                  }];
-        }
-        else
-        {
-            //        mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSArray *flows){
-            //            [self handleHomeServerFlows:flows];
-            //        } failure:^(NSError *error){
-            //            NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
-            //            [self onFailureDuringMXOperation:error];
-            //        }];
-            
-            // Currently no registration flow are supported, we switch directly to the fallback page
-            [self showRegistrationFallBackView:[mxRestClient registerFallback]];
-        }
-    }
-}
-
-- (void)handleHomeServerFlows:(NSArray *)flows
-{
-    [_authenticationActivityIndicator stopAnimating];
-    
-    [supportedFlows removeAllObjects];
-    for (MXLoginFlow* flow in flows)
-    {
-        if ([MXKAuthenticationViewController isImplementedFlowType:flow.type forAuthType:_authType])
-        {
-            // Check here all stages
-            BOOL isSupported = YES;
-            if (flow.stages.count)
-            {
-                for (NSString *stage in flow.stages)
-                {
-                    if ([MXKAuthenticationViewController isImplementedFlowType:stage forAuthType:_authType] == NO)
-                    {
-                        isSupported = NO;
-                        break;
-                    }
-                }
-            }
-            
-            if (isSupported)
-            {
-                [supportedFlows addObject:flow];
-            }
-        }
-    }
-    
-    if (supportedFlows.count)
-    {
-        // FIXME display supported flows
-        // Currently we select the first one
-        self.selectedFlow = [supportedFlows firstObject];
-    }
-    
-    if (!_selectedFlow)
-    {
-        // Notify user that no flow is supported
-        if (_authType == MXKAuthenticationTypeLogin)
-        {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
-        }
-        else
-        {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
-        }
-        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
-        
-        _noFlowLabel.hidden = NO;
-        _retryButton.hidden = NO;
-    }
+    selectedFlow = inSelectedFlow;
 }
 
 - (void)onFailureDuringMXOperation:(NSError*)error
 {
     mxCurrentOperation = nil;
     
-    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorCancelled)
+    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
     {
         // Ignore this error
         return;
@@ -520,6 +744,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
     }
+    [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+    [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
     _retryButton.hidden = NO;
     
     // Handle specific error code here
@@ -573,7 +799,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             
             if (_authType == MXKAuthenticationTypeLogin)
             {
-                if ([_selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
+                if ([self.selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
                 {
                     MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)currentAuthInputsView;
                     
@@ -584,31 +810,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                         success:^(MXCredentials *credentials){
                                             [_authenticationActivityIndicator stopAnimating];
                                             
-                                            // Sanity check: check whether the user is not already logged in with this id
-                                            if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
-                                            {
-                                                //Alert user
-                                                __weak typeof(self) weakSelf = self;
-                                                alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
-                                                [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
-                                                    // We remove the authentication view controller.
-                                                    [weakSelf withdrawViewControllerAnimated:YES completion:nil];
-                                                }];
-                                                [alert showInViewController:self];
-                                            }
-                                            else
-                                            {
-                                                // Report the new account in account manager
-                                                MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-                                                account.identityServerURL = _identityServerTextField.text;
-                                                
-                                                [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-                                                
-                                                if (_delegate)
-                                                {
-                                                    [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-                                                }
-                                            }
+                                            [self onSuccessfulLogin:credentials];
                                         }
                                         failure:^(NSError *error){
                                             [self onFailureDuringAuthRequest:error];
@@ -627,7 +829,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             }
         }
     }
-    else if (sender == _authSwitchButton){
+    else if (sender == _authSwitchButton)
+    {
         if (_authType == MXKAuthenticationTypeLogin)
         {
             self.authType = MXKAuthenticationTypeRegister;
@@ -639,13 +842,19 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else if (sender == _retryButton)
     {
-        [self refreshSupportedAuthFlow];
+        if (authenticationFallback)
+        {
+            [self showAuthenticationFallBackView:authenticationFallback];
+        }
+        else
+        {
+            [self refreshSupportedAuthFlow];
+        }
     }
-    else if (sender == _cancelRegistrationFallbackButton)
+    else if (sender == _cancelAuthFallbackButton)
     {
         // Hide fallback webview
         [self hideRegistrationFallbackView];
-        self.authType = MXKAuthenticationTypeLogin;
     }
 }
 
@@ -714,6 +923,35 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [alert showInViewController:self];
 }
 
+- (void)onSuccessfulLogin:(MXCredentials*)credentials
+{
+    // Sanity check: check whether the user is not already logged in with this id
+    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
+    {
+        //Alert user
+        __weak typeof(self) weakSelf = self;
+        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
+        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+            // We remove the authentication view controller.
+            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
+        }];
+        [alert showInViewController:self];
+    }
+    else
+    {
+        // Report the new account in account manager
+        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+        account.identityServerURL = _identityServerTextField.text;
+        
+        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
+        
+        if (_delegate)
+        {
+            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+        }
+    }
+}
+
 #pragma mark - Keyboard handling
 
 - (void)dismissKeyboard
@@ -731,6 +969,26 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _submitButton.enabled = currentAuthInputsView.areAllRequiredFieldsFilled;
 }
 
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    if (textField == _homeServerTextField)
+    {
+        // Cancel supported AuthFlow refresh if a request is in progress
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
+        
+        if (mxCurrentOperation)
+        {
+            // Cancel potential request in progress
+            [mxCurrentOperation cancel];
+            mxCurrentOperation = nil;
+        }
+        
+        [_authenticationActivityIndicator stopAnimating];
+    }
+
+    return YES;
+}
+
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     if (textField == _homeServerTextField)
@@ -741,20 +999,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             textField.text = _defaultHomeServerUrl;
         }
         
-        // Refresh REST client
-        if (textField.text.length)
-        {
-            mxRestClient = [[MXRestClient alloc] initWithHomeServer:textField.text];
-            if (_identityServerTextField.text.length)
-            {
-                [mxRestClient setIdentityServer:_identityServerTextField.text];
-            }
-        }
-        else
-        {
-            [mxRestClient close];
-            mxRestClient = nil;
-        }
+        [self updateRESTClient];
         
         // Refresh UI
         [self refreshSupportedAuthFlow];
@@ -796,36 +1041,49 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-#pragma mark - Registration Fallback
+#pragma mark - Authentication Fallback
 
-- (void)showRegistrationFallBackView:(NSString*)fallbackPage
+- (void)showAuthenticationFallBackView:(NSString*)fallbackPage
 {
     _authenticationScrollView.hidden = YES;
-    _registrationFallbackContentView.hidden = NO;
+    _authFallbackContentView.hidden = NO;
     
-    [_registrationFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
-         
-         // Workaround: HS does not return the right URL. Use the one we used to make the request
-         credentials.homeServer = mxRestClient.homeserver;
-         
-         // Report the new account in accounts manager
-         MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-         account.identityServerURL = _identityServerTextField.text;
-         
-         [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-         
-         if (_delegate)
-         {
-             [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-         }
-     }];
+    // Add a cancel button in case of navigation controller use.
+    if (self.navigationController)
+    {
+        if (!cancelFallbackBarButton)
+        {
+            cancelFallbackBarButton = [[UIBarButtonItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_leave_fallback"] style:UIBarButtonItemStylePlain target:self action:@selector(hideRegistrationFallbackView)];
+        }
+        
+        // Add cancel button in right bar items
+        NSArray *rightBarButtonItems = self.navigationItem.rightBarButtonItems;
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:cancelFallbackBarButton] : @[cancelFallbackBarButton];
+    }
+    
+    [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
+        
+        // Workaround: HS does not return the right URL. Use the one we used to make the request
+        credentials.homeServer = mxRestClient.homeserver;
+        
+        // TODO handle unrecognized certificate (if any) during registration through fallback webview.
+        
+        [self onSuccessfulLogin:credentials];
+    }];
 }
 
 - (void)hideRegistrationFallbackView
 {
-    [_registrationFallbackWebView stopLoading];
+    if (cancelFallbackBarButton)
+    {
+        NSMutableArray *rightBarButtonItems = [NSMutableArray arrayWithArray: self.navigationItem.rightBarButtonItems];
+        [rightBarButtonItems removeObject:cancelFallbackBarButton];
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    }
+    
+    [_authFallbackWebView stopLoading];
     _authenticationScrollView.hidden = NO;
-    _registrationFallbackContentView.hidden = YES;
+    _authFallbackContentView.hidden = YES;
 }
 
 @end

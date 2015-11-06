@@ -78,7 +78,7 @@
                             <action selector="showHideDateTime:" destination="WmY-Jw-mqv" eventType="touchUpInside" id="jYV-nj-p60"/>
                         </connections>
                     </button>
-                    <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IOg-Kt-8vW" userLabel="DateTimeLabelContainer">
+                    <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IOg-Kt-8vW" userLabel="bubbleInfoContainer">
                         <rect key="frame" x="531" y="10" width="61" height="39"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -150,8 +150,8 @@
                 <outlet property="attachViewTopConstraint" destination="96U-67-5TP" id="Ugm-cH-32E"/>
                 <outlet property="attachViewWidthConstraint" destination="9zO-jU-qTb" id="fOO-VW-fe1"/>
                 <outlet property="attachmentView" destination="5IE-JS-uf3" id="imT-1z-hR1"/>
-                <outlet property="dateTimeLabelContainer" destination="IOg-Kt-8vW" id="TAw-QY-Y9e"/>
-                <outlet property="dateTimeLabelContainerTopConstraint" destination="XSL-TG-m62" id="qVf-vJ-4aP"/>
+                <outlet property="bubbleInfoContainer" destination="IOg-Kt-8vW" id="TAw-QY-Y9e"/>
+                <outlet property="bubbleInfoContainerTopConstraint" destination="XSL-TG-m62" id="qVf-vJ-4aP"/>
                 <outlet property="fileTypeIconView" destination="K9X-gn-noF" id="4Pj-bc-3gk"/>
                 <outlet property="messageTextView" destination="HTH-5n-MSU" id="YN4-iK-gNc"/>
                 <outlet property="msgTextViewLeadingConstraint" destination="uig-Xh-7m6" id="kgj-3v-ECW"/>

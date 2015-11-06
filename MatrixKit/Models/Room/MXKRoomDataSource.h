@@ -20,6 +20,13 @@
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
 
+
+/**
+ define the threshold which triggers a bubbles count flush.
+ */
+
+#define MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD 30
+
 /**
  List the supported pagination of the rendered room bubble cells
  */
@@ -107,7 +114,6 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 /**
  The id of the room managed by the data source.
-
  */
 @property (nonatomic, readonly) NSString *roomId;
 
@@ -121,6 +127,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  The last event in the room that matches the `eventsFilterForMessages` property.
  */
 @property (nonatomic, readonly) MXEvent *lastMessage;
+
+/**
+ The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
+ */
+@property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
 
 /**
  The number of unread messages.
@@ -138,7 +149,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  The events are processed asynchronously. This property counts the number of queued events
  during server sync for which the process is pending.
  */
-@property (nonatomic, readonly) NSUInteger serverSyncEventCount;
+@property (nonatomic, readonly) NSInteger serverSyncEventCount;
 
 /**
  The current text message partially typed in text input (use nil to reset it).
@@ -164,10 +175,25 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) BOOL showBubblesDateTime;
 
 /**
+  The date time label is not managed by MatrixKit. (NO by default).
+ */
+@property (nonatomic) BOOL useCustomDateTimeLabel;
+
+/**
+ Show the receipts in rendered bubble cell (YES by default)
+ */
+@property (nonatomic) BOOL showBubbleReceipts;
+
+/**
  The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
  */
 @property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;
 
+/**
+ Max nbr of cached bubbles when there is no delegate.
+ The default value is 30.
+ */
+@property (nonatomic) unsigned long maxBackgroundCachedBubblesCount;
 
 #pragma mark - Life cycle
 /**
@@ -193,6 +219,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)limitMemoryUsage:(NSInteger)maxBubbleNb;
 
+/**
+ Force data reload.
+ */
+- (void)reload;
+
 #pragma mark - Public methods
 /**
  Get the data for the cell at the given index.
@@ -203,12 +234,20 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 - (id<MXKRoomBubbleCellDataStoring>)cellDataAtIndex:(NSInteger)index;
 
 /**
- Get the data for the cell at the given index.
+ Get the data for the cell which contains the event with the provided event id.
 
- @param index the index of the cell in the array
+ @param eventId the event identifier
  @return the cell data
  */
 - (id<MXKRoomBubbleCellDataStoring>)cellDataOfEventWithEventId:(NSString*)eventId;
+
+/**
+ Get the index of the cell which contains the event with the provided event id.
+
+ @param eventId the event identifier
+ @return the index of the concerned cell (NSNotFound if none).
+ */
+- (NSInteger)indexOfCellDataWithEventId:(NSString *)eventId;
 
 /**
  Get height of the cell at the given index.

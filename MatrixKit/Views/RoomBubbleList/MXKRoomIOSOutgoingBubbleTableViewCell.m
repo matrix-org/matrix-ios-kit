@@ -81,7 +81,7 @@
     }
     
     // Mask the image with the bubble
-    if (self.bubbleData.dataType != MXKRoomBubbleCellDataTypeText && self.bubbleData.dataType != MXKRoomBubbleCellDataTypeFile)
+    if (self.bubbleData.attachment && self.bubbleData.attachment.type != MXKAttachmentTypeFile)
     {
         self.bubbleImageView.hidden = YES;
         
@@ -96,10 +96,12 @@
 {
     CGFloat rowHeight = [super originalHeightForCellData:cellData withMaximumWidth:maxWidth];
     
+    CGFloat height = self.cellWithOriginalXib.frame.size.height;
+    
     // Use the xib height as the minimal height
-    if (rowHeight < self.cellWithOriginalXib.frame.size.height)
+    if (rowHeight < height)
     {
-        rowHeight = self.cellWithOriginalXib.frame.size.height;
+        rowHeight = height;
     }
     
     return rowHeight;

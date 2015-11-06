@@ -20,22 +20,6 @@
 #import "MXKRoomBubbleComponent.h"
 
 /**
- List bubble content types
- */
-typedef enum : NSUInteger {
-    MXKRoomBubbleCellDataTypeUndefined,
-    // Text type
-    MXKRoomBubbleCellDataTypeText,
-    // Attachment types
-    MXKRoomBubbleCellDataTypeImage,
-    MXKRoomBubbleCellDataTypeAudio,
-    MXKRoomBubbleCellDataTypeVideo,
-    MXKRoomBubbleCellDataTypeLocation,
-    MXKRoomBubbleCellDataTypeFile
-    
-} MXKRoomBubbleCellDataType;
-
-/**
  `MXKRoomBubbleCellData` instances compose data for `MXKRoomBubbleTableViewCell` cells.
  
  This is the basic implementation which considers only one component (event) by bubble.
@@ -53,6 +37,7 @@ typedef enum : NSUInteger {
      Array of bubble components. Each bubble is supposed to have at least one component.
      */
     NSMutableArray *bubbleComponents;
+    
     /**
      The body of the message with sets of attributes, or kind of content description in case of attachment (e.g. "image attachment")
      */
@@ -60,14 +45,9 @@ typedef enum : NSUInteger {
 }
 
 /**
- The matrix session
+ The matrix session.
  */
 @property (nonatomic, readonly) MXSession *mxSession;
-
-/**
- The bubble content type
- */
-@property (nonatomic) MXKRoomBubbleCellDataType dataType;
 
 /**
  Returns bubble components list (`MXKRoomBubbleComponent` instances).
@@ -80,28 +60,22 @@ typedef enum : NSUInteger {
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
- The max width of the text view used to display the text message (relevant only when `dataType` is MXKRoomBubbleCellDataTypeText or MXKRoomBubbleCellDataTypeFile).
+ The max width of the text view used to display the text message (relevant only for text message or attached file).
  */
 @property (nonatomic) CGFloat maxTextViewWidth;
 
 /**
  The bubble content size depends on its type:
- - MXKRoomBubbleCellDataTypeText: returns suitable content size of a text view to display the whole text message (respecting maxTextViewWidth).
- - MXKRoomBubbleCellDataTypeImage and MXKRoomBubbleCellDataTypeVideo: returns suitable content size for an image view in order to display
+ - Text: returns suitable content size of a text view to display the whole text message (respecting maxTextViewWidth).
+ - Attached image or video: returns suitable content size for an image view in order to display
  attachment thumbnail or icon.
- - MXKRoomBubbleCellDataTypeFile: returns suitable content size of a text view to display the file name (no icon is used presently).
+ - Attached file: returns suitable content size of a text view to display the file name (no icon is used presently).
  */
 @property (nonatomic) CGSize contentSize;
 
-
-// Attachment info (nil when messageType is RoomMessageTypeText)
-@property (nonatomic) NSString *attachmentURL;
-@property (nonatomic) NSString *attachmentCacheFilePath;
-@property (nonatomic) NSDictionary *attachmentInfo;
-@property (nonatomic) NSString *thumbnailURL;
-@property (nonatomic) NSDictionary *thumbnailInfo;
-@property (nonatomic) UIImageOrientation thumbnailOrientation;
-@property (nonatomic) NSString *previewURL;
+/**
+ Attachment upload
+ */
 @property (nonatomic) NSString *uploadId;
 @property (nonatomic) CGFloat uploadProgress;
 

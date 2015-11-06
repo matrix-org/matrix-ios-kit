@@ -31,10 +31,19 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKSampleRoomMemberTableViewCell class]] loadNibNamed:NSStringFromClass([MXKSampleRoomMemberTableViewCell class])
-                                                                                                   owner:nil
-                                                                                                 options:nil];
-    self = nibViews.firstObject;
+    // Check whether a xib is defined
+    if ([NSBundle bundleForClass:[MXKSampleRoomMemberTableViewCell class]])
+    {
+        NSArray *nibViews = [[NSBundle bundleForClass:[MXKSampleRoomMemberTableViewCell class]] loadNibNamed:NSStringFromClass([MXKSampleRoomMemberTableViewCell class])
+                                                                                                       owner:nil
+                                                                                                     options:nil];
+        self = nibViews.firstObject;
+    }
+    else
+    {
+        self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    }
+    
     return self;
 }
 

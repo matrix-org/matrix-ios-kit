@@ -51,6 +51,18 @@
  */
 @property (nonatomic) BOOL showUnsupportedEventsInRoomHistory;
 
+/**
+ Scheme with which to open HTTP links. e.g. if this is set to "googlechrome", any http:// links displayed in a room will be rewritten to use the googlechrome:// scheme.
+ Defaults to "http".
+ */
+@property (nonatomic) NSString *httpLinkScheme;
+
+/**
+ Scheme with which to open HTTPS links. e.g. if this is set to "googlechromes", any https:// links displayed in a room will be rewritten to use the googlechromes:// scheme.
+ Defaults to "https".
+ */
+@property (nonatomic) NSString *httpsLinkScheme;
+
 
 #pragma mark - Room members
 

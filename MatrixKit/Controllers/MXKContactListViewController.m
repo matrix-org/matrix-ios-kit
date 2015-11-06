@@ -42,6 +42,7 @@
     NSMutableArray  *filteredContacts;
     MXKSectionedContacts* sectionedFilteredContacts;
     BOOL             searchBarShouldEndEditing;
+    BOOL             ignoreSearchRequest;
     NSString* latestSearchedPattern;
     
     NSArray* collationTitles;
@@ -104,9 +105,20 @@
     self.enableSearch = YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // Restore search mechanism (if enabled)
+    ignoreSearchRequest = NO;
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    // The user may still press search button whereas the view disappears
+    ignoreSearchRequest = YES;
     
     // Leave potential search session
     if (contactsSearchBar)
@@ -423,24 +435,13 @@
     {
         displayMatrixUsers = (0 == self.contactsControls.selectedSegmentIndex);
         
+        // Leave potential search session
         if (contactsSearchBar)
         {
-            if (displayMatrixUsers)
-            {
-                [self updateSectionedMatrixContacts:NO];
-            }
-            else
-            {
-                [self updateSectionedLocalContacts:NO];
-            }
-            
-            latestSearchedPattern = nil;
-            [self searchBar:contactsSearchBar textDidChange:contactsSearchBar.text];
+            [self searchBarCancelButtonClicked:contactsSearchBar];
         }
-        else
-        {
-            [self.tableView reloadData];
-        }
+        
+        [self.tableView reloadData];
     }
 }
 
@@ -448,6 +449,12 @@
 
 - (void)search:(id)sender
 {
+    // The user may have pressed search button whereas the view controller was disappearing
+    if (ignoreSearchRequest)
+    {
+        return;
+    }
+    
     if (!contactsSearchBar)
     {
         MXKSectionedContacts* sectionedContacts = displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts;

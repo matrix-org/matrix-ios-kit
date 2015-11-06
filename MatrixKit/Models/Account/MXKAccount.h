@@ -16,6 +16,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+@class MXKAccount;
+
 /**
  Posted when account user information (display name, picture, presence) has been updated.
  The notification object is the matrix user id of the account.
@@ -32,6 +34,15 @@ extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
  MXKAccount error domain
  */
 extern NSString *const kMXKAccountErrorDomain;
+
+/**
+ Block called when a certificate change is observed during authentication challenge from a server.
+ 
+ @param mxAccount the account concerned by this certificate change.
+ @param certificate the server certificate to evaluate.
+ @return YES to accept/trust this certificate, NO to cancel/ignore it.
+ */
+typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *certificate);
 
 /**
  `MXKAccount` object contains the credentials of a logged matrix user. It is used to handle matrix
@@ -114,6 +125,21 @@ extern NSString *const kMXKAccountErrorDomain;
 @property (nonatomic,getter=isDisabled) BOOL disabled;
 
 /**
+ Manage the online presence event.
+ 
+ The presence event must not be sent if the application is launched by a push notification.
+ */
+@property (nonatomic) BOOL hideUserPresence;
+
+/**
+ Register the MXKAccountOnCertificateChange block that will be used to handle certificate change during account use.
+ This block is nil by default, any new certificate is ignored/untrusted (this will abort the connection to the server).
+ 
+ @param onCertificateChangeBlock
+ */
++ (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock;
+
+/**
  Get the color code related to a specific presence.
  
  @param presence
@@ -155,6 +181,14 @@ extern NSString *const kMXKAccountErrorDomain;
  Pause the current matrix session.
  */
 - (void)pauseInBackgroundTask;
+
+/**
+ Perform a catchup
+ @param timeout catchup timeout in milliseconds.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)catchup:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure;
 
 /**
  Resume the current matrix session.

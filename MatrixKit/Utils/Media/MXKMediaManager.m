@@ -24,6 +24,8 @@
 
 #import "MXKTools.h"
 
+#import "MXKLRUCache.h"
+
 NSString *const kMXKMediaManagerAvatarThumbnailFolder = @"kMXKMediaManagerAvatarThumbnailFolder";
 NSString *const kMXKMediaManagerDefaultCacheFolder = @"kMXKMediaManagerDefaultCacheFolder";
 
@@ -81,6 +83,33 @@ static NSMutableDictionary* uploadTableById = nil;
     }
     return NO;
 }
+
+static MXKLRUCache* imagesCacheLruCache = nil;
+
++ (UIImage*)loadFromMemoryCacheWithFilePath:(NSString*)filePath
+{
+    if (!imagesCacheLruCache)
+    {
+        imagesCacheLruCache = [[MXKLRUCache alloc] initWithCapacity:20];
+    }
+    
+    UIImage* image = (UIImage*)[imagesCacheLruCache get:filePath];
+    
+    if (image)
+    {
+        return image;
+    }
+    
+    image = [MXKMediaManager loadPictureFromFilePath:filePath];
+    
+    if (image)
+    {
+        [imagesCacheLruCache put:filePath object:image];
+    }
+    
+    return image;
+}
+
 
 + (UIImage*)loadPictureFromFilePath:(NSString*)filePath
 {
@@ -415,6 +444,45 @@ static NSMutableDictionary* uploadTableById = nil;
     return path;
 }
 
+static NSMutableDictionary* fileBaseFromMimeType = nil;
+
++ (NSString*)filebase:(NSString*)mimeType
+{
+    // sanity checks
+    if (!mimeType || !mimeType.length)
+    {
+        return @"";
+    }
+    
+    NSString* fileBase;
+
+    if (!fileBaseFromMimeType)
+    {
+        fileBaseFromMimeType = [[NSMutableDictionary alloc] init];
+    }
+    
+    fileBase = fileBaseFromMimeType[mimeType];
+    
+    if (!fileBase)
+    {
+        fileBase = @"";
+        
+        if ([mimeType rangeOfString:@"/"].location != NSNotFound)
+        {
+            NSArray *components = [mimeType componentsSeparatedByString:@"/"];
+            fileBase = [components objectAtIndex:0];
+            if (fileBase.length > 3)
+            {
+                fileBase = [fileBase substringToIndex:3];
+            }
+        }
+        
+        [fileBaseFromMimeType setObject:fileBase forKey:mimeType];
+    }
+    
+    return fileBase;
+}
+
 + (NSString*)cachePathForMediaWithURL:(NSString*)url andType:(NSString *)mimeType inFolder:(NSString*)folder
 {
     NSString* fileBase = @"";
@@ -430,16 +498,7 @@ static NSMutableDictionary* uploadTableById = nil;
         extension = [MXKTools fileExtensionFromContentType:mimeType];
         
         // use the mime type to extract a base filename
-        
-        if ([mimeType rangeOfString:@"/"].location != NSNotFound)
-        {
-            NSArray *components = [mimeType componentsSeparatedByString:@"/"];
-            fileBase = [components objectAtIndex:0];
-            if (fileBase.length > 3)
-            {
-                fileBase = [fileBase substringToIndex:3];
-            }
-        }
+        fileBase = [MXKMediaManager filebase:mimeType];
     }
     
     if (!extension.length)

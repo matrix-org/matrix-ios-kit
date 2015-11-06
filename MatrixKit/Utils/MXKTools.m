@@ -87,6 +87,24 @@
     return res;
 }
 
++ (long long)roundFileSize:(long long)filesize
+{
+    static long long roundedFactor = (100 * 1024);
+    static long long smallRoundedFactor = (10 * 1024);
+    long long roundedFileSize = filesize;
+    
+    if (filesize > roundedFactor)
+    {
+        roundedFileSize = ((filesize + (roundedFactor /2)) / roundedFactor) * roundedFactor;
+    }
+    else if (filesize > smallRoundedFactor)
+    {
+        roundedFileSize = ((filesize + (smallRoundedFactor /2)) / smallRoundedFactor) * smallRoundedFactor;
+    }
+    
+    return roundedFileSize;
+}
+
 + (NSString*)fileSizeToString:(long)fileSize
 {
     if (fileSize < 0)
@@ -177,45 +195,68 @@
     }
 }
 
+
+// cache the value to improve the UX.
+static NSMutableDictionary *fileExtensionByContentType = nil;
+
 // return the file extension from a contentType
 + (NSString*)fileExtensionFromContentType:(NSString*)contentType
 {
-    if (!contentType)
+    // sanity checks
+    if (!contentType || (0 == contentType.length))
     {
         return @"";
     }
     
-    CFStringRef mimeType = (__bridge CFStringRef)contentType;
-    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+    NSString* fileExt = nil;
     
-    NSString* extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension);
-    
-    CFRelease(uti);
-    
-    if (extension)
+    if (!fileExtensionByContentType)
     {
-        return [NSString stringWithFormat:@".%@", extension];
+        fileExtensionByContentType  = [[NSMutableDictionary alloc] init];
     }
     
-    // else undefined type
-    if ([contentType isEqualToString:@"application/jpeg"])
+    fileExt = fileExtensionByContentType[contentType];
+    
+    if (!fileExt)
     {
-        return @".jpg";
-    }
-    else  if ([contentType isEqualToString:@"audio/x-alaw-basic"])
-    {
-        return @".alaw";
-    }
-    else  if ([contentType isEqualToString:@"audio/x-caf"])
-    {
-        return @".caf";
-    }
-    else  if ([contentType isEqualToString:@"audio/aac"])
-    {
-        return @".aac";
+        fileExt = @"";
+        
+        // else undefined type
+        if ([contentType isEqualToString:@"application/jpeg"])
+        {
+            fileExt = @".jpg";
+        }
+        else if ([contentType isEqualToString:@"audio/x-alaw-basic"])
+        {
+            fileExt = @".alaw";
+        }
+        else if ([contentType isEqualToString:@"audio/x-caf"])
+        {
+            fileExt = @".caf";
+        }
+        else if ([contentType isEqualToString:@"audio/aac"])
+        {
+            fileExt =  @".aac";
+        }
+        else
+        {
+            CFStringRef mimeType = (__bridge CFStringRef)contentType;
+            CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+            
+            NSString* extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension);
+            
+            CFRelease(uti);
+            
+            if (extension)
+            {
+                fileExt = [NSString stringWithFormat:@".%@", extension];
+            }
+        }
+        
+        [fileExtensionByContentType setObject:fileExt forKey:contentType];
     }
     
-    return @"";
+    return fileExt;
 }
 
 #pragma mark - Hex color to UIColor conversion
@@ -271,7 +312,54 @@
     return retImage;
 }
 
-+ (UIImage *)resize:(UIImage *)image toFitInSize:(CGSize)size
++ (CGSize)resizeImageSize:(CGSize)originalSize toFitInSize:(CGSize)maxSize canExpand:(BOOL)canExpand
+{
+    if ((originalSize.width == 0) || (originalSize.height == 0))
+    {
+        return CGSizeZero;
+    }
+    
+    CGSize resized = originalSize;
+    
+    if ((maxSize.width > 0) && (maxSize.height > 0) && (canExpand || ((originalSize.width > maxSize.width) || (originalSize.height > maxSize.height))))
+    {
+        CGFloat ratioX = maxSize.width  / originalSize.width;
+        CGFloat ratioY = maxSize.height / originalSize.height;
+        
+        CGFloat scale = MIN(ratioX, ratioY);
+        resized.width  *= scale;
+        resized.height *= scale;
+        
+        // padding
+        resized.width  = floorf(resized.width  / 2) * 2;
+        resized.height = floorf(resized.height / 2) * 2;
+    }
+    
+    return resized;
+}
+
++ (CGSize)resizeImageSize:(CGSize)originalSize toFillWithSize:(CGSize)maxSize canExpand:(BOOL)canExpand
+{
+    CGSize resized = originalSize;
+    
+    if ((maxSize.width > 0) && (maxSize.height > 0) && (canExpand || ((originalSize.width > maxSize.width) && (originalSize.height > maxSize.height))))
+    {
+        CGFloat ratioX = maxSize.width  / originalSize.width;
+        CGFloat ratioY = maxSize.height / originalSize.height;
+        
+        CGFloat scale = MAX(ratioX, ratioY);
+        resized.width  *= scale;
+        resized.height *= scale;
+        
+        // padding
+        resized.width  = floorf(resized.width  / 2) * 2;
+        resized.height = floorf(resized.height / 2) * 2;
+    }
+    
+    return resized;
+}
+
++ (UIImage *)resizeImage:(UIImage *)image toFitInSize:(CGSize)size
 {
     UIImage *resizedImage = image;
     

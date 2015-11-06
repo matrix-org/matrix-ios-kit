@@ -55,7 +55,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKAlert *currentAlert;
     
     /**
-     Boolean value used to scroll to bottom the bubble history at first display.
+     Boolean value used to scroll to bottom the bubble history after refresh.
      */
     BOOL shouldScrollToBottomOnTableRefresh;
     
@@ -63,6 +63,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      YES if scrolling to bottom is in progress
      */
     BOOL isScrollingToBottom;
+    
+    /**
+     The identifier of the current event displayed at the bottom of the table (just above the toolbar).
+     Use to anchor the message displayed at the bottom during table refresh.
+     */
+    NSString *currentEventIdAtTableBottom;
+    
+    /**
+     Tell whether a device rotation is in progress
+     */
+    BOOL isSizeTransitionInProgress;
     
     /**
      Date of the last observed typing
@@ -78,6 +89,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      YES when back pagination is in progress.
      */
     BOOL isBackPaginationInProgress;
+    
+    /**
+     The back pagination spinner view.
+     */
+    UIView* backPaginationActivityView;
     
     /**
      Store current number of bubbles before back pagination.
@@ -100,16 +116,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     id kMXSessionWillLeaveRoomNotificationObserver;
     
     /**
+     Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+     */
+    id UIApplicationWillEnterForegroundNotificationObserver;
+    
+    /**
      Observe UIMenuControllerDidHideMenuNotification to cancel text selection
      */
     id UIMenuControllerDidHideMenuNotificationObserver;
     NSString *selectedText;
-    
-    /**
-     Observe Attachment download
-     */
-    id onAttachmentDownloadFailureObs;
-    id onAttachmentDownloadEndObs;
     
     /**
      The document interaction Controller used to share attachment
@@ -117,16 +132,29 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     UIDocumentInteractionController *documentInteractionController;
     
     /**
-     The path of the temporary document defined with the original attachment name
+     The current shared attachment.
      */
-    NSString *documentCopyPath;
+    MXKAttachment *currentSharedAttachment;
     
-    // Attachment handling
-    MXKImageView *highResImageView;
-    NSString *AVAudioSessionCategory;
-    MPMoviePlayerController *videoPlayer;
-    MPMoviePlayerController *tmpVideoPlayer;
-    UIWebView *animatedGifViewer;
+    /**
+     The attachments viewer for image and video.
+     */
+     MXKAttachmentsViewController *attachmentsViewer;
+    
+    /**
+     The reconnection animated view.
+     */
+    UIView* reconnectingView;
+    
+    /**
+     The latest server sync date
+     */
+    NSDate* latestServerSync;
+    
+    /**
+     The restart the event connnection
+     */
+    BOOL restartConnection;
 }
 
 @end
@@ -178,6 +206,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                               attribute:NSLayoutAttributeBottom
                                                                              multiplier:1.0f
                                                                                constant:0.0f];
+    
     if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
     {
         [NSLayoutConstraint activateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
@@ -209,38 +238,69 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self configureView];
     }
+    
+    // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+    UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+        {
+            // Reload the full table
+            [self reloadBubblesTable:YES];
+        }
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     
+    // Observe the server sync
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
+    
     // Finalize view controller appearance
     [self updateViewControllerAppearanceOnRoomDataSourceState];
+    
+    // no need to reload the tableview at this stage
+    // IOS is going to load it after calling this method
+    // so give a breath to scroll to the bottom if required
+    if (shouldScrollToBottomOnTableRefresh)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self scrollBubblesTableViewToBottomAnimated:NO];
+            // Hide bubbles table by default in order to hide initial scrolling to the bottom
+            _bubblesTableView.hidden = NO;
+        });
+    }
+    else
+    {
+        _bubblesTableView.hidden = NO;
+    }
+    
+    // Remove potential attachments viewer
+    if (attachmentsViewer)
+    {
+        [attachmentsViewer destroy];
+        attachmentsViewer = nil;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    // Refresh bubbles table if data are available.
-    // Note: This operation is not done during `viewWillAppear:` because the view controller is not added to a view hierarchy yet. The table layout is not valid then to apply scroll to bottom mechanism.
-    if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
-    {
-        [self reloadBubblesTable];
-    }
-    _bubblesTableView.hidden = NO;
-    shouldScrollToBottomOnTableRefresh = NO;
-    
     if (_saveProgressTextInput && roomDataSource)
     {
         // Retrieve the potential message partially typed during last room display.
         // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
         inputToolbarView.textMessage = roomDataSource.partialTextMessage;
+        
+        [roomDataSource markAllAsRead];
     }
+    
+    shouldScrollToBottomOnTableRefresh = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -254,6 +314,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
+    
+    [self removeReconnectingView];
 }
 
 - (void)dealloc
@@ -269,27 +332,33 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
 {
+    isSizeTransitionInProgress = YES;
+    shouldScrollToBottomOnTableRefresh = [self isBubblesTableScrollViewAtTheBottom];
+    
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
         if (!self.keyboardView)
         {
             [self updateMessageTextViewFrame];
         }
-        // Cell width will be updated, force table refresh to take into account changes of message components
-        [self reloadBubblesTable];
+        
+        // Force full table refresh to take into account cell width change.
+        [self reloadBubblesTable:YES];
+        
+        shouldScrollToBottomOnTableRefresh = NO;
+        isSizeTransitionInProgress = NO;
     });
 }
 
 // The 2 following methods are deprecated since iOS 8
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    isSizeTransitionInProgress = YES;
+    shouldScrollToBottomOnTableRefresh = [self isBubblesTableScrollViewAtTheBottom];
     
-    // Cell width will be updated, force table refresh to take into account changes of message components
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self reloadBubblesTable];
-    });
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -299,6 +368,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self updateMessageTextViewFrame];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Force full table refresh to take into account cell width change.
+        [self reloadBubblesTable:YES];
+        
+        shouldScrollToBottomOnTableRefresh = NO;
+        isSizeTransitionInProgress = NO;
+    });
 }
 
 #pragma mark - Override MXKViewController
@@ -311,7 +388,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (self.roomDataSource && (self.roomDataSource.state == MXKDataSourceStatePreparing || self.roomDataSource.serverSyncEventCount))
     {
         // dataSource is not ready, keep running the loading wheel
-        [self.activityIndicator startAnimating];
+        [self startActivityIndicator];
     }
 }
 
@@ -362,6 +439,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)destroy
 {
+    if (UIApplicationWillEnterForegroundNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationWillEnterForegroundNotificationObserver];
+        UIApplicationWillEnterForegroundNotificationObserver = nil;
+    }
+    
     if (kMXSessionWillLeaveRoomNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
@@ -374,18 +457,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         UIMenuControllerDidHideMenuNotificationObserver = nil;
     }
     
-    if (onAttachmentDownloadEndObs)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-        onAttachmentDownloadEndObs = nil;
-    }
-    
-    if (onAttachmentDownloadFailureObs)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-        onAttachmentDownloadFailureObs = nil;
-    }
-    
     if (documentInteractionController)
     {
         [documentInteractionController dismissPreviewAnimated:NO];
@@ -393,10 +464,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         documentInteractionController = nil;
     }
     
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
     
     [self dismissTemporarySubViews];
@@ -548,6 +619,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
             }
         }
+        else
+        {
+            _bubblesTableView.contentOffset = CGPointMake(0, -_bubblesTableView.contentInset.top);
+        }
     }
 }
 
@@ -556,8 +631,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)dismissTemporarySubViews
 {
     [self dismissKeyboard];
-    
-    [self hideAttachmentView];
     
     if (currentAlert)
     {
@@ -1127,7 +1200,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                
                                                // Reload table
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable];
+                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
                                                
                                            }
@@ -1135,12 +1208,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                
                                                // Reload table
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable];
+                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
                                                
                                            }];
 }
 
+/**
+ This method handles the back pagination and the related animation when the user bounces at the top of the tableview.
+ It is not a public method because it is implemented by considering some priori knowledges like the current table content offset.
+ 
+ If a developer wants to customize the back pagination, he should override [scrollViewWillEndDragging: withVelocity: targetContentOffset:]
+ to call his own back pagination handler.
+ */
 - (void)triggerBackPagination
 {
     // Paginate only if possible
@@ -1158,72 +1238,160 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
     isBackPaginationInProgress = YES;
-    [self startActivityIndicator];
+    
+    if (!backPaginationActivityView)
+    {
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        spinner.hidesWhenStopped = NO;
+        spinner.backgroundColor = [UIColor clearColor];
+        [spinner startAnimating];
+        
+        // no need to manage constraints here
+        // IOS defines them.
+        // since IOS7 the spinner is centered so need to create a background and add it.
+        _bubblesTableView.tableHeaderView = backPaginationActivityView = spinner;
+    }
     
     // Trigger back pagination
     [roomDataSource paginateBackMessages:10 success:^{
         
-        // We will scroll to bottom if the displayed content does not reach the bottom (after adding back pagination)
-        BOOL shouldScrollToBottom = NO;
-        CGFloat maxPositionY = self.bubblesTableView.contentOffset.y + (self.bubblesTableView.frame.size.height - self.bubblesTableView.contentInset.bottom);
-        // Compute the height of the blank part at the bottom
-        if (maxPositionY > self.bubblesTableView.contentSize.height)
-        {
-            CGFloat blankAreaHeight = maxPositionY - self.bubblesTableView.contentSize.height;
-            // Scroll to bottom if this blank area is greater than max scrolling offet
-            shouldScrollToBottom = (blankAreaHeight >= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET);
-        }
+        // Delay the response handling to keep visible the spinner a minimum of time
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        CGFloat verticalOffset = 0;
-        if (shouldScrollToBottom == NO)
-        {
-            NSInteger addedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0] - backPaginationSavedBubblesNb;
-            if (addedBubblesNb >= 0)
+            // We will scroll to bottom if the displayed content does not reach the bottom (after adding back pagination)
+            BOOL shouldScrollToBottom = NO;
+            CGFloat maxPositionY = self.bubblesTableView.contentOffset.y + (self.bubblesTableView.frame.size.height - self.bubblesTableView.contentInset.bottom);
+            // Compute the height of the blank part at the bottom
+            if (maxPositionY > self.bubblesTableView.contentSize.height)
             {
-                
-                // We will adjust the vertical offset in order to make visible only a few part of added messages (at the top of the table)
-                NSIndexPath *indexPath;
-                // Compute the cumulative height of the added messages
-                for (NSUInteger index = 0; index < addedBubblesNb; index++)
-                {
-                    indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                    verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
-                }
-                
-                // Add delta of the height of the first existing message
-                indexPath = [NSIndexPath indexPathForRow:addedBubblesNb inSection:0];
-                verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
-                
-                // Deduce the vertical offset from this height
-                verticalOffset -= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET;
+                CGFloat blankAreaHeight = maxPositionY - self.bubblesTableView.contentSize.height;
+                // Scroll to bottom if this blank area is greater than max scrolling offet
+                shouldScrollToBottom = (blankAreaHeight >= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET);
             }
-        }
+            
+            CGFloat verticalOffset = 0;
+            if (shouldScrollToBottom == NO)
+            {
+                NSInteger addedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0] - backPaginationSavedBubblesNb;
+                if (addedBubblesNb >= 0)
+                {
+                    
+                    // We will adjust the vertical offset in order to make visible only a few part of added messages (at the top of the table)
+                    NSIndexPath *indexPath;
+                    // Compute the cumulative height of the added messages
+                    for (NSUInteger index = 0; index < addedBubblesNb; index++)
+                    {
+                        indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                        verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+                    }
+                    
+                    // Add delta of the height of the first existing message
+                    indexPath = [NSIndexPath indexPathForRow:addedBubblesNb inSection:0];
+                    verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+                    
+                    // Deduce the vertical offset from this height
+                    verticalOffset -= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET;
+                }
+            }
+            
+            // Trigger a full table reload. We could not only insert new cells related to back pagination,
+            // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+            isBackPaginationInProgress = NO;
+            _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+            
+            [self reloadBubblesTable:NO];
+            
+            // Adjust vertical content offset
+            if (shouldScrollToBottom)
+            {
+                [self scrollBubblesTableViewToBottomAnimated:NO];
+            }
+            else if (verticalOffset > 0)
+            {
+                // Adjust vertical offset in order to limit scrolling down
+                CGPoint contentOffset = self.bubblesTableView.contentOffset;
+                contentOffset.y = verticalOffset - self.bubblesTableView.contentInset.top;
+                [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            }
+            
+        });
         
-        // Adjust vertical content offset
-        if (shouldScrollToBottom)
-        {
-            [self scrollBubblesTableViewToBottomAnimated:NO];
-        }
-        else if (verticalOffset > 0)
-        {
-            // Adjust vertical offset in order to limit scrolling down
-            CGPoint contentOffset = self.bubblesTableView.contentOffset;
-            contentOffset.y = verticalOffset - self.bubblesTableView.contentInset.top;
-            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
-        }
+    } failure:^(NSError *error) {
         
-        // Reload table
+        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
         isBackPaginationInProgress = NO;
-        [self reloadBubblesTable];
-        [self stopActivityIndicator];
+        _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
-    }
-                                 failure:^(NSError *error)
+        [self reloadBubblesTable:YES];
+        
+    }];
+}
+
+- (void)triggerAttachmentBackPagination:(NSString*)eventId
+{
+    // Paginate only if possible
+    if (NO == roomDataSource.room.canPaginate && attachmentsViewer)
     {
-        // Reload table
+        return;
+    }
+    
+    isBackPaginationInProgress = YES;
+    
+    // Trigger back pagination to find previous attachments
+    [roomDataSource paginateBackMessages:30 success:^{
+        
+        // Check whether attachments viewer is still visible
+        if (attachmentsViewer)
+        {
+            // Check whether some older attachments have been added.
+            BOOL isDone = NO;
+            NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+            if (attachmentsWithThumbnail.count)
+            {
+                MXKAttachment *attachment = attachmentsWithThumbnail.firstObject;
+                isDone = ![attachment.event.eventId isEqualToString:eventId];
+            }
+            
+            // Check whether pagination is still available
+            attachmentsViewer.complete = (roomDataSource.room.canPaginate == NO);
+            
+            if (isDone || attachmentsViewer.complete)
+            {
+                // Refresh the current attachments list.
+                [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+                
+                // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
+                // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+                isBackPaginationInProgress = NO;
+                [self reloadBubblesTable:YES];
+                
+                // Done
+                return;
+            }
+            
+            // Here a new back pagination is required
+            [self triggerAttachmentBackPagination:eventId];
+        }
+        else
+        {
+            // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
+            // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+            isBackPaginationInProgress = NO;
+            [self reloadBubblesTable:YES];
+        }
+        
+    } failure:^(NSError *error) {
+        
+        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
         isBackPaginationInProgress = NO;
-        [self reloadBubblesTable];
-        [self stopActivityIndicator];
+        [self reloadBubblesTable:YES];
+        
+        if (attachmentsViewer)
+        {
+            // Force attachments update to cancel potential loading wheel
+            [attachmentsViewer displayAttachments:attachmentsViewer.attachments focusOn:nil];
+        }
+        
     }];
 }
 
@@ -1342,18 +1510,175 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - bubbles table
 
-- (void)reloadBubblesTable
+- (void)reloadBubblesTable:(BOOL)useBottomAnchor
 {
-    // We will scroll to bottom if the bottom of the table is currently visible
-    BOOL shouldScrollToBottom = (shouldScrollToBottomOnTableRefresh || [self isBubblesTableScrollViewAtTheBottom]);
+    BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
-    // For now, do a simple full reload
-    [_bubblesTableView reloadData];
+    // When no size transition is in progress, check if the bottom of the content is currently visible.
+    // If this is the case, we will scroll automatically to the bottom after table refresh.
+    if (!isSizeTransitionInProgress && !shouldScrollToBottom)
+    {
+        shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
+    }
+    
+    // When scroll to bottom is not active, check whether we should keep the current event displayed at the bottom of the table
+    if (!shouldScrollToBottom && useBottomAnchor && currentEventIdAtTableBottom)
+    {
+        // Update content offset after refresh in order to keep visible the current event displayed at the bottom
+        
+        [_bubblesTableView reloadData];
+        
+        // Retrieve the new cell index of the event displayed previously at the bottom of table
+        NSInteger rowIndex = [roomDataSource indexOfCellDataWithEventId:currentEventIdAtTableBottom];
+        if (rowIndex != NSNotFound)
+        {
+            // Retrieve the corresponding cell
+            UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
+            UITableViewCell *cellTmp;
+            if (!cell)
+            {
+                // Create temporarily the cell (this cell will released at the end, to be reusable)
+                cellTmp = [roomDataSource tableView:_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
+                cell = cellTmp;
+            }
+            
+            if (cell)
+            {
+                CGFloat eventTopPosition = cell.frame.origin.y;
+                CGFloat eventBottomPosition = eventTopPosition + cell.frame.size.height;
+                
+                // Compute accurate event positions in case of bubble with multiple components
+                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count > 1)
+                {
+                    // Check and update each component position
+                    [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
+                    
+                    NSInteger index = roomBubbleTableViewCell.bubbleData.bubbleComponents.count - 1;
+                    MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                    
+                    if ([component.event.eventId isEqualToString:currentEventIdAtTableBottom])
+                    {
+                        eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                    }
+                    else
+                    {
+                        while (index--)
+                        {
+                            MXKRoomBubbleComponent *previousComponent = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                            if ([previousComponent.event.eventId isEqualToString:currentEventIdAtTableBottom])
+                            {
+                                // Update top position if this is not the first component
+                                if (index)
+                                {
+                                   eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + previousComponent.position.y;
+                                }
+                                
+                                eventBottomPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                                break;
+                            }
+                            
+                            component = previousComponent;
+                        }
+                    }
+                }
+                
+                // Compute the offset of the content displayed at the bottom.
+                CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+                if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
+                {
+                    contentBottomOffsetY = _bubblesTableView.contentSize.height;
+                }
+                
+                // Check whether this event is no more displayed at the bottom
+                if ((contentBottomOffsetY <= eventTopPosition ) || (eventBottomPosition < contentBottomOffsetY))
+                {
+                    // Compute the top content offset to display again this event at the table bottom
+                    CGFloat contentOffsetY = eventBottomPosition - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+                    
+                    // Check if there are enought data to fill the top
+                    if (contentOffsetY < -_bubblesTableView.contentInset.top)
+                    {
+                        // Scroll to the top
+                        contentOffsetY = -_bubblesTableView.contentInset.top;
+                    }
+                    
+                    CGPoint contentOffset = _bubblesTableView.contentOffset;
+                    contentOffset.y = contentOffsetY;
+                    _bubblesTableView.contentOffset = contentOffset;
+                }
+                
+                if (cellTmp && [cellTmp conformsToProtocol:@protocol(MXKCellRendering)])
+                {
+                    // Release here resources, and restore reusable cells
+                    [(id<MXKCellRendering>)cellTmp didEndDisplay];
+                }
+            }
+        }
+    }
+    else
+    {
+        // Do a full reload
+        [_bubblesTableView reloadData];
+    }
     
     if (shouldScrollToBottom)
     {
-        // Scroll to the bottom
         [self scrollBubblesTableViewToBottomAnimated:NO];
+    }
+}
+
+
+
+- (void)upateCurrentEventIdAtTableBottom
+{
+    // Update the identifier of the event displayed at the bottom of the table, except if a rotation or other size transition is in progress.
+    if (! isSizeTransitionInProgress)
+    {
+        // Compute the content offset corresponding to the line displayed at the table bottom (just above the toolbar).
+        CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+        if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
+        {
+            contentBottomOffsetY = _bubblesTableView.contentSize.height;
+        }
+        // Adjust slightly this offset to be above the actual bottom line.
+        contentBottomOffsetY -= 5;
+        
+        // Reset the current event id
+        currentEventIdAtTableBottom = nil;
+        
+        // Consider the visible cells (starting by those displayed at the bottom)
+        NSArray *indexPathsForVisibleRows = [_bubblesTableView indexPathsForVisibleRows];
+        NSInteger index = indexPathsForVisibleRows.count;
+        UITableViewCell *cell;
+        while (index--)
+        {
+            cell = [_bubblesTableView cellForRowAtIndexPath:indexPathsForVisibleRows[index]];
+            if (cell && (cell.frame.origin.y < contentBottomOffsetY) && (contentBottomOffsetY <= cell.frame.origin.y + cell.frame.size.height))
+            {
+                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                
+                // Check which bubble component is displayed at the bottom.
+                // For that update each component position.
+                [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
+                
+                NSInteger componentIndex = roomBubbleTableViewCell.bubbleData.bubbleComponents.count;
+                while (componentIndex --)
+                {
+                    MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[componentIndex];
+                    currentEventIdAtTableBottom = component.event.eventId;
+                    
+                    // Check the component start position.
+                    CGFloat pos = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                    if (pos < contentBottomOffsetY)
+                    {
+                        // We found the component (by default the event id of the first component is considered).
+                        break;
+                    }
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -1362,11 +1687,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (isBackPaginationInProgress)
     {
-        // table will be updated at the end of pagination.
+        // Ignore these changes, the table will be full updated at the end of pagination.
         return;
     }
     
-    [self reloadBubblesTable];
+    if (attachmentsViewer)
+    {
+        // Refresh the current attachments list without changing the current displayed attachment (see focus = nil).
+        NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+    }
+    
+    [self reloadBubblesTable:YES];
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state
@@ -1405,7 +1737,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
         
         // Check if there is a download in progress, then offer to cancel it
-        NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+        NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
         if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
         {
             if (currentAlert)
@@ -1441,7 +1773,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             // Check if there is an upload in progress, then offer to cancel it
             // Upload id is stored in attachment url (nasty trick)
-            NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
+            NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
             if ([MXKMediaManager existingUploaderWithId:uploadId])
             {
                 if (currentAlert)
@@ -1481,6 +1813,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         MXEvent *selectedEvent = userInfo[kMXKRoomBubbleCellEventKey];
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+        MXKAttachment *attachment = roomBubbleTableViewCell.bubbleData.attachment;
         
         if (selectedEvent)
         {
@@ -1519,7 +1852,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             // Add actions for text message
-            if (!selectedEvent.isMediaAttachment)
+            if (!attachment)
             {
                 // Highlight the select event
                 [roomBubbleTableViewCell highlightTextMessageForEvent:selectedEvent.eventId];
@@ -1574,92 +1907,91 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                     }];
                 }
             }
-            else // Add action for medias
+            else // Add action for attachment
             {
-                NSString *msgtype = selectedEvent.content[@"msgtype"];
-                
-                if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo])
+                if (attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeVideo)
                 {
                     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                        
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
-                        [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                        [strongSelf startActivityIndicator];
+                        
+                        [attachment save:^{
                             
-                            BOOL isImage = [msgtype isEqualToString:kMXMessageTypeImage];
-                            NSURL* url = [NSURL fileURLWithPath:cacheFilePath];
+                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            [strongSelf stopActivityIndicator];
                             
-                            [strongSelf startActivityIndicator];
-                            [MXKMediaManager saveMediaToPhotosLibrary:url
-                                                              isImage:isImage
-                                                              success:^() {
-                                                                  
-                                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                                  [strongSelf stopActivityIndicator];
-                                                                  
-                                                              } failure:^(NSError *error) {
-                                                                  
-                                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                                  [strongSelf stopActivityIndicator];
-                                                                  
-                                                                  // Notify MatrixKit user
-                                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                  
-                                                              }];
-                        } failure:nil];
+                        } failure:^(NSError *error) {
+                            
+                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            [strongSelf stopActivityIndicator];
+                            
+                            // Notify MatrixKit user
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                            
+                        }];
+                        
+                        // Start animation in case of download during attachment preparing
+                        [roomBubbleTableViewCell startProgressUI];
                     }];
                 }
                 
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                    [strongSelf startActivityIndicator];
+                    
+                    [attachment copy:^{
                         
-                        if ([msgtype isEqualToString:kMXMessageTypeImage])
-                        {
-                            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:cacheFilePath]];
-                        }
-                        else
-                        {
-                            NSData* data = [NSData dataWithContentsOfFile:cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
-                            
-                            if (data)
-                            {
-                                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[cacheFilePath pathExtension] , NULL);
-                                
-                                if (UTI)
-                                {
-                                    [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
-                                }
-                            }
-                        }
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        [strongSelf stopActivityIndicator];
                         
-                    } failure:nil];
+                    } failure:^(NSError *error) {
+                        
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        [strongSelf stopActivityIndicator];
+                        
+                        // Notify MatrixKit user
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                        
+                    }];
+                    
+                    // Start animation in case of download during attachment preparing
+                    [roomBubbleTableViewCell startProgressUI];
                 }];
                 
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
                     strongSelf->currentAlert = nil;
                     
-                    [strongSelf downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
+                    [attachment prepareShare:^(NSURL *fileURL) {
                         
-                        // Prepare the file URL by considering the original file name (if any)
-                        NSURL *fileURL = [strongSelf attachmentURLWithOriginalFileNameInCell:cell];
-                        
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [strongSelf->documentInteractionController setDelegate:strongSelf];
+                        currentSharedAttachment = attachment;
                         
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
                         {
                             strongSelf->documentInteractionController = nil;
-                            if (strongSelf->documentCopyPath)
-                            {
-                                [[NSFileManager defaultManager] removeItemAtPath:strongSelf->documentCopyPath error:nil];
-                                strongSelf->documentCopyPath = nil;
-                            }
+                            [attachment onShareEnded];
+                            currentSharedAttachment = nil;
                         }
-                    } failure:nil];
+                        
+                    } failure:^(NSError *error) {
+                        
+                        // Notify MatrixKit user
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                        
+                    }];
+                    
+                    // Start animation in case of download during attachment preparing
+                    [roomBubbleTableViewCell startProgressUI];
                 }];
             }
             
@@ -1667,7 +1999,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             if (selectedEvent.mxkState == MXKEventStateUploading)
             {
                 // Upload id is stored in attachment url (nasty trick)
-                NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachmentURL;
+                NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
                 if ([MXKMediaManager existingUploaderWithId:uploadId])
                 {
                     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
@@ -1690,7 +2022,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 // Check whether download is in progress
                 if (selectedEvent.isMediaAttachment)
                 {
-                    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
+                    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
                     if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
                     {
                         [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
@@ -1817,126 +2149,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     return (selectedText.length != 0);
 }
 
-#pragma mark - Download attachment
-
-- (void)downloadAttachmentInCell:(id<MXKCellRendering>)cell success:(void (^)(NSString *cacheFilePath))success failure:(void (^)(NSError *error))failure
-{
-    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    
-    // Check whether the attachment is already available
-    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
-    {
-        // Done
-        if (success)
-        {
-            success (cacheFilePath);
-        }
-    }
-    else
-    {
-        // Trigger download if it is not already in progress
-        MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-        NSString *attachmentURL = roomBubbleTableViewCell.bubbleData.attachmentURL;
-        if (!loader)
-        {
-            loader = [MXKMediaManager downloadMediaFromURL:attachmentURL andSaveAtFilePath:cacheFilePath];
-        }
-        
-        if (loader)
-        {
-            [roomBubbleTableViewCell startProgressUI];
-            
-            // Add observers
-            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                
-                // Sanity check
-                if ([notif.object isKindOfClass:[NSString class]])
-                {
-                    NSString* url = notif.object;
-                    NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
-                    
-                    if ([url isEqualToString:attachmentURL] && cacheFilePath.length)
-                    {
-                        // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-                        onAttachmentDownloadEndObs = nil;
-                        onAttachmentDownloadFailureObs = nil;
-                        
-                        if (success)
-                        {
-                            success (cacheFilePath);
-                        }
-                    }
-                }
-            }];
-            
-            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                
-                // Sanity check
-                if ([notif.object isKindOfClass:[NSString class]])
-                {
-                    NSString* url = notif.object;
-                    NSError* error = notif.userInfo[kMXKMediaLoaderErrorKey];
-                    
-                    if ([url isEqualToString:attachmentURL])
-                    {
-                        // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-                        onAttachmentDownloadEndObs = nil;
-                        onAttachmentDownloadFailureObs = nil;
-                        
-                        if (failure)
-                        {
-                            failure (error);
-                        }
-                    }
-                }
-            }];
-        }
-        else if (failure)
-        {
-            failure (nil);
-        }
-    }
-}
-
-- (NSURL*)attachmentURLWithOriginalFileNameInCell:(id<MXKCellRendering>)cell
-{
-    NSURL *fileUrl;
-    
-    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    
-    // Retrieve the cache file path
-    NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachmentCacheFilePath;
-    
-    // The original file name is available in attachment body (if any).
-    // This attachment body is reported in bubble text message.
-    NSString *attachmentBody = roomBubbleTableViewCell.bubbleData.textMessage;
-    if ([attachmentBody pathExtension].length)
-    {
-        // Copy the cached file to restore its original name
-        // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-        documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:attachmentBody];
-        
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        if ([[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:documentCopyPath error:nil])
-        {
-            fileUrl = [NSURL fileURLWithPath:documentCopyPath];
-        }
-    }
-    
-    if (!fileUrl)
-    {
-        // Use the cached file by default
-        fileUrl = [NSURL fileURLWithPath:cacheFilePath];
-    }
-    
-    return fileUrl;
-}
-
 #pragma mark - UITableView delegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1969,13 +2181,54 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [self triggerBackPagination];
         }
+        else
+        {
+            [self detectPullToKick:scrollView];
+        }
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (scrollView == _bubblesTableView)
+    {
+        // if the user scrolls the history content without animation
+        // upateCurrentEventIdAtTableBottom must be called here (without dispatch).
+        // else it will be done in scrollViewDidEndDecelerating
+        if (!decelerate)
+        {
+            [self upateCurrentEventIdAtTableBottom];
+        }
+    }
+}
+
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == _bubblesTableView)
+    {
+        // do not dispatch the upateCurrentEventIdAtTableBottom call
+        // else it might triggers weird UI lags.
+        [self upateCurrentEventIdAtTableBottom];
+        [self managePullToKick:scrollView];
     }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    // Consider this callback to reset scrolling to bottom flag
-    isScrollingToBottom = NO;
+    if (scrollView == _bubblesTableView)
+    {
+        // Consider this callback to reset scrolling to bottom flag
+        isScrollingToBottom = NO;
+        
+        // when the content size if smaller that the frame
+        // scrollViewDidEndDecelerating is not called
+        // so test it when the content offset goes back to the screen top.
+        if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
+        {
+            [self managePullToKick:scrollView];
+        }
+    }
 }
 
 #pragma mark - MXKRoomTitleViewDelegate
@@ -2202,287 +2455,58 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self dismissKeyboard];
     
     MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    MXKImageView *attachment = roomBubbleTableViewCell.attachmentView;
+    MXKAttachment *selectedAttachment = roomBubbleTableViewCell.bubbleData.attachment;
     
-    // Retrieve attachment information
-    NSDictionary *content = attachment.mediaInfo;
-    NSUInteger msgtype = ((NSNumber*)content[@"msgtype"]).unsignedIntValue;
-    if (msgtype == MXKRoomBubbleCellDataTypeImage)
+    if (roomBubbleTableViewCell.bubbleData.isAttachmentWithThumbnail)
     {
-        NSString *url = content[@"url"];
-        if (url.length)
-        {
-            NSString *mimetype = nil;
-            if (content[@"info"])
-            {
-                mimetype = content[@"info"][@"mimetype"];
-            }
-            
-            // Use another MXKImageView that will show the attachment in fullscreen
-            highResImageView = [[MXKImageView alloc] initWithFrame:self.view.frame];
-            highResImageView.stretchable = YES;
-            
-            [highResImageView showFullScreen];
-            
-            if ([mimetype isEqualToString:@"image/gif"])
-            {
-                // Animated gif is displayed in webview
-                CGFloat minSize = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height;
-                CGFloat width, height;
-                if (content[@"info"][@"w"] && content[@"info"][@"h"])
-                {
-                    width = [content[@"info"][@"w"] integerValue];
-                    height = [content[@"info"][@"h"] integerValue];
-                    if (width > minSize || height > minSize)
-                    {
-                        if (width > height)
-                        {
-                            height = (height * minSize) / width;
-                            height = floorf(height / 2) * 2;
-                            width = minSize;
-                        }
-                        else
-                        {
-                            width = (width * minSize) / height;
-                            width = floorf(width / 2) * 2;
-                            height = minSize;
-                        }
-                    }
-                    else
-                    {
-                        width = minSize;
-                        height = minSize;
-                    }
-                }
-                else
-                {
-                    width = minSize;
-                    height = minSize;
-                }
-                
-                animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
-                animatedGifViewer.center = highResImageView.center;
-                animatedGifViewer.opaque = NO;
-                animatedGifViewer.backgroundColor = highResImageView.backgroundColor;
-                animatedGifViewer.contentMode = UIViewContentModeScaleAspectFit;
-                animatedGifViewer.scalesPageToFit = YES;
-                animatedGifViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
-                animatedGifViewer.userInteractionEnabled = NO;
-                [highResImageView addSubview:animatedGifViewer];
-                
-                UIImageView *previewImage = [[UIImageView alloc] initWithFrame:animatedGifViewer.frame];
-                previewImage.contentMode = animatedGifViewer.contentMode;
-                previewImage.autoresizingMask = animatedGifViewer.autoresizingMask;
-                previewImage.image = attachment.image;
-                previewImage.center = highResImageView.center;
-                [highResImageView addSubview:previewImage];
-                
-                MXKPieChartView *pieChartView = [[MXKPieChartView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-                pieChartView.progress = 0;
-                pieChartView.progressColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.25];
-                pieChartView.unprogressColor = [UIColor clearColor];
-                pieChartView.autoresizingMask = animatedGifViewer.autoresizingMask;
-                pieChartView.center = highResImageView.center;
-                [highResImageView addSubview:pieChartView];
-                
-                id downloadProgressObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                    
-                    if ([notif.object isEqualToString:roomBubbleTableViewCell.bubbleData.attachmentURL])
-                    {
-                        if (notif.userInfo)
-                        {
-                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
-                            
-                            if (progressNumber)
-                            {
-                                pieChartView.progress = progressNumber.floatValue;
-                            }
-                        }
-                    }
-                    
-                }];
-                
-                [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
-                    
-                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
-                    
-                    [animatedGifViewer loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:cacheFilePath]]];
-                    
-                    [pieChartView removeFromSuperview];
-                    [previewImage removeFromSuperview];
-                    
-                } failure:^(NSError *error) {
-                    
-                    [[NSNotificationCenter defaultCenter] removeObserver:downloadProgressObserver];
-                    
-                    NSLog(@"[MXKRoomVC] gif download failed: %@", error);
-                    // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                    
-                    [self hideAttachmentView];
-                    
-                }];
-            }
-            else
-            {
-                // Show the image in fullscreen
-                highResImageView.mediaFolder = roomDataSource.roomId;
-                [highResImageView setImageURL:url withType:mimetype andImageOrientation:UIImageOrientationUp previewImage:attachment.image];
-            }
-            
-            // Add tap recognizer to hide attachment
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideAttachmentView)];
-            [tap setNumberOfTouchesRequired:1];
-            [tap setNumberOfTapsRequired:1];
-            [highResImageView addGestureRecognizer:tap];
-            highResImageView.userInteractionEnabled = YES;
-        }
-    }
-    else if (msgtype == MXKRoomBubbleCellDataTypeVideo)
-    {
-        NSString *url =content[@"url"];
-        if (url.length)
-        {
-            AVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
-            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-            videoPlayer = [[MPMoviePlayerController alloc] init];
-            if (videoPlayer != nil)
-            {
-                videoPlayer.scalingMode = MPMovieScalingModeAspectFit;
-                [self.view addSubview:videoPlayer.view];
-                [videoPlayer setFullscreen:YES animated:NO];
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(moviePlayerPlaybackDidFinishNotification:)
-                                                             name:MPMoviePlayerPlaybackDidFinishNotification
-                                                           object:nil];
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(moviePlayerWillExitFullscreen:)
-                                                             name:MPMoviePlayerWillExitFullscreenNotification
-                                                           object:videoPlayer];
-                
-                // check if the file is a local one
-                // could happen because a media upload has failed
-                if ([[NSFileManager defaultManager] fileExistsAtPath:url])
-                {
-                    videoPlayer.contentURL = [NSURL fileURLWithPath:url];
-                    [videoPlayer play];
-                }
-                else
-                {
-                    [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
-                        
-                        videoPlayer.contentURL = [NSURL fileURLWithPath:cacheFilePath];
-                        [videoPlayer play];
-                        
-                    } failure:^(NSError *error) {
-                        
-                        NSLog(@"[MXKRoomVC] Video Download failed: %@", error);
-                        // Notify MatrixKit user
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+        
+        // Present an attachment viewer
+        attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+        attachmentsViewer.delegate = self;
+        attachmentsViewer.complete = (roomDataSource.room.canPaginate == NO);
+        attachmentsViewer.hidesBottomBarWhenPushed = YES;
+        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
 
-                        [self hideAttachmentView];
-                        
-                    }];
-                }
-            }
-        }
+        [self.navigationController pushViewController:attachmentsViewer animated:YES];
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeAudio)
+    else if (selectedAttachment.type == MXKAttachmentTypeAudio)
     {
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeLocation)
+    else if (selectedAttachment.type == MXKAttachmentTypeLocation)
     {
     }
-    else if (msgtype == MXKRoomBubbleCellDataTypeFile)
+    else if (selectedAttachment.type == MXKAttachmentTypeFile)
     {
-        [self downloadAttachmentInCell:cell success:^(NSString *cacheFilePath) {
-            
-            // Prepare the file URL by considering the original file name (if any)
-            NSURL *fileURL = [self attachmentURLWithOriginalFileNameInCell:cell];
+        [selectedAttachment prepareShare:^(NSURL *fileURL) {
             
             documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-            
             [documentInteractionController setDelegate:self];
+            currentSharedAttachment = selectedAttachment;
             
             if (![documentInteractionController presentPreviewAnimated:YES])
             {
                 if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
                 {
                     documentInteractionController = nil;
-                    if (documentCopyPath)
-                    {
-                        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-                        documentCopyPath = nil;
-                    }
+                    [selectedAttachment onShareEnded];
+                    currentSharedAttachment = nil;
                 }
             }
-
-        } failure:nil];
-    }
-}
-
-- (void)hideAttachmentView
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerWillExitFullscreenNotification object:nil];
-    
-    if (animatedGifViewer)
-    {
-        [animatedGifViewer removeFromSuperview];
-        animatedGifViewer = nil;
-    }
-    
-    if (highResImageView)
-    {
-        for (UIGestureRecognizer *gestureRecognizer in highResImageView.gestureRecognizers)
-        {
-            [highResImageView removeGestureRecognizer:gestureRecognizer];
-        }
-        [highResImageView removeFromSuperview];
-        highResImageView = nil;
-    }
-    
-    // Restore audio category
-    if (AVAudioSessionCategory)
-    {
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategory error:nil];
-    }
-    if (videoPlayer)
-    {
-        [videoPlayer stop];
-        [videoPlayer setFullscreen:NO];
-        [videoPlayer.view removeFromSuperview];
-        videoPlayer = nil;
-    }
-}
-
-- (void)moviePlayerWillExitFullscreen:(NSNotification*)notification
-{
-    if (notification.object == videoPlayer)
-    {
-        [self hideAttachmentView];
-    }
-}
-
-- (void)moviePlayerPlaybackDidFinishNotification:(NSNotification *)notification
-{
-    NSDictionary *notificationUserInfo = [notification userInfo];
-    NSNumber *resultValue = [notificationUserInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
-    MPMovieFinishReason reason = [resultValue intValue];
-    
-    // error cases
-    if (reason == MPMovieFinishReasonPlaybackError)
-    {
-        NSError *mediaPlayerError = [notificationUserInfo objectForKey:@"error"];
-        if (mediaPlayerError)
-        {
-            NSLog(@"[RoomVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
-            [self hideAttachmentView];
             
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
-        }
+        } failure:nil];
+        
+        // Start animation in case of download
+        [roomBubbleTableViewCell startProgressUI];
     }
+}
+
+// MXKAttachmentsViewControllerDelegate
+- (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId
+{
+    [self triggerAttachmentBackPagination:eventId];
+    
+    return self.roomDataSource.room.canPaginate;
 }
 
 #pragma mark - UIDocumentInteractionControllerDelegate
@@ -2501,30 +2525,118 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
     documentInteractionController = nil;
-    if (documentCopyPath)
+    if (currentSharedAttachment)
     {
-        [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-        documentCopyPath = nil;
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
+    }
+}
+
+#pragma mark - resync management
+
+- (void)onSyncNotification
+{
+    latestServerSync = [NSDate date];
+    [self removeReconnectingView];
+}
+
+- (BOOL)canReconnect
+{
+    // avoid restarting connection if some data has been received within 1 second (1000 : latestServerSync is null)
+    NSTimeInterval interval = latestServerSync ? [[NSDate date] timeIntervalSinceDate:latestServerSync] : 1000;
+    return  (interval > 1) && [self.mainSession reconnect];
+}
+
+- (void)addReconnectingView
+{
+    if (!reconnectingView)
+    {
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [spinner sizeToFit];
+        spinner.hidesWhenStopped = NO;
+        spinner.backgroundColor = [UIColor clearColor];
+        [spinner startAnimating];
+        
+        // no need to manage constraints here
+        // IOS defines them.
+        // since IOS7 the spinner is centered so need to create a background and add it.
+        _bubblesTableView.tableFooterView = reconnectingView = spinner;
+    }
+}
+
+- (void)removeReconnectingView
+{
+    if (reconnectingView && !restartConnection)
+    {
+        _bubblesTableView.tableFooterView = reconnectingView = nil;
+    }
+}
+
+/**
+ Detect if the current connection must be restarted.
+ The spinner is displayed until the overscroll ends (and scrollViewDidEndDecelerating is called).
+ */
+- (void)detectPullToKick:(UIScrollView *)scrollView
+{
+    if (!reconnectingView)
+    {
+        // detect if the user scrolls over the tableview bottom
+        restartConnection = (
+                             ((scrollView.contentSize.height < scrollView.frame.size.height) && (scrollView.contentOffset.y > 128))
+                             ||
+                             ((scrollView.contentSize.height > scrollView.frame.size.height) &&  (scrollView.contentOffset.y + scrollView.frame.size.height) > (scrollView.contentSize.height + 128)));
+        
+        if (restartConnection)
+        {
+            // wait that list decelerate to display / hide it
+            [self addReconnectingView];
+        }
+    }
+}
+
+
+/**
+ Restarts the current connection if it is required.
+ The 0.3s delay is added to avoid flickering if the connection does not require to be restarted.
+ */
+- (void)managePullToKick:(UIScrollView *)scrollView
+{
+    // the current connection must be restarted
+    if (restartConnection)
+    {
+        // display at least 0.3s the spinner to show to the user that something is pending
+        // else the UI is flickering
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            restartConnection = NO;
+            
+            if (![self canReconnect])
+            {
+                // if the event stream has not been restarted
+                // hide the spinner
+                [self removeReconnectingView];
+            }
+            // else wait that onSyncNotification is called.
+        });
     }
 }
 

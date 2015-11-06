@@ -55,9 +55,14 @@ typedef enum : NSUInteger {
 {
 @protected
     /**
-     The date format string used by the date formatter.
+     The date formatter used to build date string without time information.
      */
-    NSString *dateFormat;
+    NSDateFormatter *dateFormatter;
+    
+    /**
+     The time formatter used to build time string without date information.
+     */
+    NSDateFormatter *timeFormatter;
 }
 
 /**
@@ -74,17 +79,19 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isForSubtitle;
 
 /**
- The date formatter
- */
-@property (nonatomic, readonly) NSDateFormatter *dateFormatter;
-
-/**
  Initialise the event formatter.
 
  @param mxSession the Matrix to retrieve contextual data.
  @return the newly created instance.
  */
 - (instancetype)initWithMatrixSession:(MXSession*)mxSession;
+
+/**
+ Initialise the date and time formatters.
+ This formatter could require to be updated after updating the device settings.
+ e.g the time format switches from 24H format to AM/PM.
+ */
+- (void)initDateTimeFormatters;
 
 /**
  Checks whether the event is related to an attachment and if it is supported.
@@ -124,13 +131,13 @@ typedef enum : NSUInteger {
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
- Return sets of attributes for the displayable string representing the event.
+ Return attributed string for the displayable string representing the event.
  
+ @param text pre-computed text representation of the event
  @param event the event.
- @return sets of attributes to apply on event description.
+ @return NSAttributedString for displaying the event.
  */
-- (NSDictionary*)stringAttributesForEvent:(MXEvent*)event;
-
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event;
 
 #pragma mark - Fake event objects creation
 - (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content;

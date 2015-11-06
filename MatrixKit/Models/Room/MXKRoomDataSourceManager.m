@@ -25,6 +25,11 @@
      Each key is a room ID. Each value, the MXKRoomDataSource instance.
      */
     NSMutableDictionary *roomDataSources;
+    
+    /**
+     Observe UIApplicationDidReceiveMemoryWarningNotification to dispose of any resources that can be recreated.
+     */
+    id UIApplicationDidReceiveMemoryWarningNotificationObserver;
 }
 
 @end
@@ -76,7 +81,7 @@ static Class _roomDataSourceClass;
         MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
         if (roomDataSourceManager)
         {
-            [roomDataSourceManager reset];
+            [roomDataSourceManager destroy];
             [_roomDataSourceManagers removeObjectForKey:mxSessionId];
         }
     }
@@ -99,7 +104,7 @@ static Class _roomDataSourceClass;
                 MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
                 if (roomDataSourceManager)
                 {
-                    [roomDataSourceManager reset];
+                    [roomDataSourceManager destroy];
                     [_roomDataSourceManagers removeObjectForKey:mxSessionId];
                 }
             }
@@ -117,6 +122,22 @@ static Class _roomDataSourceClass;
         _releasePolicy = MXKRoomDataSourceManagerReleasePolicyNeverRelease;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
+        
+        // Observe UIApplicationDidReceiveMemoryWarningNotification
+        UIApplicationDidReceiveMemoryWarningNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            NSLog(@"MXKRoomDataSourceManager %@: Received memory warning.", self);
+            
+            // Reload all data sources (except the current used ones) to reduce memory usage.
+            for (MXKRoomDataSource *roomDataSource in roomDataSources.allValues)
+            {
+                if (!roomDataSource.delegate)
+                {
+                    [roomDataSource reload];
+                }
+            }
+            
+        }];
     }
     return self;
 }
@@ -124,6 +145,17 @@ static Class _roomDataSourceClass;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
+}
+
+- (void)destroy
+{
+    [self reset];
+    
+    if (UIApplicationDidReceiveMemoryWarningNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationDidReceiveMemoryWarningNotificationObserver];
+        UIApplicationDidReceiveMemoryWarningNotificationObserver = nil;
+    }
 }
 
 #pragma mark
@@ -203,7 +235,7 @@ static Class _roomDataSourceClass;
         case MXKRoomDataSourceManagerReleasePolicyNeverRelease:
             
             // Keep the instance for life (reduce memory usage by flushing room data if the number of bubbles is over 30).
-            [roomDataSource limitMemoryUsage:30];
+            [roomDataSource limitMemoryUsage:MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD];
             // The close here consists in no more sending actions to the currrent view controller, the room data source delegate
             roomDataSource.delegate = nil;
             break;

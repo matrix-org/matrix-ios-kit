@@ -24,7 +24,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *memberCount;
 @property (weak, nonatomic) IBOutlet UILabel *roomTopic;
 
-@property (nonatomic, getter=isFocused) BOOL focused;
+@property (nonatomic, getter=isHighlightedPublicRoom) BOOL highlightedPublicRoom;
 
 /**
  Configure the cell in order to display the public room.

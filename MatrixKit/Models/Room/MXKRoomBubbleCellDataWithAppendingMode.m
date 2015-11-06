@@ -24,8 +24,8 @@ static NSAttributedString *messageSeparator = nil;
 
 - (BOOL)addEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
 {
-    // We group together text messages from the same user
-    if ([event.userId isEqualToString:self.senderId] && (self.dataType == MXKRoomBubbleCellDataTypeText))
+    // We group together text messages from the same user (attachments are not merged).
+    if ([event.sender isEqualToString:self.senderId] && (self.attachment == nil))
     {
         // Attachments (image, video ...) cannot be added here
         if ([roomDataSource.eventFormatter isSupportedAttachment:event])
@@ -76,8 +76,21 @@ static NSAttributedString *messageSeparator = nil;
     if ([self hasSameSenderAsBubbleCellData:bubbleCellData])
     {
         MXKRoomBubbleCellData *cellData = (MXKRoomBubbleCellData*)bubbleCellData;
-        if ((self.dataType == MXKRoomBubbleCellDataTypeText) && (cellData.dataType == MXKRoomBubbleCellDataTypeText))
+        // Only text messages are merged (Attachments are not merged).
+        if ((self.attachment == nil) && (cellData.attachment == nil))
         {
+            // Take into account here the rendered bubbles pagination
+            if (roomDataSource.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+            {
+                // bubble components must be sent the same day than self.
+                NSString *selfDateString = [roomDataSource.eventFormatter dateStringFromDate:self.date withTime:NO];
+                NSString *bubbleDateString = [roomDataSource.eventFormatter dateStringFromDate:bubbleCellData.date withTime:NO];
+                if (![bubbleDateString isEqualToString:selfDateString])
+                {
+                    return NO;
+                }
+            }
+        
             // Add all components of the provided message
             for (MXKRoomBubbleComponent* component in cellData.bubbleComponents)
             {
@@ -95,29 +108,33 @@ static NSAttributedString *messageSeparator = nil;
     NSMutableAttributedString *customAttributedTextMsg;
     NSAttributedString *componentString;
     
-    for (MXKRoomBubbleComponent* component in bubbleComponents)
+    @synchronized(bubbleComponents)
     {
-        componentString = component.attributedTextMessage;
-        
-        if ([component.event.eventId isEqualToString:eventId])
+        for (MXKRoomBubbleComponent* component in bubbleComponents)
         {
-            NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
-            UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
-            [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
-            componentString = customComponentString;
-        }
-        
-        if (!customAttributedTextMsg)
-        {
-            customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
-        }
-        else
-        {
-            // Append attributed text
-            [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-            [customAttributedTextMsg appendAttributedString:componentString];
+            componentString = component.attributedTextMessage;
+            
+            if ([component.event.eventId isEqualToString:eventId])
+            {
+                NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+                UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
+                [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
+                componentString = customComponentString;
+            }
+            
+            if (!customAttributedTextMsg)
+            {
+                customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+            }
+            else
+            {
+                // Append attributed text
+                [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                [customAttributedTextMsg appendAttributedString:componentString];
+            }
         }
     }
+
     return customAttributedTextMsg;
 }
 
@@ -128,33 +145,35 @@ static NSAttributedString *messageSeparator = nil;
     // Set position of the first component
     [super prepareBubbleComponentsPosition];
     
-    // Check whether the position of other components need to be refreshed
-    if (self.dataType != MXKRoomBubbleCellDataTypeText || !shouldUpdateComponentsPosition || bubbleComponents.count < 2)
+    @synchronized(bubbleComponents)
     {
-        return;
+        // Check whether the position of other components need to be refreshed        
+        if (!self.attachment && shouldUpdateComponentsPosition && bubbleComponents.count > 1)
+        {
+            // Compute height of the first text component
+            MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
+            CGFloat componentHeight = [self rawTextHeight:component.attributedTextMessage];
+            
+            // Set position for each other component
+            CGFloat positionY = component.position.y;
+            CGFloat cumulatedHeight = 0;
+            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+            for (NSUInteger index = 1; index < bubbleComponents.count; index++)
+            {
+                cumulatedHeight += componentHeight;
+                positionY += componentHeight;
+                
+                component = [bubbleComponents objectAtIndex:index];
+                component.position = CGPointMake(0, positionY);
+                
+                // Compute height of the current component
+                [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                [attributedString appendAttributedString:component.attributedTextMessage];
+                componentHeight = [self rawTextHeight:attributedString] - cumulatedHeight;
+            }
+        }
     }
-    
-    // Compute height of the first text component
-    MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-    CGFloat componentHeight = [self rawTextHeight:component.attributedTextMessage];
-    
-    // Set position for each other component
-    CGFloat positionY = component.position.y;
-    CGFloat cumulatedHeight = 0;
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
-    for (NSUInteger index = 1; index < bubbleComponents.count; index++)
-    {
-        cumulatedHeight += componentHeight;
-        positionY += componentHeight;
-        
-        component = [bubbleComponents objectAtIndex:index];
-        component.position = CGPointMake(0, positionY);
-        
-        // Compute height of the current component
-        [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-        [attributedString appendAttributedString:component.attributedTextMessage];
-        componentHeight = [self rawTextHeight:attributedString] - cumulatedHeight;
-    }
+
     shouldUpdateComponentsPosition = NO;
 }
 
@@ -168,17 +187,20 @@ static NSAttributedString *messageSeparator = nil;
     {
         // Append all components text message
         NSMutableString *currentTextMsg;
-        for (MXKRoomBubbleComponent* component in bubbleComponents)
+        @synchronized(bubbleComponents)
         {
-            if (!currentTextMsg)
+            for (MXKRoomBubbleComponent* component in bubbleComponents)
             {
-                currentTextMsg = [NSMutableString stringWithString:component.textMessage];
-            }
-            else
-            {
-                // Append text message
-                [currentTextMsg appendString:@"\n"];
-                [currentTextMsg appendString:component.textMessage];
+                if (!currentTextMsg)
+                {
+                    currentTextMsg = [NSMutableString stringWithString:component.textMessage];
+                }
+                else
+                {
+                    // Append text message
+                    [currentTextMsg appendString:@"\n"];
+                    [currentTextMsg appendString:component.textMessage];
+                }
             }
         }
         rawText = currentTextMsg;
@@ -197,25 +219,28 @@ static NSAttributedString *messageSeparator = nil;
 
 - (NSAttributedString*)attributedTextMessage
 {
-    if (!attributedTextMessage.length && bubbleComponents.count)
+    @synchronized(bubbleComponents)
     {
-        // Create attributed string
-        NSMutableAttributedString *currentAttributedTextMsg;
-        
-        for (MXKRoomBubbleComponent* component in bubbleComponents)
+        if (!attributedTextMessage.length && bubbleComponents.count)
         {
-            if (!currentAttributedTextMsg)
+            // Create attributed string
+            NSMutableAttributedString *currentAttributedTextMsg;
+            
+            for (MXKRoomBubbleComponent* component in bubbleComponents)
             {
-                currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+                if (!currentAttributedTextMsg)
+                {
+                    currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+                }
+                else
+                {
+                    // Append attributed text
+                    [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                    [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
+                }
             }
-            else
-            {
-                // Append attributed text
-                [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-                [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
-            }
+            attributedTextMessage = currentAttributedTextMsg;
         }
-        attributedTextMessage = currentAttributedTextMsg;
     }
     
     return attributedTextMessage;
@@ -254,23 +279,26 @@ static NSAttributedString *messageSeparator = nil;
 
 - (void)addComponent:(MXKRoomBubbleComponent*)addedComponent
 {
-    // Check date of existing components to insert this new one
-    NSUInteger index = bubbleComponents.count;
-    while (index)
+    @synchronized(bubbleComponents)
     {
-        MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
-        if ([msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+        // Check date of existing components to insert this new one
+        NSUInteger index = bubbleComponents.count;
+        while (index)
         {
-            // New component will be inserted here
-            index ++;
-            break;
+            MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
+            if ([msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+            {
+                // New component will be inserted here
+                index ++;
+                break;
+            }
         }
+        // Insert new component
+        [bubbleComponents insertObject:addedComponent atIndex:index];
+        
+        // Reset the current attributed string (This will reset rendering attributes).
+        self.attributedTextMessage = nil;
     }
-    // Insert new component
-    [bubbleComponents insertObject:addedComponent atIndex:index];
-    
-    // Reset the current attributed string (This will reset rendering attributes).
-    self.attributedTextMessage = nil;
 }
 
 @end

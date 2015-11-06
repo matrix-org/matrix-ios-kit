@@ -39,8 +39,11 @@
 #import "MXKContactDetailsViewController.h"
 #import "MXKRoomMemberDetailsViewController.h"
 #import "MXKNotificationSettingsViewController.h"
+#import "MXKAttachmentsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
+#import "MXKAuthInputsPasswordBasedView.h"
+#import "MXKAuthInputsEmailCodeBasedView.h"
 
 #import "MXKRoomCreationInputs.h"
 
@@ -55,6 +58,8 @@
 
 #import "MXKRoomBubbleCellData.h"
 #import "MXKRoomBubbleCellDataWithAppendingMode.h"
+
+#import "MXKAttachment.h"
 
 #import "MXKPublicRoomTableViewCell.h"
 
@@ -77,6 +82,8 @@
 #import "MXKTableViewCellWithSearchBar.h"
 #import "MXKTableViewCellWithTextFieldAndButton.h"
 #import "MXKTableViewCellWithTextView.h"
+
+#import "MXKMediaCollectionViewCell.h"
 
 #import "MXKRoomTitleView.h"
 #import "MXKRoomTitleViewWithTopic.h"
