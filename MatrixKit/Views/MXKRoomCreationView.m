@@ -356,7 +356,8 @@
     NSString *roomAlias = _roomAliasTextField.text;
     NSString *participants = _participantsTextField.text;
     
-    _createRoomBtn.enabled = (roomName.length || roomAlias.length || participants.length);
+    // Room alias is required to create public room
+    _createRoomBtn.enabled = ((_roomVisibilityControl.selectedSegmentIndex == 0) ? roomAlias.length : (roomName.length || roomAlias.length || participants.length));
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
@@ -398,7 +399,7 @@
             textField.text = nil;
             
             // Update Create button status
-            _createRoomBtn.enabled = (_roomNameTextField.text.length || _participantsTextField.text.length);
+            _createRoomBtn.enabled = ((_roomVisibilityControl.selectedSegmentIndex == 1) && (_roomNameTextField.text.length || _participantsTextField.text.length));
         }
     }
     else if (textField == _participantsTextField)
@@ -407,7 +408,7 @@
         textField.text = [participants componentsJoinedByString:@"; "];
         
         // Update Create button status
-        _createRoomBtn.enabled = (_roomNameTextField.text.length || _roomAliasTextField.text.length || _participantsTextField.text.length);
+        _createRoomBtn.enabled = ((_roomVisibilityControl.selectedSegmentIndex == 0) ? _roomAliasTextField.text.length : (_roomNameTextField.text.length || _roomAliasTextField.text.length || _participantsTextField.text.length));
     }
 }
 
