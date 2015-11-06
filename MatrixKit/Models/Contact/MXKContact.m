@@ -214,9 +214,13 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     {
         _contactID = [NSString stringWithFormat:@"%@%@", kMXKContactMatrixContactPrefixId, [[NSUUID UUID] UUIDString]];
         
-        // used when the contact is not defined in the contacts book
-        matrixIdField = [[MXKContactField alloc] initWithContactID:_contactID matrixID:matrixID];
-        isMatrixContact = YES;
+        // Sanity check
+        if (matrixID.length)
+        {
+            // used when the contact is not defined in the contacts book
+            matrixIdField = [[MXKContactField alloc] initWithContactID:_contactID matrixID:matrixID];
+            isMatrixContact = YES;
+        }
         
         // _displayName must not be nil
         // it is used to sort the contacts

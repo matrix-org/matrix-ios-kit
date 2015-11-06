@@ -844,36 +844,42 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         if ([mxSession privateOneToOneRoomWithUserId:matrixId])
         {
-            // Update or create a contact for this user
+            // Retrieve the user object related to this contact
             MXUser* user = [mxSession userWithUserId:matrixId];
-            MXKContact* contact = [matrixContactByMatrixID objectForKey:matrixId];
             
-            // already defined
-            if (contact)
+            // This user may not exist (if the oneToOne room is a pending invitation to him).
+            if (user)
             {
-                NSString *userDisplayName = (user.displayname.length > 0) ? user.displayname : user.userId;
-                if (![contact.displayName isEqualToString:userDisplayName])
+                // Update or create a contact for this user
+                MXKContact* contact = [matrixContactByMatrixID objectForKey:matrixId];
+                
+                // already defined
+                if (contact)
                 {
-                    contact.displayName = userDisplayName;
+                    NSString *userDisplayName = (user.displayname.length > 0) ? user.displayname : user.userId;
+                    if (![contact.displayName isEqualToString:userDisplayName])
+                    {
+                        contact.displayName = userDisplayName;
+                        
+                        [self cacheMatrixContacts];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                    }
+                }
+                else
+                {
+                    contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) andMatrixID:user.userId];
+                    [matrixContactByMatrixID setValue:contact forKey:matrixId];
+                    
+                    // update the matrix contacts list
+                    [matrixContactByContactID setValue:contact forKey:contact.contactID];
                     
                     [self cacheMatrixContacts];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
                 }
-            }
-            else
-            {
-                contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) andMatrixID:user.userId];
-                [matrixContactByMatrixID setValue:contact forKey:matrixId];
                 
-                // update the matrix contacts list
-                [matrixContactByContactID setValue:contact forKey:contact.contactID];
-                
-                [self cacheMatrixContacts];
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                // Done
+                return;
             }
-            
-            // Done
-            return;
         }
     }
     
