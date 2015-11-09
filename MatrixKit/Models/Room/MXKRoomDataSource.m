@@ -525,7 +525,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // so, if some messages have been read on one device, the other devices must update the unread counters
         if ([event.receiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
         {
-            [self refreshUnreadCounters:YES];
+            [self refreshUnreadCounters:NO];
             
             // the unread counter has been updated so refresh the recents
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
