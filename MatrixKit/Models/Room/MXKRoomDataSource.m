@@ -121,7 +121,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
         
         _roomId = roomId;
-        processingQueue = dispatch_queue_create("MXKRoomDataSource", DISPATCH_QUEUE_SERIAL);
         bubbles = [NSMutableArray array];
         eventsToProcess = [NSMutableArray array];
         eventIdToBubbleMap = [NSMutableDictionary dictionary];
@@ -384,7 +383,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     [self reset];
     
     self.eventFormatter = nil;
-    processingQueue = nil;
     
     eventsToProcess = nil;
     bubbles = nil;
@@ -545,7 +543,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         if (direction == MXEventDirectionForwards)
         {
             // Do the processing on the processing queue
-            dispatch_async(processingQueue, ^{
+            dispatch_async(MXKRoomDataSource.processingQueue, ^{
                 
                 // Check whether a message contains the redacted event
                 id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
@@ -1703,6 +1701,22 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 #pragma mark - Asynchronous events processing
 /**
+ The dispatch queue to process room messages.
+ This processing can consume time. Handling it on a separated thread avoids to block the main thread.
+ All MXKRoomDataSource instances share the same dispatch queue.
+ */
+ + (dispatch_queue_t)processingQueue
+{
+    static dispatch_queue_t processingQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        processingQueue = dispatch_queue_create("MXKRoomDataSource", DISPATCH_QUEUE_SERIAL);
+    });
+
+    return processingQueue;
+}
+
+/**
  Queue an event in order to process its display later.
  
  @param event the event to process.
@@ -1769,7 +1783,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)processQueuedEvents:(void (^)())onComplete
 {
     // Do the processing on the processing queue
-    dispatch_async(processingQueue, ^{
+    dispatch_async(MXKRoomDataSource.processingQueue, ^{
         
         // Note: As this block is always called from the same processing queue,
         // only one batch process is done at a time. Thus, an event cannot be
@@ -2000,14 +2014,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         else
         {
             // No new event has been added, we just inform about the end if requested.
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if (onComplete)
-                {
+            if (onComplete)
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
                     onComplete();
-                }
-                
-            });
+                });
+            }
         }
     });
 }
