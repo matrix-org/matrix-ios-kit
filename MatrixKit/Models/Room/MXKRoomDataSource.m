@@ -1804,9 +1804,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(eventsToProcessSnapshot)
         {
-            // Reset the previous snapshot
-        	bubblesSnapshot = nil;
-
             // Is there events to process?
             // The list can be empty because several calls of processQueuedEvents may be processed
             // in one pass in the processingQueue
@@ -1959,7 +1956,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         if (bubblesSnapshot)
         {
             // Updated data can be displayed now
-            // Synchronously wait for the end of the block execution to
+            // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
             dispatch_sync(dispatch_get_main_queue(), ^{
                 
                 // Check whether self has not been reloaded or destroyed
@@ -1978,6 +1975,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     [self refreshUnreadCounters:NO];
                     
                     bubbles = bubblesSnapshot;
+                    bubblesSnapshot = nil;
                     
                     if (self.delegate)
                     {
