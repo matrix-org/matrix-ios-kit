@@ -1804,6 +1804,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(eventsToProcessSnapshot)
         {
+            // Reset the previous snapshot
+        	bubblesSnapshot = nil;
+
             // Is there events to process?
             // The list can be empty because several calls of processQueuedEvents may be processed
             // in one pass in the processingQueue
