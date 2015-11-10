@@ -91,20 +91,14 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 /**
  The data source for `MXKRoomViewController`.
  */
-@interface MXKRoomDataSource : MXKDataSource <UITableViewDataSource> {
-
+@interface MXKRoomDataSource : MXKDataSource <UITableViewDataSource>
+{
 @protected
 
     /**
      The data for the cells served by `MXKRoomDataSource`.
      */
     NSMutableArray *bubbles;
-
-    /**
-     The queue to process room messages.
-     This processing can consume time. Handling it on a separated thread avoids to block the main thread.
-     */
-    dispatch_queue_t processingQueue;
 
     /**
      The queue of events that need to be processed in order to compute their display.
