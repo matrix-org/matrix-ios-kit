@@ -47,34 +47,43 @@
 
 - (void)update
 {
-    // Keep ref on event
+    // Keep ref on displayed last event
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
-    lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
     
-    // Compute the text message
-    MXKEventFormatterError error;
-    lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
-    
-    // Manage error
-    if (error != MXKEventFormatterErrorNone)
+    if (lastEvent)
     {
-        switch (error)
+        lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
+        
+        // Compute the text message
+        MXKEventFormatterError error;
+        lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+        
+        // Manage error
+        if (error != MXKEventFormatterErrorNone)
         {
-            case MXKEventFormatterErrorUnsupported:
-                lastEvent.mxkState = MXKEventStateUnsupported;
-                break;
-            case MXKEventFormatterErrorUnexpected:
-                lastEvent.mxkState = MXKEventStateUnexpected;
-                break;
-            case MXKEventFormatterErrorUnknownEventType:
-                lastEvent.mxkState = MXKEventStateUnknownType;
-                break;
-                
-            default:
-                break;
+            switch (error)
+            {
+                case MXKEventFormatterErrorUnsupported:
+                    lastEvent.mxkState = MXKEventStateUnsupported;
+                    break;
+                case MXKEventFormatterErrorUnexpected:
+                    lastEvent.mxkState = MXKEventStateUnexpected;
+                    break;
+                case MXKEventFormatterErrorUnknownEventType:
+                    lastEvent.mxkState = MXKEventStateUnknownType;
+                    break;
+                    
+                default:
+                    break;
+            }
         }
     }
+    else
+    {
+        lastEventTextMessage = nil;
+    }
+    
     
     if (0 == lastEventTextMessage.length)
     {
