@@ -53,7 +53,28 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 {
     [super awakeFromNib];
     
-    self.pictureView.backgroundColor = [UIColor clearColor];
+    self.pictureView.backgroundColor = [UIColor blackColor];
+    self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+    
+    // Listen to avatar tap
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
+    [tapGesture setNumberOfTouchesRequired:1];
+    [tapGesture setNumberOfTapsRequired:1];
+    [tapGesture setDelegate:self];
+    [self.pictureView addGestureRecognizer:tapGesture];
+    self.pictureView.userInteractionEnabled = YES;
+    
+    // Listen to textView tap
+    tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
+    [tapGesture setNumberOfTouchesRequired:1];
+    [tapGesture setNumberOfTapsRequired:1];
+    [tapGesture setDelegate:self];
+    [self.messageTextView addGestureRecognizer:tapGesture];
+    self.messageTextView.userInteractionEnabled = YES;
+    
+    // Add a long gesture recognizer on text view in order to display event details
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+    [self.messageTextView addGestureRecognizer:longPress];
     
     self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
 }
@@ -129,42 +150,34 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
         
-        // set the media folders
-        self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        // Set attached media folders
         self.attachmentView.mediaFolder = bubbleData.roomId;
         
-        // Handle sender's picture and adjust view's constraints
-        self.pictureView.hidden = NO;
+        // Check whether the sender's picture is actually displayed before loading it.
+        if (self.bubbleData.shouldHideSenderInformation == NO)
+        {
+            self.pictureView.hidden = NO;
+            
+            // Handle user's picture
+            NSString *avatarThumbURL = nil;
+            if (bubbleData.senderAvatarUrl)
+            {
+                // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+                avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
+            }
+            self.pictureView.enableInMemoryCache = YES;
+            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+            [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
+            self.pictureView.clipsToBounds = YES;
+        }
+        else
+        {
+            self.pictureView.hidden = YES;
+        }
+        
+        // Set default view's constraints
         self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant;
         self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant ;
-        // Handle user's picture
-        NSString *avatarThumbURL = nil;
-        if (bubbleData.senderAvatarUrl)
-        {
-            // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
-        }
-        self.pictureView.enableInMemoryCache = YES;
-        [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
-        [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
-        self.pictureView.clipsToBounds = YES;
-        self.pictureView.backgroundColor = [UIColor blackColor];
-        
-        // Listen to avatar tap
-        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
-        [tapGesture setNumberOfTouchesRequired:1];
-        [tapGesture setNumberOfTapsRequired:1];
-        [tapGesture setDelegate:self];
-        [self.pictureView addGestureRecognizer:tapGesture];
-        self.pictureView.userInteractionEnabled = YES;
-        
-        // Listen to textView tap
-        tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
-        [tapGesture setNumberOfTouchesRequired:1];
-        [tapGesture setNumberOfTapsRequired:1];
-        [tapGesture setDelegate:self];
-        [self.messageTextView addGestureRecognizer:tapGesture];
-        self.messageTextView.userInteractionEnabled = YES;
         
         // Adjust top constraint constant for dateTime labels container, and hide it by default
         if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
@@ -284,13 +297,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 
                 newText = updatedText;
                 
-                // Add tap recognizer to open attachment
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
-                [tap setNumberOfTouchesRequired:1];
-                [tap setNumberOfTapsRequired:1];
-                [tap setDelegate:self];
-                [self.messageTextView addGestureRecognizer:tap];
-                
                 // Store attachment content description used in showAttachmentView:
                 self.attachmentView.mediaInfo = @{
                                                   @"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type],
@@ -323,10 +329,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             {
                 self.messageTextView.frame = newFrame;
             }
-            
-            // Add a long gesture recognizer on text view in order to display event details
-            UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
-            [self.messageTextView addGestureRecognizer:longPress];
         }
         
         // Check and update each component position (used to align timestamps label in front of events, and to handle tap gesture on events)
@@ -723,7 +725,15 @@ static NSMutableDictionary *childClasses;
 {
     if (delegate)
     {
-        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:nil];
+        // Check whether the current displayed text corresponds to an attached file
+        if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+        {
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
+        }
+        else
+        {
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:nil];
+        }
     }
 }
 

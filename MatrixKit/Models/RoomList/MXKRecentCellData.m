@@ -84,7 +84,6 @@
         lastEventTextMessage = nil;
     }
     
-    
     if (0 == lastEventTextMessage.length)
     {
         lastEventTextMessage = @"";
