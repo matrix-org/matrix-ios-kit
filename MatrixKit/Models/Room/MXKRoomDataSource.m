@@ -216,7 +216,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
-- (void)refreshUnreadCounters:(BOOL)refreshBingCounter {
+- (void)refreshUnreadCounters:(BOOL)refreshBingCounter
+{
     // always highlight invitation message.
     // if the room is joined from another device
     // this state will be updated so the standard read receipts management will be applied.
@@ -227,20 +228,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     else
     {
-        // default value
-        _unreadCount = 0;
-        
         NSArray* list = [_room unreadEvents];
-        
-        if (list)
+        if (_unreadCount != list.count)
         {
             _unreadCount = list.count;
             
+            // Note: check bing takes time, so we allow bing counter refresh only when the unread count has changed
+            // and the caller has enabled the refresh ('refreshBingCounter' boolean).
             if (refreshBingCounter)
             {
                 _unreadBingCount = 0;
                 
-                for(MXEvent* event in list)
+                for (MXEvent* event in list)
                 {
                     [self checkBing:event];
                 }
@@ -263,8 +262,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)limitMemoryUsage:(NSInteger)maxBubbleNb
 {
-    // Do nothing if some local echoes are in progress or if unread counter is not nil.
-    if (pendingLocalEchoes.count || _unreadCount)
+    // Do nothing if some local echoes are in progress.
+    if (pendingLocalEchoes.count)
     {
         return;
     }
@@ -330,6 +329,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     _serverSyncEventCount = 0;
+    _unreadCount = 0;
+    _unreadBingCount = 0;
 
     // Notify the delegate to reload its tableview
     if (self.delegate)
@@ -348,14 +349,29 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [self.delegate dataSource:self didStateChange:state];
     }
     
-    // Flush the current bubble data
+    // Flush the current bubble data by keeping the current unread counts (to reduce computation time, indeed check bing takes time).
+    NSUInteger unreadCount = _unreadCount;
+    NSUInteger unreadBingCount = _unreadBingCount;
+    
     [self reset];
+    
+    _unreadCount = unreadCount;
+    _unreadBingCount = unreadBingCount;
     
     // Reload
     [self didMXSessionStateChange];
     
-    // Notify the last message may have changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    // Handle here the case where reload has failed (should not happen except if session has been closed).
+    if (state != MXKDataSourceStateReady)
+    {
+        NSLog(@"[MXKRoomDataSource] Reload Failed (%p - room id: %@)", self, _roomId);
+        
+        _unreadCount = 0;
+        _unreadBingCount = 0;
+        
+        // Notify the last message, unreadCount and/or unreadBingCount have changed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    }
 }
 
 - (void)destroy
@@ -406,6 +422,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                 [_room resetBackState];
                 
+                [self refreshUnreadCounters:YES];
+                
                 // Force to set the filter at the MXRoom level
                 self.eventsFilterForMessages = _eventsFilterForMessages;
                 
@@ -414,8 +432,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateReady;
-                
-                [self refreshUnreadCounters:YES];
                 
                 // Check user membership in this room
                 MXMembership membership = self.room.state.membership;
@@ -1981,24 +1997,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     {
                         [self.delegate dataSource:self didCellChange:nil];
                     }
-                    else if (0 == pendingLocalEchoes.count)
+                    else
                     {
-                        NSInteger count;
-                        @synchronized(bubbles)
-                        {
-                            count = bubbles.count;
-                        }
-                        
-                        // loop until the bubbles count is reduced as expected.
-                        while (count > _maxBackgroundCachedBubblesCount)
-                        {
-                            [self removeCellData:[bubbles objectAtIndex:0]];
-                            
-                            @synchronized(bubbles)
-                            {
-                                count = bubbles.count;
-                            }
-                        }
+                        // Check the memory usage of the data source. Reload it if the cache is too huge.
+                        [self limitMemoryUsage:_maxBackgroundCachedBubblesCount];
                     }
                     
                     // Notify the last message, unreadCount and/or unreadBingCount have changed
