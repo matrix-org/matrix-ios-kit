@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.2.6 (2015-11-12)
+===============================================
+
+Improvements:
+ * MXKRoomDataSource: Reduce computation time on read receipts handling.
+ * MXKRoomDataSource: Use only one dispatch queue to limit thread switchings.
+
+Bug fixes:
+ * MXKRoomDataSource: Fix performance regression (UI was refreshed even in case of no change).
+ * MXKRoomDataSource: Fix "Missing messages in back pagination".
+
 Changes in MatrixKit in 0.2.5 (2015-11-06)
 ===============================================
 
