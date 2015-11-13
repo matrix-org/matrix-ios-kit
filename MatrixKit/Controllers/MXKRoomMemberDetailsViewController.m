@@ -364,6 +364,9 @@
     [self.memberThumbnailButton setImage:image forState:UIControlStateNormal];
     [self.memberThumbnailButton setImage:image forState:UIControlStateHighlighted];
     [self.memberThumbnailButton setImage:image forState:UIControlStateDisabled];
+    
+    [self.memberThumbnailButton.layer setCornerRadius:self.memberThumbnailButton.frame.size.width / 2];
+    self.memberThumbnailButton.clipsToBounds = YES;
 }
 
 - (void)updateMemberInfo
