@@ -63,6 +63,9 @@
         
         self.userLabel.text = memberCellData.memberDisplayName;
         
+        // Disable by default activity update mechanism (This is required in case of a reused cell).
+        shouldUpdateActivityInfo = NO;
+        
         // User thumbnail
         NSString *thumbnailURL = nil;
         if (memberCellData.roomMember.avatarUrl)
