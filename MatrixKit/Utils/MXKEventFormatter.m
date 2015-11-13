@@ -135,8 +135,16 @@
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"avatar_url"] length])
     {
-        // Use the actual display name
-        senderAvatarUrl = event.content[@"avatar_url"];
+        // We ignore non mxc avatar url
+        if ([event.content[@"avatar_url"] hasPrefix:kMXContentUriScheme])
+        {
+            // Use the actual avatar
+            senderAvatarUrl = event.content[@"avatar_url"];
+        }
+        else
+        {
+            senderAvatarUrl = [mxSession.matrixRestClient urlOfIdenticon:event.sender];
+        }
     }
     return senderAvatarUrl;
 }

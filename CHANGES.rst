@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.2.7 (2015-11-13)
+===============================================
+
+Improvements:
+ * MXKRoomBubbleTableViewCell: Improve resources handling.
+ * MXKRoomMemberDetails: Display rounded picture.
+
+Bug fixes:
+ * App crashes on an invite event during events stream resume.
+ * MXKRoomMemberTableViewCell: App crashes on room members list update.
+
 Changes in MatrixKit in 0.2.6 (2015-11-12)
 ===============================================
 
