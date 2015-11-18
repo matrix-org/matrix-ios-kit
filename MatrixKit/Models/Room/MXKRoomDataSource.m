@@ -144,6 +144,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // display the read receips by default
         self.showBubbleReceipts = YES;
         
+        // display keyboard icon in cells.
+        self.showTypingNotifications = YES;
+        
         self.useCustomDateTimeLabel = NO;
         
         _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
@@ -665,7 +668,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         if (direction == MXEventDirectionForwards)
         {
             // Retrieve typing users list
-            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
+            NSMutableArray *typingUsers;
+            
+            if (self.showTypingNotifications)
+            {
+                typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
+            }
+            else
+            {
+                // display as no one is typing
+                typingUsers = [[NSMutableArray alloc] init];
+            }
+
             // Remove typing info for the current user
             NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
             if (index != NSNotFound)
@@ -685,7 +699,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }
     }];
-    currentTypingUsers = _room.typingUsers;
+    
+    if (self.showTypingNotifications)
+    {
+        currentTypingUsers = _room.typingUsers;
+    }
+    else
+    {
+        currentTypingUsers = [[NSMutableArray alloc] init];
+    }
 }
 
 - (void)cancelAllRequests
