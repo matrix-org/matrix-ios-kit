@@ -933,7 +933,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         return;
     }
 
-    
     // Remove potential toolbar
     if (extraInfoView)
     {
@@ -952,7 +951,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     extraInfoView = [roomExtraInfoViewClass roomExtraInfoView];
     
     // assume that the height is never updated
-    _roomExtraInfoContainerHeightConstraint.constant = extraInfoView.frame.size.height;
+    _roomExtraInfoContainerHeightConstraint.constant = extraInfoView.height;
     
     // Add the view and define edge constraints
     [_roomExtraInfoContainer addSubview:extraInfoView];
@@ -985,10 +984,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                           multiplier:1.0f
                                                                             constant:0.0f]];
     
+    _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;;
+    
     [_roomExtraInfoContainer setNeedsUpdateConstraints];
 }
-
-
 
 - (BOOL)isIRCStyleCommand:(NSString*)string
 {

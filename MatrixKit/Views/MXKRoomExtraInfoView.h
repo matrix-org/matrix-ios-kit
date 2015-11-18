@@ -21,6 +21,8 @@
  */
 @interface MXKRoomExtraInfoView : UIView
 
+@property (nonatomic) CGFloat height;
+
 /**
  Creates and returns a new `MXKRoomExtraInfoView-inherited` object.
  
