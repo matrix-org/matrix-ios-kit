@@ -950,19 +950,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     extraInfoView = [roomExtraInfoViewClass roomExtraInfoView];
     
-    // assume that the height is never updated
-    _roomExtraInfoContainerHeightConstraint.constant = extraInfoView.height;
-    
     // Add the view and define edge constraints
     [_roomExtraInfoContainer addSubview:extraInfoView];
     [_roomExtraInfoContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
-                                                                           attribute:NSLayoutAttributeBottom
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:extraInfoView
-                                                                           attribute:NSLayoutAttributeBottom
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomExtraInfoContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
                                                                            attribute:NSLayoutAttributeTop
                                                                            relatedBy:NSLayoutRelationEqual
                                                                               toItem:extraInfoView
@@ -977,12 +967,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                           multiplier:1.0f
                                                                             constant:0.0f]];
     [_roomExtraInfoContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
-                                                                           attribute:NSLayoutAttributeTrailing
+                                                                           attribute:NSLayoutAttributeWidth
                                                                            relatedBy:NSLayoutRelationEqual
                                                                               toItem:extraInfoView
-                                                                           attribute:NSLayoutAttributeTrailing
+                                                                           attribute:NSLayoutAttributeWidth
                                                                           multiplier:1.0f
                                                                             constant:0.0f]];
+    
+    // let the provide view to define a height.
+    // it could have no constrainst if there is no defined xib
+    _roomExtraInfoContainerHeightConstraint.constant = extraInfoView.height;
     
     _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;;
     
