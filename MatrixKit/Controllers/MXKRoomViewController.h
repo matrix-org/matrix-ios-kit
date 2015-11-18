@@ -20,6 +20,8 @@ limitations under the License.
 #import "MXKRoomDataSource.h"
 #import "MXKRoomTitleView.h"
 #import "MXKRoomInputToolbarView.h"
+#import "MXKRoomExtraInfoView.h"
+
 
 #import "MXKAttachmentsViewController.h"
 
@@ -53,6 +55,11 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic, readonly) MXKRoomInputToolbarView* inputToolbarView;
 
 /**
+ The current extra info view defined into the view controller.
+ */
+@property (nonatomic, readonly) MXKRoomExtraInfoView* extraInfoView;
+
+/**
  Enable/disable saving of the current typed text in message composer when view disappears.
  The message composer is prefilled with this text when the room is opened again.
  This property value is YES by default.
@@ -68,7 +75,10 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic) IBOutlet UITableView *bubblesTableView;
 @property (nonatomic) IBOutlet UIView *roomTitleViewContainer;
 @property (nonatomic) IBOutlet UIView *roomInputToolbarContainer;
+@property (nonatomic) IBOutlet UIView *roomExtraInfoContainer;
+
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomExtraInfoContainerHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerBottomConstraint;
 
@@ -153,6 +163,15 @@ extern NSString *const kCmdResetUserPowerLevel;
  @param roomInputToolbarViewClass a MXKRoomInputToolbarView-inherited class.
  */
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass;
+
+/**
+ Register the class used to instantiate the extra info view.
+ 
+ The resulting view is added into 'roomExtraInfoContainer' view, which must be defined before calling this method.
+ 
+ @param roomExtraInfoViewClass a MXKRoomExtraInfoViewClass-inherited class.
+ */
+- (void)setRoomExtraInfoViewClass:(Class)roomExtraInfoViewClass;
 
 /**
  Detect and process potential IRC command in provided string.
