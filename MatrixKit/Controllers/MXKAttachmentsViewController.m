@@ -28,6 +28,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "GBDeviceInfo_iOS.h"
+
 @interface MXKAttachmentsViewController ()
 {
     /**
@@ -121,7 +123,11 @@
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
-    [self hideNavigationBar];
+    // Hide navigation bar by default. We need to wait viewDidAppear for iOS < 9.0
+    if ([GBDeviceInfo deviceInfo].osVersion.major >= 9)
+    {
+        [self hideNavigationBar];
+    }
     
     // Handle here the case of splitviewcontroller use on iOS 8 and later.
     if (self.splitViewController && [self.splitViewController respondsToSelector:@selector(displayMode)])
@@ -146,6 +152,11 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    if (self.navigationController.navigationBarHidden == NO)
+    {
+        [self hideNavigationBar];
+    }
     
     // Adjust content offset and make visible the attachmnet collections
     [self refreshAttachmentCollectionContentOffset];
