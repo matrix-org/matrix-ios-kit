@@ -168,7 +168,7 @@
 
 - (void)addMatrixSession:(MXSession*)mxSession
 {
-    if (!mxSession)
+    if (!mxSession || mxSession.state == MXSessionStateClosed)
     {
         return;
     }
@@ -283,8 +283,20 @@
 {
     MXSession *mxSession = notif.object;
     
-    if ([mxSessionArray indexOfObject:mxSession] != NSNotFound)
+    NSUInteger index = [mxSessionArray indexOfObject:mxSession];
+    if (index != NSNotFound)
     {
+        if (mxSession.state == MXSessionStateClosed)
+        {
+            [mxSessionArray removeObjectAtIndex:index];
+            
+            if (!mxSessionArray.count)
+            {
+                // Remove matrix sessions observer
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
+            }
+        }
+        
         [self onMatrixSessionChange];
     }
 }
