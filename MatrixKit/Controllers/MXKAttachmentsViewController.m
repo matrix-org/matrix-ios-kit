@@ -28,8 +28,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#import "GBDeviceInfo_iOS.h"
-
 @interface MXKAttachmentsViewController ()
 {
     /**
@@ -123,8 +121,10 @@
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
-    // Hide navigation bar by default. We need to wait viewDidAppear for iOS < 9.0
-    if ([GBDeviceInfo deviceInfo].osVersion.major >= 9)
+    // Hide navigation bar by default.
+    // For unknown reason, we have to wait for 'viewDidAppear' in iOS < 9.0, the bar is then visible a few seconds.
+    // We decided to hide it here on iOS 9 and later. Patch: we check a method available on iOS 9 and later.
+    if ([self respondsToSelector:@selector(loadViewIfNeeded)])
     {
         [self hideNavigationBar];
     }
