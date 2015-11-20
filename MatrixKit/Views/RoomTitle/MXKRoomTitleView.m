@@ -142,43 +142,51 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    NSString *alertMsg = nil;
-    
-    if (textField == self.displayNameTextField)
+    // check if the deleaget allows the edition
+    if (!self.delegate || [self.delegate roomTitleViewShouldBeginEditing:self])
     {
-        // Check whether the user has enough power to rename the room
-        MXRoomPowerLevels *powerLevels = [_mxRoom.state powerLevels];
-        NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoom.mxSession.myUser.userId];
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
+        NSString *alertMsg = nil;
+        
+        if (textField == self.displayNameTextField)
         {
-            // Only the room name is edited here, update the text field with the room name
-            textField.text = _mxRoom.state.name;
-            textField.backgroundColor = [UIColor whiteColor];
+            // Check whether the user has enough power to rename the room
+            MXRoomPowerLevels *powerLevels = [_mxRoom.state powerLevels];
+            NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoom.mxSession.myUser.userId];
+            if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
+            {
+                // Only the room name is edited here, update the text field with the room name
+                textField.text = _mxRoom.state.name;
+                textField.backgroundColor = [UIColor whiteColor];
+            }
+            else
+            {
+                alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
+            }
         }
-        else
+        
+        if (alertMsg)
         {
-            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
+            // Alert user
+            __weak typeof(self) weakSelf = self;
+            if (currentAlert)
+            {
+                [currentAlert dismiss:NO];
+            }
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+            }];
+            [self.delegate roomTitleView:self presentMXKAlert:currentAlert];
+            return NO;
         }
+        return YES;
     }
-    
-    if (alertMsg)
+    else
     {
-        // Alert user
-        __weak typeof(self) weakSelf = self;
-        if (currentAlert)
-        {
-            [currentAlert dismiss:NO];
-        }
-        currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-        {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-        }];
-        [self.delegate roomTitleView:self presentMXKAlert:currentAlert];
         return NO;
     }
-    return YES;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField

@@ -29,6 +29,14 @@
  */
 - (void)roomTitleView:(MXKRoomTitleView*)titleView presentMXKAlert:(MXKAlert*)alert;
 
+/**
+ Asks the delegate if editing should begin
+
+ @param titleView the room title view.
+ @return  YES if an editing session should be initiated; otherwise, NO to disallow editing.
+ */
+- (BOOL)roomTitleViewShouldBeginEditing:(MXKRoomTitleView*)titleView;
+
 @optional
 
 /**
