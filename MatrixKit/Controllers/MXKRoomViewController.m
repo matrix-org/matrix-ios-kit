@@ -2239,6 +2239,11 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [alert showInViewController:self];
 }
 
+- (BOOL)roomTitleViewShouldBeginEditing:(MXKRoomTitleView*)titleView
+{
+    return YES;
+}
+
 - (void)roomTitleView:(MXKRoomTitleView*)titleView isSaving:(BOOL)saving
 {
     if (saving)

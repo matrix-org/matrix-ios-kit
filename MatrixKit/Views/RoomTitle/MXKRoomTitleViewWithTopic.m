@@ -341,72 +341,80 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    NSString *alertMsg = nil;
-    
-    if (textField == self.displayNameTextField)
+    // check if the deleaget allows the edition
+    if (!self.delegate || [self.delegate roomTitleViewShouldBeginEditing:self])
     {
-        // Check whether the user has enough power to rename the room
-        MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
-        NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
-        {
-            // Only the room name is edited here, update the text field with the room name
-            textField.text = self.mxRoom.state.name;
-            textField.backgroundColor = [UIColor whiteColor];
-        }
-        else
-        {
-            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
-        }
+        NSString *alertMsg = nil;
         
-        // Check whether the user is allowed to change room topic
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
+        if (textField == self.displayNameTextField)
         {
-            // Show topic text field even if the current value is nil
-            self.hiddenTopic = NO;
-            if (alertMsg)
+            // Check whether the user has enough power to rename the room
+            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
+            if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
-                // Here the user can only update the room topic, switch on room topic field (without displaying alert)
-                alertMsg = nil;
-                [self.topicTextField becomeFirstResponder];
-                return NO;
+                // Only the room name is edited here, update the text field with the room name
+                textField.text = self.mxRoom.state.name;
+                textField.backgroundColor = [UIColor whiteColor];
+            }
+            else
+            {
+                alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
+            }
+            
+            // Check whether the user is allowed to change room topic
+            if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
+            {
+                // Show topic text field even if the current value is nil
+                self.hiddenTopic = NO;
+                if (alertMsg)
+                {
+                    // Here the user can only update the room topic, switch on room topic field (without displaying alert)
+                    alertMsg = nil;
+                    [self.topicTextField becomeFirstResponder];
+                    return NO;
+                }
             }
         }
+        else if (textField == self.topicTextField)
+        {
+            // Check whether the user has enough power to edit room topic
+            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
+            if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
+            {
+                textField.backgroundColor = [UIColor whiteColor];
+                [self stopTopicAnimation];
+            }
+            else
+            {
+                alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_topic_edition_not_authorized"];
+            }
+        }
+        
+        if (alertMsg)
+        {
+            // Alert user
+            __weak typeof(self) weakSelf = self;
+            if (currentAlert)
+            {
+                [currentAlert dismiss:NO];
+            }
+            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+            {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+            }];
+            [self.delegate roomTitleView:self presentMXKAlert:currentAlert];
+            return NO;
+        }
+        return YES;
     }
-    else if (textField == self.topicTextField)
+    else
     {
-        // Check whether the user has enough power to edit room topic
-        MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
-        NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
-        if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
-        {
-            textField.backgroundColor = [UIColor whiteColor];
-            [self stopTopicAnimation];
-        }
-        else
-        {
-            alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_topic_edition_not_authorized"];
-        }
-    }
-    
-    if (alertMsg)
-    {
-        // Alert user
-        __weak typeof(self) weakSelf = self;
-        if (currentAlert)
-        {
-            [currentAlert dismiss:NO];
-        }
-        currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-        {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-        }];
-        [self.delegate roomTitleView:self presentMXKAlert:currentAlert];
         return NO;
     }
-    return YES;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField

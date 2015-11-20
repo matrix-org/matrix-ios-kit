@@ -21,9 +21,9 @@
 - (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)state direction:(MXEventDirection)direction
 {
     self = [super init];
-    if (self) {
-        // Make a copy as the data can be read at anytime later
-        _event = [event copy];
+    if (self)
+    {
+        _event = event;
         _state = state;
         _direction = direction;
     }
