@@ -16,6 +16,18 @@
 
 #import "MXKRoomDetailsViewController.h"
 
+#import "NSBundle+MatrixKit.h"
+
+@interface MXKRoomDetailsViewController()
+{    
+    // nav barbutton
+    UIBarButtonItem* doneButton;
+    
+    // the room events listener
+    id roomListener;
+}
+@end
+
 @implementation MXKRoomDetailsViewController
 
 #pragma mark - Class methods
@@ -41,10 +53,82 @@
 {
     _session = aSession;
     _roomId = aRoomId;
+    
+    // sanity checks
+    if (aSession && aRoomId)
+    {
+        mxRoom = [aSession roomWithRoomId:aRoomId];
+    }
+    
+    if (mxRoom)
+    {
+        // Register a listener to handle messages related to room name, topic...
+        roomListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
+                                             onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+                        {
+                            // Consider only live events
+                            if (direction == MXEventDirectionForwards)
+                            {
+                                if (event.eventType != MXEventTypeRoomMember || !self.isEditing)
+                                {
+                                    [self refreshDisplay:mxRoom.state];
+                                }
+                            }
+                        }];
+        
+        mxRoomState = mxRoom.state;
+        [self checkIfSuperUser];
+    }
+    
+    self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];
+    
+    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(onDone:)];
+    self.navigationItem.rightBarButtonItem = doneButton;
 }
 
+#pragma mark - private methods
+
+- (void)checkIfSuperUser
+{
+    // Check whether the user has enough power to rename the room
+    MXRoomPowerLevels *powerLevels = [mxRoomState powerLevels];
+    NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_session.myUser.userId];
+    
+    isSuperUser = (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName]);
+}
+
+- (void)refreshDisplay:(MXRoomState*)newRoomState
+{
+    // the inherited classes could partially disable the refresh
+    // e.g. if the user set a new value, the refresh could be locked
+    mxRoomState = newRoomState.copy;
+    
+    [self checkIfSuperUser];
+    [self.tableView reloadData];
+}
+
+- (void)destroy
+{
+    if (roomListener)
+    {
+        [mxRoom removeListener:roomListener];
+        roomListener = nil;
+    }
+}
+
+#pragma mark - Action
+
+- (IBAction) onDone:(id)sender
+{
+    // should check if there are some updates before closing
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 #pragma mark - UITableViewDataSource
+
+// empty by default
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 0;

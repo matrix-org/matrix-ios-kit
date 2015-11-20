@@ -22,6 +22,18 @@
  This view controller displays the room details.
  */
 @interface MXKRoomDetailsViewController : MXKTableViewController
+{
+@protected
+    
+    // the dedicated room
+    MXRoom* mxRoom;
+    
+    // the room state
+    MXRoomState* mxRoomState;
+    
+    // tell if the user can update the room info
+    BOOL isSuperUser;
+}
 
 /**
  The dedicated roomId.

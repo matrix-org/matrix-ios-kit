@@ -247,7 +247,10 @@
 
 // room creation dialog Screen 
 
-// room info dialog Screen 
+// room info dialog Screen
+
+// room details dialog screen
+"room_details_title" = "Room Details";
 
 // contacts list screen 
 "invitation_message" = "I\'d like to chat with you with matrix. Please, visit the website http://matrix.org to have more information.";
