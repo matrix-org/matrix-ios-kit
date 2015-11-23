@@ -269,9 +269,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (shouldScrollToBottomOnTableRefresh)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
+            
             [self scrollBubblesTableViewToBottomAnimated:NO];
-            // Hide bubbles table by default in order to hide initial scrolling to the bottom
-            _bubblesTableView.hidden = NO;
+            
+            // Show bubbles table after initial scrolling to the bottom
+            // Patch: We need to delay this operation to wait for the end of scrolling.
+            dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                
+                _bubblesTableView.hidden = NO;
+                
+            });
+            
         });
     }
     else
