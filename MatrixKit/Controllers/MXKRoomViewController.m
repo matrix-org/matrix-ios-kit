@@ -924,7 +924,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)setRoomExtraInfoViewClass:(Class)roomExtraInfoViewClass
 {
-    // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
+    // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
     NSParameterAssert([roomExtraInfoViewClass isSubclassOfClass:MXKRoomExtraInfoView.class]);
     
     if (!_roomExtraInfoContainer)
@@ -952,33 +952,49 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Add the view and define edge constraints
     [_roomExtraInfoContainer addSubview:extraInfoView];
-    [_roomExtraInfoContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
-                                                                           attribute:NSLayoutAttributeTop
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:extraInfoView
-                                                                           attribute:NSLayoutAttributeTop
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomExtraInfoContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
-                                                                           attribute:NSLayoutAttributeLeading
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:extraInfoView
-                                                                           attribute:NSLayoutAttributeLeading
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomExtraInfoContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
-                                                                           attribute:NSLayoutAttributeWidth
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:extraInfoView
-                                                                           attribute:NSLayoutAttributeWidth
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
+    
+    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
+                                                                     attribute:NSLayoutAttributeTop
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:extraInfoView
+                                                                     attribute:NSLayoutAttributeTop
+                                                                    multiplier:1.0f
+                                                                      constant:0.0f];
+    
+    
+    NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:extraInfoView
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                        multiplier:1.0f
+                                                                          constant:0.0f];
+    
+    NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
+                                                                       attribute:NSLayoutAttributeWidth
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:extraInfoView
+                                                                       attribute:NSLayoutAttributeWidth
+                                                                      multiplier:1.0f
+                                                                        constant:0.0f];
+    
+    
+    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+    {
+        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint]];
+    }
+    else
+    {
+        [_roomExtraInfoContainer addConstraint:topConstraint];
+        [_roomExtraInfoContainer addConstraint:leadingConstraint];
+        [_roomExtraInfoContainer addConstraint:widthConstraint];
+    }
     
     // let the provide view to define a height.
     // it could have no constrainst if there is no defined xib
     _roomExtraInfoContainerHeightConstraint.constant = extraInfoView.height;
     
-    _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;;
+    _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;
     
     [_roomExtraInfoContainer setNeedsUpdateConstraints];
 }
@@ -2338,7 +2354,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                          // We will scroll to bottom if the bottom of the table is currently visible
                          BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
                          
-                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;;
+                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;
                          
                          if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
                          {
