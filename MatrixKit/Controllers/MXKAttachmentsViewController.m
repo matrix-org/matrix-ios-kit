@@ -121,7 +121,13 @@
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
-    [self hideNavigationBar];
+    // Hide navigation bar by default.
+    // For unknown reason, we have to wait for 'viewDidAppear' in iOS < 9.0, the bar is then visible a few seconds.
+    // We decided to hide it here on iOS 9 and later. Patch: we check a method available on iOS 9 and later.
+    if ([self respondsToSelector:@selector(loadViewIfNeeded)])
+    {
+        [self hideNavigationBar];
+    }
     
     // Handle here the case of splitviewcontroller use on iOS 8 and later.
     if (self.splitViewController && [self.splitViewController respondsToSelector:@selector(displayMode)])
@@ -146,6 +152,11 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    if (self.navigationController.navigationBarHidden == NO)
+    {
+        [self hideNavigationBar];
+    }
     
     // Adjust content offset and make visible the attachmnet collections
     [self refreshAttachmentCollectionContentOffset];
