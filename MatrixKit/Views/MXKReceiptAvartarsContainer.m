@@ -85,7 +85,7 @@
         
         label.textColor = [UIColor blackColor];
         moreView = label;
-        [self addSubview:label];;
+        [self addSubview:label];
     }
 }
 

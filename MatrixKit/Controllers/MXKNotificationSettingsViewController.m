@@ -369,7 +369,7 @@
                 pushRuleCreationCell = [[MXKPushRuleCreationTableViewCell alloc] init];
             }
             
-            pushRuleCreationCell.mxSession = _mxAccount.mxSession;;
+            pushRuleCreationCell.mxSession = _mxAccount.mxSession;
             pushRuleCreationCell.mxPushRuleKind = MXPushRuleKindContent;
             cell = pushRuleCreationCell;
         }
