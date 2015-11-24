@@ -14,17 +14,17 @@
  limitations under the License.
  */
 
-#import "MXKRoomExtraInfoView.h"
+#import "MXKRoomActivitiesView.h"
 
-@implementation MXKRoomExtraInfoView
+@implementation MXKRoomActivitiesView
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRoomExtraInfoView class])
-                          bundle:[NSBundle bundleForClass:[MXKRoomExtraInfoView class]]];
+    return [UINib nibWithNibName:NSStringFromClass([MXKRoomActivitiesView class])
+                          bundle:[NSBundle bundleForClass:[MXKRoomActivitiesView class]]];
 }
 
-+ (instancetype)roomExtraInfoView
++ (instancetype)roomActivitiesView
 {
     id instance = nil;
     

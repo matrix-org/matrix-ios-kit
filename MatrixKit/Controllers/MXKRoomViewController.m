@@ -160,7 +160,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 @end
 
 @implementation MXKRoomViewController
-@synthesize roomDataSource, titleView, inputToolbarView, extraInfoView;
+@synthesize roomDataSource, titleView, inputToolbarView, activitiesView;
 
 #pragma mark - Class methods
 
@@ -228,7 +228,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self setRoomInputToolbarViewClass:MXKRoomInputToolbarViewWithSimpleTextView.class];
     
     // set the default extra
-    [self setRoomExtraInfoViewClass:MXKRoomExtraInfoView.class];
+    [self setRoomActivitiesViewClass:MXKRoomActivitiesView.class];
     
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
@@ -421,7 +421,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Update constraints
     _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
-    _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;
+    _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
     
     // Force layout immediately to take into account new constraint
     [self.view layoutIfNeeded];
@@ -922,58 +922,58 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 
-- (void)setRoomExtraInfoViewClass:(Class)roomExtraInfoViewClass
+- (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass
 {
     // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
-    NSParameterAssert([roomExtraInfoViewClass isSubclassOfClass:MXKRoomExtraInfoView.class]);
+    NSParameterAssert([roomActivitiesViewClass isSubclassOfClass:MXKRoomActivitiesView.class]);
     
-    if (!_roomExtraInfoContainer)
+    if (!_roomActivitiesContainer)
     {
-        NSLog(@"[MXKRoomVC] Set setRoomExtraInfoViewClass failed: container is missing");
+        NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
         return;
     }
 
     // Remove potential toolbar
-    if (extraInfoView)
+    if (activitiesView)
     {
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
         {
-            [NSLayoutConstraint deactivateConstraints:extraInfoView.constraints];
+            [NSLayoutConstraint deactivateConstraints:activitiesView.constraints];
         }
         else
         {
-            [_roomExtraInfoContainer removeConstraints:extraInfoView.constraints];
+            [_roomActivitiesContainer removeConstraints:activitiesView.constraints];
         }
-        [extraInfoView removeFromSuperview];
-        [extraInfoView destroy];
+        [activitiesView removeFromSuperview];
+        [activitiesView destroy];
     }
     
-    extraInfoView = [roomExtraInfoViewClass roomExtraInfoView];
+    activitiesView = [roomActivitiesViewClass roomActivitiesView];
     
     // Add the view and define edge constraints
-    [_roomExtraInfoContainer addSubview:extraInfoView];
+    [_roomActivitiesContainer addSubview:activitiesView];
     
-    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
+    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
                                                                      attribute:NSLayoutAttributeTop
                                                                      relatedBy:NSLayoutRelationEqual
-                                                                        toItem:extraInfoView
+                                                                        toItem:activitiesView
                                                                      attribute:NSLayoutAttributeTop
                                                                     multiplier:1.0f
                                                                       constant:0.0f];
     
     
-    NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
+    NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
                                                                          attribute:NSLayoutAttributeLeading
                                                                          relatedBy:NSLayoutRelationEqual
-                                                                            toItem:extraInfoView
+                                                                            toItem:activitiesView
                                                                          attribute:NSLayoutAttributeLeading
                                                                         multiplier:1.0f
                                                                           constant:0.0f];
     
-    NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomExtraInfoContainer
+    NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
                                                                        attribute:NSLayoutAttributeWidth
                                                                        relatedBy:NSLayoutRelationEqual
-                                                                          toItem:extraInfoView
+                                                                          toItem:activitiesView
                                                                        attribute:NSLayoutAttributeWidth
                                                                       multiplier:1.0f
                                                                         constant:0.0f];
@@ -985,18 +985,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     else
     {
-        [_roomExtraInfoContainer addConstraint:topConstraint];
-        [_roomExtraInfoContainer addConstraint:leadingConstraint];
-        [_roomExtraInfoContainer addConstraint:widthConstraint];
+        [_roomActivitiesContainer addConstraint:topConstraint];
+        [_roomActivitiesContainer addConstraint:leadingConstraint];
+        [_roomActivitiesContainer addConstraint:widthConstraint];
     }
     
     // let the provide view to define a height.
     // it could have no constrainst if there is no defined xib
-    _roomExtraInfoContainerHeightConstraint.constant = extraInfoView.height;
+    _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
     
-    _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;
+    _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomActivitiesContainerHeightConstraint.constant;
     
-    [_roomExtraInfoContainer setNeedsUpdateConstraints];
+    [_roomActivitiesContainer setNeedsUpdateConstraints];
 }
 
 - (BOOL)isIRCStyleCommand:(NSString*)string
@@ -2354,7 +2354,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                          // We will scroll to bottom if the bottom of the table is currently visible
                          BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
                          
-                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomExtraInfoContainerHeightConstraint.constant;
+                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
                          
                          if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
                          {

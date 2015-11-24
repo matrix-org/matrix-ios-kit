@@ -672,6 +672,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             [_room removeListener:typingNotifListener];
             currentTypingUsers = nil;
+            typingNotifListener = nil;
         }
     }
 }
@@ -715,14 +716,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }];
     
-    if (self.showTypingNotifications)
-    {
-        currentTypingUsers = _room.typingUsers;
-    }
-    else
-    {
-        currentTypingUsers = [[NSMutableArray alloc] init];
-    }
+    currentTypingUsers = _room.typingUsers;
 }
 
 - (void)cancelAllRequests
@@ -2125,7 +2119,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Update typing flag before rendering
-    bubbleData.isTyping = ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
+    bubbleData.isTyping = _showTypingNotifications && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
     bubbleData.showBubbleDateTime = self.showBubblesDateTime;
     // display the read receipts

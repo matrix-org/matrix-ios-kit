@@ -17,19 +17,19 @@
 #import <UIKit/UIKit.h>
 
 /**
- Customize UIView to display some extra info above the RoomInpuToolBar
+ Customize UIView to display some extra info above the RoomInputToolBar
  */
-@interface MXKRoomExtraInfoView : UIView
+@interface MXKRoomActivitiesView : UIView
 
 @property (nonatomic) CGFloat height;
 
 /**
- Creates and returns a new `MXKRoomExtraInfoView-inherited` object.
+ Creates and returns a new `MXKRoomActivitiesView-inherited` object.
  
  @discussion This is the designated initializer for programmatic instantiation.
- @return An initialized `MXKRoomExtraInfoView-inherited` object if successful, `nil` otherwise.
+ @return An initialized `MXKRoomActivitiesView-inherited` object if successful, `nil` otherwise.
  */
-+ (instancetype)roomExtraInfoView;
++ (instancetype)roomActivitiesView;
 
 /**
  Dispose any resources and listener.

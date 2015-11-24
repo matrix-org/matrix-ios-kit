@@ -20,7 +20,7 @@ limitations under the License.
 #import "MXKRoomDataSource.h"
 #import "MXKRoomTitleView.h"
 #import "MXKRoomInputToolbarView.h"
-#import "MXKRoomExtraInfoView.h"
+#import "MXKRoomActivitiesView.h"
 
 
 #import "MXKAttachmentsViewController.h"
@@ -57,7 +57,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 /**
  The current extra info view defined into the view controller.
  */
-@property (nonatomic, readonly) MXKRoomExtraInfoView* extraInfoView;
+@property (nonatomic, readonly) MXKRoomActivitiesView* activitiesView;
 
 /**
  Enable/disable saving of the current typed text in message composer when view disappears.
@@ -75,10 +75,10 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic) IBOutlet UITableView *bubblesTableView;
 @property (nonatomic) IBOutlet UIView *roomTitleViewContainer;
 @property (nonatomic) IBOutlet UIView *roomInputToolbarContainer;
-@property (nonatomic) IBOutlet UIView *roomExtraInfoContainer;
+@property (nonatomic) IBOutlet UIView *roomActivitiesContainer;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomExtraInfoContainerHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomActivitiesContainerHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerBottomConstraint;
 
@@ -167,11 +167,11 @@ extern NSString *const kCmdResetUserPowerLevel;
 /**
  Register the class used to instantiate the extra info view.
  
- The resulting view is added into 'roomExtraInfoContainer' view, which must be defined before calling this method.
+ The resulting view is added into 'roomActivitiesContainer' view, which must be defined before calling this method.
  
- @param roomExtraInfoViewClass a MXKRoomExtraInfoViewClass-inherited class.
+ @param roomActivitiesViewClass a MXKRoomActivitiesViewClass-inherited class.
  */
-- (void)setRoomExtraInfoViewClass:(Class)roomExtraInfoViewClass;
+- (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass;
 
 /**
  Detect and process potential IRC command in provided string.

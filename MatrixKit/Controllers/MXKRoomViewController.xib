@@ -9,8 +9,8 @@
             <connections>
                 <outlet property="bubblesTableView" destination="BGD-sd-SQR" id="OG4-Tw-Ovt"/>
                 <outlet property="bubblesTableViewBottomConstraint" destination="Ksk-39-kfi" id="CTo-Ux-4NP"/>
-                <outlet property="roomExtraInfoContainer" destination="XX4-n6-hCm" id="9Mq-ND-WWW"/>
-                <outlet property="roomExtraInfoContainerHeightConstraint" destination="E8v-l2-8eV" id="Pp4-FH-dnN"/>
+                <outlet property="roomActivitiesContainer" destination="XX4-n6-hCm" id="uD0-ab-8s8"/>
+                <outlet property="roomActivitiesContainerHeightConstraint" destination="E8v-l2-8eV" id="ebD-oV-ttx"/>
                 <outlet property="roomInputToolbarContainer" destination="nLd-BP-JAE" id="1dp-P1-0js"/>
                 <outlet property="roomInputToolbarContainerBottomConstraint" destination="kQ6-Cg-FMi" id="nHr-fR-XnV"/>
                 <outlet property="roomInputToolbarContainerHeightConstraint" destination="5eD-Fm-RDb" id="6ny-5w-1UA"/>
@@ -22,7 +22,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XX4-n6-hCm" userLabel="Room Info Container">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XX4-n6-hCm" userLabel="Activities Container">
                     <rect key="frame" x="0.0" y="539" width="600" height="20"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
