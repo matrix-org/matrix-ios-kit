@@ -160,7 +160,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 @end
 
 @implementation MXKRoomViewController
-@synthesize roomDataSource, titleView, inputToolbarView;
+@synthesize roomDataSource, titleView, inputToolbarView, activitiesView;
 
 #pragma mark - Class methods
 
@@ -226,6 +226,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Set default input toolbar view
     [self setRoomInputToolbarViewClass:MXKRoomInputToolbarViewWithSimpleTextView.class];
+    
+    // set the default extra
+    [self setRoomActivitiesViewClass:MXKRoomActivitiesView.class];
     
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
@@ -426,7 +429,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Update constraints
     _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
-    _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant;
+    _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
     
     // Force layout immediately to take into account new constraint
     [self.view layoutIfNeeded];
@@ -924,6 +927,84 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                           multiplier:1.0f
                                                                             constant:0.0f]];
     [_roomInputToolbarContainer setNeedsUpdateConstraints];
+}
+
+
+- (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass
+{
+    // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
+    NSParameterAssert([roomActivitiesViewClass isSubclassOfClass:MXKRoomActivitiesView.class]);
+    
+    if (!_roomActivitiesContainer)
+    {
+        NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
+        return;
+    }
+
+    // Remove potential toolbar
+    if (activitiesView)
+    {
+        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+        {
+            [NSLayoutConstraint deactivateConstraints:activitiesView.constraints];
+        }
+        else
+        {
+            [_roomActivitiesContainer removeConstraints:activitiesView.constraints];
+        }
+        [activitiesView removeFromSuperview];
+        [activitiesView destroy];
+    }
+    
+    activitiesView = [roomActivitiesViewClass roomActivitiesView];
+    
+    // Add the view and define edge constraints
+    [_roomActivitiesContainer addSubview:activitiesView];
+    
+    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                     attribute:NSLayoutAttributeTop
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:activitiesView
+                                                                     attribute:NSLayoutAttributeTop
+                                                                    multiplier:1.0f
+                                                                      constant:0.0f];
+    
+    
+    NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:activitiesView
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                        multiplier:1.0f
+                                                                          constant:0.0f];
+    
+    NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                       attribute:NSLayoutAttributeWidth
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:activitiesView
+                                                                       attribute:NSLayoutAttributeWidth
+                                                                      multiplier:1.0f
+                                                                        constant:0.0f];
+    
+    
+    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+    {
+        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint]];
+    }
+    else
+    {
+        [_roomActivitiesContainer addConstraint:topConstraint];
+        [_roomActivitiesContainer addConstraint:leadingConstraint];
+        [_roomActivitiesContainer addConstraint:widthConstraint];
+    }
+    
+    // let the provide view to define a height.
+    // it could have no constrainst if there is no defined xib
+    _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
+    
+    _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomActivitiesContainerHeightConstraint.constant;
+    
+    [_roomActivitiesContainer setNeedsUpdateConstraints];
 }
 
 - (BOOL)isIRCStyleCommand:(NSString*)string
@@ -2286,7 +2367,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                          // We will scroll to bottom if the bottom of the table is currently visible
                          BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
                          
-                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant;
+                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
                          
                          if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
                          {

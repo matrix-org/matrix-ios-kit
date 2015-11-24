@@ -144,6 +144,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // display the read receips by default
         self.showBubbleReceipts = YES;
         
+        // display keyboard icon in cells.
+        _showTypingNotifications = YES;
+        
         self.useCustomDateTimeLabel = NO;
         
         _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
@@ -427,8 +430,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // Force to set the filter at the MXRoom level
                 self.eventsFilterForMessages = _eventsFilterForMessages;
                 
-                // Register on typing notif
-                [self listenTypingNotifications];
+                // display typing notifications is optional
+                // the inherited class can manage them by its own.
+                if (_showTypingNotifications)
+                {
+                    // Register on typing notif
+                    [self listenTypingNotifications];
+                }
                 
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateReady;
@@ -648,6 +656,27 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)setShowTypingNotifications:(BOOL)shouldShowTypingNotifications
+{
+    _showTypingNotifications = shouldShowTypingNotifications;
+    
+    if (shouldShowTypingNotifications)
+    {
+        // Register on typing notif
+        [self listenTypingNotifications];
+    }
+    else
+    {
+        // Remove the live listener
+        if (typingNotifListener)
+        {
+            [_room removeListener:typingNotifListener];
+            currentTypingUsers = nil;
+            typingNotifListener = nil;
+        }
+    }
+}
+
 - (void)listenTypingNotifications
 {
     // Remove the previous live listener
@@ -666,6 +695,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Retrieve typing users list
             NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
+
             // Remove typing info for the current user
             NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
             if (index != NSNotFound)
@@ -685,6 +715,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }
     }];
+    
     currentTypingUsers = _room.typingUsers;
 }
 
@@ -2088,7 +2119,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Update typing flag before rendering
-    bubbleData.isTyping = ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
+    bubbleData.isTyping = _showTypingNotifications && currentTypingUsers && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
     bubbleData.showBubbleDateTime = self.showBubblesDateTime;
     // display the read receipts

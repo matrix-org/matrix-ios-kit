@@ -179,6 +179,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) BOOL showBubbleReceipts;
 
 /**
+ Show the typing notifications of other room members in the chat history (YES by default).
+ */
+@property (nonatomic) BOOL showTypingNotifications;
+
+/**
  The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
  */
 @property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;

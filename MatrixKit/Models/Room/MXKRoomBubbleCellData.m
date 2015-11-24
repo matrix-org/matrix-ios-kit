@@ -403,7 +403,7 @@
     
     if (firstComponent)
     {
-        return firstComponent.date;;
+        return firstComponent.date;
     }
     
     return nil;
