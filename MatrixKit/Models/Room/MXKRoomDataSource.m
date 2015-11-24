@@ -2119,7 +2119,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Update typing flag before rendering
-    bubbleData.isTyping = _showTypingNotifications && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
+    bubbleData.isTyping = _showTypingNotifications && currentTypingUsers && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
     bubbleData.showBubbleDateTime = self.showBubblesDateTime;
     // display the read receipts
