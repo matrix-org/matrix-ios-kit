@@ -145,7 +145,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         self.showBubbleReceipts = YES;
         
         // display keyboard icon in cells.
-        self.showTypingNotifications = YES;
+        _showTypingNotifications = YES;
         
         self.useCustomDateTimeLabel = NO;
         
@@ -430,8 +430,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // Force to set the filter at the MXRoom level
                 self.eventsFilterForMessages = _eventsFilterForMessages;
                 
-                // Register on typing notif
-                [self listenTypingNotifications];
+                // display typing notifications is optional
+                // the inherited class can manage them by its own.
+                if (_showTypingNotifications)
+                {
+                    // Register on typing notif
+                    [self listenTypingNotifications];
+                }
                 
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateReady;
@@ -651,6 +656,26 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)setShowTypingNotifications:(BOOL)shouldShowTypingNotifications
+{
+    _showTypingNotifications = shouldShowTypingNotifications;
+    
+    if (shouldShowTypingNotifications)
+    {
+        // Register on typing notif
+        [self listenTypingNotifications];
+    }
+    else
+    {
+        // Remove the live listener
+        if (typingNotifListener)
+        {
+            [_room removeListener:typingNotifListener];
+            currentTypingUsers = nil;
+        }
+    }
+}
+
 - (void)listenTypingNotifications
 {
     // Remove the previous live listener
@@ -668,17 +693,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         if (direction == MXEventDirectionForwards)
         {
             // Retrieve typing users list
-            NSMutableArray *typingUsers;
-            
-            if (self.showTypingNotifications)
-            {
-                typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
-            }
-            else
-            {
-                // display as no one is typing
-                typingUsers = [[NSMutableArray alloc] init];
-            }
+            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
 
             // Remove typing info for the current user
             NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
