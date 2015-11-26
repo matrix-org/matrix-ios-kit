@@ -14,11 +14,11 @@
  limitations under the License.
  */
 
-#import "MXKRoomDetailsViewController.h"
+#import "MXKRoomSettingsViewController.h"
 
 #import "NSBundle+MatrixKit.h"
 
-@interface MXKRoomDetailsViewController()
+@interface MXKRoomSettingsViewController()
 {    
     // nav barbutton
     UIBarButtonItem* doneButton;
@@ -28,20 +28,20 @@
 }
 @end
 
-@implementation MXKRoomDetailsViewController
+@implementation MXKRoomSettingsViewController
 
 #pragma mark - Class methods
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRoomDetailsViewController class])
-                          bundle:[NSBundle bundleForClass:[MXKRoomDetailsViewController class]]];
+    return [UINib nibWithNibName:NSStringFromClass([MXKRoomSettingsViewController class])
+                          bundle:[NSBundle bundleForClass:[MXKRoomSettingsViewController class]]];
 }
 
-+ (instancetype)roomDetailsViewController
++ (instancetype)roomSettingsViewController
 {
-    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRoomDetailsViewController class])
-                                          bundle:[NSBundle bundleForClass:[MXKRoomDetailsViewController class]]];
+    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRoomSettingsViewController class])
+                                          bundle:[NSBundle bundleForClass:[MXKRoomSettingsViewController class]]];
 }
 
 #pragma mark - Public API

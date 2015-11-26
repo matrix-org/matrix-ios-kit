@@ -19,9 +19,9 @@
 #import "MXKTableViewController.h"
 
 /**
- This view controller displays the room details.
+ This view controller displays the room settings.
  */
-@interface MXKRoomDetailsViewController : MXKTableViewController
+@interface MXKRoomSettingsViewController : MXKTableViewController
 {
 @protected
     
@@ -49,7 +49,7 @@
 #pragma mark - Class methods
 
 /**
- Returns the `UINib` object initialized for a `MXKRoomDetailsViewController`.
+ Returns the `UINib` object initialized for a `MXKRoomSettingsViewController`.
  
  @return The initialized `UINib` object or `nil` if there were errors during initialization
  or the nib file could not be located.
@@ -61,12 +61,12 @@
 + (UINib *)nib;
 
 /**
- Creates and returns a new `MXKRoomDetailsViewController` object.
+ Creates and returns a new `MXKRoomSettingsViewController` object.
  
  @discussion This is the designated initializer for programmatic instantiation.
- @return An initialized `MXKRoomDetailsViewController` object if successful, `nil` otherwise.
+ @return An initialized `MXKRoomSettingsViewController` object if successful, `nil` otherwise.
  */
-+ (instancetype)roomDetailsViewController;
++ (instancetype)roomSettingsViewController;
 
 /**
  Set the dedicated session and the room Id
