@@ -104,9 +104,11 @@
 @property (nonatomic) NSAttributedString *attributedTextMessage;
 
 /**
- YES if the sender name appears at the beginning of the message text
+ Tell whether the sender's name is relevant or not for this bubble.
+ Return YES if the first component of the bubble message corresponds to an emote, or a state event in which
+ the sender's name appears at the beginning of the message text (for example membership events).
  */
-@property (nonatomic) BOOL startsWithSenderName;
+@property (nonatomic) BOOL shouldHideSenderName;
 
 /**
  YES if the sender is currently typing in the current room

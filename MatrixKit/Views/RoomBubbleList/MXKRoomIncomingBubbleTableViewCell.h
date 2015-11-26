@@ -22,6 +22,5 @@
 @interface MXKRoomIncomingBubbleTableViewCell : MXKRoomBubbleTableViewCell
 
 @property (weak, nonatomic) IBOutlet UIImageView *typingBadge;
-@property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 
 @end

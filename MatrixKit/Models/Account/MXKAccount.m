@@ -603,10 +603,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     
 #ifdef DEBUG
-    NSString *appId = @"org.matrix.console.ios.dev";
+    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdDev"];
 #else
-    NSString *appId = @"org.matrix.console.ios.prod";
+    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdProd"];
 #endif
+    
+    if (!appId)
+    {
+        NSLog(@"[MXKAccount] Not setting pusher because pusher app id is undefined");
+        return;
+    }
     
     NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
     NSDictionary *pushData = @{
