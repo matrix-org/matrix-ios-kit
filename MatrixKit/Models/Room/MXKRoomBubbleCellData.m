@@ -27,7 +27,7 @@
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
 @synthesize textMessage, attributedTextMessage;
-@synthesize startsWithSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel;
+@synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
@@ -364,7 +364,7 @@
     return attributedTextMessage;
 }
 
-- (BOOL)startsWithSenderName
+- (BOOL)shouldHideSenderName
 {
     BOOL res = NO;
 
@@ -373,7 +373,7 @@
     
     if (firstComponent)
     {
-        res = (firstComponent.event.isEmote || [firstComponent.textMessage hasPrefix:senderDisplayName]);
+        res = (firstComponent.event.isEmote || (firstComponent.event.isState && [firstComponent.textMessage hasPrefix:senderDisplayName]));
     }
     
     return res;

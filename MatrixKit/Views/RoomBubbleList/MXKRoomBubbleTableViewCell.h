@@ -102,6 +102,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  */
 @property (nonatomic) UIImage *picturePlaceholder;
 
+@property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;
 @property (strong, nonatomic) IBOutlet MXKImageView *attachmentView;
