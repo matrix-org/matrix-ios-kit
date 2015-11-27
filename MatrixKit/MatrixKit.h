@@ -93,7 +93,16 @@
 #import "MXKRoomTitleViewWithTopic.h"
 
 #import "MXKRoomIncomingBubbleTableViewCell.h"
+#import "MXKRoomIncomingTextMsgBubbleCell.h"
+#import "MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomIncomingAttachmentBubbleCell.h"
+#import "MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h"
+
 #import "MXKRoomOutgoingBubbleTableViewCell.h"
+#import "MXKRoomOutgoingTextMsgBubbleCell.h"
+#import "MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h"
 
 #import "MXKAccountManager.h"
 

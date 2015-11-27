@@ -14,11 +14,11 @@
  limitations under the License.
  */
 
-#import "MXKRoomBubbleTableViewCell.h"
+#import "MXKRoomOutgoingAttachmentBubbleCell.h"
 
 /**
- `MXKRoomOutgoingBubbleTableViewCell` displays outgoing message bubbles.
+ `MXKRoomOutgoingAttachmentHiddenSenderBubbleCell` displays outgoing attachment with thumbnail, without user's name.
  */
-@interface MXKRoomOutgoingBubbleTableViewCell : MXKRoomBubbleTableViewCell
+@interface MXKRoomOutgoingAttachmentHiddenSenderBubbleCell : MXKRoomOutgoingAttachmentBubbleCell
 
 @end

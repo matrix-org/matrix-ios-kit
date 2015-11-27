@@ -14,11 +14,13 @@
  limitations under the License.
  */
 
-#import "MXKRoomBubbleTableViewCell.h"
+#import "MXKRoomOutgoingBubbleTableViewCell.h"
 
 /**
- `MXKRoomOutgoingBubbleTableViewCell` displays outgoing message bubbles.
+ `MXKRoomOutgoingAttachmentBubbleCell` displays outgoing attachment bubbles.
  */
-@interface MXKRoomOutgoingBubbleTableViewCell : MXKRoomBubbleTableViewCell
+@interface MXKRoomOutgoingAttachmentBubbleCell : MXKRoomOutgoingBubbleTableViewCell
+
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end

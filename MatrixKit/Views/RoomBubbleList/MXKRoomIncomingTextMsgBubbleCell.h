@@ -14,11 +14,11 @@
  limitations under the License.
  */
 
-#import "MXKRoomBubbleTableViewCell.h"
+#import "MXKRoomIncomingBubbleTableViewCell.h"
 
 /**
- `MXKRoomOutgoingBubbleTableViewCell` displays outgoing message bubbles.
+ `MXKRoomIncomingTextMsgBubbleCell` displays incoming message bubbles with sender's information.
  */
-@interface MXKRoomOutgoingBubbleTableViewCell : MXKRoomBubbleTableViewCell
+@interface MXKRoomIncomingTextMsgBubbleCell : MXKRoomIncomingBubbleTableViewCell
 
 @end
