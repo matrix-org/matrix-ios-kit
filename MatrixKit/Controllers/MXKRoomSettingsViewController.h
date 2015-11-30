@@ -24,7 +24,6 @@
 @interface MXKRoomSettingsViewController : MXKTableViewController
 {
 @protected
-    
     // the dedicated room
     MXRoom* mxRoom;
     
