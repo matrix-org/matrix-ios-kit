@@ -1,3 +1,16 @@
+Changes in MatrixKit in 0.2.8 (2015-11-30)
+===============================================
+
+Improvements:
+ * MXKRoomViewController: Add MXKRoomActivitiesView class to display typing information above the input tool bar.
+ * MXKViewControllerHandling: remove automatically closed sessions.
+ * MXKQueuedEvent: Removed the deep copy of the passed MXEvent.
+ * MXKAccount: Use pusher app ids defined in defaults.plist.
+ * MXKRoomBubble: Handle sender's name at MXKRoomBubbleTableViewCell level.
+
+Bug fixes:
+ * MXKAttachmentsViewController: Back failed on attachment view (iOS8).
+
 Changes in MatrixKit in 0.2.7 (2015-11-13)
 ===============================================
 

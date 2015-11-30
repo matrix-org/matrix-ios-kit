@@ -30,7 +30,7 @@
 		71C5F2921C0748D8004C094B /* MXKRoomSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71C5F2901C0748D8004C094B /* MXKRoomSettingsViewController.xib */; settings = {ASSET_TAGS = (); }; };
 		71DE22E41BCD37D800284153 /* MXKReceiptAvartarsContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E21BCD37D800284153 /* MXKReceiptAvartarsContainer.m */; };
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
-		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; settings = {ASSET_TAGS = (); }; };
+		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
 		8B9E9737BF25A512725372BE /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C994EE81FBAC79EE746DF4E5 /* libPods-MatrixKitSample.a */; };
 		F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */; };
 		F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */; };
@@ -1020,6 +1020,7 @@
 				3219CB651AA6F2780027D7E2 /* Frameworks */,
 				3219CB661AA6F2780027D7E2 /* Resources */,
 				823C4FED456AD37C7A8B72D0 /* Copy Pods Resources */,
+				FC08C2D46757964161ED45BA /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1180,6 +1181,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FC08C2D46757964161ED45BA /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
