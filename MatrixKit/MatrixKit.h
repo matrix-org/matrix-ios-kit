@@ -62,6 +62,9 @@
 
 #import "MXKAttachment.h"
 
+#import "MXKRecentTableViewCell.h"
+#import "MXKInterleavedRecentTableViewCell.h"
+
 #import "MXKPublicRoomTableViewCell.h"
 
 #import "MXKRoomMemberTableViewCell.h"

@@ -67,12 +67,34 @@
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
 
 /**
- Add/remove matrix session.
+ Add a matrix session in the list of associated sessions (see 'mxSessions' property).
+ 
+ The session is ignored if its state is 'MXSessionStateClosed'.
+ In other case, the session is stored, and an observer on 'kMXSessionStateDidChangeNotification' is added if it's not already done.
+ A session is automatically removed when its state returns to 'MXSessionStateClosed'.
  
  @param mxSession a Matrix session.
  */
 - (void)addMatrixSession:(MXSession*)mxSession;
+
+/**
+ Remove a matrix session from the list of associated sessions (see 'mxSessions' property).
+ 
+ Remove the session. The 'kMXSessionStateDidChangeNotification' observer is removed if there is no more matrix session.
+ 
+ @param mxSession a Matrix session.
+ */
 - (void)removeMatrixSession:(MXSession*)mxSession;
+
+/**
+ The method specified as notification selector during 'kMXSessionStateDidChangeNotification' observer creation.
+ 
+ By default this method consider ONLY notifications related to associated sessions (see 'mxSessions' property).
+ A session is automatically removed from the list when its state is 'MXSessionStateClosed'. Else [self onMatrixSessionChange] is called.
+ 
+ Override it to handle state change on associated sessions AND others.
+ */
+- (void)onMatrixSessionStateDidChange:(NSNotification *)notif;
 
 /**
  This method is called on the following matrix session changes:

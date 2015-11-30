@@ -156,6 +156,21 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Check whether the sender's picture is actually displayed before loading it.
         if (self.bubbleData.shouldHideSenderInformation == NO)
         {
+            // Check conditions to display the message sender name
+            if (self.userNameLabel)
+            {
+                // Display sender's name except if the name appears in the displayed text (see emote and membership events)
+                if (self.bubbleData.shouldHideSenderName == NO)
+                {
+                    self.userNameLabel.text = bubbleData.senderDisplayName;
+                    self.userNameLabel.hidden = NO;
+                }
+                else
+                {
+                    self.userNameLabel.hidden = YES;
+                }
+            }
+            
             self.pictureView.hidden = NO;
             
             // Handle user's picture
@@ -172,6 +187,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         }
         else
         {
+            if (self.userNameLabel)
+            {
+                self.userNameLabel.hidden = YES;
+            }
+            
             self.pictureView.hidden = YES;
         }
         

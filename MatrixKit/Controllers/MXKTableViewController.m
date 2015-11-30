@@ -155,7 +155,7 @@
 
 - (void)addMatrixSession:(MXSession*)mxSession
 {
-    if (!mxSession)
+    if (!mxSession || mxSession.state == MXSessionStateClosed)
     {
         return;
     }
@@ -266,14 +266,30 @@
 {
     MXSession *mxSession = notif.object;
     
-    if ([mxSessionArray indexOfObject:mxSession] != NSNotFound)
+    NSUInteger index = [mxSessionArray indexOfObject:mxSession];
+    if (index != NSNotFound)
     {
+        if (mxSession.state == MXSessionStateClosed)
+        {
+            [mxSessionArray removeObjectAtIndex:index];
+            
+            if (!mxSessionArray.count)
+            {
+                // Remove matrix sessions observer
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
+            }
+        }
+        
         [self onMatrixSessionChange];
     }
 }
 
 - (void)onMatrixSessionChange
 {
+    // This method is called to refresh view controller appearance on session state change,
+    // It is called when the view will appear to update session array by removing closed sessions.
+    // Indeed 'kMXSessionStateDidChangeNotification' are observed only when the view controller is visible.
+    
     // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
     UINavigationController *mainNavigationController = nil;
     if (self.splitViewController)
@@ -301,20 +317,41 @@
         BOOL allHomeserverNotReachable = YES;
         BOOL isActivityInProgress = NO;
         
-        for (MXSession *mxSession in mxSessionArray)
+        // Check each session state
+        for (NSUInteger index = 0; index < mxSessionArray.count;)
         {
-            if (mxSession.state == MXSessionStateHomeserverNotReachable)
+            MXSession *mxSession = mxSessionArray[index];
+            
+            // Remove here closed sessions
+            if (mxSession.state == MXSessionStateClosed)
             {
-                barTintColor = [UIColor orangeColor];
+                [mxSessionArray removeObjectAtIndex:index];
+                
+                if (!mxSessionArray.count)
+                {
+                    // Remove matrix sessions observer
+                    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
+                    
+                    allHomeserverNotReachable = NO;
+                }
             }
             else
             {
-                allHomeserverNotReachable = NO;
-                
-                if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
+                if (mxSession.state == MXSessionStateHomeserverNotReachable)
                 {
-                    isActivityInProgress = YES;
+                    barTintColor = [UIColor orangeColor];
                 }
+                else
+                {
+                    allHomeserverNotReachable = NO;
+                    
+                    if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
+                    {
+                        isActivityInProgress = YES;
+                    }
+                }
+                
+                index ++;
             }
         }
         

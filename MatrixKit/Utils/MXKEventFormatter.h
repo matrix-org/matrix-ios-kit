@@ -162,7 +162,7 @@ typedef enum : NSUInteger {
  @param time The flag used to know if the returned string must include time information or not.
  @return the string representation of the date.
  */
-- (NSString*)dateStringFromTimestamp:(uint64_t)timestamp withTime:(BOOL)time;;
+- (NSString*)dateStringFromTimestamp:(uint64_t)timestamp withTime:(BOOL)time;
 
 /**
  Generate the date in string format corresponding to the event.
@@ -172,7 +172,7 @@ typedef enum : NSUInteger {
  @param time The flag used to know if the returned string must include time information or not.
  @return the string representation of the event date.
  */
-- (NSString*)dateStringFromEvent:(MXEvent*)event withTime:(BOOL)time;;
+- (NSString*)dateStringFromEvent:(MXEvent*)event withTime:(BOOL)time;
 
 
 # pragma mark - Customisation
