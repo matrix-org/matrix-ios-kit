@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <objects>
@@ -18,6 +17,9 @@
                         <rect key="frame" x="452" y="0.0" width="97" height="49"/>
                         <animations/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="97" id="QpI-TQ-x5C"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                         <dataDetectorType key="dataDetectorTypes" link="YES"/>
@@ -68,6 +70,7 @@
                 <outlet property="msgTextViewLeadingConstraint" destination="hwr-aa-TB4" id="c9j-8p-cpx"/>
                 <outlet property="msgTextViewTopConstraint" destination="8Sy-eu-tYs" id="7yx-oJ-KBP"/>
                 <outlet property="msgTextViewTrailingConstraint" destination="xYz-lp-c7K" id="ubt-P4-J2o"/>
+                <outlet property="msgTextViewWidthConstraint" destination="QpI-TQ-x5C" id="6JK-pz-IWm"/>
             </connections>
         </tableViewCell>
     </objects>

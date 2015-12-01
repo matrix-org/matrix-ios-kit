@@ -117,6 +117,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewBottomConstraint;

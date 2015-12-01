@@ -284,6 +284,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             bubbleData.maxTextViewWidth = self.frame.size.width - (self.msgTextViewLeadingConstraint.constant + self.msgTextViewTrailingConstraint.constant);
             CGSize contentSize = bubbleData.contentSize;
             
+            // Prepare displayed text message
             NSAttributedString* newText = nil;
             
             // Underline attached file name
@@ -306,18 +307,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 self.messageTextView.attributedText = newText;
             }
             
-            // update the frame size from the content size
-            // the content size is cached so it saved few ms
-            // and avoid using sizeToFit
-            CGRect newFrame, curframe;
-            newFrame = curframe = CGRectIntegral(self.messageTextView.frame);
-            newFrame.size = contentSize;
-            
-            // update the frame only if it is required
-            // setting a frame is quite slow so avoid useless update.
-            if (!CGRectEqualToRect(curframe, CGRectIntegral(newFrame)))
+            // Update msgTextView width constraint to align correctly the text
+            if (self.msgTextViewWidthConstraint.constant != contentSize.width)
             {
-                self.messageTextView.frame = newFrame;
+                self.msgTextViewWidthConstraint.constant = contentSize.width;
             }
         }
         
