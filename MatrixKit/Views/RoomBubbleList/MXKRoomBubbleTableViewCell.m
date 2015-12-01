@@ -199,7 +199,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             self.pictureView.clipsToBounds = YES;
         }
         
-        if (self.attachmentView)
+        if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)
         {
             // Set attached media folders
             self.attachmentView.mediaFolder = bubbleData.roomId;
