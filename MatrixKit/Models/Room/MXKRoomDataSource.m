@@ -20,8 +20,16 @@
 #import "MXKRoomBubbleTableViewCell.h"
 
 #import "MXKRoomBubbleCellData.h"
-#import "MXKRoomIncomingBubbleTableViewCell.h"
-#import "MXKRoomOutgoingBubbleTableViewCell.h"
+
+#import "MXKRoomIncomingTextMsgBubbleCell.h"
+#import "MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomIncomingAttachmentBubbleCell.h"
+#import "MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h"
+
+#import "MXKRoomOutgoingTextMsgBubbleCell.h"
+#import "MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h"
 
 #import "MXKTools.h"
 
@@ -33,10 +41,15 @@
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
 
-NSString *const kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier";
-NSString *const kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier = @"kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier";
-NSString *const kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier";
-NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier = @"kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier";
+NSString *const kMXKRoomIncomingTextMsgCellIdentifier = @"kMXKRoomIncomingTextMsgCellIdentifier";
+NSString *const kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier = @"kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier";
+NSString *const kMXKRoomIncomingAttachmentCellIdentifier = @"kMXKRoomIncomingAttachmentCellIdentifier";
+NSString *const kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier = @"kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier";
+
+NSString *const kMXKRoomOutgoingTextMsgCellIdentifier = @"kMXKRoomOutgoingTextMsgCellIdentifier";
+NSString *const kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier = @"kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier";
+NSString *const kMXKRoomOutgoingAttachmentCellIdentifier = @"kMXKRoomOutgoingAttachmentCellIdentifier";
+NSString *const kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier = @"kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier";
 
 NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
 NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncStatusChanged";
@@ -131,12 +144,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [self registerCellDataClass:MXKRoomBubbleCellData.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
         
         // For incoming messages
-        [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
-        [self registerCellViewClass:MXKRoomIncomingBubbleTableViewCell.class forCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
+        [self registerCellViewClass:MXKRoomIncomingTextMsgBubbleCell.class forCellIdentifier:kMXKRoomIncomingTextMsgCellIdentifier];
+        [self registerCellViewClass:MXKRoomIncomingTextMsgHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier];
+        [self registerCellViewClass:MXKRoomIncomingAttachmentBubbleCell.class forCellIdentifier:kMXKRoomIncomingAttachmentCellIdentifier];
+        [self registerCellViewClass:MXKRoomIncomingAttachmentHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier];
         
         // And outgoing messages
-        [self registerCellViewClass:MXKRoomOutgoingBubbleTableViewCell.class forCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
-        [self registerCellViewClass:MXKRoomOutgoingBubbleTableViewCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+        [self registerCellViewClass:MXKRoomOutgoingTextMsgBubbleCell.class forCellIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier];
+        [self registerCellViewClass:MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier];
+        [self registerCellViewClass:MXKRoomOutgoingAttachmentBubbleCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier];
+        [self registerCellViewClass:MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier];
         
         // Set default MXEvent -> NSString formatter
         self.eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
@@ -801,20 +818,48 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     {
         if (bubbleData.isAttachmentWithThumbnail)
         {
-            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier];
+            }
+            else
+            {
+                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentCellIdentifier];
+            }
         }
         else
         {
-            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier];
+            }
+            else
+            {
+                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgCellIdentifier];
+            }
         }
     }
     else if (bubbleData.isAttachmentWithThumbnail)
     {
-        cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+        if (bubbleData.shouldHideSenderInformation)
+        {
+            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier];
+        }
+        else
+        {
+            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier];
+        }
     }
     else
     {
-        cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
+        if (bubbleData.shouldHideSenderInformation)
+        {
+            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier];
+        }
+        else
+        {
+            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier];
+        }
     }
     
     rowHeight = [cellViewClass heightForCellData:bubbleData withMaximumWidth:maxWidth];
@@ -2096,20 +2141,48 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     {
         if (bubbleData.isAttachmentWithThumbnail)
         {
-            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier forIndexPath:indexPath];
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier forIndexPath:indexPath];
+            }
+            else
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingAttachmentCellIdentifier forIndexPath:indexPath];
+            }
         }
         else
         {
-            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier forIndexPath:indexPath];
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier forIndexPath:indexPath];
+            }
+            else
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingTextMsgCellIdentifier forIndexPath:indexPath];
+            }
         }
     }
     else if (bubbleData.isAttachmentWithThumbnail)
     {
-        cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier forIndexPath:indexPath];
+        if (bubbleData.shouldHideSenderInformation)
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier forIndexPath:indexPath];
+        }
+        else
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier forIndexPath:indexPath];
+        }
     }
     else
     {
-        cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier forIndexPath:indexPath];
+        if (bubbleData.shouldHideSenderInformation)
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier forIndexPath:indexPath];
+        }
+        else
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier forIndexPath:indexPath];
+        }
     }
     
     // Make sure we listen to user actions on the cell

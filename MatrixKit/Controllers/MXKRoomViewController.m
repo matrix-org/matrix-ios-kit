@@ -527,10 +527,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.dataSource = roomDataSource;
     
     // Set up classes to use for cells
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier];
+    
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier];
+    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier];
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
     kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {

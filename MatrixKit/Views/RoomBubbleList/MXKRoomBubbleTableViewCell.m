@@ -40,43 +40,63 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 + (instancetype)roomBubbleTableViewCell
 {
+    id instance = nil;
+    
     // Check whether a xib is defined
     if ([[self class] nib])
     {
-        return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+        @try {
+            instance = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+        }
+        @catch (NSException *exception) {
+        }
     }
     
-    return [[[self class] alloc] init];
+    if (!instance)
+    {
+        instance = [[self alloc] init];
+    }
+    
+    return instance;
 }
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
     
-    self.pictureView.backgroundColor = [UIColor blackColor];
-    self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+    if (self.pictureView)
+    {
+        self.pictureView.backgroundColor = [UIColor blackColor];
+        self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        
+        // Listen to avatar tap
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.pictureView addGestureRecognizer:tapGesture];
+        self.pictureView.userInteractionEnabled = YES;
+    }
     
-    // Listen to avatar tap
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
-    [tapGesture setNumberOfTouchesRequired:1];
-    [tapGesture setNumberOfTapsRequired:1];
-    [tapGesture setDelegate:self];
-    [self.pictureView addGestureRecognizer:tapGesture];
-    self.pictureView.userInteractionEnabled = YES;
+    if (self.messageTextView)
+    {
+        // Listen to textView tap
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.messageTextView addGestureRecognizer:tapGesture];
+        self.messageTextView.userInteractionEnabled = YES;
+        
+        // Add a long gesture recognizer on text view in order to display event details
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+        [self.messageTextView addGestureRecognizer:longPress];
+    }
     
-    // Listen to textView tap
-    tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
-    [tapGesture setNumberOfTouchesRequired:1];
-    [tapGesture setNumberOfTapsRequired:1];
-    [tapGesture setDelegate:self];
-    [self.messageTextView addGestureRecognizer:tapGesture];
-    self.messageTextView.userInteractionEnabled = YES;
-    
-    // Add a long gesture recognizer on text view in order to display event details
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
-    [self.messageTextView addGestureRecognizer:longPress];
-    
-    self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
+    if (self.playIconView)
+    {
+        self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
+    }
 }
 
 - (void)dealloc
@@ -94,7 +114,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)setAllTextHighlighted:(BOOL)allTextHighlighted
 {
-    if (bubbleData.textMessage.length != 0)
+    if (self.messageTextView && bubbleData.textMessage.length != 0)
     {
         _allTextHighlighted = allTextHighlighted;
         
@@ -103,18 +123,18 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             NSMutableAttributedString *highlightedString = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
             UIColor *color = self.tintColor ? self.tintColor : [UIColor lightGrayColor];
             [highlightedString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, highlightedString.length)];
-            _messageTextView.attributedText = highlightedString;
+            self.messageTextView.attributedText = highlightedString;
         }
         else
         {
-            _messageTextView.attributedText = bubbleData.attributedTextMessage;
+            self.messageTextView.attributedText = bubbleData.attributedTextMessage;
         }
     }
 }
 
 - (void)highlightTextMessageForEvent:(NSString*)eventId
 {
-    if (bubbleData.attachment == nil)
+    if (self.messageTextView)
     {
         if (eventId.length)
         {
@@ -148,31 +168,24 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     bubbleData = (MXKRoomBubbleCellData*)cellData;
     if (bubbleData)
     {
-        MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
-        
-        // Set attached media folders
-        self.attachmentView.mediaFolder = bubbleData.roomId;
+        // Check conditions to display the message sender name
+        if (self.userNameLabel)
+        {
+            // Display sender's name except if the name appears in the displayed text (see emote and membership events)
+            if (self.bubbleData.shouldHideSenderName == NO)
+            {
+                self.userNameLabel.text = bubbleData.senderDisplayName;
+                self.userNameLabel.hidden = NO;
+            }
+            else
+            {
+                self.userNameLabel.hidden = YES;
+            }
+        }
         
         // Check whether the sender's picture is actually displayed before loading it.
-        if (self.bubbleData.shouldHideSenderInformation == NO)
+        if (self.pictureView)
         {
-            // Check conditions to display the message sender name
-            if (self.userNameLabel)
-            {
-                // Display sender's name except if the name appears in the displayed text (see emote and membership events)
-                if (self.bubbleData.shouldHideSenderName == NO)
-                {
-                    self.userNameLabel.text = bubbleData.senderDisplayName;
-                    self.userNameLabel.hidden = NO;
-                }
-                else
-                {
-                    self.userNameLabel.hidden = YES;
-                }
-            }
-            
-            self.pictureView.hidden = NO;
-            
             // Handle user's picture
             NSString *avatarThumbURL = nil;
             if (bubbleData.senderAvatarUrl)
@@ -185,40 +198,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
             self.pictureView.clipsToBounds = YES;
         }
-        else
-        {
-            if (self.userNameLabel)
-            {
-                self.userNameLabel.hidden = YES;
-            }
-            
-            self.pictureView.hidden = YES;
-        }
         
-        // Set default view's constraints
-        self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant;
-        self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant ;
-        
-        // Adjust top constraint constant for dateTime labels container, and hide it by default
-        if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
+        if (self.attachmentView)
         {
-            self.bubbleInfoContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
-        }
-        else
-        {
-            self.bubbleInfoContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
-        }
-        self.bubbleInfoContainer.hidden = YES;
-        
-        // Set message content
-        bubbleData.maxTextViewWidth = self.frame.size.width - (cellWithOriginalXib.msgTextViewLeadingConstraint.constant + cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
-        CGSize contentSize = bubbleData.contentSize;
-        if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
-        {
-            self.messageTextView.hidden = YES;
-            self.attachmentView.hidden = NO;
+            // Set attached media folders
+            self.attachmentView.mediaFolder = bubbleData.roomId;
             
             self.attachmentView.backgroundColor = [UIColor clearColor];
+            
+            // Retrieve the suitable content size for the attachment thumbnail
+            CGSize contentSize = bubbleData.contentSize;
             
             // Update image view frame in order to center loading wheel (if any)
             CGRect frame = self.attachmentView.frame;
@@ -275,17 +264,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [tap setNumberOfTapsRequired:1];
                 [tap setDelegate:self];
                 [self.attachmentView addGestureRecognizer:tap];
-                
-                // Prepare attachment description
-                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type], @"url" : bubbleData.attachment.actualURL}];
-                
-                if (bubbleData.attachment.contentInfo)
-                {
-                    mediaInfoDict[@"info"] = bubbleData.attachment.contentInfo;
-                }
-                
-                // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = mediaInfoDict;
             }
             
             [self startProgressUI];
@@ -300,13 +278,13 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
             [self.progressView addGestureRecognizer:longPress];
         }
-        else
+        else if (self.messageTextView)
         {
-            self.attachmentView.hidden = YES;
-            self.playIconView.hidden = YES;
-            self.fileTypeIconView.hidden = YES;
-            self.messageTextView.hidden = NO;
+            // Compute message content size
+            bubbleData.maxTextViewWidth = self.frame.size.width - (self.msgTextViewLeadingConstraint.constant + self.msgTextViewTrailingConstraint.constant);
+            CGSize contentSize = bubbleData.contentSize;
             
+            // Prepare displayed text message
             NSAttributedString* newText = nil;
             
             // Underline attached file name
@@ -316,13 +294,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
                 newText = updatedText;
-                
-                // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = @{
-                                                  @"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type],
-                                                  @"url" : bubbleData.attachment.actualURL,
-                                                  @"info" : bubbleData.attachment.contentInfo
-                                                  };
             }
             else
             {
@@ -336,18 +307,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 self.messageTextView.attributedText = newText;
             }
             
-            // update the frame size from the content size
-            // the content size is cached so it saved few ms
-            // and avoid using sizeToFit
-            CGRect newFrame, curframe;
-            newFrame = curframe = CGRectIntegral(self.messageTextView.frame);
-            newFrame.size = contentSize;
-            
-            // update the frame only if it is required
-            // setting a frame is quite slow so avoid useless update.
-            if (!CGRectEqualToRect(curframe, CGRectIntegral(newFrame)))
+            // Update msgTextView width constraint to align correctly the text
+            if (self.msgTextViewWidthConstraint.constant != contentSize.width)
             {
-                self.messageTextView.frame = newFrame;
+                self.msgTextViewWidthConstraint.constant = contentSize.width;
             }
         }
         
@@ -531,6 +494,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                     }
                 }
             }
+            else
+            {
+                self.bubbleInfoContainer.hidden = YES;
+            }
         }
     }
 }
@@ -547,19 +514,31 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
     MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
+    CGFloat rowHeight = 0;
     
-    // Compute height of message content (The maximum width available for the textview must be updated dynamically)
-    bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
-    CGFloat rowHeight = bubbleData.contentSize.height;
-    
-    // Add top margin
-    if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
+    if (cell.messageTextView)
     {
-        rowHeight += cell.msgTextViewTopConstraint.constant;
+        // Update maximum width available for the textview
+        bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
+        
+        // Compute row height by adding the height of the message content and the top constraint.
+        rowHeight = bubbleData.contentSize.height + cell.msgTextViewTopConstraint.constant;
     }
     else
     {
-        rowHeight += cell.attachViewTopConstraint.constant ;
+        // Compute row height by adding the height of the image view and the vertical constraints.
+        rowHeight = bubbleData.contentSize.height + cell.attachViewTopConstraint.constant + cell.attachViewBottomConstraint.constant;
+    }
+    
+    if (cell.pictureView)
+    {
+        CGFloat height = cell.frame.size.height;
+        
+        // We consider a minimun cell height in order to display correctly user's picture
+        if (rowHeight < height)
+        {
+            rowHeight = height;
+        }
     }
     
     return rowHeight;
@@ -569,14 +548,17 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 {
     bubbleData = nil;
     
-    // Remove all gesture recognizer
-    while (self.attachmentView.gestureRecognizers.count)
+    if (self.attachmentView)
     {
-        [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
+        // Remove all gesture recognizer
+        while (self.attachmentView.gestureRecognizers.count)
+        {
+            [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
+        }
     }
     
     // Remove potential dateTime (or unsent) label(s)
-    if (self.bubbleInfoContainer.subviews.count > 0)
+    if (self.bubbleInfoContainer && self.bubbleInfoContainer.subviews.count > 0)
     {
         NSArray* subviews = self.bubbleInfoContainer.subviews;
              
@@ -586,17 +568,22 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         }
     }
     
-    [self stopProgressUI];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    // Remove long tap gesture on the progressView
-    while (self.progressView.gestureRecognizers.count)
+    if (self.progressView)
     {
-        [self.progressView removeGestureRecognizer:self.progressView.gestureRecognizers[0]];
+        [self stopProgressUI];
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        
+        // Remove long tap gesture on the progressView
+        while (self.progressView.gestureRecognizers.count)
+        {
+            [self.progressView removeGestureRecognizer:self.progressView.gestureRecognizers[0]];
+        }
     }
     
     delegate = nil;
 }
+
+#pragma mark - Attachment progress handling
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict
 {
@@ -723,7 +710,7 @@ static NSMutableDictionary *childClasses;
     
     @synchronized(self)
     {
-        if(childClasses == nil)
+        if (childClasses == nil)
         {
             childClasses = [NSMutableDictionary dictionary];
         }
@@ -741,6 +728,7 @@ static NSMutableDictionary *childClasses;
 }
 
 #pragma mark - User actions
+
 - (IBAction)onMessageTap:(UITapGestureRecognizer*)sender
 {
     if (delegate)

@@ -14,16 +14,11 @@
  limitations under the License.
  */
 
-#import "MXKRoomBubbleTableViewCell.h"
+#import "MXKRoomIncomingAttachmentBubbleCell.h"
 
 /**
- `MXKRoomIncomingBubbleTableViewCell` inherits from 'MXKRoomBubbleTableViewCell' class in order to handle specific
- options related to incoming messages (like typing badge).
-
- In order to optimize bubbles rendering, we advise to define a .xib for each layout.
+ `MXKRoomIncomingAttachmentHiddenSenderBubbleCell` displays incoming message bubbles without sender's information.
  */
-@interface MXKRoomIncomingBubbleTableViewCell : MXKRoomBubbleTableViewCell
-
-@property (weak, nonatomic) IBOutlet UIImageView *typingBadge;
+@interface MXKRoomIncomingAttachmentHiddenSenderBubbleCell : MXKRoomIncomingAttachmentBubbleCell
 
 @end

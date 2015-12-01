@@ -84,6 +84,10 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 #pragma mark - MXKRoomBubbleTableViewCell
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
+ 
+ This class is used to handle a maximum of items which may be present in bubbles display (like the user's picture view, the message text view...).
+ To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
+ Each inherited class should define only the actual displayed items.
  */
 @interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering>
 
@@ -117,8 +121,10 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubbleInfoContainerTopConstraint;
 
 - (void)startProgressUI;
