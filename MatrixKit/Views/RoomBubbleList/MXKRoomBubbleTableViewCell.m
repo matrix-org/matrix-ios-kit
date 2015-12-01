@@ -264,17 +264,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [tap setNumberOfTapsRequired:1];
                 [tap setDelegate:self];
                 [self.attachmentView addGestureRecognizer:tap];
-                
-                // Prepare attachment description
-                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type], @"url" : bubbleData.attachment.actualURL}];
-                
-                if (bubbleData.attachment.contentInfo)
-                {
-                    mediaInfoDict[@"info"] = bubbleData.attachment.contentInfo;
-                }
-                
-                // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = mediaInfoDict;
             }
             
             [self startProgressUI];
@@ -289,7 +278,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
             [self.progressView addGestureRecognizer:longPress];
         }
-        else
+        else if (self.messageTextView)
         {
             // Compute message content size
             bubbleData.maxTextViewWidth = self.frame.size.width - (self.msgTextViewLeadingConstraint.constant + self.msgTextViewTrailingConstraint.constant);
@@ -304,13 +293,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
                 newText = updatedText;
-                
-                // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = @{
-                                                  @"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type],
-                                                  @"url" : bubbleData.attachment.actualURL,
-                                                  @"info" : bubbleData.attachment.contentInfo
-                                                  };
             }
             else
             {
