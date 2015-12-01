@@ -468,29 +468,7 @@
 {
     if (editingStyle == UITableViewCellEditingStyleDelete)
     {
-        // Leave the selected room
-        id<MXKRecentCellDataStoring> recentCellData = [self cellDataAtIndexPath:indexPath];
-        
-        // cancel pending uploads/downloads
-        // they are useless by now
-        [MXKMediaManager cancelDownloadsInCacheFolder:recentCellData.roomDataSource.room.state.roomId];
-        // TODO GFO cancel pending uploads related to this room
-        
-        [recentCellData.roomDataSource.room leave:^{
-            
-            // Refresh table display
-            if (self.delegate)
-            {
-                [self.delegate dataSource:self didCellChange:nil];
-            }
-            
-        } failure:^(NSError *error) {
-            
-            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed: %@", recentCellData.roomDataSource.room.state.roomId, error);
-            
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-        }];
+        [self leaveRoomAtIndexPath:indexPath];
     }
 }
 
@@ -616,5 +594,50 @@
         }
     }
 }
+
+#pragma mark - room actions
+- (MXRoom*)getRoomAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Leave the selected room
+    id<MXKRecentCellDataStoring> recentCellData = [self cellDataAtIndexPath:indexPath];
+    
+    if (recentCellData)
+    {
+        return recentCellData.roomDataSource.room;
+    }
+    
+    return nil;
+}
+
+- (void)leaveRoomAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    
+    if (room)
+    {
+        // cancel pending uploads/downloads
+        // they are useless by now
+        [MXKMediaManager cancelDownloadsInCacheFolder:room.state.roomId];
+        
+        // TODO GFO cancel pending uploads related to this room
+        
+        [room leave:^{
+            
+            // Refresh table display
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed: %@", room.state.roomId, error);
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        }];
+    }
+}
+
 
 @end

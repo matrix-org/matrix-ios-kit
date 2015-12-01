@@ -121,6 +121,21 @@
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
 /**
+ Returns the room at the index path
+ 
+ @param indexPath the index of the cell
+ @return the MXRoom if it exists
+ */
+- (MXRoom*)getRoomAtIndexPath:(NSIndexPath *)indexPath;
+
+/**
+ Leave the room at the index path
+
+ @param indexPath the index of the cell
+ */
+- (void)leaveRoomAtIndexPath:(NSIndexPath *)indexPath;
+
+/**
  Action registered on buttons used to shrink/disclose recents sources.
  */
 - (IBAction)onButtonPressed:(id)sender;
