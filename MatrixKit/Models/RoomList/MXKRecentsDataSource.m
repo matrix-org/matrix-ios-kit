@@ -665,9 +665,13 @@
             newtag = nil;
         }
         
+        NSString* tagOrder = [room.mxSession tagOrderToBeAtIndex:0 withTag:newtag];
+        
+        NSLog(@"[MXKRecentsDataSource] Update the room %@ tag from %@ to %@ with tag order %@", room.state.roomId, oldTag, newtag, tagOrder);
+        
         [room replaceTag:oldTag
                    byTag:newtag
-               withOrder:@"0"
+               withOrder:tagOrder
                  success: ^{
             
             // Refresh table display
