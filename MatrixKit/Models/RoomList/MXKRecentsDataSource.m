@@ -690,5 +690,145 @@
     }
 }
 
+- (MXPushRule*)getPushRulesForRoom:(MXRoom*)room
+{
+    if (room)
+    {
+        NSArray* rules = room.mxSession.notificationCenter.rules.global.room;
+        
+        // sanity checks
+        if (rules)
+        {
+            for(MXPushRule* rule in rules)
+            {
+                // the rule id is the room Id
+                // it is the server trick to avoid duplicated rule on the same room.
+                if ([rule.ruleId isEqualToString:room.state.roomId])
+                {
+                    return rule;
+                }
+            }
+        }
+    }
+    
+    return nil;
+}
+
+/**
+ Check if the room notification can be suspened
+ 
+ @param indexPath the index of the cell
+ @return YES if the room notification can be suspended.
+ */
+- (BOOL)canSuspendRoomNotificationsAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    MXPushRule* rule = [self getPushRulesForRoom:room];
+    
+    if (rule)
+    {
+        for (MXPushRuleAction *ruleAction in rule.actions)
+        {
+            // if the user defines a dedicated rule to this room
+            // the client does not know how to merge it
+            if ((ruleAction.actionType == MXPushRuleActionTypeNotify || ruleAction.actionType == MXPushRuleActionTypeCoalesce))
+            {
+                return NO;
+            }
+        }
+    }
+    
+    return YES;
+}
+
+/**
+ Check if there is a push notification rules for the room at the position indexPath
+ 
+ @param indexPath the index of the cell
+ @return YES if there is a push rules.
+ */
+- (BOOL)isRoomNotifiedAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    MXPushRule* rule = [self getPushRulesForRoom:room];
+    
+    if (rule)
+    {
+        for (MXPushRuleAction *ruleAction in rule.actions)
+        {
+            if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
+            {
+                return !rule.enabled;
+            }
+        }
+    }
+    
+    return YES;
+}
+
+- (void)muteRoomNotifications:(BOOL)mute atIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+ 
+    // sanity check
+    if (room)
+    {
+        BOOL isNotified = [self isRoomNotifiedAtIndexPath:indexPath];
+        
+        // check if the state is already in the right state
+        if (isNotified == !mute)
+        {
+            return;
+        }
+        
+        MXNotificationCenter* notificationCenter = room.mxSession.notificationCenter;
+        MXPushRule* rule = [self getPushRulesForRoom:room];
+        
+        if (!mute)
+        {
+            // let the other notification rules manage the pushes.
+            [notificationCenter removeRule:rule];
+        }
+        else
+        {
+            // user does not want to have push
+            
+            // if there is no rule
+            if (!rule)
+            {
+                // add one
+                [notificationCenter addRoomRule:room.state.roomId
+                                                    notify:NO
+                                                     sound:NO
+                                                 highlight:NO];
+            }
+            else
+            {
+                // check if the user did not define one
+                BOOL hasDontNotifyRule = NO;
+                
+                for (MXPushRuleAction *ruleAction in rule.actions)
+                {
+                    if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
+                    {
+                        hasDontNotifyRule = YES;
+                        break;
+                    }
+                }
+                
+                // if the user defined one, use it
+                if (hasDontNotifyRule)
+                {
+                    [notificationCenter enableRule:rule isEnabled:YES];
+                }
+                else
+                {
+                    // don't know how to merge the rules
+                    // the user defined his dedicated rule 
+                }
+            }
+        }
+    }
+}
 
 @end
