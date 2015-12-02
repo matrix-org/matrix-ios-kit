@@ -40,7 +40,7 @@
 #import "MXKRoomMemberDetailsViewController.h"
 #import "MXKNotificationSettingsViewController.h"
 #import "MXKAttachmentsViewController.h"
-#import "MXKRoomDetailsViewController.h"
+#import "MXKRoomSettingsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 #import "MXKAuthInputsPasswordBasedView.h"

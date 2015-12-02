@@ -14,34 +14,31 @@
  limitations under the License.
  */
 
-#import "MXKRoomDetailsViewController.h"
+#import "MXKRoomSettingsViewController.h"
 
 #import "NSBundle+MatrixKit.h"
 
-@interface MXKRoomDetailsViewController()
+@interface MXKRoomSettingsViewController()
 {    
-    // nav barbutton
-    UIBarButtonItem* doneButton;
-    
     // the room events listener
     id roomListener;
 }
 @end
 
-@implementation MXKRoomDetailsViewController
+@implementation MXKRoomSettingsViewController
 
 #pragma mark - Class methods
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRoomDetailsViewController class])
-                          bundle:[NSBundle bundleForClass:[MXKRoomDetailsViewController class]]];
+    return [UINib nibWithNibName:NSStringFromClass([MXKRoomSettingsViewController class])
+                          bundle:[NSBundle bundleForClass:[MXKRoomSettingsViewController class]]];
 }
 
-+ (instancetype)roomDetailsViewController
++ (instancetype)roomSettingsViewController
 {
-    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRoomDetailsViewController class])
-                                          bundle:[NSBundle bundleForClass:[MXKRoomDetailsViewController class]]];
+    return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKRoomSettingsViewController class])
+                                          bundle:[NSBundle bundleForClass:[MXKRoomSettingsViewController class]]];
 }
 
 #pragma mark - Public API
@@ -49,7 +46,7 @@
 /**
  Set the dedicated session and the room Id
  */
-- (void) initWithSession:(MXSession*)aSession andRoomId:(NSString*)aRoomId
+- (void)initWithSession:(MXSession*)aSession andRoomId:(NSString*)aRoomId
 {
     _session = aSession;
     _roomId = aRoomId;
@@ -82,8 +79,8 @@
     
     self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];
     
-    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(onDone:)];
-    self.navigationItem.rightBarButtonItem = doneButton;
+    UIBarButtonItem* saveButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(onSave:)];
+    self.navigationItem.rightBarButtonItem = saveButton;
 }
 
 #pragma mark - private methods
@@ -118,10 +115,9 @@
 
 #pragma mark - Action
 
-- (IBAction) onDone:(id)sender
+- (IBAction) onSave:(id)sender
 {
-    // should check if there are some updates before closing
-    
+    // should check if there are some updates before closing ?
     [self.navigationController popViewControllerAnimated:YES];
 }
 
