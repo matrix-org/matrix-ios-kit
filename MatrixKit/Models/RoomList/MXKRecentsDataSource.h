@@ -136,6 +136,14 @@
 - (void)leaveRoomAtIndexPath:(NSIndexPath *)indexPath;
 
 /**
+ Update the room tag at the index path
+ 
+ @param indexPath the index of the cell
+ @param tag the new tag value
+ */
+- (void)updateRoomTagAtIndexPath:(NSIndexPath *)indexPath to:(NSString*)tag;
+
+/**
  Action registered on buttons used to shrink/disclose recents sources.
  */
 - (IBAction)onButtonPressed:(id)sender;

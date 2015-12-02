@@ -639,5 +639,52 @@
     }
 }
 
+/**
+ Update the room tag at the index path
+ 
+ @param indexPath the index of the cell
+ @param tag the new tag value
+ */
+- (void)updateRoomTagAtIndexPath:(NSIndexPath *)indexPath to:(NSString*)newtag
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    
+    if (room)
+    {
+        NSString* oldTag = nil;
+        
+        // sanity cg
+        if (room.accountData.tags && room.accountData.tags.count)
+        {
+            oldTag = [room.accountData.tags.allKeys objectAtIndex:0];
+        }
+        
+        // support only kMXRoomTagFavourite or kMXRoomTagLowPriority tags by now
+        if (![newtag isEqualToString:kMXRoomTagFavourite] && ![newtag isEqualToString:kMXRoomTagLowPriority])
+        {
+            newtag = nil;
+        }
+        
+        [room replaceTag:oldTag
+                   byTag:newtag
+               withOrder:@"0"
+                 success: ^{
+            
+            // Refresh table display
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRecentsDataSource] Failed to update the tag %@ of room (%@) failed: %@", newtag, room.state.roomId, error);
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        }];
+    }
+}
+
 
 @end
