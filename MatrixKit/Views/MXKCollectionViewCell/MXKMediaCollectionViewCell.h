@@ -14,7 +14,8 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MXKCollectionViewCell.h"
+
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "MXKImageView.h"
@@ -22,20 +23,7 @@
 /**
  'MXKMediaCollectionViewCell' class is used to display picture or video thumbnail.
  */
-@interface MXKMediaCollectionViewCell : UICollectionViewCell
-
-/**
- Returns the `UINib` object initialized for the cell.
- 
- @return The initialized `UINib` object or `nil` if there were errors during
- initialization or the nib file could not be located.
- */
-+ (UINib *)nib;
-
-/**
- The default reuseIdentifier of the 'MXKMediaCollectionViewCell' class.
- */
-+ (NSString*)defaultReuseIdentifier;
+@interface MXKMediaCollectionViewCell : MXKCollectionViewCell
 
 @property (weak, nonatomic) IBOutlet UIView *customView;
 @property (weak, nonatomic) IBOutlet MXKImageView *mxkImageView;

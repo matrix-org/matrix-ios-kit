@@ -14,24 +14,25 @@
  limitations under the License.
  */
 
-#import "MXKMediaCollectionViewCell.h"
+#import "MXKCollectionViewCell.h"
 
-@implementation MXKMediaCollectionViewCell
+@implementation MXKCollectionViewCell
 
-- (instancetype)initWithFrame:(CGRect)frame
++ (UINib *)nib
 {
-    // Check whether a xib is defined
-    if ([[self class] nib])
+    // Check whether a nib file is available
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
+    if (path)
     {
-        self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
-        self.frame = frame;
+        return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
     }
-    else
-    {
-        self = [super initWithFrame:frame];
-    }
-    
-    return self;
+    return nil;
+}
+
++ (NSString*)defaultReuseIdentifier
+{
+    return NSStringFromClass([self class]);
 }
 
 @end
