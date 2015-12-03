@@ -468,29 +468,7 @@
 {
     if (editingStyle == UITableViewCellEditingStyleDelete)
     {
-        // Leave the selected room
-        id<MXKRecentCellDataStoring> recentCellData = [self cellDataAtIndexPath:indexPath];
-        
-        // cancel pending uploads/downloads
-        // they are useless by now
-        [MXKMediaManager cancelDownloadsInCacheFolder:recentCellData.roomDataSource.room.state.roomId];
-        // TODO GFO cancel pending uploads related to this room
-        
-        [recentCellData.roomDataSource.room leave:^{
-            
-            // Refresh table display
-            if (self.delegate)
-            {
-                [self.delegate dataSource:self didCellChange:nil];
-            }
-            
-        } failure:^(NSError *error) {
-            
-            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed: %@", recentCellData.roomDataSource.room.state.roomId, error);
-            
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-        }];
+        [self leaveRoomAtIndexPath:indexPath];
     }
 }
 
@@ -613,6 +591,242 @@
             
             // Loop on 'didCellChange' method to let inherited 'MXKRecentsDataSource' class handle change on this data source.
             [self dataSource:recentsDataSource didCellChange:nil];
+        }
+    }
+}
+
+#pragma mark - room actions
+- (MXRoom*)getRoomAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Leave the selected room
+    id<MXKRecentCellDataStoring> recentCellData = [self cellDataAtIndexPath:indexPath];
+    
+    if (recentCellData)
+    {
+        return recentCellData.roomDataSource.room;
+    }
+    
+    return nil;
+}
+
+- (void)leaveRoomAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    
+    if (room)
+    {
+        // cancel pending uploads/downloads
+        // they are useless by now
+        [MXKMediaManager cancelDownloadsInCacheFolder:room.state.roomId];
+        
+        // TODO GFO cancel pending uploads related to this room
+        
+        [room leave:^{
+            
+            // Refresh table display
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed: %@", room.state.roomId, error);
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        }];
+    }
+}
+
+/**
+ Update the room tag at the index path
+ 
+ @param indexPath the index of the cell
+ @param tag the new tag value
+ */
+- (void)updateRoomTagAtIndexPath:(NSIndexPath *)indexPath to:(NSString*)newtag
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    
+    if (room)
+    {
+        NSString* oldTag = nil;
+        
+        // sanity cg
+        if (room.accountData.tags && room.accountData.tags.count)
+        {
+            oldTag = [room.accountData.tags.allKeys objectAtIndex:0];
+        }
+        
+        // support only kMXRoomTagFavourite or kMXRoomTagLowPriority tags by now
+        if (![newtag isEqualToString:kMXRoomTagFavourite] && ![newtag isEqualToString:kMXRoomTagLowPriority])
+        {
+            newtag = nil;
+        }
+        
+        NSString* tagOrder = [room.mxSession tagOrderToBeAtIndex:0 withTag:newtag];
+        
+        NSLog(@"[MXKRecentsDataSource] Update the room %@ tag from %@ to %@ with tag order %@", room.state.roomId, oldTag, newtag, tagOrder);
+        
+        [room replaceTag:oldTag
+                   byTag:newtag
+               withOrder:tagOrder
+                 success: ^{
+            
+            // Refresh table display
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRecentsDataSource] Failed to update the tag %@ of room (%@) failed: %@", newtag, room.state.roomId, error);
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        }];
+    }
+}
+
+- (MXPushRule*)getPushRulesForRoom:(MXRoom*)room
+{
+    if (room)
+    {
+        NSArray* rules = room.mxSession.notificationCenter.rules.global.room;
+        
+        // sanity checks
+        if (rules)
+        {
+            for(MXPushRule* rule in rules)
+            {
+                // the rule id is the room Id
+                // it is the server trick to avoid duplicated rule on the same room.
+                if ([rule.ruleId isEqualToString:room.state.roomId])
+                {
+                    return rule;
+                }
+            }
+        }
+    }
+    
+    return nil;
+}
+
+/**
+ Check if the room notification can be suspened
+ 
+ @param indexPath the index of the cell
+ @return YES if the room notification can be suspended.
+ */
+- (BOOL)canSuspendRoomNotificationsAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    MXPushRule* rule = [self getPushRulesForRoom:room];
+    
+    if (rule)
+    {
+        for (MXPushRuleAction *ruleAction in rule.actions)
+        {
+            // if the user defines a dedicated rule to this room
+            // the client does not know how to merge it
+            if ((ruleAction.actionType == MXPushRuleActionTypeNotify || ruleAction.actionType == MXPushRuleActionTypeCoalesce))
+            {
+                return NO;
+            }
+        }
+    }
+    
+    return YES;
+}
+
+/**
+ Check if there is a push notification rules for the room at the position indexPath
+ 
+ @param indexPath the index of the cell
+ @return YES if there is a push rules.
+ */
+- (BOOL)isRoomNotifiedAtIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+    MXPushRule* rule = [self getPushRulesForRoom:room];
+    
+    if (rule)
+    {
+        for (MXPushRuleAction *ruleAction in rule.actions)
+        {
+            if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
+            {
+                return !rule.enabled;
+            }
+        }
+    }
+    
+    return YES;
+}
+
+- (void)muteRoomNotifications:(BOOL)mute atIndexPath:(NSIndexPath *)indexPath
+{
+    MXRoom* room = [self getRoomAtIndexPath:indexPath];
+ 
+    // sanity check
+    if (room)
+    {
+        BOOL isNotified = [self isRoomNotifiedAtIndexPath:indexPath];
+        
+        // check if the state is already in the right state
+        if (isNotified == !mute)
+        {
+            return;
+        }
+        
+        MXNotificationCenter* notificationCenter = room.mxSession.notificationCenter;
+        MXPushRule* rule = [self getPushRulesForRoom:room];
+        
+        if (!mute)
+        {
+            // let the other notification rules manage the pushes.
+            [notificationCenter removeRule:rule];
+        }
+        else
+        {
+            // user does not want to have push
+            
+            // if there is no rule
+            if (!rule)
+            {
+                // add one
+                [notificationCenter addRoomRule:room.state.roomId
+                                                    notify:NO
+                                                     sound:NO
+                                                 highlight:NO];
+            }
+            else
+            {
+                // check if the user did not define one
+                BOOL hasDontNotifyRule = NO;
+                
+                for (MXPushRuleAction *ruleAction in rule.actions)
+                {
+                    if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
+                    {
+                        hasDontNotifyRule = YES;
+                        break;
+                    }
+                }
+                
+                // if the user defined one, use it
+                if (hasDontNotifyRule)
+                {
+                    [notificationCenter enableRule:rule isEnabled:YES];
+                }
+                else
+                {
+                    // don't know how to merge the rules
+                    // the user defined his dedicated rule 
+                }
+            }
         }
     }
 }
