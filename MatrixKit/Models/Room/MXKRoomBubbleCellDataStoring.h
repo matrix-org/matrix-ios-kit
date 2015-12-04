@@ -53,6 +53,11 @@
 @property (nonatomic) NSString *senderAvatarUrl;
 
 /**
+ The sender avatar placeholder (may be nil) - Used when url is nil, or during avatar download.
+ */
+@property (nonatomic) UIImage *senderAvatarPlaceholder;
+
+/**
  Tell whether a new pagination starts with this bubble.
  */
 @property (nonatomic) BOOL isPaginationFirstBubble;
