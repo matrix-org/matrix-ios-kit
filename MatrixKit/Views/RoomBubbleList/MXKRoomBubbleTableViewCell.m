@@ -186,15 +186,38 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Check whether the sender's picture is actually displayed before loading it.
         if (self.pictureView)
         {
-            // Handle user's picture
-            NSString *avatarThumbURL = nil;
-            if (bubbleData.senderAvatarUrl)
+            UIImage* image = nil;
+            
+            if (_roomBubbleTableViewCellDelegate)
             {
-                // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
+                image = [_roomBubbleTableViewCellDelegate pictureViewImage:self];
             }
-            self.pictureView.enableInMemoryCache = YES;
-            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+            
+            // the delegate defines an image to use.
+            if (image)
+            {
+                self.pictureView.image = image;
+            }
+            else
+            {
+                UIImage* previewImage = self.picturePlaceholder;
+                
+                if (_roomBubbleTableViewCellDelegate)
+                {
+                    previewImage = [_roomBubbleTableViewCellDelegate pictureViewPreviewImage:self];
+                }
+                
+                // Handle user's picture
+                NSString *avatarThumbURL = nil;
+                if (bubbleData.senderAvatarUrl)
+                {
+                    // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+                    avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
+                }
+                self.pictureView.enableInMemoryCache = YES;
+                [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:previewImage];
+            }
+
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
             self.pictureView.clipsToBounds = YES;
         }
