@@ -46,8 +46,8 @@
      The creation must be done after the deletion has been confirmed.
      The confirmation is done with a notification.
      */
-    NSMutableDictionary* ruleDidUpdateRulesObserverByRoomId;
-    NSMutableDictionary* rulePendingDidFailUpdateRulesObserverByRoomId;
+    NSMutableDictionary* ruleDidUpdateObserverByRoomId;
+    NSMutableDictionary* ruleDidFailUpdateObserverByRoomId;
 }
 
 @end
@@ -69,8 +69,8 @@
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
         [self registerCellViewClass:MXKRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
         
-        ruleDidUpdateRulesObserverByRoomId = [[NSMutableDictionary alloc] init];
-        rulePendingDidFailUpdateRulesObserverByRoomId = [[NSMutableDictionary alloc] init];
+        ruleDidUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
+        ruleDidFailUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -233,20 +233,20 @@
 - (void)destroy
 {
     // remove any observer
-    if (ruleDidUpdateRulesObserverByRoomId || rulePendingDidFailUpdateRulesObserverByRoomId)
+    if (ruleDidUpdateObserverByRoomId || ruleDidFailUpdateObserverByRoomId)
     {
         NSMutableArray *observers = [[NSMutableArray alloc] init];
         
-        if (ruleDidUpdateRulesObserverByRoomId)
+        if (ruleDidUpdateObserverByRoomId)
         {
-            [observers addObjectsFromArray:[ruleDidUpdateRulesObserverByRoomId allValues]];
-            ruleDidUpdateRulesObserverByRoomId = nil;
+            [observers addObjectsFromArray:[ruleDidUpdateObserverByRoomId allValues]];
+            ruleDidUpdateObserverByRoomId = nil;
         }
         
-        if (rulePendingDidFailUpdateRulesObserverByRoomId)
+        if (ruleDidFailUpdateObserverByRoomId)
         {
-            [observers addObjectsFromArray:[rulePendingDidFailUpdateRulesObserverByRoomId allValues]];
-            rulePendingDidFailUpdateRulesObserverByRoomId = nil;
+            [observers addObjectsFromArray:[ruleDidFailUpdateObserverByRoomId allValues]];
+            ruleDidFailUpdateObserverByRoomId = nil;
         }
         
         for(id observer in observers)
@@ -811,7 +811,7 @@
             else
             {
                 // check if there is no pending update for this room
-                if ([ruleDidUpdateRulesObserverByRoomId objectForKey:room.state.roomId])
+                if ([ruleDidUpdateObserverByRoomId objectForKey:room.state.roomId])
                 {
                     // if there is one, ignore the current request
                     return;
@@ -848,20 +848,20 @@
                         // there is no way to know if the notif is really for this rule..
                         if (!rule)
                         {
-                            id observer = [ruleDidUpdateRulesObserverByRoomId objectForKey:room.state.roomId];
+                            id observer = [ruleDidUpdateObserverByRoomId objectForKey:room.state.roomId];
                             
                             if (observer)
                             {
                                 [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                                [ruleDidUpdateRulesObserverByRoomId removeObjectForKey:room.state.roomId];
+                                [ruleDidUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
                             }
                             
-                            observer = [ruleDidUpdateRulesObserverByRoomId objectForKey:room.state.roomId];
+                            observer = [ruleDidFailUpdateObserverByRoomId objectForKey:room.state.roomId];
                             
                             if (observer)
                             {
                                 [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                                [ruleDidUpdateRulesObserverByRoomId removeObjectForKey:room.state.roomId];
+                                [ruleDidFailUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
                             }
                             
                             // add one
@@ -874,25 +874,25 @@
                     
                     id notificationCenterDidFailObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXNotificationCenterDidFailRulesUpdate object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
 
-                        id observer = [ruleDidUpdateRulesObserverByRoomId objectForKey:room.state.roomId];
+                        id observer = [ruleDidUpdateObserverByRoomId objectForKey:room.state.roomId];
                         
                         if (observer)
                         {
                             [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                            [ruleDidUpdateRulesObserverByRoomId removeObjectForKey:room.state.roomId];
+                            [ruleDidUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
                         }
                         
-                        observer = [ruleDidUpdateRulesObserverByRoomId objectForKey:room.state.roomId];
+                        observer = [ruleDidFailUpdateObserverByRoomId objectForKey:room.state.roomId];
                         
                         if (observer)
                         {
                             [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                            [ruleDidUpdateRulesObserverByRoomId removeObjectForKey:room.state.roomId];
+                            [ruleDidFailUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
                         }
                     }];
                     
-                    [ruleDidUpdateRulesObserverByRoomId setObject:notificationCenterDidUpdateObserver forKey:room.state.roomId];
-                    [rulePendingDidFailUpdateRulesObserverByRoomId setObject:notificationCenterDidFailObserver forKey:room.state.roomId];
+                    [ruleDidUpdateObserverByRoomId setObject:notificationCenterDidUpdateObserver forKey:room.state.roomId];
+                    [ruleDidFailUpdateObserverByRoomId setObject:notificationCenterDidFailObserver forKey:room.state.roomId];
                     
                     // remove the rule notification
                     // the notifications are used to tell
