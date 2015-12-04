@@ -81,6 +81,30 @@ extern NSString *const kMXKRoomBubbleCellLongPressOnProgressView;
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
 
+@class MXKRoomBubbleTableViewCell;
+
+@protocol MXKRoomBubbleTableViewCellDelegate
+
+/**
+ Provide the image for the pictureView object.
+ A nil image implies to use the default behaviour.
+ 
+ @param cell the MXKRoomBubbleTableViewCell cell.
+ @return an image. nil means to use the default behaviour.
+ */
+- (UIImage*)pictureViewImage:(MXKRoomBubbleTableViewCell*)cell;
+
+/**
+ Provide the default image for the pictureView object.
+ A nil image implies to use the default default image.
+ 
+ @param cell the MXKRoomBubbleTableViewCell cell.
+ @return an image. nil means to use the default default image.
+ */
+- (UIImage*)pictureViewPreviewImage:(MXKRoomBubbleTableViewCell*)cell;
+
+@end
+
 #pragma mark - MXKRoomBubbleTableViewCell
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
@@ -126,6 +150,9 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubbleInfoContainerTopConstraint;
+
+// delegate to customize the UI
+@property (nonatomic) id <MXKRoomBubbleTableViewCellDelegate> roomBubbleTableViewCellDelegate;
 
 - (void)startProgressUI;
 

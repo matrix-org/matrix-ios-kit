@@ -108,6 +108,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 #pragma mark - MXKRoomDataSource
 @protocol MXKRoomBubbleCellDataStoring;
+@protocol MXKRoomBubbleTableViewCellDelegate;
 
 /**
  The data source for `MXKRoomViewController`.
@@ -208,6 +209,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
  */
 @property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;
+
+/**
+ Delegate to customize the MXKRoomBubbleTableViewCell i.e. the base room bubble cell
+ */
+@property (nonatomic) id<MXKRoomBubbleTableViewCellDelegate> roomBubbleTableViewCellDelegate;
 
 /**
  Max nbr of cached bubbles when there is no delegate.

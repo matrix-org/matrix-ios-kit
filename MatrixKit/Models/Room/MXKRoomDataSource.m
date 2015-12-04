@@ -2191,6 +2191,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         cell.delegate = self;
     }
     
+    // define the customization delegate
+    cell.roomBubbleTableViewCellDelegate = _roomBubbleTableViewCellDelegate;
+    
     // Update typing flag before rendering
     bubbleData.isTyping = _showTypingNotifications && currentTypingUsers && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
     // Report the current timestamp display option
