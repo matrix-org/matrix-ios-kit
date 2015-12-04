@@ -131,13 +131,24 @@
 + (CGSize)resizeImageSize:(CGSize)originalSize toFillWithSize:(CGSize)maxSize canExpand:(BOOL)canExpand;
 
 /**
- Resize image.
+ Reduce image to fit in the provided size.
+ The aspect ratio is kept.
+ If the image is smaller than the provided size, the image is not recomputed.
  
  @param image
  @param size to fit in.
  @return resized image.
  */
-+ (UIImage *)resizeImage:(UIImage *)image toFitInSize:(CGSize)size;
++ (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size;
+
+/**
+ Resize image to a provided size.
+ 
+ @param image
+ @param the destinated
+ @return resized image.
+ */
++ (UIImage*)resizeImage:(UIImage *)image toSize:(CGSize)size;
 
 /**
  Paint an image with a color.

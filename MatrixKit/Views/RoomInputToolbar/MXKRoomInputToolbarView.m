@@ -481,7 +481,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Send the small image
-                UIImage *smallImage = [MXKTools resizeImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
+                UIImage *smallImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
                 [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:smallImage];
                 
                 [strongSelf dismissCompressionPrompt];
@@ -496,7 +496,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Send the medium image
-                UIImage *mediumImage = [MXKTools resizeImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
+                UIImage *mediumImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
                 [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:mediumImage];
                 
                 [strongSelf dismissCompressionPrompt];
@@ -511,7 +511,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Send the large image
-                UIImage *largeImage = [MXKTools resizeImage:image toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize)];
+                UIImage *largeImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize)];
                 [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:largeImage];
                 
                 [strongSelf dismissCompressionPrompt];
@@ -552,21 +552,21 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
             case MXKRoomInputToolbarCompressionModeSmall:
                 if (smallFilesize)
                 {
-                    finalImage = [MXKTools resizeImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
                 }
                 break;
                 
             case MXKRoomInputToolbarCompressionModeMedium:
                 if (mediumFilesize)
                 {
-                    finalImage = [MXKTools resizeImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
                 }
                 break;
                 
             case MXKRoomInputToolbarCompressionModeLarge:
                 if (largeFilesize)
                 {
-                    finalImage = [MXKTools resizeImage:image toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize)];
                 }
                 break;
                 
