@@ -17,7 +17,6 @@
 #import "MXKRoomMemberListDataSource.h"
 
 #import "MXKRoomMemberCellData.h"
-#import "MXKRoomMemberTableViewCell.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
@@ -58,9 +57,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
         
-        // Set default data and view classes
+        // Set default data class
         [self registerCellDataClass:MXKRoomMemberCellData.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
-        [self registerCellViewClass:MXKRoomMemberTableViewCell.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
     }
     return self;
 }
@@ -180,10 +178,14 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index
 {
-    id<MXKRoomMemberCellDataStoring> cellData = [self cellDataAtIndex:index];
-    
-    Class<MXKCellRendering> class = [self cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier];
-    return [class heightForCellData:cellData withMaximumWidth:0];
+    if (self.delegate)
+    {
+        id<MXKRoomMemberCellDataStoring> cellData = [self cellDataAtIndex:index];
+        
+        Class<MXKCellRendering> class = [self.delegate cellViewClassForCellData:cellData];
+        return [class heightForCellData:cellData withMaximumWidth:0];
+    }
+    return 0;
 }
 
 #pragma mark - Members processing
@@ -407,6 +409,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 }
 
 #pragma mark - UITableViewDataSource
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (filteredCellDataArray)
@@ -420,12 +423,21 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 {
     id<MXKRoomMemberCellDataStoring> roomData = [self cellDataAtIndex:indexPath.row];
     
-    MXKRoomMemberTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRoomMemberCellIdentifier forIndexPath:indexPath];
+    if (roomData && self.delegate)
+    {
+        NSString *identifier = [self.delegate cellReuseIdentifierForCellData:roomData];
+        if (identifier)
+        {
+            UITableViewCell<MXKCellRendering> *cell  = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+            
+            // Make the bubble display the data
+            [cell render:roomData];
+            
+            return cell;
+        }
+    }
     
-    // Make the bubble display the data
-    [cell render:roomData];
-    
-    return cell;
+    return nil;
 }
 
 @end

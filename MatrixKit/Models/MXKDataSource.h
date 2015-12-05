@@ -50,6 +50,10 @@ typedef enum : NSUInteger {
 
 /**
  `MXKDataSource` is the base class for data sources managed by MatrixKit.
+ 
+ Inherited 'MXKDataSource' instances are used to handle table or collection data.
+ They may conform to UITableViewDataSource or UICollectionViewDataSource protocol to be used as data source delegate
+ for a UITableView or a UICollectionView instance.
  */
 @interface MXKDataSource : NSObject <MXKCellRenderingDelegate>
 {
@@ -77,8 +81,7 @@ typedef enum : NSUInteger {
 /**
  Base constructor of data source.
  
- Customization like class registrations must be done before loading data (see '[MXKDataSource registerCellDataClass: forCellIdentifier:]'
- and '[MXKDataSource registerCellViewClass: forCellIdentifier:]') .
+ Customization like class registrations must be done before loading data (see '[MXKDataSource registerCellDataClass: forCellIdentifier:]') .
  That is why 3 steps should be considered during 'MXKDataSource' initialization:
  1- call [MXKDataSource initWithMatrixSession:] to initialize a new allocated object.
  2- customize classes and others...
@@ -123,27 +126,8 @@ typedef enum : NSUInteger {
  */
 - (Class)cellDataClassForCellIdentifier:(NSString *)identifier;
 
-
-#pragma mark - MXKCellRendering classes
-/**
- Register the MXKCellRendering-compliant class and that will be used to display cells
- with the designated identifier.
-
- @param cellViewClass a class implementing the `MXKCellRendering` protocol.
- @param identifier the identifier of targeted cell.
- */
-- (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier;
-
-/**
- Return the MXKCellRendering-compliant class that manages the display of cells with the designated identifier.
-
- @param identifier the cell identifier.
- @return the associated MXKCellData-inherited class.
- */
-- (Class<MXKCellRendering>)cellViewClassForCellIdentifier:(NSString *)identifier;
-
-
 #pragma mark - Pending HTTP requests 
+
 /**
  Cancel all registered requests.
  */
@@ -151,8 +135,29 @@ typedef enum : NSUInteger {
 
 @end
 
-
 @protocol MXKDataSourceDelegate <NSObject>
+
+/**
+ Ask the delegate which MXKCellRendering-compliant class must be used to render this cell data.
+ 
+ This method is called when MXKDataSource instance is used as the data source delegate of a table or a collection.
+ CAUTION: The table or the collection MUST have registered the returned class with the same identifier than the one returned by [cellReuseIdentifierForCellData:].
+ 
+ @param cellData the cell data to display.
+ @return a MXKCellRendering-compliant class which inherits UITableViewCell or UICollectionViewCell class (nil if the cellData is not supported).
+ */
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData;
+
+/**
+ Ask the delegate which identifier must be used to dequeue reusable cell for this cell data.
+ 
+ This method is called when MXKDataSource instance is used as the data source delegate of a table or a collection.
+ CAUTION: The table or the collection MUST have registered the right class with the returned identifier (see [cellViewClassForCellData:]).
+ 
+ @param cellData the cell data to display.
+ @return the reuse identifier for the cell (nil if the cellData is not supported).
+ */
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData;
 
 /**
  Tells the delegate that some cell data/views have been changed.

@@ -40,9 +40,6 @@
     if (self)
     {
         interleavedCellDataArray = [NSMutableArray array];
-        
-        // Reset default view classes
-        [self registerCellViewClass:MXKInterleavedRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
     }
     return self;
 }
@@ -335,23 +332,24 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     id<MXKRecentCellDataStoring> roomData = [self cellDataAtIndexPath:indexPath];
-    if (roomData)
+    if (roomData && self.delegate)
     {
-        MXKRecentTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRecentCellIdentifier forIndexPath:indexPath];
-        
-        // Make the bubble display the data
-        [cell render:roomData];
-        
-        // Clear the user flag, if only one recents list is available
-        if (displayedRecentsDataSourceArray.count == 1)
+        NSString *cellIdentifier = [self.delegate cellReuseIdentifierForCellData:roomData];
+        if (cellIdentifier)
         {
-            if ([cell isKindOfClass:[MXKInterleavedRecentTableViewCell class]])
+            UITableViewCell<MXKCellRendering> *cell  = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+            
+            // Make the bubble display the data
+            [cell render:roomData];
+            
+            // Clear the user flag, if only one recents list is available
+            if (displayedRecentsDataSourceArray.count == 1 && [cell isKindOfClass:[MXKInterleavedRecentTableViewCell class]])
             {
                 ((MXKInterleavedRecentTableViewCell*)cell).userFlag.backgroundColor = [UIColor clearColor];
             }
+            
+            return cell;
         }
-        
-        return cell;
     }
     return nil;
 }

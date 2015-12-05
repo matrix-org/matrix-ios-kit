@@ -21,16 +21,6 @@
 
 #import "MXKRoomBubbleCellData.h"
 
-#import "MXKRoomIncomingTextMsgBubbleCell.h"
-#import "MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h"
-#import "MXKRoomIncomingAttachmentBubbleCell.h"
-#import "MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h"
-
-#import "MXKRoomOutgoingTextMsgBubbleCell.h"
-#import "MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h"
-#import "MXKRoomOutgoingAttachmentBubbleCell.h"
-#import "MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h"
-
 #import "MXKTools.h"
 
 #import "MXKAppSettings.h"
@@ -40,16 +30,6 @@
 #pragma mark - Constant definitions
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
-
-NSString *const kMXKRoomIncomingTextMsgCellIdentifier = @"kMXKRoomIncomingTextMsgCellIdentifier";
-NSString *const kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier = @"kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier";
-NSString *const kMXKRoomIncomingAttachmentCellIdentifier = @"kMXKRoomIncomingAttachmentCellIdentifier";
-NSString *const kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier = @"kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier";
-
-NSString *const kMXKRoomOutgoingTextMsgCellIdentifier = @"kMXKRoomOutgoingTextMsgCellIdentifier";
-NSString *const kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier = @"kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier";
-NSString *const kMXKRoomOutgoingAttachmentCellIdentifier = @"kMXKRoomOutgoingAttachmentCellIdentifier";
-NSString *const kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier = @"kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier";
 
 NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
 NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncStatusChanged";
@@ -142,18 +122,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Set default data and view classes
         // Cell data
         [self registerCellDataClass:MXKRoomBubbleCellData.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
-        
-        // For incoming messages
-        [self registerCellViewClass:MXKRoomIncomingTextMsgBubbleCell.class forCellIdentifier:kMXKRoomIncomingTextMsgCellIdentifier];
-        [self registerCellViewClass:MXKRoomIncomingTextMsgHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier];
-        [self registerCellViewClass:MXKRoomIncomingAttachmentBubbleCell.class forCellIdentifier:kMXKRoomIncomingAttachmentCellIdentifier];
-        [self registerCellViewClass:MXKRoomIncomingAttachmentHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier];
-        
-        // And outgoing messages
-        [self registerCellViewClass:MXKRoomOutgoingTextMsgBubbleCell.class forCellIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier];
-        [self registerCellViewClass:MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier];
-        [self registerCellViewClass:MXKRoomOutgoingAttachmentBubbleCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier];
-        [self registerCellViewClass:MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.class forCellIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier];
         
         // Set default MXEvent -> NSString formatter
         self.eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
@@ -802,68 +770,17 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth
 {
-    // Compute here height of bubble cell
-    CGFloat rowHeight;
-    
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataAtIndex:index];
     
     // Sanity check
-    if (!bubbleData)
+    if (bubbleData && self.delegate)
     {
-        return 0;
+        // Compute here height of bubble cell
+        Class<MXKCellRendering> cellViewClass = [self.delegate cellViewClassForCellData:bubbleData];
+        return [cellViewClass heightForCellData:bubbleData withMaximumWidth:maxWidth];
     }
     
-    Class cellViewClass;
-    if (bubbleData.isIncoming)
-    {
-        if (bubbleData.isAttachmentWithThumbnail)
-        {
-            if (bubbleData.shouldHideSenderInformation)
-            {
-                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier];
-            }
-            else
-            {
-                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentCellIdentifier];
-            }
-        }
-        else
-        {
-            if (bubbleData.shouldHideSenderInformation)
-            {
-                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier];
-            }
-            else
-            {
-                cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgCellIdentifier];
-            }
-        }
-    }
-    else if (bubbleData.isAttachmentWithThumbnail)
-    {
-        if (bubbleData.shouldHideSenderInformation)
-        {
-            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier];
-        }
-        else
-        {
-            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier];
-        }
-    }
-    else
-    {
-        if (bubbleData.shouldHideSenderInformation)
-        {
-            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier];
-        }
-        else
-        {
-            cellViewClass = [self cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier];
-        }
-    }
-    
-    rowHeight = [cellViewClass heightForCellData:bubbleData withMaximumWidth:maxWidth];
-    return rowHeight;
+    return 0;
 }
 
 #pragma mark - Pagination
@@ -2124,84 +2041,44 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell<MXKCellRendering> *cell;
+    
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataAtIndex:indexPath.row];
     
+    if (bubbleData && self.delegate)
+    {
+        // Retrieve the cell identifier according to cell data.
+        NSString *identifier = [self.delegate cellReuseIdentifierForCellData:bubbleData];
+        if (identifier)
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+            
+            // Make sure we listen to user actions on the cell
+            if (!cell.delegate)
+            {
+                cell.delegate = self;
+            }
+            
+            // Update typing flag before rendering
+            bubbleData.isTyping = _showTypingNotifications && currentTypingUsers && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
+            // Report the current timestamp display option
+            bubbleData.showBubbleDateTime = self.showBubblesDateTime;
+            // display the read receipts
+            bubbleData.showBubbleReceipts = self.showBubbleReceipts;
+            // let the caller application manages the time label
+            bubbleData.useCustomDateTimeLabel = self.useCustomDateTimeLabel;
+            
+            // Make the bubble display the data
+            [cell render:bubbleData];
+        }
+    }
+    
     // Sanity check: this method may be called during a layout refresh while room data have been modified.
-    if (!bubbleData)
+    if (!cell)
     {
         // Return an empty cell
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"fakeCell"];
     }
-    
-    // The cell to use depends if this is a message from the user or not
-    // Then use the cell class defined by the table view
-    MXKRoomBubbleTableViewCell *cell;
-    
-    if (bubbleData.isIncoming)
-    {
-        if (bubbleData.isAttachmentWithThumbnail)
-        {
-            if (bubbleData.shouldHideSenderInformation)
-            {
-                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier forIndexPath:indexPath];
-            }
-            else
-            {
-                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingAttachmentCellIdentifier forIndexPath:indexPath];
-            }
-        }
-        else
-        {
-            if (bubbleData.shouldHideSenderInformation)
-            {
-                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier forIndexPath:indexPath];
-            }
-            else
-            {
-                cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomIncomingTextMsgCellIdentifier forIndexPath:indexPath];
-            }
-        }
-    }
-    else if (bubbleData.isAttachmentWithThumbnail)
-    {
-        if (bubbleData.shouldHideSenderInformation)
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier forIndexPath:indexPath];
-        }
-        else
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier forIndexPath:indexPath];
-        }
-    }
-    else
-    {
-        if (bubbleData.shouldHideSenderInformation)
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier forIndexPath:indexPath];
-        }
-        else
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier forIndexPath:indexPath];
-        }
-    }
-    
-    // Make sure we listen to user actions on the cell
-    if (!cell.delegate)
-    {
-        cell.delegate = self;
-    }
-    
-    // Update typing flag before rendering
-    bubbleData.isTyping = _showTypingNotifications && currentTypingUsers && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
-    // Report the current timestamp display option
-    bubbleData.showBubbleDateTime = self.showBubblesDateTime;
-    // display the read receipts
-    bubbleData.showBubbleReceipts = self.showBubbleReceipts;
-    // let the caller application manages the time label
-    bubbleData.useCustomDateTimeLabel = self.useCustomDateTimeLabel;
-    
-    // Make the bubble display the data
-    [cell render:bubbleData];
     
     return cell;
 }
