@@ -25,7 +25,7 @@
 #import "MXKMediaManager.h"
 
 @implementation MXKRoomBubbleCellData
-@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
+@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
 @synthesize textMessage, attributedTextMessage;
 @synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel;
 
@@ -49,6 +49,7 @@
             roomId = event.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
             senderAvatarUrl = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
+            senderAvatarPlaceholder = nil;
             isIncoming = ([event.sender isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
             
             // Check attachment if any

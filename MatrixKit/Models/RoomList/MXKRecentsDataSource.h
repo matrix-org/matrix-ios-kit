@@ -144,14 +144,6 @@
 - (void)updateRoomTagAtIndexPath:(NSIndexPath *)indexPath to:(NSString*)tag;
 
 /**
- Check if the room notification can be suspened
- 
- @param indexPath the index of the cell
- @return YES if the room notification can be suspended.
- */
-- (BOOL)canSuspendRoomNotificationsAtIndexPath:(NSIndexPath *)indexPath;
-
-/**
  Check if the room receives pushes.
  
  @param indexPath the index of the cell
