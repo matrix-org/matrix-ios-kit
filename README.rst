@@ -163,20 +163,20 @@ This use case shows how to make `cellView` customisation.
 A room chat is basically a list of items where each item represents a message
 (or a set of messages if they are grouped by sender). In the code, these items
 are inherit from MXKTableViewCell. If you are not happy with the default
-ones used by MXKRoomViewController and MXKRoomDataSource, you can change them by overriding MXKDataSourceDelegate methods in your view controller:
+ones used by MXKRoomViewController and MXKRoomDataSource, you can change them by overriding MXKDataSourceDelegate methods in your view controller::
 
-        - (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
-		{ 
-		    // Let `MyOwnBubbleTableViewCell` class manage the display of message cells
-	        // This class must inherit from UITableViewCell and must conform the `MXKCellRendering` protocol
-		    return MyOwnBubbleTableViewCell.class;
-		}
-
-		- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
-		{
-		    // Return the `MyOwnBubbleTableViewCell` cell identifier.
-		    return @"MyOwnBubbleTableViewCellIdentifier";
-		}
+    - (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+    {
+       // Let `MyOwnBubbleTableViewCell` class manage the display of message cells
+       // This class must inherit from UITableViewCell and must conform the `MXKCellRendering` protocol
+       return MyOwnBubbleTableViewCell.class;
+    }
+    
+    - (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+    {
+        // Return the `MyOwnBubbleTableViewCell` cell identifier.
+        return @"MyOwnBubbleTableViewCellIdentifier";
+    }
         
 You may return a `cellView` class by taking into account the provided cell data. For example you can define different classes for received and sent messages.
 
