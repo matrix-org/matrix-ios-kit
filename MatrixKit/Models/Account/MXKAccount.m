@@ -290,6 +290,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         {
             // Close session (keep the storage).
             [self closeSession:NO];
+	    if (_enablePushNotifications)
+	    {
+		// Turn off pusher
+		[self enablePusher:NO success:nil failure:nil];
+	    }
+    
         }
         else if (!mxSession)
         {
@@ -454,12 +460,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
  */
 - (void)closeSession:(BOOL)clearStore
 {
-    if (_enablePushNotifications)
-    {
-        // Turn off pusher
-        [self enablePusher:NO success:nil failure:nil];
-    }
-    
     [self removeNotificationListener];
     
     if (reachabilityObserver)
@@ -505,6 +505,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logout
 {
     [self closeSession:YES];
+    if (_enablePushNotifications)
+    {
+        // Turn off pusher
+        [self enablePusher:NO success:nil failure:nil];
+    }
+    
 }
 
 - (void)pauseInBackgroundTask
