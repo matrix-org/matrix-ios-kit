@@ -359,7 +359,7 @@ static NSMutableDictionary *fileExtensionByContentType = nil;
     return resized;
 }
 
-+ (UIImage *)resizeImage:(UIImage *)image toFitInSize:(CGSize)size
++ (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size
 {
     UIImage *resizedImage = image;
     
@@ -401,6 +401,27 @@ static NSMutableDictionary *fileExtensionByContentType = nil;
             resizedImage = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
         }
+    }
+    
+    return resizedImage;
+}
+
++ (UIImage*)resizeImage:(UIImage *)image toSize:(CGSize)size
+{
+    UIImage *resizedImage = image;
+    
+    // Check whether resize is required
+    if (size.width && size.height)
+    {
+        UIGraphicsBeginImageContext(size);
+        
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+        
+        [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        UIGraphicsEndImageContext();
     }
     
     return resizedImage;
