@@ -62,7 +62,7 @@ ecosystem based on 4 components:
 ViewController
   The ViewController is responsible for managing the display and user actions.
 
-Dataource
+DataSource
   Provides the ViewController with items (CellView objects) to display. More
   accurately, the DataSource gets data (mainly Matrix events) from the Matrix
   SDK. It asks CellData objects to process the data into human readable text and
@@ -136,26 +136,21 @@ The kit has been designed so that developers can make customisations at
 different levels, which are:
 
 ViewController
-  The provided ViewControllers can be subclassed in order to change their
-  default behavior and the interactions with the end user.
+  The provided ViewControllers can be subclassed in order to customise the following points:
+- the CellView class used by the DataSource to render CellData.
+- the layout of the table or the collection view.
+- the interactions with the end user.
 
 CellView
-  The developer can indicate to the DataSource which view class it should use to
-  render CellData. This can be used to completely change the way items are
-  displayed. Note that CellView classes must implement the MXKCellRendering
-  protocol.
+  The developer may override MatrixKit CellViews to completely change the way items are displayed. Note that CellView classes must be conformed to the MXKCellRendering protocol.
 
 CellData
-  The developer can provide another CellData class in order to compute data
-  differently.
+  The developer can implement his own CellData classes in order to prepare differently rendered data. Note that the use of customised CellData classes is handled at DataSource level (see registerCellDataClass method).
 
 DataSource
   This object gets the data from the Matrix SDK and serves it to the view
   controller via CellView and CellData objects. You can override the default
   DataSource to have a different behaviour.
-
-UIAppearance (Not yet available)
-    Views in MatrixKit use the UIKit UIAppearance concept to allow easy skinning.
 
 
 Customisation example
@@ -167,25 +162,23 @@ This use case shows how to make `cellView` customisation.
 
 A room chat is basically a list of items where each item represents a message
 (or a set of messages if they are grouped by sender). In the code, these items
-are inherit from UITableViewCell. If you are not happy with the default
-ones used by MXKRoomViewController and MXKRoomDataSource, you can tell them to
-use a UITableViewCell class of your own as follows::
+are inherit from MXKTableViewCell. If you are not happy with the default
+ones used by MXKRoomViewController and MXKRoomDataSource, you can change them by overriding MXKDataSourceDelegate methods in your view controller:
 
-        // Init the room data source
-        MXKRoomDataSource *roomDataSource = [[MXKRoomDataSource alloc] initWithRoomId:@"!cURbafjkfsMDVwdRDQ:matrix.org" andMatrixSession:mxSession];
+        - (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+		{ 
+		    // Let `MyOwnBubbleTableViewCell` class manage the display of message cells
+	        // This class must inherit from UITableViewCell and must conform the `MXKCellRendering` protocol
+		    return MyOwnBubbleTableViewCell.class;
+		}
 
-        // `cellView` Customisation
-        // Let the `MyOwnIncomingBubbleTableViewCell` class manage the display of message cells
-        // This class must inherit from UITableViewCell and must conform the `MXKCellRendering` protocol
-        [roomDataSource registerCellViewClass:MyOwnIncomingBubbleTableViewCell.class
-                            forCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
-
-        // Then finalise the room view controller
-        MXKRoomViewController *roomViewController = [[MXKRoomViewController alloc] init];
-        [roomViewController displayRoom:roomDataSource];
+		- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+		{
+		    // Return the `MyOwnBubbleTableViewCell` cell identifier.
+		    return @"MyOwnBubbleTableViewCellIdentifier";
+		}
         
-This example also illustrates how you can define different `cellView` classes
-for received and sent messages.
+You may return a `cellView` class by taking into account the provided cell data. For example you can define different classes for received and sent messages.
 
 Development
 ===========
