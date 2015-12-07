@@ -77,6 +77,7 @@
 #import "MXKTableViewCellWithButtons.h"
 #import "MXKTableViewCellWithLabelAndButton.h"
 #import "MXKTableViewCellWithLabelAndImageView.h"
+#import "MXKTableViewCellWithLabelAndMXKImageView.h"
 #import "MXKTableViewCellWithLabelAndSlider.h"
 #import "MXKTableViewCellWithLabelAndSubLabel.h"
 #import "MXKTableViewCellWithLabelAndSwitch.h"
