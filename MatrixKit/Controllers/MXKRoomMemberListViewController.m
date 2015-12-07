@@ -16,7 +16,7 @@
 
 #import "MXKRoomMemberListViewController.h"
 
-#import "MXKRoomMemberTableViewCell.h" // imported here to provide 'updateActivityInfo' definition.
+#import "MXKRoomMemberTableViewCell.h"
 
 #import "MXKAlert.h"
 
@@ -149,11 +149,12 @@
     // Add an accessory view to the search bar in order to retrieve keyboard view.
     self.membersSearchBar.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     
-    // Check whether a room has been defined
-    if (dataSource)
-    {
-        [self configureView];
-    }
+    // Finalize table view configuration
+    self.membersTableView.delegate = self;
+    self.membersTableView.dataSource = dataSource; // Note datasource may be nil here.
+    
+    // Set up default table view cell class
+    [self.membersTableView registerNib:MXKRoomMemberTableViewCell.nib forCellReuseIdentifier:MXKRoomMemberTableViewCell.defaultReuseIdentifier];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -283,24 +284,6 @@
 
 #pragma mark - Internal methods
 
-- (void)configureView
-{
-    self.membersTableView.delegate = self;
-    
-    // Set up table data source
-    self.membersTableView.dataSource = dataSource;
-    
-    // Set up classes to use for cells
-    if ([[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib])
-    {
-        [self.membersTableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] nib] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
-    }
-    else
-    {
-        [self.membersTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRoomMemberCellIdentifier] forCellReuseIdentifier:kMXKRoomMemberCellIdentifier];
-    }
-}
-
 - (void)scrollToTop
 {
     // stop any scrolling effect
@@ -390,11 +373,25 @@
     
     if (self.membersTableView)
     {
-        [self configureView];
+        // Set up table data source
+        self.membersTableView.dataSource = dataSource;
     }
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    // Return the default member table view cell
+    return MXKRoomMemberTableViewCell.class;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    // Consider the default member table view cell
+    return MXKRoomMemberTableViewCell.defaultReuseIdentifier;
+}
+
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
     if (presenceUpdateTimer)

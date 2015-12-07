@@ -16,8 +16,6 @@
 
 #import "MXKSessionRecentsDataSource.h"
 
-#import "MXKRecentTableViewCell.h"
-
 #import "MXKRoomDataSourceManager.h"
 
 #pragma mark - Constant definitions
@@ -62,7 +60,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
-        [self registerCellViewClass:MXKRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
         
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
@@ -255,10 +252,15 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
 - (CGFloat)cellHeightAtIndex:(NSInteger)index
 {
-    id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:index];
+    if (self.delegate)
+    {
+        id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:index];
+        
+        Class<MXKCellRendering> class = [self.delegate cellViewClassForCellData:cellData];
+        return [class heightForCellData:cellData withMaximumWidth:0];
+    }
     
-    Class<MXKCellRendering> class = [self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier];
-    return [class heightForCellData:cellData withMaximumWidth:0];
+    return 0;
 }
 
 

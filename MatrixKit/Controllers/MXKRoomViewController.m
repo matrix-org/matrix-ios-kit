@@ -31,6 +31,16 @@
 
 #import "MXKConstants.h"
 
+#import "MXKRoomIncomingTextMsgBubbleCell.h"
+#import "MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomIncomingAttachmentBubbleCell.h"
+#import "MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h"
+
+#import "MXKRoomOutgoingTextMsgBubbleCell.h"
+#import "MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h"
+
 #import "NSBundle+MatrixKit.h"
 
 NSString *const kCmdChangeDisplayName = @"/nick";
@@ -236,11 +246,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Save progress text input
     _saveProgressTextInput = YES;
     
-    // Check whether a room source has been defined
-    if (roomDataSource)
-    {
-        [self configureView];
-    }
+    // Finalize table view configuration
+    [self configureBubblesTableView];
     
     // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
     UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -518,24 +525,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark -
 
-- (void)configureView
+- (void)configureBubblesTableView
 {
-    [self dismissTemporarySubViews];
-    
     // Set up table delegates
     _bubblesTableView.delegate = self;
-    _bubblesTableView.dataSource = roomDataSource;
+    _bubblesTableView.dataSource = roomDataSource; // Note: data source may be nil here, it will be set during [displayRoom:] call.
     
-    // Set up classes to use for cells
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier];
+    // Set up default classes to use for cells
+    [_bubblesTableView registerClass:MXKRoomIncomingTextMsgBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingTextMsgHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgHiddenSenderBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingAttachmentBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingAttachmentHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentHiddenSenderBubbleCell.defaultReuseIdentifier];
     
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.defaultReuseIdentifier];
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
     kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -691,7 +696,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         if (_bubblesTableView)
         {
-            [self configureView];
+            [self dismissTemporarySubViews];
+            
+            // Set up table data source
+            _bubblesTableView.dataSource = roomDataSource;
         }
         
         // When ready, do the initial back pagination
@@ -1777,6 +1785,81 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    Class cellViewClass = nil;
+    
+    // Sanity check
+    if ([cellData conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)])
+    {
+        id<MXKRoomBubbleCellDataStoring> bubbleData = (id<MXKRoomBubbleCellDataStoring>)cellData;
+        
+        // Select the suitable table view cell class
+        if (bubbleData.isIncoming)
+        {
+            if (bubbleData.isAttachmentWithThumbnail)
+            {
+                if (bubbleData.shouldHideSenderInformation)
+                {
+                    cellViewClass = MXKRoomIncomingAttachmentHiddenSenderBubbleCell.class;
+                }
+                else
+                {
+                    cellViewClass = MXKRoomIncomingAttachmentBubbleCell.class;
+                }
+            }
+            else
+            {
+                if (bubbleData.shouldHideSenderInformation)
+                {
+                    cellViewClass = MXKRoomIncomingTextMsgHiddenSenderBubbleCell.class;
+                }
+                else
+                {
+                    cellViewClass = MXKRoomIncomingTextMsgBubbleCell.class;
+                }
+            }
+        }
+        else if (bubbleData.isAttachmentWithThumbnail)
+        {
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cellViewClass = MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.class;
+            }
+            else
+            {
+                cellViewClass = MXKRoomOutgoingAttachmentBubbleCell.class;
+            }
+        }
+        else
+        {
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cellViewClass = MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.class;
+            }
+            else
+            {
+                cellViewClass = MXKRoomOutgoingTextMsgBubbleCell.class;
+            }
+        }
+    }
+    
+    return cellViewClass;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    Class class = [self cellViewClassForCellData:cellData];
+    
+    if ([class respondsToSelector:@selector(defaultReuseIdentifier)])
+    {
+        return [class defaultReuseIdentifier];
+    }
+    
+    return nil;
+}
+
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
     if (isBackPaginationInProgress)

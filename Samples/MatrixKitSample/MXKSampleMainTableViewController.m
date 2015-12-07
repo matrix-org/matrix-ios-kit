@@ -19,8 +19,6 @@
 #import "MXKSampleJSQMessagesViewController.h"
 #import "MXKSampleRoomMembersViewController.h"
 
-#import "MXKSampleRoomMemberTableViewCell.h"
-
 #import <MatrixSDK/MXFileStore.h>
 
 @interface MXKSampleMainTableViewController ()
@@ -653,9 +651,6 @@
         sampleRoomMemberListViewController.delegate = self;
         
         MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
-        
-        // Replace default table view cell with customized cell: `MXKSampleRoomMemberTableViewCell`
-        [listDataSource registerCellViewClass:MXKSampleRoomMemberTableViewCell.class forCellIdentifier:kMXKRoomMemberCellIdentifier];
         
         [listDataSource finalizeInitialization];
         
