@@ -174,6 +174,14 @@ typedef enum : NSUInteger {
  */
 - (NSString*)dateStringFromEvent:(MXEvent*)event withTime:(BOOL)time;
 
+/**
+ Generate the time string of the provided date by considered the current system time formatting.
+ 
+ @param date The date.
+ @return the string representation of the time component of the date.
+ */
+- (NSString*)timeStringFromDate:(NSDate *)date;
+
 
 # pragma mark - Customisation
 /**

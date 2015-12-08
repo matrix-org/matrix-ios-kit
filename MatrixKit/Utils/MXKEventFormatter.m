@@ -767,15 +767,15 @@
     
     if (time)
     {
-        NSString *timeString = [timeFormatter stringFromDate:date];
+        NSString *timeString = [self timeStringFromDate:date];
         if (dateString.length)
         {
             // Add time string
-            dateString = [NSString stringWithFormat:@"%@ %@", dateString, timeString.lowercaseString];
+            dateString = [NSString stringWithFormat:@"%@ %@", dateString, timeString];
         }
         else
         {
-            dateString = timeString.lowercaseString;
+            dateString = timeString;
         }
     }
     
@@ -797,6 +797,13 @@
     }
     
     return nil;
+}
+
+- (NSString*)timeStringFromDate:(NSDate *)date
+{
+    NSString *timeString = [timeFormatter stringFromDate:date];
+    
+    return timeString.lowercaseString;
 }
 
 @end
