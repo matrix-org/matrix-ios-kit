@@ -20,6 +20,7 @@
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="192" id="iGr-e7-bde"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="33" id="nSK-Ug-3Q4"/>
                         </constraints>
                     </view>
                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KGx-6M-GER" userLabel="File Type Image View">
@@ -123,6 +124,7 @@
             <connections>
                 <outlet property="activityIndicator" destination="Mqf-7a-bsm" id="toi-nL-eJa"/>
                 <outlet property="attachViewBottomConstraint" destination="fMN-Th-SOT" id="fw0-N9-RUj"/>
+                <outlet property="attachViewMinHeightConstraint" destination="nSK-Ug-3Q4" id="rfM-Ha-vVp"/>
                 <outlet property="attachViewTopConstraint" destination="QDm-tP-KWa" id="Ku6-FC-jqo"/>
                 <outlet property="attachViewWidthConstraint" destination="iGr-e7-bde" id="uD4-aU-1Ru"/>
                 <outlet property="attachmentView" destination="SIW-l4-PfI" id="L4H-ub-pPI"/>

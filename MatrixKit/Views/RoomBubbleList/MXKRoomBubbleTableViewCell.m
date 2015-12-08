@@ -516,29 +516,36 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
     CGFloat rowHeight = 0;
     
-    if (cell.messageTextView)
+    if (cell.attachmentView && bubbleData.isAttachmentWithThumbnail)
+    {
+        // retrieve the suggested image view height
+        rowHeight = bubbleData.contentSize.height;
+        
+        // Check here the minimum height defined in cell view for text message
+        if (cell.attachViewMinHeightConstraint && rowHeight < cell.attachViewMinHeightConstraint.constant)
+        {
+            rowHeight = cell.attachViewMinHeightConstraint.constant;
+        }
+        
+        // Finalize the row height by adding the vertical constraints.
+        rowHeight += cell.attachViewTopConstraint.constant + cell.attachViewBottomConstraint.constant;
+    }
+    else if (cell.messageTextView)
     {
         // Update maximum width available for the textview
         bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
         
-        // Compute row height by adding the height of the message content and the top constraint.
-        rowHeight = bubbleData.contentSize.height + cell.msgTextViewTopConstraint.constant;
-    }
-    else
-    {
-        // Compute row height by adding the height of the image view and the vertical constraints.
-        rowHeight = bubbleData.contentSize.height + cell.attachViewTopConstraint.constant + cell.attachViewBottomConstraint.constant;
-    }
-    
-    if (cell.pictureView)
-    {
-        CGFloat height = cell.frame.size.height;
+        // Retrieve the suggested height of the message content
+        rowHeight = bubbleData.contentSize.height;
         
-        // We consider a minimun cell height in order to display correctly user's picture
-        if (rowHeight < height)
+        // Consider here the minimum height defined in cell view for text message
+        if (cell.msgTextViewMinHeightConstraint && rowHeight < cell.msgTextViewMinHeightConstraint.constant)
         {
-            rowHeight = height;
+            rowHeight = cell.msgTextViewMinHeightConstraint.constant;
         }
+        
+        // Finalize the row height by adding the top constraint of the message text view in cell
+        rowHeight += cell.msgTextViewTopConstraint.constant;
     }
     
     return rowHeight;
