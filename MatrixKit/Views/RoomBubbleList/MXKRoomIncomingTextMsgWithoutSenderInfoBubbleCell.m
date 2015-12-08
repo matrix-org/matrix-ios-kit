@@ -14,8 +14,8 @@
  limitations under the License.
  */
 
-#import "MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h"
+#import "MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h"
 
-@implementation MXKRoomIncomingAttachmentHiddenSenderBubbleCell
+@implementation MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell
 
 @end

@@ -17,8 +17,8 @@
 #import "MXKRoomIncomingTextMsgBubbleCell.h"
 
 /**
- `MXKRoomIncomingTextMsgHiddenSenderBubbleCell` displays incoming message bubbles without sender's information.
+ `MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell` displays incoming message bubbles without sender's information.
  */
-@interface MXKRoomIncomingTextMsgHiddenSenderBubbleCell : MXKRoomIncomingTextMsgBubbleCell
+@interface MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell : MXKRoomIncomingTextMsgBubbleCell
 
 @end

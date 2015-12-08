@@ -32,14 +32,14 @@
 #import "MXKConstants.h"
 
 #import "MXKRoomIncomingTextMsgBubbleCell.h"
-#import "MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h"
 #import "MXKRoomIncomingAttachmentBubbleCell.h"
-#import "MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h"
+#import "MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.h"
 
 #import "MXKRoomOutgoingTextMsgBubbleCell.h"
-#import "MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h"
+#import "MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.h"
 #import "MXKRoomOutgoingAttachmentBubbleCell.h"
-#import "MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -533,14 +533,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Set up default classes to use for cells
     [_bubblesTableView registerClass:MXKRoomIncomingTextMsgBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgBubbleCell.defaultReuseIdentifier];
-    [_bubblesTableView registerClass:MXKRoomIncomingTextMsgHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgHiddenSenderBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
     [_bubblesTableView registerClass:MXKRoomIncomingAttachmentBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentBubbleCell.defaultReuseIdentifier];
-    [_bubblesTableView registerClass:MXKRoomIncomingAttachmentHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentHiddenSenderBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
     
     [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgBubbleCell.defaultReuseIdentifier];
-    [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
     [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentBubbleCell.defaultReuseIdentifier];
-    [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
     kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -1802,7 +1802,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 if (bubbleData.shouldHideSenderInformation)
                 {
-                    cellViewClass = MXKRoomIncomingAttachmentHiddenSenderBubbleCell.class;
+                    cellViewClass = MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.class;
                 }
                 else
                 {
@@ -1813,7 +1813,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 if (bubbleData.shouldHideSenderInformation)
                 {
-                    cellViewClass = MXKRoomIncomingTextMsgHiddenSenderBubbleCell.class;
+                    cellViewClass = MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.class;
                 }
                 else
                 {
@@ -1825,7 +1825,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             if (bubbleData.shouldHideSenderInformation)
             {
-                cellViewClass = MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.class;
+                cellViewClass = MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.class;
             }
             else
             {
@@ -1836,7 +1836,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             if (bubbleData.shouldHideSenderInformation)
             {
-                cellViewClass = MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.class;
+                cellViewClass = MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.class;
             }
             else
             {
