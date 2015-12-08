@@ -352,6 +352,27 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
+- (void)changePassword:(NSString*)oldPassword with:(NSString*)newPassword success:(void (^)())success failure:(void (^)(NSError *error))failure
+{
+    if (mxSession)
+    {
+        [mxRestClient changePassword:oldPassword
+                                with:newPassword
+                             success:^{
+                                 
+                                 if (success) {
+                                     success();
+                                 }
+                                 
+                             }
+                             failure:failure];
+    }
+    else if (failure)
+    {
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+    }
+}
+
 - (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion
 {
     userPresence = presence;
