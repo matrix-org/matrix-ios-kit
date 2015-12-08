@@ -51,46 +51,6 @@ typedef enum : NSUInteger
  */
 extern NSString *const kMXKRoomBubbleCellDataIdentifier;
 
-/**
- String identifying the cell object to be reused to display incoming room events as text messages.
- */
-extern NSString *const kMXKRoomIncomingTextMsgCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display incoming room events as text messages by hidding sender's information.
- */
-extern NSString *const kMXKRoomIncomingTextMsgHiddenSenderCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display incoming attachments.
- */
-extern NSString *const kMXKRoomIncomingAttachmentCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display incoming attachments by hidding sender's information.
- */
-extern NSString *const kMXKRoomIncomingAttachmentHiddenSenderCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display outgoing room events as text messages.
- */
-extern NSString *const kMXKRoomOutgoingTextMsgCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display outgoing room events as text messages by hidding user's name.
- */
-extern NSString *const kMXKRoomOutgoingTextMsgHiddenSenderCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display outgoing attachments.
- */
-extern NSString *const kMXKRoomOutgoingAttachmentCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display outgoing attachments by hidding user's name.
- */
-extern NSString *const kMXKRoomOutgoingAttachmentHiddenSenderCellIdentifier;
-
 
 #pragma mark - Notifications
 /**

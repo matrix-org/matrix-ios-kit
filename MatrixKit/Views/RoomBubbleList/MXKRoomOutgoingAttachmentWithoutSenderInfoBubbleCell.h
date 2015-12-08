@@ -17,8 +17,8 @@
 #import "MXKRoomOutgoingAttachmentBubbleCell.h"
 
 /**
- `MXKRoomOutgoingAttachmentHiddenSenderBubbleCell` displays outgoing attachment with thumbnail, without user's name.
+ `MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell` displays outgoing attachment with thumbnail, without user's name.
  */
-@interface MXKRoomOutgoingAttachmentHiddenSenderBubbleCell : MXKRoomOutgoingAttachmentBubbleCell
+@interface MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell : MXKRoomOutgoingAttachmentBubbleCell
 
 @end

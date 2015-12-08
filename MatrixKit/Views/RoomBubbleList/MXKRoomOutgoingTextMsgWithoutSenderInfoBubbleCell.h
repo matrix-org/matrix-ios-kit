@@ -17,8 +17,8 @@
 #import "MXKRoomOutgoingTextMsgBubbleCell.h"
 
 /**
- `MXKRoomOutgoingTextMsgHiddenSenderBubbleCell` displays outgoing message bubbles without user's name.
+ `MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell` displays outgoing message bubbles without user's name.
  */
-@interface MXKRoomOutgoingTextMsgHiddenSenderBubbleCell : MXKRoomOutgoingTextMsgBubbleCell
+@interface MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell : MXKRoomOutgoingTextMsgBubbleCell
 
 @end

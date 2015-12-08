@@ -15,7 +15,11 @@
  */
 
 #import "MXKRecentListViewController.h"
+
 #import "MXKRoomDataSourceManager.h"
+
+#import "MXKInterleavedRecentsDataSource.h"
+#import "MXKInterleavedRecentTableViewCell.h"
 
 @interface MXKRecentListViewController ()
 {
@@ -134,11 +138,14 @@
     // Add an accessory view to the search bar in order to retrieve keyboard view.
     self.recentsSearchBar.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     
-    // Check whether a room has been defined
-    if (dataSource)
-    {
-        [self configureView];
-    }
+    // Finalize table view configuration
+    self.recentsTableView.delegate = self;
+    self.recentsTableView.dataSource = dataSource; // Note: dataSource may be nil here
+    
+    // Set up classes to use for cells
+    [self.recentsTableView registerNib:MXKRecentTableViewCell.nib forCellReuseIdentifier:MXKRecentTableViewCell.defaultReuseIdentifier];
+    // Consider here the specific case where interleaved recents are supported
+    [self.recentsTableView registerNib:MXKInterleavedRecentTableViewCell.nib forCellReuseIdentifier:MXKInterleavedRecentTableViewCell.defaultReuseIdentifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -285,29 +292,6 @@
 
 #pragma mark -
 
-- (void)configureView
-{
-    self.recentsTableView.delegate = self;
-    
-    // Set up table data source
-    self.recentsTableView.dataSource = dataSource;
-    
-    if (dataSource)
-    {
-        // Set up classes to use for cells
-        if ([[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] nib])
-        {
-            [self.recentsTableView registerNib:[[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] nib] forCellReuseIdentifier:kMXKRecentCellIdentifier];
-        }
-        else
-        {
-            [self.recentsTableView registerClass:[dataSource cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellReuseIdentifier:kMXKRecentCellIdentifier];
-        }
-    }
-}
-
-#pragma mark -
-
 - (void)setEnableSearch:(BOOL)enableSearch
 {
     if (enableSearch)
@@ -356,7 +340,8 @@
     
     if (self.recentsTableView)
     {
-        [self configureView];
+        // Set up table data source
+        self.recentsTableView.dataSource = dataSource;
     }
 }
 
@@ -390,6 +375,30 @@
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    // Consider here the specific case where interleaved recents are supported
+    if ([dataSource isKindOfClass:MXKInterleavedRecentsDataSource.class])
+    {
+        return MXKInterleavedRecentTableViewCell.class;
+    }
+    
+    // Return the default recent table view cell
+    return MXKRecentTableViewCell.class;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    // Consider here the specific case where interleaved recents are supported
+    if ([dataSource isKindOfClass:MXKInterleavedRecentsDataSource.class])
+    {
+        return MXKInterleavedRecentTableViewCell.defaultReuseIdentifier;
+    }
+    
+    // Return the default recent table view cell
+    return MXKRecentTableViewCell.defaultReuseIdentifier;
+}
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {

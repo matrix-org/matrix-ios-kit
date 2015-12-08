@@ -290,6 +290,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         {
             // Close session (keep the storage).
             [self closeSession:NO];
+	    if (_enablePushNotifications)
+	    {
+		// Turn off pusher
+		[self enablePusher:NO success:nil failure:nil];
+	    }
+    
         }
         else if (!mxSession)
         {
@@ -475,12 +481,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
  */
 - (void)closeSession:(BOOL)clearStore
 {
-    if (_enablePushNotifications)
-    {
-        // Turn off pusher
-        [self enablePusher:NO success:nil failure:nil];
-    }
-    
     [self removeNotificationListener];
     
     if (reachabilityObserver)
@@ -526,6 +526,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logout
 {
     [self closeSession:YES];
+    if (_enablePushNotifications)
+    {
+        // Turn off pusher
+        [self enablePusher:NO success:nil failure:nil];
+    }
+    
 }
 
 - (void)pauseInBackgroundTask
@@ -635,6 +641,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         return;
     }
     
+    NSString *appDisplayName = [NSString stringWithFormat:@"%@ (iOS)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
+    
     NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
     NSDictionary *pushData = @{
                                @"url": @"https://matrix.org/_matrix/push/v1/notify",
@@ -668,7 +676,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     MXRestClient *restCli = self.mxRestClient;
     
-    [restCli setPusherWithPushkey:b64Token kind:kind appId:appId appDisplayName:@"Matrix Console iOS" deviceDisplayName:[[UIDevice currentDevice] name] profileTag:profileTag lang:deviceLang data:pushData append:append success:^{
+    [restCli setPusherWithPushkey:b64Token kind:kind appId:appId appDisplayName:appDisplayName deviceDisplayName:[[UIDevice currentDevice] name] profileTag:profileTag lang:deviceLang data:pushData append:append success:^{
         NSLog(@"[MXKAccount] Succeeded to update pusher for %@", self.mxCredentials.userId);
         
         if (success)

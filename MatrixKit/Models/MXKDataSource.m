@@ -25,11 +25,6 @@
      The mapping between cell identifiers and MXKCellData classes.
      */
     NSMutableDictionary *cellDataMap;
-    
-    /**
-     The mapping between cell identifiers and MXKCellRendering classes.
-     */
-    NSMutableDictionary *cellViewMap;
 }
 @end
 
@@ -45,7 +40,6 @@
     {
         state = MXKDataSourceStateUnknown;
         cellDataMap = [NSMutableDictionary dictionary];
-        cellViewMap = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -86,7 +80,6 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     cellDataMap = nil;
-    cellViewMap = nil;
 }
 
 #pragma mark - MXSessionStateDidChangeNotification
@@ -118,19 +111,6 @@
 {
     return cellDataMap[identifier];
 }
-
-
-#pragma mark - MXKCellRendering classes
-- (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier
-{
-    cellViewMap[identifier] = cellViewClass;
-}
-
-- (Class<MXKCellRendering>)cellViewClassForCellIdentifier:(NSString *)identifier
-{
-    return cellViewMap[identifier];
-}
-
 
 #pragma mark - MXKCellRenderingDelegate
 - (void)cell:(id<MXKCellRendering>)cell didRecognizeAction:(NSString*)actionIdentifier userInfo:(NSDictionary *)userInfo

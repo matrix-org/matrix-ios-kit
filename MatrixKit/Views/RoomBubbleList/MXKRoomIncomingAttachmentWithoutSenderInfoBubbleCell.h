@@ -17,8 +17,8 @@
 #import "MXKRoomIncomingAttachmentBubbleCell.h"
 
 /**
- `MXKRoomIncomingAttachmentHiddenSenderBubbleCell` displays incoming message bubbles without sender's information.
+ `MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell` displays incoming message bubbles without sender's information.
  */
-@interface MXKRoomIncomingAttachmentHiddenSenderBubbleCell : MXKRoomIncomingAttachmentBubbleCell
+@interface MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell : MXKRoomIncomingAttachmentBubbleCell
 
 @end

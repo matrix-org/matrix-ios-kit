@@ -141,6 +141,21 @@
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    // In this sample, the data source is not used to provide collection view cell
+    // That is why we return nil here.
+    return nil;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    // In this sample, the data source is not used to provide collection view cell
+    // That is why we return nil here.
+    return nil;
+}
+
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
     // For now, do a simple full reload

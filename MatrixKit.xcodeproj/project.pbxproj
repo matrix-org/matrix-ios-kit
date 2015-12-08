@@ -41,20 +41,20 @@
 		F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00C252A1ADBC60300065077 /* MXKTableViewController.m */; };
 		F00FA8551C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8541C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m */; };
 		F00FA85C1C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8571C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m */; };
-		F00FA85D1C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8591C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.m */; };
-		F00FA85E1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA85B1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.m */; };
+		F00FA85D1C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8591C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m */; };
+		F00FA85E1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA85B1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m */; };
 		F00FA8631C089D2100E25826 /* MXKRoomIncomingAttachmentBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA85F1C089D2100E25826 /* MXKRoomIncomingAttachmentBubbleCell.xib */; };
-		F00FA8641C089D2100E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8601C089D2100E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.xib */; };
+		F00FA8641C089D2100E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8601C089D2100E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.xib */; };
 		F00FA8651C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8611C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib */; };
-		F00FA8661C089D2100E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8621C089D2100E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.xib */; };
+		F00FA8661C089D2100E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8621C089D2100E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib */; };
 		F00FA8731C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8681C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.m */; };
 		F00FA8741C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8691C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.xib */; };
-		F00FA8751C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA86B1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.m */; };
-		F00FA8761C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA86C1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.xib */; };
+		F00FA8751C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA86B1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m */; };
+		F00FA8761C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA86C1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib */; };
 		F00FA8771C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA86E1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.m */; };
 		F00FA8781C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA86F1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.xib */; };
-		F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8711C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.m */; };
-		F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.xib */; };
+		F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8711C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m */; };
+		F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib */; };
 		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
 		F01449AB1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */; };
 		F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */; };
@@ -262,26 +262,26 @@
 		F00FA8541C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIncomingTextMsgBubbleCell.m; sourceTree = "<group>"; };
 		F00FA8561C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIncomingAttachmentBubbleCell.h; sourceTree = "<group>"; };
 		F00FA8571C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIncomingAttachmentBubbleCell.m; sourceTree = "<group>"; };
-		F00FA8581C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h; sourceTree = "<group>"; };
-		F00FA8591C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIncomingAttachmentHiddenSenderBubbleCell.m; sourceTree = "<group>"; };
-		F00FA85A1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h; sourceTree = "<group>"; };
-		F00FA85B1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIncomingTextMsgHiddenSenderBubbleCell.m; sourceTree = "<group>"; };
+		F00FA8581C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.h; sourceTree = "<group>"; };
+		F00FA8591C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m; sourceTree = "<group>"; };
+		F00FA85A1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h; sourceTree = "<group>"; };
+		F00FA85B1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m; sourceTree = "<group>"; };
 		F00FA85F1C089D2100E25826 /* MXKRoomIncomingAttachmentBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIncomingAttachmentBubbleCell.xib; sourceTree = "<group>"; };
-		F00FA8601C089D2100E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIncomingAttachmentHiddenSenderBubbleCell.xib; sourceTree = "<group>"; };
+		F00FA8601C089D2100E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.xib; sourceTree = "<group>"; };
 		F00FA8611C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIncomingTextMsgBubbleCell.xib; sourceTree = "<group>"; };
-		F00FA8621C089D2100E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIncomingTextMsgHiddenSenderBubbleCell.xib; sourceTree = "<group>"; };
+		F00FA8621C089D2100E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib; sourceTree = "<group>"; };
 		F00FA8671C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomOutgoingAttachmentBubbleCell.h; sourceTree = "<group>"; };
 		F00FA8681C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomOutgoingAttachmentBubbleCell.m; sourceTree = "<group>"; };
 		F00FA8691C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomOutgoingAttachmentBubbleCell.xib; sourceTree = "<group>"; };
-		F00FA86A1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h; sourceTree = "<group>"; };
-		F00FA86B1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.m; sourceTree = "<group>"; };
-		F00FA86C1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.xib; sourceTree = "<group>"; };
+		F00FA86A1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h; sourceTree = "<group>"; };
+		F00FA86B1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m; sourceTree = "<group>"; };
+		F00FA86C1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib; sourceTree = "<group>"; };
 		F00FA86D1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomOutgoingTextMsgBubbleCell.h; sourceTree = "<group>"; };
 		F00FA86E1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomOutgoingTextMsgBubbleCell.m; sourceTree = "<group>"; };
 		F00FA86F1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomOutgoingTextMsgBubbleCell.xib; sourceTree = "<group>"; };
-		F00FA8701C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h; sourceTree = "<group>"; };
-		F00FA8711C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.m; sourceTree = "<group>"; };
-		F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.xib; sourceTree = "<group>"; };
+		F00FA8701C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.h; sourceTree = "<group>"; };
+		F00FA8711C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m; sourceTree = "<group>"; };
+		F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib; sourceTree = "<group>"; };
 		F01267481AF8A9440067D962 /* MXK3PID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXK3PID.h; sourceTree = "<group>"; };
 		F01267491AF8A9440067D962 /* MXK3PID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXK3PID.m; sourceTree = "<group>"; };
 		F01449A51B53FA7600EA7D73 /* MXKPushRuleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPushRuleTableViewCell.h; sourceTree = "<group>"; };
@@ -691,29 +691,29 @@
 				F00FA8531C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.h */,
 				F00FA8541C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m */,
 				F00FA8611C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib */,
-				F00FA85A1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.h */,
-				F00FA85B1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.m */,
-				F00FA8621C089D2100E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.xib */,
+				F00FA85A1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h */,
+				F00FA85B1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m */,
+				F00FA8621C089D2100E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib */,
 				F00FA8561C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.h */,
 				F00FA8571C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m */,
 				F00FA85F1C089D2100E25826 /* MXKRoomIncomingAttachmentBubbleCell.xib */,
-				F00FA8581C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.h */,
-				F00FA8591C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.m */,
-				F00FA8601C089D2100E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.xib */,
+				F00FA8581C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.h */,
+				F00FA8591C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m */,
+				F00FA8601C089D2100E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.xib */,
 				328AC48A1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.h */,
 				328AC48B1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.m */,
 				F00FA86D1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.h */,
 				F00FA86E1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.m */,
 				F00FA86F1C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.xib */,
-				F00FA8701C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.h */,
-				F00FA8711C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.m */,
-				F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.xib */,
+				F00FA8701C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.h */,
+				F00FA8711C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m */,
+				F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib */,
 				F00FA8671C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.h */,
 				F00FA8681C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.m */,
 				F00FA8691C08A51B00E25826 /* MXKRoomOutgoingAttachmentBubbleCell.xib */,
-				F00FA86A1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.h */,
-				F00FA86B1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.m */,
-				F00FA86C1C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.xib */,
+				F00FA86A1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h */,
+				F00FA86B1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m */,
+				F00FA86C1C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib */,
 				321313C61AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.h */,
 				321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */,
 				321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */,
@@ -1187,14 +1187,14 @@
 				F00FA8781C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.xib in Resources */,
 				F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */,
 				F0CF98F11B0B886000EAE373 /* MXKTableViewCellWithTextFieldAndButton.xib in Resources */,
-				F00FA8761C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.xib in Resources */,
-				F00FA8641C089D2100E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.xib in Resources */,
+				F00FA8761C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib in Resources */,
+				F00FA8641C089D2100E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CF98EB1B0B874A00EAE373 /* MXKTableViewCellWithLabelAndTextField.xib in Resources */,
 				F080B4321BD6991A00DE095E /* MXKMediaCollectionViewCell.xib in Resources */,
 				F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */,
 				F0868E0E1B18FC01004CBE80 /* MXKRoomCreationView.xib in Resources */,
 				F04356401B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib in Resources */,
-				F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.xib in Resources */,
+				F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CE56E81AA8BB5E003BE77A /* Images.xcassets in Resources */,
 				F05FB1821AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib in Resources */,
 				F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */,
@@ -1212,7 +1212,7 @@
 				321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */,
 				F0DB1AC61B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib in Resources */,
 				F0868E131B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.xib in Resources */,
-				F00FA8661C089D2100E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.xib in Resources */,
+				F00FA8661C089D2100E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CF98EF1B0B882E00EAE373 /* MXKTableViewCellWithPicker.xib in Resources */,
 				F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */,
 				F0CF98FE1B0CDF6100EAE373 /* MXKTableViewCellWithButton.xib in Resources */,
@@ -1290,7 +1290,7 @@
 				F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */,
 				3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */,
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
-				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgHiddenSenderBubbleCell.m in Sources */,
+				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */,
 				F04356361B2EF9D80096FA02 /* MXKTableViewCellWithLabelAndButton.m in Sources */,
 				F0CF98F81B0C6EA000EAE373 /* MXKAccountTableViewCell.m in Sources */,
@@ -1310,7 +1310,7 @@
 				321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */,
 				F00FA85C1C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m in Sources */,
 				F04356311B2EF6FD0096FA02 /* MXKContactDetailsViewController.m in Sources */,
-				F00FA8751C08A51B00E25826 /* MXKRoomOutgoingAttachmentHiddenSenderBubbleCell.m in Sources */,
+				F00FA8751C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m in Sources */,
 				329CF77B1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m in Sources */,
 				F095E4FD1B2586C6009606CE /* MXKContactListViewController.m in Sources */,
 				F0BA9C6A1B3438300065B4B7 /* MXKTableViewCell.m in Sources */,
@@ -1325,7 +1325,7 @@
 				F0CF98DF1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelTextFieldAndButton.m in Sources */,
 				F06E769A1AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m in Sources */,
 				F0CF99021B0D1D4B00EAE373 /* MXKRecentsDataSource.m in Sources */,
-				F00FA85E1C0867F900E25826 /* MXKRoomIncomingTextMsgHiddenSenderBubbleCell.m in Sources */,
+				F00FA85E1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				F0CF98E21B0B7FDC00EAE373 /* MXKTableViewCellWithTextFieldAndButton.m in Sources */,
 				F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */,
 				F0316E361B7DEA5300F03620 /* MXKTableViewCellWithSearchBar.m in Sources */,
@@ -1335,7 +1335,7 @@
 				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
-				F00FA85D1C0867F900E25826 /* MXKRoomIncomingAttachmentHiddenSenderBubbleCell.m in Sources */,
+				F00FA85D1C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m in Sources */,
 				F02D21491B7109950002DE01 /* MXKConstants.m in Sources */,
 				F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */,
 				71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */,

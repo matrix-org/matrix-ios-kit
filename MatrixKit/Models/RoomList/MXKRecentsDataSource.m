@@ -16,8 +16,6 @@
 
 #import "MXKRecentsDataSource.h"
 
-#import "MXKRecentTableViewCell.h"
-
 #import "NSBundle+MatrixKit.h"
 
 #import "MXKConstants.h"
@@ -67,8 +65,7 @@
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
-        [self registerCellViewClass:MXKRecentTableViewCell.class forCellIdentifier:kMXKRecentCellIdentifier];
-        
+
         ruleDidUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
         ruleDidFailUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
     }
@@ -99,7 +96,6 @@
         
         // Set the actual data and view classes
         [recentsDataSource registerCellDataClass:[self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
-        [recentsDataSource registerCellViewClass:[self cellViewClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
         
         [mxSessionArray addObject:matrixSession];
         
@@ -208,26 +204,6 @@
     }
     
     return currentState;
-}
-
-- (void)registerCellDataClass:(Class)cellDataClass forCellIdentifier:(NSString *)identifier
-{
-    [super registerCellDataClass:cellDataClass forCellIdentifier:identifier];
-    
-    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
-    {
-        [recentsDataSource registerCellDataClass:cellDataClass forCellIdentifier:identifier];
-    }
-}
-
-- (void)registerCellViewClass:(Class<MXKCellRendering>)cellViewClass forCellIdentifier:(NSString *)identifier
-{
-    [super registerCellViewClass:cellViewClass forCellIdentifier:identifier];
-    
-    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
-    {
-        [recentsDataSource registerCellViewClass:cellViewClass forCellIdentifier:identifier];
-    }
 }
 
 - (void)destroy
@@ -475,18 +451,22 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section < displayedRecentsDataSourceArray.count)
+    if (indexPath.section < displayedRecentsDataSourceArray.count && self.delegate)
     {
         MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:indexPath.section];
         
         id<MXKRecentCellDataStoring> roomData = [recentsDataSource cellDataAtIndex:indexPath.row];
         
-        MXKRecentTableViewCell *cell  = [tableView dequeueReusableCellWithIdentifier:kMXKRecentCellIdentifier forIndexPath:indexPath];
-        
-        // Make the bubble display the data
-        [cell render:roomData];
-        
-        return cell;
+        NSString *cellIdentifier = [self.delegate cellReuseIdentifierForCellData:roomData];
+        if (cellIdentifier)
+        {
+            UITableViewCell<MXKCellRendering> *cell  = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+            
+            // Make the bubble display the data
+            [cell render:roomData];
+            
+            return cell;
+        }
     }
     return nil;
 }
@@ -506,6 +486,28 @@
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    // Retrieve the class from the delegate here
+    if (self.delegate)
+    {
+        return [self.delegate cellViewClassForCellData:cellData];
+    }
+    
+    return nil;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    // Retrieve the identifier from the delegate here
+    if (self.delegate)
+    {
+        return [self.delegate cellReuseIdentifierForCellData:cellData];
+    }
+    
+    return nil;
+}
 
 - (void)dataSource:(MXKDataSource*)dataSource didCellChange:(id)changes
 {
