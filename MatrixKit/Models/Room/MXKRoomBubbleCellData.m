@@ -17,7 +17,7 @@
 #define MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH 192
 
 #define MXK_ROOM_BUBBLE_CELL_DATA_DEFAULT_MAX_TEXTVIEW_WIDTH 200
-#define MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN 5
+#define MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN 10
 
 #import "MXKRoomBubbleCellData.h"
 
@@ -265,7 +265,7 @@
     
     if (firstComponent)
     {
-        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : -MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN;
+        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : 0;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -290,7 +290,7 @@
     if (textSize.height)
     {
         // Return the actual height of the text by removing textview margin from content height
-        return (textSize.height - (2 * MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN));
+        return (textSize.height - MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN);
     }
     return 0;
 }
