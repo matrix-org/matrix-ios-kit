@@ -18,7 +18,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#import "MXKReceiptAvartarsContainer.h"
 #import "MXRoom.h"
 
 #pragma mark - Constant definitions
@@ -36,7 +35,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 
 @implementation MXKRoomBubbleTableViewCell
-@synthesize delegate, bubbleData;
+@synthesize delegate, bubbleData, readReceiptsAlignment;
 
 + (instancetype)roomBubbleTableViewCell
 {
@@ -97,6 +96,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     {
         self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
     }
+    
+    self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
 }
 
 - (void)dealloc
@@ -404,12 +405,12 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             
                             timeLabelOffset += 15;
                         }
-                    
-                        if (!bubbleData.isIncoming && bubbleData.showBubbleReceipts)
+                        
+                        if (bubbleData.showBubbleReceipts)
                         {
                             NSMutableArray* userIds = nil;
                             NSArray* receipts = nil;
-                         
+                            
                             MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
                             
                             // get the events receipts
@@ -432,7 +433,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                                         [res addObject:data.userId];
                                     }
                                 }
-                                
+    
                                 if (res.count > 0)
                                 {
                                     userIds = res;
@@ -443,7 +444,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             {
                                 MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15)];
                                 
-                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder];
+                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder withAlignment:self.readReceiptsAlignment];
                                 [self.bubbleInfoContainer addSubview:avatarsContainer];
                                 
                                 // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)

@@ -23,6 +23,7 @@
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"
+#import "MXKReceiptAvartarsContainer.h"
 
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 
@@ -82,6 +83,7 @@ extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
 
 #pragma mark - MXKRoomBubbleTableViewCell
+
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
  
@@ -105,6 +107,12 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  The default picture displayed when no picture is available.
  */
 @property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ The read receipts alignment.
+ By default, they are left aligned.
+ */
+@property (nonatomic) ReadReceiptsAlignment readReceiptsAlignment;
 
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;

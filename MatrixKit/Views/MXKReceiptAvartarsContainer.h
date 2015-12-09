@@ -18,9 +18,16 @@
 
 #import "MXRoom.h"
 
-@interface MXKReceiptAvartarsContainer : UIView
+typedef NS_ENUM(NSInteger, ReadReceiptsAlignment) {
+    // the latest receipt is displayed on left
+    ReadReceiptAlignmentLeft = 0,
+    // the latest receipt is displayed on right
+    ReadReceiptAlignmentRight = 1,
+};
 
-- (void)setUserIds:(NSArray*)userIds roomState:(MXRoomState*)roomState session:(MXSession*)session placeholder:(UIImage*)placeHolder;
+@interface MXKReceiptAvartarsContainer : UIView
+    
+- (void)setUserIds:(NSArray*)userIds roomState:(MXRoomState*)roomState session:(MXSession*)session placeholder:(UIImage*)placeHolder withAlignment:(ReadReceiptsAlignment)alignment;
 
 @end
 
