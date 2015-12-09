@@ -82,6 +82,14 @@ extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
 
 #pragma mark - MXKRoomBubbleTableViewCell
+
+typedef NS_ENUM(NSInteger, ReadReceiptsAlignment) {
+    // the latest receipt is displayed on left
+    ReadReceiptAlignmentLeft = 0,
+    // the latest receipt is displayed on right
+    ReadReceiptAlignmentRight = 1,
+};
+
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
  
@@ -105,6 +113,12 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  The default picture displayed when no picture is available.
  */
 @property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ The read receipts alignment.
+ By default, they are left aligned.
+ */
+@property (nonatomic) ReadReceiptsAlignment readReceiptsAlignment;
 
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;

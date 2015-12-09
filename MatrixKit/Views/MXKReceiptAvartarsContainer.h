@@ -18,9 +18,11 @@
 
 #import "MXRoom.h"
 
-@interface MXKReceiptAvartarsContainer : UIView
+#import "MXKRoomBubbleTableViewCell.h"
 
-- (void)setUserIds:(NSArray*)userIds roomState:(MXRoomState*)roomState session:(MXSession*)session placeholder:(UIImage*)placeHolder;
+@interface MXKReceiptAvartarsContainer : UIView
+    
+- (void)setUserIds:(NSArray*)userIds roomState:(MXRoomState*)roomState session:(MXSession*)session placeholder:(UIImage*)placeHolder withAlignment:(ReadReceiptsAlignment)alignment;
 
 @end
 

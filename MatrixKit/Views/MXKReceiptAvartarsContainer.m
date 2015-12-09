@@ -32,16 +32,26 @@
 
 @implementation MXKReceiptAvartarsContainer
 
-- (void)setUserIds:(NSArray*)userIds roomState:(MXRoomState*)roomState session:(MXSession*)session placeholder:(UIImage*)placeHolder
+- (void)setUserIds:(NSArray*)userIds roomState:(MXRoomState*)roomState session:(MXSession*)session placeholder:(UIImage*)placeHolder withAlignment:(ReadReceiptsAlignment)alignment
 {
     CGRect globalFrame = self.frame;
     CGFloat side = globalFrame.size.height;
-    unsigned long count = MIN(userIds.count, MAX_NBR_USERS);
+    unsigned long count;
+    unsigned long maxDisplayableItems = ((int)globalFrame.size.width / side) - 1;
+    
+    maxDisplayableItems = MIN(maxDisplayableItems, MAX_NBR_USERS);
+    count = MIN(userIds.count, maxDisplayableItems);
+    
     int index;
     
     MXRestClient* restclient = session.matrixRestClient;
     
     CGFloat xOff = 0;
+    
+    if (alignment == ReadReceiptAlignmentRight)
+    {
+        xOff =  globalFrame.size.width - (side + 2);
+    }
     
     for(index = 0; index < count; index++)
     {
@@ -62,7 +72,16 @@
         }
         
         MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-        xOff += side + 2;
+        
+        if (alignment == ReadReceiptAlignmentRight)
+        {
+            xOff -= side + 2;
+        }
+        else
+        {
+            xOff += side + 2;
+        }
+        
         [self addSubview:imageView];
         [avatarViews addObject:imageView];
         imageView.enableInMemoryCache = YES;
@@ -73,7 +92,7 @@
     }
     
     // more than expected read receipts
-    if (index > (MAX_NBR_USERS+1))
+    if (userIds.count > maxDisplayableItems)
     {
         // add a more indicator
 

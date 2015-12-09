@@ -25,6 +25,7 @@
     [super awakeFromNib];
     
     self.typingBadge.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_keyboard"];
+    self.readReceiptsAlignment = ReadReceiptAlignmentRight;
 }
 
 - (void)render:(MXKCellData *)cellData
