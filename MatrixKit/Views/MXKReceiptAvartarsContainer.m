@@ -50,7 +50,7 @@
     
     if (alignment == ReadReceiptAlignmentRight)
     {
-        xOff =  globalFrame.size.width - (side + 2);
+        xOff = globalFrame.size.width - (side + 2);
     }
     
     for(index = 0; index < count; index++)
@@ -97,7 +97,7 @@
         // add a more indicator
 
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-        label.text = [NSString stringWithFormat:@"+%tu", userIds.count - MAX_NBR_USERS];
+        label.text = [NSString stringWithFormat:(alignment == ReadReceiptAlignmentRight) ? @"%tu+" : @"+%tu", userIds.count - MAX_NBR_USERS];
         label.font = [UIFont systemFontOfSize:11];
         label.adjustsFontSizeToFitWidth = YES;
         label.minimumScaleFactor = 0.6;
