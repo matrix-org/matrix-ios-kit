@@ -18,7 +18,12 @@
 
 #import "MXRoom.h"
 
-#import "MXKRoomBubbleTableViewCell.h"
+typedef NS_ENUM(NSInteger, ReadReceiptsAlignment) {
+    // the latest receipt is displayed on left
+    ReadReceiptAlignmentLeft = 0,
+    // the latest receipt is displayed on right
+    ReadReceiptAlignmentRight = 1,
+};
 
 @interface MXKReceiptAvartarsContainer : UIView
     

@@ -18,7 +18,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#import "MXKReceiptAvartarsContainer.h"
 #import "MXRoom.h"
 
 #pragma mark - Constant definitions

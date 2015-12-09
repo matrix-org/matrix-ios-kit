@@ -23,6 +23,7 @@
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"
+#import "MXKReceiptAvartarsContainer.h"
 
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 
@@ -82,13 +83,6 @@ extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
 
 #pragma mark - MXKRoomBubbleTableViewCell
-
-typedef NS_ENUM(NSInteger, ReadReceiptsAlignment) {
-    // the latest receipt is displayed on left
-    ReadReceiptAlignmentLeft = 0,
-    // the latest receipt is displayed on right
-    ReadReceiptAlignmentRight = 1,
-};
 
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
