@@ -117,6 +117,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     cellDataArray = nil;
     internalCellDataArray = nil;
@@ -271,6 +272,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     // Reset the table
     [internalCellDataArray removeAllObjects];
@@ -299,6 +301,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     // Listen to MXSession rooms count changes
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionInviteRoomUpdate:) name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     // Listen to MXRoomDataSource
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
@@ -399,6 +402,17 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     }
 }
 
+- (void)didMXSessionInviteRoomUpdate:(NSNotification *)notif
+{
+    MXSession *mxSession = notif.object;
+    if (mxSession == self.mxSession)
+    {
+        // do nothing by default
+        // the inherited classes might require to perform a full or a particial refresh.
+        //[self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
 // Order cells
 - (void)sortCellDataAndNotifyChanges
 {
@@ -433,7 +447,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     // And inform the delegate about the update
     [self.delegate dataSource:self didCellChange:nil];
 }
-
 
 // Find the cell data that stores information about the given room id
 - (id<MXKRecentCellDataStoring>)cellDataWithRoomId:(NSString*)roomId
