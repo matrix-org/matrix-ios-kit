@@ -132,6 +132,7 @@
 {
     // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
     NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
+    
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"avatar_url"] length])
     {
@@ -143,9 +144,16 @@
         }
         else
         {
-            senderAvatarUrl = [mxSession.matrixRestClient urlOfIdenticon:event.sender];
+            senderAvatarUrl = nil;
         }
     }
+    
+    // Handle here the case where no avatar is defined (Check SDK options before using identicon).
+    if (!senderAvatarUrl && ![MXSDKOptions sharedInstance].disableIdenticonUseForUserAvatar)
+    {
+        senderAvatarUrl = [mxSession.matrixRestClient urlOfIdenticon:event.sender];
+    }
+    
     return senderAvatarUrl;
 }
 

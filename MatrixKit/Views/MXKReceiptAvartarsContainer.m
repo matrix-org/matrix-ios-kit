@@ -64,11 +64,6 @@
         if (roomMember)
         {
             avatarUrl = [restclient urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:CGSizeMake(side, side) withMethod:MXThumbnailingMethodCrop];
-            
-            if (!avatarUrl)
-            {
-                avatarUrl = roomMember.avatarUrl;
-            }
         }
         
         MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
