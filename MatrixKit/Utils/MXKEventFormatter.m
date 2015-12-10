@@ -41,6 +41,7 @@
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
+        _subTitleTextColor = [UIColor blackColor];
         _bingTextColor = [UIColor blueColor];
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
@@ -689,7 +690,14 @@
     switch (event.mxkState)
     {
         case MXKEventStateDefault:
-            textColor = _defaultTextColor;
+            if (_isForSubtitle)
+            {
+                textColor = _subTitleTextColor;
+            }
+            else
+            {
+                textColor = _defaultTextColor;
+            }
             break;
         case MXKEventStateBing:
             textColor = _bingTextColor;
@@ -704,7 +712,14 @@
             textColor = _errorTextColor;
             break;
         default:
-            textColor = _defaultTextColor;
+            if (_isForSubtitle)
+            {
+                textColor = _subTitleTextColor;
+            }
+            else
+            {
+                textColor = _defaultTextColor;
+            }
             break;
     }
     [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];

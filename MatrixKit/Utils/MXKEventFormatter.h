@@ -186,20 +186,26 @@ typedef enum : NSUInteger {
 # pragma mark - Customisation
 /**
  Default color used to display text content of event.
- Default is black.
+ Default is [UIColor blackColor].
  */
 @property (nonatomic) UIColor *defaultTextColor;
 
 /**
+ Default color used to display text content of event when it is displayed as subtitle (related to 'isForSubtitle' property).
+ Default is [UIColor blackColor].
+ */
+@property (nonatomic) UIColor *subTitleTextColor;
+
+/**
  Color used when the event must be bing to the end user. This happens when the event
  matches the user's push rules.
- Default is blue.
+ Default is [UIColor blueColor].
  */
 @property (nonatomic) UIColor *bingTextColor;
 
 /**
  Color used to display text content of an event being sent.
- Default is ligh gray.
+ Default is [UIColor lightGrayColor].
  */
 @property (nonatomic) UIColor *sendingTextColor;
 
