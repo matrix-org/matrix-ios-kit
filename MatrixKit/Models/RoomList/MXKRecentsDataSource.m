@@ -68,6 +68,8 @@
 
         ruleDidUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
         ruleDidFailUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionInviteRoomUpdate:) name:kMXSessionInvitedRoomsDidChangeNotification object:nil];        
     }
     return self;
 }
@@ -241,6 +243,8 @@
     mxSessionArray = nil;
     
     searchPatternsList = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     [super destroy];
 }
@@ -902,6 +906,17 @@
                 }
             }
         }
+    }
+}
+
+- (void)didMXSessionInviteRoomUpdate:(NSNotification *)notif
+{
+    MXSession *mxSession = notif.object;
+    if (mxSession == self.mxSession)
+    {
+        // do nothing by default
+        // the inherited classes might require to perform a full or a particial refresh.
+        //[self.delegate dataSource:self didCellChange:nil];
     }
 }
 

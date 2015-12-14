@@ -117,7 +117,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     cellDataArray = nil;
     internalCellDataArray = nil;
@@ -272,7 +271,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     // Reset the table
     [internalCellDataArray removeAllObjects];
@@ -301,7 +299,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     // Listen to MXSession rooms count changes
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionInviteRoomUpdate:) name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
     // Listen to MXRoomDataSource
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
