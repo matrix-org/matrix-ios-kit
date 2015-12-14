@@ -30,7 +30,7 @@
 /**
  Action identifier used when the user tapped on message text view.
  
- The `userInfo` is nil.
+ The `userInfo` dictionary contains an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the tapped event.
  */
 extern NSString *const kMXKRoomBubbleCellTapOnMessageTextView;
 
@@ -54,6 +54,13 @@ extern NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer;
  The `userInfo` is nil. The attachment can be retrieved via MXKRoomBubbleTableViewCell.attachmentView.
  */
 extern NSString *const kMXKRoomBubbleCellTapOnAttachmentView;
+
+/**
+ Action identifier used when the user tapped on overlay container.
+ 
+ The `userInfo` is nil
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnOverlayContainer;
 
 /**
  Action identifier used when the user pressed unsent button displayed in front of an unsent event.
@@ -121,6 +128,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (strong, nonatomic) IBOutlet UIImageView *playIconView;
 @property (strong, nonatomic) IBOutlet UIImageView *fileTypeIconView;
 @property (weak, nonatomic) IBOutlet UIView *bubbleInfoContainer;
+@property (weak, nonatomic) IBOutlet UIView *bubbleOverlayContainer;
 
 @property (weak, nonatomic) IBOutlet UIView *progressView;
 @property (weak, nonatomic) IBOutlet UILabel *statsLabel;

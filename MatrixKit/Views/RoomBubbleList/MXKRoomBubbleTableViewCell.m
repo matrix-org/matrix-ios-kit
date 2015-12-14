@@ -25,6 +25,7 @@ NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTap
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
 NSString *const kMXKRoomBubbleCellTapOnAttachmentView = @"kMXKRoomBubbleCellTapOnAttachmentView";
+NSString *const kMXKRoomBubbleCellTapOnOverlayContainer = @"kMXKRoomBubbleCellTapOnOverlayContainer";
 NSString *const kMXKRoomBubbleCellUnsentButtonPressed = @"kMXKRoomBubbleCellUnsentButtonPressed";
 
 NSString *const kMXKRoomBubbleCellLongPressOnEvent = @"kMXKRoomBubbleCellLongPressOnEvent";
@@ -95,6 +96,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     if (self.playIconView)
     {
         self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
+    }
+    
+    if (self.bubbleOverlayContainer)
+    {
+        // Add tap recognizer to open attachment
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onOverlayTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.bubbleOverlayContainer addGestureRecognizer:tapGesture];
     }
     
     self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
@@ -321,7 +332,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Handle here timestamp display (only if a container has been defined)
         if (self.bubbleInfoContainer)
         {
-            if ((bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel) || bubbleData.showBubbleReceipts)
+            if ((bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
+                || (bubbleData.showBubbleReceipts && !bubbleData.useCustomReceipts))
             {
                 // Add datetime label for each component
                 self.bubbleInfoContainer.hidden = NO;
@@ -406,7 +418,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             timeLabelOffset += 15;
                         }
                         
-                        if (bubbleData.showBubbleReceipts)
+                        if (bubbleData.showBubbleReceipts && !bubbleData.useCustomReceipts)
                         {
                             NSMutableArray* userIds = nil;
                             NSArray* receipts = nil;
@@ -575,6 +587,19 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             [view removeFromSuperview];
         }
     }
+    self.bubbleInfoContainer.hidden = YES;
+    
+    // Remove potential overlay subviews
+    if (self.bubbleOverlayContainer && self.bubbleOverlayContainer.subviews.count > 0)
+    {
+        NSArray* subviews = self.bubbleOverlayContainer.subviews;
+        
+        for (UIView *view in subviews)
+        {
+            [view removeFromSuperview];
+        }
+    }
+    self.bubbleOverlayContainer.hidden = YES;
     
     if (self.progressView)
     {
@@ -748,7 +773,29 @@ static NSMutableDictionary *childClasses;
         }
         else
         {
-            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:nil];
+            MXEvent *tappedEvent = nil;
+            if (bubbleData.bubbleComponents.count == 1)
+            {
+                MXKRoomBubbleComponent *component = [bubbleData.bubbleComponents firstObject];
+                tappedEvent = component.event;
+            }
+            else if (bubbleData.bubbleComponents.count)
+            {
+                // Look for the tapped component
+                UIView* view = sender.view;
+                CGPoint tapPoint = [sender locationInView:view];
+                
+                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+                {
+                    if (tapPoint.y < component.position.y)
+                    {
+                        break;
+                    }
+                    tappedEvent = component.event;
+                }
+            }
+            
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
         }
     }
 }
@@ -774,6 +821,14 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnDateTimeContainer userInfo:nil];
+    }
+}
+
+- (IBAction)onOverlayTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnOverlayContainer userInfo:nil];
     }
 }
 

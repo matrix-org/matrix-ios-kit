@@ -121,19 +121,24 @@
 @property (nonatomic) BOOL isTyping;
 
 /**
- Show the date time label in rendered bubble cell (NO by default)
+ Show the date time label in rendered bubble cell. NO by default.
  */
 @property (nonatomic) BOOL showBubbleDateTime;
 
 /**
- The date time label is not managed by MatrixKit. (NO by default).
+ A Boolean value that determines whether the date time labels are customized (By default date time display is handled by MatrixKit). NO by default.
  */
 @property (nonatomic) BOOL useCustomDateTimeLabel;
 
 /**
- Show the receipts in rendered bubble cell (YES by default)
+ Show the receipts in rendered bubble cell. YES by default.
  */
 @property (nonatomic) BOOL showBubbleReceipts;
+
+/**
+ A Boolean value that determines whether the read receipts are customized (By default read receipts display is handled by MatrixKit). NO by default.
+ */
+@property (nonatomic) BOOL useCustomReceipts;
 
 #pragma mark - Public methods
 /**

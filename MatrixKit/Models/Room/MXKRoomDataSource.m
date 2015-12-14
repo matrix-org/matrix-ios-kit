@@ -133,6 +133,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         _showTypingNotifications = YES;
         
         self.useCustomDateTimeLabel = NO;
+        self.useCustomReceipts = NO;
         
         _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
         

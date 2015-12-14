@@ -145,19 +145,24 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
- Show the date time label in rendered room bubble cells (NO by default)
+ Show the date time label in rendered room bubble cells. NO by default.
  */
 @property (nonatomic) BOOL showBubblesDateTime;
 
 /**
-  The date time label is not managed by MatrixKit. (NO by default).
+ A Boolean value that determines whether the date time labels are customized (By default date time display is handled by MatrixKit). NO by default.
  */
 @property (nonatomic) BOOL useCustomDateTimeLabel;
 
 /**
- Show the receipts in rendered bubble cell (YES by default)
+ Show the receipts in rendered bubble cell. YES by default.
  */
 @property (nonatomic) BOOL showBubbleReceipts;
+
+/**
+ A Boolean value that determines whether the read receipts are customized (By default read receipts display is handled by MatrixKit). NO by default.
+ */
+@property (nonatomic) BOOL useCustomReceipts;
 
 /**
  Show the typing notifications of other room members in the chat history (YES by default).
