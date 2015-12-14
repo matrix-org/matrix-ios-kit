@@ -425,7 +425,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             
                             MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
                             
-                            // get the events receipts
+                            // Get the events receipts by ignoring the current user receipt.
                             if (room)
                             {
                                 receipts = [room getEventReceipts:component.event.eventId sorted:YES];
@@ -434,21 +434,12 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             // if some receipts are found
                             if (receipts)
                             {
-                                NSString* myUserId = bubbleData.mxSession.myUser.userId;
-                                NSMutableArray* res = [[NSMutableArray alloc] init];
+                                userIds = [[NSMutableArray alloc] initWithCapacity:receipts.count];
                                 
-                                // remove the oneself receipts
-                                for(MXReceiptData* data in receipts)
+                                // Report all user ids listed in receipts
+                                for (MXReceiptData* data in receipts)
                                 {
-                                    if (![data.userId isEqualToString:myUserId])
-                                    {
-                                        [res addObject:data.userId];
-                                    }
-                                }
-    
-                                if (res.count > 0)
-                                {
-                                    userIds = res;
+                                    [userIds addObject:data.userId];
                                 }
                             }
                             
