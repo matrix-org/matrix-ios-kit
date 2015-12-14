@@ -126,7 +126,7 @@
 @property (nonatomic) BOOL showBubbleDateTime;
 
 /**
- Disable the default display of date time labels by MatrixKit. NO by default.
+ A Boolean value that determines whether the date time labels are customized (By default date time display is handled by MatrixKit). NO by default.
  */
 @property (nonatomic) BOOL useCustomDateTimeLabel;
 
@@ -136,7 +136,7 @@
 @property (nonatomic) BOOL showBubbleReceipts;
 
 /**
- Disable the default display of read receipts by MatrixKit. NO by default.
+ A Boolean value that determines whether the read receipts are customized (By default read receipts display is handled by MatrixKit). NO by default.
  */
 @property (nonatomic) BOOL useCustomReceipts;
 
