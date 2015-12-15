@@ -1522,7 +1522,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     // The account may be shared between several devices.
     // so, if some messages have been read on one device, the other devices must update the unread counters
-    if ([receiptEvent.receiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
+    if ([receiptEvent.readReceiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
     {
         [self refreshUnreadCounters:NO];
         
