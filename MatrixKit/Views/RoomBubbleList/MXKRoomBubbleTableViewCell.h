@@ -23,7 +23,7 @@
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"
-#import "MXKReceiptAvartarsContainer.h"
+#import "MXKReceiptSendersContainer.h"
 
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 
