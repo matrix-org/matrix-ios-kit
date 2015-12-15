@@ -393,4 +393,15 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)removeEventWithEventId:(NSString *)eventId;
 
+/**
+ This method is called to handle each read receipt event which is received in forward mode.
+ 
+ You should not call this method directly.
+ You may override it in inherited 'MXKRoomDataSource' class.
+ 
+ @param receiptEvent an event with 'm.receipt' type.
+ @param roomState the room state right before the event
+ */
+- (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState;
+
 @end
