@@ -25,5 +25,9 @@
  Toolbar buttons are not overridden by this class. We keep the default implementation.
  */
 @interface MXKRoomInputToolbarViewWithHPGrowingText : MXKRoomInputToolbarView <HPGrowingTextViewDelegate>
+{
+@protected
+    HPGrowingTextView *growingTextView;
+}
 
 @end

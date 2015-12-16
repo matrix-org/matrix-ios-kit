@@ -26,11 +26,12 @@
 /**
  Message composer defined in `messageComposerContainer`.
  */
-@property (weak, nonatomic) IBOutlet HPGrowingTextView *growingTextView;
+@property (nonatomic) IBOutlet HPGrowingTextView *growingTextView;
 
 @end
 
 @implementation MXKRoomInputToolbarViewWithHPGrowingText
+@synthesize growingTextView;
 
 + (UINib *)nib
 {
@@ -43,27 +44,27 @@
     [super awakeFromNib];
     
     // Handle message composer based on HPGrowingTextView use
-    _growingTextView.delegate = self;
+    growingTextView.delegate = self;
     
-    [_growingTextView setTranslatesAutoresizingMaskIntoConstraints: NO];
+    [growingTextView setTranslatesAutoresizingMaskIntoConstraints: NO];
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
     inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
-    _growingTextView.internalTextView.inputAccessoryView = self.inputAccessoryView;
+    growingTextView.internalTextView.inputAccessoryView = self.inputAccessoryView;
     
     // set text input font
-    _growingTextView.font = [UIFont systemFontOfSize:14];
+    growingTextView.font = [UIFont systemFontOfSize:14];
     
     // draw a rounded border around the textView
-    _growingTextView.layer.cornerRadius = 5;
-    _growingTextView.layer.borderWidth = 1;
-    _growingTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    _growingTextView.clipsToBounds = YES;
-    _growingTextView.backgroundColor = [UIColor whiteColor];
+    growingTextView.layer.cornerRadius = 5;
+    growingTextView.layer.borderWidth = 1;
+    growingTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    growingTextView.clipsToBounds = YES;
+    growingTextView.backgroundColor = [UIColor whiteColor];
     
     // on IOS 8, the growing textview animation could trigger weird UI animations
     // indeed, the messages tableView can be refreshed while its height is updated (e.g. when setting a message)
-    _growingTextView.animateHeightChange = NO;
+    growingTextView.animateHeightChange = NO;
     
     lastEditedText = nil;
 }
@@ -75,9 +76,10 @@
 
 - (void)destroy
 {
-    if (_growingTextView)
+    if (growingTextView)
     {
-        _growingTextView.delegate = nil;
+        growingTextView.delegate = nil;
+        growingTextView = nil;
     }
     
     [super destroy];
@@ -85,39 +87,39 @@
 
 - (void)setMaxHeight:(CGFloat)maxHeight
 {
-    _growingTextView.maxHeight = maxHeight - (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
-    [_growingTextView refreshHeight];
+    growingTextView.maxHeight = maxHeight - (self.messageComposerContainerTopConstraint.constant + self.messageComposerContainerBottomConstraint.constant);
+    [growingTextView refreshHeight];
     
     super.maxHeight = maxHeight;
 }
 
 - (NSString*)textMessage
 {
-    return _growingTextView.text;
+    return growingTextView.text;
 }
 
 - (void)setTextMessage:(NSString *)textMessage
 {
-    _growingTextView.text = textMessage;
+    growingTextView.text = textMessage;
     self.rightInputToolbarButton.enabled = textMessage.length;
     
-    if (!textMessage.length && _growingTextView.isFirstResponder)
+    if (!textMessage.length && growingTextView.isFirstResponder)
     {
         // Trick: Toggle default keyboard from 123 mode to ABC mode when text input is reset
-        [_growingTextView resignFirstResponder];
-        [_growingTextView becomeFirstResponder];
+        [growingTextView resignFirstResponder];
+        [growingTextView becomeFirstResponder];
     }
 }
 
 - (void)setPlaceholder:(NSString *)inPlaceholder
 {
     [super setPlaceholder:inPlaceholder];
-    _growingTextView.placeholder = inPlaceholder;
+    growingTextView.placeholder = inPlaceholder;
 }
 
 - (void)dismissKeyboard
 {
-    [_growingTextView resignFirstResponder];
+    [growingTextView resignFirstResponder];
 }
 
 #pragma mark - HPGrowingTextView delegate
@@ -132,7 +134,7 @@
 
 - (void)growingTextViewDidChange:(HPGrowingTextView *)sender
 {
-    NSString *msg = _growingTextView.text;
+    NSString *msg = growingTextView.text;
     
     // HPGrowingTextView triggers growingTextViewDidChange event when it recomposes itself.
     // Save the last edited text to prevent unexpected typing events
