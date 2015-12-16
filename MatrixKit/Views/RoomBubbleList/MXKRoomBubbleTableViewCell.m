@@ -420,7 +420,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                         
                         if (bubbleData.showBubbleReceipts && !bubbleData.useCustomReceipts)
                         {
-                            NSMutableArray* userIds = nil;
+                            NSMutableArray* roomMembers = nil;
+                            NSMutableArray* placeholders = nil;
                             NSArray* receipts = nil;
                             
                             MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
@@ -431,23 +432,30 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                                 receipts = [room getEventReceipts:component.event.eventId sorted:YES];
                             }
                             
-                            // if some receipts are found
-                            if (receipts)
+                            // Check whether some receipts are found
+                            if (receipts.count)
                             {
-                                userIds = [[NSMutableArray alloc] initWithCapacity:receipts.count];
+                                // Retrieve the corresponding room members
+                                roomMembers = [[NSMutableArray alloc] initWithCapacity:receipts.count];
+                                placeholders = [[NSMutableArray alloc] initWithCapacity:receipts.count];
                                 
-                                // Report all user ids listed in receipts
                                 for (MXReceiptData* data in receipts)
                                 {
-                                    [userIds addObject:data.userId];
+                                    MXRoomMember * roomMember = [room.state memberWithUserId:data.userId];
+                                    if (roomMember)
+                                    {
+                                        [roomMembers addObject:roomMember];
+                                        [placeholders addObject:self.picturePlaceholder];
+                                    }
                                 }
                             }
                             
-                            if (userIds)
+                            if (roomMembers.count)
                             {
-                                MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15)];
+                                MXKReceiptSendersContainer* avatarsContainer = [[MXKReceiptSendersContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15) andRestClient:bubbleData.mxSession.matrixRestClient];
                                 
-                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder withAlignment:self.readReceiptsAlignment];
+                                [avatarsContainer refreshReceiptSenders:roomMembers withPlaceHolders:placeholders andAlignment:self.readReceiptsAlignment];
+                                
                                 [self.bubbleInfoContainer addSubview:avatarsContainer];
                                 
                                 // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)

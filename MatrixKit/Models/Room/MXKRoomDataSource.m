@@ -529,21 +529,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     receiptsListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
         
-        // the account is shared between several devices.
-        // so, if some messages have been read on one device, the other devices must update the unread counters
-        if ([event.receiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
+        if (MXEventDirectionForwards == direction)
         {
-            [self refreshUnreadCounters:NO];
-            
-            // the unread counter has been updated so refresh the recents
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+            // Handle this read receipt
+            [self didReceiveReceiptEvent:event roomState:roomState];
         }
-        
-        if (self.delegate)
-        {
-            [self.delegate dataSource:self didCellChange:nil];
-        }
-        
     }];
     
     // Register a listener to handle redaction in live stream
@@ -1528,6 +1518,23 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState
+{
+    // The account may be shared between several devices.
+    // so, if some messages have been read on one device, the other devices must update the unread counters
+    if ([receiptEvent.readReceiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
+    {
+        [self refreshUnreadCounters:NO];
+        
+        // the unread counter has been updated so refresh the recents
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    }
+    
+    if (self.delegate)
+    {
+        [self.delegate dataSource:self didCellChange:nil];
+    }
+}
 
 #pragma mark - Private methods
 - (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent
@@ -2066,8 +2073,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             bubbleData.showBubbleDateTime = self.showBubblesDateTime;
             // display the read receipts
             bubbleData.showBubbleReceipts = self.showBubbleReceipts;
-            // let the caller application manages the time label
+            // let the caller application manages the time label?
             bubbleData.useCustomDateTimeLabel = self.useCustomDateTimeLabel;
+            // let the caller application manages the receipt?
+            bubbleData.useCustomReceipts = self.useCustomReceipts;
             
             // Make the bubble display the data
             [cell render:bubbleData];
