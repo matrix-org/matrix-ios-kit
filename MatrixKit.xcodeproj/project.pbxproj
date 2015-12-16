@@ -30,7 +30,6 @@
 		71352D691C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D671C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m */; };
 		71352D6A1C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D681C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib */; };
 		719E5AF51BDE241600F63021 /* MXKLRUCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 719E5AF41BDE241600F63021 /* MXKLRUCache.m */; };
-		71DE22E41BCD37D800284153 /* MXKReceiptAvartarsContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E21BCD37D800284153 /* MXKReceiptAvartarsContainer.m */; };
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
 		8B9E9737BF25A512725372BE /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C994EE81FBAC79EE746DF4E5 /* libPods-MatrixKitSample.a */; };
@@ -111,6 +110,7 @@
 		F0868E0E1B18FC01004CBE80 /* MXKRoomCreationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0868E0C1B18FC01004CBE80 /* MXKRoomCreationView.xib */; };
 		F0868E121B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F0868E101B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.m */; };
 		F0868E131B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0868E111B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.xib */; };
+		F093BCAD1C21BDD80010D05F /* MXKReceiptSendersContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F093BCAC1C21BDD80010D05F /* MXKReceiptSendersContainer.m */; };
 		F094D15E1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = F094D15C1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m */; };
 		F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */; };
 		F094EC671ABAC380006B8CE3 /* MXKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F094EC661ABAC380006B8CE3 /* MXKViewController.m */; };
@@ -240,8 +240,6 @@
 		71352D681C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKTableViewCellWithLabelAndMXKImageView.xib; sourceTree = "<group>"; };
 		719E5AF31BDE241600F63021 /* MXKLRUCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKLRUCache.h; sourceTree = "<group>"; };
 		719E5AF41BDE241600F63021 /* MXKLRUCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKLRUCache.m; sourceTree = "<group>"; };
-		71DE22E21BCD37D800284153 /* MXKReceiptAvartarsContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKReceiptAvartarsContainer.m; sourceTree = "<group>"; };
-		71DE22E31BCD37D800284153 /* MXKReceiptAvartarsContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKReceiptAvartarsContainer.h; sourceTree = "<group>"; };
 		71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleCellDataWithIncomingAppendingMode.m; sourceTree = "<group>"; };
 		71DE22E61BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellDataWithIncomingAppendingMode.h; sourceTree = "<group>"; };
 		71EBE6611C04608100E7D953 /* MXKRoomActivitiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomActivitiesView.h; sourceTree = "<group>"; };
@@ -376,6 +374,8 @@
 		F0868E0F1B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPublicRoomTableViewCell.h; sourceTree = "<group>"; };
 		F0868E101B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPublicRoomTableViewCell.m; sourceTree = "<group>"; };
 		F0868E111B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKPublicRoomTableViewCell.xib; sourceTree = "<group>"; };
+		F093BCAB1C21BDD80010D05F /* MXKReceiptSendersContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKReceiptSendersContainer.h; sourceTree = "<group>"; };
+		F093BCAC1C21BDD80010D05F /* MXKReceiptSendersContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKReceiptSendersContainer.m; sourceTree = "<group>"; };
 		F094D15B1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarViewWithSimpleTextView.h; sourceTree = "<group>"; };
 		F094D15C1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomInputToolbarViewWithSimpleTextView.m; sourceTree = "<group>"; };
 		F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomInputToolbarViewWithSimpleTextView.xib; sourceTree = "<group>"; };
@@ -670,8 +670,8 @@
 				F09E288B1AC1FEDA00C51E44 /* MXKImageView.m */,
 				F09E288C1AC1FEDA00C51E44 /* MXKPieChartView.h */,
 				F09E288D1AC1FEDA00C51E44 /* MXKPieChartView.m */,
-				71DE22E31BCD37D800284153 /* MXKReceiptAvartarsContainer.h */,
-				71DE22E21BCD37D800284153 /* MXKReceiptAvartarsContainer.m */,
+				F093BCAB1C21BDD80010D05F /* MXKReceiptSendersContainer.h */,
+				F093BCAC1C21BDD80010D05F /* MXKReceiptSendersContainer.m */,
 				71EBE6611C04608100E7D953 /* MXKRoomActivitiesView.h */,
 				71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */,
 				F0868E0A1B18FC01004CBE80 /* MXKRoomCreationView.h */,
@@ -1331,6 +1331,7 @@
 				F0316E361B7DEA5300F03620 /* MXKTableViewCellWithSearchBar.m in Sources */,
 				F00FA8551C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m in Sources */,
 				F0F148C21AB31237005F5D4A /* MXKMediaLoader.m in Sources */,
+				F093BCAD1C21BDD80010D05F /* MXKReceiptSendersContainer.m in Sources */,
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
 				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
@@ -1373,7 +1374,6 @@
 				F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */,
 				32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */,
 				71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */,
-				71DE22E41BCD37D800284153 /* MXKReceiptAvartarsContainer.m in Sources */,
 				F095E5121B25899F009606CE /* MXKSectionedContacts.m in Sources */,
 				F06E76881AF0FEBC00980E5A /* MXKAccount.m in Sources */,
 				F01449B11B56A92800EA7D73 /* MXKNotificationSettingsViewController.m in Sources */,
