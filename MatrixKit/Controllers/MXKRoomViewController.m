@@ -93,7 +93,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     /**
      Local typing timout
      */
-    NSTimer* typingTimer;
+    NSTimer *typingTimer;
+    
+    /**
+     The potential text input placeholder is saved when it is replaced temporarily
+     */
+    NSString *savedInputToolbarPlaceholder;
     
     /**
      YES when back pagination is in progress.
@@ -1032,6 +1037,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSArray *components = [string componentsSeparatedByString:@" "];
     NSString *cmd = [components objectAtIndex:0];
     NSUInteger index = 1;
+    
+    // We save here the current placeholder of the text input to be able
+    // to replace it temporarily with a cmd usage string.
+    savedInputToolbarPlaceholder = inputToolbarView.placeholder.length ? inputToolbarView.placeholder : @"";
     
     if ([cmd isEqualToString:kCmdEmote])
     {
@@ -2437,10 +2446,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {
-    if (typing)
+    if (typing && savedInputToolbarPlaceholder)
     {
-        // Reset potential placeholder (used in case of wrong command usage)
-        inputToolbarView.placeholder = nil;
+        // Reset temporary placeholder (used in case of wrong command usage)
+        inputToolbarView.placeholder = savedInputToolbarPlaceholder.length ? savedInputToolbarPlaceholder : nil;
     }
     [self handleTypingNotification:typing];
 }
