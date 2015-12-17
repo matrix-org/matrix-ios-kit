@@ -26,6 +26,8 @@ NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAva
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
 NSString *const kMXKRoomBubbleCellTapOnAttachmentView = @"kMXKRoomBubbleCellTapOnAttachmentView";
 NSString *const kMXKRoomBubbleCellTapOnOverlayContainer = @"kMXKRoomBubbleCellTapOnOverlayContainer";
+NSString *const kMXKRoomBubbleCellTapOnContentView = @"kMXKRoomBubbleCellTapOnContentView";
+
 NSString *const kMXKRoomBubbleCellUnsentButtonPressed = @"kMXKRoomBubbleCellUnsentButtonPressed";
 
 NSString *const kMXKRoomBubbleCellLongPressOnEvent = @"kMXKRoomBubbleCellLongPressOnEvent";
@@ -107,6 +109,13 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [tapGesture setDelegate:self];
         [self.bubbleOverlayContainer addGestureRecognizer:tapGesture];
     }
+    
+    // Listen to content view tap by default
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onContentViewTap:)];
+    [tapGesture setNumberOfTouchesRequired:1];
+    [tapGesture setNumberOfTapsRequired:1];
+    [tapGesture setDelegate:self];
+    [self.contentView addGestureRecognizer:tapGesture];
     
     self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
 }
@@ -828,6 +837,52 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnOverlayContainer userInfo:nil];
+    }
+}
+
+- (IBAction)onContentViewTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        // Check whether a bubble component is displayed at the level of the tapped line.
+        MXKRoomBubbleComponent *tappedComponent = nil;
+        
+        CGPoint tapPoint;
+        if (self.attachmentView)
+        {
+            // Check whether the user tapped on the side of the attachment.
+            tapPoint = [sender locationInView:self.attachmentView];
+            
+            if (tapPoint.y > 0 && tapPoint.y < self.attachmentView.frame.size.height)
+            {
+                // Only one component is available in bubble with attachment.
+                tappedComponent = [bubbleData.bubbleComponents firstObject];
+            }
+        }
+        else if (self.messageTextView)
+        {
+            // Check whether the user tapped in front of a text component.
+            tapPoint = [sender locationInView:self.messageTextView];
+            
+            if (tapPoint.y > 0 && tapPoint.y < self.messageTextView.frame.size.height)
+            {
+                // Consider by default the first component
+                tappedComponent = [bubbleData.bubbleComponents firstObject];
+                
+                for (NSInteger index = 1; index < bubbleData.bubbleComponents.count; index++)
+                {
+                    // Here the bubble is composed by multiple text messages
+                    MXKRoomBubbleComponent *component = bubbleData.bubbleComponents[index];
+                    if (tapPoint.y < component.position.y)
+                    {
+                        break;
+                    }
+                    tappedComponent = component;
+                }
+            }
+        }
+        
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnContentView userInfo:(tappedComponent ? @{kMXKRoomBubbleCellEventKey:tappedComponent.event} : nil)];
     }
 }
 
