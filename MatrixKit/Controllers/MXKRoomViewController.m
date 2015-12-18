@@ -142,16 +142,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSString *selectedText;
     
     /**
-     The document interaction Controller used to share attachment
-     */
-    UIDocumentInteractionController *documentInteractionController;
-    
-    /**
-     The current shared attachment.
-     */
-    MXKAttachment *currentSharedAttachment;
-    
-    /**
      The attachments viewer for image and video.
      */
      MXKAttachmentsViewController *attachmentsViewer;
@@ -2160,13 +2150,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [strongSelf->documentInteractionController setDelegate:strongSelf];
-                        currentSharedAttachment = attachment;
+                        strongSelf->currentSharedAttachment = attachment;
                         
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
                         {
                             strongSelf->documentInteractionController = nil;
                             [attachment onShareEnded];
-                            currentSharedAttachment = nil;
+                            strongSelf->currentSharedAttachment = nil;
                         }
                         
                     } failure:^(NSError *error) {
