@@ -63,6 +63,13 @@ extern NSString *const kMXKRoomBubbleCellTapOnAttachmentView;
 extern NSString *const kMXKRoomBubbleCellTapOnOverlayContainer;
 
 /**
+ Action identifier used when the user tapped on content view.
+ 
+ The `userInfo` dictionary may contain an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the event displayed at the level of the tapped line. This dictionary is empty if no event correspond to the tapped position.
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnContentView;
+
+/**
  Action identifier used when the user pressed unsent button displayed in front of an unsent event.
  
  The `userInfo` dictionary contains an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the unsent event.

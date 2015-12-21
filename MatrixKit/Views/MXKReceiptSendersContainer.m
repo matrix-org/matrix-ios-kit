@@ -48,8 +48,9 @@
     
     CGRect globalFrame = self.frame;
     CGFloat side = globalFrame.size.height;
+    CGFloat defaultMoreLabelWidth = side < 20 ? 20 : side;
     unsigned long count;
-    unsigned long maxDisplayableItems = ((int)globalFrame.size.width / side) - 1;
+    unsigned long maxDisplayableItems = (int)((globalFrame.size.width - defaultMoreLabelWidth - _avatarMargin) / (side + _avatarMargin));
     
     maxDisplayableItems = MIN(maxDisplayableItems, _maxDisplayedAvatars);
     count = MIN(roomMembers.count, maxDisplayableItems);
@@ -95,16 +96,34 @@
         imageView.clipsToBounds = YES;
     }
     
-    // more than expected read receipts
+    // Check whether there are more than expected read receipts
     if (roomMembers.count > maxDisplayableItems)
     {
-        // add a more indicator
-
-        _moreLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
+        // Add a more indicator
+        
+        // In case of right alignment, adjust the current position by considering the default label width
+        if (alignment == ReadReceiptAlignmentRight && side < defaultMoreLabelWidth)
+        {
+            xOff -= (defaultMoreLabelWidth - side);
+        }
+        
+        _moreLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOff, 0, defaultMoreLabelWidth, side)];
         _moreLabel.text = [NSString stringWithFormat:(alignment == ReadReceiptAlignmentRight) ? @"%tu+" : @"+%tu", roomMembers.count - maxDisplayableItems];
         _moreLabel.font = [UIFont systemFontOfSize:11];
         _moreLabel.adjustsFontSizeToFitWidth = YES;
         _moreLabel.minimumScaleFactor = 0.6;
+        
+        // In case of right alignment, adjust the horizontal position according to the actual label width
+        if (alignment == ReadReceiptAlignmentRight)
+        {
+            [_moreLabel sizeToFit];
+            CGRect frame = _moreLabel.frame;
+            if (frame.size.width < defaultMoreLabelWidth)
+            {
+                frame.origin.x += (defaultMoreLabelWidth - frame.size.width);
+                _moreLabel.frame = frame;
+            }
+        }
         
         _moreLabel.textColor = [UIColor blackColor];
         [self addSubview:_moreLabel];
