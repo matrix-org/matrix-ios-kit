@@ -70,12 +70,14 @@ static MXKLRUCache *imagesResourceCache = nil;
     NSString *localizedString;
     
     // Check first customized table
+    // Use "_", a string that does not worth to be translated, as default value to mark
+    // a key that does not have a value in the customized table.
     if (customLocalizedStringTableName)
     {
-        localizedString = NSLocalizedStringFromTable(key, customLocalizedStringTableName, nil);
+        localizedString = NSLocalizedStringWithDefaultValue(key, customLocalizedStringTableName, [NSBundle mainBundle], @"_", nil);
     }
-    
-    if (!localizedString)
+
+    if (localizedString.length == 1 && [localizedString isEqualToString:@"_"])
     {
         localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
     }
