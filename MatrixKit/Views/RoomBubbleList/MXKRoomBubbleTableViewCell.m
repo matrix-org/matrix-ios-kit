@@ -32,6 +32,7 @@ NSString *const kMXKRoomBubbleCellUnsentButtonPressed = @"kMXKRoomBubbleCellUnse
 
 NSString *const kMXKRoomBubbleCellLongPressOnEvent = @"kMXKRoomBubbleCellLongPressOnEvent";
 NSString *const kMXKRoomBubbleCellLongPressOnProgressView = @"kMXKRoomBubbleCellLongPressOnProgressView";
+NSString *const kMXKRoomBubbleCellLongPressOnAvatarView = @"kMXKRoomBubbleCellLongPressOnAvatarView";
 
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
@@ -78,6 +79,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [tapGesture setDelegate:self];
         [self.pictureView addGestureRecognizer:tapGesture];
         self.pictureView.userInteractionEnabled = YES;
+        
+        // Add a long gesture recognizer on avatar (in order to display for example the member details)
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+        [self.pictureView addGestureRecognizer:longPress];
     }
     
     if (self.messageTextView)
@@ -90,7 +95,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [self.messageTextView addGestureRecognizer:tapGesture];
         self.messageTextView.userInteractionEnabled = YES;
         
-        // Add a long gesture recognizer on text view in order to display event details
+        // Add a long gesture recognizer on text view (in order to display for example the event details)
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
         [self.messageTextView addGestureRecognizer:longPress];
     }
@@ -925,6 +930,10 @@ static NSMutableDictionary *childClasses;
             {
                 [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnEvent userInfo:@{kMXKRoomBubbleCellEventKey:selectedEvent}];
             }
+        }
+        else if (view == self.pictureView)
+        {
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnAvatarView userInfo:@{kMXKRoomBubbleCellUserIdKey: bubbleData.senderId}];
         }
     }
 }

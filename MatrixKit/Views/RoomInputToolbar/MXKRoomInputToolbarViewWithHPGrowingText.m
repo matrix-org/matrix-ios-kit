@@ -117,6 +117,11 @@
     growingTextView.placeholder = inPlaceholder;
 }
 
+- (BOOL)becomeFirstResponder
+{
+    return [growingTextView becomeFirstResponder];
+}
+
 - (void)dismissKeyboard
 {
     [growingTextView resignFirstResponder];

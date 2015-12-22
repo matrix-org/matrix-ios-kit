@@ -1897,7 +1897,30 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
     {
-        NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+        //NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+        
+        // Add the member display name in text input
+        MXRoomMember *selectedRoomMember = [roomDataSource.room.state memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
+        if (selectedRoomMember)
+        {
+            NSString *memberName = selectedRoomMember.displayname.length ? selectedRoomMember.displayname : selectedRoomMember.userId;
+            if (inputToolbarView.textMessage.length)
+            {
+                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@ %@", inputToolbarView.textMessage, memberName];
+            }
+            else if ([selectedRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
+            {
+                // Prepare emote
+                inputToolbarView.textMessage = @"/me ";
+            }
+            else
+            {
+                // Bing the member
+                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@: ", memberName];
+            }
+            
+            [inputToolbarView becomeFirstResponder];
+        }
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnDateTimeContainer])
     {
@@ -2248,6 +2271,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 currentAlert = nil;
             }
         }
+    }
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnAvatarView])
+    {
+        NSLog(@"    -> Avatar of %@ has been long pressed", userInfo[kMXKRoomBubbleCellUserIdKey]);
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellUnsentButtonPressed])
     {
