@@ -567,4 +567,54 @@ static NSMutableDictionary *fileExtensionByContentType = nil;
     }];
 }
 
+static NSMutableDictionary* backgroundByImageNameDict;
+
++ (UIColor*)convertImageToPatternColor:(NSString*)reourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize
+{
+    if (!reourceName)
+    {
+        return backgroundColor;
+    }
+    
+    if (!backgroundByImageNameDict)
+    {
+        backgroundByImageNameDict = [[NSMutableDictionary alloc] init];
+    }
+    
+    NSString* key = [NSString stringWithFormat:@"%@ %f %f", reourceName, patternSize.width, resourceSize.width];
+    
+    UIColor* bgColor = [backgroundByImageNameDict objectForKey:key];
+    
+    if (!bgColor)
+    {
+        UIImageView* backgroundView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, patternSize.width, patternSize.height)];
+        backgroundView.backgroundColor = backgroundColor;
+        
+        CGFloat offsetX = (patternSize.width - resourceSize.width) / 2.0f;
+        CGFloat offsetY = (patternSize.height - resourceSize.height) / 2.0f;
+        
+        UIImageView* resourceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(offsetX, offsetY, resourceSize.width, resourceSize.width)];
+        resourceImageView.backgroundColor = [UIColor clearColor];
+        resourceImageView.image = [MXKTools resizeImage:[UIImage imageNamed:reourceName] toSize:resourceSize];
+        
+        [backgroundView addSubview:resourceImageView];
+        
+        // Create a "canvas" (image context) to draw in.
+        UIGraphicsBeginImageContextWithOptions(backgroundView.frame.size, NO, 0);
+        
+        // set to the top quality
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+        [[backgroundView layer] renderInContext: UIGraphicsGetCurrentContext()];
+        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        
+        bgColor = [[UIColor alloc] initWithPatternImage:image];
+        [backgroundByImageNameDict setObject:bgColor forKey:key];
+    }
+    
+    return bgColor;
+}
+
 @end

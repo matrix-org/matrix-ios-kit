@@ -53,6 +53,15 @@ extern NSString *const kMXKContactManagerMatrixPresenceKey;
 extern NSString *const kMXKContactManagerDidInternationalizeNotification;
 
 /**
+ Define the contact creation for the room members
+ */
+typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
+    MXKContactManagerMXRoomSourceNone        = 0,   // the MXMember does not create any new contact.
+    MXKContactManagerMXRoomSourceOneToOne    = 1,   // the 1:1 room members have their own contact even if they are not defined in the device contacts book
+    MXKContactManagerMXRoomSourceAll         = 2,   // all the room members have their own contact even if they are not defined in the device contacts book
+};
+
+/**
  This manager handles 2 kinds of contact list:
  - The local contacts retrieved from the device phonebook.
  - The matrix contacts retrieved from the matrix one-to-one rooms.
@@ -74,6 +83,12 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
  If this property is not set whereas some matrix sessions are added, the identity server of the first available matrix session is used.
  */
 @property (nonatomic) NSString *identityServer;
+
+/**
+ Define if the room member must have their dedicated contact even if they are not define in the device contacts book.
+ The default value is MXKContactManagerMXRoomSourceOneToOne;
+ */
+@property (nonatomic) MXKContactManagerMXRoomSource contactManagerMXRoomSource;
 
 /**
  Associated matrix sessions (empty by default).

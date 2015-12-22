@@ -186,4 +186,17 @@
 + (void)convertVideoToMP4:(NSURL*)videoLocalURL
                   success:(void(^)(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs))success
                   failure:(void(^)())failure;
+
+/**
+ Draw the image resource in a view and transforms it to a pattern color.
+ The view size is defined by patternSize and will have a "backgroundColor" backgroundColor.
+ The resource image is drawn with the resourceSize size and is centered into its parent view.
+ 
+ @param reourceName the image resource name.
+ @param backgroundColor the pattern background color.
+ @param patternSize the pattern size.
+ @param resourceSize the resource size in the pattern.
+ @return the pattern color which can be used to define the background color of a view in order to display the provided image as its background.
+ */
++ (UIColor*)convertImageToPatternColor:(NSString*)reourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize;
 @end
