@@ -767,6 +767,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Finalize room title refresh
     [titleView refreshDisplay];
+    
+    if (activitiesView)
+    {
+        // Hide by default the activity view when no room is displayed
+        activitiesView.hidden = (roomDataSource == nil);
+    }
 }
 
 - (void)leaveRoomOnEvent:(MXEvent*)event
