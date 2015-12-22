@@ -77,7 +77,7 @@ static MXKLRUCache *imagesResourceCache = nil;
         localizedString = NSLocalizedStringWithDefaultValue(key, customLocalizedStringTableName, [NSBundle mainBundle], @"_", nil);
     }
 
-    if (localizedString.length == 1 && [localizedString isEqualToString:@"_"])
+    if (!localizedString || (localizedString.length == 1 && [localizedString isEqualToString:@"_"]))
     {
         localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
     }
