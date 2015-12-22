@@ -55,10 +55,10 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
 /**
  Define the contact creation for the room members
  */
-typedef NS_ENUM(NSInteger, MXKMemberContactCreation) {
-    MXKMemberContactCreationNone            = 0,   // the MXMember does not create any new contact.
-    MXKMemberContactCreationOneToOneRoom    = 1,   // the 1:1 room members have their own contact even if they are not defined in the device contacts book
-    MXKMemberContactCreationAll             = 2,   // all the room members have their own contact even if they are not defined in the device contacts book
+typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
+    MXKContactManagerMXRoomSourceNone        = 0,   // the MXMember does not create any new contact.
+    MXKContactManagerMXRoomSourceOneToOne    = 1,   // the 1:1 room members have their own contact even if they are not defined in the device contacts book
+    MXKContactManagerMXRoomSourceAll         = 2,   // all the room members have their own contact even if they are not defined in the device contacts book
 };
 
 /**
@@ -86,9 +86,9 @@ typedef NS_ENUM(NSInteger, MXKMemberContactCreation) {
 
 /**
  Define if the room member must have their dedicated contact even if they are not define in the device contacts book.
- The default value is MXKMemberContactCreationOneToOneRoom;
+ The default value is MXKContactManagerMXRoomSourceOneToOne;
  */
-@property (nonatomic) MXKMemberContactCreation memberContactCreation;
+@property (nonatomic) MXKContactManagerMXRoomSource contactManagerMXRoomSource;
 
 /**
  Associated matrix sessions (empty by default).
