@@ -288,16 +288,13 @@
     {
         if (mxSession.state == MXSessionStateClosed)
         {
-            [mxSessionArray removeObjectAtIndex:index];
-            
-            if (!mxSessionArray.count)
-            {
-                // Remove matrix sessions observer
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
-            }
+            // Call here the dedicated method which may be overridden
+            [self removeMatrixSession:mxSession];
         }
-        
-        [self onMatrixSessionChange];
+        else
+        {
+            [self onMatrixSessionChange];
+        }
     }
 }
 
@@ -342,15 +339,10 @@
             // Remove here closed sessions
             if (mxSession.state == MXSessionStateClosed)
             {
-                [mxSessionArray removeObjectAtIndex:index];
-                
-                if (!mxSessionArray.count)
-                {
-                    // Remove matrix sessions observer
-                    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
-                    
-                    allHomeserverNotReachable = NO;
-                }
+                // Call here the dedicated method which may be overridden.
+                // This method will call again [onMatrixSessionChange] when session is removed.
+                [self removeMatrixSession:mxSession];
+                return;
             }
             else
             {
