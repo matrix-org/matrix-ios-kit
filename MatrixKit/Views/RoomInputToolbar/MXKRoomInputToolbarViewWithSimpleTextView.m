@@ -54,6 +54,11 @@
     }
 }
 
+- (BOOL)becomeFirstResponder
+{
+    return [_messageComposerTextView becomeFirstResponder];
+}
+
 - (void)dismissKeyboard
 {
     if (_messageComposerTextView)

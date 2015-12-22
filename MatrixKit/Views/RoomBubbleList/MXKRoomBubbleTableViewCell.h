@@ -91,6 +91,13 @@ extern NSString *const kMXKRoomBubbleCellLongPressOnEvent;
 extern NSString *const kMXKRoomBubbleCellLongPressOnProgressView;
 
 /**
+ Action identifier used when the user long pressed on avatar view.
+ 
+ The `userInfo` dictionary contains an `NSString` object under the `kMXKRoomBubbleCellUserIdKey` key, representing the user id of the concerned avatar.
+ */
+extern NSString *const kMXKRoomBubbleCellLongPressOnAvatarView;
+
+/**
  Notifications `userInfo` keys
  */
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
