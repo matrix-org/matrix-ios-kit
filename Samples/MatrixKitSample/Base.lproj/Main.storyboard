@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="P8X-dO-YH1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="P8X-dO-YH1">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
         <!--Recent List View Controller-->
@@ -145,6 +145,14 @@
             </objects>
             <point key="canvasLocation" x="522" y="236"/>
         </scene>
+        <!--Search View Controller-->
+        <scene sceneID="7DC-ws-ivl">
+            <objects>
+                <tableViewController id="lo0-13-eLy" customClass="MXKSearchViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aMp-lr-Vjx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1197" y="236"/>
+        </scene>
         <!--MatrixKit Samples-->
         <scene sceneID="HuU-tB-Z5y">
             <objects>
@@ -237,6 +245,7 @@
                         <segue destination="YbK-3w-mDu" kind="show" identifier="showInterleavedRecentsViewController" id="8a2-C4-GfS"/>
                         <segue destination="UuX-gA-8uG" kind="show" identifier="showMXKRoomMemberDetailsViewController" id="qYZ-nn-TMh"/>
                         <segue destination="uwp-lu-7Nl" kind="show" identifier="showMXKContactDetailsViewController" id="bbV-58-Cj4"/>
+                        <segue destination="lo0-13-eLy" kind="show" identifier="showMXKSearchViewController" id="aOY-IK-2mC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>
