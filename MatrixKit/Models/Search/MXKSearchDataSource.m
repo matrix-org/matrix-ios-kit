@@ -61,6 +61,16 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     return self;
 }
 
+- (instancetype)initWithRoomId:(NSString *)roomId andMatrixSession:(MXSession *)mxSession
+{
+    self = [self initWithMatrixSession:mxSession];
+    if (self)
+    {
+        _roomId = roomId;
+    }
+    return self;
+}
+
 - (void)searchMessageText:(NSString *)text
 {
     if (![_searchText isEqualToString:text])
@@ -127,9 +137,16 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         return;
     }
 
+    // Search in one room?
+    NSArray *rooms;
+    if (_roomId)
+    {
+        rooms = @[_roomId];
+    }
+
     NSDate *startDate = [NSDate date];
 
-    searchRequest = [self.mxSession.matrixRestClient searchMessageText:_searchText inRooms:nil beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
+    searchRequest = [self.mxSession.matrixRestClient searchMessageText:_searchText inRooms:rooms beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
 
         NSLog(@"[MXKSearchDataSource] searchMessageText: %@. Done in %.3fms - Got %tu / %tu messages", _searchText, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 

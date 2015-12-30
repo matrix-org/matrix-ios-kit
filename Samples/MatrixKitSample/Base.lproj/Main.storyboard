@@ -195,11 +195,14 @@
                         </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="mainTableViewCellSampleVC" textLabel="kKE-Ks-Tkj" style="IBUITableViewCellStyleDefault" id="LDf-Nb-Cy6">
+                                <rect key="frame" x="0.0" y="136" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LDf-Nb-Cy6" id="LAe-MX-BrZ">
+                                    <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kKE-Ks-Tkj">
+                                            <rect key="frame" x="15" y="0.0" width="550" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -209,12 +212,14 @@
                                 </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="mainTableViewCellAction" textLabel="8WO-Fx-GSE" style="IBUITableViewCellStyleDefault" id="bQb-CH-pka">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <rect key="frame" x="0.0" y="180" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bQb-CH-pka" id="Z5z-LM-nJJ">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Action" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8WO-Fx-GSE">
+                                            <rect key="frame" x="15" y="0.0" width="570" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                             <color key="textColor" red="0.22481874389132883" green="0.40248149657007426" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -246,6 +251,7 @@
                         <segue destination="UuX-gA-8uG" kind="show" identifier="showMXKRoomMemberDetailsViewController" id="qYZ-nn-TMh"/>
                         <segue destination="uwp-lu-7Nl" kind="show" identifier="showMXKContactDetailsViewController" id="bbV-58-Cj4"/>
                         <segue destination="lo0-13-eLy" kind="show" identifier="showMXKSearchViewController" id="aOY-IK-2mC"/>
+                        <segue destination="lo0-13-eLy" kind="show" identifier="showMXKSearchViewControllerForRoom" id="KLJ-qn-rgs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6VS-GP-Sio" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -271,5 +277,6 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="Y6Z-lf-5du"/>
+        <segue reference="KLJ-qn-rgs"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -583,8 +583,7 @@
                 [self performSegueWithIdentifier:@"showMXKSearchViewController" sender:self];
                 break;
             case 1:
-                // TODO
-                //[self performSegueWithIdentifier:@"showMXKSearchViewControllerForRoom" sender:self];
+                [self performSegueWithIdentifier:@"showMXKSearchViewControllerForRoom" sender:self];
                 break;
         }
     }
@@ -700,6 +699,13 @@
     {
         MXKSearchViewController *searchViewController = (MXKSearchViewController*)destinationViewController;
         MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithMatrixSession:self.mainSession];
+
+        [searchViewController displaySearch:searchDataSource];
+    }
+    else if ([segue.identifier isEqualToString:@"showMXKSearchViewControllerForRoom"])
+    {
+        MXKSearchViewController *searchViewController = (MXKSearchViewController*)destinationViewController;
+        MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:self.mainSession];
 
         [searchViewController displaySearch:searchDataSource];
     }

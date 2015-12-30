@@ -26,6 +26,9 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 
 /**
  The data source for `MXKRoomMemberListViewController`.
+ 
+ Use the `initWithMatrixSession:` constructor to search in all user's rooms.
+ Use the `initWithRoomId:andMatrixSession: constructor to search in a specific room.
  */
 @interface MXKSearchDataSource : MXKDataSource <UITableViewDataSource>
 
@@ -33,6 +36,11 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  The current search.
  */
 @property (nonatomic, readonly) NSString *searchText;
+
+/**
+ If any the id of the room where the search is made.
+ */
+@property (nonatomic, readonly) NSString *roomId;
 
 /**
  Total number of results available on the server.
@@ -50,6 +58,15 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  */
 @property (nonatomic, readonly) BOOL canPaginate;
 
+
+/**
+ Initialise the data source to search messages in the passed room.
+
+ @param roomId the id of the room to search for.
+ @param mxSession the Matrix session to get data from.
+ @return the newly created instance.
+ */
+- (instancetype)initWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
 /**
  Launch a message search homeserver side.
