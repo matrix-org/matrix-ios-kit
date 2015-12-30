@@ -16,8 +16,7 @@
 
 #import "MXKSearchViewController.h"
 
-// TODO: To replace with dedicated search cell
-#import "MXKRecentTableViewCell.h"
+#import "MXKSearchTableViewCell.h"
 
 @interface MXKSearchViewController ()
 {
@@ -114,12 +113,8 @@
     _searchTableView.delegate = self;
     _searchTableView.dataSource = dataSource; // Note: dataSource may be nil here
 
-
-    //@TODO
     // Set up classes to use for cells
-    [self.searchTableView registerNib:MXKRecentTableViewCell.nib forCellReuseIdentifier:MXKRecentTableViewCell.defaultReuseIdentifier];
-
-    //_searchTableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    [self.searchTableView registerNib:MXKSearchTableViewCell.nib forCellReuseIdentifier:MXKSearchTableViewCell.defaultReuseIdentifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -215,14 +210,12 @@
 
 - (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
 {
-    // Return the default recent table view cell
-    return MXKRecentTableViewCell.class;
+    return MXKSearchTableViewCell.class;
 }
 
 - (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
 {
-    // Return the default recent table view cell
-    return MXKRecentTableViewCell.defaultReuseIdentifier;
+    return MXKSearchTableViewCell.defaultReuseIdentifier;
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
