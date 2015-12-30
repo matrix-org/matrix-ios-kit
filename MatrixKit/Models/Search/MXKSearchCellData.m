@@ -29,14 +29,25 @@
     {
         searchResult = searchResult2;
 
-        MXRoom *room = [searchDataSource.mxSession roomWithRoomId:searchResult.result.roomId];
-        if (room)
+        if (nil == searchDataSource.roomId)
         {
-            title = room.state.displayname;
+            // We are displaying a search over all user's rooms
+            // As title, display the room name of this search result
+            MXRoom *room = [searchDataSource.mxSession roomWithRoomId:searchResult.result.roomId];
+            if (room)
+            {
+                title = room.state.displayname;
+            }
+            else
+            {
+                title = searchResult.result.roomId;
+            }
         }
         else
         {
-            title = searchResult.result.roomId;
+            // We are displaying a search within a room
+            // As title, display the user id
+            title = searchResult.result.userId;
         }
 
         date = [searchDataSource.eventFormatter dateStringFromEvent:searchResult.result withTime:YES];
