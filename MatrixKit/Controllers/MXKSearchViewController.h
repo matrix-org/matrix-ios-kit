@@ -45,10 +45,10 @@ limitations under the License.
 @property (nonatomic) BOOL enableSearchButton;
 
 /**
- If YES, the table view will scroll at the top on the next data source refresh.
+ If YES, the table view will scroll at the bottom on the next data source refresh.
  It comes back to NO after each refresh.
  */
-@property (nonatomic) BOOL shouldScrollToTopOnRefresh;
+@property (nonatomic) BOOL shouldScrollToBottomOnRefresh;
 
 
 #pragma mark - Class methods

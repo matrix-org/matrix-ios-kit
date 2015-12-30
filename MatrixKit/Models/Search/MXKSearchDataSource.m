@@ -82,7 +82,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
             NSAssert([class conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
 
             // Process HS response to cells data
-            for (MXSearchResult *result in roomEventResults.results)
+            for (MXSearchResult *result in [roomEventResults.results reverseObjectEnumerator])
             {
                 id<MXKSearchCellDataStoring> cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
                 if (cellData)

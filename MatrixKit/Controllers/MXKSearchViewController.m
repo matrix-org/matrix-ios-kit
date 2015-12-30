@@ -33,7 +33,7 @@
 @end
 
 @implementation MXKSearchViewController
-@synthesize dataSource, shouldScrollToTopOnRefresh;
+@synthesize dataSource, shouldScrollToBottomOnRefresh;
 
 #pragma mark - Class methods
 
@@ -222,6 +222,12 @@
 {
     // For now, do a simple full reload
     [_searchTableView reloadData];
+
+    if (shouldScrollToBottomOnRefresh)
+    {
+        [self scrollToBottomAnimated:NO];
+        shouldScrollToBottomOnRefresh = NO;
+    }
 }
 
 - (void)dataSource:(MXKDataSource*)dataSource didStateChange:(MXKDataSourceState)state
@@ -272,7 +278,7 @@
     // Apply filter
     if (searchBar.text.length)
     {
-        shouldScrollToTopOnRefresh = YES;
+        shouldScrollToBottomOnRefresh = YES;
         [dataSource searchMessageText:searchBar.text];
     }
 }
@@ -310,6 +316,29 @@
     else
     {
         [self searchBarCancelButtonClicked: self.searchSearchBar];
+    }
+}
+
+#pragma mark - Private methods
+
+- (void)scrollToBottomAnimated:(BOOL)animated
+{
+    if (_searchTableView.contentSize.height)
+    {
+        CGFloat visibleHeight = _searchTableView.frame.size.height - _searchTableView.contentInset.top - _searchTableView.contentInset.bottom;
+        if (visibleHeight < _searchTableView.contentSize.height)
+        {
+            CGFloat wantedOffsetY = _searchTableView.contentSize.height - visibleHeight - _searchTableView.contentInset.top;
+            CGFloat currentOffsetY = _searchTableView.contentOffset.y;
+            if (wantedOffsetY != currentOffsetY)
+            {
+                [_searchTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
+            }
+        }
+        else
+        {
+            _searchTableView.contentOffset = CGPointMake(0, - _searchTableView.contentInset.top);
+        }
     }
 }
 
