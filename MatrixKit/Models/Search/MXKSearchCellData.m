@@ -20,7 +20,7 @@
 
 
 @implementation MXKSearchCellData
-@synthesize searchResult, roomDisplayname, eventTextMessage, eventDate;
+@synthesize searchResult, title, message, date;
 
 - (instancetype)initWithSearchResult:(MXSearchResult *)searchResult2 andSearchDataSource:(MXKSearchDataSource *)searchDataSource
 {
@@ -32,17 +32,17 @@
         MXRoom *room = [searchDataSource.mxSession roomWithRoomId:searchResult.result.roomId];
         if (room)
         {
-            roomDisplayname = room.state.displayname;
+            title = room.state.displayname;
         }
         else
         {
-            roomDisplayname = searchResult.result.roomId;
+            title = searchResult.result.roomId;
         }
 
-        eventDate = [searchDataSource.eventFormatter dateStringFromEvent:searchResult.result withTime:YES];
+        date = [searchDataSource.eventFormatter dateStringFromEvent:searchResult.result withTime:YES];
 
         // Code from [MXEventFormatter stringFromEvent] for the particular case of a text message
-        eventTextMessage = [searchResult.result.content[@"body"] isKindOfClass:[NSString class]] ? searchResult.result.content[@"body"] : nil;
+        message = [searchResult.result.content[@"body"] isKindOfClass:[NSString class]] ? searchResult.result.content[@"body"] : nil;
     }
     return self;
 }

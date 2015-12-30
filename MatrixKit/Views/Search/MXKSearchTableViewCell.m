@@ -27,9 +27,9 @@
     id<MXKSearchCellDataStoring> searchCellData = (id<MXKSearchCellDataStoring>)cellData;
     if (searchCellData)
     {
-        _title.text = searchCellData.roomDisplayname;
-        _date.text = searchCellData.eventDate;
-        _message.text = searchCellData.eventTextMessage;
+        _title.text = searchCellData.title;
+        _date.text = searchCellData.date;
+        _message.text = searchCellData.message;
     }
     else
     {

@@ -25,9 +25,9 @@
  */
 @protocol MXKSearchCellDataStoring <NSObject>
 
-@property (nonatomic, readonly) NSString *roomDisplayname;
-@property (nonatomic, readonly) NSString *eventTextMessage;
-@property (nonatomic, readonly) NSString *eventDate;
+@property (nonatomic, readonly) NSString *title;
+@property (nonatomic, readonly) NSString *message;
+@property (nonatomic, readonly) NSString *date;
 
 // Bulk result returned by MatrixSDK
 @property (nonatomic, readonly) MXSearchResult *searchResult;
