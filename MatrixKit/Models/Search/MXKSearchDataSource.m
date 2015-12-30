@@ -152,8 +152,8 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
         searchRequest = nil;
         _serverCount = roomEventResults.count;
-        _canPaginate = (0 < roomEventResults.results.count);
         nextBatch = roomEventResults.nextBatch;
+        _canPaginate = (nil != nextBatch);
 
         // Retrieve the MXKCellData class to manage the data
         Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
