@@ -220,13 +220,39 @@
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    // For now, do a simple full reload
+    __block CGPoint tableViewOffset;
+    
+    if (!shouldScrollToBottomOnRefresh)
+    {
+        // Store current tableview scrolling point to restore it after [UITableView reloadData]
+        // This avoids unexpected scrolling for the user
+        tableViewOffset = _searchTableView.contentOffset;
+    }
+
     [_searchTableView reloadData];
 
     if (shouldScrollToBottomOnRefresh)
     {
         [self scrollToBottomAnimated:NO];
         shouldScrollToBottomOnRefresh = NO;
+    }
+    else
+    {
+        // Restore the user crolling point by computing the offset introduced by new cells
+        // New cells are always introduced at the top of the table
+        NSIndexSet *insertedIndexes = (NSIndexSet*)changes;
+
+        // Get each new cell height
+        [insertedIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+
+            id<MXKSearchCellDataStoring> cellData = [self.dataSource cellDataAtIndex:idx];
+            Class<MXKCellRendering> class = [self cellViewClassForCellData:cellData];
+
+            tableViewOffset.y += [class heightForCellData:cellData withMaximumWidth:_searchTableView.frame.size.width];
+
+        }];
+
+        [_searchTableView setContentOffset:tableViewOffset animated:NO];
     }
 }
 
@@ -250,7 +276,7 @@
     id<MXKSearchCellDataStoring> cellData = [dataSource cellDataAtIndex:indexPath.row];
 
     Class<MXKCellRendering> class = [self cellViewClassForCellData:cellData];
-    return [class heightForCellData:cellData withMaximumWidth:0];
+    return [class heightForCellData:cellData withMaximumWidth:tableView.frame.size.width];
 }
 
 

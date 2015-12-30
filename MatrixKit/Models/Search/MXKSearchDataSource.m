@@ -136,7 +136,15 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         }
 
         self.state = MXKDataSourceStateReady;
-        [self.delegate dataSource:self didCellChange:nil];
+
+        // Provide changes information to the delegate
+        NSIndexSet *insertedIndexes;
+        if (roomEventResults.results.count)
+        {
+            insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, roomEventResults.results.count)];
+        }
+
+        [self.delegate dataSource:self didCellChange:insertedIndexes];
 
     } failure:^(NSError *error) {
         self.state = MXKDataSourceStateFailed;
