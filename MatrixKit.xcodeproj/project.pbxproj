@@ -18,6 +18,7 @@
 		3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3235CD791C32DEBF0084EA40 /* MXKSearchViewController.m */; };
 		3235CD7C1C32DEBF0084EA40 /* MXKSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD7A1C32DEBF0084EA40 /* MXKSearchViewController.xib */; };
 		3235CD801C33C6640084EA40 /* MXKSearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */; };
+		3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */; };
 		327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */; };
 		328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */; };
 		328AC4891AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4881AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m */; };
@@ -222,6 +223,7 @@
 		3235CD7A1C32DEBF0084EA40 /* MXKSearchViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKSearchViewController.xib; sourceTree = "<group>"; };
 		3235CD7E1C33C6640084EA40 /* MXKSearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MXKSearchTableViewCell.h; path = Search/MXKSearchTableViewCell.h; sourceTree = "<group>"; };
 		3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MXKSearchTableViewCell.m; path = Search/MXKSearchTableViewCell.m; sourceTree = "<group>"; };
+		3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MXKSearchTableViewCell.xib; path = Search/MXKSearchTableViewCell.xib; sourceTree = "<group>"; };
 		327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRecentTableViewCell.xib; sourceTree = "<group>"; };
 		328AC4841AA75E000044A6FB /* MXKRoomBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleTableViewCell.h; sourceTree = "<group>"; };
 		328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleTableViewCell.m; sourceTree = "<group>"; };
@@ -718,6 +720,7 @@
 			children = (
 				3235CD7E1C33C6640084EA40 /* MXKSearchTableViewCell.h */,
 				3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */,
+				3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */,
 			);
 			name = Search;
 			sourceTree = "<group>";
@@ -1212,6 +1215,7 @@
 				3235CD7C1C32DEBF0084EA40 /* MXKSearchViewController.xib in Resources */,
 				F06E76961AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
+				3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */,
 				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
 				F0316E441B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.xib in Resources */,
 				F00FA8651C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib in Resources */,

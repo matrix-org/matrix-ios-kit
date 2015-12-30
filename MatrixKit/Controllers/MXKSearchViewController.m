@@ -268,6 +268,19 @@
     }
 }
 
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    // Detect vertical bounce at the top of the tableview to trigger pagination
+    if (scrollView == _searchTableView)
+    {
+        // paginate ?
+        if (scrollView.contentOffset.y < -64)
+        {
+            [self triggerBackPagination];
+        }
+    }
+}
+
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -320,6 +333,17 @@
 }
 
 #pragma mark - Private methods
+
+- (void)triggerBackPagination
+{
+    // Paginate only if possible
+    if (NO == dataSource.canPaginate)
+    {
+        return;
+    }
+
+    [dataSource paginateBack];
+}
 
 - (void)scrollToBottomAnimated:(BOOL)animated
 {

@@ -35,10 +35,21 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 @property (nonatomic, readonly) NSString *searchText;
 
 /**
+ Total number of results available on the server.
+ */
+@property (nonatomic, readonly) NSUInteger serverCount;
+
+/**
  The events to display texts formatter.
  `MXKSearchCellDataStoring` instances can use it to format text.
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
+
+/**
+ Flag indicating if there are still results (in the past) to get with paginateBack.
+ */
+@property (nonatomic, readonly) BOOL canPaginate;
+
 
 /**
  Launch a message search homeserver side.
@@ -46,6 +57,11 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  @param text the text to search.
  */
 - (void)searchMessageText:(NSString*)text;
+
+/**
+ Load more results from the past.
+ */
+- (void)paginateBack;
 
 /**
  Get the data for the cell at the given index.

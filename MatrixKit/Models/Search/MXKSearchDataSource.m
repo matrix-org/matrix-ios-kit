@@ -25,11 +25,6 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 @interface MXKSearchDataSource ()
 {
     /**
-     Total number of results available on the server.
-     */
-    NSUInteger count;
-
-    /**
      List of results retrieved from the server.
      */
     NSMutableArray<id<MXKSearchCellDataStoring>> *cellDataArray;
@@ -66,38 +61,25 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     if (![_searchText isEqualToString:text])
     {
         NSLog(@"[MXKSearchDataSource] searchMessageText: %@", text);
-        NSDate *startDate = [NSDate date];
 
         // Reset data before making the new search
         _searchText = text;
+        _serverCount = 0;
+        _canPaginate = NO;
+        nextBatch = nil;
         self.state = MXKDataSourceStatePreparing;
         [cellDataArray removeAllObjects];
 
-        [self.mxSession.matrixRestClient searchMessageText:text inRooms:nil beforeLimit:0 afterLimit:0 nextBatch:nil success:^(MXSearchRoomEventResults *roomEventResults) {
-
-            NSLog(@"[MXKSearchDataSource] searchMessageText: %@. Done in %.3fms - Got %tu / %tu messages", text, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
-
-            // Retrieve the MXKCellData class to manage the data
-            Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
-            NSAssert([class conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
-
-            // Process HS response to cells data
-            for (MXSearchResult *result in [roomEventResults.results reverseObjectEnumerator])
-            {
-                id<MXKSearchCellDataStoring> cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
-                if (cellData)
-                {
-                    [cellDataArray addObject:cellData];
-                }
-            }
-
-            self.state = MXKDataSourceStateReady;
-            [self.delegate dataSource:self didCellChange:nil];
-
-        } failure:^(NSError *error) {
-            self.state = MXKDataSourceStateFailed;
-        }];
+        [self doSearch];
     }
+}
+
+- (void)paginateBack
+{
+    NSLog(@"[MXKSearchDataSource] paginateBack");
+
+    self.state = MXKDataSourceStatePreparing;
+    [self doSearch];
 }
 
 - (id<MXKSearchCellDataStoring>)cellDataAtIndex:(NSInteger)index
@@ -111,6 +93,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     return cellData;
 }
 
+#pragma mark - Private methods
 
 // Update the MXKDataSource and notify the delegate
 - (void)setState:(MXKDataSourceState)newState
@@ -124,6 +107,40 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
             [self.delegate dataSource:self didStateChange:state];
         }
     }
+}
+
+- (void)doSearch
+{
+    NSDate *startDate = [NSDate date];
+
+    [self.mxSession.matrixRestClient searchMessageText:_searchText inRooms:nil beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
+
+        NSLog(@"[MXKSearchDataSource] searchMessageText: %@. Done in %.3fms - Got %tu / %tu messages", _searchText, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+
+        _serverCount = roomEventResults.count;
+        _canPaginate = (0 < roomEventResults.results.count);
+        nextBatch = roomEventResults.nextBatch;
+
+        // Retrieve the MXKCellData class to manage the data
+        Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
+        NSAssert([class conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
+
+        // Process HS response to cells data
+        for (MXSearchResult *result in roomEventResults.results)
+        {
+            id<MXKSearchCellDataStoring> cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
+            if (cellData)
+            {
+                [cellDataArray insertObject:cellData atIndex:0];
+            }
+        }
+
+        self.state = MXKDataSourceStateReady;
+        [self.delegate dataSource:self didCellChange:nil];
+
+    } failure:^(NSError *error) {
+        self.state = MXKDataSourceStateFailed;
+    }];
 }
 
 #pragma mark - UITableViewDataSource
