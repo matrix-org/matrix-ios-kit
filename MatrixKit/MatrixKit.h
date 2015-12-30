@@ -106,6 +106,9 @@
 #import "MXKRoomOutgoingAttachmentBubbleCell.h"
 #import "MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h"
 
+#import "MXKSearchCellData.h"
+#import "MXKSearchTableViewCell.h"
+
 #import "MXKAccountManager.h"
 
 #import "MXKContactManager.h"
