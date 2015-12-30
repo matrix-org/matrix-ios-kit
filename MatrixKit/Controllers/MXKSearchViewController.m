@@ -104,7 +104,7 @@
     self.searchSearchBarHeightConstraint.constant = 0;
     [self.view setNeedsUpdateConstraints];
 
-    searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
+    searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearch:)];
 
     // Add search option in navigation bar
     self.enableSearchButton = YES;
@@ -115,6 +115,9 @@
 
     // Set up classes to use for cells
     [self.searchTableView registerNib:MXKSearchTableViewCell.nib forCellReuseIdentifier:MXKSearchTableViewCell.defaultReuseIdentifier];
+
+    // TODO: This requires context api
+    _searchTableView.allowsSelection = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -254,6 +257,8 @@
 
         [_searchTableView setContentOffset:tableViewOffset animated:NO];
     }
+
+    self.title = [NSString stringWithFormat:@"%@ (%tu)", self.dataSource.searchText, self.dataSource.serverCount];
 }
 
 - (void)dataSource:(MXKDataSource*)dataSource didStateChange:(MXKDataSourceState)state
@@ -336,7 +341,7 @@
 
 #pragma mark - Actions
 
-- (void)search:(id)sender
+- (void)showSearch:(id)sender
 {
     // The user may have pressed search button whereas the view controller was disappearing
     if (ignoreSearchRequest)
