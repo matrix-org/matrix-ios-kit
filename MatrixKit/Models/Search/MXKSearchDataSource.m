@@ -30,6 +30,11 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     NSMutableArray<id<MXKSearchCellDataStoring>> *cellDataArray;
 
     /**
+     The current search request.
+     */
+    MXHTTPOperation *searchRequest;
+
+    /**
      Token that can be used to get the next batch of results in the group, if exists.
      */
     NSString *nextBatch;
@@ -63,6 +68,11 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         NSLog(@"[MXKSearchDataSource] searchMessageText: %@", text);
 
         // Reset data before making the new search
+        if (searchRequest)
+        {
+            [searchRequest cancel];
+            searchRequest = nil;
+        }
         _searchText = text;
         _serverCount = 0;
         _canPaginate = NO;
@@ -111,12 +121,19 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
 - (void)doSearch
 {
+    // Handle one request at a time
+    if (searchRequest)
+    {
+        return;
+    }
+
     NSDate *startDate = [NSDate date];
 
-    [self.mxSession.matrixRestClient searchMessageText:_searchText inRooms:nil beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
+    searchRequest = [self.mxSession.matrixRestClient searchMessageText:_searchText inRooms:nil beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
 
         NSLog(@"[MXKSearchDataSource] searchMessageText: %@. Done in %.3fms - Got %tu / %tu messages", _searchText, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
+        searchRequest = nil;
         _serverCount = roomEventResults.count;
         _canPaginate = (0 < roomEventResults.results.count);
         nextBatch = roomEventResults.nextBatch;
@@ -147,8 +164,22 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         [self.delegate dataSource:self didCellChange:insertedIndexes];
 
     } failure:^(NSError *error) {
+        searchRequest = nil;
         self.state = MXKDataSourceStateFailed;
     }];
+}
+
+#pragma mark - Override MXKDataSource
+
+- (void)cancelAllRequests
+{
+    if (searchRequest)
+    {
+        [searchRequest cancel];
+        searchRequest = nil;
+    }
+
+    [super cancelAllRequests];
 }
 
 #pragma mark - UITableViewDataSource

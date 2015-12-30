@@ -104,7 +104,7 @@
     self.searchSearchBarHeightConstraint.constant = 0;
     [self.view setNeedsUpdateConstraints];
 
-    searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearch:)];
+    searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchBar:)];
 
     // Add search option in navigation bar
     self.enableSearchButton = YES;
@@ -167,7 +167,8 @@
     _searchTableView.dataSource = nil;
     _searchTableView.delegate = nil;
     _searchTableView = nil;
-    
+
+    [dataSource destroy];
     dataSource.delegate = nil;
     dataSource = nil;
     
@@ -341,7 +342,7 @@
 
 #pragma mark - Actions
 
-- (void)showSearch:(id)sender
+- (void)showSearchBar:(id)sender
 {
     // The user may have pressed search button whereas the view controller was disappearing
     if (ignoreSearchRequest)
