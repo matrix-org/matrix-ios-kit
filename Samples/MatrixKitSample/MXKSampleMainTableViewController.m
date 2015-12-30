@@ -295,7 +295,11 @@
         roomMembersSectionIndex = count++;
     }
 
-    searchSectionIndex = count++;
+    if ([[MXKAccountManager sharedManager] accounts].count)
+    {
+        searchSectionIndex = count++;
+    }
+
     authenticationSectionIndex = count++;
     contactSectionIndex = count++;
     
