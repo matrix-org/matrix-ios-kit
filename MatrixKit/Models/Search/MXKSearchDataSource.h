@@ -31,6 +31,14 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  Use the `initWithRoomId:andMatrixSession: constructor to search in a specific room.
  */
 @interface MXKSearchDataSource : MXKDataSource <UITableViewDataSource>
+{
+    @protected
+    /**
+     List of results retrieved from the server.
+     The` MXKSearchDataSource` class stores MXKSearchCellDataStoring objects in it.
+     */
+    NSMutableArray *cellDataArray;
+}
 
 /**
  The current search.
@@ -87,5 +95,14 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  @return the cell data
  */
 - (id<MXKSearchCellDataStoring>)cellDataAtIndex:(NSInteger)index;
+
+/**
+ Convert the results of a homeserver search requests into cells.
+ 
+ This methods is in charge of filling `cellDataArray`.
+ 
+ @param roomEventResults the homeserver response as provided by MatrixSDK.
+ */
+- (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults;
 
 @end

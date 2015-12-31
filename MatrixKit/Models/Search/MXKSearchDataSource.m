@@ -25,11 +25,6 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 @interface MXKSearchDataSource ()
 {
     /**
-     List of results retrieved from the server.
-     */
-    NSMutableArray<id<MXKSearchCellDataStoring>> *cellDataArray;
-
-    /**
      The current search request.
      */
     MXHTTPOperation *searchRequest;
@@ -113,6 +108,22 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     return cellData;
 }
 
+- (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults
+{
+    // Retrieve the MXKCellData class to manage the data
+    Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
+    NSAssert([class conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
+
+    for (MXSearchResult *result in roomEventResults.results)
+    {
+        id<MXKSearchCellDataStoring> cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
+        if (cellData)
+        {
+            [cellDataArray insertObject:cellData atIndex:0];
+        }
+    }
+}
+
 #pragma mark - Private methods
 
 // Update the MXKDataSource and notify the delegate
@@ -155,19 +166,8 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         nextBatch = roomEventResults.nextBatch;
         _canPaginate = (nil != nextBatch);
 
-        // Retrieve the MXKCellData class to manage the data
-        Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
-        NSAssert([class conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
-
         // Process HS response to cells data
-        for (MXSearchResult *result in roomEventResults.results)
-        {
-            id<MXKSearchCellDataStoring> cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
-            if (cellData)
-            {
-                [cellDataArray insertObject:cellData atIndex:0];
-            }
-        }
+        [self convertHomeserverResultsIntoCells:roomEventResults];
 
         self.state = MXKDataSourceStateReady;
 
