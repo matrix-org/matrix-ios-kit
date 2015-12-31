@@ -18,6 +18,8 @@
 
 #import "MXKSearchTableViewCell.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @interface MXKSearchViewController ()
 {
     /**
@@ -103,6 +105,9 @@
     self.searchSearchBar.hidden = YES;
     self.searchSearchBarHeightConstraint.constant = 0;
     [self.view setNeedsUpdateConstraints];
+
+    self.noResultsLabel.text = [NSBundle mxk_localizedStringForKey:@"search_no_results"];
+    self.noResultsLabel.hidden = YES;
 
     searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchBar:)];
 
@@ -262,16 +267,28 @@
     self.title = [NSString stringWithFormat:@"%@ (%tu)", self.dataSource.searchText, self.dataSource.serverCount];
 }
 
-- (void)dataSource:(MXKDataSource*)dataSource didStateChange:(MXKDataSourceState)state
+- (void)dataSource:(MXKDataSource*)dataSource2 didStateChange:(MXKDataSourceState)state
 {
     // MXKSearchDataSource comes back to the `MXKDataSourceStatePreparing` when searching
     if (state == MXKDataSourceStatePreparing)
     {
+        _noResultsLabel.hidden = YES;
         [self startActivityIndicator];
     }
     else
     {
         [self stopActivityIndicator];
+
+        // Display "No Results" if there is nothing
+        if ([dataSource tableView:_searchTableView numberOfRowsInSection:0])
+        {
+            _searchTableView.hidden = NO;
+        }
+        else
+        {
+            _noResultsLabel.hidden = NO;
+            _searchTableView.hidden = YES;
+        }
     }
 }
 

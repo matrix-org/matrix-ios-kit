@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKSearchViewController">
             <connections>
+                <outlet property="noResultsLabel" destination="R0k-Za-T1q" id="B08-vF-6Fy"/>
                 <outlet property="searchSearchBar" destination="Zbr-9e-VZh" id="cnj-ol-yU0"/>
                 <outlet property="searchSearchBarHeightConstraint" destination="jCU-cq-2OA" id="xFA-RP-Mdl"/>
                 <outlet property="searchSearchBarTopConstraint" destination="aRg-Nz-enq" id="cKu-YM-PQP"/>
@@ -34,14 +35,26 @@
                     <rect key="frame" x="0.0" y="44" width="600" height="556"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </tableView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Results" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R0k-Za-T1q">
+                    <rect key="frame" x="15" y="60" width="600" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="RRM-CN-Pq2"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="orV-HH-88x" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="NaR-eJ-WMj"/>
+                <constraint firstItem="R0k-Za-T1q" firstAttribute="top" secondItem="Zbr-9e-VZh" secondAttribute="bottom" constant="16" id="UC4-55-9yg"/>
                 <constraint firstItem="Zbr-9e-VZh" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="aRg-Nz-enq"/>
+                <constraint firstItem="R0k-Za-T1q" firstAttribute="trailing" secondItem="Zbr-9e-VZh" secondAttribute="trailing" constant="15" id="bvY-5p-dck"/>
                 <constraint firstItem="Zbr-9e-VZh" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="fty-XB-tTr"/>
                 <constraint firstItem="orV-HH-88x" firstAttribute="top" secondItem="Zbr-9e-VZh" secondAttribute="bottom" id="lBa-P2-Vnx"/>
                 <constraint firstAttribute="bottom" secondItem="orV-HH-88x" secondAttribute="bottom" id="m4x-32-odR"/>
+                <constraint firstItem="R0k-Za-T1q" firstAttribute="leading" secondItem="Zbr-9e-VZh" secondAttribute="leading" constant="15" id="oCw-HZ-Aqi"/>
                 <constraint firstAttribute="trailing" secondItem="Zbr-9e-VZh" secondAttribute="trailing" id="rKb-TZ-sap"/>
                 <constraint firstAttribute="trailing" secondItem="orV-HH-88x" secondAttribute="trailing" id="yBp-63-kZi"/>
             </constraints>

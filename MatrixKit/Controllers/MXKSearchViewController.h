@@ -29,6 +29,7 @@ limitations under the License.
 
 @property (weak, nonatomic) IBOutlet UISearchBar *searchSearchBar;
 @property (weak, nonatomic) IBOutlet UITableView *searchTableView;
+@property (weak, nonatomic) IBOutlet UILabel *noResultsLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *searchSearchBarTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *searchSearchBarHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *searchTableViewBottomConstraint;
