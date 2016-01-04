@@ -71,6 +71,7 @@
     NSInteger recentsSectionIndex;
     NSInteger roomSectionIndex;
     NSInteger roomMembersSectionIndex;
+    NSInteger searchSectionIndex;
     NSInteger authenticationSectionIndex;
     NSInteger contactSectionIndex;
 }
@@ -279,7 +280,7 @@
 {
     NSInteger count = 0;
     
-    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = authenticationSectionIndex = contactSectionIndex = -1;
+    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = searchSectionIndex =authenticationSectionIndex = contactSectionIndex = -1;
     
     accountSectionIndex = count++;
     
@@ -293,7 +294,12 @@
         roomSectionIndex = count++;
         roomMembersSectionIndex = count++;
     }
-    
+
+    if ([[MXKAccountManager sharedManager] accounts].count)
+    {
+        searchSectionIndex = count++;
+    }
+
     authenticationSectionIndex = count++;
     contactSectionIndex = count++;
     
@@ -321,6 +327,14 @@
     else if (section == roomMembersSectionIndex)
     {
         return 2;
+    }
+    else if (section == searchSectionIndex)
+    {
+        if (selectedRoom)
+        {
+            return 2;
+        }
+        return 1;
     }
     else if (section == authenticationSectionIndex)
     {
@@ -351,6 +365,10 @@
     else if (section == roomMembersSectionIndex)
     {
         return @"Room members:";
+    }
+    else if (section == searchSectionIndex)
+    {
+        return @"Search:";
     }
     else if (section == authenticationSectionIndex)
     {
@@ -460,6 +478,19 @@
                 break;
         }
     }
+    else if (indexPath.section == searchSectionIndex)
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+        switch (indexPath.row)
+        {
+            case 0:
+                cell.textLabel.text = @"MXKSearchViewController";
+                break;
+            case 1:
+                cell.textLabel.text = @"MXKSearchViewController on one room";
+                break;
+        }
+    }
     else if (indexPath.section == authenticationSectionIndex)
     {
         switch (indexPath.row)
@@ -545,6 +576,18 @@
                 break;
             case 1:
                 [self performSegueWithIdentifier:@"showSampleRoomMembersViewController" sender:self];
+                break;
+        }
+    }
+    else if (indexPath.section == searchSectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+                [self performSegueWithIdentifier:@"showMXKSearchViewController" sender:self];
+                break;
+            case 1:
+                [self performSegueWithIdentifier:@"showMXKSearchViewControllerForRoom" sender:self];
                 break;
         }
     }
@@ -655,6 +698,20 @@
         [listDataSource finalizeInitialization];
         
         [sampleRoomMemberListViewController displayList:listDataSource];
+    }
+    else if ([segue.identifier isEqualToString:@"showMXKSearchViewController"])
+    {
+        MXKSearchViewController *searchViewController = (MXKSearchViewController*)destinationViewController;
+        MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithMatrixSession:self.mainSession];
+
+        [searchViewController displaySearch:searchDataSource];
+    }
+    else if ([segue.identifier isEqualToString:@"showMXKSearchViewControllerForRoom"])
+    {
+        MXKSearchViewController *searchViewController = (MXKSearchViewController*)destinationViewController;
+        MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:self.mainSession];
+
+        [searchViewController displaySearch:searchDataSource];
     }
     else if ([segue.identifier isEqualToString:@"showMXKAuthenticationViewController"])
     {
