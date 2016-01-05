@@ -155,6 +155,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                // Consider only live event
                                if (direction == MXEventDirectionForwards)
                                {
+                                   // Consider first presence events
                                    if (event.eventType == MXEventTypePresence)
                                    {
                                        // Check whether the concerned matrix user belongs to at least one contact.
@@ -169,7 +170,10 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerMatrixUserPresenceChangeNotification object:event.sender userInfo:@{kMXKContactManagerMatrixPresenceKey:event.content[@"presence"]}];
                                        }
                                    }
-                                   else //if (event.eventType == MXEventTypeRoomMember)
+                                   // Else the event type is MXEventTypeRoomMember.
+                                   // Ignore here membership events if the session is not running yet,
+                                   // Indeed all the contacts are refreshed when session state becomes running.
+                                   else if (mxSession.state == MXSessionStateRunning)
                                    {
                                        // Update matrix contact list on membership change
                                        [self updateMatrixContactWithID:event.sender];
@@ -896,7 +900,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
     
     // Here no one-to-one room exist, remove the contact if any
     MXKContact* contact = [matrixContactByMatrixID objectForKey:matrixId];
-    if (contact) {
+    if (contact)
+    {
         [matrixContactByContactID removeObjectForKey:contact.contactID];
         [matrixContactByMatrixID removeObjectForKey:matrixId];
         
@@ -988,14 +993,21 @@ static NSString *contactsBookInfoFile = @"contacts";
     
     if (matrixContactByContactID && (matrixContactByContactID.count > 0))
     {
-        NSMutableData *theData = [NSMutableData data];
-        NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
+        // Switch on processing queue because matrixContactByContactID dictionary may be huge.
+        NSDictionary *matrixContactByContactIDCpy = [matrixContactByContactID copy];
         
-        [encoder encodeObject:matrixContactByContactID forKey:@"matrixContactByContactID"];
-        
-        [encoder finishEncoding];
-        
-        [theData writeToFile:dataFilePath atomically:YES];
+        dispatch_async(processingQueue, ^{
+            
+            NSMutableData *theData = [NSMutableData data];
+            NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
+            
+            [encoder encodeObject:matrixContactByContactIDCpy forKey:@"matrixContactByContactID"];
+            
+            [encoder finishEncoding];
+            
+            [theData writeToFile:dataFilePath atomically:YES];
+            
+        });
     }
     else
     {
@@ -1010,37 +1022,50 @@ static NSString *contactsBookInfoFile = @"contacts";
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     
+    __block NSDictionary *matrixContactByContactIDCpy = nil;
+    
     if ([fileManager fileExistsAtPath:dataFilePath])
     {
-        // the file content could be corrupted
-        @try
-        {
-            NSData* filecontent = [NSData dataWithContentsOfFile:dataFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+        // Use here processing queue because this queue is used during encoding.
+        dispatch_sync(processingQueue, ^{
             
-            NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
-            
-            id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
-            
-            if ([object isKindOfClass:[NSDictionary class]])
+            // The file content could be corrupted
+            @try
             {
-                matrixContactByContactID = [object mutableCopy];
+                NSData* filecontent = [NSData dataWithContentsOfFile:dataFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+                
+                NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
+                
+                id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
+                
+                if ([object isKindOfClass:[NSDictionary class]])
+                {
+                    matrixContactByContactIDCpy = object;
+                }
+                
+                [decoder finishDecoding];
+            }
+            @catch (NSException *exception)
+            {
             }
             
-            [decoder finishDecoding];
-        }
-        @catch (NSException *exception)
-        {
-        }
+        });
+        
     }
     
-    if (!matrixContactByContactID)
+    if (!matrixContactByContactIDCpy)
     {
         matrixContactByContactID = [[NSMutableDictionary alloc] init];
+    }
+    else
+    {
+        matrixContactByContactID = [matrixContactByContactIDCpy mutableCopy];
     }
     
     matrixContactByMatrixID = [[NSMutableDictionary alloc] initWithCapacity:matrixContactByContactID.count];
     
-    for (MXKContact *contact in matrixContactByContactID.allValues) {
+    for (MXKContact *contact in matrixContactByContactID.allValues)
+    {
         // One and only one matrix id is expected for each listed contact.
         [matrixContactByMatrixID setObject:contact forKey:contact.matrixIdentifiers.firstObject];
     }
