@@ -63,11 +63,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     // If a server sync is in progress, the pause is delayed at the end of sync (except if resume is called).
     BOOL isPauseRequested;
     
-    // catchup management
-    MXOnCatchupDone catchupDone;
-    MXOnCatchupFail catchupfails;
-    UIBackgroundTaskIdentifier catchupBgTask;
-    NSTimer* catchupTimer;
+    // Background sync management
+    MXOnBackgroundSyncDone backgroundSyncDone;
+    MXOnBackgroundSyncFail backgroundSyncfails;
+    UIBackgroundTaskIdentifier backgroundSyncBgTask;
+    NSTimer* backgroundSyncTimer;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -579,7 +579,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     if (mxSession)
     {
-        [self cancelCatchup];
+        [self cancelBackgroundSync];
         
         if (mxSession.state == MXSessionStatePaused)
         {
@@ -935,116 +935,116 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }];
 }
 
-#pragma mark - catchup management
+#pragma mark - backgroundSync management
 
-- (void)cancelCatchup
+- (void)cancelBackgroundSync
 {
-    if (catchupBgTask != UIBackgroundTaskInvalid)
+    if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
     {
-        NSLog(@"[MXKAccount] The catchup is cancelled.");
+        NSLog(@"[MXKAccount] The background Sync is cancelled.");
 
         if (mxSession)
         {
-            if (mxSession.state == MXSessionStateCatchingUp)
+            if (mxSession.state == MXSessionStateBackgroundSyncInProgress)
             {
                 [mxSession pause];
             }
         }
         
-        [self onCatchupDoneWithError:[[NSError alloc] init]];
+        [self onBackgroundSyncDoneWithError:[[NSError alloc] init]];
     }
 }
 
-- (void)onCatchupDoneWithError:(NSError*)error
+- (void)onBackgroundSyncDoneWithError:(NSError*)error
 {
-    if (catchupTimer)
+    if (backgroundSyncTimer)
     {
-        [catchupTimer invalidate];
-        catchupTimer = NULL;
+        [backgroundSyncTimer invalidate];
+        backgroundSyncTimer = NULL;
     }
     
-    if (catchupfails && error)
+    if (backgroundSyncfails && error)
     {
-        catchupfails(error);
+        backgroundSyncfails(error);
     }
     
-    if (catchupDone && !error)
+    if (backgroundSyncDone && !error)
     {
-        catchupDone();
+        backgroundSyncDone();
     }
     
-    catchupDone = NULL;
-    catchupfails = NULL;
+    backgroundSyncDone = NULL;
+    backgroundSyncfails = NULL;
     
-    if (catchupBgTask != UIBackgroundTaskInvalid)
+    if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
     {
-        UIBackgroundTaskIdentifier localCatchupBgTask = catchupBgTask;
-        catchupBgTask = UIBackgroundTaskInvalid;
+        UIBackgroundTaskIdentifier localBackgroundSyncBgTask = backgroundSyncBgTask;
+        backgroundSyncBgTask = UIBackgroundTaskInvalid;
         
         // give some times to perform other stuff like store saving...
         dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
-            if (localCatchupBgTask != UIBackgroundTaskInvalid)
+            if (localBackgroundSyncBgTask != UIBackgroundTaskInvalid)
             {
                 // Cancel background task
-                [[UIApplication sharedApplication] endBackgroundTask:localCatchupBgTask];
-                NSLog(@"[MXKAccount] onCatchupDoneWithError : %08lX stop", (unsigned long)localCatchupBgTask);
+                [[UIApplication sharedApplication] endBackgroundTask:localBackgroundSyncBgTask];
+                NSLog(@"[MXKAccount] onBackgroundSyncDoneWithError : %08lX stop", (unsigned long)localBackgroundSyncBgTask);
             }
         });
     }
 }
 
-- (void)onCatchupTimerOut
+- (void)onBackgroundSyncTimerOut
 {
-    [self cancelCatchup];
+    [self cancelBackgroundSync];
 }
 
-- (void)catchup:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
+- (void)backgroundSync:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
 {
     isPauseRequested = NO;
     
     // only work when the application is suspended
     
-    // FIXME SYNCV2 enable it when V2 will be released
-    if (false)//(mxSession && mxSession.state == MXSessionStatePaused)
+    // Check conditions before launching background sync
+    if (mxSession && mxSession.state == MXSessionStatePaused)
     {
-        NSLog(@"[MXKAccount] starts a catchup");
+        NSLog(@"[MXKAccount] starts a background Sync");
         
-        catchupDone = success;
-        catchupfails = failure;
+        backgroundSyncDone = success;
+        backgroundSyncfails = failure;
         
-        if (catchupBgTask != UIBackgroundTaskInvalid)
+        if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
         {
-             [[UIApplication sharedApplication] endBackgroundTask:catchupBgTask];
+             [[UIApplication sharedApplication] endBackgroundTask:backgroundSyncBgTask];
         }
         
-        catchupBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            NSLog(@"[MXKAccount] the catchup fails because of the bg task timeout");
-            [self cancelCatchup];
+        backgroundSyncBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            NSLog(@"[MXKAccount] the background Sync fails because of the bg task timeout");
+            [self cancelBackgroundSync];
             
         }];
         
-        // ensure that the catchup will be really done in the expected time
+        // ensure that the backgroundSync will be really done in the expected time
         // the request could be done but the treatment could be long so add a timer to cancel it
         // if it takes too much time
-        catchupTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(timeout - 1) / 1000]
+        backgroundSyncTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(timeout - 1) / 1000]
                                                 interval:0
                                                   target:self
-                                                selector:@selector(onCatchupTimerOut)
+                                                selector:@selector(onBackgroundSyncTimerOut)
                                                 userInfo:nil
                                                  repeats:NO];
         
-        [[NSRunLoop mainRunLoop] addTimer:catchupTimer forMode:NSDefaultRunLoopMode];
+        [[NSRunLoop mainRunLoop] addTimer:backgroundSyncTimer forMode:NSDefaultRunLoopMode];
         
-            [mxSession catchup:timeout success:^{
-                NSLog(@"[MXKAccount] the catchup succeeds");
-                [self onCatchupDoneWithError:NULL];
+            [mxSession backgroundSync:timeout success:^{
+                NSLog(@"[MXKAccount] the background Sync succeeds");
+                [self onBackgroundSyncDoneWithError:NULL];
                 
             }
                 failure:^(NSError* error) {
 
-                NSLog(@"[MXKAccount] the catchup fails");
-                [self onCatchupDoneWithError:error];
+                NSLog(@"[MXKAccount] the background Sync fails");
+                [self onBackgroundSyncDoneWithError:error];
                        
             }
 
@@ -1052,7 +1052,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     else
     {
-        NSLog(@"[MXKAccount] cannot start catchup (invalid state)");
+        NSLog(@"[MXKAccount] cannot start background Sync (invalid state)");
         failure([[NSError alloc] init]);
     }
 }
