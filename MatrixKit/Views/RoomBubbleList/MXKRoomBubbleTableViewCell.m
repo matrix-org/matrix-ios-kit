@@ -438,7 +438,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             NSMutableArray* placeholders = nil;
                             NSArray* receipts = nil;
                             
-                            MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
+                            MXRoom* room = [bubbleData.mxSession roomWithRoomId:bubbleData.roomId];
                             
                             // Get the events receipts by ignoring the current user receipt.
                             if (room)

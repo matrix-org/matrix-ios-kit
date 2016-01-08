@@ -46,7 +46,7 @@
             [bubbleComponents addObject:firstComponent];
             
             senderId = event.sender;
-            roomId = event.roomId;
+            roomId = roomDataSource.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
             senderAvatarUrl = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
             senderAvatarPlaceholder = nil;
