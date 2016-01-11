@@ -249,10 +249,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param numItems the number of items to get.
- @param success a block called when the operation succeeds.
+ @param success a block called when the operation succeeds. This block returns the number of added cells.
+ (Note this count may be 0 if paginated messages have been concatenated to the current first cell).
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load enough messages to fill the rect.

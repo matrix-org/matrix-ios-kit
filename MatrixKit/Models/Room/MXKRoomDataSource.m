@@ -775,7 +775,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 #pragma mark - Pagination
-- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
     // Check the current data source state, and the actual user membership for this room.
     if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
@@ -799,7 +799,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: No more events to paginate");
         if (success)
         {
-            success();
+            success(0);
         }
     }
     
@@ -818,7 +818,14 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         backPaginationRequest = nil;
         // Once done, process retrieved events
         [_room removeListener:backPaginateListener];
-        [self processQueuedEvents:success];
+        [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+            
+            if (success)
+            {
+                success(addedHistoryCellNb);
+            }
+            
+        }];
         
     } failure:^(NSError *error) {
         
@@ -826,12 +833,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         backPaginationRequest = nil;
         [_room removeListener:backPaginateListener];
+        
         // Process at least events retrieved from store
-        [self processQueuedEvents:^{
+        [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+            
             if (failure)
             {
                 failure(error);
             }
+            else if (addedHistoryCellNb && success)
+            {
+                success(addedHistoryCellNb);
+            }
+            
         }];
         
     }];
@@ -877,7 +891,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             NSUInteger messagesToLoad = ceil((rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5);
             
             NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
-            [self paginateBackMessages:messagesToLoad success:^{
+            [self paginateBackMessages:messagesToLoad success:^(NSUInteger addedCellNumber) {
                 
                 [self paginateBackMessagesToFillRect:rect success:success failure:failure];
                 
@@ -1796,8 +1810,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
  Start processing pending events.
  
  @param onComplete a block called (on the main thread) when the processing has been done. Can be nil.
+ Note this block returns the number of added cells in first and last positions.
  */
-- (void)processQueuedEvents:(void (^)())onComplete
+- (void)processQueuedEvents:(void (^)(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb))onComplete
 {
     // Do the processing on the processing queue
     dispatch_async(MXKRoomDataSource.processingQueue, ^{
@@ -1817,6 +1832,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
 
         NSUInteger serverSyncEventCount = 0;
+        NSUInteger addedHistoryCellCount = 0;
+        NSUInteger addedLiveCellCount = 0;
         
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(eventsToProcessSnapshot)
@@ -1920,6 +1937,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
                                 // Insert the new bubble data in first position
                                 [bubblesSnapshot insertObject:bubbleData atIndex:0];
+                                
+                                addedHistoryCellCount++;
                             }
                             else
                             {
@@ -1955,6 +1974,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
                                 // Insert the new bubble in last position
                                 [bubblesSnapshot addObject:bubbleData];
+                                
+                                addedLiveCellCount++;
                             }
                         }
                         
@@ -2011,7 +2032,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // Inform about the end if requested
                 if (onComplete)
                 {
-                    onComplete();
+                    onComplete(addedHistoryCellCount, addedLiveCellCount);
                 }
             });
         }
@@ -2021,7 +2042,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             if (onComplete)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    onComplete();
+                    onComplete(0, 0);
                 });
             }
         }
