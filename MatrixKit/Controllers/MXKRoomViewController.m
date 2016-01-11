@@ -1417,7 +1417,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginateBackMessages:30 success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginateBackMessages:_backPaginationLimit success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
