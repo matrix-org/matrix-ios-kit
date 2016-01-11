@@ -1376,8 +1376,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         isBackPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
-        // Hide the scroll indicator during refresh to prevent flickering
+        // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
         [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
+        [self.bubblesTableView setScrollEnabled:NO];
         
         [self reloadBubblesTable:NO];
         
@@ -1390,8 +1391,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self.bubblesTableView setContentOffset:contentOffset animated:NO];
         }
         
-        // Restore the scroll indicator
+        // Restore scrolling and the scroll indicator
         [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
+        [self.bubblesTableView setScrollEnabled:YES];
         
     } failure:^(NSError *error) {
         
