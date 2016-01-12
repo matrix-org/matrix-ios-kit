@@ -1311,18 +1311,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [roomDataSource paginateBackMessagesToFillRect:frame
                                            success:^{
                                                
-                                               // Reload table
+                                               // Stop spinner
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
+                                               
+                                               // Reload table
+                                               [self reloadBubblesTable:YES];
                                                
                                            }
                                            failure:^(NSError *error) {
                                                
-                                               // Reload table
+                                               // Stop spinner
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
+                                               
+                                               // Reload table
+                                               [self reloadBubblesTable:YES];
                                                
                                            }];
 }
@@ -1401,7 +1405,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         isBackPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
-        [self reloadBubblesTable:YES];
+        [self reloadBubblesTable:NO];
         
     }];
 }
