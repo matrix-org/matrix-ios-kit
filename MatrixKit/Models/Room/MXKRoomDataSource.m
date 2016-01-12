@@ -861,16 +861,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
         
         bubblesTotalHeight += bubbleHeight;
-    
-        // each bubble height must be precomputed to avoid lags while scrolling.
-        // Indeed, cellForRowAtIndexPath calls cellHeightAtIndex while creating a cell.
-        // But it is not precomputed, the scroll will have lags while creating the invisible cell.
-        // as we can assume that the user is going to scroll back.
-        /*if (bubblesTotalHeight > rect.size.height)
+
+        if (bubblesTotalHeight > rect.size.height)
         {
             // No need to compute more cells heights, there are enough to fill the rect
             break;
-        }*/
+        }
         
         // Compute the minimal height an event takes
         id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
