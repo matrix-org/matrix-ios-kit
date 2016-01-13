@@ -49,6 +49,11 @@ extern NSString *const kCmdResetUserPowerLevel;
      The current shared attachment.
      */
     MXKAttachment *currentSharedAttachment;
+    
+    /**
+     The potential text input placeholder is saved when it is replaced temporarily
+     */
+    NSString *savedInputToolbarPlaceholder;
 }
 
 /**
