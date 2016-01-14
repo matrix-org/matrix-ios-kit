@@ -1382,10 +1382,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
         [self.bubblesTableView setScrollEnabled:NO];
         
-        [self reloadBubblesTable:NO];
+        BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
         
-        // Adjust vertical content offset
-        if (verticalOffset > 0)
+        // Adjust vertical content offset (except if the table has been scrolled to bottom)
+        if (!hasBeenScrolledToBottom && verticalOffset > 0)
         {
             // Adjust vertical offset in order to compensate scrolling
             CGPoint contentOffset = self.bubblesTableView.contentOffset;
@@ -1591,7 +1591,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - bubbles table
 
-- (void)reloadBubblesTable:(BOOL)useBottomAnchor
+// Return a boolean value which tells whether the table has been scrolled to the bottom
+- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor
 {
     BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
@@ -1707,6 +1708,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
+    
+    return shouldScrollToBottom;
 }
 
 
@@ -2411,7 +2414,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (scrollView == _bubblesTableView)
+    if (scrollView == _bubblesTableView && scrollView.contentSize.height)
     {
         // Consider this callback to reset scrolling to bottom flag
         isScrollingToBottom = NO;
