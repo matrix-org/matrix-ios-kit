@@ -314,12 +314,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     [super viewWillDisappear:animated];
     
-    if (_saveProgressTextInput && roomDataSource)
-    {
-        // Store the potential message partially typed in text input
-        roomDataSource.partialTextMessage = inputToolbarView.textMessage;
-    }
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
@@ -2469,6 +2463,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Reset temporary placeholder (used in case of wrong command usage)
         inputToolbarView.placeholder = savedInputToolbarPlaceholder.length ? savedInputToolbarPlaceholder : nil;
         savedInputToolbarPlaceholder = nil;
+    }
+
+    if (_saveProgressTextInput && roomDataSource)
+    {
+        // Store the potential message partially typed in text input
+        roomDataSource.partialTextMessage = inputToolbarView.textMessage;
     }
     
     [self handleTypingNotification:typing];
