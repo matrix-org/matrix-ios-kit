@@ -489,6 +489,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     return attachments;
 }
 
+- (NSString *)partialTextMessage
+{
+    return _room.partialTextMessage;
+}
+
+- (void)setPartialTextMessage:(NSString *)partialTextMessage
+{
+    _room.partialTextMessage = partialTextMessage;
+}
+
 - (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages
 {
     // Remove the previous live listener
