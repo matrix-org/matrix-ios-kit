@@ -45,6 +45,7 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 @property (nonatomic) BOOL hideActivityIndicator;
 
 @property (strong, nonatomic) UIImage *image;
+@property (nonatomic, readonly) UIImageView *imageView;
 
 @property (nonatomic) BOOL stretchable;
 @property (nonatomic, readonly) BOOL fullScreen;

@@ -47,12 +47,11 @@
     
     // Subviews
     UIScrollView *scrollView;
-    UIImageView *imageView;
 }
 @end
 
 @implementation MXKImageView
-@synthesize stretchable, mediaFolder;
+@synthesize stretchable, mediaFolder, imageView;
 
 #define CUSTOM_IMAGE_VIEW_BUTTON_WIDTH 100
 
