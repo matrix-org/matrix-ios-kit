@@ -201,7 +201,12 @@
             
             [MXKMediaManager saveMediaToPhotosLibrary:url
                                               isImage:(_type == MXKAttachmentTypeImage)
-                                              success:onSuccess
+                                              success:^(NSURL *assetURL){
+                                                  if (onSuccess)
+                                                  {
+                                                      onSuccess();
+                                                  }
+                                              }
                                               failure:onFailure];
         } failure:onFailure];
     }

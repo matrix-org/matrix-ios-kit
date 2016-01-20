@@ -17,8 +17,7 @@
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
 
-#import <Photos/PHPhotoLibrary.h>
-#import <Photos/PHAssetChangeRequest.h>
+#import <Photos/Photos.h>
 
 #import "MXKMediaManager.h"
 
@@ -127,7 +126,7 @@ static MXKLRUCache* imagesCacheLruCache = nil;
     return res;
 }
 
-+ (void)saveImageToPhotosLibrary:(UIImage*)image success:(void (^)())success failure:(void (^)(NSError *error))failure
++ (void)saveImageToPhotosLibrary:(UIImage*)image success:(void (^)(NSURL *imageURL))success failure:(void (^)(NSError *error))failure
 {
     if (image)
     {
@@ -135,20 +134,49 @@ static MXKLRUCache* imagesCacheLruCache = nil;
         Class PHPhotoLibrary_class = NSClassFromString(@"PHPhotoLibrary");
         if (PHPhotoLibrary_class)
         {
+            __block NSString* localId;
+            
             [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                
                 // Request creating an asset from the image.
-                [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                
+                localId = [[assetRequest placeholderForCreatedAsset] localIdentifier];
+                
             } completionHandler:^(BOOL successFlag, NSError *error) {
+                
                 NSLog(@"Finished adding asset. %@", (successFlag ? @"Success" : error));
                 
                 if (successFlag)
                 {
                     if (success)
                     {
-                        // Return on main thread
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            success();
-                        });
+                        // Retrieve the created asset thanks to the local id of the change request
+                        PHFetchResult* assetResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localId] options:nil];
+                        // Sanity check
+                        if (assetResult.count)
+                        {
+                            PHAsset *asset = [assetResult firstObject];
+                            PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
+                            
+                            [asset requestContentEditingInputWithOptions:editOptions
+                                                       completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+                                                           
+                                                           // Here the fullSizeImageURL is related to a local file path
+                                                           
+                                                           // Return on main thread
+                                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                                               success(contentEditingInput.fullSizeImageURL);
+                                                           });
+                                                       }];
+                        }
+                        else
+                        {
+                            // Return on main thread
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                success(nil);
+                            });
+                        }
                     }
                 }
                 else if (failure)
@@ -158,6 +186,7 @@ static MXKLRUCache* imagesCacheLruCache = nil;
                         failure(error);
                     });
                 }
+                
             }];
         }
         else
@@ -168,6 +197,7 @@ static MXKLRUCache* imagesCacheLruCache = nil;
                 NSData *data = UIImageJPEGRepresentation(image, 0.9);
                 
                 [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                    
                     if (error)
                     {
                         if (failure) {
@@ -176,15 +206,16 @@ static MXKLRUCache* imagesCacheLruCache = nil;
                     }
                     else if (success)
                     {
-                        success();
+                        success(assetURL);
                     }
+                    
                 }];
             });
         }
     }
 }
 
-+ (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)())success failure:(void (^)(NSError *error))failure
++ (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)(NSURL *imageURL))success failure:(void (^)(NSError *error))failure
 {
     if (fileURL)
     {
@@ -192,17 +223,24 @@ static MXKLRUCache* imagesCacheLruCache = nil;
         Class PHPhotoLibrary_class = NSClassFromString(@"PHPhotoLibrary");
         if (PHPhotoLibrary_class)
         {
+            __block NSString* localId;
+
             [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                
+                PHAssetChangeRequest *assetRequest;
+                
                 if (isImage)
                 {
                     // Request creating an asset from the image.
-                    [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:fileURL];
+                    assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:fileURL];
                 }
                 else
                 {
                     // Request creating an asset from the image.
-                    [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:fileURL];
+                    assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:fileURL];
                 }
+                
+                localId = [[assetRequest placeholderForCreatedAsset] localIdentifier];
                 
             } completionHandler:^(BOOL successFlag, NSError *error) {
                 NSLog(@"Finished adding asset. %@", (successFlag ? @"Success" : error));
@@ -211,10 +249,61 @@ static MXKLRUCache* imagesCacheLruCache = nil;
                 {
                     if (success)
                     {
-                        // Return on main thread
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            success ();
-                        });
+                        // Retrieve the created asset thanks to the local id of the change request
+                        PHFetchResult* assetResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localId] options:nil];
+                        // Sanity check
+                        if (assetResult.count)
+                        {
+                            PHAsset *asset = [assetResult firstObject];
+                            PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
+                            
+                            [asset requestContentEditingInputWithOptions:editOptions
+                                                       completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+                                                           
+                                                           if (contentEditingInput.mediaType == PHAssetMediaTypeImage)
+                                                           {
+                                                               // Here the fullSizeImageURL is related to a local file path
+                                                               
+                                                               // Return on main thread
+                                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                                   success(contentEditingInput.fullSizeImageURL);
+                                                               });
+                                                           }
+                                                           else if (contentEditingInput.mediaType == PHAssetMediaTypeVideo)
+                                                           {
+                                                               if ([contentEditingInput.avAsset isKindOfClass:[AVURLAsset class]])
+                                                               {
+                                                                   AVURLAsset *avURLAsset = (AVURLAsset*)contentEditingInput.avAsset;
+                                                                   
+                                                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                                                       success ([avURLAsset URL]);
+                                                                   });
+                                                               }
+                                                               else
+                                                               {
+                                                                   NSLog(@"[MXKMediaManager] Failed to retrieve the asset URL of the saved video!");
+                                                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                                                       success (nil);
+                                                                   });
+                                                               }
+                                                           }
+                                                           else
+                                                           {
+                                                               // Return on main thread
+                                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                                   success (nil);
+                                                               });
+                                                           }
+                                                           
+                                                       }];
+                        }
+                        else
+                        {
+                            // Return on main thread
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                success (nil);
+                            });
+                        }
                     }
                 }
                 else if (failure)
@@ -243,7 +332,7 @@ static MXKLRUCache* imagesCacheLruCache = nil;
                         }
                         else if (success)
                         {
-                            success();
+                            success(assetURL);
                         }
                     }];
                 }
@@ -258,7 +347,7 @@ static MXKLRUCache* imagesCacheLruCache = nil;
                         }
                         else if (success)
                         {
-                            success();
+                            success(assetURL);
                         }
                     }];
                 }
