@@ -215,4 +215,29 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) UIColor *errorTextColor;
 
+/**
+ Default text font used to display text content of event.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *defaultTextFont;
+
+/**
+ Text font used when the event must be bing to the end user. This happens when the event
+ matches the user's push rules.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *bingTextFont;
+
+/**
+ Text font used when the event is a state event.
+ Default is italic SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *stateEventTextFont;
+
+/**
+ Text font used to display call invite.
+ Default is italic SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *callInviteTextFont;
+
 @end

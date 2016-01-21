@@ -46,6 +46,11 @@
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
         
+        _defaultTextFont = [UIFont systemFontOfSize:14];
+        _bingTextFont = [UIFont systemFontOfSize:14];
+        _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
+        _callInviteTextFont = [UIFont italicSystemFontOfSize:14];
+        
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
     }
@@ -686,6 +691,7 @@
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
     NSRange wholeString = NSMakeRange(0, str.length);
     
+    // Select the text color
     UIColor *textColor;
     switch (event.mxkState)
     {
@@ -724,15 +730,22 @@
     }
     [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     
-    UIFont *font;
-    if (event.isState || event.eventType == MXEventTypeCallInvite)
+    // Select text font
+    UIFont *font = _defaultTextFont;
+    if (event.isState)
     {
-        font = [UIFont italicSystemFontOfSize:14];
+        font = _stateEventTextFont;
     }
-    else
+    else if (event.eventType == MXEventTypeCallInvite)
     {
-        font = [UIFont systemFontOfSize:14];
+        font = _callInviteTextFont;
     }
+    else if (event.mxkState == MXKEventStateBing)
+    {        
+        font = _bingTextFont;
+    }
+    
+    // Apply selected color and font
     [str addAttribute:NSFontAttributeName value:font range:wholeString];
 
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
