@@ -230,7 +230,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 for (MXEvent* event in list)
                 {
-                    [self checkBing:event];
+                    if ([self checkBing:event])
+                    {
+                        _unreadBingCount++;
+                    }
                 }
             }
         }
@@ -467,6 +470,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     {
         // If no bubble was loaded yet, use MXRoom data
         lastMessage = [_room lastMessageWithTypeIn:_eventsFilterForMessages];
+        // Check if this event is a bing event
+        [self checkBing:lastMessage];
     }
     return lastMessage;
 }
@@ -1783,7 +1788,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
-- (void)checkBing:(MXEvent*)event
+- (BOOL)checkBing:(MXEvent*)event
 {
     // read receipts have no rule
     if (![event.type isEqualToString:kMXEventTypeStringReceipt]) {
@@ -1803,13 +1808,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
                         {
                             event.mxkState = MXKEventStateBing;
-                            _unreadBingCount++;
+                            return YES;
                         }
                     }
                 }
             }
         }
     }
+    
+    return NO;
 }
 
 /**
@@ -1865,7 +1872,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             serverSyncEventCount ++;
                         }
 
-                        [self checkBing:queuedEvent.event];
+                        if ([self checkBing:queuedEvent.event])
+                        {
+                            _unreadBingCount++;
+                        }
 
                         // Retrieve the MXKCellData class to manage the data
                         Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
