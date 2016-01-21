@@ -102,7 +102,7 @@
 {
     if (!_attributedTextMessage)
     {
-        _attributedTextMessage = [_eventFormatter attributedStringFromString:_textMessage forEvent:_event];
+        _attributedTextMessage = [_eventFormatter attributedStringFromString:_textMessage forEvent:_event withPrefix:nil];
     }
     
     return _attributedTextMessage;

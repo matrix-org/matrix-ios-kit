@@ -42,11 +42,13 @@
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
         _subTitleTextColor = [UIColor blackColor];
+        _prefixTextColor = [UIColor blackColor];
         _bingTextColor = [UIColor blueColor];
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
         
         _defaultTextFont = [UIFont systemFontOfSize:14];
+        _prefixTextFont = [UIFont systemFontOfSize:14];
         _bingTextFont = [UIFont systemFontOfSize:14];
         _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
         _callInviteTextFont = [UIFont italicSystemFontOfSize:14];
@@ -592,12 +594,6 @@
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
-                
-                // Check whether the sender name has to be added
-                if (displayText && _isForSubtitle && [msgtype isEqualToString:kMXMessageTypeEmote] == NO)
-                {
-                    displayText = [NSString stringWithFormat:@"%@: %@", senderDisplayName, displayText];
-                }
             }
             break;
         }
@@ -686,10 +682,23 @@
     return displayText;
 }
 
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix
 {
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
-    NSRange wholeString = NSMakeRange(0, str.length);
+    NSRange wholeString;
+    
+    if (prefix.length)
+    {
+        wholeString = NSMakeRange(prefix.length, str.length - prefix.length);
+        
+        // Apply prefix attributes
+        [str addAttribute:NSForegroundColorAttributeName value:_prefixTextColor range:NSMakeRange(0, prefix.length)];
+        [str addAttribute:NSFontAttributeName value:_prefixTextFont range:NSMakeRange(0, prefix.length)];
+    }
+    else
+    {
+        wholeString = NSMakeRange(0, str.length);
+    }
     
     // Select the text color
     UIColor *textColor;
@@ -728,7 +737,6 @@
             }
             break;
     }
-    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     
     // Select text font
     UIFont *font = _defaultTextFont;
@@ -746,6 +754,7 @@
     }
     
     // Apply selected color and font
+    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     [str addAttribute:NSFontAttributeName value:font range:wholeString];
 
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&

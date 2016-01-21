@@ -95,10 +95,29 @@
             [roomDataSource paginateBackMessages:5 success:nil failure:nil];
             
         });
+        
+        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString: @""];
     }
-    
-    // Compute the attribute text message
-    lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent];
+    else
+    {
+        // Check whether the sender name has to be added
+        NSString *prefix = nil;
+        
+        if (lastEvent.eventType == MXEventTypeRoomMessage)
+        {
+            NSString *msgtype = lastEvent.content[@"msgtype"];
+            if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
+            {
+                NSString *senderDisplayName = roomDataSource.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomDataSource.room.state] : lastEvent.sender;
+                
+                prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
+                lastEventTextMessage = [NSString stringWithFormat:@"%@%@", prefix, lastEventTextMessage];
+            }
+        }
+        
+        // Compute the attribute text message
+        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent withPrefix:prefix];
+    }
 }
 
 - (void)dealloc
