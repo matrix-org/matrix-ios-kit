@@ -1,3 +1,52 @@
+Changes in MatrixKit in 0.3.0 (2016-01-22)
+===============================================
+
+Improvements:
+ * MXKDataSource: The table/collection view cell classes are now defined by the data source delegate (see README).
+ * MXKRecentsDataSource: Add methods to get, leave or tag a room.
+ * MXKRecentsDataSource: Add method to mute/unmute room notifications.
+ * MXKRecentsDataSource: Add kMXSessionInvitedRoomsDidChangeNotification observer.
+ * MXKSearchViewController: Add reusable view controller for messages search (add dedicated resources: MXKSearchDataSource, MXKSearchCellData, MXKSearchTableViewCell).
+ * MXKEventFormatter: Add timeStringFromDate method to generate the time string of a date by considered the current system time formatting.
+ * MXKRoomBubbleCellData: Add nullable ’senderAvatarPlaceholder’ property. It is used when url is nil, or during avatar download.
+ * MXKAccount: Add the ‘replacePassword’ method.
+ * MXKAccount: Enable Background Sync (Active when push body will contain ‘content-available’ key).
+ * MXKRoomDataSource: Add a new flag 'useCustomReceipts' to disable the default display of read receipts by MatrixKit.
+ * MXKRoomBubbleTableViewCell: Rename inherited classes (MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell…).
+ * MXKRoomBubbleTableViewCell: Add overlay container.
+ * MXKRoomBubbleTableView: Add member display name in text input when user taps on avatar.
+ * MXKRoomBubbleTableViewCell: Add listener to content view tap.
+ * MXKRoomBubbleTableViewCell: Add listener to long press on the avatar view.
+ * MXKRoomBubbleTableViewCell: Improve cell height computation by introducing some constraints.
+ * Replace MXKReceiptAvartarsContainer with MXKReceiptSendersContainer.
+ * MXKReceiptSendersContainer: Handle read receipts for incoming messages too.
+ * MXKAccount: Use “<Bundle DisplayName> (iOS)” as app display name for notification pusher.
+ * MXKEventFormatter: Define properties to allow formatted string customization (color and font).
+ * MXKContactManager: Define the modes of the contact creation from the room members.
+ * MXKRoomSettingsViewController: Reusable view controller dedicated to room settings.
+ * MXKRoomInputToolbarViewWithHPGrowingText: Define growingTextView as protected field.
+ * NSBundle+MatrixKit: Customize the table used to retrieve the localized version of a string. If the key is not defined in this table, the localized string is retrieved from the default table "MatrixKit.strings".
+ * MXKRoomViewController: Define as protected UIDocumentInteractionController items.
+ * MXKRoomViewController: Implement infinite back pagination.
+ * MXKRoomViewController: Move as protected the saved placeholder of text input.
+ * MXKAttachmentViewController: Hide status bar.
+ * MXKImageView: Make public the imageView used as subview (in readonly mode).
+ * MXKMediaManager: Return asset URL in case of saving in user's library
+ * MXKRoomCreationInputs: Replace image url with image.
+ * Add MXKCollectionViewCell class to define custom UICollectionViewCell.
+ * Add MXKTableViewCellWithLabelAndMXKImageView class.
+ * MXKTools: Rename resizeImage to reduceImage.
+ * MXKImageView: Remove ‘mediaInfo’ property.
+ * MXKTools: Add method to convert an image to a pattern color.
+
+Bug fixes:
+ * SYIOS-180: Bad scrolling performance on iOS 9.
+ * The pusher is deleted and recreated every time the app starts, which is a Bad Idea.
+ * iOS breaks catastrophically if you try to attach a photo when landscape. 
+ * SYIOS-196 - Performance issue in MXKContactManager when resuming the app.
+ * App freezes during back pagination in #matrix-spam.
+ * Bing messages are not highlighted in Recents on new login.
+
 Changes in MatrixKit in 0.2.8 (2015-11-30)
 ===============================================
 
