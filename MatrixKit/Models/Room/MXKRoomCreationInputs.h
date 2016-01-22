@@ -46,7 +46,7 @@
 /**
  The room picture.
  */
-@property (nonatomic) NSString *roomPictureUrl;
+@property (nonatomic) UIImage *roomPicture;
 
 /**
  The room visibility (kMXRoomVisibilityPrivate by default).
