@@ -62,11 +62,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSMutableDictionary *eventIdToBubbleMap;
     
     /**
-     Local echo events which requests are pending.
-     */
-    NSMutableArray *pendingLocalEchoes;
-    
-    /**
      Typing notifications listener.
      */
     id typingNotifListener;
@@ -117,8 +112,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         bubbles = [NSMutableArray array];
         eventsToProcess = [NSMutableArray array];
         eventIdToBubbleMap = [NSMutableDictionary dictionary];
-        pendingLocalEchoes = [NSMutableArray array];
-        
+
         // Set default data and view classes
         // Cell data
         [self registerCellDataClass:MXKRoomBubbleCellData.class forCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
@@ -254,12 +248,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)limitMemoryUsage:(NSInteger)maxBubbleNb
 {
-    // Do nothing if some local echoes are in progress.
-    if (pendingLocalEchoes.count)
-    {
-        return;
-    }
-    
     NSInteger bubbleCount;
     @synchronized(bubbles)
     {
@@ -315,7 +303,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         [bubbles removeAllObjects];
         [eventIdToBubbleMap removeAllObjects];
-        [pendingLocalEchoes removeAllObjects];
         
         _room = nil;
     }
@@ -395,7 +382,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     eventsToProcess = nil;
     bubbles = nil;
     eventIdToBubbleMap = nil;
-    pendingLocalEchoes = nil;
     
     [super destroy];
 }
@@ -425,6 +411,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 {
                     // Register on typing notif
                     [self listenTypingNotifications];
+                }
+                
+                // Add unsent events at the end of the conversation
+                for (MXEvent *outgoingMessage in _room.outgoingMessages)
+                {
+                    outgoingMessage.mxkState = MXKEventStateSendingFailed;
+
+                    // Need to update the timestamp because bubbles can reorder their events
+                    // according to theirs timestamps
+                    outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
+
+                    [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXEventDirectionForwards];
                 }
                 
                 // Update here data source state if it is not already ready
@@ -522,7 +520,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Check for local echo suppression
             MXEvent *localEcho;
-            if (pendingLocalEchoes.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
+            if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
             {
                 localEcho = [self pendingLocalEchoRelatedToEvent:event];
                 if (localEcho)
@@ -1012,6 +1010,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
         localEcho.content = msgContent2;
+        [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
         
         // Make the final request that posts the image event
         [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
@@ -1107,7 +1106,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
         localEcho.content = msgContent2;
-        
+        [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
+
         // Make the final request that posts the image event
         [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
             
@@ -1201,6 +1201,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // Apply the nasty trick again so that the cell can monitor the upload progress
                 msgContent[@"url"] = videoUploader.uploadId;
                 localEcho.content = msgContent;
+                [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
                 [self updateLocalEcho:localEcho];
                 
                 [videoUploader uploadData:videoData filename:filename mimeType:mimetype success:^(NSString *videoUrl) {
@@ -1219,6 +1220,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     msgContent[@"info"][@"thumbnail_url"] = thumbnailUrl;
                     
                     localEcho.content = msgContent;
+                    [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
                     [self updateLocalEcho:localEcho];
                     
                     // And send the Matrix room message video event to the homeserver
@@ -1350,7 +1352,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
         localEcho.content = msgContent2;
-        
+        [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
+
         // Make the final request that posts the event
         [_room sendMessageOfType:kMXMessageTypeFile content:msgContent2 success:^(NSString *eventId) {
             
@@ -1431,6 +1434,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Remove the local echo
             [self removeEventWithEventId:eventId];
+            [_room removeOutgoingMessage:eventId];
             
             // And resend
             [self sendMessageOfType:msgType content:event.content success:success failure:failure];
@@ -1439,6 +1443,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Remove the local echo
             [self removeEventWithEventId:eventId];
+            [_room removeOutgoingMessage:eventId];
             
             NSString *mimetype = nil;
             if (event.content[@"info"])
@@ -2141,7 +2146,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
  */
 - (void)addPendingLocalEcho:(MXEvent*)localEcho
 {
-    [pendingLocalEchoes addObject:localEcho];
+    [_room storeOutgoingMessage:localEcho];
 }
 
 /**
@@ -2153,7 +2158,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
  */
 - (void)removePendingLocalEcho:(MXEvent*)localEcho
 {
-    [pendingLocalEchoes removeObject:localEcho];
+    [_room removeOutgoingMessage:localEcho.eventId];
 }
 
 /**
@@ -2169,6 +2174,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSString *msgtype = event.content[@"msgtype"];
     
     MXEvent *localEcho = nil;
+    NSArray<MXEvent*>* pendingLocalEchoes = _room.outgoingMessages;
     for (NSInteger index = 0; index < pendingLocalEchoes.count; index++)
     {
         localEcho = [pendingLocalEchoes objectAtIndex:index];
