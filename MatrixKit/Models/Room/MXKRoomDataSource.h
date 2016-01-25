@@ -165,6 +165,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) BOOL useCustomReceipts;
 
 /**
+ A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
+ */
+@property (nonatomic) BOOL useCustomUnsentButton;
+
+/**
  Show the typing notifications of other room members in the chat history (YES by default).
  */
 @property (nonatomic) BOOL showTypingNotifications;
@@ -404,5 +409,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @param roomState the room state right before the event
  */
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState;
+
+/**
+ Overridable method to customise the way how unsent messages are managed.
+ By default, they are added to the end of the timeline.
+ */
+- (void)handleUnsentMessages;
 
 @end
