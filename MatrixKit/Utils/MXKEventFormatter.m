@@ -41,9 +41,17 @@
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
+        _subTitleTextColor = [UIColor blackColor];
+        _prefixTextColor = [UIColor blackColor];
         _bingTextColor = [UIColor blueColor];
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
+        
+        _defaultTextFont = [UIFont systemFontOfSize:14];
+        _prefixTextFont = [UIFont systemFontOfSize:14];
+        _bingTextFont = [UIFont systemFontOfSize:14];
+        _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
+        _callInviteTextFont = [UIFont italicSystemFontOfSize:14];
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
@@ -132,6 +140,7 @@
 {
     // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
     NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
+    
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     if ([event.content[@"avatar_url"] length])
     {
@@ -143,9 +152,16 @@
         }
         else
         {
-            senderAvatarUrl = [mxSession.matrixRestClient urlOfIdenticon:event.sender];
+            senderAvatarUrl = nil;
         }
     }
+    
+    // Handle here the case where no avatar is defined (Check SDK options before using identicon).
+    if (!senderAvatarUrl && ![MXSDKOptions sharedInstance].disableIdenticonUseForUserAvatar)
+    {
+        senderAvatarUrl = [mxSession.matrixRestClient urlOfIdenticon:event.sender];
+    }
+    
     return senderAvatarUrl;
 }
 
@@ -578,12 +594,6 @@
                         *error = MXKEventFormatterErrorUnsupported;
                     }
                 }
-                
-                // Check whether the sender name has to be added
-                if (displayText && _isForSubtitle && [msgtype isEqualToString:kMXMessageTypeEmote] == NO)
-                {
-                    displayText = [NSString stringWithFormat:@"%@: %@", senderDisplayName, displayText];
-                }
             }
             break;
         }
@@ -672,16 +682,37 @@
     return displayText;
 }
 
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix
 {
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
-    NSRange wholeString = NSMakeRange(0, str.length);
+    NSRange wholeString;
     
+    if (prefix.length)
+    {
+        wholeString = NSMakeRange(prefix.length, str.length - prefix.length);
+        
+        // Apply prefix attributes
+        [str addAttribute:NSForegroundColorAttributeName value:_prefixTextColor range:NSMakeRange(0, prefix.length)];
+        [str addAttribute:NSFontAttributeName value:_prefixTextFont range:NSMakeRange(0, prefix.length)];
+    }
+    else
+    {
+        wholeString = NSMakeRange(0, str.length);
+    }
+    
+    // Select the text color
     UIColor *textColor;
     switch (event.mxkState)
     {
         case MXKEventStateDefault:
-            textColor = _defaultTextColor;
+            if (_isForSubtitle)
+            {
+                textColor = _subTitleTextColor;
+            }
+            else
+            {
+                textColor = _defaultTextColor;
+            }
             break;
         case MXKEventStateBing:
             textColor = _bingTextColor;
@@ -696,20 +727,34 @@
             textColor = _errorTextColor;
             break;
         default:
-            textColor = _defaultTextColor;
+            if (_isForSubtitle)
+            {
+                textColor = _subTitleTextColor;
+            }
+            else
+            {
+                textColor = _defaultTextColor;
+            }
             break;
     }
-    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     
-    UIFont *font;
-    if (event.isState || event.eventType == MXEventTypeCallInvite)
+    // Select text font
+    UIFont *font = _defaultTextFont;
+    if (event.isState)
     {
-        font = [UIFont italicSystemFontOfSize:14];
+        font = _stateEventTextFont;
     }
-    else
+    else if (event.eventType == MXEventTypeCallInvite)
     {
-        font = [UIFont systemFontOfSize:14];
+        font = _callInviteTextFont;
     }
+    else if (event.mxkState == MXKEventStateBing)
+    {        
+        font = _bingTextFont;
+    }
+    
+    // Apply selected color and font
+    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     [str addAttribute:NSFontAttributeName value:font range:wholeString];
 
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
@@ -767,15 +812,15 @@
     
     if (time)
     {
-        NSString *timeString = [timeFormatter stringFromDate:date];
+        NSString *timeString = [self timeStringFromDate:date];
         if (dateString.length)
         {
             // Add time string
-            dateString = [NSString stringWithFormat:@"%@ %@", dateString, timeString.lowercaseString];
+            dateString = [NSString stringWithFormat:@"%@ %@", dateString, timeString];
         }
         else
         {
-            dateString = timeString.lowercaseString;
+            dateString = timeString;
         }
     }
     
@@ -797,6 +842,13 @@
     }
     
     return nil;
+}
+
+- (NSString*)timeStringFromDate:(NSDate *)date
+{
+    NSString *timeString = [timeFormatter stringFromDate:date];
+    
+    return timeString.lowercaseString;
 }
 
 @end

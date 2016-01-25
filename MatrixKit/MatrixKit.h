@@ -33,6 +33,7 @@
 #import "MXKRoomViewController.h"
 #import "MXKRecentListViewController.h"
 #import "MXKRoomMemberListViewController.h"
+#import "MXKSearchViewController.h"
 #import "MXKCallViewController.h"
 #import "MXKContactListViewController.h"
 #import "MXKAccountDetailsViewController.h"
@@ -40,7 +41,7 @@
 #import "MXKRoomMemberDetailsViewController.h"
 #import "MXKNotificationSettingsViewController.h"
 #import "MXKAttachmentsViewController.h"
-#import "MXKRoomDetailsViewController.h"
+#import "MXKRoomSettingsViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 #import "MXKAuthInputsPasswordBasedView.h"
@@ -77,6 +78,7 @@
 #import "MXKTableViewCellWithButtons.h"
 #import "MXKTableViewCellWithLabelAndButton.h"
 #import "MXKTableViewCellWithLabelAndImageView.h"
+#import "MXKTableViewCellWithLabelAndMXKImageView.h"
 #import "MXKTableViewCellWithLabelAndSlider.h"
 #import "MXKTableViewCellWithLabelAndSubLabel.h"
 #import "MXKTableViewCellWithLabelAndSwitch.h"
@@ -93,7 +95,19 @@
 #import "MXKRoomTitleViewWithTopic.h"
 
 #import "MXKRoomIncomingBubbleTableViewCell.h"
+#import "MXKRoomIncomingTextMsgBubbleCell.h"
+#import "MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h"
+#import "MXKRoomIncomingAttachmentBubbleCell.h"
+#import "MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.h"
+
 #import "MXKRoomOutgoingBubbleTableViewCell.h"
+#import "MXKRoomOutgoingTextMsgBubbleCell.h"
+#import "MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h"
+
+#import "MXKSearchCellData.h"
+#import "MXKSearchTableViewCell.h"
 
 #import "MXKAccountManager.h"
 

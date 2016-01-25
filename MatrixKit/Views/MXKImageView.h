@@ -44,10 +44,8 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 // Use this boolean to hide activity indicator during image downloading
 @property (nonatomic) BOOL hideActivityIndicator;
 
-// Information about the media represented by this image (image, video...)
-@property (strong, nonatomic) NSDictionary *mediaInfo;
-
 @property (strong, nonatomic) UIImage *image;
+@property (nonatomic, readonly) UIImageView *imageView;
 
 @property (nonatomic) BOOL stretchable;
 @property (nonatomic, readonly) BOOL fullScreen;

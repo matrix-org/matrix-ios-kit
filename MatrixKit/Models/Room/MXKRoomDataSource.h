@@ -45,30 +45,11 @@ typedef enum : NSUInteger
 
 
 #pragma mark - Cells identifiers
+
 /**
  String identifying the object used to store and prepare room bubble data.
  */
 extern NSString *const kMXKRoomBubbleCellDataIdentifier;
-
-/**
- String identifying the cell object to be reused to display incoming room events as text messages.
- */
-extern NSString *const kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display incoming attachments.
- */
-extern NSString *const kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display outgoing room events as text messages.
- */
-extern NSString *const kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier;
-
-/**
- String identifying the cell object to be reused to display outgoing attachments.
- */
-extern NSString *const kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier;
 
 
 #pragma mark - Notifications
@@ -164,19 +145,29 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
- Show the date time label in rendered room bubble cells (NO by default)
+ Show the date time label in rendered room bubble cells. NO by default.
  */
 @property (nonatomic) BOOL showBubblesDateTime;
 
 /**
-  The date time label is not managed by MatrixKit. (NO by default).
+ A Boolean value that determines whether the date time labels are customized (By default date time display is handled by MatrixKit). NO by default.
  */
 @property (nonatomic) BOOL useCustomDateTimeLabel;
 
 /**
- Show the receipts in rendered bubble cell (YES by default)
+ Show the receipts in rendered bubble cell. YES by default.
  */
 @property (nonatomic) BOOL showBubbleReceipts;
+
+/**
+ A Boolean value that determines whether the read receipts are customized (By default read receipts display is handled by MatrixKit). NO by default.
+ */
+@property (nonatomic) BOOL useCustomReceipts;
+
+/**
+ A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
+ */
+@property (nonatomic) BOOL useCustomUnsentButton;
 
 /**
  Show the typing notifications of other room members in the chat history (YES by default).
@@ -263,10 +254,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param numItems the number of items to get.
- @param success a block called when the operation succeeds.
+ @param success a block called when the operation succeeds. This block returns the number of added cells.
+ (Note this count may be 0 if paginated messages have been concatenated to the current first cell).
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load enough messages to fill the rect.
@@ -406,5 +398,22 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @param the id of the event to remove.
  */
 - (void)removeEventWithEventId:(NSString *)eventId;
+
+/**
+ This method is called to handle each read receipt event which is received in forward mode.
+ 
+ You should not call this method directly.
+ You may override it in inherited 'MXKRoomDataSource' class.
+ 
+ @param receiptEvent an event with 'm.receipt' type.
+ @param roomState the room state right before the event
+ */
+- (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState;
+
+/**
+ Overridable method to customise the way how unsent messages are managed.
+ By default, they are added to the end of the timeline.
+ */
+- (void)handleUnsentMessages;
 
 @end

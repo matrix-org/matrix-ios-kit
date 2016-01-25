@@ -65,20 +65,22 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
  Save an image to user's photos library
  
  @param image
- @param success A block object called when the operation succeeds.
+ @param success A block object called when the operation succeeds. The returned url
+ references the image in the file system or in the AssetsLibrary framework.
  @param failure A block object called when the operation fails.
  */
-+ (void)saveImageToPhotosLibrary:(UIImage*)image success:(void (^)())success failure:(void (^)(NSError *error))failure;
++ (void)saveImageToPhotosLibrary:(UIImage*)image success:(void (^)(NSURL *imageURL))success failure:(void (^)(NSError *error))failure;
 
 /**
  Save a media to user's photos library
  
  @param fileURL URL based on local media file path.
  @param isImage YES for images, NO for video files.
- @param success A block object called when the operation succeeds.
+ @param success A block object called when the operation succeeds.The returned url
+ references the media in the file system or in the AssetsLibrary framework.
  @param failure A block object called when the operation fails.
  */
-+ (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)())success failure:(void (^)(NSError *error))failure;
++ (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)(NSURL *imageURL))success failure:(void (^)(NSError *error))failure;
 
 #pragma mark - Download
 

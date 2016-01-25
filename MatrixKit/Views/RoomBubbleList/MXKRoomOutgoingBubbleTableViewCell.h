@@ -17,10 +17,11 @@
 #import "MXKRoomBubbleTableViewCell.h"
 
 /**
- `MXKRoomOutgoingBubbleTableViewCell` displays outgoing message bubbles.
+ `MXKRoomOutgoingBubbleTableViewCell` inherits from 'MXKRoomBubbleTableViewCell' class in order to handle specific
+ options related to outgoing messages (like unsent labels, upload progress in case of attachment).
+ 
+ In order to optimize bubbles rendering, we advise to define a .xib for each layout.
  */
 @interface MXKRoomOutgoingBubbleTableViewCell : MXKRoomBubbleTableViewCell
-
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end

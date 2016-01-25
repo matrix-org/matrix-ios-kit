@@ -18,7 +18,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#import "MXKReceiptAvartarsContainer.h"
 #import "MXRoom.h"
 
 #pragma mark - Constant definitions
@@ -26,57 +25,104 @@ NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTap
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
 NSString *const kMXKRoomBubbleCellTapOnAttachmentView = @"kMXKRoomBubbleCellTapOnAttachmentView";
+NSString *const kMXKRoomBubbleCellTapOnOverlayContainer = @"kMXKRoomBubbleCellTapOnOverlayContainer";
+NSString *const kMXKRoomBubbleCellTapOnContentView = @"kMXKRoomBubbleCellTapOnContentView";
+
 NSString *const kMXKRoomBubbleCellUnsentButtonPressed = @"kMXKRoomBubbleCellUnsentButtonPressed";
 
 NSString *const kMXKRoomBubbleCellLongPressOnEvent = @"kMXKRoomBubbleCellLongPressOnEvent";
 NSString *const kMXKRoomBubbleCellLongPressOnProgressView = @"kMXKRoomBubbleCellLongPressOnProgressView";
+NSString *const kMXKRoomBubbleCellLongPressOnAvatarView = @"kMXKRoomBubbleCellLongPressOnAvatarView";
 
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 
 @implementation MXKRoomBubbleTableViewCell
-@synthesize delegate, bubbleData;
+@synthesize delegate, bubbleData, readReceiptsAlignment;
 
 + (instancetype)roomBubbleTableViewCell
 {
+    id instance = nil;
+    
     // Check whether a xib is defined
     if ([[self class] nib])
     {
-        return [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+        @try {
+            instance = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+        }
+        @catch (NSException *exception) {
+        }
     }
     
-    return [[[self class] alloc] init];
+    if (!instance)
+    {
+        instance = [[self alloc] init];
+    }
+    
+    return instance;
 }
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
     
-    self.pictureView.backgroundColor = [UIColor blackColor];
-    self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+    if (self.pictureView)
+    {
+        self.pictureView.backgroundColor = [UIColor blackColor];
+        self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        
+        // Listen to avatar tap
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.pictureView addGestureRecognizer:tapGesture];
+        self.pictureView.userInteractionEnabled = YES;
+        
+        // Add a long gesture recognizer on avatar (in order to display for example the member details)
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+        [self.pictureView addGestureRecognizer:longPress];
+    }
     
-    // Listen to avatar tap
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
+    if (self.messageTextView)
+    {
+        // Listen to textView tap
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.messageTextView addGestureRecognizer:tapGesture];
+        self.messageTextView.userInteractionEnabled = YES;
+        
+        // Add a long gesture recognizer on text view (in order to display for example the event details)
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+        [self.messageTextView addGestureRecognizer:longPress];
+    }
+    
+    if (self.playIconView)
+    {
+        self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
+    }
+    
+    if (self.bubbleOverlayContainer)
+    {
+        // Add tap recognizer to open attachment
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onOverlayTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.bubbleOverlayContainer addGestureRecognizer:tapGesture];
+    }
+    
+    // Listen to content view tap by default
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onContentViewTap:)];
     [tapGesture setNumberOfTouchesRequired:1];
     [tapGesture setNumberOfTapsRequired:1];
     [tapGesture setDelegate:self];
-    [self.pictureView addGestureRecognizer:tapGesture];
-    self.pictureView.userInteractionEnabled = YES;
+    [self.contentView addGestureRecognizer:tapGesture];
     
-    // Listen to textView tap
-    tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMessageTap:)];
-    [tapGesture setNumberOfTouchesRequired:1];
-    [tapGesture setNumberOfTapsRequired:1];
-    [tapGesture setDelegate:self];
-    [self.messageTextView addGestureRecognizer:tapGesture];
-    self.messageTextView.userInteractionEnabled = YES;
-    
-    // Add a long gesture recognizer on text view in order to display event details
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
-    [self.messageTextView addGestureRecognizer:longPress];
-    
-    self.playIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
+    self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
 }
 
 - (void)dealloc
@@ -94,7 +140,7 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
 - (void)setAllTextHighlighted:(BOOL)allTextHighlighted
 {
-    if (bubbleData.textMessage.length != 0)
+    if (self.messageTextView && bubbleData.textMessage.length != 0)
     {
         _allTextHighlighted = allTextHighlighted;
         
@@ -103,18 +149,18 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             NSMutableAttributedString *highlightedString = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
             UIColor *color = self.tintColor ? self.tintColor : [UIColor lightGrayColor];
             [highlightedString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, highlightedString.length)];
-            _messageTextView.attributedText = highlightedString;
+            self.messageTextView.attributedText = highlightedString;
         }
         else
         {
-            _messageTextView.attributedText = bubbleData.attributedTextMessage;
+            self.messageTextView.attributedText = bubbleData.attributedTextMessage;
         }
     }
 }
 
 - (void)highlightTextMessageForEvent:(NSString*)eventId
 {
-    if (bubbleData.attachment == nil)
+    if (self.messageTextView)
     {
         if (eventId.length)
         {
@@ -148,31 +194,24 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     bubbleData = (MXKRoomBubbleCellData*)cellData;
     if (bubbleData)
     {
-        MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
-        
-        // Set attached media folders
-        self.attachmentView.mediaFolder = bubbleData.roomId;
+        // Check conditions to display the message sender name
+        if (self.userNameLabel)
+        {
+            // Display sender's name except if the name appears in the displayed text (see emote and membership events)
+            if (self.bubbleData.shouldHideSenderName == NO)
+            {
+                self.userNameLabel.text = bubbleData.senderDisplayName;
+                self.userNameLabel.hidden = NO;
+            }
+            else
+            {
+                self.userNameLabel.hidden = YES;
+            }
+        }
         
         // Check whether the sender's picture is actually displayed before loading it.
-        if (self.bubbleData.shouldHideSenderInformation == NO)
+        if (self.pictureView)
         {
-            // Check conditions to display the message sender name
-            if (self.userNameLabel)
-            {
-                // Display sender's name except if the name appears in the displayed text (see emote and membership events)
-                if (self.bubbleData.shouldHideSenderName == NO)
-                {
-                    self.userNameLabel.text = bubbleData.senderDisplayName;
-                    self.userNameLabel.hidden = NO;
-                }
-                else
-                {
-                    self.userNameLabel.hidden = YES;
-                }
-            }
-            
-            self.pictureView.hidden = NO;
-            
             // Handle user's picture
             NSString *avatarThumbURL = nil;
             if (bubbleData.senderAvatarUrl)
@@ -181,44 +220,20 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
             }
             self.pictureView.enableInMemoryCache = YES;
-            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];        
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
             self.pictureView.clipsToBounds = YES;
         }
-        else
-        {
-            if (self.userNameLabel)
-            {
-                self.userNameLabel.hidden = YES;
-            }
-            
-            self.pictureView.hidden = YES;
-        }
         
-        // Set default view's constraints
-        self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant;
-        self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant ;
-        
-        // Adjust top constraint constant for dateTime labels container, and hide it by default
-        if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
+        if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)
         {
-            self.bubbleInfoContainerTopConstraint.constant = self.msgTextViewTopConstraint.constant;
-        }
-        else
-        {
-            self.bubbleInfoContainerTopConstraint.constant = self.attachViewTopConstraint.constant;
-        }
-        self.bubbleInfoContainer.hidden = YES;
-        
-        // Set message content
-        bubbleData.maxTextViewWidth = self.frame.size.width - (cellWithOriginalXib.msgTextViewLeadingConstraint.constant + cellWithOriginalXib.msgTextViewTrailingConstraint.constant);
-        CGSize contentSize = bubbleData.contentSize;
-        if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
-        {
-            self.messageTextView.hidden = YES;
-            self.attachmentView.hidden = NO;
+            // Set attached media folders
+            self.attachmentView.mediaFolder = bubbleData.roomId;
             
             self.attachmentView.backgroundColor = [UIColor clearColor];
+            
+            // Retrieve the suitable content size for the attachment thumbnail
+            CGSize contentSize = bubbleData.contentSize;
             
             // Update image view frame in order to center loading wheel (if any)
             CGRect frame = self.attachmentView.frame;
@@ -275,17 +290,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [tap setNumberOfTapsRequired:1];
                 [tap setDelegate:self];
                 [self.attachmentView addGestureRecognizer:tap];
-                
-                // Prepare attachment description
-                NSMutableDictionary *mediaInfoDict = [NSMutableDictionary dictionaryWithDictionary:@{@"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type], @"url" : bubbleData.attachment.actualURL}];
-                
-                if (bubbleData.attachment.contentInfo)
-                {
-                    mediaInfoDict[@"info"] = bubbleData.attachment.contentInfo;
-                }
-                
-                // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = mediaInfoDict;
             }
             
             [self startProgressUI];
@@ -300,13 +304,13 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
             [self.progressView addGestureRecognizer:longPress];
         }
-        else
+        else if (self.messageTextView)
         {
-            self.attachmentView.hidden = YES;
-            self.playIconView.hidden = YES;
-            self.fileTypeIconView.hidden = YES;
-            self.messageTextView.hidden = NO;
+            // Compute message content size
+            bubbleData.maxTextViewWidth = self.frame.size.width - (self.msgTextViewLeadingConstraint.constant + self.msgTextViewTrailingConstraint.constant);
+            CGSize contentSize = bubbleData.contentSize;
             
+            // Prepare displayed text message
             NSAttributedString* newText = nil;
             
             // Underline attached file name
@@ -316,13 +320,6 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
                 
                 newText = updatedText;
-                
-                // Store attachment content description used in showAttachmentView:
-                self.attachmentView.mediaInfo = @{
-                                                  @"attachmenttype" : [NSNumber numberWithUnsignedInt:bubbleData.attachment.type],
-                                                  @"url" : bubbleData.attachment.actualURL,
-                                                  @"info" : bubbleData.attachment.contentInfo
-                                                  };
             }
             else
             {
@@ -336,18 +333,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                 self.messageTextView.attributedText = newText;
             }
             
-            // update the frame size from the content size
-            // the content size is cached so it saved few ms
-            // and avoid using sizeToFit
-            CGRect newFrame, curframe;
-            newFrame = curframe = CGRectIntegral(self.messageTextView.frame);
-            newFrame.size = contentSize;
-            
-            // update the frame only if it is required
-            // setting a frame is quite slow so avoid useless update.
-            if (!CGRectEqualToRect(curframe, CGRectIntegral(newFrame)))
+            // Update msgTextView width constraint to align correctly the text
+            if (self.msgTextViewWidthConstraint.constant != contentSize.width)
             {
-                self.messageTextView.frame = newFrame;
+                self.msgTextViewWidthConstraint.constant = contentSize.width;
             }
         }
         
@@ -357,7 +346,8 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         // Handle here timestamp display (only if a container has been defined)
         if (self.bubbleInfoContainer)
         {
-            if ((bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel) || bubbleData.showBubbleReceipts)
+            if ((bubbleData.showBubbleDateTime && !bubbleData.useCustomDateTimeLabel)
+                || (bubbleData.showBubbleReceipts && !bubbleData.useCustomReceipts))
             {
                 // Add datetime label for each component
                 self.bubbleInfoContainer.hidden = NO;
@@ -441,46 +431,45 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                             
                             timeLabelOffset += 15;
                         }
-                    
-                        if (!bubbleData.isIncoming && bubbleData.showBubbleReceipts)
+                        
+                        if (bubbleData.showBubbleReceipts && !bubbleData.useCustomReceipts)
                         {
-                            NSMutableArray* userIds = nil;
+                            NSMutableArray* roomMembers = nil;
+                            NSMutableArray* placeholders = nil;
                             NSArray* receipts = nil;
-                         
-                            MXRoom* room = [bubbleData.mxSession roomWithRoomId:component.event.roomId];
                             
-                            // get the events receipts
+                            MXRoom* room = [bubbleData.mxSession roomWithRoomId:bubbleData.roomId];
+                            
+                            // Get the events receipts by ignoring the current user receipt.
                             if (room)
                             {
                                 receipts = [room getEventReceipts:component.event.eventId sorted:YES];
                             }
                             
-                            // if some receipts are found
-                            if (receipts)
+                            // Check whether some receipts are found
+                            if (receipts.count)
                             {
-                                NSString* myUserId = bubbleData.mxSession.myUser.userId;
-                                NSMutableArray* res = [[NSMutableArray alloc] init];
+                                // Retrieve the corresponding room members
+                                roomMembers = [[NSMutableArray alloc] initWithCapacity:receipts.count];
+                                placeholders = [[NSMutableArray alloc] initWithCapacity:receipts.count];
                                 
-                                // remove the oneself receipts
-                                for(MXReceiptData* data in receipts)
+                                for (MXReceiptData* data in receipts)
                                 {
-                                    if (![data.userId isEqualToString:myUserId])
+                                    MXRoomMember * roomMember = [room.state memberWithUserId:data.userId];
+                                    if (roomMember)
                                     {
-                                        [res addObject:data.userId];
+                                        [roomMembers addObject:roomMember];
+                                        [placeholders addObject:self.picturePlaceholder];
                                     }
-                                }
-                                
-                                if (res.count > 0)
-                                {
-                                    userIds = res;
                                 }
                             }
                             
-                            if (userIds)
+                            if (roomMembers.count)
                             {
-                                MXKReceiptAvartarsContainer* avatarsContainer = [[MXKReceiptAvartarsContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15)];
+                                MXKReceiptSendersContainer* avatarsContainer = [[MXKReceiptSendersContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15) andRestClient:bubbleData.mxSession.matrixRestClient];
                                 
-                                [avatarsContainer setUserIds:userIds roomState:room.state session:bubbleData.mxSession placeholder:self.picturePlaceholder];
+                                [avatarsContainer refreshReceiptSenders:roomMembers withPlaceHolders:placeholders andAlignment:self.readReceiptsAlignment];
+                                
                                 [self.bubbleInfoContainer addSubview:avatarsContainer];
                                 
                                 // Force dateTimeLabel in full width (to handle auto-layout in case of screen rotation)
@@ -531,6 +520,10 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
                     }
                 }
             }
+            else
+            {
+                self.bubbleInfoContainer.hidden = YES;
+            }
         }
     }
 }
@@ -547,19 +540,38 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
     MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
+    CGFloat rowHeight = 0;
     
-    // Compute height of message content (The maximum width available for the textview must be updated dynamically)
-    bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
-    CGFloat rowHeight = bubbleData.contentSize.height;
-    
-    // Add top margin
-    if (bubbleData.attachment == nil || bubbleData.attachment.type == MXKAttachmentTypeFile)
+    if (cell.attachmentView && bubbleData.isAttachmentWithThumbnail)
     {
-        rowHeight += cell.msgTextViewTopConstraint.constant;
+        // retrieve the suggested image view height
+        rowHeight = bubbleData.contentSize.height;
+        
+        // Check here the minimum height defined in cell view for text message
+        if (cell.attachViewMinHeightConstraint && rowHeight < cell.attachViewMinHeightConstraint.constant)
+        {
+            rowHeight = cell.attachViewMinHeightConstraint.constant;
+        }
+        
+        // Finalize the row height by adding the vertical constraints.
+        rowHeight += cell.attachViewTopConstraint.constant + cell.attachViewBottomConstraint.constant;
     }
-    else
+    else if (cell.messageTextView)
     {
-        rowHeight += cell.attachViewTopConstraint.constant ;
+        // Update maximum width available for the textview
+        bubbleData.maxTextViewWidth = maxWidth - (cell.msgTextViewLeadingConstraint.constant + cell.msgTextViewTrailingConstraint.constant);
+        
+        // Retrieve the suggested height of the message content
+        rowHeight = bubbleData.contentSize.height;
+        
+        // Consider here the minimum height defined in cell view for text message
+        if (cell.msgTextViewMinHeightConstraint && rowHeight < cell.msgTextViewMinHeightConstraint.constant)
+        {
+            rowHeight = cell.msgTextViewMinHeightConstraint.constant;
+        }
+        
+        // Finalize the row height by adding the top constraint of the message text view in cell
+        rowHeight += cell.msgTextViewTopConstraint.constant;
     }
     
     return rowHeight;
@@ -569,14 +581,17 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 {
     bubbleData = nil;
     
-    // Remove all gesture recognizer
-    while (self.attachmentView.gestureRecognizers.count)
+    if (self.attachmentView)
     {
-        [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
+        // Remove all gesture recognizer
+        while (self.attachmentView.gestureRecognizers.count)
+        {
+            [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
+        }
     }
     
     // Remove potential dateTime (or unsent) label(s)
-    if (self.bubbleInfoContainer.subviews.count > 0)
+    if (self.bubbleInfoContainer && self.bubbleInfoContainer.subviews.count > 0)
     {
         NSArray* subviews = self.bubbleInfoContainer.subviews;
              
@@ -585,18 +600,36 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             [view removeFromSuperview];
         }
     }
+    self.bubbleInfoContainer.hidden = YES;
     
-    [self stopProgressUI];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    // Remove long tap gesture on the progressView
-    while (self.progressView.gestureRecognizers.count)
+    // Remove potential overlay subviews
+    if (self.bubbleOverlayContainer && self.bubbleOverlayContainer.subviews.count > 0)
     {
-        [self.progressView removeGestureRecognizer:self.progressView.gestureRecognizers[0]];
+        NSArray* subviews = self.bubbleOverlayContainer.subviews;
+        
+        for (UIView *view in subviews)
+        {
+            [view removeFromSuperview];
+        }
+    }
+    self.bubbleOverlayContainer.hidden = YES;
+    
+    if (self.progressView)
+    {
+        [self stopProgressUI];
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        
+        // Remove long tap gesture on the progressView
+        while (self.progressView.gestureRecognizers.count)
+        {
+            [self.progressView removeGestureRecognizer:self.progressView.gestureRecognizers[0]];
+        }
     }
     
     delegate = nil;
 }
+
+#pragma mark - Attachment progress handling
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict
 {
@@ -723,7 +756,7 @@ static NSMutableDictionary *childClasses;
     
     @synchronized(self)
     {
-        if(childClasses == nil)
+        if (childClasses == nil)
         {
             childClasses = [NSMutableDictionary dictionary];
         }
@@ -741,6 +774,7 @@ static NSMutableDictionary *childClasses;
 }
 
 #pragma mark - User actions
+
 - (IBAction)onMessageTap:(UITapGestureRecognizer*)sender
 {
     if (delegate)
@@ -752,7 +786,29 @@ static NSMutableDictionary *childClasses;
         }
         else
         {
-            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:nil];
+            MXEvent *tappedEvent = nil;
+            if (bubbleData.bubbleComponents.count == 1)
+            {
+                MXKRoomBubbleComponent *component = [bubbleData.bubbleComponents firstObject];
+                tappedEvent = component.event;
+            }
+            else if (bubbleData.bubbleComponents.count)
+            {
+                // Look for the tapped component
+                UIView* view = sender.view;
+                CGPoint tapPoint = [sender locationInView:view];
+                
+                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+                {
+                    if (tapPoint.y < component.position.y)
+                    {
+                        break;
+                    }
+                    tappedEvent = component.event;
+                }
+            }
+            
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
         }
     }
 }
@@ -778,6 +834,60 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnDateTimeContainer userInfo:nil];
+    }
+}
+
+- (IBAction)onOverlayTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnOverlayContainer userInfo:nil];
+    }
+}
+
+- (IBAction)onContentViewTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        // Check whether a bubble component is displayed at the level of the tapped line.
+        MXKRoomBubbleComponent *tappedComponent = nil;
+        
+        CGPoint tapPoint;
+        if (self.attachmentView)
+        {
+            // Check whether the user tapped on the side of the attachment.
+            tapPoint = [sender locationInView:self.attachmentView];
+            
+            if (tapPoint.y > 0 && tapPoint.y < self.attachmentView.frame.size.height)
+            {
+                // Only one component is available in bubble with attachment.
+                tappedComponent = [bubbleData.bubbleComponents firstObject];
+            }
+        }
+        else if (self.messageTextView)
+        {
+            // Check whether the user tapped in front of a text component.
+            tapPoint = [sender locationInView:self.messageTextView];
+            
+            if (tapPoint.y > 0 && tapPoint.y < self.messageTextView.frame.size.height)
+            {
+                // Consider by default the first component
+                tappedComponent = [bubbleData.bubbleComponents firstObject];
+                
+                for (NSInteger index = 1; index < bubbleData.bubbleComponents.count; index++)
+                {
+                    // Here the bubble is composed by multiple text messages
+                    MXKRoomBubbleComponent *component = bubbleData.bubbleComponents[index];
+                    if (tapPoint.y < component.position.y)
+                    {
+                        break;
+                    }
+                    tappedComponent = component;
+                }
+            }
+        }
+        
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnContentView userInfo:(tappedComponent ? @{kMXKRoomBubbleCellEventKey:tappedComponent.event} : nil)];
     }
 }
 
@@ -820,6 +930,10 @@ static NSMutableDictionary *childClasses;
             {
                 [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnEvent userInfo:@{kMXKRoomBubbleCellEventKey:selectedEvent}];
             }
+        }
+        else if (view == self.pictureView)
+        {
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnAvatarView userInfo:@{kMXKRoomBubbleCellUserIdKey: bubbleData.senderId}];
         }
     }
 }

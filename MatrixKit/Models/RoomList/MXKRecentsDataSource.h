@@ -121,6 +121,45 @@
 - (NSIndexPath*)cellIndexPathWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
 /**
+ Returns the room at the index path
+ 
+ @param indexPath the index of the cell
+ @return the MXRoom if it exists
+ */
+- (MXRoom*)getRoomAtIndexPath:(NSIndexPath *)indexPath;
+
+/**
+ Leave the room at the index path
+
+ @param indexPath the index of the cell
+ */
+- (void)leaveRoomAtIndexPath:(NSIndexPath *)indexPath;
+
+/**
+ Update the room tag at the index path
+ 
+ @param indexPath the index of the cell
+ @param tag the new tag value
+ */
+- (void)updateRoomTagAtIndexPath:(NSIndexPath *)indexPath to:(NSString*)tag;
+
+/**
+ Check if the room receives pushes.
+ 
+ @param indexPath the index of the cell
+ @return YES if the room is notified.
+ */
+- (BOOL)isRoomNotifiedAtIndexPath:(NSIndexPath *)indexPath;
+
+/**
+ Mute/unmute the room notifications to the room selected at the index path indexPath
+ 
+ @param mute YES to mute room notification
+ @param indexPath the index of the cell
+ */
+- (void)muteRoomNotifications:(BOOL)mute atIndexPath:(NSIndexPath *)indexPath;
+
+/**
  Action registered on buttons used to shrink/disclose recents sources.
  */
 - (IBAction)onButtonPressed:(id)sender;

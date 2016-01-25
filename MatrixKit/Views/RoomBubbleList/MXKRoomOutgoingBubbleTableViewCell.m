@@ -20,15 +20,7 @@
 
 #import "NSBundle+Matrixkit.h"
 
-#pragma mark - UI Constant definitions
-#define MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN -10
-
 @implementation MXKRoomOutgoingBubbleTableViewCell
-
-- (void)dealloc
-{
-    [self stopAnimating];
-}
 
 - (void)render:(MXKCellData *)cellData
 {
@@ -36,26 +28,8 @@
     
     if (self.bubbleData)
     {
-        // Check whether the previous message has been sent by the same user.
-        // The user's picture and name are displayed only for the first message.
-        // Handle sender's picture and adjust view's constraints
-        if (self.bubbleData.shouldHideSenderInformation)
-        {
-            self.pictureView.hidden = YES;
-            
-            MXKRoomBubbleTableViewCell* cellWithOriginalXib = self.class.cellWithOriginalXib;
-        
-            self.msgTextViewTopConstraint.constant = cellWithOriginalXib.msgTextViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            self.attachViewTopConstraint.constant = cellWithOriginalXib.attachViewTopConstraint.constant + MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            
-            if (!self.bubbleInfoContainer.hidden)
-            {
-                self.bubbleInfoContainerTopConstraint.constant += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-            }
-        }
-        
-        // Add unsent label for failed components (only if bubbleInfoContainer is defined)
-        if (self.bubbleInfoContainer)
+        // Add unsent label for failed components (except if the app customizes it) 
+        if (self.bubbleInfoContainer && (self.bubbleData.useCustomUnsentButton == NO))
         {
             for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
             {
@@ -82,132 +56,14 @@
                 }
             }
         }
-        
-        if (!self.attachmentView.isHidden)
-        {
-            // Do not display activity indicator on outgoing attachments (These attachments are supposed to be stored locally)
-            // Some download may append to retrieve the actual thumbnail after posting an image.
-            self.attachmentView.hideActivityIndicator = YES;
-            
-            // Check if the image is uploading
-            MXKRoomBubbleComponent *component = self.bubbleData.bubbleComponents.firstObject;
-            if (component.event.mxkState == MXKEventStateUploading)
-            {
-                // Retrieve the uploadId embedded in the fake url
-                self.bubbleData.uploadId = component.event.content[@"url"];
-                
-                self.attachmentView.alpha = 0.5;
-                
-                // Start showing upload progress
-                [self startUploadAnimating];
-            }
-            else if (component.event.mxkState == MXKEventStateSending)
-            {
-                self.attachmentView.alpha = 0.5;
-                [self.activityIndicator startAnimating];
-            }
-            else if (component.event.mxkState == MXKEventStateSendingFailed)
-            {
-                self.attachmentView.alpha = 0.5;
-                [self.activityIndicator stopAnimating];
-            }
-            else
-            {
-                self.attachmentView.alpha = 1;
-                [self.activityIndicator stopAnimating];
-            }
-        }
     }
 }
-
-+ (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
-{
-    CGFloat rowHeight = [super heightForCellData:cellData withMaximumWidth:maxWidth];
-    
-    MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
-    
-    // Check whether the previous message has been sent by the same user.
-    // The user's picture and name are displayed only for the first message.
-    if (bubbleData.shouldHideSenderInformation)
-    {
-        // Reduce top margin -> row height reduction
-        rowHeight += MXKROOMBUBBLETABLEVIEWCELL_OUTGOING_HEIGHT_REDUCTION_WHEN_SENDER_INFO_IS_HIDDEN;
-    }
-    else
-    {
-        CGFloat height = self.cellWithOriginalXib.frame.size.height;
-        
-        // We consider a minimun cell height in order to display correctly user's picture
-        if (rowHeight < height)
-        {
-            rowHeight = height;
-        }
-    }
-    
-    return rowHeight;
-}
-
 
 - (void)didEndDisplay
 {
     [super didEndDisplay];
     
-    // Hide potential loading wheel
-    [self stopAnimating];
-    
     self.bubbleInfoContainer.userInteractionEnabled = NO;
-}
-
--(void)startUploadAnimating
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaUploadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUploadProgress:) name:kMXKMediaUploadProgressNotification object:nil];
-    
-    [self.activityIndicator startAnimating];
-    
-    MXKMediaLoader *uploader = [MXKMediaManager existingUploaderWithId:self.bubbleData.uploadId];
-    if (uploader && uploader.statisticsDict)
-    {
-        [self.activityIndicator stopAnimating];
-        [self updateProgressUI:uploader.statisticsDict];
-        
-        // Check whether the upload is ended
-        if (self.progressChartView.progress == 1.0)
-        {
-            self.progressView.hidden = YES;
-        }
-    }
-    else
-    {
-        self.progressView.hidden = YES;
-    }
-}
-
-
--(void)stopAnimating
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaUploadProgressNotification object:nil];
-    [self.activityIndicator stopAnimating];
-}
-
-- (void)onUploadProgress:(NSNotification *)notif
-{
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString *uploadId = notif.object;
-        if ([uploadId isEqualToString:self.bubbleData.uploadId])
-        {
-            [self.activityIndicator stopAnimating];
-            [self updateProgressUI:notif.userInfo];
-            
-            // the upload is ended
-            if (self.progressChartView.progress == 1.0)
-            {
-                self.progressView.hidden = YES;
-            }
-        }
-    }
 }
 
 #pragma mark - User actions

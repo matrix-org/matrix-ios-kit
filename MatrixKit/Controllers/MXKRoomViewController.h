@@ -38,6 +38,23 @@ extern NSString *const kCmdResetUserPowerLevel;
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
  */
 @interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate, MXKAttachmentsViewControllerDelegate>
+{
+@protected
+    /**
+     The document interaction Controller used to share attachment
+     */
+    UIDocumentInteractionController *documentInteractionController;
+    
+    /**
+     The current shared attachment.
+     */
+    MXKAttachment *currentSharedAttachment;
+    
+    /**
+     The potential text input placeholder is saved when it is replaced temporarily
+     */
+    NSString *savedInputToolbarPlaceholder;
+}
 
 /**
  The current data source associated to the view controller.
@@ -58,6 +75,17 @@ extern NSString *const kCmdResetUserPowerLevel;
  The current extra info view defined into the view controller.
  */
 @property (nonatomic, readonly) MXKRoomActivitiesView* activitiesView;
+
+/**
+ The threshold used to trigger inconspicuous back pagination. A pagination is triggered when the vertical
+ content offset is lower this threshold. Default is 300.
+ */
+@property (nonatomic) NSUInteger backPaginationThreshold;
+
+/**
+ The maximum number of messages to retrieve during a back pagination. Default is 30.
+ */
+@property (nonatomic) NSUInteger backPaginationLimit;
 
 /**
  Enable/disable saving of the current typed text in message composer when view disappears.

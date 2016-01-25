@@ -135,9 +135,10 @@ typedef enum : NSUInteger {
  
  @param text pre-computed text representation of the event
  @param event the event.
+ @param prefix this string defines the potential prefix on which the prefix attributes (font and color) are applied (used to customized message sender name if any).
  @return NSAttributedString for displaying the event.
  */
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event;
+- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix;
 
 #pragma mark - Fake event objects creation
 - (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content;
@@ -174,24 +175,44 @@ typedef enum : NSUInteger {
  */
 - (NSString*)dateStringFromEvent:(MXEvent*)event withTime:(BOOL)time;
 
+/**
+ Generate the time string of the provided date by considered the current system time formatting.
+ 
+ @param date The date.
+ @return the string representation of the time component of the date.
+ */
+- (NSString*)timeStringFromDate:(NSDate *)date;
+
 
 # pragma mark - Customisation
 /**
  Default color used to display text content of event.
- Default is black.
+ Default is [UIColor blackColor].
  */
 @property (nonatomic) UIColor *defaultTextColor;
 
 /**
+ Default color used to display text content of event when it is displayed as subtitle (related to 'isForSubtitle' property).
+ Default is [UIColor blackColor].
+ */
+@property (nonatomic) UIColor *subTitleTextColor;
+
+/**
+ Color applied on the event description prefix used to display for example the message sender name.
+ Default is [UIColor blackColor].
+ */
+@property (nonatomic) UIColor *prefixTextColor;
+
+/**
  Color used when the event must be bing to the end user. This happens when the event
  matches the user's push rules.
- Default is blue.
+ Default is [UIColor blueColor].
  */
 @property (nonatomic) UIColor *bingTextColor;
 
 /**
  Color used to display text content of an event being sent.
- Default is ligh gray.
+ Default is [UIColor lightGrayColor].
  */
 @property (nonatomic) UIColor *sendingTextColor;
 
@@ -200,5 +221,36 @@ typedef enum : NSUInteger {
  Default is red.
  */
 @property (nonatomic) UIColor *errorTextColor;
+
+/**
+ Default text font used to display text content of event.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *defaultTextFont;
+
+/**
+ Font applied on the event description prefix used to display for example the message sender name.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *prefixTextFont;
+
+/**
+ Text font used when the event must be bing to the end user. This happens when the event
+ matches the user's push rules.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *bingTextFont;
+
+/**
+ Text font used when the event is a state event.
+ Default is italic SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *stateEventTextFont;
+
+/**
+ Text font used to display call invite.
+ Default is italic SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *callInviteTextFont;
 
 @end

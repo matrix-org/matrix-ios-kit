@@ -148,6 +148,9 @@
 "contact_mx_users" = "Matrix Users";
 "contact_local_contacts" = "Local Contacts";
 
+// Search
+"search_no_results" = "No Results";
+
 // Others
 "user_id_title" = "User ID:";
 "offline" = "offline";

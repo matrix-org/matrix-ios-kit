@@ -18,23 +18,6 @@
 
 @implementation MXKMediaCollectionViewCell
 
-+ (UINib *)nib
-{
-    // Check whether a nib file is available
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
-    if (path)
-    {
-        return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
-    }
-    return nil;
-}
-
-+ (NSString*)defaultReuseIdentifier
-{
-    return NSStringFromClass([self class]);
-}
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
     // Check whether a xib is defined

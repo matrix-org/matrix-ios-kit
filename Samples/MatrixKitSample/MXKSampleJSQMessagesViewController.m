@@ -141,6 +141,21 @@
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    // In this sample, the data source is not used to provide collection view cell
+    // That is why we return nil here.
+    return nil;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    // In this sample, the data source is not used to provide collection view cell
+    // That is why we return nil here.
+    return nil;
+}
+
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
     // For now, do a simple full reload
@@ -476,7 +491,7 @@
 {
     // Disable the button while requesting
     sender.enabled = NO;
-    [roomDataSource paginateBackMessages:30 success:^{
+    [roomDataSource paginateBackMessages:30 success:^(NSUInteger addedCellNumber){
         
         // Pagingate messages have been received by the didChange protocol
         // Just need  to reenable the button

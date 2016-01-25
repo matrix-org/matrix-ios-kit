@@ -35,4 +35,11 @@
  */
 + (NSAttributedString *)messageSeparator;
 
+/**
+ The maximum number of components in each bubble. Default is 10.
+ We limit the number of components to reduce the computation time required during bubble handling.
+ Indeed some process like [prepareBubbleComponentsPosition] is time consuming.
+ */
+@property (nonatomic) NSUInteger maxComponentCount;
+
 @end

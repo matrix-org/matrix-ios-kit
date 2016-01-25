@@ -23,13 +23,14 @@
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"
+#import "MXKReceiptSendersContainer.h"
 
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 
 /**
  Action identifier used when the user tapped on message text view.
  
- The `userInfo` is nil.
+ The `userInfo` dictionary contains an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the tapped event.
  */
 extern NSString *const kMXKRoomBubbleCellTapOnMessageTextView;
 
@@ -55,6 +56,20 @@ extern NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer;
 extern NSString *const kMXKRoomBubbleCellTapOnAttachmentView;
 
 /**
+ Action identifier used when the user tapped on overlay container.
+ 
+ The `userInfo` is nil
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnOverlayContainer;
+
+/**
+ Action identifier used when the user tapped on content view.
+ 
+ The `userInfo` dictionary may contain an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the event displayed at the level of the tapped line. This dictionary is empty if no event correspond to the tapped position.
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnContentView;
+
+/**
  Action identifier used when the user pressed unsent button displayed in front of an unsent event.
  
  The `userInfo` dictionary contains an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the unsent event.
@@ -76,14 +91,26 @@ extern NSString *const kMXKRoomBubbleCellLongPressOnEvent;
 extern NSString *const kMXKRoomBubbleCellLongPressOnProgressView;
 
 /**
+ Action identifier used when the user long pressed on avatar view.
+ 
+ The `userInfo` dictionary contains an `NSString` object under the `kMXKRoomBubbleCellUserIdKey` key, representing the user id of the concerned avatar.
+ */
+extern NSString *const kMXKRoomBubbleCellLongPressOnAvatarView;
+
+/**
  Notifications `userInfo` keys
  */
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
 
 #pragma mark - MXKRoomBubbleTableViewCell
+
 /**
  `MXKRoomBubbleTableViewCell` is a base class for displaying a room bubble.
+ 
+ This class is used to handle a maximum of items which may be present in bubbles display (like the user's picture view, the message text view...).
+ To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
+ Each inherited class should define only the actual displayed items.
  */
 @interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering>
 
@@ -102,6 +129,12 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  */
 @property (nonatomic) UIImage *picturePlaceholder;
 
+/**
+ The read receipts alignment.
+ By default, they are left aligned.
+ */
+@property (nonatomic) ReadReceiptsAlignment readReceiptsAlignment;
+
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;
@@ -109,6 +142,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (strong, nonatomic) IBOutlet UIImageView *playIconView;
 @property (strong, nonatomic) IBOutlet UIImageView *fileTypeIconView;
 @property (weak, nonatomic) IBOutlet UIView *bubbleInfoContainer;
+@property (weak, nonatomic) IBOutlet UIView *bubbleOverlayContainer;
 
 @property (weak, nonatomic) IBOutlet UIView *progressView;
 @property (weak, nonatomic) IBOutlet UILabel *statsLabel;
@@ -117,8 +151,12 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewMinHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewMinHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubbleInfoContainerTopConstraint;
 
 - (void)startProgressUI;

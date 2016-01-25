@@ -19,6 +19,8 @@
 
 @implementation NSBundle (MatrixKit)
 
+static NSString *customLocalizedStringTableName = nil;
+
 + (NSBundle*)mxk_assetsBundle
 {
     NSString *bundleResourcePath = [NSBundle mainBundle].resourcePath;
@@ -58,9 +60,29 @@ static MXKLRUCache *imagesResourceCache = nil;
     return [NSURL fileURLWithPath:[[NSBundle mxk_assetsBundle] pathForResource:name ofType:@"mp3" inDirectory:@"Sounds"]];
 }
 
++ (void)mxk_customizeLocalizedStringTableName:(NSString*)tableName
+{
+    customLocalizedStringTableName = tableName;
+}
+
 + (NSString *)mxk_localizedStringForKey:(NSString *)key
 {
-    return NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
+    NSString *localizedString;
+    
+    // Check first customized table
+    // Use "_", a string that does not worth to be translated, as default value to mark
+    // a key that does not have a value in the customized table.
+    if (customLocalizedStringTableName)
+    {
+        localizedString = NSLocalizedStringWithDefaultValue(key, customLocalizedStringTableName, [NSBundle mainBundle], @"_", nil);
+    }
+
+    if (!localizedString || (localizedString.length == 1 && [localizedString isEqualToString:@"_"]))
+    {
+        localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
+    }
+    
+    return localizedString;
 }
 
 @end

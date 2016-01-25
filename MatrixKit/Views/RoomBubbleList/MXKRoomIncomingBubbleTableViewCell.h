@@ -17,7 +17,10 @@
 #import "MXKRoomBubbleTableViewCell.h"
 
 /**
- `MXKRoomIncomingBubbleTableViewCell` displays incoming message bubbles.
+ `MXKRoomIncomingBubbleTableViewCell` inherits from 'MXKRoomBubbleTableViewCell' class in order to handle specific
+ options related to incoming messages (like typing badge).
+
+ In order to optimize bubbles rendering, we advise to define a .xib for each layout.
  */
 @interface MXKRoomIncomingBubbleTableViewCell : MXKRoomBubbleTableViewCell
 

@@ -31,6 +31,16 @@
 
 #import "MXKConstants.h"
 
+#import "MXKRoomIncomingTextMsgBubbleCell.h"
+#import "MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h"
+#import "MXKRoomIncomingAttachmentBubbleCell.h"
+#import "MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.h"
+
+#import "MXKRoomOutgoingTextMsgBubbleCell.h"
+#import "MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentBubbleCell.h"
+#import "MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h"
+
 #import "NSBundle+MatrixKit.h"
 
 NSString *const kCmdChangeDisplayName = @"/nick";
@@ -83,7 +93,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     /**
      Local typing timout
      */
-    NSTimer* typingTimer;
+    NSTimer *typingTimer;
     
     /**
      YES when back pagination is in progress.
@@ -94,11 +104,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      The back pagination spinner view.
      */
     UIView* backPaginationActivityView;
-    
-    /**
-     Store current number of bubbles before back pagination.
-     */
-    NSInteger backPaginationSavedBubblesNb;
     
     /**
      Store the height of the first bubble before back pagination.
@@ -125,16 +130,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
      */
     id UIMenuControllerDidHideMenuNotificationObserver;
     NSString *selectedText;
-    
-    /**
-     The document interaction Controller used to share attachment
-     */
-    UIDocumentInteractionController *documentInteractionController;
-    
-    /**
-     The current shared attachment.
-     */
-    MXKAttachment *currentSharedAttachment;
     
     /**
      The attachments viewer for image and video.
@@ -233,14 +228,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
     
+    // Default back pagination settings
+    _backPaginationThreshold = 300;
+    _backPaginationLimit = 30;
+    
     // Save progress text input
     _saveProgressTextInput = YES;
     
-    // Check whether a room source has been defined
-    if (roomDataSource)
-    {
-        [self configureView];
-    }
+    // Finalize table view configuration
+    [self configureBubblesTableView];
     
     // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
     UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -317,12 +313,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    if (_saveProgressTextInput && roomDataSource)
-    {
-        // Store the potential message partially typed in text input
-        roomDataSource.partialTextMessage = inputToolbarView.textMessage;
-    }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
@@ -481,6 +471,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         currentSharedAttachment = nil;
     }
     
+    // Remove potential attachments viewer
+    if (attachmentsViewer)
+    {
+        [attachmentsViewer destroy];
+        attachmentsViewer = nil;
+    }
+    
     [self dismissTemporarySubViews];
     
     _bubblesTableView.dataSource = nil;
@@ -518,19 +515,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark -
 
-- (void)configureView
+- (void)configureBubblesTableView
 {
-    [self dismissTemporarySubViews];
-    
     // Set up table delegates
     _bubblesTableView.delegate = self;
-    _bubblesTableView.dataSource = roomDataSource;
+    _bubblesTableView.dataSource = roomDataSource; // Note: data source may be nil here, it will be set during [displayRoom:] call.
     
-    // Set up classes to use for cells
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingTextMsgBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingTextMsgBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomIncomingAttachmentBubbleTableViewCellIdentifier];
-    [_bubblesTableView registerClass:[roomDataSource cellViewClassForCellIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier] forCellReuseIdentifier:kMXKRoomOutgoingAttachmentBubbleTableViewCellIdentifier];
+    // Set up default classes to use for cells
+    [_bubblesTableView registerClass:MXKRoomIncomingTextMsgBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingAttachmentBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
+    
+    [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentBubbleCell.defaultReuseIdentifier];
+    [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
     kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -686,7 +686,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         if (_bubblesTableView)
         {
-            [self configureView];
+            [self dismissTemporarySubViews];
+            
+            // Set up table data source
+            _bubblesTableView.dataSource = roomDataSource;
         }
         
         // When ready, do the initial back pagination
@@ -759,6 +762,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Finalize room title refresh
     [titleView refreshDisplay];
+    
+    if (activitiesView)
+    {
+        // Hide by default the activity view when no room is displayed
+        activitiesView.hidden = (roomDataSource == nil);
+    }
 }
 
 - (void)leaveRoomOnEvent:(MXEvent*)event
@@ -1019,6 +1028,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSArray *components = [string componentsSeparatedByString:@" "];
     NSString *cmd = [components objectAtIndex:0];
     NSUInteger index = 1;
+    
+    // We save here the current placeholder of the text input to be able
+    // to replace it temporarily with a cmd usage string.
+    if (!savedInputToolbarPlaceholder)
+    {
+        savedInputToolbarPlaceholder = inputToolbarView.placeholder.length ? inputToolbarView.placeholder : @"";
+    }
     
     if ([cmd isEqualToString:kCmdEmote])
     {
@@ -1287,123 +1303,93 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [roomDataSource paginateBackMessagesToFillRect:frame
                                            success:^{
                                                
-                                               // Reload table
+                                               // Stop spinner
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
+                                               
+                                               // Reload table
+                                               [self reloadBubblesTable:YES];
                                                
                                            }
                                            failure:^(NSError *error) {
                                                
-                                               // Reload table
+                                               // Stop spinner
                                                isBackPaginationInProgress = NO;
-                                               [self reloadBubblesTable:YES];
                                                [self stopActivityIndicator];
+                                               
+                                               // Reload table
+                                               [self reloadBubblesTable:YES];
                                                
                                            }];
 }
 
 /**
- This method handles the back pagination and the related animation when the user bounces at the top of the tableview.
- It is not a public method because it is implemented by considering some priori knowledges like the current table content offset.
+ Trigger an inconspicuous back pagination. The retrieved history is added discretely to the top of bubbles table without change the current display.
  
- If a developer wants to customize the back pagination, he should override [scrollViewWillEndDragging: withVelocity: targetContentOffset:]
- to call his own back pagination handler.
+ @param limit the maximum number of messages to retrieve
  */
-- (void)triggerBackPagination
+- (void)triggerBackPagination:(NSUInteger)limit
 {
     // Paginate only if possible
-    if (NO == roomDataSource.room.canPaginate)
+    if (isBackPaginationInProgress || NO == roomDataSource.room.canPaginate)
     {
         return;
     }
     
     // Store the current height of the first bubble (if any)
     backPaginationSavedFirstBubbleHeight = 0;
-    backPaginationSavedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
-    if (backPaginationSavedBubblesNb)
+    if ([roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
     {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
+    
     isBackPaginationInProgress = YES;
     
-    if (!backPaginationActivityView)
-    {
-        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        spinner.hidesWhenStopped = NO;
-        spinner.backgroundColor = [UIColor clearColor];
-        [spinner startAnimating];
-        
-        // no need to manage constraints here
-        // IOS defines them.
-        // since IOS7 the spinner is centered so need to create a background and add it.
-        _bubblesTableView.tableHeaderView = backPaginationActivityView = spinner;
-    }
-    
     // Trigger back pagination
-    [roomDataSource paginateBackMessages:10 success:^{
+    [roomDataSource paginateBackMessages:limit success:^(NSUInteger addedCellNumber) {
         
-        // Delay the response handling to keep visible the spinner a minimum of time
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        // We will adjust the vertical offset in order to unchange the current display (back pagination should be inconspicuous)
+        CGFloat verticalOffset = 0;
+        NSIndexPath *indexPath;
         
-            // We will scroll to bottom if the displayed content does not reach the bottom (after adding back pagination)
-            BOOL shouldScrollToBottom = NO;
-            CGFloat maxPositionY = self.bubblesTableView.contentOffset.y + (self.bubblesTableView.frame.size.height - self.bubblesTableView.contentInset.bottom);
-            // Compute the height of the blank part at the bottom
-            if (maxPositionY > self.bubblesTableView.contentSize.height)
-            {
-                CGFloat blankAreaHeight = maxPositionY - self.bubblesTableView.contentSize.height;
-                // Scroll to bottom if this blank area is greater than max scrolling offet
-                shouldScrollToBottom = (blankAreaHeight >= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET);
-            }
-            
-            CGFloat verticalOffset = 0;
-            if (shouldScrollToBottom == NO)
-            {
-                NSInteger addedBubblesNb = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0] - backPaginationSavedBubblesNb;
-                if (addedBubblesNb >= 0)
-                {
-                    
-                    // We will adjust the vertical offset in order to make visible only a few part of added messages (at the top of the table)
-                    NSIndexPath *indexPath;
-                    // Compute the cumulative height of the added messages
-                    for (NSUInteger index = 0; index < addedBubblesNb; index++)
-                    {
-                        indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                        verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
-                    }
-                    
-                    // Add delta of the height of the first existing message
-                    indexPath = [NSIndexPath indexPathForRow:addedBubblesNb inSection:0];
-                    verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
-                    
-                    // Deduce the vertical offset from this height
-                    verticalOffset -= MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET;
-                }
-            }
-            
-            // Trigger a full table reload. We could not only insert new cells related to back pagination,
-            // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-            isBackPaginationInProgress = NO;
-            _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
-            
-            [self reloadBubblesTable:NO];
-            
-            // Adjust vertical content offset
-            if (shouldScrollToBottom)
-            {
-                [self scrollBubblesTableViewToBottomAnimated:NO];
-            }
-            else if (verticalOffset > 0)
-            {
-                // Adjust vertical offset in order to limit scrolling down
-                CGPoint contentOffset = self.bubblesTableView.contentOffset;
-                contentOffset.y = verticalOffset - self.bubblesTableView.contentInset.top;
-                [self.bubblesTableView setContentOffset:contentOffset animated:NO];
-            }
-            
-        });
+        // Compute the cumulative height of the added messages
+        for (NSUInteger index = 0; index < addedCellNumber; index++)
+        {
+            indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+            verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+        }
+        
+        // Add delta of the height of the previous first cell (if any)
+        if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+        {
+            indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
+            verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+        }
+        
+        // Trigger a full table reload. We could not only insert new cells related to back pagination,
+        // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+        isBackPaginationInProgress = NO;
+        _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+        
+        // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
+        [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
+        [self.bubblesTableView setScrollEnabled:NO];
+        
+        BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
+        
+        // Adjust vertical content offset (except if the table has been scrolled to bottom)
+        if (!hasBeenScrolledToBottom && verticalOffset > 0)
+        {
+            // Adjust vertical offset in order to compensate scrolling
+            CGPoint contentOffset = self.bubblesTableView.contentOffset;
+            contentOffset.y += verticalOffset;
+            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+        }
+        
+        // Restore scrolling and the scroll indicator
+        [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
+        [self.bubblesTableView setScrollEnabled:YES];
         
     } failure:^(NSError *error) {
         
@@ -1411,7 +1397,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         isBackPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
-        [self reloadBubblesTable:YES];
+        [self reloadBubblesTable:NO];
         
     }];
 }
@@ -1427,7 +1413,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginateBackMessages:30 success:^{
+    [roomDataSource paginateBackMessages:_backPaginationLimit success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
@@ -1599,7 +1585,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark - bubbles table
 
-- (void)reloadBubblesTable:(BOOL)useBottomAnchor
+// Return a boolean value which tells whether the table has been scrolled to the bottom
+- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor
 {
     BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
@@ -1715,6 +1702,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
+    
+    return shouldScrollToBottom;
 }
 
 
@@ -1772,6 +1761,81 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 #pragma mark - MXKDataSourceDelegate
+
+- (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
+{
+    Class cellViewClass = nil;
+    
+    // Sanity check
+    if ([cellData conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)])
+    {
+        id<MXKRoomBubbleCellDataStoring> bubbleData = (id<MXKRoomBubbleCellDataStoring>)cellData;
+        
+        // Select the suitable table view cell class
+        if (bubbleData.isIncoming)
+        {
+            if (bubbleData.isAttachmentWithThumbnail)
+            {
+                if (bubbleData.shouldHideSenderInformation)
+                {
+                    cellViewClass = MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.class;
+                }
+                else
+                {
+                    cellViewClass = MXKRoomIncomingAttachmentBubbleCell.class;
+                }
+            }
+            else
+            {
+                if (bubbleData.shouldHideSenderInformation)
+                {
+                    cellViewClass = MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.class;
+                }
+                else
+                {
+                    cellViewClass = MXKRoomIncomingTextMsgBubbleCell.class;
+                }
+            }
+        }
+        else if (bubbleData.isAttachmentWithThumbnail)
+        {
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cellViewClass = MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.class;
+            }
+            else
+            {
+                cellViewClass = MXKRoomOutgoingAttachmentBubbleCell.class;
+            }
+        }
+        else
+        {
+            if (bubbleData.shouldHideSenderInformation)
+            {
+                cellViewClass = MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.class;
+            }
+            else
+            {
+                cellViewClass = MXKRoomOutgoingTextMsgBubbleCell.class;
+            }
+        }
+    }
+    
+    return cellViewClass;
+}
+
+- (NSString *)cellReuseIdentifierForCellData:(MXKCellData*)cellData
+{
+    Class class = [self cellViewClassForCellData:cellData];
+    
+    if ([class respondsToSelector:@selector(defaultReuseIdentifier)])
+    {
+        return [class defaultReuseIdentifier];
+    }
+    
+    return nil;
+}
+
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
     if (isBackPaginationInProgress)
@@ -1810,7 +1874,30 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
     {
-        NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+        //NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+        
+        // Add the member display name in text input
+        MXRoomMember *selectedRoomMember = [roomDataSource.room.state memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
+        if (selectedRoomMember)
+        {
+            NSString *memberName = selectedRoomMember.displayname.length ? selectedRoomMember.displayname : selectedRoomMember.userId;
+            if (inputToolbarView.textMessage.length)
+            {
+                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@ %@", inputToolbarView.textMessage, memberName];
+            }
+            else if ([selectedRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
+            {
+                // Prepare emote
+                inputToolbarView.textMessage = @"/me ";
+            }
+            else
+            {
+                // Bing the member
+                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@: ", memberName];
+            }
+            
+            [inputToolbarView becomeFirstResponder];
+        }
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnDateTimeContainer])
     {
@@ -2063,13 +2150,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [strongSelf->documentInteractionController setDelegate:strongSelf];
-                        currentSharedAttachment = attachment;
+                        strongSelf->currentSharedAttachment = attachment;
                         
                         if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
                         {
                             strongSelf->documentInteractionController = nil;
                             [attachment onShareEnded];
-                            currentSharedAttachment = nil;
+                            strongSelf->currentSharedAttachment = nil;
                         }
                         
                     } failure:^(NSError *error) {
@@ -2161,6 +2248,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 currentAlert = nil;
             }
         }
+    }
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnAvatarView])
+    {
+        NSLog(@"    -> Avatar of %@ has been long pressed", userInfo[kMXKRoomBubbleCellUserIdKey]);
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellUnsentButtonPressed])
     {
@@ -2265,10 +2356,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Detect vertical bounce at the top of the tableview to trigger pagination
     if (scrollView == _bubblesTableView)
     {
-        // paginate ?
+        // Detect top bounce
         if (scrollView.contentOffset.y < -64)
         {
-            [self triggerBackPagination];
+            // Shall we add back pagination spinner?
+            if (isBackPaginationInProgress && !backPaginationActivityView)
+            {
+                UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                spinner.hidesWhenStopped = NO;
+                spinner.backgroundColor = [UIColor clearColor];
+                [spinner startAnimating];
+                
+                // no need to manage constraints here
+                // IOS defines them.
+                // since IOS7 the spinner is centered so need to create a background and add it.
+                _bubblesTableView.tableHeaderView = backPaginationActivityView = spinner;
+            }
         }
         else
         {
@@ -2305,7 +2408,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (scrollView == _bubblesTableView)
+    if (scrollView == _bubblesTableView && scrollView.contentSize.height)
     {
         // Consider this callback to reset scrolling to bottom flag
         isScrollingToBottom = NO;
@@ -2316,6 +2419,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
         {
             [self managePullToKick:scrollView];
+        }
+        
+        // Trigger inconspicuous pagination when user scrolls toward the top
+        if (scrollView.contentOffset.y < _backPaginationThreshold)
+        {
+            [self triggerBackPagination: _backPaginationLimit];
         }
     }
 }
@@ -2349,11 +2458,19 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {
-    if (typing)
+    if (typing && savedInputToolbarPlaceholder)
     {
-        // Reset potential placeholder (used in case of wrong command usage)
-        inputToolbarView.placeholder = nil;
+        // Reset temporary placeholder (used in case of wrong command usage)
+        inputToolbarView.placeholder = savedInputToolbarPlaceholder.length ? savedInputToolbarPlaceholder : nil;
+        savedInputToolbarPlaceholder = nil;
     }
+
+    if (_saveProgressTextInput && roomDataSource)
+    {
+        // Store the potential message partially typed in text input
+        roomDataSource.partialTextMessage = inputToolbarView.textMessage;
+    }
+    
     [self handleTypingNotification:typing];
 }
 
