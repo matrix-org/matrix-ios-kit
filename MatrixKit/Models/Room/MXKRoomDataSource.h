@@ -405,4 +405,10 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState;
 
+/**
+ Overridable method to customise the way how unsent messages are managed.
+ By default, they are added to the end of the timeline.
+ */
+- (void)handleUnsentMessages;
+
 @end

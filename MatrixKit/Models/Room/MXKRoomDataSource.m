@@ -412,18 +412,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Register on typing notif
                     [self listenTypingNotifications];
                 }
-                
-                // Add unsent events at the end of the conversation
-                for (MXEvent *outgoingMessage in _room.outgoingMessages)
-                {
-                    outgoingMessage.mxkState = MXKEventStateSendingFailed;
 
-                    // Need to update the timestamp because bubbles can reorder their events
-                    // according to theirs timestamps
-                    outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-
-                    [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXEventDirectionForwards];
-                }
+                // Manage unsent messages
+                [self handleUnsentMessages];
                 
                 // Update here data source state if it is not already ready
                 state = MXKDataSourceStateReady;
@@ -1563,6 +1554,21 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (self.delegate)
     {
         [self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
+- (void)handleUnsentMessages
+{
+    // Add unsent events at the end of the conversation
+    for (MXEvent *outgoingMessage in _room.outgoingMessages)
+    {
+        outgoingMessage.mxkState = MXKEventStateSendingFailed;
+
+        // Need to update the timestamp because bubbles can reorder their events
+        // according to theirs timestamps
+        outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
+
+        [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXEventDirectionForwards];
     }
 }
 
