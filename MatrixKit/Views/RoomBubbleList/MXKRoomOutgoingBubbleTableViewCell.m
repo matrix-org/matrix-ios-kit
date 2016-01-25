@@ -28,8 +28,8 @@
     
     if (self.bubbleData)
     {
-        // Add unsent label for failed components (only if bubbleInfoContainer is defined)
-        if (self.bubbleInfoContainer)
+        // Add unsent label for failed components (except if the app customizes it) 
+        if (self.bubbleInfoContainer && (self.bubbleData.useCustomUnsentButton == NO))
         {
             for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
             {

@@ -140,6 +140,11 @@
  */
 @property (nonatomic) BOOL useCustomReceipts;
 
+/**
+ A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
+ */
+@property (nonatomic) BOOL useCustomUnsentButton;
+
 #pragma mark - Public methods
 /**
  Create a new `MXKRoomBubbleCellDataStoring` object for a new bubble cell.

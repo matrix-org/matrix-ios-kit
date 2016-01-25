@@ -128,6 +128,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         self.useCustomDateTimeLabel = NO;
         self.useCustomReceipts = NO;
+        self.useCustomUnsentButton = NO;
         
         _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
         
@@ -2125,6 +2126,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             bubbleData.useCustomDateTimeLabel = self.useCustomDateTimeLabel;
             // let the caller application manages the receipt?
             bubbleData.useCustomReceipts = self.useCustomReceipts;
+            // let the caller application manages the unsent button?
+            bubbleData.useCustomUnsentButton = self.useCustomUnsentButton;
             
             // Make the bubble display the data
             [cell render:bubbleData];
