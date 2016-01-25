@@ -40,6 +40,7 @@ Improvements:
  * MXKTools: Add method to convert an image to a pattern color.
 
 Bug fixes:
+ * SYIOS-183: Store in-progress messages. Pending and unsent messages are now stored.
  * SYIOS-180: Bad scrolling performance on iOS 9.
  * The pusher is deleted and recreated every time the app starts, which is a Bad Idea.
  * iOS breaks catastrophically if you try to attach a photo when landscape. 
