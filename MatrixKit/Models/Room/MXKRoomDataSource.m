@@ -1018,7 +1018,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
-            [self removePendingLocalEcho:localEcho];
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1030,7 +1029,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     } failure:^(NSError *error) {
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
-        [self removePendingLocalEcho:localEcho];
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1114,7 +1112,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
-            [self removePendingLocalEcho:localEcho];
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1126,7 +1123,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     } failure:^(NSError *error) {
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
-        [self removePendingLocalEcho:localEcho];
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1228,7 +1224,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         
                         // Update the local echo with the error state
                         localEcho.mxkState = MXKEventStateSendingFailed;
-                        [self removePendingLocalEcho:localEcho];
                         [self updateLocalEcho:localEcho];
                         
                         if (failure)
@@ -1241,7 +1236,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     
                     // Update the local echo with the error state
                     localEcho.mxkState = MXKEventStateSendingFailed;
-                    [self removePendingLocalEcho:localEcho];
                     [self updateLocalEcho:localEcho];
                     
                     if (failure)
@@ -1254,7 +1248,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             {
                 // Update the local echo with the error state
                 localEcho.mxkState = MXKEventStateSendingFailed;
-                [self removePendingLocalEcho:localEcho];
                 [self updateLocalEcho:localEcho];
                 
                 if (failure)
@@ -1266,7 +1259,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
-            [self removePendingLocalEcho:localEcho];
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1279,7 +1271,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
-        [self removePendingLocalEcho:localEcho];
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1360,7 +1351,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             
             // Update the local echo with the error state
             localEcho.mxkState = MXKEventStateSendingFailed;
-            [self removePendingLocalEcho:localEcho];
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1372,7 +1362,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     } failure:^(NSError *error) {
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
-        [self removePendingLocalEcho:localEcho];
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1401,7 +1390,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     } failure:^(NSError *error) {
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
-        [self removePendingLocalEcho:localEcho];
         [self updateLocalEcho:localEcho];
         
         if (failure)
