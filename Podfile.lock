@@ -24,11 +24,11 @@ PODS:
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.8)
-  - Mantle (2.0.5):
-    - Mantle/extobjc (= 2.0.5)
-  - Mantle/extobjc (2.0.5)
-  - MatrixSDK (0.5.6):
+  - libPhoneNumber-iOS (0.8.10)
+  - Mantle (2.0.6):
+    - Mantle/extobjc (= 2.0.6)
+  - Mantle/extobjc (2.0.6)
+  - MatrixSDK (0.6.0):
     - AFNetworking (~> 2.6.0)
     - Mantle (~> 2.0.5)
 
@@ -45,7 +45,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: 9c6d4da79b07047b2cc783c61d653c14fc813480
+    :commit: 950a2a8e584c0d56feda6ec6eb14ce0ef3c5f55c
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
@@ -53,8 +53,8 @@ SPEC CHECKSUMS:
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: fe877b7c44c270a9da2082d3e2892d5316f6a2f9
-  Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
-  MatrixSDK: 47a452d56248eae27bbb332b33280986c1f1a854
+  libPhoneNumber-iOS: 7bfd00f843fdcd82b5182b463e8eb3b27579f41d
+  Mantle: 299966b00759634931699f69cb6a30b9239b944d
+  MatrixSDK: 053f51ed82e818cce2aa4df1e10763c16d9221f0
 
 COCOAPODS: 0.39.0
