@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -10,6 +10,7 @@
                 <outlet property="authFallbackContentView" destination="q1e-Wg-6t7" id="mR6-hS-5YB"/>
                 <outlet property="authFallbackWebView" destination="Vhh-m0-nXN" id="YWJ-8T-74t"/>
                 <outlet property="authInputContainerViewHeightConstraint" destination="e04-1Y-4gZ" id="5qa-cu-M8v"/>
+                <outlet property="authInputContainerViewMinHeightConstraint" destination="2s6-K4-8Vv" id="x5P-zJ-hA6"/>
                 <outlet property="authInputsContainerView" destination="xWb-IJ-v7F" id="DEo-Ji-wPT"/>
                 <outlet property="authScrollViewBottomConstraint" destination="g7o-eO-7Yr" id="kVv-Xp-aTT"/>
                 <outlet property="authSwitchButton" destination="FNe-kn-VlD" id="EhA-sr-kiZ"/>
@@ -85,6 +86,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="centerX" secondItem="54b-4O-ip9" secondAttribute="centerX" id="0bV-x1-MhX"/>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="80" id="2s6-K4-8Vv"/>
                                         <constraint firstItem="54b-4O-ip9" firstAttribute="top" secondItem="xWb-IJ-v7F" secondAttribute="top" constant="8" id="Ddp-gU-nLY"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="54b-4O-ip9" secondAttribute="trailing" constant="8" id="VEQ-w9-9Ln"/>
                                         <constraint firstAttribute="centerY" secondItem="30E-gm-z6O" secondAttribute="centerY" id="ctL-D3-bgP"/>

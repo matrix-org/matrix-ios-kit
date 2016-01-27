@@ -73,6 +73,7 @@ extern NSString *const MXKAuthErrorDomain;
 
 @property (weak, nonatomic) IBOutlet UIView *authInputsContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewMinHeightConstraint;
 
 @property (weak, nonatomic) IBOutlet UILabel *homeServerLabel;
 @property (weak, nonatomic) IBOutlet UITextField *homeServerTextField;
@@ -161,6 +162,13 @@ extern NSString *const MXKAuthErrorDomain;
  @param onUnrecognizedCertificateBlock
  */
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock;
+
+/**
+ Action registered on the following events:
+ - 'UIControlEventTouchUpInside' for each UIButton instance.
+ - 'UIControlEventValueChanged' for each UISwitch instance.
+ */
+- (IBAction)onButtonPressed:(id)sender;
 
 @end
 

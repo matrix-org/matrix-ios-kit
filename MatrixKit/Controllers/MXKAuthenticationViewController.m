@@ -703,7 +703,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     else
     {
         // No input fields are displayed
-        _authInputContainerViewHeightConstraint.constant = 80;
+        _authInputContainerViewHeightConstraint.constant = _authInputContainerViewMinHeightConstraint.constant;
     }
     
     [self.view layoutIfNeeded];
