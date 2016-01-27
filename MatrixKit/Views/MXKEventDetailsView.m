@@ -66,7 +66,7 @@
         
         if (mxEvent)
         {
-            NSMutableDictionary *eventDict = [NSMutableDictionary dictionaryWithDictionary:mxEvent.originalDictionary];
+            NSMutableDictionary *eventDict = [NSMutableDictionary dictionaryWithDictionary:mxEvent.JSONDictionary];
             
             // Remove event type added by SDK
             [eventDict removeObjectForKey:@"event_type"];
