@@ -150,8 +150,12 @@ extern NSString *const MXKAuthErrorDomain;
 - (void)refreshSupportedAuthFlow;
 
 /**
- Customize the MXHTTPClientOnUnrecognizedCertificate block that will be used to handle unrecognized certificate observed
- during authentication challenge from a server.
+ Handle supported flows returned by the server.
+ */
+- (void)handleHomeServerFlows:(NSArray *)flows;
+
+/**
+ Customize the MXHTTPClientOnUnrecognizedCertificate block that will be used to handle unrecognized certificate observed during authentication challenge from a server.
  By default we prompt the user by displaying a fingerprint (SHA256) of the certificate. The user is then able to trust or not the certificate.
  
  @param onUnrecognizedCertificateBlock

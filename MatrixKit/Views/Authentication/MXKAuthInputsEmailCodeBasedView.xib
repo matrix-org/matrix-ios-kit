@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -55,6 +55,7 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="FVM-ec-tja" firstAttribute="top" secondItem="mbS-mV-L86" secondAttribute="bottom" constant="8" id="0BV-8c-ZVg"/>
+                <constraint firstAttribute="height" constant="122" id="1nP-RR-5GK"/>
                 <constraint firstAttribute="centerX" secondItem="mbS-mV-L86" secondAttribute="centerX" id="2R2-Du-o97"/>
                 <constraint firstAttribute="bottom" secondItem="FVM-ec-tja" secondAttribute="bottom" constant="8" id="7DZ-Wm-ps6"/>
                 <constraint firstItem="oen-Yq-xJw" firstAttribute="top" secondItem="Nmn-Ry-t32" secondAttribute="top" constant="8" id="BkW-Np-qB3"/>
@@ -62,7 +63,6 @@
                 <constraint firstAttribute="centerX" secondItem="FVM-ec-tja" secondAttribute="centerX" id="c9K-6H-ufd"/>
                 <constraint firstItem="mbS-mV-L86" firstAttribute="top" secondItem="vDa-DE-6Bn" secondAttribute="bottom" constant="8" id="cq8-qs-59M"/>
                 <constraint firstItem="vDa-DE-6Bn" firstAttribute="top" secondItem="Nmn-Ry-t32" secondAttribute="top" constant="8" id="eAp-Ob-hFr"/>
-                <constraint firstAttribute="width" constant="300" id="fac-n1-3De"/>
                 <constraint firstAttribute="centerX" secondItem="vDa-DE-6Bn" secondAttribute="centerX" id="otm-qx-iNL"/>
                 <constraint firstAttribute="centerX" secondItem="oen-Yq-xJw" secondAttribute="centerX" id="s7Y-qf-yrY"/>
             </constraints>
@@ -75,6 +75,7 @@
                 <outlet property="emailAndTokenTextField" destination="mbS-mV-L86" id="nY5-gT-wGe"/>
                 <outlet property="promptEmailTokenLabel" destination="vDa-DE-6Bn" id="X3w-5E-0Kg"/>
                 <outlet property="userLoginTextField" destination="oen-Yq-xJw" id="OM2-gy-O9P"/>
+                <outlet property="viewHeightConstraint" destination="1nP-RR-5GK" id="s3W-1L-bWN"/>
             </connections>
         </view>
     </objects>

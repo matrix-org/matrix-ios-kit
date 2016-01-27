@@ -666,6 +666,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         currentAuthInputsView = [class authInputsView];
     }
     
+    CGFloat previousInputsContainerViewHeight = _authInputContainerViewHeightConstraint.constant;
+    
     if (currentAuthInputsView)
     {
         [_authInputsContainerView addSubview:currentAuthInputsView];
@@ -706,8 +708,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     [self.view layoutIfNeeded];
     
-    // Refresh content view height
-    _contentViewHeightConstraint.constant = _authSwitchButton.frame.origin.y + _authSwitchButton.frame.size.height + 15;
+    // Refresh content view height by considering the updated height of inputs container
+    _contentViewHeightConstraint.constant += (_authInputContainerViewHeightConstraint.constant - previousInputsContainerViewHeight);
     
     selectedFlow = inSelectedFlow;
 }
