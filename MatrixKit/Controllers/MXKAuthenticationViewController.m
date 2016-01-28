@@ -76,11 +76,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     UIBarButtonItem *cancelFallbackBarButton;
 }
 
-/**
- The current selected login flow
- */
-@property (nonatomic) MXLoginFlow *selectedFlow;
-
 @end
 
 @implementation MXKAuthenticationViewController
@@ -368,8 +363,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (mxRestClient)
     {
-        [_authenticationActivityIndicator startAnimating];
-        self.selectedFlow = nil;
         if (_authType == MXKAuthenticationTypeLogin)
         {
             mxCurrentOperation = [mxRestClient getLoginFlow:^(NSDictionary *JSONResponse) {
@@ -592,15 +585,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if ((supportedFlows.count != flows.count) && authenticationFallback.length)
     {
         NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
+
+        // Remove the potential auth inputs view
+        self.selectedFlow = nil;
+    }
+    else if (supportedFlows.count)
+    {
+        // FIXME display supported flows
+        // Currently we select the first one
+        self.selectedFlow = [supportedFlows firstObject];
     }
     else
     {
-        if (supportedFlows.count)
-        {
-            // FIXME display supported flows
-            // Currently we select the first one
-            self.selectedFlow = [supportedFlows firstObject];
-        }
+        // Remove the potential auth inputs view
+        self.selectedFlow = nil;
     }
     
     if (!self.selectedFlow)
@@ -634,22 +632,15 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setSelectedFlow:(MXLoginFlow *)inSelectedFlow
 {
-    // Hide views which depend on auth flow
-    _submitButton.hidden = YES;
-    _noFlowLabel.hidden = YES;
-    _retryButton.hidden = YES;
-    
-    [currentAuthInputsView removeFromSuperview];
-    currentAuthInputsView.delegate = nil;
-    currentAuthInputsView = nil;
+    selectedFlow = inSelectedFlow;
     
     // C-S API v2: Consider the first flow from stages as current type
-    if (inSelectedFlow.type == nil && inSelectedFlow.stages.count)
+    if (selectedFlow.type == nil && selectedFlow.stages.count)
     {
-        inSelectedFlow.type = inSelectedFlow.stages.firstObject;
+        selectedFlow.type = selectedFlow.stages.firstObject;
     }
     
-    // Create the right auth inputs view
+    // Retrieve the corresponding auth inputs view
     NSDictionary *authInputsViewMap;
     if (self.authType == MXKAuthenticationTypeLogin)
     {
@@ -660,7 +651,23 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         authInputsViewMap = registerAuthInputsViewMap;
     }
     
-    Class class = authInputsViewMap[inSelectedFlow.type];
+    Class class = authInputsViewMap[selectedFlow.type];
+    
+    // Keep the current view if it is still relevant
+    if (currentAuthInputsView && [currentAuthInputsView isKindOfClass:class])
+    {
+        return;
+    }
+    
+    // Here a new view will be loaded, hide first subviews which depend on auth flow
+    _submitButton.hidden = YES;
+    _noFlowLabel.hidden = YES;
+    _retryButton.hidden = YES;
+    
+    [currentAuthInputsView removeFromSuperview];
+    currentAuthInputsView.delegate = nil;
+    currentAuthInputsView = nil;
+    
     if (class)
     {
         currentAuthInputsView = [class authInputsView];
@@ -710,8 +717,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     // Refresh content view height by considering the updated height of inputs container
     _contentViewHeightConstraint.constant += (_authInputContainerViewHeightConstraint.constant - previousInputsContainerViewHeight);
-    
-    selectedFlow = inSelectedFlow;
 }
 
 - (void)onFailureDuringMXOperation:(NSError*)error
@@ -739,17 +744,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                {}];
     [alert showInViewController:self];
     
-    // Display failure reason
-    _noFlowLabel.hidden = NO;
-    _noFlowLabel.text = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-    if (!_noFlowLabel.text.length)
-    {
-        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
-    }
-    [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
-    [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
-    _retryButton.hidden = NO;
-    
     // Handle specific error code here
     if ([error.domain isEqualToString:NSURLErrorDomain])
     {
@@ -766,6 +760,30 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 [self refreshSupportedAuthFlow];
             });
         }
+        else
+        {
+            // Remove the potential auth inputs view
+            self.selectedFlow = nil;
+        }
+    }
+    else
+    {
+        // Remove the potential auth inputs view
+        self.selectedFlow = nil;
+    }
+    
+    if (!selectedFlow)
+    {
+        // Display failure reason
+        _noFlowLabel.hidden = NO;
+        _noFlowLabel.text = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+        if (!_noFlowLabel.text.length)
+        {
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
+        }
+        [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+        [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+        _retryButton.hidden = NO;
     }
 }
 

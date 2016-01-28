@@ -99,6 +99,11 @@ extern NSString *const MXKAuthErrorDomain;
 @property (nonatomic) MXKAuthenticationType authType;
 
 /**
+ The current selected login flow
+ */
+@property (nonatomic) MXLoginFlow *selectedFlow;
+
+/**
  The default home server url (nil by default).
  */
 @property (nonatomic) NSString *defaultHomeServerUrl;
