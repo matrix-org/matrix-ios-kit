@@ -1,3 +1,11 @@
+Changes in MatrixKit in 0.3.1 (2016-01-29)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.1).
+ * MXKAuthenticationViewController: Keep the current inputs view when it is still relevant after auth flow refresh.
+ * MXKAuthenticationViewController: Improve scroller content size handling.
+
 Changes in MatrixKit in 0.3.0 (2016-01-22)
 ===============================================
 
