@@ -60,6 +60,8 @@ typedef enum {
  */
 @property (weak, nonatomic) UITextField *displayNameTextField;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;
+
 /**
  *  Returns the `UINib` object initialized for the auth inputs view.
  *

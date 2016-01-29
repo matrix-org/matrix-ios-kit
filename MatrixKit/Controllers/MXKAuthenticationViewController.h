@@ -73,6 +73,7 @@ extern NSString *const MXKAuthErrorDomain;
 
 @property (weak, nonatomic) IBOutlet UIView *authInputsContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *authInputContainerViewMinHeightConstraint;
 
 @property (weak, nonatomic) IBOutlet UILabel *homeServerLabel;
 @property (weak, nonatomic) IBOutlet UITextField *homeServerTextField;
@@ -96,6 +97,11 @@ extern NSString *const MXKAuthErrorDomain;
  The current authentication type
  */
 @property (nonatomic) MXKAuthenticationType authType;
+
+/**
+ The current selected login flow
+ */
+@property (nonatomic) MXLoginFlow *selectedFlow;
 
 /**
  The default home server url (nil by default).
@@ -150,13 +156,24 @@ extern NSString *const MXKAuthErrorDomain;
 - (void)refreshSupportedAuthFlow;
 
 /**
- Customize the MXHTTPClientOnUnrecognizedCertificate block that will be used to handle unrecognized certificate observed
- during authentication challenge from a server.
+ Handle supported flows returned by the server.
+ */
+- (void)handleHomeServerFlows:(NSArray *)flows;
+
+/**
+ Customize the MXHTTPClientOnUnrecognizedCertificate block that will be used to handle unrecognized certificate observed during authentication challenge from a server.
  By default we prompt the user by displaying a fingerprint (SHA256) of the certificate. The user is then able to trust or not the certificate.
  
  @param onUnrecognizedCertificateBlock
  */
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock;
+
+/**
+ Action registered on the following events:
+ - 'UIControlEventTouchUpInside' for each UIButton instance.
+ - 'UIControlEventValueChanged' for each UISwitch instance.
+ */
+- (IBAction)onButtonPressed:(id)sender;
 
 @end
 

@@ -566,7 +566,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             if ([event.eventId isEqualToString:redactionEvent.redacts])
                             {
                                 redactedEvent = [event prune];
-                                redactedEvent.redactedBecause = redactionEvent.originalDictionary;
+                                redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
                                 break;
                             }
                         }

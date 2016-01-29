@@ -63,7 +63,7 @@
 
 - (CGFloat)actualHeight
 {
-    return self.frame.size.height;
+    return _viewHeightConstraint.constant;
 }
 
 - (BOOL)areAllRequiredFieldsFilled
