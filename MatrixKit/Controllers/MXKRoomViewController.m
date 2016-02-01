@@ -2409,11 +2409,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (scrollView == _bubblesTableView && scrollView.contentSize.height)
+    // Consider this callback to reset scrolling to bottom flag
+    isScrollingToBottom = NO;
+
+    // shouldScrollToBottomOnTableRefresh is used to inhibit false detection of
+    // scrolling action from the user when the viewVC appears or rotates
+    if (scrollView == _bubblesTableView && scrollView.contentSize.height && !shouldScrollToBottomOnTableRefresh)
     {
-        // Consider this callback to reset scrolling to bottom flag
-        isScrollingToBottom = NO;
-        
         // when the content size if smaller that the frame
         // scrollViewDidEndDecelerating is not called
         // so test it when the content offset goes back to the screen top.
