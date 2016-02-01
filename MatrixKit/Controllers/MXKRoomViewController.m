@@ -1301,6 +1301,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     [self startActivityIndicator];
     [roomDataSource paginateBackMessagesToFillRect:frame
+                       withMinRequestMessagesCount:_backPaginationLimit
                                            success:^{
                                                
                                                // Stop spinner
@@ -1347,7 +1348,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination
-    [roomDataSource paginateBackMessages:limit success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginateBackMessages:limit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // We will adjust the vertical offset in order to unchange the current display (back pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
@@ -1413,7 +1414,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginateBackMessages:_backPaginationLimit success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginateBackMessages:_backPaginationLimit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
