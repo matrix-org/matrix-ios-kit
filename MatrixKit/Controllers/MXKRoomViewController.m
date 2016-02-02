@@ -1301,6 +1301,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     [self startActivityIndicator];
     [roomDataSource paginateBackMessagesToFillRect:frame
+                       withMinRequestMessagesCount:_backPaginationLimit
                                            success:^{
                                                
                                                // Stop spinner
@@ -1347,7 +1348,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination
-    [roomDataSource paginateBackMessages:limit success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginateBackMessages:limit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // We will adjust the vertical offset in order to unchange the current display (back pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
@@ -1413,7 +1414,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginateBackMessages:_backPaginationLimit success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginateBackMessages:_backPaginationLimit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
@@ -2408,11 +2409,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (scrollView == _bubblesTableView && scrollView.contentSize.height)
+    // Consider this callback to reset scrolling to bottom flag
+    isScrollingToBottom = NO;
+
+    // shouldScrollToBottomOnTableRefresh is used to inhibit false detection of
+    // scrolling action from the user when the viewVC appears or rotates
+    if (scrollView == _bubblesTableView && scrollView.contentSize.height && !shouldScrollToBottomOnTableRefresh)
     {
-        // Consider this callback to reset scrolling to bottom flag
-        isScrollingToBottom = NO;
-        
         // when the content size if smaller that the frame
         // scrollViewDidEndDecelerating is not called
         // so test it when the content offset goes back to the screen top.
