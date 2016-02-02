@@ -147,6 +147,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomMessage,
                                              kMXEventTypeStringRoomMessageFeedback,
                                              kMXEventTypeStringRoomRedaction,
+                                             kMXEventTypeStringRoomThirdPartyInvite,
                                              kMXEventTypeStringCallInvite
                                              ];
         }
@@ -158,6 +159,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomTopic,
                                              kMXEventTypeStringRoomMember,
                                              kMXEventTypeStringRoomMessage,
+                                             kMXEventTypeStringRoomThirdPartyInvite,
                                              kMXEventTypeStringCallInvite
                                              ];
         }

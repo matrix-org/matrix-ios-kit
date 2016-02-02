@@ -618,6 +618,11 @@
             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction"], senderDisplayName, eventId];
             break;
         }
+        case MXEventTypeRoomThirdPartyInvite:
+        {
+            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, event.content[@"display_name"]];
+            break;
+        }
         case MXEventTypeCallInvite:
         {
             // outgoing call?
