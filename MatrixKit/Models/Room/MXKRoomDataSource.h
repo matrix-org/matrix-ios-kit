@@ -175,7 +175,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic) BOOL showTypingNotifications;
 
 /**
- The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default)
+ The pagination applied on the rendered room bubble cells (MXKRoomDataSourceBubblesPaginationNone by default).
  */
 @property (nonatomic) MXKRoomDataSourceBubblesPagination bubblesPagination;
 
@@ -254,21 +254,24 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param numItems the number of items to get.
+ @param onlyFromStore if YES, return available events from the store, do not make a pagination request to the homeserver.
  @param success a block called when the operation succeeds. This block returns the number of added cells.
  (Note this count may be 0 if paginated messages have been concatenated to the current first cell).
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessages:(NSUInteger)numItems success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
+- (void)paginateBackMessages:(NSUInteger)numItems onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load enough messages to fill the rect.
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
- @param the rect to fill.
+ @param rect the rect to fill.
+ @param minRequestMessagesCount if messages are not available in the store, a request to the homeserver
+        is required. minRequestMessagesCount indicates the minimum messages count to retrieve from the hs.
  @param success a block called when the operation succeeds.
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessagesToFillRect:(CGRect)rect success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)paginateBackMessagesToFillRect:(CGRect)rect withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 
 #pragma mark - Sending

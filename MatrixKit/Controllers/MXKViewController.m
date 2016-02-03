@@ -411,6 +411,15 @@
 {
     [self.view bringSubviewToFront:activityIndicator];
     [activityIndicator startAnimating];
+
+    // Show the loading wheel after a delay so that if the caller calls stopActivityIndicator
+    // in a short future, the loading wheel will not be displayed to the end user.
+    activityIndicator.alpha = 0;
+    [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        activityIndicator.alpha = 1;
+    } completion:^(BOOL finished)
+     {
+     }];
 }
 
 - (void)stopActivityIndicator
