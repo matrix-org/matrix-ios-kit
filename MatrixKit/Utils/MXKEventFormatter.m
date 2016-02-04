@@ -369,7 +369,11 @@
                     }
                     else if (prevMembership)
                     {
-                        if ([prevMembership isEqualToString:@"join"] || [prevMembership isEqualToString:@"invite"])
+                        if ([prevMembership isEqualToString:@"invite"])
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw"], senderDisplayName, targetDisplayName];
+                        }
+                        else if ([prevMembership isEqualToString:@"join"])
                         {
                             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
                             if (event.content[@"reason"])

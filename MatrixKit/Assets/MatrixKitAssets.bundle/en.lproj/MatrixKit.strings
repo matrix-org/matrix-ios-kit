@@ -179,6 +179,7 @@
 "notice_room_kick" = "%@ kicked %@";
 "notice_room_unban" = "%@ unbanned %@";
 "notice_room_ban" = "%@ banned %@";
+"notice_room_withdraw" = "%@ withdrew %@'s invitation";
 "notice_avatar_url_changed" = "%@ changed their avatar";
 "notice_display_name_set" = "%@ set their display name to %@";
 "notice_display_name_changed_from" = "%@ changed their display name from %@ to %@";
