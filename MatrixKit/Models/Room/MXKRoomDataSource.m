@@ -265,10 +265,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             @synchronized(bubbles)
             {
                 // Do the search from the end to improve it
-                for (NSUInteger i = bubbles.count - 1; i >0; i--)
+                for (NSInteger i = bubbles.count - 1; i >= 0; i--)
                 {
                     id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
-                    for (NSUInteger j = bubbleData.events.count - 1; j >0; j--)
+                    for (NSInteger j = bubbleData.events.count - 1; j >= 0; j--)
                     {
                         MXEvent *event = bubbleData.events[j];
                         if (event.mxkState == MXKEventStateSending)
