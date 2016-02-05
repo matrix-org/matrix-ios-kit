@@ -96,6 +96,7 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
  @return MXKContact instance
  */
 - (id)initMatrixContactWithDisplayName:(NSString*)displayName;
+
 /**
  Create a matrix contact with the dedicated info
  
