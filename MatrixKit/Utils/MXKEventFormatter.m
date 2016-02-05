@@ -355,7 +355,14 @@
                 // Consider here a membership change
                 if ([membership isEqualToString:@"invite"])
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                    if (event.content[@"third_party_invite"])
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], event.content[@"third_party_invite"][@"display_name"], targetDisplayName, senderDisplayName];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                    }
                 }
                 else if ([membership isEqualToString:@"join"])
                 {
