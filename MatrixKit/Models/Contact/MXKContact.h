@@ -53,7 +53,12 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
  YES if the contact does not exist in the contacts book
  the contact has been created from a MXUser or MXRoomThirdPartyInvite
  */
-@property (nonatomic, readonly) BOOL isMatrixContact;
+@property (nonatomic) BOOL isMatrixContact;
+
+/**
+ YES if the contact is coming from MXRoomThirdPartyInvite event.
+ */
+@property (nonatomic) BOOL isThirdPartyInvite;
 
 /**
  The array of MXKPhoneNumber
@@ -83,6 +88,14 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
  */
 - (id)initLocalContactWithABRecord:(ABRecordRef)record;
 
+/**
+ Create a matrix contact with the dedicated info
+ 
+ @param displayName
+ @param matrixID
+ @return MXKContact instance
+ */
+- (id)initMatrixContactWithDisplayName:(NSString*)displayName;
 /**
  Create a matrix contact with the dedicated info
  
