@@ -257,6 +257,30 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     if (bubbleCount > maxBubbleNb)
     {
+        // Do nothing if some local echoes are in progress.
+        // Unfortunately, the outgoing events in the store do not keep their mxkState.
+        // So, we need to check the mxkState of the events currently displayed (the events in 'bubbles')
+        if (_room.outgoingMessages.count)
+        {
+            @synchronized(bubbles)
+            {
+                // Do the search from the end to improve it
+                for (NSInteger i = bubbles.count - 1; i >= 0; i--)
+                {
+                    id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+                    for (NSInteger j = bubbleData.events.count - 1; j >= 0; j--)
+                    {
+                        MXEvent *event = bubbleData.events[j];
+                        if (event.mxkState == MXKEventStateSending)
+                        {
+                            NSLog(@"[MXKRoomDataSource] cancel limitMemoryUsage because some messages are being sent");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         // Reset the room data source (return in initial state: minimum memory usage).
         [self reload];
     }
