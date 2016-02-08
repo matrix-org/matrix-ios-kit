@@ -1463,8 +1463,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Remove the local echo
             [self removeEventWithEventId:eventId];
-            [_room removeOutgoingMessage:eventId];
-            
+
             // And resend
             [self sendMessageOfType:msgType content:event.content success:success failure:failure];
         }
@@ -1472,7 +1471,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Remove the local echo
             [self removeEventWithEventId:eventId];
-            [_room removeOutgoingMessage:eventId];
             
             NSString *mimetype = nil;
             if (event.content[@"info"])
@@ -1565,7 +1563,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             [self removeCellData:bubbleData];
         }
-        
+
+        // Remove the event from the outgoing messages storage
+        [_room removeOutgoingMessage:eventId];
+    
         // Update the delegate
         if (self.delegate)
         {
