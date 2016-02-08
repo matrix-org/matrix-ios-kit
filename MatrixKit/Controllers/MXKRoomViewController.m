@@ -1391,6 +1391,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Restore scrolling and the scroll indicator
         [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
         [self.bubblesTableView setScrollEnabled:YES];
+
+        // Force the update of the current visual position
+        // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
+        [self upateCurrentEventIdAtTableBottom];
         
     } failure:^(NSError *error) {
         
