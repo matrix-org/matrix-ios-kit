@@ -206,29 +206,6 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     return self;
 }
 
-- (id)initMatrixContactWithDisplayName:(NSString*)aDisplayName
-{
-    self = [super init];
-
-    if (self)
-    {
-        _contactID = [NSString stringWithFormat:@"%@%@", kMXKContactMatrixContactPrefixId, [[NSUUID UUID] UUIDString]];
-
-        // _displayName must not be nil
-        // it is used to sort the contacts
-        if (aDisplayName)
-        {
-            _displayName = aDisplayName;
-        }
-        else
-        {
-            _displayName = @"";
-        }
-    }
-
-    return self;
-}
-
 - (id)initMatrixContactWithDisplayName:(NSString*)aDisplayName andMatrixID:(NSString*)matrixID
 {
     self = [super init];
