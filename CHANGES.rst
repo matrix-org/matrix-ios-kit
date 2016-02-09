@@ -1,3 +1,17 @@
+Changes in MatrixKit in 0.3.2 (2016-02-09)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.2).
+ * MXKRoomViewController: Avoid to make pagination request when opening the page while there may be messages available in the store.
+ * MXKViewController/MXKTableViewController: Activity indicator. Do not show it if the stopActivityIndicator is called just after (less than 0.3s)
+ * Handle email invitation.
+
+Bug fixes:
+ * Messages being sent (echoes) were sometimes displayed in red.
+ * Deleted unsent messages keep coming back when the app is relaunched.
+ * If messages arrive whilst you are scrolled back, the scroll offset jumps.
+
 Changes in MatrixKit in 0.3.1 (2016-01-29)
 ===============================================
 
