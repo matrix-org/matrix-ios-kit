@@ -173,11 +173,14 @@
 */
 
 "notice_room_invite" = "%@ invited %@";
+"notice_room_third_party_invite" = "%@ sent an invitation to %@ to join the room";
+"notice_room_third_party_registered_invite" = "%@ registered as %@ and received an invitation from %@";
 "notice_room_join" = "%@ joined";
 "notice_room_leave" = "%@ left";
 "notice_room_kick" = "%@ kicked %@";
 "notice_room_unban" = "%@ unbanned %@";
 "notice_room_ban" = "%@ banned %@";
+"notice_room_withdraw" = "%@ withdrew %@'s invitation";
 "notice_avatar_url_changed" = "%@ changed their avatar";
 "notice_display_name_set" = "%@ set their display name to %@";
 "notice_display_name_changed_from" = "%@ changed their display name from %@ to %@";

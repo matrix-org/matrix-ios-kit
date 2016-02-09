@@ -105,6 +105,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic) IBOutlet UIView *roomInputToolbarContainer;
 @property (nonatomic) IBOutlet UIView *roomActivitiesContainer;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomActivitiesContainerHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *roomInputToolbarContainerHeightConstraint;

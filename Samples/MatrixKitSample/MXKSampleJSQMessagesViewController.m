@@ -95,7 +95,7 @@
     membersPlaceHolderAvatar = [NSMutableDictionary dictionary];
     
     // Start showing history right now
-    [roomDataSource paginateBackMessagesToFillRect:self.view.frame success:^{
+    [roomDataSource paginateBackMessagesToFillRect:self.view.frame withMinRequestMessagesCount:30 success:^{
         // @TODO (hide loading wheel)
     } failure:^(NSError *error)
     {
@@ -491,7 +491,7 @@
 {
     // Disable the button while requesting
     sender.enabled = NO;
-    [roomDataSource paginateBackMessages:30 success:^(NSUInteger addedCellNumber){
+    [roomDataSource paginateBackMessages:30 onlyFromStore:NO success:^(NSUInteger addedCellNumber){
         
         // Pagingate messages have been received by the didChange protocol
         // Just need  to reenable the button
