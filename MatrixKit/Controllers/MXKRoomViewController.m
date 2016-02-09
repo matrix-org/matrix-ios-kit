@@ -871,6 +871,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                        multiplier:1.0f
                                                                          constant:0.0f]];
     [_roomTitleViewContainer setNeedsUpdateConstraints];
+    
+    [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass
