@@ -246,4 +246,14 @@
     return YES;
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (void)handleTapGesture:(UITapGestureRecognizer*)tapGestureRecognizer
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(roomTitleView:recognizeTapGesture:)])
+    {
+        [self.delegate roomTitleView:self recognizeTapGesture:tapGestureRecognizer];
+    }
+}
+
 @end
