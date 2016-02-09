@@ -47,12 +47,20 @@
  */
 - (void)roomTitleView:(MXKRoomTitleView*)titleView isSaving:(BOOL)saving;
 
+/**
+ Tells the delegate that a tap gesture has been recognized.
+ 
+ @param titleView the room title view.
+ @param tapGestureRecognizer the recognized gesture.
+ */
+- (void)roomTitleView:(MXKRoomTitleView*)titleView recognizeTapGesture:(UITapGestureRecognizer*)tapGestureRecognizer;
+
 @end
 
 /**
  'MXKRoomTitleView' instance displays editable room display name.
  */
-@interface MXKRoomTitleView : UIView <UITextFieldDelegate>
+@interface MXKRoomTitleView : UIView <UITextFieldDelegate, UIGestureRecognizerDelegate>
 {
 @protected
     /**

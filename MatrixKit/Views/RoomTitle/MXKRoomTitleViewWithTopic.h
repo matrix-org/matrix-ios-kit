@@ -19,7 +19,7 @@
 /**
  'MXKRoomTitleViewWithTopic' inherits 'MXKRoomTitleView' to add an editable room topic field.
  */
-@interface MXKRoomTitleViewWithTopic : MXKRoomTitleView <UIGestureRecognizerDelegate>{
+@interface MXKRoomTitleViewWithTopic : MXKRoomTitleView {
 }
 
 @property (weak, nonatomic) IBOutlet UITextField *topicTextField;
