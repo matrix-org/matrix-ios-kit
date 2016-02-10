@@ -81,11 +81,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSString *currentEventIdAtTableBottom;
     
     /**
-     Tell whether a device rotation is in progress
-     */
-    BOOL isSizeTransitionInProgress;
-    
-    /**
      Date of the last observed typing
      */
     NSDate *lastTypingDate;

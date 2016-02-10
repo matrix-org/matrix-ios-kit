@@ -54,6 +54,11 @@ extern NSString *const kCmdResetUserPowerLevel;
      The potential text input placeholder is saved when it is replaced temporarily
      */
     NSString *savedInputToolbarPlaceholder;
+    
+    /**
+     Tell whether a device rotation is in progress
+     */
+    BOOL isSizeTransitionInProgress;
 }
 
 /**
