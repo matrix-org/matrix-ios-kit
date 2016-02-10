@@ -33,6 +33,11 @@
 @protocol MXKViewControllerHandling <NSObject>
 
 /**
+ The default navigation bar tint color (nil by default).
+ */
+@property (nonatomic) UIColor *defaultBarTintColor;
+
+/**
  List of associated matrix sessions (empty by default).
  This property is used to update view appearance according to the session(s) state.
  */

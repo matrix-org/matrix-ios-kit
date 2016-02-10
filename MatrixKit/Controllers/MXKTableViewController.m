@@ -31,6 +31,7 @@
 @end
 
 @implementation MXKTableViewController
+@synthesize defaultBarTintColor;
 @synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
 @synthesize childViewControllers;
@@ -310,7 +311,7 @@
     if (mxSessionArray.count)
     {
         // The navigation bar tintColor depends on matrix homeserver reachability status
-        UIColor *barTintColor = nil; //default tintColor
+        UIColor *barTintColor = defaultBarTintColor;
         BOOL allHomeserverNotReachable = YES;
         BOOL isActivityInProgress = NO;
         
@@ -380,10 +381,10 @@
         [self stopActivityIndicator];
         
         // Restore default tintColor
-        self.navigationController.navigationBar.barTintColor = nil;
+        self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
         if (mainNavigationController)
         {
-            mainNavigationController.navigationBar.barTintColor = nil;
+            mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
         }
     }
 }
