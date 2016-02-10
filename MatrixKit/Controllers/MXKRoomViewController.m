@@ -970,6 +970,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     activitiesView = [roomActivitiesViewClass roomActivitiesView];
     
     // Add the view and define edge constraints
+    activitiesView.translatesAutoresizingMaskIntoConstraints = NO;
     [_roomActivitiesContainer addSubview:activitiesView];
     
     NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
