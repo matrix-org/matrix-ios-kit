@@ -28,8 +28,6 @@
 
 @interface MXKRoomMemberDetailsViewController ()
 {
-    NSString *thumbnailURL;
-    MXKMediaLoader* imageLoader;
     id membersListener;
     
     NSMutableArray* buttonsTitles;
@@ -66,15 +64,13 @@
     [super viewDidLoad];
     
     // Check whether the view controller has been pushed via storyboard
-    if (!_memberThumbnailButton)
+    if (!self.memberThumbnail)
     {
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
     buttonsTitles = [[NSMutableArray alloc] init];
-    
-    [self updatePictureButton:self.picturePlaceholder];
     
     // ignore useless update
     if (_mxRoomMember)
@@ -144,11 +140,6 @@
         _enableVoipCall = enableVoipCall;
         [self updateMemberInfo];
     }
-}
-
-- (IBAction)onMemberThumbnailPressed:(id)sender
-{
-    // Do nothing by default
 }
 
 - (IBAction)onActionButtonPressed:(id)sender
@@ -346,27 +337,11 @@
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    if (imageLoader)
-    {
-        [imageLoader cancel];
-        imageLoader = nil;
-    }
-    
     if (membersListener && mxRoom)
     {
         [mxRoom removeListener:membersListener];
         membersListener = nil;
     }
-}
-
-- (void)updatePictureButton:(UIImage*)image
-{
-    [self.memberThumbnailButton setImage:image forState:UIControlStateNormal];
-    [self.memberThumbnailButton setImage:image forState:UIControlStateHighlighted];
-    [self.memberThumbnailButton setImage:image forState:UIControlStateDisabled];
-    
-    [self.memberThumbnailButton.layer setCornerRadius:self.memberThumbnailButton.frame.size.width / 2];
-    self.memberThumbnailButton.clipsToBounds = YES;
 }
 
 - (void)updateMemberInfo
@@ -377,50 +352,21 @@
     self.title = _mxRoomMember.displayname ? _mxRoomMember.displayname : _mxRoomMember.userId;
     
     // set the thumbnail info
-    [[self.memberThumbnailButton imageView] setContentMode: UIViewContentModeScaleAspectFill];
-    [[self.memberThumbnailButton imageView] setClipsToBounds:YES];
+    self.memberThumbnail.contentMode = UIViewContentModeScaleAspectFill;
+    self.memberThumbnail.backgroundColor = [UIColor clearColor];
+    [self.memberThumbnail.layer setCornerRadius:self.memberThumbnail.frame.size.width / 2];
+    [self.memberThumbnail setClipsToBounds:YES];
     
+    NSString *thumbnailURL = nil;
     if (_mxRoomMember.avatarUrl)
     {
         // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnailButton.frame.size withMethod:MXThumbnailingMethodCrop];
-        
-        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:thumbnailURL andType:nil inFolder:kMXKMediaManagerAvatarThumbnailFolder];
-        
-        // Check whether the image download is in progress
-        id loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-        if (loader)
-        {
-            // Add observers
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-        }
-        else
-        {
-            // Retrieve the image from cache
-            UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
-            if (image)
-            {
-                [self updatePictureButton:image];
-            }
-            else
-            {
-                // Cancel potential download in progress
-                if (imageLoader)
-                {
-                    [imageLoader cancel];
-                }
-                // Add observers
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-                imageLoader = [MXKMediaManager downloadMediaFromURL:thumbnailURL andSaveAtFilePath:cacheFilePath];
-            }
-        }
+        thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnail.frame.size withMethod:MXThumbnailingMethodCrop];
     }
-    else
-    {
-        [self updatePictureButton:self.picturePlaceholder];
-    }
+    
+    self.memberThumbnail.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+    self.memberThumbnail.enableInMemoryCache = YES;
+    [self.memberThumbnail setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
     
     self.roomMemberMatrixInfo.text = _mxRoomMember.userId;
     
@@ -483,35 +429,6 @@
     }
     
     [self.tableView reloadData];
-}
-
-- (void)onMediaDownloadEnd:(NSNotification *)notif
-{
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
-        
-        if ([url isEqualToString:thumbnailURL] && cacheFilePath.length)
-        {
-            // update the image
-            UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
-            if (image == nil)
-            {
-                image = self.picturePlaceholder;
-            }
-            
-            if (image)
-            {
-                [self updatePictureButton:image];
-            }
-            
-            // remove the observers
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
-            imageLoader = nil;
-        }
-    }
 }
 
 #pragma mark - Table view data source

@@ -17,6 +17,7 @@
 #import <UIKit/UIKit.h>
 
 #import "MXKTableViewController.h"
+#import "MXKImageView.h"
 
 /**
  Available actions on room member
@@ -62,7 +63,7 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 
 @interface MXKRoomMemberDetailsViewController : MXKTableViewController
 
-@property (weak, nonatomic) IBOutlet UIButton *memberThumbnailButton;
+@property (weak, nonatomic) IBOutlet MXKImageView *memberThumbnail;
 @property (weak, nonatomic) IBOutlet UITextView *roomMemberMatrixInfo;
 
 /**
@@ -115,14 +116,6 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
  @param room the matrix room to which this member belongs.
  */
 - (void)displayRoomMember:(MXRoomMember*)roomMember withMatrixRoom:(MXRoom*)room;
-
-/**
- The member's thumbnail is displayed inside a button. The following method is registered on
- `UIControlEventTouchUpInside` event of this button.
- 
- Nothing is done by the current implementation.
- */
-- (IBAction)onMemberThumbnailPressed:(id)sender;
 
 /**
  The following method is registered on `UIControlEventTouchUpInside` event for all displayed action buttons (see MXKRoomMemberDetailsAction).

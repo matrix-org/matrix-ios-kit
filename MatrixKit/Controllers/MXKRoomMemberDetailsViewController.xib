@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKRoomMemberDetailsViewController">
             <connections>
-                <outlet property="memberThumbnailButton" destination="Q5C-z0-PFC" id="liH-Kp-ICk"/>
+                <outlet property="memberThumbnail" destination="aCC-Nn-76o" id="gyJ-vS-syH"/>
                 <outlet property="roomMemberMatrixInfo" destination="j7K-fD-zCi" id="2o5-bf-JBu"/>
                 <outlet property="view" destination="ju7-p5-cp4" id="1a8-31-bad"/>
             </connections>
@@ -21,20 +21,14 @@
                 <rect key="frame" x="0.0" y="0.0" width="600" height="115"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q5C-z0-PFC" userLabel="member picture Button">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aCC-Nn-76o" customClass="MXKImageView">
                         <rect key="frame" x="10" y="10" width="75" height="75"/>
-                        <color key="backgroundColor" white="0.89720269880000003" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="75" id="h4a-sn-FGX"/>
-                            <constraint firstAttribute="height" constant="75" id="u5z-VM-exL"/>
+                            <constraint firstAttribute="width" constant="75" id="MrR-4z-5Ya"/>
+                            <constraint firstAttribute="width" secondItem="aCC-Nn-76o" secondAttribute="height" multiplier="1:1" id="lwc-Yc-EDh"/>
                         </constraints>
-                        <state key="normal">
-                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                        </state>
-                        <connections>
-                            <action selector="onMemberThumbnailPressed:" destination="-1" eventType="touchUpInside" id="jo1-Jb-jJD"/>
-                        </connections>
-                    </button>
+                    </view>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j7K-fD-zCi" userLabel="member matrix info">
                         <rect key="frame" x="95" y="10" width="495" height="95"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -45,11 +39,11 @@
                 </subviews>
                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 <constraints>
-                    <constraint firstItem="Q5C-z0-PFC" firstAttribute="leading" secondItem="gTa-z3-gJI" secondAttribute="leading" constant="10" id="SBo-aU-k5D"/>
-                    <constraint firstItem="j7K-fD-zCi" firstAttribute="leading" secondItem="Q5C-z0-PFC" secondAttribute="trailing" constant="10" id="Tyv-6p-V4Q"/>
+                    <constraint firstItem="j7K-fD-zCi" firstAttribute="leading" secondItem="aCC-Nn-76o" secondAttribute="trailing" constant="10" id="36h-WB-UmL"/>
+                    <constraint firstItem="aCC-Nn-76o" firstAttribute="top" secondItem="gTa-z3-gJI" secondAttribute="top" constant="10" id="3KV-hw-l1z"/>
                     <constraint firstAttribute="trailing" secondItem="j7K-fD-zCi" secondAttribute="trailing" constant="10" id="Uc5-Z1-ISb"/>
                     <constraint firstAttribute="bottom" secondItem="j7K-fD-zCi" secondAttribute="bottom" constant="10" id="WPd-8P-yk2"/>
-                    <constraint firstItem="Q5C-z0-PFC" firstAttribute="top" secondItem="gTa-z3-gJI" secondAttribute="top" constant="10" id="mdK-nI-1Z6"/>
+                    <constraint firstItem="aCC-Nn-76o" firstAttribute="leading" secondItem="gTa-z3-gJI" secondAttribute="leading" constant="10" id="eSS-il-m6Z"/>
                     <constraint firstItem="j7K-fD-zCi" firstAttribute="top" secondItem="gTa-z3-gJI" secondAttribute="top" constant="10" id="r1j-GD-Wko"/>
                 </constraints>
             </view>
