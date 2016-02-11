@@ -173,6 +173,13 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 + (MXKRoomBubbleTableViewCell*)cellWithOriginalXib;
 
 /**
+ Disable the handling of the long press on event (see kMXKRoomBubbleCellLongPressOnEvent). NO by default.
+ 
+ CAUTION: Changing this flag only impact the new created cells (existing 'MXKRoomBubbleTableViewCell' instances are unchanged).
+ */
++ (void)disableLongPressGestureOnEvent:(BOOL)disable;
+
+/**
  The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering render:] not
  overidden by a class child.
 
