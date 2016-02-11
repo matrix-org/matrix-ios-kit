@@ -31,7 +31,7 @@
 @end
 
 @implementation MXKTableViewController
-@synthesize defaultBarTintColor;
+@synthesize defaultBarTintColor, enableBarTintColorStatusChange;
 @synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
 @synthesize childViewControllers;
@@ -39,6 +39,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    enableBarTintColorStatusChange = YES;
     
     childViewControllers = [NSMutableArray array];
     
@@ -124,6 +126,16 @@
         }
         
         [childViewControllers removeAllObjects];
+    }
+}
+
+- (void)setEnableBarTintColorStatusChange:(BOOL)enable
+{
+    if (enableBarTintColorStatusChange != enable)
+    {
+        enableBarTintColorStatusChange = enable;
+        
+        [self onMatrixSessionChange];
     }
 }
 
@@ -308,7 +320,7 @@
         }
     }
     
-    if (mxSessionArray.count)
+    if (mxSessionArray.count && enableBarTintColorStatusChange)
     {
         // The navigation bar tintColor depends on matrix homeserver reachability status
         UIColor *barTintColor = defaultBarTintColor;
