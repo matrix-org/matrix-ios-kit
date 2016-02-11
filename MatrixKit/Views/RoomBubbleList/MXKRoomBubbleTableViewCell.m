@@ -37,6 +37,7 @@ NSString *const kMXKRoomBubbleCellLongPressOnAvatarView = @"kMXKRoomBubbleCellLo
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 
+static BOOL _disableLongPressGestureOnEvent;
 
 @implementation MXKRoomBubbleTableViewCell
 @synthesize delegate, bubbleData, readReceiptsAlignment;
@@ -61,6 +62,11 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
     }
     
     return instance;
+}
+
++ (void)disableLongPressGestureOnEvent:(BOOL)disable
+{
+    _disableLongPressGestureOnEvent = disable;
 }
 
 - (void)awakeFromNib
@@ -95,9 +101,12 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
         [self.messageTextView addGestureRecognizer:tapGesture];
         self.messageTextView.userInteractionEnabled = YES;
         
-        // Add a long gesture recognizer on text view (in order to display for example the event details)
-        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
-        [self.messageTextView addGestureRecognizer:longPress];
+        if (_disableLongPressGestureOnEvent == NO)
+        {
+            // Add a long gesture recognizer on text view (in order to display for example the event details)
+            UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+            [self.messageTextView addGestureRecognizer:longPress];
+        }
     }
     
     if (self.playIconView)
@@ -297,12 +306,16 @@ NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
             // Adjust Attachment width constant
             self.attachViewWidthConstraint.constant = contentSize.width;
             
-            // Add a long gesture recognizer on attachment view in order to display event details
+            // Add a long gesture recognizer on progressView to cancel the current operation (Note: only the download can be cancelled).
             UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
-            [self.attachmentView addGestureRecognizer:longPress];
-            // Add another long gesture recognizer on progressView to cancel the current operation (Note: only the download can be cancelled).
-            longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
             [self.progressView addGestureRecognizer:longPress];
+            
+            if (_disableLongPressGestureOnEvent == NO)
+            {
+                // Add a long gesture recognizer on attachment view in order to display for example the event details
+                longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+                [self.attachmentView addGestureRecognizer:longPress];
+            }
         }
         else if (self.messageTextView)
         {
