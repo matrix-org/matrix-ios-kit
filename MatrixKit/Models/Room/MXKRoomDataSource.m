@@ -456,6 +456,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
                 }
+
+                // Notify the last message may have changed
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
             }
             else
             {
