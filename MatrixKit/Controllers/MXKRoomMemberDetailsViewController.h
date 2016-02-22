@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXKTableViewController.h"
+#import "MXKViewController.h"
 #import "MXKImageView.h"
 
 /**
@@ -61,7 +61,14 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 
 @end
 
-@interface MXKRoomMemberDetailsViewController : MXKTableViewController
+/**
+ Whereas the main item of this view controller is a table view, the 'MXKRoomMemberDetailsViewController' class inherits
+ from 'MXKViewController' instead of 'MXKTableViewController' in order to ease the customization.
+ Indeed some items like header may be added at the same level than the table.
+ */
+@interface MXKRoomMemberDetailsViewController : MXKViewController
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (weak, nonatomic) IBOutlet MXKImageView *memberThumbnail;
 @property (weak, nonatomic) IBOutlet UITextView *roomMemberMatrixInfo;

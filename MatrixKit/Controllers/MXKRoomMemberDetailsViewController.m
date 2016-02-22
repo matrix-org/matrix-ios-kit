@@ -64,7 +64,7 @@
     [super viewDidLoad];
     
     // Check whether the view controller has been pushed via storyboard
-    if (!self.memberThumbnail)
+    if (!self.tableView)
     {
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
