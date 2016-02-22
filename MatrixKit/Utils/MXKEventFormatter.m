@@ -774,21 +774,34 @@
     [str addAttribute:NSFontAttributeName value:font range:wholeString];
 
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
-          [[_settings httpsLinkScheme] isEqualToString: @"https"])) {
+          [[_settings httpsLinkScheme] isEqualToString: @"https"]))
+    {
         NSError *error = NULL;
         NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
 
         NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
-        for (NSTextCheckingResult *match in matches) {
+        for (NSTextCheckingResult *match in matches)
+        {
             NSRange matchRange = [match range];
             NSURL *matchUrl = [match URL];
             NSURLComponents *url = [[NSURLComponents new] initWithURL:matchUrl resolvingAgainstBaseURL:NO];
-            if ([url.scheme isEqualToString: @"http"]) {
-                url.scheme = [_settings httpLinkScheme];
-            } else if ([url.scheme isEqualToString: @"https"]) {
-                url.scheme = [_settings httpsLinkScheme];
+
+            if (url)
+            {
+                if ([url.scheme isEqualToString: @"http"])
+                {
+                    url.scheme = [_settings httpLinkScheme];
+                }
+                else if ([url.scheme isEqualToString: @"https"])
+                {
+                    url.scheme = [_settings httpsLinkScheme];
+                }
+
+                if (url.URL)
+                {
+                    [str addAttribute:NSLinkAttributeName value:url.URL range:matchRange];
+                }
             }
-            [str addAttribute:NSLinkAttributeName value: [url URL] range: matchRange];
         }
     }
 
