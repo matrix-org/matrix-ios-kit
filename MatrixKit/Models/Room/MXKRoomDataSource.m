@@ -298,19 +298,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     if (_room && liveEventsListener)
     {
-        [_room removeListener:liveEventsListener];
+        [_room.liveTimeLine removeListener:liveEventsListener];
         liveEventsListener = nil;
         
-        [_room removeListener:redactionListener];
+        [_room.liveTimeLine removeListener:redactionListener];
         redactionListener = nil;
         
-        [_room removeListener:receiptsListener];
+        [_room.liveTimeLine removeListener:receiptsListener];
         receiptsListener = nil;
     }
     
     if (_room && typingNotifListener)
     {
-        [_room removeListener:typingNotifListener];
+        [_room.liveTimeLine removeListener:typingNotifListener];
         typingNotifListener = nil;
     }
     currentTypingUsers = nil;
@@ -528,14 +528,14 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the previous live listener
     if (liveEventsListener)
     {
-        [_room removeListener:liveEventsListener];
-        [_room removeListener:redactionListener];
-        [_room removeListener:receiptsListener];
+        [_room.liveTimeLine removeListener:liveEventsListener];
+        [_room.liveTimeLine removeListener:redactionListener];
+        [_room.liveTimeLine removeListener:receiptsListener];
     }
     
     // And register a new one with the requested filter
     _eventsFilterForMessages = [eventsFilterForMessages copy];
-    liveEventsListener = [_room listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    liveEventsListener = [_room.liveTimeLine listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
     {
         if (MXEventDirectionForwards == direction)
         {
@@ -561,7 +561,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
     
     
-    receiptsListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
+    receiptsListener = [_room.liveTimeLine listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
         
         if (MXEventDirectionForwards == direction)
         {
@@ -571,7 +571,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
     
     // Register a listener to handle redaction in live stream
-    redactionListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXEventDirection direction, MXRoomState *roomState) {
+    redactionListener = [_room.liveTimeLine listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXEventDirection direction, MXRoomState *roomState) {
         
         // Consider only live redaction events
         if (direction == MXEventDirectionForwards)
@@ -680,7 +680,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Remove the live listener
         if (typingNotifListener)
         {
-            [_room removeListener:typingNotifListener];
+            [_room.liveTimeLine removeListener:typingNotifListener];
             currentTypingUsers = nil;
             typingNotifListener = nil;
         }
@@ -692,12 +692,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the previous live listener
     if (typingNotifListener)
     {
-        [_room removeListener:typingNotifListener];
+        [_room.liveTimeLine removeListener:typingNotifListener];
         currentTypingUsers = nil;
     }
     
     // Add typing notification listener
-    typingNotifListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    typingNotifListener = [_room.liveTimeLine listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
     {
         
         // Handle only live events
@@ -838,7 +838,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Keep events from the past to later processing
-    id backPaginateListener = [_room listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    id backPaginateListener = [_room.liveTimeLine listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
     {
         if (MXEventDirectionBackwards == direction)
         {
@@ -851,7 +851,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         backPaginationRequest = nil;
         // Once done, process retrieved events
-        [_room removeListener:backPaginateListener];
+        [_room.liveTimeLine removeListener:backPaginateListener];
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
             
             if (success)
@@ -866,7 +866,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
         
         backPaginationRequest = nil;
-        [_room removeListener:backPaginateListener];
+        [_room.liveTimeLine removeListener:backPaginateListener];
         
         // Process at least events retrieved from store
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {

@@ -76,7 +76,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     
     if (typingNotifListener)
     {
-        [mxRoom removeListener:typingNotifListener];
+        [mxRoom.liveTimeLine removeListener:typingNotifListener];
         typingNotifListener = nil;
     }
     
@@ -370,11 +370,11 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     // Remove the previous live listener
     if (typingNotifListener)
     {
-        [mxRoom removeListener:typingNotifListener];
+        [mxRoom.liveTimeLine removeListener:typingNotifListener];
     }
     
     // Add typing notification listener
-    typingNotifListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    typingNotifListener = [mxRoom.liveTimeLine listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
     {
         // Handle only live events
         if (direction == MXEventDirectionForwards)
