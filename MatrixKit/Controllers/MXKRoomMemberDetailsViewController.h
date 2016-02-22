@@ -66,7 +66,7 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
  from 'MXKViewController' instead of 'MXKTableViewController' in order to ease the customization.
  Indeed some items like header may be added at the same level than the table.
  */
-@interface MXKRoomMemberDetailsViewController : MXKViewController
+@interface MXKRoomMemberDetailsViewController : MXKViewController <UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
