@@ -58,6 +58,9 @@
 "sign_up" = "Sign up";
 "submit_code" = "Submit code";
 "set_power_level" = "Set Power Level";
+"set_default_power_level" = "Reset Power Level";
+"set_moderator" = "Set Moderator";
+"set_admin" = "Set Admin";
 "start_chat" = "Start Chat";
 "start_voice_call" = "Start Voice Call";
 "start_video_call" = "Start Video Call";
