@@ -425,7 +425,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             {
                 // Only one pagination process can be done at a time by an MXRoom object.
                 // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
-                [_room.liveTimeline resetBackState];
+                [_room.liveTimeline resetPagination];
                 
                 [self refreshUnreadCounters:YES];
                 
