@@ -267,7 +267,7 @@
             }
             case MXKRoomMemberDetailsActionSetCustomPowerLevel:
             {
-                [self updateUserPowerLevel:_mxRoomMember];
+                [self updateUserPowerLevel];
                 break;
             }
             case MXKRoomMemberDetailsActionStartChat:
@@ -694,9 +694,9 @@
     }
 }
 
-- (void)setUserPowerLevel:(MXRoomMember*)roomMember to:(NSUInteger)value
+- (void)setPowerLevel:(NSUInteger)value
 {
-    NSUInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:roomMember.userId];
+    NSUInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     
     // check if the power level has not yet been set to 0
     if (value != currentPowerLevel)
@@ -706,14 +706,14 @@
         [weakSelf addPendingActionMask];
         
         // Reset user power level
-        [self.mxRoom setPowerLevelOfUserWithUserID:roomMember.userId powerLevel:value success:^{
+        [self.mxRoom setPowerLevelOfUserWithUserID:_mxRoomMember.userId powerLevel:value success:^{
             
             [weakSelf removePendingActionMask];
             
         } failure:^(NSError *error) {
             
             [weakSelf removePendingActionMask];
-            NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", roomMember.userId, error);
+            NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", weakSelf.mxRoomMember.userId, error);
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
             
@@ -721,26 +721,26 @@
     }
 }
 
-- (void)updateUserPowerLevel:(MXRoomMember*)roomMember
+- (void)updateUserPowerLevel
 {
     __weak typeof(self) weakSelf = self;
     
     // Ask for the power level to set
     self.actionMenu = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"]  message:nil style:MXKAlertStyleAlert];
     
-    if (![self.mainSession.myUser.userId isEqualToString:roomMember.userId])
+    if (![self.mainSession.myUser.userId isEqualToString:_mxRoomMember.userId])
     {
         self.actionMenu.cancelButtonIndex = [self.actionMenu addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             weakSelf.actionMenu = nil;
             
-            [weakSelf setUserPowerLevel:roomMember to:weakSelf.mxRoom.state.powerLevels.usersDefault];
+            [weakSelf setPowerLevel:weakSelf.mxRoom.state.powerLevels.usersDefault];
         }];
     }
     [self.actionMenu addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%tu", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:roomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%tu", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:weakSelf.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
@@ -751,7 +751,7 @@
         
         if (textField.text.length > 0)
         {
-            [weakSelf setUserPowerLevel:roomMember to:[textField.text integerValue]];
+            [weakSelf setPowerLevel:[textField.text integerValue]];
         }
     }];
     [self.actionMenu showInViewController:self];

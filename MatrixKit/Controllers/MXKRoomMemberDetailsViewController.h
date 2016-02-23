@@ -103,6 +103,11 @@ typedef enum : NSUInteger
 @property (nonatomic) BOOL enableVoipCall;
 
 /**
+ Tell whether an action is already in progress.
+ */
+@property (nonatomic, readonly) BOOL hasPendingAction;
+
+/**
  The delegate for the view controller.
  */
 @property (nonatomic) id<MXKRoomMemberDetailsViewControllerDelegate> delegate;
@@ -152,6 +157,13 @@ typedef enum : NSUInteger
  are transferred to the delegate.
  */
 - (IBAction)onActionButtonPressed:(id)sender;
+
+/**
+ Set the power level of the room member
+ 
+ @param value the value to set.
+ */
+- (void)setPowerLevel:(NSUInteger)value;
 
 @end
 
