@@ -100,14 +100,14 @@
         // Remove potential listener
         if (roomListener && _mxRoom)
         {
-            [_mxRoom.liveTimeLine removeListener:roomListener];
+            [_mxRoom.liveTimeline removeListener:roomListener];
             roomListener = nil;
         }
         
         if (mxRoom)
         {
             // Register a listener to handle messages related to room name
-            roomListener = [mxRoom.liveTimeLine listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
+            roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
                                                  onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
             {
                 // Consider only live events
