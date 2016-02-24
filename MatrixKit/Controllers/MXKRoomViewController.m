@@ -991,16 +991,25 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                                                       multiplier:1.0f
                                                                         constant:0.0f];
     
+    NSLayoutConstraint* heightConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                       attribute:NSLayoutAttributeHeight
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:activitiesView
+                                                                       attribute:NSLayoutAttributeHeight
+                                                                      multiplier:1.0f
+                                                                        constant:0.0f];
+    
     
     if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
     {
-        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint]];
+        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
     }
     else
     {
         [_roomActivitiesContainer addConstraint:topConstraint];
         [_roomActivitiesContainer addConstraint:leadingConstraint];
         [_roomActivitiesContainer addConstraint:widthConstraint];
+        [_roomActivitiesContainer addConstraint:heightConstraint];
     }
     
     // let the provide view to define a height.
