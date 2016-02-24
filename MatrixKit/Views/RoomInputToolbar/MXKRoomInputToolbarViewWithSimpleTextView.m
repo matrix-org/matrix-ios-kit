@@ -69,6 +69,14 @@
 
 #pragma mark - UITextViewDelegate
 
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:isTyping:)])
+    {
+        [self.delegate roomInputToolbarView:self isTyping:YES];
+    }
+}
+
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:isTyping:)])
