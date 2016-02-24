@@ -30,8 +30,6 @@
 {
     id membersListener;
     
-    NSMutableArray* buttonsTitles;
-    
     // mask view while processing a request
     UIView* pendingRequestMask;
     UIActivityIndicatorView * pendingMaskSpinnerView;
@@ -70,12 +68,12 @@
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
-    buttonsTitles = [[NSMutableArray alloc] init];
+    actionsArray = [[NSMutableArray alloc] init];
     
     // ignore useless update
     if (_mxRoomMember)
     {
-        [self updateMemberInfo];
+        [self initObservers];
     }
 }
 
@@ -83,7 +81,7 @@
 {
     [super viewWillAppear:animated];
     
-    [self updateMemberInfo];
+    [self initObservers];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -125,7 +123,8 @@
     [self addMatrixSession:room.mxSession];
     
     _mxRoomMember = roomMember;
-    [self updateMemberInfo];
+    
+    [self initObservers];
 }
 
 - (UIImage*)picturePlaceholder
@@ -138,6 +137,7 @@
     if (_enableVoipCall != enableVoipCall)
     {
         _enableVoipCall = enableVoipCall;
+        
         [self updateMemberInfo];
     }
 }
@@ -152,233 +152,222 @@
             return;
         }
         
-        NSString* action = ((UIButton*)sender).titleLabel.text;
+        UIButton *button = (UIButton*)sender;
         
-        if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"leave"]])
+        switch (button.tag)
         {
-            [self addPendingActionMask];
-            [self.mxRoom leave:^{
-                
-                [self removePendingActionMask];
-                [self withdrawViewControllerAnimated:YES completion:nil];
-                
-            } failure:^(NSError *error) {
-                
-                [self removePendingActionMask];
-                NSLog(@"[MXKMemberVC] Leave room %@ failed: %@", mxRoom.state.roomId, error);
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                
-            }];
-        }
-        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"set_power_level"]])
-        {
-            [self updateUserPowerLevel:_mxRoomMember];
-        }
-        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"kick"]])
-        {
-            [self addPendingActionMask];
-            [mxRoom kickUser:_mxRoomMember.userId
-                      reason:nil
-                     success:^{
-                         
-                         [self removePendingActionMask];
-                         // Pop/Dismiss the current view controller if the left members are hidden
-                         if (![[MXKAppSettings standardAppSettings] showLeftMembersInRoomMemberList])
-                         {
-                             [self withdrawViewControllerAnimated:YES completion:nil];
-                         }
-                         
-                     } failure:^(NSError *error) {
-                         
-                         [self removePendingActionMask];
-                         NSLog(@"[MXKMemberVC] Kick %@ failed: %@", _mxRoomMember.userId, error);
-                         // Notify MatrixKit user
-                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                         
-                     }];
-        }
-        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"ban"]])
-        {
-            [self addPendingActionMask];
-            [mxRoom banUser:_mxRoomMember.userId
-                     reason:nil
-                    success:^{
-                        
-                        [self removePendingActionMask];
-                        
-                    } failure:^(NSError *error) {
-                        
-                        [self removePendingActionMask];
-                        NSLog(@"[MXKMemberVC] Ban %@ failed: %@", _mxRoomMember.userId, error);
-                        // Notify MatrixKit user
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                        
-                    }];
-        }
-        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"invite"]])
-        {
-            [self addPendingActionMask];
-            [mxRoom inviteUser:_mxRoomMember.userId
-                       success:^{
-                           
-                           [self removePendingActionMask];
-                           
-                       } failure:^(NSError *error) {
-                           
-                           [self removePendingActionMask];
-                           NSLog(@"[MXKMemberVC] Invite %@ failed: %@", _mxRoomMember.userId, error);
-                           // Notify MatrixKit user
-                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                           
-                       }];
-        }
-        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"unban"]])
-        {
-            [self addPendingActionMask];
-            [mxRoom unbanUser:_mxRoomMember.userId
-                      success:^{
-                          
-                          [self removePendingActionMask];
-                          
-                      } failure:^(NSError *error) {
-                          
-                          [self removePendingActionMask];
-                          NSLog(@"[MXKMemberVC] Unban %@ failed: %@", _mxRoomMember.userId, error);
-                          // Notify MatrixKit user
-                          [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                          
-                      }];
-        }
-        else if ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_chat"]])
-        {
-            if (self.delegate)
+            case MXKRoomMemberDetailsActionInvite:
             {
                 [self addPendingActionMask];
-                
-                [self.delegate roomMemberDetailsViewController:self startChatWithMemberId:_mxRoomMember.userId];
-                
-                [self removePendingActionMask];
+                [mxRoom inviteUser:_mxRoomMember.userId
+                           success:^{
+                               
+                               [self removePendingActionMask];
+                               
+                           } failure:^(NSError *error) {
+                               
+                               [self removePendingActionMask];
+                               NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed: %@", _mxRoomMember.userId, error);
+                               // Notify MatrixKit user
+                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                               
+                           }];
+                break;
             }
-        }
-        else if (([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_voice_call"]]) || ([action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_video_call"]]))
-        {
-            BOOL isVideoCall = [action isEqualToString:[NSBundle mxk_localizedStringForKey:@"start_video_call"]];
-            
-            if (self.delegate && [self.delegate respondsToSelector:@selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:)])
+            case MXKRoomMemberDetailsActionLeave:
             {
                 [self addPendingActionMask];
-                
-                [self.delegate roomMemberDetailsViewController:self placeVoipCallWithMemberId:_mxRoomMember.userId andVideo:isVideoCall];
-                
-                [self removePendingActionMask];
+                [self.mxRoom leave:^{
+                    
+                    [self removePendingActionMask];
+                    [self withdrawViewControllerAnimated:YES completion:nil];
+                    
+                } failure:^(NSError *error) {
+                    
+                    [self removePendingActionMask];
+                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed: %@", mxRoom.state.roomId, error);
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                }];
+                break;
             }
-            else
+            case MXKRoomMemberDetailsActionKick:
             {
                 [self addPendingActionMask];
-                
-                MXRoom* oneToOneRoom = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
-                
-                // Place the call directly if the room exists
-                if (oneToOneRoom)
+                [mxRoom kickUser:_mxRoomMember.userId
+                          reason:nil
+                         success:^{
+                             
+                             [self removePendingActionMask];
+                             // Pop/Dismiss the current view controller if the left members are hidden
+                             if (![[MXKAppSettings standardAppSettings] showLeftMembersInRoomMemberList])
+                             {
+                                 [self withdrawViewControllerAnimated:YES completion:nil];
+                             }
+                             
+                         } failure:^(NSError *error) {
+                             
+                             [self removePendingActionMask];
+                             NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed: %@", _mxRoomMember.userId, error);
+                             // Notify MatrixKit user
+                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                             
+                         }];
+                break;
+            }
+            case MXKRoomMemberDetailsActionBan:
+            {
+                [self addPendingActionMask];
+                [mxRoom banUser:_mxRoomMember.userId
+                         reason:nil
+                        success:^{
+                            
+                            [self removePendingActionMask];
+                            
+                        } failure:^(NSError *error) {
+                            
+                            [self removePendingActionMask];
+                            NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed: %@", _mxRoomMember.userId, error);
+                            // Notify MatrixKit user
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                            
+                        }];
+                break;
+            }
+            case MXKRoomMemberDetailsActionUnban:
+            {
+                [self addPendingActionMask];
+                [mxRoom unbanUser:_mxRoomMember.userId
+                          success:^{
+                              
+                              [self removePendingActionMask];
+                              
+                          } failure:^(NSError *error) {
+                              
+                              [self removePendingActionMask];
+                              NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed: %@", _mxRoomMember.userId, error);
+                              // Notify MatrixKit user
+                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                              
+                          }];
+                break;
+            }
+            case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
+            {
+                break;
+            }
+            case MXKRoomMemberDetailsActionSetModerator:
+            {
+                break;
+            }
+            case MXKRoomMemberDetailsActionSetAdmin:
+            {
+                break;
+            }
+            case MXKRoomMemberDetailsActionSetCustomPowerLevel:
+            {
+                [self updateUserPowerLevel];
+                break;
+            }
+            case MXKRoomMemberDetailsActionStartChat:
+            {
+                if (self.delegate)
                 {
-                    [self.mainSession.callManager placeCallInRoom:oneToOneRoom.state.roomId withVideo:isVideoCall];
+                    [self addPendingActionMask];
+                    
+                    [self.delegate roomMemberDetailsViewController:self startChatWithMemberId:_mxRoomMember.userId];
+                    
+                    [self removePendingActionMask];
+                }
+                break;
+            }
+            case MXKRoomMemberDetailsActionStartVoiceCall:
+            case MXKRoomMemberDetailsActionStartVideoCall:
+            {
+                BOOL isVideoCall = (button.tag == MXKRoomMemberDetailsActionStartVideoCall);
+                
+                if (self.delegate && [self.delegate respondsToSelector:@selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:)])
+                {
+                    [self addPendingActionMask];
+                    
+                    [self.delegate roomMemberDetailsViewController:self placeVoipCallWithMemberId:_mxRoomMember.userId andVideo:isVideoCall];
+                    
                     [self removePendingActionMask];
                 }
                 else
                 {
-                    // Create a new room
-                    [self.mainSession createRoom:nil
-                                      visibility:kMXRoomVisibilityPrivate
-                                       roomAlias:nil
-                                           topic:nil
-                                         success:^(MXRoom *room) {
-                                             
-                                             // Add the user
-                                             [room inviteUser:_mxRoomMember.userId success:^{
+                    [self addPendingActionMask];
+                    
+                    MXRoom* oneToOneRoom = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
+                    
+                    // Place the call directly if the room exists
+                    if (oneToOneRoom)
+                    {
+                        [self.mainSession.callManager placeCallInRoom:oneToOneRoom.state.roomId withVideo:isVideoCall];
+                        [self removePendingActionMask];
+                    }
+                    else
+                    {
+                        // Create a new room
+                        [self.mainSession createRoom:nil
+                                          visibility:kMXRoomVisibilityPrivate
+                                           roomAlias:nil
+                                               topic:nil
+                                             success:^(MXRoom *room) {
                                                  
-                                                 // Delay the call in order to be sure that the room is ready
-                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                     [self.mainSession.callManager placeCallInRoom:room.state.roomId withVideo:isVideoCall];
+                                                 // Add the user
+                                                 [room inviteUser:_mxRoomMember.userId success:^{
+                                                     
+                                                     // Delay the call in order to be sure that the room is ready
+                                                     dispatch_async(dispatch_get_main_queue(), ^{
+                                                         [self.mainSession.callManager placeCallInRoom:room.state.roomId withVideo:isVideoCall];
+                                                         [self removePendingActionMask];
+                                                     });
+                                                     
+                                                 } failure:^(NSError *error) {
+                                                     
+                                                     NSLog(@"[MXKRoomMemberDetailsVC] %@ invitation failed (roomId: %@): %@", _mxRoomMember.userId, room.state.roomId, error);
                                                      [self removePendingActionMask];
-                                                 });
+                                                     // Notify MatrixKit user
+                                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                     
+                                                 }];
                                                  
                                              } failure:^(NSError *error) {
                                                  
-                                                 NSLog(@"[MXKMemberVC] %@ invitation failed (roomId: %@): %@", _mxRoomMember.userId, room.state.roomId, error);
+                                                 NSLog(@"[MXKRoomMemberDetailsVC] Create room failed: %@", error);
                                                  [self removePendingActionMask];
                                                  // Notify MatrixKit user
                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                                                  
                                              }];
-                                             
-                                         } failure:^(NSError *error) {
-                                             
-                                             NSLog(@"[MXKMemberVC] Create room failed: %@", error);
-                                             [self removePendingActionMask];
-                                             // Notify MatrixKit user
-                                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                             
-                                         }];
+                    }
                 }
+                break;
             }
+            default:
+                break;
         }
     }
 }
 
 #pragma mark - Internals
 
-- (void)removeObservers
-{
-    if (leaveRoomNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
-        leaveRoomNotificationObserver = nil;
-    }
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    if (membersListener && mxRoom)
-    {
-        [mxRoom.liveTimeline removeListener:membersListener];
-        membersListener = nil;
-    }
-}
-
-- (void)updateMemberInfo
+- (void)initObservers
 {
     // Remove any pending observers
     [self removeObservers];
-    
-    self.title = _mxRoomMember.displayname ? _mxRoomMember.displayname : _mxRoomMember.userId;
-    
-    // set the thumbnail info
-    self.memberThumbnail.contentMode = UIViewContentModeScaleAspectFill;
-    self.memberThumbnail.backgroundColor = [UIColor clearColor];
-    [self.memberThumbnail.layer setCornerRadius:self.memberThumbnail.frame.size.width / 2];
-    [self.memberThumbnail setClipsToBounds:YES];
-    
-    NSString *thumbnailURL = nil;
-    if (_mxRoomMember.avatarUrl)
-    {
-        // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnail.frame.size withMethod:MXThumbnailingMethodCrop];
-    }
-    
-    self.memberThumbnail.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
-    self.memberThumbnail.enableInMemoryCache = YES;
-    [self.memberThumbnail setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
-    
-    self.roomMemberMatrixInfo.text = _mxRoomMember.userId;
     
     if (mxRoom)
     {
         // Observe room's members update
         NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
         membersListener = [mxRoom.liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXEventDirection direction, id customObject) {
+            
             // consider only live event
             if (direction == MXEventDirectionForwards)
             {
-                
                 // Hide potential action sheet
                 if (self.actionMenu)
                 {
@@ -405,11 +394,13 @@
                     // Refresh member
                     _mxRoomMember = nextRoomMember;
                     [self updateMemberInfo];
-                } else
+                }
+                else
                 {
                     [self withdrawViewControllerAnimated:YES completion:nil];
                 }
             }
+            
         }];
         
         // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
@@ -428,6 +419,48 @@
         }];
     }
     
+    [self updateMemberInfo];
+}
+
+- (void)removeObservers
+{
+    if (leaveRoomNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
+        leaveRoomNotificationObserver = nil;
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    if (membersListener && mxRoom)
+    {
+        [mxRoom.liveTimeline removeListener:membersListener];
+        membersListener = nil;
+    }
+}
+
+- (void)updateMemberInfo
+{
+    self.title = _mxRoomMember.displayname ? _mxRoomMember.displayname : _mxRoomMember.userId;
+    
+    // set the thumbnail info
+    self.memberThumbnail.contentMode = UIViewContentModeScaleAspectFill;
+    self.memberThumbnail.backgroundColor = [UIColor clearColor];
+    [self.memberThumbnail.layer setCornerRadius:self.memberThumbnail.frame.size.width / 2];
+    [self.memberThumbnail setClipsToBounds:YES];
+    
+    NSString *thumbnailURL = nil;
+    if (_mxRoomMember.avatarUrl)
+    {
+        // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+        thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnail.frame.size withMethod:MXThumbnailingMethodCrop];
+    }
+    
+    self.memberThumbnail.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+    self.memberThumbnail.enableInMemoryCache = YES;
+    [self.memberThumbnail setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+    
+    self.roomMemberMatrixInfo.text = _mxRoomMember.userId;
+    
     [self.tableView reloadData];
 }
 
@@ -445,16 +478,16 @@
     NSUInteger memberPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     NSUInteger oneSelfPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
     
-    [buttonsTitles removeAllObjects];
+    [actionsArray removeAllObjects];
     
     // Consider the case of the user himself
     if ([_mxRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
     {
-        [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"leave"]];
+        [actionsArray addObject:@(MXKRoomMemberDetailsActionLeave)];
         
         if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels])
         {
-            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"set_power_level"]];
+            [actionsArray addObject:@(MXKRoomMemberDetailsActionSetCustomPowerLevel)];
         }
     }
     else if (_mxRoomMember)
@@ -462,8 +495,8 @@
         if (_enableVoipCall)
         {
             // Offer voip call options
-            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"start_voice_call"]];
-            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"start_video_call"]];
+            [actionsArray addObject:@(MXKRoomMemberDetailsActionStartVoiceCall)];
+            [actionsArray addObject:@(MXKRoomMemberDetailsActionStartVideoCall)];
         }
         
         // Consider membership of the selected member
@@ -473,14 +506,14 @@
             case MXMembershipJoin:
             {
                 // Check conditions to be able to kick someone
-                if (oneSelfPowerLevel >= [powerLevels kick] && oneSelfPowerLevel >= memberPowerLevel)
+                if (oneSelfPowerLevel >= [powerLevels kick] && oneSelfPowerLevel > memberPowerLevel)
                 {
-                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"kick"]];
+                    [actionsArray addObject:@(MXKRoomMemberDetailsActionKick)];
                 }
                 // Check conditions to be able to ban someone
-                if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel >= memberPowerLevel)
+                if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel > memberPowerLevel)
                 {
-                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"ban"]];
+                    [actionsArray addObject:@(MXKRoomMemberDetailsActionBan)];
                 }
                 break;
             }
@@ -489,21 +522,21 @@
                 // Check conditions to be able to invite someone
                 if (oneSelfPowerLevel >= [powerLevels invite])
                 {
-                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"invite"]];
+                    [actionsArray addObject:@(MXKRoomMemberDetailsActionInvite)];
                 }
                 // Check conditions to be able to ban someone
-                if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel >= memberPowerLevel)
+                if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel > memberPowerLevel)
                 {
-                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"ban"]];
+                    [actionsArray addObject:@(MXKRoomMemberDetailsActionBan)];
                 }
                 break;
             }
             case MXMembershipBan:
             {
                 // Check conditions to be able to unban someone
-                if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel >= memberPowerLevel)
+                if (oneSelfPowerLevel >= [powerLevels ban] && oneSelfPowerLevel > memberPowerLevel)
                 {
-                    [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"unban"]];
+                    [actionsArray addObject:@(MXKRoomMemberDetailsActionUnban)];
                 }
                 break;
             }
@@ -514,9 +547,9 @@
         }
         
         // update power level
-        if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels])
+        if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels] && oneSelfPowerLevel > memberPowerLevel)
         {
-            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"set_power_level"]];
+            [actionsArray addObject:@(MXKRoomMemberDetailsActionSetCustomPowerLevel)];
         }
         
         // offer to start a new chat only if the room is not a 1:1 room with this user
@@ -524,11 +557,60 @@
         MXRoom* room = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
         if (!room || (![room.state.roomId isEqualToString:mxRoom.state.roomId]))
         {
-            [buttonsTitles addObject:[NSBundle mxk_localizedStringForKey:@"start_chat"]];
+            [actionsArray addObject:@(MXKRoomMemberDetailsActionStartChat)];
         }
     }
     
-    return (buttonsTitles.count + 1) / 2;
+    return (actionsArray.count + 1) / 2;
+}
+
+- (NSString*)actionButtonTitle:(MXKRoomMemberDetailsAction)action
+{
+    NSString *title;
+    
+    switch (action)
+    {
+        case MXKRoomMemberDetailsActionInvite:
+            title = [NSBundle mxk_localizedStringForKey:@"invite"];
+            break;
+        case MXKRoomMemberDetailsActionLeave:
+            title = [NSBundle mxk_localizedStringForKey:@"leave"];
+            break;
+        case MXKRoomMemberDetailsActionKick:
+            title = [NSBundle mxk_localizedStringForKey:@"kick"];
+            break;
+        case MXKRoomMemberDetailsActionBan:
+            title = [NSBundle mxk_localizedStringForKey:@"ban"];
+            break;
+        case MXKRoomMemberDetailsActionUnban:
+            title = [NSBundle mxk_localizedStringForKey:@"unban"];
+            break;
+        case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
+            title = [NSBundle mxk_localizedStringForKey:@"set_default_power_level"];
+            break;
+        case MXKRoomMemberDetailsActionSetModerator:
+            title = [NSBundle mxk_localizedStringForKey:@"set_moderator"];
+            break;
+        case MXKRoomMemberDetailsActionSetAdmin:
+            title = [NSBundle mxk_localizedStringForKey:@"set_admin"];
+            break;
+        case MXKRoomMemberDetailsActionSetCustomPowerLevel:
+            title = [NSBundle mxk_localizedStringForKey:@"set_power_level"];
+            break;
+        case MXKRoomMemberDetailsActionStartChat:
+            title = [NSBundle mxk_localizedStringForKey:@"start_chat"];
+            break;
+        case MXKRoomMemberDetailsActionStartVoiceCall:
+            title = [NSBundle mxk_localizedStringForKey:@"start_voice_call"];
+            break;
+        case MXKRoomMemberDetailsActionStartVideoCall:
+            title = [NSBundle mxk_localizedStringForKey:@"start_video_call"];
+            break;
+        default:
+            break;
+    }
+    
+    return title;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -549,14 +631,13 @@
         NSString *text = nil;
         for (UIButton *button in buttons)
         {
-            if (index < buttonsTitles.count)
+            NSNumber *actionNumber;
+            if (index < actionsArray.count)
             {
-                text = [buttonsTitles objectAtIndex:index];
+                actionNumber = [actionsArray objectAtIndex:index];
             }
-            else
-            {
-                text = nil;
-            }
+            
+            text = (actionNumber ? [self actionButtonTitle:actionNumber.unsignedIntegerValue] : nil);
             
             button.hidden = (text.length == 0);
             
@@ -568,6 +649,8 @@
             [button setTitle:text forState:UIControlStateHighlighted];
             
             [button addTarget:self action:@selector(onActionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            
+            button.tag = (actionNumber ? actionNumber.unsignedIntegerValue : -1);
             
             index ++;
         }
@@ -611,9 +694,9 @@
     }
 }
 
-- (void)setUserPowerLevel:(MXRoomMember*)roomMember to:(NSUInteger)value
+- (void)setPowerLevel:(NSUInteger)value
 {
-    NSUInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:roomMember.userId];
+    NSUInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     
     // check if the power level has not yet been set to 0
     if (value != currentPowerLevel)
@@ -623,14 +706,14 @@
         [weakSelf addPendingActionMask];
         
         // Reset user power level
-        [self.mxRoom setPowerLevelOfUserWithUserID:roomMember.userId powerLevel:value success:^{
+        [self.mxRoom setPowerLevelOfUserWithUserID:_mxRoomMember.userId powerLevel:value success:^{
             
             [weakSelf removePendingActionMask];
             
         } failure:^(NSError *error) {
             
             [weakSelf removePendingActionMask];
-            NSLog(@"[MXKMemberVC] Set user power (%@) failed: %@", roomMember.userId, error);
+            NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", weakSelf.mxRoomMember.userId, error);
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
             
@@ -638,26 +721,26 @@
     }
 }
 
-- (void)updateUserPowerLevel:(MXRoomMember*)roomMember
+- (void)updateUserPowerLevel
 {
     __weak typeof(self) weakSelf = self;
     
     // Ask for the power level to set
     self.actionMenu = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"]  message:nil style:MXKAlertStyleAlert];
     
-    if (![self.mainSession.myUser.userId isEqualToString:roomMember.userId])
+    if (![self.mainSession.myUser.userId isEqualToString:_mxRoomMember.userId])
     {
         self.actionMenu.cancelButtonIndex = [self.actionMenu addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
             weakSelf.actionMenu = nil;
             
-            [weakSelf setUserPowerLevel:roomMember to:weakSelf.mxRoom.state.powerLevels.usersDefault];
+            [weakSelf setPowerLevel:weakSelf.mxRoom.state.powerLevels.usersDefault];
         }];
     }
     [self.actionMenu addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%tu", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:roomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%tu", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:weakSelf.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
@@ -668,7 +751,7 @@
         
         if (textField.text.length > 0)
         {
-            [weakSelf setUserPowerLevel:roomMember to:[textField.text integerValue]];
+            [weakSelf setPowerLevel:[textField.text integerValue]];
         }
     }];
     [self.actionMenu showInViewController:self];
