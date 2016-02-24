@@ -363,7 +363,7 @@
     {
         // Observe room's members update
         NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
-        membersListener = [mxRoom listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXEventDirection direction, id customObject) {
+        membersListener = [mxRoom.liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXEventDirection direction, id customObject) {
             
             // consider only live event
             if (direction == MXEventDirectionForwards)
@@ -433,7 +433,7 @@
     
     if (membersListener && mxRoom)
     {
-        [mxRoom removeListener:membersListener];
+        [mxRoom.liveTimeline removeListener:membersListener];
         membersListener = nil;
     }
 }
