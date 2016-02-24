@@ -814,8 +814,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         return;
     }
     
-    [self dismissKeyboard];
-    
     // Remove potential title view
     if (titleView)
     {
@@ -827,6 +825,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [_roomTitleViewContainer removeConstraints:titleView.constraints];
         }
+        [titleView dismissKeyboard];
         [titleView removeFromSuperview];
         [titleView destroy];
     }
@@ -881,8 +880,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         return;
     }
     
-    [self dismissKeyboard];
-    
     // Remove potential toolbar
     if (inputToolbarView)
     {
@@ -894,6 +891,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [_roomInputToolbarContainer removeConstraints:inputToolbarView.constraints];
         }
+        [inputToolbarView dismissKeyboard];
         [inputToolbarView removeFromSuperview];
         [inputToolbarView destroy];
     }
