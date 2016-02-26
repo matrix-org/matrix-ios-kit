@@ -108,10 +108,10 @@
         {
             // Register a listener to handle messages related to room name
             roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
-                                                 onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+                                                 onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
             {
                 // Consider only live events
-                if (direction == MXEventDirectionForwards)
+                if (direction == MXTimelineDirectionForwards)
                 {
                     
                     // In case of room member change, check whether the text field is editing before refreshing title view

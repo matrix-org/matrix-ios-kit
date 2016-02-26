@@ -535,9 +535,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // And register a new one with the requested filter
     _eventsFilterForMessages = [eventsFilterForMessages copy];
-    liveEventsListener = [_room.liveTimeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    liveEventsListener = [_room.liveTimeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
-        if (MXEventDirectionForwards == direction)
+        if (MXTimelineDirectionForwards == direction)
         {
             // Check for local echo suppression
             MXEvent *localEcho;
@@ -554,16 +554,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             if (nil == localEcho)
             {
                 // Post incoming events for later processing
-                [self queueEventForProcessing:event withRoomState:roomState direction:MXEventDirectionForwards];
+                [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
                 [self processQueuedEvents:nil];
             }
         }
     }];
     
     
-    receiptsListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState) {
+    receiptsListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
         
-        if (MXEventDirectionForwards == direction)
+        if (MXTimelineDirectionForwards == direction)
         {
             // Handle this read receipt
             [self didReceiveReceiptEvent:event roomState:roomState];
@@ -571,10 +571,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
     
     // Register a listener to handle redaction in live stream
-    redactionListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXEventDirection direction, MXRoomState *roomState) {
+    redactionListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
         
         // Consider only live redaction events
-        if (direction == MXEventDirectionForwards)
+        if (direction == MXTimelineDirectionForwards)
         {
             // Do the processing on the processing queue
             dispatch_async(MXKRoomDataSource.processingQueue, ^{
@@ -697,11 +697,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Add typing notification listener
-    typingNotifListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    typingNotifListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
         
         // Handle only live events
-        if (direction == MXEventDirectionForwards)
+        if (direction == MXTimelineDirectionForwards)
         {
             // Retrieve typing users list
             NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
@@ -828,7 +828,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         return;
     }
     
-    if (NO == [_room.liveTimeline canPaginate: MXEventDirectionBackwards])
+    if (NO == [_room.liveTimeline canPaginate: MXTimelineDirectionBackwards])
     {
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: No more events to paginate");
         if (success)
@@ -838,16 +838,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Keep events from the past to later processing
-    id backPaginateListener = [_room.liveTimeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    id backPaginateListener = [_room.liveTimeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
-        if (MXEventDirectionBackwards == direction)
+        if (MXTimelineDirectionBackwards == direction)
         {
-            [self queueEventForProcessing:event withRoomState:roomState direction:MXEventDirectionBackwards];
+            [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionBackwards];
         }
     }];
     
     // Launch the pagination
-    backPaginationRequest = [_room.liveTimeline paginate:numItems direction:MXEventDirectionBackwards onlyFromStore:onlyFromStore complete:^{
+    backPaginationRequest = [_room.liveTimeline paginate:numItems direction:MXTimelineDirectionBackwards onlyFromStore:onlyFromStore complete:^{
         
         backPaginationRequest = nil;
         // Once done, process retrieved events
@@ -932,7 +932,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (bubblesTotalHeight < rect.size.height)
     {
         // No. Paginate to get more messages
-        if ([_room.liveTimeline canPaginate:MXEventDirectionBackwards])
+        if ([_room.liveTimeline canPaginate:MXTimelineDirectionBackwards])
         {
             // Bound the minimal height to 44
             minMessageHeight = MIN(minMessageHeight, 44);
@@ -1612,7 +1612,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // according to theirs timestamps
         outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
 
-        [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXEventDirectionForwards];
+        [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
     }
 }
 
@@ -1628,7 +1628,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXEvent *localEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:nil andContent:msgContent];
     localEcho.mxkState = eventState;
     
-    [self queueEventForProcessing:localEcho withRoomState:_room.state direction:MXEventDirectionForwards];
+    [self queueEventForProcessing:localEcho withRoomState:_room.state direction:MXTimelineDirectionForwards];
     [self processQueuedEvents:nil];
     
     // Register the echo as pending for its future deletion
@@ -1820,7 +1820,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
  @param roomState the state of the room when the event fired.
  @param direction the order of the events in the arrays
  */
-- (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXEventDirection)direction
+- (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXTimelineDirection)direction
 {
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
     
@@ -1941,7 +1941,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
                         {
                             // Try to concatenate the event to the last or the oldest bubble?
-                            if (queuedEvent.direction == MXEventDirectionBackwards)
+                            if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
                                 bubbleData = bubblesSnapshot.firstObject;
                             }
@@ -1966,7 +1966,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                 continue;
                             }
 
-                            if (queuedEvent.direction == MXEventDirectionBackwards)
+                            if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
                                 // The new bubble data will be inserted at first position.
                                 // We have to update the 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags of the current first bubble.

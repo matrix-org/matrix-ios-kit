@@ -363,10 +363,10 @@
     {
         // Observe room's members update
         NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
-        membersListener = [mxRoom.liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXEventDirection direction, id customObject) {
+        membersListener = [mxRoom.liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
             
             // consider only live event
-            if (direction == MXEventDirectionForwards)
+            if (direction == MXTimelineDirectionForwards)
             {
                 // Hide potential action sheet
                 if (self.actionMenu)

@@ -114,10 +114,10 @@
         {
             // Register a listener to handle messages related to room name
             roomTopicListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic]
-                                                      onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+                                                      onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
             {
                 // Consider only live events
-                if (direction == MXEventDirectionForwards)
+                if (direction == MXTimelineDirectionForwards)
                 {
                     [self refreshDisplay];
                 }

@@ -151,9 +151,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
         
         // Register a listener on matrix presence and membership events
         id eventListener = [mxSession listenToEventsOfTypes:@[kMXEventTypeStringRoomMember, kMXEventTypeStringPresence]
-                                                       onEvent:^(MXEvent *event, MXEventDirection direction, id customObject) {
+                                                       onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
                                // Consider only live event
-                               if (direction == MXEventDirectionForwards)
+                               if (direction == MXTimelineDirectionForwards)
                                {
                                    // Consider first presence events
                                    if (event.eventType == MXEventTypePresence)
