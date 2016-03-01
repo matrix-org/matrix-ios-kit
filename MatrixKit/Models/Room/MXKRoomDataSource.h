@@ -99,6 +99,17 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic, readonly) MXRoom *room;
 
 /**
+ The timeline being managed. It can be the live timeline of the room
+ or a timeline from a past event, initialEventId.
+ */
+@property (nonatomic, readonly) MXEventTimeline *timeline;
+
+/**
+ Flag indicating if the data source manages, or will manage, a live timeline.
+ */
+@property (nonatomic, readonly) BOOL isLive;
+
+/**
  The last event in the room that matches the `eventsFilterForMessages` property.
  */
 @property (nonatomic, readonly) MXEvent *lastMessage;
@@ -194,6 +205,17 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @return the newly created instance.
  */
 - (instancetype)initWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
+
+/**
+ Initialise the data source to serve data corresponding to an event in the
+ past of a room.
+
+ @param roomId the id of the room to get data from.
+ @param initialEventId the id of the event where to start the timeline.
+ @param mxSession the Matrix session to get data from.
+ @return the newly created instance.
+ */
+- (instancetype)initWithRoomId:(NSString*)roomId andInitialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
 
 /**
  Mark all messages as read

@@ -1337,7 +1337,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)triggerBackPagination:(NSUInteger)limit
 {
     // Paginate only if possible
-    if (isBackPaginationInProgress || NO == [roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards])
+    if (isBackPaginationInProgress || NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards])
     {
         return;
     }
@@ -1415,7 +1415,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)triggerAttachmentBackPagination:(NSString*)eventId
 {
     // Paginate only if possible
-    if (NO == [roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards] && attachmentsViewer)
+    if (NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] && attachmentsViewer)
     {
         return;
     }
@@ -1438,7 +1438,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             // Check whether pagination is still available
-            attachmentsViewer.complete = ([roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards] == NO);
+            attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
             
             if (isDone || attachmentsViewer.complete)
             {
@@ -2687,7 +2687,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Present an attachment viewer
         attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
         attachmentsViewer.delegate = self;
-        attachmentsViewer.complete = ([roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards] == NO);
+        attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
         attachmentsViewer.hidesBottomBarWhenPushed = YES;
         [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
 
@@ -2729,7 +2729,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     [self triggerAttachmentBackPagination:eventId];
     
-    return [self.roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards];
+    return [self.roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards];
 }
 
 #pragma mark - UIDocumentInteractionControllerDelegate
