@@ -501,6 +501,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         // Update here data source state if it is not already ready
                         state = MXKDataSourceStateReady;
 
+                        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                        {
+                            [self.delegate dataSource:self didStateChange:state];
+                        }
+
                     } failure:nil];
                 }
 

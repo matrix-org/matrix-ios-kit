@@ -52,7 +52,7 @@
 /**
  Returns bubble components list (`MXKRoomBubbleComponent` instances).
  */
-@property (nonatomic, readonly) NSArray *bubbleComponents;
+@property (nonatomic, readonly) NSArray<MXKRoomBubbleComponent*> *bubbleComponents;
 
 /**
  Event formatter
