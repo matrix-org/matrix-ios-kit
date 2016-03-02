@@ -879,7 +879,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSLog(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
         return;
     }
-    
+
+    // Do not show the input toolbar if the displayed timeline is not the live one
+    // We do not let the user type message in this case.
+    if (!roomDataSource.isLive)
+    {
+        return;
+    }
+
     // Remove potential toolbar
     if (inputToolbarView)
     {
@@ -942,6 +949,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (!_roomActivitiesContainer)
     {
         NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
+        return;
+    }
+
+    // Do not show room activities if the displayed timeline is not the live one
+    if (!roomDataSource.isLive)
+    {
+        _roomActivitiesContainerHeightConstraint.constant = 0;
         return;
     }
 
