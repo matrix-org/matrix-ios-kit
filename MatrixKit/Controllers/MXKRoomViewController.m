@@ -1382,62 +1382,60 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         // We will adjust the vertical offset in order to unchange the current display (pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
-        NSIndexPath *indexPath;
 
-        NSUInteger count = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
-        // Compute the cumulative height of the added messages
-        for (NSUInteger index = 0; index < addedCellNumber; index++)
+        if (direction == MXTimelineDirectionBackwards)
         {
-            if (direction == MXTimelineDirectionBackwards)
+            // Compute the cumulative height of the added messages
+            for (NSUInteger index = 0; index < addedCellNumber; index++)
             {
-                indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
                 verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
             }
-            else
+
+            // Add delta of the height of the previous first cell (if any)
+            if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
             {
-                indexPath = [NSIndexPath indexPathForRow:(count - 1 - index) inSection:0];
-                verticalOffset -= [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
-            }
-        }
-        
-        // Add delta of the height of the previous first cell (if any)
-        if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
-        {
-            if (direction == MXTimelineDirectionBackwards)
-            {
-                indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
                 verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
             }
-            else
-            {
-                indexPath = [NSIndexPath indexPathForRow:(count - 1 - addedCellNumber) inSection:0];
-                verticalOffset -= ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
-            }
+
+            _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+        }
+        else
+        {
+            _bubblesTableView.tableFooterView = reconnectingView = nil;
         }
 
         // Trigger a full table reload. We could not only insert new cells related to pagination,
         // because some other changes may have been ignored during pagination (see[dataSource:didCellChange:]).
-        isPaginationInProgress = NO;
-        _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
-        
+
         // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
         [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
         [self.bubblesTableView setScrollEnabled:NO];
-        
+
+        CGPoint contentOffset = self.bubblesTableView.contentOffset;
+
         BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
-        
-        // Adjust vertical content offset (except if the table has been scrolled to bottom)
-        if ((!hasBeenScrolledToBottom && verticalOffset > 0) || direction == MXTimelineDirectionForwards)
+
+        if (direction == MXTimelineDirectionBackwards)
         {
-            // Adjust vertical offset in order to compensate scrolling
-            CGPoint contentOffset = self.bubblesTableView.contentOffset;
-            contentOffset.y += verticalOffset;
-            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            // Backwards pagination adds cells at the top of the tableview content.
+            // Vertical content offset needs to be updated (except if the table has been scrolled to bottom)
+            if ((!hasBeenScrolledToBottom && verticalOffset > 0) || direction == MXTimelineDirectionForwards)
+            {
+                // Adjust vertical offset in order to compensate scrolling
+                contentOffset.y += verticalOffset;
+                [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            }
         }
-        
+
+        [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+
         // Restore scrolling and the scroll indicator
         [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
         [self.bubblesTableView setScrollEnabled:YES];
+
+        isPaginationInProgress = NO;
 
         // Force the update of the current visual position
         // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
@@ -1445,7 +1443,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             [self upateCurrentEventIdAtTableBottom];
         }
-        
+
     } failure:^(NSError *error) {
         
         // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
@@ -2872,7 +2870,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
  */
 - (void)detectPullToKick:(UIScrollView *)scrollView
 {
-    if (!reconnectingView)
+    if (roomDataSource.isLive && !reconnectingView)
     {
         // detect if the user scrolls over the tableview bottom
         restartConnection = (
