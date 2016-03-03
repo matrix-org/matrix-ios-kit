@@ -43,9 +43,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSString *initialEventId;
 
     /**
-     Current back pagination request (if any)
+     Current pagination request (if any)
      */
-    MXHTTPOperation *backPaginationRequest;
+    MXHTTPOperation *paginationRequest;
     
     /**
      The listener to incoming events in the room.
@@ -309,10 +309,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)reset
 {
-    if (backPaginationRequest)
+    if (paginationRequest)
     {
-        [backPaginationRequest cancel];
-        backPaginationRequest = nil;
+        [paginationRequest cancel];
+        paginationRequest = nil;
     }
     
     if (_room && liveEventsListener)
@@ -784,10 +784,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)cancelAllRequests
 {
-    if (backPaginationRequest)
+    if (paginationRequest)
     {
-        [backPaginationRequest cancel];
-        backPaginationRequest = nil;
+        [paginationRequest cancel];
+        paginationRequest = nil;
     }
     
     [super cancelAllRequests];
@@ -875,7 +875,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         return;
     }
     
-    if (backPaginationRequest)
+    if (paginationRequest)
     {
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
         return;
@@ -900,9 +900,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
     
     // Launch the pagination
-    backPaginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
+    paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
-        backPaginationRequest = nil;
+        paginationRequest = nil;
         // Once done, process retrieved events
         [_timeline removeListener:backPaginateListener];
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
@@ -919,7 +919,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
         
-        backPaginationRequest = nil;
+        paginationRequest = nil;
         [_timeline removeListener:backPaginateListener];
         
         // Process at least events retrieved from store

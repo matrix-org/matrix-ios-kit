@@ -17,8 +17,6 @@
 #define MXKROOMVIEWCONTROLLER_DEFAULT_TYPING_TIMEOUT_SEC 10
 #define MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT 50
 
-#define MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET 100
-
 #import "MXKRoomViewController.h"
 
 #import <MediaPlayer/MediaPlayer.h>
@@ -91,9 +89,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSTimer *typingTimer;
     
     /**
-     YES when back pagination is in progress.
+     YES when pagination is in progress.
      */
-    BOOL isBackPaginationInProgress;
+    BOOL isPaginationInProgress;
     
     /**
      The back pagination spinner view.
@@ -223,9 +221,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
     
-    // Default back pagination settings
-    _backPaginationThreshold = 300;
-    _backPaginationLimit = 30;
+    // Default pagination settings
+    _paginationThreshold = 300;
+    _paginationLimit = 30;
     
     // Save progress text input
     _saveProgressTextInput = YES;
@@ -1299,7 +1297,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     
     // Check internal processes before stopping the loading wheel
-    if (isBackPaginationInProgress)
+    if (isPaginationInProgress)
     {
         // Keep activity indicator running
         return;
@@ -1309,7 +1307,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [super stopActivityIndicator];
 }
 
-#pragma mark - Back pagination
+#pragma mark - Pagination
 
 - (void)triggerInitialBackPagination
 {
@@ -1317,15 +1315,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
     CGRect frame = window.rootViewController.view.bounds;
     
-    isBackPaginationInProgress = YES;
+    isPaginationInProgress = YES;
     [self startActivityIndicator];
     [roomDataSource paginateToFillRect:frame
                              direction:MXTimelineDirectionBackwards
-           withMinRequestMessagesCount:_backPaginationLimit
+           withMinRequestMessagesCount:_paginationLimit
                                success:^{
 
                                    // Stop spinner
-                                   isBackPaginationInProgress = NO;
+                                   isPaginationInProgress = NO;
                                    [self stopActivityIndicator];
 
                                    // Reload table
@@ -1335,7 +1333,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                failure:^(NSError *error) {
 
                                    // Stop spinner
-                                   isBackPaginationInProgress = NO;
+                                   isPaginationInProgress = NO;
                                    [self stopActivityIndicator];
 
                                    // Reload table
@@ -1345,16 +1343,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 /**
- Trigger an inconspicuous back pagination.
+ Trigger an inconspicuous pagination.
  The retrieved history is added discretely to the top of bubbles table without change the current display.
 
  @param limit the maximum number of messages to retrieve.
  @param direction backwards or forwards.
  */
-- (void)triggerBackPagination:(NSUInteger)limit direction:(MXTimelineDirection)direction
+- (void)triggerPagination:(NSUInteger)limit direction:(MXTimelineDirection)direction
 {
     // Paginate only if possible
-    if (isBackPaginationInProgress || NO == [roomDataSource.timeline canPaginate:direction])
+    if (isPaginationInProgress || NO == [roomDataSource.timeline canPaginate:direction])
     {
         return;
     }
@@ -1377,12 +1375,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
     
-    isBackPaginationInProgress = YES;
+    isPaginationInProgress = YES;
     
-    // Trigger back pagination
+    // Trigger pagination
     [roomDataSource paginate:limit direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
-        // We will adjust the vertical offset in order to unchange the current display (back pagination should be inconspicuous)
+        // We will adjust the vertical offset in order to unchange the current display (pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
         NSIndexPath *indexPath;
 
@@ -1417,9 +1415,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
         }
 
-        // Trigger a full table reload. We could not only insert new cells related to back pagination,
-        // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-        isBackPaginationInProgress = NO;
+        // Trigger a full table reload. We could not only insert new cells related to pagination,
+        // because some other changes may have been ignored during pagination (see[dataSource:didCellChange:]).
+        isPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
         // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
@@ -1450,8 +1448,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
     } failure:^(NSError *error) {
         
-        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
-        isBackPaginationInProgress = NO;
+        // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
+        isPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
         [self reloadBubblesTable:NO];
@@ -1467,10 +1465,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         return;
     }
     
-    isBackPaginationInProgress = YES;
+    isPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginate:_backPaginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginate:_paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
@@ -1494,7 +1492,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
                 // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-                isBackPaginationInProgress = NO;
+                isPaginationInProgress = NO;
                 [self reloadBubblesTable:YES];
                 
                 // Done
@@ -1508,14 +1506,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
             // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-            isBackPaginationInProgress = NO;
+            isPaginationInProgress = NO;
             [self reloadBubblesTable:YES];
         }
         
     } failure:^(NSError *error) {
         
         // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
-        isBackPaginationInProgress = NO;
+        isPaginationInProgress = NO;
         [self reloadBubblesTable:YES];
         
         if (attachmentsViewer)
@@ -1895,7 +1893,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    if (isBackPaginationInProgress)
+    if (isPaginationInProgress)
     {
         // Ignore these changes, the table will be full updated at the end of pagination.
         return;
@@ -2417,7 +2415,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         if (scrollView.contentOffset.y < -64)
         {
             // Shall we add back pagination spinner?
-            if (isBackPaginationInProgress && !backPaginationActivityView)
+            if (isPaginationInProgress && !backPaginationActivityView)
             {
                 UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 spinner.hidesWhenStopped = NO;
@@ -2432,6 +2430,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         else
         {
+            // @TODO: spinner at the bottom for non live
             [self detectPullToKick:scrollView];
         }
     }
@@ -2481,14 +2480,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         
         // Trigger inconspicuous pagination when user scrolls toward the top
-        if (scrollView.contentOffset.y < _backPaginationThreshold)
+        if (scrollView.contentOffset.y < _paginationThreshold)
         {
-            [self triggerBackPagination:_backPaginationLimit direction:MXTimelineDirectionBackwards];
+            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
         }
         // Enable forwards pagination when displaying non live timeline
-        else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _backPaginationThreshold))
+        else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
         {
-            [self triggerBackPagination:_backPaginationLimit direction:MXTimelineDirectionForwards];
+            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
         }
     }
 }

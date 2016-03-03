@@ -82,15 +82,17 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic, readonly) MXKRoomActivitiesView* activitiesView;
 
 /**
- The threshold used to trigger inconspicuous back pagination. A pagination is triggered when the vertical
- content offset is lower this threshold. Default is 300.
+ The threshold used to trigger inconspicuous back pagination, or forwards pagination
+ for non live timeline. A pagination is triggered when the vertical content offset
+ is lower this threshold.
+ Default is 300.
  */
-@property (nonatomic) NSUInteger backPaginationThreshold;
+@property (nonatomic) NSUInteger paginationThreshold;
 
 /**
- The maximum number of messages to retrieve during a back pagination. Default is 30.
+ The maximum number of messages to retrieve during a pagination. Default is 30.
  */
-@property (nonatomic) NSUInteger backPaginationLimit;
+@property (nonatomic) NSUInteger paginationLimit;
 
 /**
  Enable/disable saving of the current typed text in message composer when view disappears.
