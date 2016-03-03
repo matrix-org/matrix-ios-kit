@@ -2429,7 +2429,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         else
         {
             // Shall we add forward pagination spinner?
-            if (!roomDataSource.isLive && isPaginationInProgress && scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height + 128 && !reconnectingView)
+            if (!roomDataSource.isLive && isPaginationInProgress && scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height + 64 && !reconnectingView)
             {
                 [self addReconnectingView];
             }
