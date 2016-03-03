@@ -1603,12 +1603,21 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)handleUnsentMessages
 {
-    // Add unsent events at the end of the conversation
-    for (MXEvent *outgoingMessage in _room.outgoingMessages)
+    // Clean outgoing messages, and add unsent ones at the end of the conversation
+    NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
+    
+    for (NSInteger index = 0; index < outgoingMessages.count; index++)
     {
-        // Check the event id (Messages which have been successfully sent have their actual event id).
-        if ([outgoingMessage.eventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix])
+        MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+        
+        // Remove successfully sent messages
+        if ([outgoingMessage.eventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix] == NO)
         {
+            [_room removeOutgoingMessage:outgoingMessage.eventId];
+        }
+        else
+        {
+            // Here the message sending has failed
             outgoingMessage.mxkState = MXKEventStateSendingFailed;
             
             // Need to update the timestamp because bubbles can reorder their events
