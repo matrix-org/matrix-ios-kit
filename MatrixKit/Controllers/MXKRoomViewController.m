@@ -2410,7 +2410,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (scrollView == _bubblesTableView)
     {
         // Detect top bounce
-        if (scrollView.contentOffset.y < -64)
+        if (scrollView.contentOffset.y < -scrollView.contentInset.top)
         {
             // Shall we add back pagination spinner?
             if (isPaginationInProgress && !backPaginationActivityView)
@@ -2428,8 +2428,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         else
         {
-            // @TODO: spinner at the bottom for non live
-            [self detectPullToKick:scrollView];
+            // Shall we add forward pagination spinner?
+            if (!roomDataSource.isLive && isPaginationInProgress && scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height + 128 && !reconnectingView)
+            {
+                [self addReconnectingView];
+            }
+            else
+            {
+                [self detectPullToKick:scrollView];
+            }
         }
     }
 }
