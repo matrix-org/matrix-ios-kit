@@ -584,9 +584,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages
 {
-    // @TODO
-    if (!_isLive)   return;
-    
     // Remove the previous live listener
     if (liveEventsListener)
     {
@@ -594,46 +591,49 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [_timeline removeListener:redactionListener];
         [_timeline removeListener:receiptsListener];
     }
-    
-    // And register a new one with the requested filter
-    _eventsFilterForMessages = [eventsFilterForMessages copy];
-    liveEventsListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+
+    // Listen to live events only for live timeline
+    // Events for past timelines come only from pagination request
+    if (_isLive)
     {
-        if (MXTimelineDirectionForwards == direction)
-        {
-            // Check for local echo suppression
-            MXEvent *localEcho;
-            if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
+        // And register a new one with the requested filter
+        _eventsFilterForMessages = [eventsFilterForMessages copy];
+        liveEventsListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            if (MXTimelineDirectionForwards == direction)
             {
-                localEcho = [self pendingLocalEchoRelatedToEvent:event];
-                if (localEcho)
+                // Check for local echo suppression
+                MXEvent *localEcho;
+                if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
                 {
-                    // Replace the local echo by the true event sent by the homeserver
-                    [self replaceLocalEcho:localEcho withEvent:event];
+                    localEcho = [self pendingLocalEchoRelatedToEvent:event];
+                    if (localEcho)
+                    {
+                        // Replace the local echo by the true event sent by the homeserver
+                        [self replaceLocalEcho:localEcho withEvent:event];
+                    }
+                }
+
+                if (nil == localEcho)
+                {
+                    // Post incoming events for later processing
+                    [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
+                    [self processQueuedEvents:nil];
                 }
             }
-            
-            if (nil == localEcho)
+        }];
+
+        receiptsListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+            if (MXTimelineDirectionForwards == direction)
             {
-                // Post incoming events for later processing
-                [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
-                [self processQueuedEvents:nil];
+                // Handle this read receipt
+                [self didReceiveReceiptEvent:event roomState:roomState];
             }
-        }
-    }];
-    
-    
-    receiptsListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-        
-        if (MXTimelineDirectionForwards == direction)
-        {
-            // Handle this read receipt
-            [self didReceiveReceiptEvent:event roomState:roomState];
-        }
-    }];
-    
-    // Register a listener to handle redaction in live stream
-    redactionListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
+        }];
+    }
+
+    // Register a listener to handle redaction which can affect live and past timelines
+    redactionListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
         
         // Consider only live redaction events
         if (direction == MXTimelineDirectionForwards)
