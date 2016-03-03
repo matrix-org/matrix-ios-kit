@@ -202,38 +202,22 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
-- (void)refreshUnreadCounters:(BOOL)refreshBingCounter
+- (void)refreshUnreadCounters
 {
-    // always highlight invitation message.
-    // if the room is joined from another device
+    // Consider as unread the pending invitation message.
+    // If the room is joined from another device,
     // this state will be updated so the standard read receipts management will be applied.
     if (MXMembershipInvite == _room.state.membership)
     {
-        _unreadCount = 1;
-        _unreadBingCount = 0;
+        _hasUnread = YES;
+        _notificationCount = 0;
+        _highlightCount = 0;
     }
     else
     {
-        NSArray* list = [_room unreadEvents];
-        if (_unreadCount != list.count)
-        {
-            _unreadCount = list.count;
-            
-            // Note: check bing takes time, so we allow bing counter refresh only when the unread count has changed
-            // and the caller has enabled the refresh ('refreshBingCounter' boolean).
-            if (refreshBingCounter)
-            {
-                _unreadBingCount = 0;
-                
-                for (MXEvent* event in list)
-                {
-                    if ([self checkBing:event])
-                    {
-                        _unreadBingCount++;
-                    }
-                }
-            }
-        }
+        _hasUnread = _room.hasUnreadEvents;
+        _notificationCount = _room.notificationCount;
+        _highlightCount = _room.highlightCount;
     }
 }
 
@@ -241,10 +225,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     if ([_room acknowledgeLatestEvent:YES])
     {
-        _unreadCount = 0;
-        _unreadBingCount = 0;
+        _hasUnread = NO;
+        _notificationCount = 0;
+        _highlightCount = 0;
         
-        // Notify the unreadCount has changed
+        // Notify the unread information has changed
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
 }
@@ -335,8 +320,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     _serverSyncEventCount = 0;
-    _unreadCount = 0;
-    _unreadBingCount = 0;
+    _hasUnread = NO;
+    _notificationCount = 0;
+    _highlightCount = 0;
 
     // Notify the delegate to reload its tableview
     if (self.delegate)
@@ -355,14 +341,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [self.delegate dataSource:self didStateChange:state];
     }
     
-    // Flush the current bubble data by keeping the current unread counts (to reduce computation time, indeed check bing takes time).
-    NSUInteger unreadCount = _unreadCount;
-    NSUInteger unreadBingCount = _unreadBingCount;
-    
     [self reset];
-    
-    _unreadCount = unreadCount;
-    _unreadBingCount = unreadBingCount;
     
     // Reload
     [self didMXSessionStateChange];
@@ -372,10 +351,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     {
         NSLog(@"[MXKRoomDataSource] Reload Failed (%p - room id: %@)", self, _roomId);
         
-        _unreadCount = 0;
-        _unreadBingCount = 0;
-        
-        // Notify the last message, unreadCount and/or unreadBingCount have changed
+        // Notify the last message, hasUnread, notificationCount and/or highlightCount have changed
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
 }
@@ -427,7 +403,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                 [_room.liveTimeline resetPagination];
                 
-                [self refreshUnreadCounters:YES];
+                [self refreshUnreadCounters];
                 
                 // Force to set the filter at the MXRoom level
                 self.eventsFilterForMessages = _eventsFilterForMessages;
@@ -1589,7 +1565,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // so, if some messages have been read on one device, the other devices must update the unread counters
     if ([receiptEvent.readReceiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
     {
-        [self refreshUnreadCounters:NO];
+        [self refreshUnreadCounters];
         
         // the unread counter has been updated so refresh the recents
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
@@ -1927,10 +1903,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             serverSyncEventCount ++;
                         }
 
-                        if ([self checkBing:queuedEvent.event])
-                        {
-                            _unreadBingCount++;
-                        }
+                        // Check whether the event must be highlighted
+                        [self checkBing:queuedEvent.event];
 
                         // Retrieve the MXKCellData class to manage the data
                         Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
@@ -2081,7 +2055,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         }
                     }
                     
-                    [self refreshUnreadCounters:NO];
+                    [self refreshUnreadCounters];
                     
                     bubbles = bubblesSnapshot;
                     bubblesSnapshot = nil;
@@ -2096,7 +2070,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         [self limitMemoryUsage:_maxBackgroundCachedBubblesCount];
                     }
                     
-                    // Notify the last message, unreadCount and/or unreadBingCount have changed
+                    // Notify the last message, hasUnread, notificationCount and/or highlightCount have changed
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
                 }
                 

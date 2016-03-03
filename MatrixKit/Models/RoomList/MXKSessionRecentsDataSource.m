@@ -155,18 +155,19 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     return cellDataArray.count;
 }
 
-- (NSUInteger)unreadCount
+- (BOOL)hasUnread
 {
-    NSUInteger unreadCount = 0;
-    
-    // Sum unreadCount of all current cells
+    // Check all current cells
     // Use numberOfRowsInSection methods so that we take benefit of the filtering
     for (NSUInteger i = 0; i < self.numberOfCells; i++)
     {
         id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
-        unreadCount += cellData.unreadCount;
+        if (cellData.hasUnread)
+        {
+            return YES;
+        }
     }
-    return unreadCount;
+    return NO;
 }
 
 - (void)setEventFormatter:(MXKEventFormatter *)eventFormatter

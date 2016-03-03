@@ -55,7 +55,7 @@ extern NSString *const kMXKRoomBubbleCellDataIdentifier;
 #pragma mark - Notifications
 /**
  Posted when an information about the room has changed.
- Tracked informations are: lastMessage, unreadCount, unreadBingCount.
+ Tracked informations are: lastMessage, hasUnread, notificationCount, highlightCount.
  The notification object is the `MXKRoomDataSource` instance.
  */
 extern NSString *const kMXKRoomDataSourceMetaDataChanged;
@@ -109,16 +109,19 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
 
 /**
- The number of unread messages.
- It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
+ Tell whether the room has unread messages.
  */
-@property (nonatomic, readonly) NSUInteger unreadCount;
+@property (nonatomic, readonly) BOOL hasUnread;
 
 /**
  The number of unread messages that match the push notification rules.
- It is automatically reset to 0 when the view controller calls numberOfRowsInSection.
  */
-@property (nonatomic, readonly) NSUInteger unreadBingCount;
+@property (nonatomic, readonly) NSUInteger notificationCount;
+
+/**
+ The number of highlighted unread messages (subset of notifications).
+ */
+@property (nonatomic, readonly) NSUInteger highlightCount;
 
 /**
  The events are processed asynchronously. This property counts the number of queued events

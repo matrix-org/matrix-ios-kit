@@ -64,6 +64,11 @@ typedef enum : NSUInteger {
 + (void)removeSharedManagerForMatrixSession:(MXSession*)mxSession;
 
 /**
+ The current number of unread messages that match the push notification rules.
+ */
++ (NSUInteger)notificationCount;
+
+/**
  Register the MXKRoomDataSource-inherited class that will be used to instantiate all room data source.
  By default MXKRoomDataSource class is considered.
  
