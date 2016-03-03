@@ -496,7 +496,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Force to set the filter at the MXRoom level
                     self.eventsFilterForMessages = _eventsFilterForMessages;
 
-                    [_timeline resetPaginationAroundInitialEventWithLimit:10 success:^{
+                    // Preload no messages before and after the intial event so that
+                    // this event will be displayed at the bottom of the screen.
+                    // The reason is we do not have tool yet to ask the table view to focus
+                    // on a given event.
+                    // TODO: Load more messages and center the table view on the initial event
+                    [_timeline resetPaginationAroundInitialEventWithLimit:0 success:^{
+
+                        // Do a "classic" reset. The room view controller will back paginate
+                        // from the most recent event stored in the timeline store, which is the initial event
+                        [_timeline resetPagination];
 
                         // Update here data source state if it is not already ready
                         state = MXKDataSourceStateReady;
