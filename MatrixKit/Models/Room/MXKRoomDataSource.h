@@ -282,7 +282,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  (Note this count may be 0 if paginated messages have been concatenated to the current first cell).
  @param failure a block called when the operation fails.
  */
-- (void)paginate:(NSUInteger)numItems :(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
+- (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load enough messages to fill the rect.
