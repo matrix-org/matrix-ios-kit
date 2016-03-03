@@ -575,6 +575,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages
 {
+    // @TODO
+    if (!_isLive)   return;
+    
     // Remove the previous live listener
     if (liveEventsListener)
     {
@@ -859,7 +862,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 #pragma mark - Pagination
-- (void)paginateBackMessages:(NSUInteger)numItems onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
+- (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
     // Check the current data source state, and the actual user membership for this room.
     if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
@@ -888,16 +891,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Keep events from the past to later processing
-    id backPaginateListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+    id backPaginateListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState)
     {
-        if (MXTimelineDirectionBackwards == direction)
+        if (direction2 == direction)
         {
-            [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionBackwards];
+            [self queueEventForProcessing:event withRoomState:roomState direction:direction];
         }
     }];
     
     // Launch the pagination
-    backPaginationRequest = [_timeline paginate:numItems direction:MXTimelineDirectionBackwards onlyFromStore:onlyFromStore complete:^{
+    backPaginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
         backPaginationRequest = nil;
         // Once done, process retrieved events
@@ -906,7 +909,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             
             if (success)
             {
-                success(addedHistoryCellNb);
+                NSUInteger addedCellNb = (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
+                success(addedCellNb);
             }
             
         }];
@@ -969,7 +973,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: Prefill with data from the store");
         // Give a chance to load data from the store before doing homeserver requests
         // Reuse minRequestMessagesCount because we need to provide a number.
-        [self paginateBackMessages:minRequestMessagesCount onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+        [self paginate:minRequestMessagesCount direction:MXTimelineDirectionBackwards onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
 
             // Then retry
             [self paginateBackMessagesToFillRect:rect withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
@@ -996,7 +1000,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             messagesToLoad = MAX(messagesToLoad, minRequestMessagesCount);
             
             NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
-            [self paginateBackMessages:messagesToLoad onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+            [self paginate:messagesToLoad direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
                 
                 [self paginateBackMessagesToFillRect:rect withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
                 

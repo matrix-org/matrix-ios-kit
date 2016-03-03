@@ -272,16 +272,17 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 #pragma mark - Pagination
 /**
- Load more messages from the history.
+ Load more messages.
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param numItems the number of items to get.
+ @param direction backwards or forwards.
  @param onlyFromStore if YES, return available events from the store, do not make a pagination request to the homeserver.
  @param success a block called when the operation succeeds. This block returns the number of added cells.
  (Note this count may be 0 if paginated messages have been concatenated to the current first cell).
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessages:(NSUInteger)numItems onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
+- (void)paginate:(NSUInteger)numItems :(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load enough messages to fill the rect.

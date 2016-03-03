@@ -1344,49 +1344,78 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 }
 
 /**
- Trigger an inconspicuous back pagination. The retrieved history is added discretely to the top of bubbles table without change the current display.
+ Trigger an inconspicuous back pagination.
+ The retrieved history is added discretely to the top of bubbles table without change the current display.
  
- @param limit the maximum number of messages to retrieve
+ @param limit the maximum number of messages to retrieve.
+ @param direction backwards or forwards.
  */
-- (void)triggerBackPagination:(NSUInteger)limit
+- (void)triggerBackPagination:(NSUInteger)limit direction:(MXTimelineDirection)direction
 {
     // Paginate only if possible
-    if (isBackPaginationInProgress || NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards])
+    if (isBackPaginationInProgress || NO == [roomDataSource.timeline canPaginate:direction])
     {
         return;
     }
     
     // Store the current height of the first bubble (if any)
     backPaginationSavedFirstBubbleHeight = 0;
-    if ([roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+
+    NSUInteger count = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
+    if (count)
     {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        NSIndexPath *indexPath;
+        if (direction == MXTimelineDirectionBackwards)
+        {
+            indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        }
+        else
+        {
+            indexPath = [NSIndexPath indexPathForRow:(count - 1) inSection:0];
+        }
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
     
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination
-    [roomDataSource paginateBackMessages:limit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginate:limit direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // We will adjust the vertical offset in order to unchange the current display (back pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
         NSIndexPath *indexPath;
-        
+
+        NSUInteger count = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
         // Compute the cumulative height of the added messages
         for (NSUInteger index = 0; index < addedCellNumber; index++)
         {
-            indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-            verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+            if (direction == MXTimelineDirectionBackwards)
+            {
+                indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+            }
+            else
+            {
+                indexPath = [NSIndexPath indexPathForRow:(count - 1 - index) inSection:0];
+                verticalOffset -= [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+            }
         }
         
         // Add delta of the height of the previous first cell (if any)
         if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
         {
-            indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
-            verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+            if (direction == MXTimelineDirectionBackwards)
+            {
+                indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
+                verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+            }
+            else
+            {
+                indexPath = [NSIndexPath indexPathForRow:(count - 1 - addedCellNumber) inSection:0];
+                verticalOffset -= ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+            }
         }
-        
+
         // Trigger a full table reload. We could not only insert new cells related to back pagination,
         // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
         isBackPaginationInProgress = NO;
@@ -1399,7 +1428,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
         
         // Adjust vertical content offset (except if the table has been scrolled to bottom)
-        if (!hasBeenScrolledToBottom && verticalOffset > 0)
+        if ((!hasBeenScrolledToBottom && verticalOffset > 0) || direction == MXTimelineDirectionForwards)
         {
             // Adjust vertical offset in order to compensate scrolling
             CGPoint contentOffset = self.bubblesTableView.contentOffset;
@@ -1413,7 +1442,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
         // Force the update of the current visual position
         // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
-        [self upateCurrentEventIdAtTableBottom];
+        if (direction == MXTimelineDirectionBackwards)
+        {
+            [self upateCurrentEventIdAtTableBottom];
+        }
         
     } failure:^(NSError *error) {
         
@@ -1437,7 +1469,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     isBackPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginateBackMessages:_backPaginationLimit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginate:_backPaginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
@@ -2450,7 +2482,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Trigger inconspicuous pagination when user scrolls toward the top
         if (scrollView.contentOffset.y < _backPaginationThreshold)
         {
-            [self triggerBackPagination: _backPaginationLimit];
+            [self triggerBackPagination:_backPaginationLimit direction:MXTimelineDirectionBackwards];
+        }
+        // Enable forwards pagination when displaying non live timeline
+        else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _backPaginationThreshold))
+        {
+            [self triggerBackPagination:_backPaginationLimit direction:MXTimelineDirectionForwards];
         }
     }
 }
@@ -2859,7 +2896,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)managePullToKick:(UIScrollView *)scrollView
 {
     // the current connection must be restarted
-    if (restartConnection)
+    if (roomDataSource.isLive && restartConnection)
     {
         // display at least 0.3s the spinner to show to the user that something is pending
         // else the UI is flickering
