@@ -261,16 +261,17 @@
     return displayedRecentsDataSourceArray.count;
 }
 
-- (NSUInteger)unreadCount
+- (BOOL)hasUnread
 {
-    NSUInteger unreadCount = 0;
-    
-    // Sum unreadCount of all ready data sources
+    // Check hasUnread flag in all ready data sources
     for (MXKSessionRecentsDataSource *recentsDataSource in displayedRecentsDataSourceArray)
     {
-        unreadCount += recentsDataSource.unreadCount;
+        if (recentsDataSource.hasUnread)
+        {
+            return YES;
+        }
     }
-    return unreadCount;
+    return NO;
 }
 
 - (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
@@ -316,11 +317,6 @@
         MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:section];
         
         NSString* sectionTitle = recentsDataSource.mxSession.myUser.userId;
-        
-        if (recentsDataSource.unreadCount)
-        {
-            sectionTitle = [NSString stringWithFormat:@"%@ (%tu)", sectionTitle, recentsDataSource.unreadCount];
-        }
         
         sectionHeader = [[UIView alloc] initWithFrame:frame];
         sectionHeader.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
