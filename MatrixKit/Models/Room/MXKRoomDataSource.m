@@ -456,15 +456,40 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     MXEvent *lastMessage;
     
-    id<MXKRoomBubbleCellDataStoring> lastBubbleData = bubbles.lastObject;
-    if (lastBubbleData)
+    // Look for the most recent message (ignore events without timestamp).
+    id<MXKRoomBubbleCellDataStoring> bubbleData;
+    @synchronized(bubbles)
     {
-        lastMessage = lastBubbleData.events.lastObject;
+        NSInteger index = bubbles.count;
+        while (index--)
+        {
+            bubbleData = bubbles[index];
+            if (bubbleData.date)
+            {
+                break;
+            }
+        }
     }
-    else
+    
+    if (bubbleData)
     {
-        // If no bubble was loaded yet, use MXRoom data
+        NSInteger index = bubbleData.events.count;
+        while (index--)
+        {
+            lastMessage = bubbleData.events[index];
+            if (lastMessage.originServerTs != kMXUndefinedTimestamp)
+            {
+                break;
+            }
+            lastMessage = nil;
+        }
+    }
+    
+    if (!lastMessage)
+    {
+        // Use here the stored data for this room
         lastMessage = [_room lastMessageWithTypeIn:_eventsFilterForMessages];
+        
         // Check if this event is a bing event
         [self checkBing:lastMessage];
     }
@@ -1620,9 +1645,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // Here the message sending has failed
             outgoingMessage.mxkState = MXKEventStateSendingFailed;
             
-            // Need to update the timestamp because bubbles can reorder their events
-            // according to theirs timestamps
-            outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
+            // Erase the timestamp
+            outgoingMessage.originServerTs = kMXUndefinedTimestamp;
             
             [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
         }
@@ -1742,7 +1766,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // We have to update the 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags of the new first bubble.
                     id<MXKRoomBubbleCellDataStoring> firstCellData = bubbles.firstObject;
                     
-                    firstCellData.isPaginationFirstBubble = (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay);
+                    firstCellData.isPaginationFirstBubble = ((self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay) && firstCellData.date);
                     firstCellData.shouldHideSenderInformation = NO;
                 }
                 else if (index < bubbles.count)
@@ -1774,7 +1798,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             // Check whether a new pagination starts on the second cellData
                             NSString *cellData1DateString = [self.eventFormatter dateStringFromDate:cellData1.date withTime:NO];
                             NSString *cellData2DateString = [self.eventFormatter dateStringFromDate:cellData2.date withTime:NO];
-                            cellData2.isPaginationFirstBubble = ![cellData2DateString isEqualToString:cellData1DateString];
+                            
+                            if (!cellData1DateString)
+                            {
+                                cellData2.isPaginationFirstBubble = (cellData2DateString && cellData.isPaginationFirstBubble);
+                            }
+                            else
+                            {
+                                cellData2.isPaginationFirstBubble = (cellData2DateString && ![cellData2DateString isEqualToString:cellData1DateString]);
+                            }
                         }
                         
                         // Check whether the sender information is relevant for this bubble.
@@ -1983,7 +2015,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                 // We have to update the 'isPaginationFirstBubble' and 'shouldHideSenderInformation' flags of the current first bubble.
 
                                 // Pagination handling
-                                if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+                                if ((self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay) && bubbleData.date)
                                 {
                                     // A new pagination starts with this new bubble data
                                     bubbleData.isPaginationFirstBubble = YES;
@@ -1994,7 +2026,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                         id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
                                         NSString *firstBubbleDateString = [self.eventFormatter dateStringFromDate:previousFirstBubbleData.date withTime:NO];
                                         NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
-                                        previousFirstBubbleData.isPaginationFirstBubble = ![firstBubbleDateString isEqualToString:bubbleDateString];
+                                        previousFirstBubbleData.isPaginationFirstBubble = (firstBubbleDateString && bubbleDateString && ![firstBubbleDateString isEqualToString:bubbleDateString]);
                                     }
                                 }
                                 else
@@ -2031,13 +2063,29 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                 if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
                                 {
                                     // Check whether a new pagination starts at this bubble
-                                    bubbleData.isPaginationFirstBubble = YES;
-                                    if (bubblesSnapshot.count)
+                                    NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                    
+                                    // Look for the current last bubble with date
+                                    NSInteger index = bubblesSnapshot.count;
+                                    NSString *lastBubbleDateString;
+                                    while (index--)
                                     {
-                                        id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot.lastObject;
-                                        NSString *lastBubbleDateString = [self.eventFormatter dateStringFromDate:previousLastBubbleData.date withTime:NO];
-                                        NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
-                                        bubbleData.isPaginationFirstBubble = ![bubbleDateString isEqualToString:lastBubbleDateString];
+                                        id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot[index];
+                                        lastBubbleDateString = [self.eventFormatter dateStringFromDate:previousLastBubbleData.date withTime:NO];
+                                        
+                                        if (lastBubbleDateString)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (lastBubbleDateString)
+                                    {
+                                        bubbleData.isPaginationFirstBubble = (bubbleDateString && ![bubbleDateString isEqualToString:lastBubbleDateString]);
+                                    }
+                                    else
+                                    {
+                                        bubbleData.isPaginationFirstBubble = (bubbleDateString != nil);
                                     }
                                 }
                                 else
