@@ -1037,8 +1037,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Make the final request that posts the image event
         [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
             
-            // Nothing to do here
-            // The local echo will be removed when the corresponding event will come through the events stream
+            // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
+            // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
+            MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+            [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
+            // Replace the local echo by the new one
+            [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
             
             if (success)
             {
@@ -1131,8 +1135,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Make the final request that posts the image event
         [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
             
-            // Nothing to do here
-            // The local echo will be removed when the corresponding event will come through the events stream
+            // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
+            // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
+            MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+            [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
+            // Replace the local echo by the new one
+            [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
             
             if (success)
             {
@@ -1244,13 +1252,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // And send the Matrix room message video event to the homeserver
                     [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {
                         
-                        // Nothing to do here
-                        // The local echo will be removed when the corresponding event will come through the events stream
+                        // Update the local echo with its actual identifier.
+                        // The echo will be removed when the corresponding event will come through the server sync.
+                        // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
+                        MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+                        [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
+                        // Replace the local echo by the new one
+                        [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
                         
                         if (success)
                         {
                             success(eventId);
                         }
+                        
                     } failure:^(NSError *error) {
                         
                         // Update the local echo with the error state
@@ -1261,6 +1275,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         {
                             failure(error);
                         }
+                        
                     }];
                     
                 } failure:^(NSError *error) {
@@ -1273,6 +1288,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     {
                         failure(error);
                     }
+                    
                 }];
             }
             else
@@ -1370,8 +1386,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Make the final request that posts the event
         [_room sendMessageOfType:kMXMessageTypeFile content:msgContent2 success:^(NSString *eventId) {
             
-            // Nothing to do here
-            // The local echo will be removed when the corresponding event will come through the events stream
+            // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
+            // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
+            MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+            [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
+            // Replace the local echo by the new one
+            [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
             
             if (success)
             {
@@ -1410,8 +1430,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Make the request to the homeserver
     [_room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId) {
         
-        // Nothing to do here
-        // The local echo will be removed when the corresponding event will come through the events stream
+        // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
+        // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
+        MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+        [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
+        // Replace the local echo by the new one
+        [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
         
         if (success)
         {
@@ -1579,16 +1603,29 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)handleUnsentMessages
 {
-    // Add unsent events at the end of the conversation
-    for (MXEvent *outgoingMessage in _room.outgoingMessages)
+    // Clean outgoing messages, and add unsent ones at the end of the conversation
+    NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
+    
+    for (NSInteger index = 0; index < outgoingMessages.count; index++)
     {
-        outgoingMessage.mxkState = MXKEventStateSendingFailed;
-
-        // Need to update the timestamp because bubbles can reorder their events
-        // according to theirs timestamps
-        outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-
-        [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+        
+        // Remove successfully sent messages
+        if ([outgoingMessage.eventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix] == NO)
+        {
+            [_room removeOutgoingMessage:outgoingMessage.eventId];
+        }
+        else
+        {
+            // Here the message sending has failed
+            outgoingMessage.mxkState = MXKEventStateSendingFailed;
+            
+            // Need to update the timestamp because bubbles can reorder their events
+            // according to theirs timestamps
+            outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
+            
+            [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        }
     }
 }
 
@@ -2188,52 +2225,67 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 /**
- Try to determine if an event coming down from the events stream has a local echo.
+ Try to determine if an event coming down from the server sync has a local echo.
  
  @param event the event from the events stream
  @return a local echo event corresponding to the event. Nil if there is no match.
  */
 - (MXEvent*)pendingLocalEchoRelatedToEvent:(MXEvent*)event
 {
-    // Note: event is supposed here to be an outgoing event received from event stream.
-    // This method returns a pending event (if any) whose content matches with received event content.
+    // Note: event is supposed here to be an outgoing event received from the server sync.
+    
     NSString *msgtype = event.content[@"msgtype"];
     
+    // We look first for a pending event with the same event id (This happens when server response is received before server sync).
     MXEvent *localEcho = nil;
     NSArray<MXEvent*>* pendingLocalEchoes = _room.outgoingMessages;
     for (NSInteger index = 0; index < pendingLocalEchoes.count; index++)
     {
         localEcho = [pendingLocalEchoes objectAtIndex:index];
-        NSString *pendingEventType = localEcho.content[@"msgtype"];
-        
-        if ([msgtype isEqualToString:pendingEventType])
+        if ([localEcho.eventId isEqualToString:event.eventId])
         {
-            if ([msgtype isEqualToString:kMXMessageTypeText] || [msgtype isEqualToString:kMXMessageTypeEmote])
-            {
-                // Compare content body
-                if ([event.content[@"body"] isEqualToString:localEcho.content[@"body"]])
-                {
-                    break;
-                }
-            }
-            else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-            {
-                // Compare geo uri
-                if ([event.content[@"geo_uri"] isEqualToString:localEcho.content[@"geo_uri"]])
-                {
-                    break;
-                }
-            }
-            else
-            {
-                // Here the type is kMXMessageTypeImage, kMXMessageTypeAudio, kMXMessageTypeVideo or kMXMessageTypeFile
-                if ([event.content[@"url"] isEqualToString:localEcho.content[@"url"]])
-                {
-                    break;
-                }
-            }
+            break;
         }
         localEcho = nil;
+    }
+    
+    // If none, we return the pending event (if any) whose content matches with received event content.
+    if (!localEcho)
+    {
+        for (NSInteger index = 0; index < pendingLocalEchoes.count; index++)
+        {
+            localEcho = [pendingLocalEchoes objectAtIndex:index];
+            NSString *pendingEventType = localEcho.content[@"msgtype"];
+            
+            if ([msgtype isEqualToString:pendingEventType])
+            {
+                if ([msgtype isEqualToString:kMXMessageTypeText] || [msgtype isEqualToString:kMXMessageTypeEmote])
+                {
+                    // Compare content body
+                    if ([event.content[@"body"] isEqualToString:localEcho.content[@"body"]])
+                    {
+                        break;
+                    }
+                }
+                else if ([msgtype isEqualToString:kMXMessageTypeLocation])
+                {
+                    // Compare geo uri
+                    if ([event.content[@"geo_uri"] isEqualToString:localEcho.content[@"geo_uri"]])
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    // Here the type is kMXMessageTypeImage, kMXMessageTypeAudio, kMXMessageTypeVideo or kMXMessageTypeFile
+                    if ([event.content[@"url"] isEqualToString:localEcho.content[@"url"]])
+                    {
+                        break;
+                    }
+                }
+            }
+            localEcho = nil;
+        }
     }
     
     return localEcho;
