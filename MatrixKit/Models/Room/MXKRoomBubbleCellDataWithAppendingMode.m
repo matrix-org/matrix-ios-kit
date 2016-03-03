@@ -65,7 +65,7 @@ static NSAttributedString *messageSeparator = nil;
             // Event must be sent the same day than the existing bubble.
             NSString *bubbleDateString = [roomDataSource.eventFormatter dateStringFromDate:self.date withTime:NO];
             NSString *eventDateString = [roomDataSource.eventFormatter dateStringFromEvent:event withTime:NO];
-            if (![bubbleDateString isEqualToString:eventDateString])
+            if (bubbleDateString && eventDateString && ![bubbleDateString isEqualToString:eventDateString])
             {
                 return NO;
             }
@@ -295,16 +295,22 @@ static NSAttributedString *messageSeparator = nil;
     {
         // Check date of existing components to insert this new one
         NSUInteger index = bubbleComponents.count;
-        while (index)
+        
+        // Component without date is added at the end by default
+        if (addedComponent.date)
         {
-            MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
-            if ([msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+            while (index)
             {
-                // New component will be inserted here
-                index ++;
-                break;
+                MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
+                if (msgComponent.date && [msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+                {
+                    // New component will be inserted here
+                    index ++;
+                    break;
+                }
             }
         }
+        
         // Insert new component
         [bubbleComponents insertObject:addedComponent atIndex:index];
         

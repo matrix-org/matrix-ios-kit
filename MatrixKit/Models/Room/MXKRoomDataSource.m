@@ -456,15 +456,40 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     MXEvent *lastMessage;
     
-    id<MXKRoomBubbleCellDataStoring> lastBubbleData = bubbles.lastObject;
-    if (lastBubbleData)
+    // Look for the most recent message (ignore events without timestamp).
+    id<MXKRoomBubbleCellDataStoring> bubbleData;
+    @synchronized(bubbles)
     {
-        lastMessage = lastBubbleData.events.lastObject;
+        NSInteger index = bubbles.count;
+        while (index--)
+        {
+            bubbleData = bubbles[index];
+            if (bubbleData.date)
+            {
+                break;
+            }
+        }
     }
-    else
+    
+    if (bubbleData)
     {
-        // If no bubble was loaded yet, use MXRoom data
+        NSInteger index = bubbleData.events.count;
+        while (index--)
+        {
+            lastMessage = bubbleData.events[index];
+            if (lastMessage.originServerTs != kMXUndefinedTimestamp)
+            {
+                break;
+            }
+            lastMessage = nil;
+        }
+    }
+    
+    if (!lastMessage)
+    {
+        // Use here the stored data for this room
         lastMessage = [_room lastMessageWithTypeIn:_eventsFilterForMessages];
+        
         // Check if this event is a bing event
         [self checkBing:lastMessage];
     }
@@ -1620,9 +1645,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // Here the message sending has failed
             outgoingMessage.mxkState = MXKEventStateSendingFailed;
             
-            // Need to update the timestamp because bubbles can reorder their events
-            // according to theirs timestamps
-            outgoingMessage.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
+            // Erase the timestamp
+            outgoingMessage.originServerTs = kMXUndefinedTimestamp;
             
             [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
         }
