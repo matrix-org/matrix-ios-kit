@@ -289,12 +289,13 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param rect the rect to fill.
+ @param direction backwards or forwards.
  @param minRequestMessagesCount if messages are not available in the store, a request to the homeserver
         is required. minRequestMessagesCount indicates the minimum messages count to retrieve from the hs.
  @param success a block called when the operation succeeds.
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessagesToFillRect:(CGRect)rect withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)paginateToFillRect:(CGRect)rect  direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 
 #pragma mark - Sending

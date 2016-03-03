@@ -1319,34 +1319,35 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     isBackPaginationInProgress = YES;
     [self startActivityIndicator];
-    [roomDataSource paginateBackMessagesToFillRect:frame
-                       withMinRequestMessagesCount:_backPaginationLimit
-                                           success:^{
-                                               
-                                               // Stop spinner
-                                               isBackPaginationInProgress = NO;
-                                               [self stopActivityIndicator];
-                                               
-                                               // Reload table
-                                               [self reloadBubblesTable:YES];
-                                               
-                                           }
-                                           failure:^(NSError *error) {
-                                               
-                                               // Stop spinner
-                                               isBackPaginationInProgress = NO;
-                                               [self stopActivityIndicator];
-                                               
-                                               // Reload table
-                                               [self reloadBubblesTable:YES];
-                                               
-                                           }];
+    [roomDataSource paginateToFillRect:frame
+                             direction:MXTimelineDirectionBackwards
+           withMinRequestMessagesCount:_backPaginationLimit
+                               success:^{
+
+                                   // Stop spinner
+                                   isBackPaginationInProgress = NO;
+                                   [self stopActivityIndicator];
+
+                                   // Reload table
+                                   [self reloadBubblesTable:YES];
+
+                               }
+                               failure:^(NSError *error) {
+
+                                   // Stop spinner
+                                   isBackPaginationInProgress = NO;
+                                   [self stopActivityIndicator];
+
+                                   // Reload table
+                                   [self reloadBubblesTable:YES];
+
+                               }];
 }
 
 /**
  Trigger an inconspicuous back pagination.
  The retrieved history is added discretely to the top of bubbles table without change the current display.
- 
+
  @param limit the maximum number of messages to retrieve.
  @param direction backwards or forwards.
  */
