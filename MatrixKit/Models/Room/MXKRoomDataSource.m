@@ -428,6 +428,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     eventsToProcess = nil;
     bubbles = nil;
     eventIdToBubbleMap = nil;
+
+    [_timeline destroy];
     
     [super destroy];
 }

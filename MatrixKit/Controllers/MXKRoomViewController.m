@@ -311,6 +311,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
     [self removeReconnectingView];
+
+    // Non live room data sources are not managed by the MXKDataSourceManager
+    // Destroy them once they are no more displayed
+    if (!roomDataSource.isLive)
+    {
+        [roomDataSource destroy];
+    }
 }
 
 - (void)dealloc
