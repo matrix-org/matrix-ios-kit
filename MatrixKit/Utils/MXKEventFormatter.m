@@ -19,6 +19,8 @@
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
 
+NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
+
 @interface MXKEventFormatter ()
 {
     /**
@@ -810,11 +812,12 @@
 
 
 #pragma mark - Fake event objects creation
+
 - (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content
 {
     if (!eventId)
     {
-        eventId = [[NSProcessInfo processInfo] globallyUniqueString];
+        eventId = [NSString stringWithFormat:@"%@%@", kMXKEventFormatterLocalEventIdPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
     }
     
     MXEvent *event = [[MXEvent alloc] init];

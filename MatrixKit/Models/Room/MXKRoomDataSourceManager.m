@@ -87,6 +87,31 @@ static Class _roomDataSourceClass;
     }
 }
 
++ (NSUInteger)notificationCount
+{
+    NSUInteger notificationCount = 0;
+    
+    // Sum here all the notification counts (retrieved from the existing room data sources)
+    @synchronized(_roomDataSourceManagers)
+    {
+        NSArray *mxSessionIds = _roomDataSourceManagers.allKeys;
+        for (NSString *mxSessionId in mxSessionIds)
+        {
+            MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
+            if (roomDataSourceManager)
+            {
+                NSArray *roomDataSources = roomDataSourceManager->roomDataSources.allValues;
+                for (MXKRoomDataSource *roomDataSource in roomDataSources)
+                {
+                    notificationCount += roomDataSource.notificationCount;
+                }
+            }
+        }
+    }
+    
+    return notificationCount;
+}
+
 + (void)registerRoomDataSourceClass:(Class)roomDataSourceClass
 {
     // Sanity check: accept only MXKRoomDataSource classes or sub-classes

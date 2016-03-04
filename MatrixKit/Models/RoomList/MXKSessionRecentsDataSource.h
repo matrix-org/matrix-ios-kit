@@ -50,9 +50,9 @@ extern NSString *const kMXKRecentCellIdentifier;
 @property (nonatomic, readonly) NSInteger numberOfCells;
 
 /**
- The total count of unread messages.
+ Tell whether there are some unread messages.
  */
-@property (nonatomic, readonly) NSUInteger unreadCount;
+@property (nonatomic, readonly) BOOL hasUnread;
 
 
 #pragma mark - Configuration

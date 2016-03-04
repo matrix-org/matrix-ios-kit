@@ -127,14 +127,19 @@
     lastEventAttributedTextMessage = nil;
 }
 
-- (NSUInteger)unreadCount
+- (BOOL)hasUnread
 {
-    return roomDataSource.unreadCount;
+    return roomDataSource.hasUnread;
 }
 
-- (NSUInteger)unreadBingCount
+- (NSUInteger)notificationCount
 {
-    return roomDataSource.unreadBingCount;
+    return roomDataSource.notificationCount;
+}
+
+- (NSUInteger)highlightCount
+{
+    return roomDataSource.highlightCount;
 }
 
 - (void)markAllAsRead

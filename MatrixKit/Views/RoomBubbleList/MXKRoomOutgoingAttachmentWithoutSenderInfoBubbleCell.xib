@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,7 +15,6 @@
                 <subviews>
                     <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="SIW-l4-PfI" userLabel="Attachment View" customClass="MXKImageView">
                         <rect key="frame" x="357" y="8" width="192" height="33"/>
-                        <animations/>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="192" id="iGr-e7-bde"/>
@@ -24,7 +23,6 @@
                     </view>
                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KGx-6M-GER" userLabel="File Type Image View">
                         <rect key="frame" x="357" y="8" width="32" height="32"/>
-                        <animations/>
                         <constraints>
                             <constraint firstAttribute="height" constant="32" id="QGB-Md-MLn"/>
                             <constraint firstAttribute="width" constant="32" id="h7Q-f3-gtz"/>
@@ -32,7 +30,6 @@
                     </imageView>
                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZC1-hT-7fs" userLabel="Play Icon Image View">
                         <rect key="frame" x="437" y="9" width="32" height="32"/>
-                        <animations/>
                         <constraints>
                             <constraint firstAttribute="width" constant="32" id="MOQ-Xi-18w"/>
                             <constraint firstAttribute="height" constant="32" id="pGM-pf-SiP"/>
@@ -40,11 +37,9 @@
                     </imageView>
                     <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Mqf-7a-bsm">
                         <rect key="frame" x="443" y="15" width="20" height="20"/>
-                        <animations/>
                     </activityIndicatorView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LVJ-Av-zVs" userLabel="showHideDateTime">
                         <rect key="frame" x="0.0" y="0.0" width="69" height="49"/>
-                        <animations/>
                         <constraints>
                             <constraint firstAttribute="width" constant="69" id="ghQ-Qb-BBg"/>
                         </constraints>
@@ -57,7 +52,6 @@
                     </button>
                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a51-cR-7FE" userLabel="bubbleInfoContainer">
                         <rect key="frame" x="8" y="8" width="61" height="41"/>
-                        <animations/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="61" id="fDy-iL-hrD"/>
@@ -68,21 +62,18 @@
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="text" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="4" preferredMaxLayoutWidth="100" translatesAutoresizingMaskIntoConstraints="NO" id="DYj-Mb-me4" userLabel="Progress stats">
                                 <rect key="frame" x="0.0" y="60" width="100" height="10"/>
-                                <animations/>
                                 <fontDescription key="fontDescription" type="system" pointSize="8"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oec-kb-Tsz" customClass="MXKPieChartView">
                                 <rect key="frame" x="30" y="0.0" width="40" height="40"/>
-                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="6tZ-ag-7TT"/>
                                     <constraint firstAttribute="width" constant="40" id="duC-38-cLC"/>
                                 </constraints>
                             </view>
                         </subviews>
-                        <animations/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="Oec-kb-Tsz" firstAttribute="top" secondItem="apW-hM-veR" secondAttribute="top" id="49H-ch-qkC"/>
@@ -96,7 +87,6 @@
                         </constraints>
                     </view>
                 </subviews>
-                <animations/>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
                     <constraint firstItem="SIW-l4-PfI" firstAttribute="centerX" secondItem="Mqf-7a-bsm" secondAttribute="centerX" id="1b6-1l-hg0"/>
@@ -118,7 +108,6 @@
                     <constraint firstItem="a51-cR-7FE" firstAttribute="top" secondItem="fCg-ju-gnG" secondAttribute="top" constant="8" id="xop-v3-Xh2"/>
                 </constraints>
             </tableViewCellContentView>
-            <animations/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <connections>
                 <outlet property="activityIndicator" destination="Mqf-7a-bsm" id="toi-nL-eJa"/>
