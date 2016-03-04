@@ -37,9 +37,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 @interface MXKRoomDataSource ()
 {
     /**
-     Current back pagination request (if any)
+     If the data is not from a live timeline, `initialEventId` is the event in the past
+     where the timeline starts.
      */
-    MXHTTPOperation *backPaginationRequest;
+    NSString *initialEventId;
+
+    /**
+     Current pagination request (if any)
+     */
+    MXHTTPOperation *paginationRequest;
     
     /**
      The listener to incoming events in the room.
@@ -109,6 +115,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
         
         _roomId = roomId;
+        _isLive = YES;
         bubbles = [NSMutableArray array];
         eventsToProcess = [NSMutableArray array];
         eventIdToBubbleMap = [NSMutableDictionary dictionary];
@@ -186,6 +193,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }];
     }
+    return self;
+}
+
+- (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId2 andMatrixSession:(MXSession*)mxSession
+{
+    self = [self initWithRoomId:roomId andMatrixSession:mxSession];
+    if (self)
+    {
+        initialEventId = initialEventId2;
+        _isLive = NO;
+    }
+
     return self;
 }
 
@@ -275,27 +294,27 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)reset
 {
-    if (backPaginationRequest)
+    if (paginationRequest)
     {
-        [backPaginationRequest cancel];
-        backPaginationRequest = nil;
+        [paginationRequest cancel];
+        paginationRequest = nil;
     }
     
     if (_room && liveEventsListener)
     {
-        [_room.liveTimeline removeListener:liveEventsListener];
+        [_timeline removeListener:liveEventsListener];
         liveEventsListener = nil;
         
-        [_room.liveTimeline removeListener:redactionListener];
+        [_timeline removeListener:redactionListener];
         redactionListener = nil;
         
-        [_room.liveTimeline removeListener:receiptsListener];
+        [_timeline removeListener:receiptsListener];
         receiptsListener = nil;
     }
     
     if (_room && typingNotifListener)
     {
-        [_room.liveTimeline removeListener:typingNotifListener];
+        [_timeline removeListener:typingNotifListener];
         typingNotifListener = nil;
     }
     currentTypingUsers = nil;
@@ -385,6 +404,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     eventsToProcess = nil;
     bubbles = nil;
     eventIdToBubbleMap = nil;
+
+    [_timeline destroy];
     
     [super destroy];
 }
@@ -399,42 +420,82 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             _room = [self.mxSession roomWithRoomId:_roomId];
             if (_room)
             {
-                // Only one pagination process can be done at a time by an MXRoom object.
-                // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
-                [_room.liveTimeline resetPagination];
-                
-                [self refreshUnreadCounters];
-                
-                // Force to set the filter at the MXRoom level
-                self.eventsFilterForMessages = _eventsFilterForMessages;
-                
-                // display typing notifications is optional
-                // the inherited class can manage them by its own.
-                if (_showTypingNotifications)
+                // This is the time to set up the timeline according to the called init method
+                if (_isLive)
                 {
-                    // Register on typing notif
-                    [self listenTypingNotifications];
+                    // LIVE
+                    _timeline = _room.liveTimeline;
+
+                    // Only one pagination process can be done at a time by an MXRoom object.
+                    // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
+                    [_timeline resetPagination];
+
+                    [self refreshUnreadCounters];
+
+                    // Force to set the filter at the MXRoom level
+                    self.eventsFilterForMessages = _eventsFilterForMessages;
+
+                    // display typing notifications is optional
+                    // the inherited class can manage them by its own.
+                    if (_showTypingNotifications)
+                    {
+                        // Register on typing notif
+                        [self listenTypingNotifications];
+                    }
+
+                    // Manage unsent messages
+                    [self handleUnsentMessages];
+
+                    // Update here data source state if it is not already ready
+                    state = MXKDataSourceStateReady;
+
+                    // Check user membership in this room
+                    MXMembership membership = self.room.state.membership;
+                    if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
+                    {
+                        // Here the initial sync is not ended or the room is a pending invitation.
+                        // Note: In case of invitation, a full sync will be triggered if the user joins this room.
+
+                        // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
+                        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
+                    }
+
+                    // Notify the last message may have changed
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+                }
+                else
+                {
+                    // Past timeline
+                    // Less things need to configured
+                    _timeline = [_room timelineOnEvent:initialEventId];
+
+                    [self refreshUnreadCounters];
+
+                    // Force to set the filter at the MXRoom level
+                    self.eventsFilterForMessages = _eventsFilterForMessages;
+
+                    // Preload no messages before and after the intial event so that
+                    // this event will be displayed at the bottom of the screen.
+                    // The reason is we do not have tool yet to ask the table view to focus
+                    // on a given event.
+                    // TODO: Load more messages and center the table view on the initial event
+                    [_timeline resetPaginationAroundInitialEventWithLimit:0 success:^{
+
+                        // Do a "classic" reset. The room view controller will back paginate
+                        // from the most recent event stored in the timeline store, which is the initial event
+                        [_timeline resetPagination];
+
+                        // Update here data source state if it is not already ready
+                        state = MXKDataSourceStateReady;
+
+                        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                        {
+                            [self.delegate dataSource:self didStateChange:state];
+                        }
+
+                    } failure:nil];
                 }
 
-                // Manage unsent messages
-                [self handleUnsentMessages];
-                
-                // Update here data source state if it is not already ready
-                state = MXKDataSourceStateReady;
-                
-                // Check user membership in this room
-                MXMembership membership = self.room.state.membership;
-                if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
-                {
-                    // Here the initial sync is not ended or the room is a pending invitation.
-                    // Note: In case of invitation, a full sync will be triggered if the user joins this room.
-                    
-                    // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
-                }
-
-                // Notify the last message may have changed
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
             }
             else
             {
@@ -529,49 +590,52 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the previous live listener
     if (liveEventsListener)
     {
-        [_room.liveTimeline removeListener:liveEventsListener];
-        [_room.liveTimeline removeListener:redactionListener];
-        [_room.liveTimeline removeListener:receiptsListener];
+        [_timeline removeListener:liveEventsListener];
+        [_timeline removeListener:redactionListener];
+        [_timeline removeListener:receiptsListener];
     }
-    
-    // And register a new one with the requested filter
-    _eventsFilterForMessages = [eventsFilterForMessages copy];
-    liveEventsListener = [_room.liveTimeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+
+    // Listen to live events only for live timeline
+    // Events for past timelines come only from pagination request
+    if (_isLive)
     {
-        if (MXTimelineDirectionForwards == direction)
-        {
-            // Check for local echo suppression
-            MXEvent *localEcho;
-            if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
+        // And register a new one with the requested filter
+        _eventsFilterForMessages = [eventsFilterForMessages copy];
+        liveEventsListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            if (MXTimelineDirectionForwards == direction)
             {
-                localEcho = [self pendingLocalEchoRelatedToEvent:event];
-                if (localEcho)
+                // Check for local echo suppression
+                MXEvent *localEcho;
+                if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
                 {
-                    // Replace the local echo by the true event sent by the homeserver
-                    [self replaceLocalEcho:localEcho withEvent:event];
+                    localEcho = [self pendingLocalEchoRelatedToEvent:event];
+                    if (localEcho)
+                    {
+                        // Replace the local echo by the true event sent by the homeserver
+                        [self replaceLocalEcho:localEcho withEvent:event];
+                    }
+                }
+
+                if (nil == localEcho)
+                {
+                    // Post incoming events for later processing
+                    [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
+                    [self processQueuedEvents:nil];
                 }
             }
-            
-            if (nil == localEcho)
+        }];
+
+        receiptsListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+            if (MXTimelineDirectionForwards == direction)
             {
-                // Post incoming events for later processing
-                [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
-                [self processQueuedEvents:nil];
+                // Handle this read receipt
+                [self didReceiveReceiptEvent:event roomState:roomState];
             }
-        }
-    }];
-    
-    
-    receiptsListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringReceipt] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-        
-        if (MXTimelineDirectionForwards == direction)
-        {
-            // Handle this read receipt
-            [self didReceiveReceiptEvent:event roomState:roomState];
-        }
-    }];
-    
-    // Register a listener to handle redaction in live stream
+        }];
+    }
+
+    // Register a listener to handle redaction which can affect live and past timelines
     redactionListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
         
         // Consider only live redaction events
@@ -681,7 +745,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Remove the live listener
         if (typingNotifListener)
         {
-            [_room.liveTimeline removeListener:typingNotifListener];
+            [_timeline removeListener:typingNotifListener];
             currentTypingUsers = nil;
             typingNotifListener = nil;
         }
@@ -693,12 +757,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the previous live listener
     if (typingNotifListener)
     {
-        [_room.liveTimeline removeListener:typingNotifListener];
+        [_timeline removeListener:typingNotifListener];
         currentTypingUsers = nil;
     }
     
     // Add typing notification listener
-    typingNotifListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+    typingNotifListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
         
         // Handle only live events
@@ -732,10 +796,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)cancelAllRequests
 {
-    if (backPaginationRequest)
+    if (paginationRequest)
     {
-        [backPaginationRequest cancel];
-        backPaginationRequest = nil;
+        [paginationRequest cancel];
+        paginationRequest = nil;
     }
     
     [super cancelAllRequests];
@@ -810,7 +874,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 #pragma mark - Pagination
-- (void)paginateBackMessages:(NSUInteger)numItems onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
+- (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
     // Check the current data source state, and the actual user membership for this room.
     if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
@@ -823,13 +887,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         return;
     }
     
-    if (backPaginationRequest)
+    if (paginationRequest)
     {
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
         return;
     }
     
-    if (NO == [_room.liveTimeline canPaginate: MXTimelineDirectionBackwards])
+    if (NO == [_timeline canPaginate: MXTimelineDirectionBackwards])
     {
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: No more events to paginate");
         if (success)
@@ -839,25 +903,26 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     
     // Keep events from the past to later processing
-    id backPaginateListener = [_room.liveTimeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+    id backPaginateListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState)
     {
-        if (MXTimelineDirectionBackwards == direction)
+        if (direction2 == direction)
         {
-            [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionBackwards];
+            [self queueEventForProcessing:event withRoomState:roomState direction:direction];
         }
     }];
     
     // Launch the pagination
-    backPaginationRequest = [_room.liveTimeline paginate:numItems direction:MXTimelineDirectionBackwards onlyFromStore:onlyFromStore complete:^{
+    paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
-        backPaginationRequest = nil;
+        paginationRequest = nil;
         // Once done, process retrieved events
-        [_room.liveTimeline removeListener:backPaginateListener];
+        [_timeline removeListener:backPaginateListener];
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
             
             if (success)
             {
-                success(addedHistoryCellNb);
+                NSUInteger addedCellNb = (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
+                success(addedCellNb);
             }
             
         }];
@@ -866,8 +931,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
         
-        backPaginationRequest = nil;
-        [_room.liveTimeline removeListener:backPaginateListener];
+        paginationRequest = nil;
+        [_timeline removeListener:backPaginateListener];
         
         // Process at least events retrieved from store
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
@@ -886,9 +951,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }];
 };
 
-- (void)paginateBackMessagesToFillRect:(CGRect)rect withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: %@", NSStringFromCGRect(rect));
+    NSLog(@"[MXKRoomDataSource] paginateToFillRect: %@", NSStringFromCGRect(rect));
 
     // Get the total height of cells already loaded in memory
     CGFloat minMessageHeight = CGFLOAT_MAX;
@@ -917,13 +982,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     else
     {
-        NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: Prefill with data from the store");
+        NSLog(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
         // Give a chance to load data from the store before doing homeserver requests
         // Reuse minRequestMessagesCount because we need to provide a number.
-        [self paginateBackMessages:minRequestMessagesCount onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+        [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
 
             // Then retry
-            [self paginateBackMessagesToFillRect:rect withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
+            [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
 
         } failure:failure];
         return;
@@ -933,7 +998,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (bubblesTotalHeight < rect.size.height)
     {
         // No. Paginate to get more messages
-        if ([_room.liveTimeline canPaginate:MXTimelineDirectionBackwards])
+        if ([_timeline canPaginate:direction])
         {
             // Bound the minimal height to 44
             minMessageHeight = MIN(minMessageHeight, 44);
@@ -946,17 +1011,17 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // So, use minRequestMessagesCount
             messagesToLoad = MAX(messagesToLoad, minRequestMessagesCount);
             
-            NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
-            [self paginateBackMessages:messagesToLoad onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+            NSLog(@"[MXKRoomDataSource] paginateToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
+            [self paginate:messagesToLoad direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
                 
-                [self paginateBackMessagesToFillRect:rect withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
+                [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
                 
             } failure:failure];
         }
         else
         {
             
-            NSLog(@"[MXKRoomDataSource] paginateBackMessagesToFillRect: No more events to paginate");
+            NSLog(@"[MXKRoomDataSource] paginateToFillRect: No more events to paginate");
             if (success)
             {
                 success();

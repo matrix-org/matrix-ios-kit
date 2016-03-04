@@ -218,6 +218,13 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         // Make the bubble display the data
         [cell render:cellData];
 
+        // Disable any interactions defined in the cell
+        // because we want [tableView didSelectRowAtIndexPath:] to be called
+        cell.contentView.userInteractionEnabled = NO;
+
+        // Force background color change on selection
+        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+
         return cell;
     }
 

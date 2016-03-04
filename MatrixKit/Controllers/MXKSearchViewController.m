@@ -120,9 +120,6 @@
 
     // Set up classes to use for cells
     [self.searchTableView registerNib:MXKSearchTableViewCell.nib forCellReuseIdentifier:MXKSearchTableViewCell.defaultReuseIdentifier];
-
-    // TODO: This requires context api
-    _searchTableView.allowsSelection = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -305,7 +302,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // TODO: This requires context api
+    // Must be implemented at app level
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath

@@ -17,8 +17,6 @@
 #define MXKROOMVIEWCONTROLLER_DEFAULT_TYPING_TIMEOUT_SEC 10
 #define MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT 50
 
-#define MXKROOMVIEWCONTROLLER_BACK_PAGINATION_MAX_SCROLLING_OFFSET 100
-
 #import "MXKRoomViewController.h"
 
 #import <MediaPlayer/MediaPlayer.h>
@@ -91,9 +89,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     NSTimer *typingTimer;
     
     /**
-     YES when back pagination is in progress.
+     YES when pagination is in progress.
      */
-    BOOL isBackPaginationInProgress;
+    BOOL isPaginationInProgress;
     
     /**
      The back pagination spinner view.
@@ -223,9 +221,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
     
-    // Default back pagination settings
-    _backPaginationThreshold = 300;
-    _backPaginationLimit = 30;
+    // Default pagination settings
+    _paginationThreshold = 300;
+    _paginationLimit = 30;
     
     // Save progress text input
     _saveProgressTextInput = YES;
@@ -504,7 +502,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [joinRoomRequest cancel];
         joinRoomRequest = nil;
     }
-    
+
+    // Non live room data sources are not managed by the MXKDataSourceManager
+    // Destroy them once they are no more displayed
+    if (!roomDataSource.isLive)
+    {
+        [roomDataSource destroy];
+    }
+
     [super destroy];
 }
 
@@ -879,7 +884,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSLog(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
         return;
     }
-    
+
+    // Do not show the input toolbar if the displayed timeline is not the live one
+    // We do not let the user type message in this case.
+    if (!roomDataSource.isLive)
+    {
+        return;
+    }
+
     // Remove potential toolbar
     if (inputToolbarView)
     {
@@ -942,6 +954,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (!_roomActivitiesContainer)
     {
         NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
+        return;
+    }
+
+    // Do not show room activities if the displayed timeline is not the live one
+    if (!roomDataSource.isLive)
+    {
+        _roomActivitiesContainerHeightConstraint.constant = 0;
         return;
     }
 
@@ -1285,7 +1304,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     
     // Check internal processes before stopping the loading wheel
-    if (isBackPaginationInProgress)
+    if (isPaginationInProgress)
     {
         // Keep activity indicator running
         return;
@@ -1295,7 +1314,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [super stopActivityIndicator];
 }
 
-#pragma mark - Back pagination
+#pragma mark - Pagination
 
 - (void)triggerInitialBackPagination
 {
@@ -1303,108 +1322,129 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
     CGRect frame = window.rootViewController.view.bounds;
     
-    isBackPaginationInProgress = YES;
+    isPaginationInProgress = YES;
     [self startActivityIndicator];
-    [roomDataSource paginateBackMessagesToFillRect:frame
-                       withMinRequestMessagesCount:_backPaginationLimit
-                                           success:^{
-                                               
-                                               // Stop spinner
-                                               isBackPaginationInProgress = NO;
-                                               [self stopActivityIndicator];
-                                               
-                                               // Reload table
-                                               [self reloadBubblesTable:YES];
-                                               
-                                           }
-                                           failure:^(NSError *error) {
-                                               
-                                               // Stop spinner
-                                               isBackPaginationInProgress = NO;
-                                               [self stopActivityIndicator];
-                                               
-                                               // Reload table
-                                               [self reloadBubblesTable:YES];
-                                               
-                                           }];
+    [roomDataSource paginateToFillRect:frame
+                             direction:MXTimelineDirectionBackwards
+           withMinRequestMessagesCount:_paginationLimit
+                               success:^{
+
+                                   // Stop spinner
+                                   isPaginationInProgress = NO;
+                                   [self stopActivityIndicator];
+
+                                   // Reload table
+                                   [self reloadBubblesTable:YES];
+
+                               }
+                               failure:^(NSError *error) {
+
+                                   // Stop spinner
+                                   isPaginationInProgress = NO;
+                                   [self stopActivityIndicator];
+
+                                   // Reload table
+                                   [self reloadBubblesTable:YES];
+
+                               }];
 }
 
 /**
- Trigger an inconspicuous back pagination. The retrieved history is added discretely to the top of bubbles table without change the current display.
- 
- @param limit the maximum number of messages to retrieve
+ Trigger an inconspicuous pagination.
+ The retrieved history is added discretely to the top or the bottom of bubbles table without change the current display.
+
+ @param limit the maximum number of messages to retrieve.
+ @param direction backwards or forwards.
  */
-- (void)triggerBackPagination:(NSUInteger)limit
+- (void)triggerPagination:(NSUInteger)limit direction:(MXTimelineDirection)direction
 {
     // Paginate only if possible
-    if (isBackPaginationInProgress || NO == [roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards])
+    if (isPaginationInProgress || NO == [roomDataSource.timeline canPaginate:direction])
     {
         return;
     }
     
     // Store the current height of the first bubble (if any)
     backPaginationSavedFirstBubbleHeight = 0;
-    if ([roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+    if (direction == MXTimelineDirectionBackwards && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
     {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
     
-    isBackPaginationInProgress = YES;
+    isPaginationInProgress = YES;
     
-    // Trigger back pagination
-    [roomDataSource paginateBackMessages:limit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+    // Trigger pagination
+    [roomDataSource paginate:limit direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
-        // We will adjust the vertical offset in order to unchange the current display (back pagination should be inconspicuous)
+        // We will adjust the vertical offset in order to unchange the current display (pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
-        NSIndexPath *indexPath;
-        
-        // Compute the cumulative height of the added messages
-        for (NSUInteger index = 0; index < addedCellNumber; index++)
+
+        if (direction == MXTimelineDirectionBackwards)
         {
-            indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-            verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+            // Compute the cumulative height of the added messages
+            for (NSUInteger index = 0; index < addedCellNumber; index++)
+            {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+            }
+
+            // Add delta of the height of the previous first cell (if any)
+            if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+            {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
+                verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+            }
+
+            _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         }
-        
-        // Add delta of the height of the previous first cell (if any)
-        if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+        else
         {
-            indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
-            verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+            _bubblesTableView.tableFooterView = reconnectingView = nil;
         }
-        
-        // Trigger a full table reload. We could not only insert new cells related to back pagination,
-        // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-        isBackPaginationInProgress = NO;
-        _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
-        
+
+        // Trigger a full table reload. We could not only insert new cells related to pagination,
+        // because some other changes may have been ignored during pagination (see[dataSource:didCellChange:]).
+
         // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
         [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
         [self.bubblesTableView setScrollEnabled:NO];
-        
+
+        CGPoint contentOffset = self.bubblesTableView.contentOffset;
+
         BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
-        
-        // Adjust vertical content offset (except if the table has been scrolled to bottom)
-        if (!hasBeenScrolledToBottom && verticalOffset > 0)
+
+        if (direction == MXTimelineDirectionBackwards)
         {
-            // Adjust vertical offset in order to compensate scrolling
-            CGPoint contentOffset = self.bubblesTableView.contentOffset;
-            contentOffset.y += verticalOffset;
-            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            // Backwards pagination adds cells at the top of the tableview content.
+            // Vertical content offset needs to be updated (except if the table has been scrolled to bottom)
+            if ((!hasBeenScrolledToBottom && verticalOffset > 0) || direction == MXTimelineDirectionForwards)
+            {
+                // Adjust vertical offset in order to compensate scrolling
+                contentOffset.y += verticalOffset;
+                [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            }
         }
-        
+
+        [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+
         // Restore scrolling and the scroll indicator
         [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
         [self.bubblesTableView setScrollEnabled:YES];
 
+        isPaginationInProgress = NO;
+
         // Force the update of the current visual position
         // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
-        [self upateCurrentEventIdAtTableBottom];
-        
+        if (direction == MXTimelineDirectionBackwards)
+        {
+            [self upateCurrentEventIdAtTableBottom];
+        }
+
     } failure:^(NSError *error) {
         
-        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
-        isBackPaginationInProgress = NO;
+        // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
+        isPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
         [self reloadBubblesTable:NO];
@@ -1415,15 +1455,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)triggerAttachmentBackPagination:(NSString*)eventId
 {
     // Paginate only if possible
-    if (NO == [roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards] && attachmentsViewer)
+    if (NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] && attachmentsViewer)
     {
         return;
     }
     
-    isBackPaginationInProgress = YES;
+    isPaginationInProgress = YES;
     
     // Trigger back pagination to find previous attachments
-    [roomDataSource paginateBackMessages:_backPaginationLimit onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+    [roomDataSource paginate:_paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
         if (attachmentsViewer)
@@ -1438,7 +1478,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
             
             // Check whether pagination is still available
-            attachmentsViewer.complete = ([roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards] == NO);
+            attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
             
             if (isDone || attachmentsViewer.complete)
             {
@@ -1447,7 +1487,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 
                 // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
                 // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-                isBackPaginationInProgress = NO;
+                isPaginationInProgress = NO;
                 [self reloadBubblesTable:YES];
                 
                 // Done
@@ -1461,14 +1501,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         {
             // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
             // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
-            isBackPaginationInProgress = NO;
+            isPaginationInProgress = NO;
             [self reloadBubblesTable:YES];
         }
         
     } failure:^(NSError *error) {
         
         // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
-        isBackPaginationInProgress = NO;
+        isPaginationInProgress = NO;
         [self reloadBubblesTable:YES];
         
         if (attachmentsViewer)
@@ -1848,7 +1888,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    if (isBackPaginationInProgress)
+    if (isPaginationInProgress)
     {
         // Ignore these changes, the table will be full updated at the end of pagination.
         return;
@@ -2367,10 +2407,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     if (scrollView == _bubblesTableView)
     {
         // Detect top bounce
-        if (scrollView.contentOffset.y < -64)
+        if (scrollView.contentOffset.y < -scrollView.contentInset.top)
         {
             // Shall we add back pagination spinner?
-            if (isBackPaginationInProgress && !backPaginationActivityView)
+            if (isPaginationInProgress && !backPaginationActivityView)
             {
                 UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 spinner.hidesWhenStopped = NO;
@@ -2385,7 +2425,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         else
         {
-            [self detectPullToKick:scrollView];
+            // Shall we add forward pagination spinner?
+            if (!roomDataSource.isLive && isPaginationInProgress && scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height + 64 && !reconnectingView)
+            {
+                [self addReconnectingView];
+            }
+            else
+            {
+                [self detectPullToKick:scrollView];
+            }
         }
     }
 }
@@ -2434,9 +2482,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         
         // Trigger inconspicuous pagination when user scrolls toward the top
-        if (scrollView.contentOffset.y < _backPaginationThreshold)
+        if (scrollView.contentOffset.y < _paginationThreshold)
         {
-            [self triggerBackPagination: _backPaginationLimit];
+            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
+        }
+        // Enable forwards pagination when displaying non live timeline
+        else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
+        {
+            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
         }
     }
 }
@@ -2687,7 +2740,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         // Present an attachment viewer
         attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
         attachmentsViewer.delegate = self;
-        attachmentsViewer.complete = ([roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards] == NO);
+        attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
         attachmentsViewer.hidesBottomBarWhenPushed = YES;
         [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
 
@@ -2729,7 +2782,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     [self triggerAttachmentBackPagination:eventId];
     
-    return [self.roomDataSource.room.liveTimeline canPaginate:MXTimelineDirectionBackwards];
+    return [self.roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards];
 }
 
 #pragma mark - UIDocumentInteractionControllerDelegate
@@ -2821,7 +2874,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
  */
 - (void)detectPullToKick:(UIScrollView *)scrollView
 {
-    if (!reconnectingView)
+    if (roomDataSource.isLive && !reconnectingView)
     {
         // detect if the user scrolls over the tableview bottom
         restartConnection = (
@@ -2845,7 +2898,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 - (void)managePullToKick:(UIScrollView *)scrollView
 {
     // the current connection must be restarted
-    if (restartConnection)
+    if (roomDataSource.isLive && restartConnection)
     {
         // display at least 0.3s the spinner to show to the user that something is pending
         // else the UI is flickering

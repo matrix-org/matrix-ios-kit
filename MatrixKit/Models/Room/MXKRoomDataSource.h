@@ -99,6 +99,17 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic, readonly) MXRoom *room;
 
 /**
+ The timeline being managed. It can be the live timeline of the room
+ or a timeline from a past event, initialEventId.
+ */
+@property (nonatomic, readonly) MXEventTimeline *timeline;
+
+/**
+ Flag indicating if the data source manages, or will manage, a live timeline.
+ */
+@property (nonatomic, readonly) BOOL isLive;
+
+/**
  The last event in the room that matches the `eventsFilterForMessages` property.
  */
 @property (nonatomic, readonly) MXEvent *lastMessage;
@@ -199,6 +210,17 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 - (instancetype)initWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
 /**
+ Initialise the data source to serve data corresponding to an event in the
+ past of a room.
+
+ @param roomId the id of the room to get data from.
+ @param initialEventId the id of the event where to start the timeline.
+ @param mxSession the Matrix session to get data from.
+ @return the newly created instance.
+ */
+- (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
+
+/**
  Mark all messages as read
  */
 - (void)markAllAsRead;
@@ -253,28 +275,30 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 #pragma mark - Pagination
 /**
- Load more messages from the history.
+ Load more messages.
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param numItems the number of items to get.
+ @param direction backwards or forwards.
  @param onlyFromStore if YES, return available events from the store, do not make a pagination request to the homeserver.
  @param success a block called when the operation succeeds. This block returns the number of added cells.
  (Note this count may be 0 if paginated messages have been concatenated to the current first cell).
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessages:(NSUInteger)numItems onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
+- (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load enough messages to fill the rect.
  This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
  
  @param rect the rect to fill.
+ @param direction backwards or forwards.
  @param minRequestMessagesCount if messages are not available in the store, a request to the homeserver
         is required. minRequestMessagesCount indicates the minimum messages count to retrieve from the hs.
  @param success a block called when the operation succeeds.
  @param failure a block called when the operation fails.
  */
-- (void)paginateBackMessagesToFillRect:(CGRect)rect withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)paginateToFillRect:(CGRect)rect  direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 
 #pragma mark - Sending
