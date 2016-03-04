@@ -218,7 +218,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @param mxSession the Matrix session to get data from.
  @return the newly created instance.
  */
-- (instancetype)initWithRoomId:(NSString*)roomId andInitialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
+- (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
 
 /**
  Mark all messages as read

@@ -196,7 +196,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     return self;
 }
 
-- (instancetype)initWithRoomId:(NSString*)roomId andInitialEventId:(NSString*)initialEventId2 andMatrixSession:(MXSession*)mxSession
+- (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId2 andMatrixSession:(MXSession*)mxSession
 {
     self = [self initWithRoomId:roomId andMatrixSession:mxSession];
     if (self)
