@@ -1351,7 +1351,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 /**
  Trigger an inconspicuous pagination.
- The retrieved history is added discretely to the top of bubbles table without change the current display.
+ The retrieved history is added discretely to the top or the bottom of bubbles table without change the current display.
 
  @param limit the maximum number of messages to retrieve.
  @param direction backwards or forwards.
@@ -1366,19 +1366,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Store the current height of the first bubble (if any)
     backPaginationSavedFirstBubbleHeight = 0;
-
-    NSUInteger count = [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0];
-    if (count)
+    if (direction == MXTimelineDirectionBackwards && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
     {
-        NSIndexPath *indexPath;
-        if (direction == MXTimelineDirectionBackwards)
-        {
-            indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        }
-        else
-        {
-            indexPath = [NSIndexPath indexPathForRow:(count - 1) inSection:0];
-        }
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
     }
     
