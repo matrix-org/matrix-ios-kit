@@ -476,6 +476,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.dataSource = nil;
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
+
+    // Non live room data sources are not managed by the MXKDataSourceManager
+    // Destroy them once they are no more displayed
+    if (!roomDataSource.isLive)
+    {
+        [roomDataSource destroy];
+    }
     
     roomDataSource.delegate = nil;
     roomDataSource = nil;
@@ -501,13 +508,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [joinRoomRequest cancel];
         joinRoomRequest = nil;
-    }
-
-    // Non live room data sources are not managed by the MXKDataSourceManager
-    // Destroy them once they are no more displayed
-    if (!roomDataSource.isLive)
-    {
-        [roomDataSource destroy];
     }
 
     [super destroy];
