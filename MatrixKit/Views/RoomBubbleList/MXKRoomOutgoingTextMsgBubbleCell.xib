@@ -73,6 +73,7 @@
                 <outlet property="bubbleInfoContainer" destination="a51-cR-7FE" id="wrR-cU-DVm"/>
                 <outlet property="bubbleInfoContainerTopConstraint" destination="fQv-07-Pgx" id="82c-KH-Wop"/>
                 <outlet property="messageTextView" destination="tgO-Rv-C7R" id="LZ5-hQ-AbQ"/>
+                <outlet property="msgTextViewBottomConstraint" destination="7C3-Tl-mMq" id="wCR-UC-iq8"/>
                 <outlet property="msgTextViewLeadingConstraint" destination="hwr-aa-TB4" id="c9j-8p-cpx"/>
                 <outlet property="msgTextViewMinHeightConstraint" destination="2xF-Uv-zZv" id="t2t-18-GqU"/>
                 <outlet property="msgTextViewTopConstraint" destination="8Sy-eu-tYs" id="7yx-oJ-KBP"/>

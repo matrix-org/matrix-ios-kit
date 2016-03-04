@@ -583,8 +583,8 @@ static BOOL _disableLongPressGestureOnEvent;
             rowHeight = cell.msgTextViewMinHeightConstraint.constant;
         }
         
-        // Finalize the row height by adding the top constraint of the message text view in cell
-        rowHeight += cell.msgTextViewTopConstraint.constant;
+        // Finalize the row height by adding the top and bottom constraints of the message text view in cell
+        rowHeight += cell.msgTextViewTopConstraint.constant + cell.msgTextViewBottomConstraint.constant;
     }
     
     return rowHeight;
