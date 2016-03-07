@@ -663,6 +663,7 @@
                 {
                     [selectedCell.moviePlayer stop];
                     selectedCell.moviePlayer.view.hidden = YES;
+                    selectedCell.centerIcon.hidden = NO;
                 }
                 else
                 {
@@ -671,6 +672,7 @@
                     if ([[NSFileManager defaultManager] fileExistsAtPath:attachmentURL])
                     {
                         selectedCell.moviePlayer.view.hidden = NO;
+                        selectedCell.centerIcon.hidden = YES;
                         selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:attachmentURL];
                         [selectedCell.moviePlayer play];
                         
@@ -716,6 +718,7 @@
                             if (selectedCell.moviePlayer.view.superview)
                             {
                                 selectedCell.moviePlayer.view.hidden = NO;
+                                selectedCell.centerIcon.hidden = YES;
                                 selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:attachment.cacheFilePath];
                                 [selectedCell.moviePlayer play];
                                 

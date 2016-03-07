@@ -35,13 +35,13 @@
 /**
  The direction of reception. Is it a live event or an event from the history?
  */
-@property (nonatomic, readonly) MXEventDirection direction;
+@property (nonatomic, readonly) MXTimelineDirection direction;
 
 /**
  Tells whether the event is queued during server sync or not.
  */
 @property (nonatomic) BOOL serverSyncEvent;
 
-- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)state direction:(MXEventDirection)direction;
+- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)state direction:(MXTimelineDirection)direction;
 
 @end

@@ -14,10 +14,9 @@
  limitations under the License.
  */
 
-#define MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH 192
+#define MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH 192
 
-#define MXK_ROOM_BUBBLE_CELL_DATA_DEFAULT_MAX_TEXTVIEW_WIDTH 200
-#define MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN 10
+#define MXKROOMBUBBLECELLDATA_DEFAULT_MAX_TEXTVIEW_WIDTH 200
 
 #import "MXKRoomBubbleCellData.h"
 
@@ -76,7 +75,7 @@
             self.attributedTextMessage = firstComponent.attributedTextMessage;
             
             // Initialize rendering attributes
-            _maxTextViewWidth = MXK_ROOM_BUBBLE_CELL_DATA_DEFAULT_MAX_TEXTVIEW_WIDTH;
+            _maxTextViewWidth = MXKROOMBUBBLECELLDATA_DEFAULT_MAX_TEXTVIEW_WIDTH;
         }
         else
         {
@@ -265,7 +264,7 @@
     
     if (firstComponent)
     {
-        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN : 0;
+        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET : 0;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -279,39 +278,41 @@
     if ([NSThread currentThread] != [NSThread mainThread])
     {
         dispatch_sync(dispatch_get_main_queue(), ^{
-            textSize = [self textContentSize:attributedText];
+            textSize = [self textContentSize:attributedText removeVerticalInset:YES];
         });
     }
     else
     {
-        textSize = [self textContentSize:attributedText];
+        textSize = [self textContentSize:attributedText removeVerticalInset:YES];
     }
     
-    if (textSize.height)
-    {
-        // Return the actual height of the text by removing textview margin from content height
-        return (textSize.height - MXK_ROOM_BUBBLE_CELL_DATA_TEXTVIEW_MARGIN);
-    }
-    return 0;
+    return textSize.height;
 }
 
-// Return the content size of a text view initialized with the provided attributed text
-// CAUTION: This method runs only on main thread
-- (CGSize)textContentSize: (NSAttributedString*)attributedText
+- (CGSize)textContentSize:(NSAttributedString*)attributedText removeVerticalInset:(BOOL)removeVerticalInset
 {
     static UITextView* measurementTextView = nil;
+    static UITextView* measurementTextViewWithoutInset = nil;
     
     if (attributedText.length)
     {
         if (!measurementTextView)
         {
             measurementTextView = [[UITextView alloc] init];
+            
+            measurementTextViewWithoutInset = [[UITextView alloc] init];
+            // Remove the container inset: this operation impacts only the vertical margin.
+            // Note: consider textContainer.lineFragmentPadding to remove horizontal margin
+            measurementTextViewWithoutInset.textContainerInset = UIEdgeInsetsZero;
         }
         
-        measurementTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
-        measurementTextView.attributedText = attributedText;
+        // Select the right text view for measurement
+        UITextView *selectedTextView = (removeVerticalInset ? measurementTextViewWithoutInset : measurementTextView);
+        
+        selectedTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
+        selectedTextView.attributedText = attributedText;
             
-        return [measurementTextView sizeThatFits:measurementTextView.frame.size];
+        return [selectedTextView sizeThatFits:measurementTextView.frame.size];
     }
     
     return CGSizeZero;
@@ -442,12 +443,12 @@
             if ([NSThread currentThread] != [NSThread mainThread])
             {
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _contentSize = [self textContentSize:self.attributedTextMessage];
+                    _contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
                 });
             }
             else
             {
-                _contentSize = [self textContentSize:self.attributedTextMessage];
+                _contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
             }
         }
         else if (self.isAttachmentWithThumbnail)
@@ -455,7 +456,7 @@
             CGFloat width, height;
             
             // Set default content size
-            width = height = MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH;
+            width = height = MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH;
             
             if (attachment.thumbnailInfo || attachment.contentInfo)
             {
@@ -470,19 +471,19 @@
                     height = [attachment.contentInfo[@"h"] integerValue];
                 }
                 
-                if (width > MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH || height > MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH)
+                if (width > MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH || height > MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH)
                 {
                     if (width > height)
                     {
-                        height = (height * MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH) / width;
+                        height = (height * MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH) / width;
                         height = floorf(height / 2) * 2;
-                        width = MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH;
+                        width = MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH;
                     }
                     else
                     {
-                        width = (width * MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH) / height;
+                        width = (width * MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH) / height;
                         width = floorf(width / 2) * 2;
-                        height = MXK_ROOM_BUBBLE_CELL_DATA_MAX_ATTACHMENTVIEW_WIDTH;
+                        height = MXKROOMBUBBLECELLDATA_MAX_ATTACHMENTVIEW_WIDTH;
                     }
                 }
             }
@@ -504,12 +505,12 @@
             if ([NSThread currentThread] != [NSThread mainThread])
             {
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _contentSize = [self textContentSize:self.attributedTextMessage];
+                    _contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
                 });
             }
             else
             {
-                _contentSize = [self textContentSize:self.attributedTextMessage];
+                _contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
             }
         }
         else

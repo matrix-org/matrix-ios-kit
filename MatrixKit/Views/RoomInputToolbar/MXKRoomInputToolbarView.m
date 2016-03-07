@@ -305,9 +305,9 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
         mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
         CFRelease(uti);
     }
-    else
+    else if (_enableAutoSaving)
     {
-        // Save the image in user's photos library
+        // Save the original image in user's photos library
         [MXKMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
     }
     
@@ -580,9 +580,10 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     }
 }
 
-- (void)sendSelectedVideo:(NSURL*)selectedVideo isCameraRecording:(BOOL)isCameraRecording
+- (void)sendSelectedVideo:(NSURL*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
 {
-    if (isCameraRecording)
+    // Check condition before saving this media in user's library
+    if (_enableAutoSaving && !isPhotoLibraryAsset)
     {
         [MXKMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
     }
@@ -665,7 +666,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
             }
             else
             {
-                // Save the original image in user's photos library and suggest compression before sending image
+                // Suggest compression before sending image
                 [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:nil];
             }
         }
@@ -674,7 +675,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     {
         NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
         
-        [self sendSelectedVideo:selectedVideo isCameraRecording:(picker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)];
+        [self sendSelectedVideo:selectedVideo isPhotoLibraryAsset:(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)];
     }
 }
 

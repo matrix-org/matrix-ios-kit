@@ -47,7 +47,7 @@
         {
             // We are displaying a search within a room
             // As title, display the user id
-            title = searchResult.result.userId;
+            title = searchResult.result.sender;
         }
 
         date = [searchDataSource.eventFormatter dateStringFromEvent:searchResult.result withTime:YES];

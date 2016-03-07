@@ -148,15 +148,30 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
 @property (weak, nonatomic) IBOutlet UILabel *statsLabel;
 @property (weak, nonatomic) IBOutlet MXKPieChartView *progressChartView;
 
+/**
+ The constraints which defines the relationship between messageTextView and its superview.
+ The defined constant are supposed >= 0.
+ */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *msgTextViewMinHeightConstraint;
+
+/**
+ The constraints which defines the relationship between attachmentView and its superview
+ The defined constant are supposed >= 0.
+ */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewMinHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *attachViewBottomConstraint;
+
+/**
+ The constraints which defines the relationship between bubbleInfoContainer and its superview
+ The defined constant are supposed >= 0.
+ */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubbleInfoContainerTopConstraint;
 
 - (void)startProgressUI;
@@ -171,6 +186,13 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  @return an instance of the child class caller which has the original Xib values.
  */
 + (MXKRoomBubbleTableViewCell*)cellWithOriginalXib;
+
+/**
+ Disable the handling of the long press on event (see kMXKRoomBubbleCellLongPressOnEvent). NO by default.
+ 
+ CAUTION: Changing this flag only impact the new created cells (existing 'MXKRoomBubbleTableViewCell' instances are unchanged).
+ */
++ (void)disableLongPressGestureOnEvent:(BOOL)disable;
 
 /**
  The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering render:] not

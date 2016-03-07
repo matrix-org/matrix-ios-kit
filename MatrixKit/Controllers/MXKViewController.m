@@ -31,6 +31,7 @@
 @end
 
 @implementation MXKViewController
+@synthesize defaultBarTintColor, enableBarTintColorStatusChange;
 @synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
 @synthesize childViewControllers;
@@ -39,6 +40,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    enableBarTintColorStatusChange = YES;
     
     childViewControllers = [NSMutableArray array];
     
@@ -135,6 +138,16 @@
         }
         
         [childViewControllers removeAllObjects];
+    }
+}
+
+- (void)setEnableBarTintColorStatusChange:(BOOL)enable
+{
+    if (enableBarTintColorStatusChange != enable)
+    {
+        enableBarTintColorStatusChange = enable;
+        
+        [self onMatrixSessionChange];
     }
 }
 
@@ -324,10 +337,10 @@
         }
     }
 
-    if (mxSessionArray.count)
+    if (mxSessionArray.count && enableBarTintColorStatusChange)
     {
         // The navigation bar tintColor depends on matrix homeserver reachability status
-        UIColor *barTintColor = nil; //default tintColor
+        UIColor *barTintColor = defaultBarTintColor;
         BOOL allHomeserverNotReachable = YES;
         BOOL isActivityInProgress = NO;
         
@@ -397,10 +410,10 @@
         [self stopActivityIndicator];
         
         // Restore default tintColor
-        self.navigationController.navigationBar.barTintColor = nil;
+        self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
         if (mainNavigationController)
         {
-            mainNavigationController.navigationBar.barTintColor = nil;
+            mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
         }
     }
 }

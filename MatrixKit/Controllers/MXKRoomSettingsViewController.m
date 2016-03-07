@@ -60,11 +60,11 @@
     if (mxRoom)
     {
         // Register a listener to handle messages related to room name, topic...
-        roomListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias]
-                                             onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias]
+                                             onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
                         {
                             // Consider only live events
-                            if (direction == MXEventDirectionForwards)
+                            if (direction == MXTimelineDirectionForwards)
                             {
                                 if (event.eventType != MXEventTypeRoomMember || !self.isEditing)
                                 {
@@ -108,7 +108,7 @@
 {
     if (roomListener)
     {
-        [mxRoom removeListener:roomListener];
+        [mxRoom.liveTimeline removeListener:roomListener];
         roomListener = nil;
     }
 }

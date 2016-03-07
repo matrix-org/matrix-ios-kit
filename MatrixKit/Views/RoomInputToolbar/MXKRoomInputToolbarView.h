@@ -216,6 +216,11 @@ typedef enum : NSUInteger
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageComposerContainerBottomConstraint;
 
 /**
+ Tell whether the sent images and videos should be automatically saved in the user's photos library. NO by default.
+ */
+@property (nonatomic) BOOL enableAutoSaving;
+
+/**
  `onTouchUpInside` action is registered on `Touch Up Inside` event for both buttons (left and right input toolbar buttons).
  Override this method to customize user interaction handling
  
@@ -224,7 +229,7 @@ typedef enum : NSUInteger
 - (IBAction)onTouchUpInside:(UIButton*)button;
 
 /**
- Handle image attachment according to the compression mode. Save the image in user's photos library when the local url is nil.
+ Handle image attachment according to the compression mode. Save the image in user's photos library when the local url is nil and auto saving is enabled.
  
  @param selectedImage the original selected image.
  @param compressionMode the compression mode to apply on this image (see MXKRoomInputToolbarCompressionMode). This option is considered only for jpeg image.
@@ -233,12 +238,13 @@ typedef enum : NSUInteger
 - (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL;
 
 /**
- Handle video attachment. Save the image in user's photos library when 'isCameraRecording' is YES.
+ Handle video attachment.
+ Save the video in user's photos library when 'isPhotoLibraryAsset' flag is NO and auto saving is enabled.
  
  @param selectedVideo the local url of the video to send.
- @param isCameraRecording tells whether the provided video has just been recorded.
+ @param isPhotoLibraryAsset tell whether the video has been selected from user's photos library.
  */
-- (void)sendSelectedVideo:(NSURL*)selectedVideo isCameraRecording:(BOOL)isCameraRecording;
+- (void)sendSelectedVideo:(NSURL*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset;
 
 /**
  The maximum height of the toolbar.

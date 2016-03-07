@@ -50,8 +50,9 @@
 @property (nonatomic, readonly) NSString *lastEventTextMessage;
 @property (nonatomic, readonly) NSString *lastEventDate;
 
-@property (nonatomic, readonly) NSUInteger unreadCount;
-@property (nonatomic, readonly) NSUInteger unreadBingCount;
+@property (nonatomic, readonly) BOOL hasUnread;
+@property (nonatomic, readonly) NSUInteger notificationCount;
+@property (nonatomic, readonly) NSUInteger highlightCount;
 
 #pragma mark - Public methods
 /**

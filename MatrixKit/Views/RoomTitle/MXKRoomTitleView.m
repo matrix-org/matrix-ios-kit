@@ -100,18 +100,18 @@
         // Remove potential listener
         if (roomListener && _mxRoom)
         {
-            [_mxRoom removeListener:roomListener];
+            [_mxRoom.liveTimeline removeListener:roomListener];
             roomListener = nil;
         }
         
         if (mxRoom)
         {
             // Register a listener to handle messages related to room name
-            roomListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
-                                                 onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+            roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
+                                                 onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
             {
                 // Consider only live events
-                if (direction == MXEventDirectionForwards)
+                if (direction == MXTimelineDirectionForwards)
                 {
                     
                     // In case of room member change, check whether the text field is editing before refreshing title view

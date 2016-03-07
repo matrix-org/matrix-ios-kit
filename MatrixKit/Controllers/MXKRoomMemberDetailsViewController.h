@@ -16,21 +16,28 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXKTableViewController.h"
+#import "MXKViewController.h"
+#import "MXKImageView.h"
 
 /**
  Available actions on room member
  */
-typedef NSString* MXKRoomMemberDetailsAction;
-extern NSString *const MXKRoomMemberDetailsActionInvite;
-extern NSString *const MXKRoomMemberDetailsActionLeave;
-extern NSString *const MXKRoomMemberDetailsActionKick;
-extern NSString *const MXKRoomMemberDetailsActionBan;
-extern NSString *const MXKRoomMemberDetailsActionUnban;
-extern NSString *const MXKRoomMemberDetailsActionSetPowerLevel;
-extern NSString *const MXKRoomMemberDetailsActionStartChat;
-extern NSString *const MXKRoomMemberDetailsActionStartVoiceCall;
-extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
+typedef enum : NSUInteger
+{
+    MXKRoomMemberDetailsActionInvite,
+    MXKRoomMemberDetailsActionLeave,
+    MXKRoomMemberDetailsActionKick,
+    MXKRoomMemberDetailsActionBan,
+    MXKRoomMemberDetailsActionUnban,
+    MXKRoomMemberDetailsActionSetDefaultPowerLevel,
+    MXKRoomMemberDetailsActionSetModerator,
+    MXKRoomMemberDetailsActionSetAdmin,
+    MXKRoomMemberDetailsActionSetCustomPowerLevel,
+    MXKRoomMemberDetailsActionStartChat,
+    MXKRoomMemberDetailsActionStartVoiceCall,
+    MXKRoomMemberDetailsActionStartVideoCall
+    
+} MXKRoomMemberDetailsAction;
 
 @class MXKRoomMemberDetailsViewController;
 
@@ -60,9 +67,23 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 
 @end
 
-@interface MXKRoomMemberDetailsViewController : MXKTableViewController
+/**
+ Whereas the main item of this view controller is a table view, the 'MXKRoomMemberDetailsViewController' class inherits
+ from 'MXKViewController' instead of 'MXKTableViewController' in order to ease the customization.
+ Indeed some items like header may be added at the same level than the table.
+ */
+@interface MXKRoomMemberDetailsViewController : MXKViewController <UITableViewDelegate, UITableViewDataSource>
+{
+@protected
+    /**
+     List of the allowed actions on this member.
+     */
+    NSMutableArray<NSNumber*> *actionsArray;
+}
 
-@property (weak, nonatomic) IBOutlet UIButton *memberThumbnailButton;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property (weak, nonatomic) IBOutlet MXKImageView *memberThumbnail;
 @property (weak, nonatomic) IBOutlet UITextView *roomMemberMatrixInfo;
 
 /**
@@ -80,6 +101,11 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
  Enable voip call (voice/video). NO by default
  */
 @property (nonatomic) BOOL enableVoipCall;
+
+/**
+ Tell whether an action is already in progress.
+ */
+@property (nonatomic, readonly) BOOL hasPendingAction;
 
 /**
  The delegate for the view controller.
@@ -117,23 +143,27 @@ extern NSString *const MXKRoomMemberDetailsActionStartVideoCall;
 - (void)displayRoomMember:(MXRoomMember*)roomMember withMatrixRoom:(MXRoom*)room;
 
 /**
- The member's thumbnail is displayed inside a button. The following method is registered on
- `UIControlEventTouchUpInside` event of this button.
- 
- Nothing is done by the current implementation.
+ Refresh the member information.
  */
-- (IBAction)onMemberThumbnailPressed:(id)sender;
+- (void)updateMemberInfo;
 
 /**
- The following method is registered on `UIControlEventTouchUpInside` event for all displayed action buttons (see MXKRoomMemberDetailsAction).
+ The following method is registered on `UIControlEventTouchUpInside` event for all displayed action buttons.
  
- The start chat option ('MXKRoomMemberDetailsActionStartChat') is transferred to the delegate.
+ The start chat option is transferred to the delegate.
  All the other actions are handled by the current implementation.
  
  If the delegate responds to selector: @selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:), the voip options
- ('MXKRoomMemberDetailsActionStartVoiceCall' and 'MXKRoomMemberDetailsActionStartVideoCall') are transferred to the delegate.
+ are transferred to the delegate.
  */
 - (IBAction)onActionButtonPressed:(id)sender;
+
+/**
+ Set the power level of the room member
+ 
+ @param value the value to set.
+ */
+- (void)setPowerLevel:(NSUInteger)value;
 
 @end
 

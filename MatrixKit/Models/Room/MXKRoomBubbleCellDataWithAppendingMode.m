@@ -65,7 +65,7 @@ static NSAttributedString *messageSeparator = nil;
             // Event must be sent the same day than the existing bubble.
             NSString *bubbleDateString = [roomDataSource.eventFormatter dateStringFromDate:self.date withTime:NO];
             NSString *eventDateString = [roomDataSource.eventFormatter dateStringFromEvent:event withTime:NO];
-            if (![bubbleDateString isEqualToString:eventDateString])
+            if (bubbleDateString && eventDateString && ![bubbleDateString isEqualToString:eventDateString])
             {
                 return NO;
             }
@@ -159,33 +159,33 @@ static NSAttributedString *messageSeparator = nil;
     
     @synchronized(bubbleComponents)
     {
-        // Check whether the position of other components need to be refreshed        
+        // Check whether the position of other components need to be refreshed
         if (!self.attachment && shouldUpdateComponentsPosition && bubbleComponents.count > 1)
         {
-            // Compute height of the first text component
+            // Init attributed string with the first text component
             MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-            CGFloat componentHeight = [self rawTextHeight:component.attributedTextMessage];
-            
-            // Set position for each other component
-            CGFloat positionY = component.position.y;
-            CGFloat cumulatedHeight = 0;
             NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+            [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+            
             for (NSUInteger index = 1; index < bubbleComponents.count; index++)
             {
-                cumulatedHeight += componentHeight;
-                positionY += componentHeight;
-                
+                // Append the next text component
                 component = [bubbleComponents objectAtIndex:index];
+                [attributedString appendAttributedString:component.attributedTextMessage];
+                
+                // Compute the height of the resulting string
+                CGFloat cumulatedHeight = [self rawTextHeight:attributedString];
+                
+                // Deduce the position of the beginning of this component
+                CGFloat positionY = MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET + (cumulatedHeight - [self rawTextHeight:component.attributedTextMessage]);
+                
                 component.position = CGPointMake(0, positionY);
                 
-                // Compute height of the current component
                 [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-                [attributedString appendAttributedString:component.attributedTextMessage];
-                componentHeight = [self rawTextHeight:attributedString] - cumulatedHeight;
             }
         }
     }
-
+    
     shouldUpdateComponentsPosition = NO;
 }
 
@@ -295,16 +295,22 @@ static NSAttributedString *messageSeparator = nil;
     {
         // Check date of existing components to insert this new one
         NSUInteger index = bubbleComponents.count;
-        while (index)
+        
+        // Component without date is added at the end by default
+        if (addedComponent.date)
         {
-            MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
-            if ([msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+            while (index)
             {
-                // New component will be inserted here
-                index ++;
-                break;
+                MXKRoomBubbleComponent *msgComponent = [bubbleComponents objectAtIndex:(--index)];
+                if (msgComponent.date && [msgComponent.date compare:addedComponent.date] != NSOrderedDescending)
+                {
+                    // New component will be inserted here
+                    index ++;
+                    break;
+                }
             }
         }
+        
         // Insert new component
         [bubbleComponents insertObject:addedComponent atIndex:index];
         

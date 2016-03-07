@@ -76,7 +76,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     
     if (typingNotifListener)
     {
-        [mxRoom removeListener:typingNotifListener];
+        [mxRoom.liveTimeline removeListener:typingNotifListener];
         typingNotifListener = nil;
     }
     
@@ -342,10 +342,10 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                                  kMXEventTypeStringRoomPowerLevels,
                                  kMXEventTypeStringPresence
                                  ];
-    membersListener = [self.mxSession listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXEventDirection direction, id customObject)
+    membersListener = [self.mxSession listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject)
     {
         // consider only live event
-        if (direction == MXEventDirectionForwards)
+        if (direction == MXTimelineDirectionForwards)
         {
             // Check the room Id (if any)
             if (event.roomId && [event.roomId isEqualToString:mxRoom.state.roomId] == NO)
@@ -370,14 +370,14 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     // Remove the previous live listener
     if (typingNotifListener)
     {
-        [mxRoom removeListener:typingNotifListener];
+        [mxRoom.liveTimeline removeListener:typingNotifListener];
     }
     
     // Add typing notification listener
-    typingNotifListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXEventDirection direction, MXRoomState *roomState)
+    typingNotifListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
         // Handle only live events
-        if (direction == MXEventDirectionForwards)
+        if (direction == MXTimelineDirectionForwards)
         {
             // Retrieve typing users list
             NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:mxRoom.typingUsers];

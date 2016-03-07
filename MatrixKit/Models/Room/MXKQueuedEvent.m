@@ -18,7 +18,7 @@
 
 @implementation MXKQueuedEvent
 
-- (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)state direction:(MXEventDirection)direction
+- (instancetype)initWithEvent:(MXEvent *)event andRoomState:(MXRoomState *)state direction:(MXTimelineDirection)direction
 {
     self = [super init];
     if (self)

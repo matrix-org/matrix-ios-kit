@@ -19,6 +19,8 @@
 
 #import "MXKRoomBubbleComponent.h"
 
+#define MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET 8
+
 /**
  `MXKRoomBubbleCellData` instances compose data for `MXKRoomBubbleTableViewCell` cells.
  
@@ -52,7 +54,7 @@
 /**
  Returns bubble components list (`MXKRoomBubbleComponent` instances).
  */
-@property (nonatomic, readonly) NSArray *bubbleComponents;
+@property (nonatomic, readonly) NSArray<MXKRoomBubbleComponent*> *bubbleComponents;
 
 /**
  Event formatter
@@ -85,18 +87,21 @@
 - (void)prepareBubbleComponentsPosition;
 
 /**
- Return the raw height of the provided text by removing any margin
+ Return the raw height of the provided text by removing any vertical margin/inset.
  
- @param the attributed text to measure
+ @param attributedText the attributed text to measure
+ @return the computed height
  */
-- (CGFloat)rawTextHeight: (NSAttributedString*)attributedText;
+- (CGFloat)rawTextHeight:(NSAttributedString*)attributedText;
 
 /**
  Return the content size of a text view initialized with the provided attributed text.
  CAUTION: This method runs only on main thread.
  
- @param the attributed text to measure
+ @param attributedText the attributed text to measure
+ @param removeVerticalInset tell whether the computation should remove vertical inset in text container.
+ @return the computed size content
  */
-- (CGSize)textContentSize: (NSAttributedString*)attributedText;
+- (CGSize)textContentSize:(NSAttributedString*)attributedText removeVerticalInset:(BOOL)removeVerticalInset;
 
 @end

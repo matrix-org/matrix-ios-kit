@@ -92,7 +92,7 @@
         // Trigger asynchronously this back pagination to not block the UI thread.
         dispatch_async(dispatch_get_main_queue(), ^{
         
-            [roomDataSource paginateBackMessages:5 onlyFromStore:NO success:nil failure:nil];
+            [roomDataSource paginate:5 direction:MXTimelineDirectionBackwards onlyFromStore:NO success:nil failure:nil];
             
         });
         
@@ -127,14 +127,19 @@
     lastEventAttributedTextMessage = nil;
 }
 
-- (NSUInteger)unreadCount
+- (BOOL)hasUnread
 {
-    return roomDataSource.unreadCount;
+    return roomDataSource.hasUnread;
 }
 
-- (NSUInteger)unreadBingCount
+- (NSUInteger)notificationCount
 {
-    return roomDataSource.unreadBingCount;
+    return roomDataSource.notificationCount;
+}
+
+- (NSUInteger)highlightCount
+{
+    return roomDataSource.highlightCount;
 }
 
 - (void)markAllAsRead
