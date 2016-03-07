@@ -2085,13 +2085,28 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                     // A new pagination starts with this new bubble data
                                     bubbleData.isPaginationFirstBubble = YES;
 
-                                    // Check whether the current first bubble belongs to the same pagination
+                                    // Check whether the current first displayed pagination title is still relevant.
                                     if (bubblesSnapshot.count)
                                     {
-                                        id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
-                                        NSString *firstBubbleDateString = [self.eventFormatter dateStringFromDate:previousFirstBubbleData.date withTime:NO];
-                                        NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
-                                        previousFirstBubbleData.isPaginationFirstBubble = (firstBubbleDateString && bubbleDateString && ![firstBubbleDateString isEqualToString:bubbleDateString]);
+                                        NSInteger index = 0;
+                                        id<MXKRoomBubbleCellDataStoring> previousFirstBubbleDataWithDate;
+                                        NSString *firstBubbleDateString;
+                                        while (index < bubblesSnapshot.count)
+                                        {
+                                            previousFirstBubbleDataWithDate = bubblesSnapshot[index++];
+                                            firstBubbleDateString = [self.eventFormatter dateStringFromDate:previousFirstBubbleDataWithDate.date withTime:NO];
+                                            
+                                            if (firstBubbleDateString)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if (firstBubbleDateString)
+                                        {
+                                            NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                            previousFirstBubbleDataWithDate.isPaginationFirstBubble = (bubbleDateString && ![firstBubbleDateString isEqualToString:bubbleDateString]);
+                                        }
                                     }
                                 }
                                 else
@@ -2109,7 +2124,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
                                     if (previousFirstBubbleData.isPaginationFirstBubble == NO)
                                     {
-                                        // Check whether the curent first bubble has been sent by the same user.
+                                        // Check whether the current first bubble has been sent by the same user.
                                         previousFirstBubbleData.shouldHideSenderInformation = [previousFirstBubbleData hasSameSenderAsBubbleCellData:bubbleData];
                                     }
                                 }
