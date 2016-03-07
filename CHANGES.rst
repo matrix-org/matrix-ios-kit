@@ -1,3 +1,27 @@
+Changes in MatrixKit in 0.3.3 (2016-03-07)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.3).
+ * MXKRoomDataSourceManager: Handle the current number of unread messages that match the push notification rules.
+ * MXKRoomDataSource: Remove the timestamp of unsent messages on data reload.
+ * MXKRoomViewController: Support the display of a timeline from the past.
+ * MXKRoomBubbleCellData: Improve the computation of the text components position.
+ * MXKViewControllerHandling: Define the default tint of the navigation bar.
+ * MXKViewControllerHandling: Add flag to disable navigation bar tint color change on network status change.
+ * MXKRoomBubbleTableViewCell: Add property to disable the default handling of the long press on event.
+ * MXKRoomMemberDetailsViewController has been refactored.
+ * MXKRoomInputToolbarView: Tells the delegate that the user is typing when textView did begin editing.
+ * MXKRoomInputToolbarView: Add option to enable media auto saving.
+ * MXKRoomViewController: Add missing constraint on Activities view.
+
+Bug fixes:
+ * MXKEventFormater: Fixed crash ("NSConcreteMutableAttributedString add Attribute:value:range:: nil value") when trying to display bad formatted links.
+ * MXKRoomDataSource: At startup, recents are not updated for rooms with a gap during server sync.
+ * MXKAttachmentsViewController: Remove play icon on videos while they're playing.
+ * MXKRoomDataSource: A sent message may appear as unsent.
+ * MXKRoomViewController: Fixed jumps when going forwards. Backwards pagination should be smoother.
+
 Changes in MatrixKit in 0.3.2 (2016-02-09)
 ===============================================
 
