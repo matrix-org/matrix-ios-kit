@@ -1426,8 +1426,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             }
         }
 
-        [self.bubblesTableView setContentOffset:contentOffset animated:NO];
-
         // Restore scrolling and the scroll indicator
         [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
         [self.bubblesTableView setScrollEnabled:YES];
