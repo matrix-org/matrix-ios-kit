@@ -185,7 +185,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         // Check whether redacted information is required
         if (_settings.showRedactionsInRoomHistory)
         {
-            NSString *redactorId = event.redactedBecause[@"user_id"];
+            NSString *redactorId = event.redactedBecause[@"sender"];
             NSString *redactedBy = @"";
             // Consider live room state to resolve redactor name if no roomState is provided
             MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
