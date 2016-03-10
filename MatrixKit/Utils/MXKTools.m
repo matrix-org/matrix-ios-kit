@@ -593,7 +593,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
         CGFloat offsetX = (patternSize.width - resourceSize.width) / 2.0f;
         CGFloat offsetY = (patternSize.height - resourceSize.height) / 2.0f;
         
-        UIImageView* resourceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(offsetX, offsetY, resourceSize.width, resourceSize.width)];
+        UIImageView* resourceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(offsetX, offsetY, resourceSize.width, resourceSize.height)];
         resourceImageView.backgroundColor = [UIColor clearColor];
         resourceImageView.image = [MXKTools resizeImage:[UIImage imageNamed:reourceName] toSize:resourceSize];
         
