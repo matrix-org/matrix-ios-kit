@@ -84,18 +84,12 @@
     return self;
 }
 
-- (void)addMatrixSession:(MXSession *)matrixSession
+- (MXKSessionRecentsDataSource *)addMatrixSession:(MXSession *)matrixSession
 {
     MXKSessionRecentsDataSource *recentsDataSource = [[MXKSessionRecentsDataSource alloc] initWithMatrixSession:matrixSession];
     
     if (recentsDataSource)
     {
-        // Report the shared event formatter (if any)
-        if (_eventFormatter)
-        {
-            recentsDataSource.eventFormatter = _eventFormatter;
-        }
-        
         // Set the actual data and view classes
         [recentsDataSource registerCellDataClass:[self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier] forCellIdentifier:kMXKRecentCellIdentifier];
         
@@ -114,6 +108,8 @@
         // Check the current state of the data source
         [self dataSource:recentsDataSource didStateChange:recentsDataSource.state];
     }
+    
+    return recentsDataSource;
 }
 
 - (void)removeMatrixSession:(MXSession*)matrixSession
@@ -272,17 +268,6 @@
         }
     }
     return NO;
-}
-
-- (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
-{
-    _eventFormatter = eventFormatter;
-    
-    // Report this formatter in all existing dataSource
-    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
-    {
-        recentsDataSource.eventFormatter = eventFormatter;
-    }
 }
 
 - (void)markAllAsRead
@@ -908,7 +893,7 @@
 - (void)didMXSessionInviteRoomUpdate:(NSNotification *)notif
 {
     MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession)
+    if ([self.mxSessions indexOfObject:mxSession] != NSNotFound)
     {
         // do nothing by default
         // the inherited classes might require to perform a full or a particial refresh.
