@@ -130,7 +130,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
     NSString *senderDisplayName = [roomState memberName:event.sender];
     // Check whether this sender name is updated by the current event (This happens in case of new joined member)
-    if ([event.content[@"displayname"] length])
+    NSString* membership = event.content[@"membership"];
+    if (membership && [membership isEqualToString:@"join"] && [event.content[@"displayname"] length])
     {
         // Use the actual display name
         senderDisplayName = event.content[@"displayname"];
@@ -144,7 +145,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
     
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
-    if ([event.content[@"avatar_url"] length])
+    NSString* membership = event.content[@"membership"];
+    if (membership && [membership isEqualToString:@"join"] && [event.content[@"avatar_url"] length])
     {
         // We ignore non mxc avatar url
         if ([event.content[@"avatar_url"] hasPrefix:kMXContentUriScheme])
