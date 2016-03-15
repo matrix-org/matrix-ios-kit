@@ -48,6 +48,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXHTTPOperation *paginationRequest;
     
     /**
+     The actual listener related to the current pagination in the timeline.
+     */
+    id paginationListener;
+    
+    /**
      The listener to incoming events in the room.
      */
     id liveEventsListener;
@@ -296,6 +301,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     if (paginationRequest)
     {
+        // We have to remove here the listener. A new pagination request may be triggered whereas the cancellation of this one is in progress
+        [_timeline removeListener:paginationListener];
+        paginationListener = nil;
+        
         [paginationRequest cancel];
         paginationRequest = nil;
     }
@@ -798,6 +807,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     if (paginationRequest)
     {
+        // We have to remove here the listener. A new pagination request may be triggered whereas the cancellation of this one is in progress
+        [_timeline removeListener:paginationListener];
+        paginationListener = nil;
+        
         [paginationRequest cancel];
         paginationRequest = nil;
     }
@@ -902,21 +915,28 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }
     
-    // Keep events from the past to later processing
-    id backPaginateListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState)
-    {
+    // Define a new listener for this pagination
+    paginationListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+        
         if (direction2 == direction)
         {
             [self queueEventForProcessing:event withRoomState:roomState direction:direction];
         }
+        
     }];
+    
+    // Keep a local reference to this listener.
+    id localPaginationListenerRef = paginationListener;
     
     // Launch the pagination
     paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
+        // Everything went well, remove the listener
         paginationRequest = nil;
+        [_timeline removeListener:paginationListener];
+        paginationListener = nil;
+        
         // Once done, process retrieved events
-        [_timeline removeListener:backPaginateListener];
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
             
             if (success)
@@ -931,22 +951,28 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
         
-        paginationRequest = nil;
-        [_timeline removeListener:backPaginateListener];
-        
-        // Process at least events retrieved from store
-        [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+        // Something wrong happened or the request was cancelled.
+        // Check whether the request is the actual one before removing listener and handling the retrieved events.
+        if (localPaginationListenerRef == paginationListener)
+        {
+            paginationRequest = nil;
+            [_timeline removeListener:paginationListener];
+            paginationListener = nil;
             
-            if (failure)
-            {
-                failure(error);
-            }
-            else if (addedHistoryCellNb && success)
-            {
-                success(addedHistoryCellNb);
-            }
-            
-        }];
+            // Process at least events retrieved from store
+            [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+                
+                if (failure)
+                {
+                    failure(error);
+                }
+                else if (addedHistoryCellNb && success)
+                {
+                    success(addedHistoryCellNb);
+                }
+                
+            }];
+        }
         
     }];
 };
