@@ -478,8 +478,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Less things need to configured
                     _timeline = [_room timelineOnEvent:initialEventId];
 
-                    [self refreshUnreadCounters];
-
                     // Force to set the filter at the MXRoom level
                     self.eventsFilterForMessages = _eventsFilterForMessages;
 
@@ -2246,7 +2244,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         }
                     }
                     
-                    [self refreshUnreadCounters];
+                    if (_isLive)
+                    {
+                        [self refreshUnreadCounters];
+                    }
                     
                     bubbles = bubblesSnapshot;
                     bubblesSnapshot = nil;
