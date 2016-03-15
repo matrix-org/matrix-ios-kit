@@ -320,14 +320,12 @@
         }
     }
     
-    if (mxSessionArray.count && enableBarTintColorStatusChange)
+    if (mxSessionArray.count)
     {
-        // The navigation bar tintColor depends on matrix homeserver reachability status
+        // Check each session state
         UIColor *barTintColor = defaultBarTintColor;
         BOOL allHomeserverNotReachable = YES;
         BOOL isActivityInProgress = NO;
-        
-        // Check each session state
         for (NSUInteger index = 0; index < mxSessionArray.count;)
         {
             MXSession *mxSession = mxSessionArray[index];
@@ -360,20 +358,25 @@
             }
         }
         
-        if (allHomeserverNotReachable)
+        // Check whether the navigation bar color depends on homeserver reachability.
+        if (enableBarTintColorStatusChange)
         {
-            self.navigationController.navigationBar.barTintColor = [UIColor redColor];
-            if (mainNavigationController)
+            // The navigation bar tintColor reflects the matrix homeserver reachability status.
+            if (allHomeserverNotReachable)
             {
-                mainNavigationController.navigationBar.barTintColor = [UIColor redColor];
+                self.navigationController.navigationBar.barTintColor = [UIColor redColor];
+                if (mainNavigationController)
+                {
+                    mainNavigationController.navigationBar.barTintColor = [UIColor redColor];
+                }
             }
-        }
-        else
-        {
-            self.navigationController.navigationBar.barTintColor = barTintColor;
-            if (mainNavigationController)
+            else
             {
-                mainNavigationController.navigationBar.barTintColor = barTintColor;
+                self.navigationController.navigationBar.barTintColor = barTintColor;
+                if (mainNavigationController)
+                {
+                    mainNavigationController.navigationBar.barTintColor = barTintColor;
+                }
             }
         }
         
