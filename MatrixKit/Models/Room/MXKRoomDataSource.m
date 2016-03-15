@@ -690,6 +690,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         [self removeCellData:bubbleData];
                     }
                     
+                    if (_isLive)
+                    {
+                        [self refreshUnreadCounters];
+                    }
+                    
                     // Update the delegate on main thread
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
