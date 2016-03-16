@@ -327,7 +327,7 @@
     {
         // Check conditions to be able to invite someone
         MXRoom *mxRoom = [self.mainSession roomWithRoomId:dataSource.roomId];
-        NSUInteger oneSelfPowerLevel = [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
+        NSInteger oneSelfPowerLevel = [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
         if (oneSelfPowerLevel < [mxRoom.state.powerLevels invite])
         {
             showInvitationOption = NO;

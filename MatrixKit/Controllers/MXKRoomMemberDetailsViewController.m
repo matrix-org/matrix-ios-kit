@@ -475,8 +475,8 @@
 {
     // Check user's power level before allowing an action (kick, ban, ...)
     MXRoomPowerLevels *powerLevels = [mxRoom.state powerLevels];
-    NSUInteger memberPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
-    NSUInteger oneSelfPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
+    NSInteger memberPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
+    NSInteger oneSelfPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
     
     [actionsArray removeAllObjects];
     
@@ -694,9 +694,9 @@
     }
 }
 
-- (void)setPowerLevel:(NSUInteger)value
+- (void)setPowerLevel:(NSInteger)value
 {
-    NSUInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
+    NSInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     
     // check if the power level has not yet been set to 0
     if (value != currentPowerLevel)
@@ -740,7 +740,7 @@
     [self.actionMenu addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%tu", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:weakSelf.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%zd", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:weakSelf.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];

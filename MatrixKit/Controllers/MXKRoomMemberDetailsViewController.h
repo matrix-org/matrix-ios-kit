@@ -163,7 +163,7 @@ typedef enum : NSUInteger
  
  @param value the value to set.
  */
-- (void)setPowerLevel:(NSUInteger)value;
+- (void)setPowerLevel:(NSInteger)value;
 
 @end
 

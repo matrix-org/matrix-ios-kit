@@ -151,7 +151,7 @@
         {
             // Check whether the user has enough power to rename the room
             MXRoomPowerLevels *powerLevels = [_mxRoom.state powerLevels];
-            NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoom.mxSession.myUser.userId];
+            NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
                 // Only the room name is edited here, update the text field with the room name
