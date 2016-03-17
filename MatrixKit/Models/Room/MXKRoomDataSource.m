@@ -906,6 +906,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (paginationRequest)
     {
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
+        if (failure)
+        {
+            failure(nil);
+        }
         return;
     }
     
