@@ -1,3 +1,16 @@
+Changes in MatrixKit in 0.3.4 (2016-03-17)
+===============================================
+
+Improvements:
+ * MXKWebViewViewController: add view controller for webview display.
+
+Bug fixes:
+ * Chat Screen: scrolling to bottom when opening new rooms seems unreliable.
+ * Chat Screen: Wrong displayName and wrong avatar are displayed on invitation.
+ * Chat Screen: Some messages are displayed twice.
+ * Chat Screen: Some unsent messages are persistent.
+ * Fix missing loading wheel when app is resumed.
+
 Changes in MatrixKit in 0.3.3 (2016-03-07)
 ===============================================
 
