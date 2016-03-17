@@ -618,14 +618,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     localEcho = [self pendingLocalEchoRelatedToEvent:event];
                     if (localEcho)
                     {
-                        // Replace the local echo by the true event sent by the homeserver
-                        [self replaceLocalEcho:localEcho withEvent:event];
+                        // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
+                        if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                        {
+                            // Replace the local echo by the true event sent by the homeserver
+                            [self replaceLocalEcho:localEcho withEvent:event];
+                        }
+                        else
+                        {
+                            // Remove the local echo, and process independently the true event.
+                            [self replaceLocalEcho:localEcho withEvent:nil];
+                            localEcho = nil;
+                        }
                     }
                 }
 
                 if (nil == localEcho)
                 {
-                    // Post incoming events for later processing
+                    // Process here incoming events, and outgoing events sent from another device.
                     [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
                     [self processQueuedEvents:nil];
                 }
@@ -1728,6 +1738,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     // Clean outgoing messages, and add unsent ones at the end of the conversation
     NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
+    BOOL shouldProcessQueuedEvents = NO;
     
     for (NSInteger index = 0; index < outgoingMessages.count; index++)
     {
@@ -1747,7 +1758,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             outgoingMessage.originServerTs = kMXUndefinedTimestamp;
             
             [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
+            shouldProcessQueuedEvents = YES;
         }
+    }
+    
+    if (shouldProcessQueuedEvents)
+    {
+        [self processQueuedEvents:nil];
     }
 }
 
@@ -1776,6 +1793,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
+    if (!bubbleData)
+    {
+        return;
+    }
+    
     @synchronized (bubbleData)
     {
         [bubbleData updateEvent:localEcho.eventId withEvent:localEcho];
@@ -1796,13 +1818,25 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the event from the pending local echo list
     [self removePendingLocalEcho:localEcho];
     
-    // Update the event in its cell data
+    // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
+    if (!bubbleData)
+    {
+        return;
+    }
     
     NSUInteger remainingEvents;
     @synchronized (bubbleData)
     {
-        remainingEvents = [bubbleData updateEvent:localEcho.eventId withEvent:event];
+        // Check whether the local echo is replaced or removed
+        if (event)
+        {
+            remainingEvents = [bubbleData updateEvent:localEcho.eventId withEvent:event];
+        }
+        else
+        {
+            remainingEvents = [bubbleData removeEvent:localEcho.eventId];
+        }
     }
     
     // Update bubbles mapping
@@ -1811,7 +1845,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Remove the broken link from the map
         [eventIdToBubbleMap removeObjectForKey:localEcho.eventId];
         
-        if (remainingEvents)
+        if (event && remainingEvents)
         {
             eventIdToBubbleMap[event.eventId] = bubbleData;
         }
