@@ -55,17 +55,12 @@
 #pragma mark - Configuration
 
 /**
- The events to display texts formatter (nil by default).
- When this formatter is defined, it is used by all available recents data sources
- */
-@property (nonatomic) MXKEventFormatter *eventFormatter;
-
-/**
  Add recents data from a matrix session.
  
  @param mxSession the Matrix session to retrieve contextual data.
+ @return the new 'MXKSessionRecentsDataSource' instance created for this Matrix session.
  */
-- (void)addMatrixSession:(MXSession*)mxSession;
+- (MXKSessionRecentsDataSource *)addMatrixSession:(MXSession*)mxSession;
 
 /**
  Remove recents data related to a matrix session.

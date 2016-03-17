@@ -42,6 +42,7 @@
 #import "MXKNotificationSettingsViewController.h"
 #import "MXKAttachmentsViewController.h"
 #import "MXKRoomSettingsViewController.h"
+#import "MXKWebViewViewController.h"
 
 #import "MXKAuthenticationViewController.h"
 #import "MXKAuthInputsPasswordBasedView.h"

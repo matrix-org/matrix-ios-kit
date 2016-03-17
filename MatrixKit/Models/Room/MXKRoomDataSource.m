@@ -48,6 +48,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXHTTPOperation *paginationRequest;
     
     /**
+     The actual listener related to the current pagination in the timeline.
+     */
+    id paginationListener;
+    
+    /**
      The listener to incoming events in the room.
      */
     id liveEventsListener;
@@ -296,6 +301,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     if (paginationRequest)
     {
+        // We have to remove here the listener. A new pagination request may be triggered whereas the cancellation of this one is in progress
+        [_timeline removeListener:paginationListener];
+        paginationListener = nil;
+        
         [paginationRequest cancel];
         paginationRequest = nil;
     }
@@ -469,8 +478,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Less things need to configured
                     _timeline = [_room timelineOnEvent:initialEventId];
 
-                    [self refreshUnreadCounters];
-
                     // Force to set the filter at the MXRoom level
                     self.eventsFilterForMessages = _eventsFilterForMessages;
 
@@ -611,14 +618,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     localEcho = [self pendingLocalEchoRelatedToEvent:event];
                     if (localEcho)
                     {
-                        // Replace the local echo by the true event sent by the homeserver
-                        [self replaceLocalEcho:localEcho withEvent:event];
+                        // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
+                        if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                        {
+                            // Replace the local echo by the true event sent by the homeserver
+                            [self replaceLocalEcho:localEcho withEvent:event];
+                        }
+                        else
+                        {
+                            // Remove the local echo, and process independently the true event.
+                            [self replaceLocalEcho:localEcho withEvent:nil];
+                            localEcho = nil;
+                        }
                     }
                 }
 
                 if (nil == localEcho)
                 {
-                    // Post incoming events for later processing
+                    // Process here incoming events, and outgoing events sent from another device.
                     [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
                     [self processQueuedEvents:nil];
                 }
@@ -681,6 +698,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     if (0 == remainingEvents)
                     {
                         [self removeCellData:bubbleData];
+                    }
+                    
+                    if (_isLive)
+                    {
+                        [self refreshUnreadCounters];
                     }
                     
                     // Update the delegate on main thread
@@ -798,6 +820,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     if (paginationRequest)
     {
+        // We have to remove here the listener. A new pagination request may be triggered whereas the cancellation of this one is in progress
+        [_timeline removeListener:paginationListener];
+        paginationListener = nil;
+        
         [paginationRequest cancel];
         paginationRequest = nil;
     }
@@ -890,6 +916,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (paginationRequest)
     {
         NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
+        if (failure)
+        {
+            failure(nil);
+        }
         return;
     }
     
@@ -902,21 +932,28 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         }
     }
     
-    // Keep events from the past to later processing
-    id backPaginateListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState)
-    {
+    // Define a new listener for this pagination
+    paginationListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+        
         if (direction2 == direction)
         {
             [self queueEventForProcessing:event withRoomState:roomState direction:direction];
         }
+        
     }];
+    
+    // Keep a local reference to this listener.
+    id localPaginationListenerRef = paginationListener;
     
     // Launch the pagination
     paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
+        // Everything went well, remove the listener
         paginationRequest = nil;
+        [_timeline removeListener:paginationListener];
+        paginationListener = nil;
+        
         // Once done, process retrieved events
-        [_timeline removeListener:backPaginateListener];
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
             
             if (success)
@@ -931,22 +968,28 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
         
-        paginationRequest = nil;
-        [_timeline removeListener:backPaginateListener];
-        
-        // Process at least events retrieved from store
-        [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+        // Something wrong happened or the request was cancelled.
+        // Check whether the request is the actual one before removing listener and handling the retrieved events.
+        if (localPaginationListenerRef == paginationListener)
+        {
+            paginationRequest = nil;
+            [_timeline removeListener:paginationListener];
+            paginationListener = nil;
             
-            if (failure)
-            {
-                failure(error);
-            }
-            else if (addedHistoryCellNb && success)
-            {
-                success(addedHistoryCellNb);
-            }
-            
-        }];
+            // Process at least events retrieved from store
+            [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+                
+                if (failure)
+                {
+                    failure(error);
+                }
+                else if (addedHistoryCellNb && success)
+                {
+                    success(addedHistoryCellNb);
+                }
+                
+            }];
+        }
         
     }];
 };
@@ -1695,6 +1738,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     // Clean outgoing messages, and add unsent ones at the end of the conversation
     NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
+    BOOL shouldProcessQueuedEvents = NO;
     
     for (NSInteger index = 0; index < outgoingMessages.count; index++)
     {
@@ -1714,7 +1758,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             outgoingMessage.originServerTs = kMXUndefinedTimestamp;
             
             [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
+            shouldProcessQueuedEvents = YES;
         }
+    }
+    
+    if (shouldProcessQueuedEvents)
+    {
+        [self processQueuedEvents:nil];
     }
 }
 
@@ -1743,6 +1793,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 {
     // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
+    if (!bubbleData)
+    {
+        return;
+    }
+    
     @synchronized (bubbleData)
     {
         [bubbleData updateEvent:localEcho.eventId withEvent:localEcho];
@@ -1763,13 +1818,25 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Remove the event from the pending local echo list
     [self removePendingLocalEcho:localEcho];
     
-    // Update the event in its cell data
+    // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
+    if (!bubbleData)
+    {
+        return;
+    }
     
     NSUInteger remainingEvents;
     @synchronized (bubbleData)
     {
-        remainingEvents = [bubbleData updateEvent:localEcho.eventId withEvent:event];
+        // Check whether the local echo is replaced or removed
+        if (event)
+        {
+            remainingEvents = [bubbleData updateEvent:localEcho.eventId withEvent:event];
+        }
+        else
+        {
+            remainingEvents = [bubbleData removeEvent:localEcho.eventId];
+        }
     }
     
     // Update bubbles mapping
@@ -1778,7 +1845,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Remove the broken link from the map
         [eventIdToBubbleMap removeObjectForKey:localEcho.eventId];
         
-        if (remainingEvents)
+        if (event && remainingEvents)
         {
             eventIdToBubbleMap[event.eventId] = bubbleData;
         }
@@ -2220,7 +2287,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                         }
                     }
                     
-                    [self refreshUnreadCounters];
+                    if (_isLive)
+                    {
+                        [self refreshUnreadCounters];
+                    }
                     
                     bubbles = bubblesSnapshot;
                     bubblesSnapshot = nil;

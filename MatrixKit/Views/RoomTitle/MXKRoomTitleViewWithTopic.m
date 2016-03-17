@@ -350,7 +350,7 @@
         {
             // Check whether the user has enough power to rename the room
             MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
-            NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
+            NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
                 // Only the room name is edited here, update the text field with the room name
@@ -380,7 +380,7 @@
         {
             // Check whether the user has enough power to edit room topic
             MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
-            NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
+            NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
             {
                 textField.backgroundColor = [UIColor whiteColor];

@@ -114,7 +114,7 @@
                 if (mxRoom)
                 {
                     MXRoomPowerLevels *powerLevels = [mxRoom.state powerLevels];
-                    NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:mxSession.myUser.userId];
+                    NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:mxSession.myUser.userId];
                     if (powerLevels.redact)
                     {
                         if (userPowerLevel >= powerLevels.redact)

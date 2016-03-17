@@ -18,6 +18,7 @@
 #import "MXKSampleRoomViewController.h"
 #import "MXKSampleJSQMessagesViewController.h"
 #import "MXKSampleRoomMembersViewController.h"
+#import "MXKWebViewViewController.h"
 
 #import <MatrixSDK/MXFileStore.h>
 
@@ -74,6 +75,7 @@
     NSInteger searchSectionIndex;
     NSInteger authenticationSectionIndex;
     NSInteger contactSectionIndex;
+    NSInteger webViewSectionIndex;
 }
 
 @end
@@ -280,7 +282,7 @@
 {
     NSInteger count = 0;
     
-    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = searchSectionIndex =authenticationSectionIndex = contactSectionIndex = -1;
+    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = searchSectionIndex =authenticationSectionIndex = contactSectionIndex = webViewSectionIndex = -1;
     
     accountSectionIndex = count++;
     
@@ -302,6 +304,7 @@
 
     authenticationSectionIndex = count++;
     contactSectionIndex = count++;
+    webViewSectionIndex = count++;
     
     return count;
 }
@@ -344,6 +347,10 @@
     {
         return 1;
     }
+    else if (section == webViewSectionIndex)
+    {
+        return 1;
+    }
     
     return 0;
 }
@@ -377,6 +384,10 @@
     else if (section == contactSectionIndex)
     {
         return @"Contacts:";
+    }
+    else if (section == webViewSectionIndex)
+    {
+        return @"Webview:";
     }
     
     return nil;
@@ -511,6 +522,16 @@
                 break;
         }
     }
+    else if (indexPath.section == webViewSectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+                cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+                cell.textLabel.text = @"MXKWebViewViewController";
+                break;
+        }
+    }
     
     return cell;
 }
@@ -607,6 +628,18 @@
             case 0:
                 [self performSegueWithIdentifier:@"showMXKContactListViewController" sender:self];
                 break;
+        }
+    }
+    else if (indexPath.section == webViewSectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+            {
+                MXKWebViewViewController *webViewViewController = [[MXKWebViewViewController alloc] initWithURL:@"https://www.matrix.org"];
+                [self.navigationController pushViewController:webViewViewController animated:YES];
+                break;
+            }
         }
     }
 }

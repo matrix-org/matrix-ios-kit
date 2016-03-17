@@ -89,7 +89,7 @@
 {
     // Check whether the user has enough power to rename the room
     MXRoomPowerLevels *powerLevels = [mxRoomState powerLevels];
-    NSUInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_session.myUser.userId];
+    NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_session.myUser.userId];
     
     isSuperUser = (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName]);
 }
