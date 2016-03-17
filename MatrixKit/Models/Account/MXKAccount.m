@@ -951,16 +951,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }
         
-        [self onBackgroundSyncDoneWithError:[[NSError alloc] init]];
+        [self onBackgroundSyncDone:[[NSError alloc] init]];
     }
 }
 
-- (void)onBackgroundSyncDoneWithError:(NSError*)error
+- (void)onBackgroundSyncDone:(NSError*)error
 {
     if (backgroundSyncTimer)
     {
         [backgroundSyncTimer invalidate];
-        backgroundSyncTimer = NULL;
+        backgroundSyncTimer = nil;
     }
     
     if (backgroundSyncfails && error)
@@ -973,8 +973,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         backgroundSyncDone();
     }
     
-    backgroundSyncDone = NULL;
-    backgroundSyncfails = NULL;
+    backgroundSyncDone = nil;
+    backgroundSyncfails = nil;
     
     if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
     {
@@ -988,7 +988,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             {
                 // Cancel background task
                 [[UIApplication sharedApplication] endBackgroundTask:localBackgroundSyncBgTask];
-                NSLog(@"[MXKAccount] onBackgroundSyncDoneWithError : %08lX stop", (unsigned long)localBackgroundSyncBgTask);
+                NSLog(@"[MXKAccount] onBackgroundSyncDone: %08lX stop", (unsigned long)localBackgroundSyncBgTask);
             }
         });
     }
@@ -1038,13 +1038,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
             [mxSession backgroundSync:timeout success:^{
                 NSLog(@"[MXKAccount] the background Sync succeeds");
-                [self onBackgroundSyncDoneWithError:NULL];
+                [self onBackgroundSyncDone:nil];
                 
             }
                 failure:^(NSError* error) {
 
                 NSLog(@"[MXKAccount] the background Sync fails");
-                [self onBackgroundSyncDoneWithError:error];
+                [self onBackgroundSyncDone:error];
                        
             }
 
