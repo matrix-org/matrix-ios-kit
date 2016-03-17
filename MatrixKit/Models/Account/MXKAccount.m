@@ -1052,7 +1052,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     else
     {
-        NSLog(@"[MXKAccount] cannot start background Sync (invalid state)");
+        NSLog(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
         failure([[NSError alloc] init]);
     }
 }
