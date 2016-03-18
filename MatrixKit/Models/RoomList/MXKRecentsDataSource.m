@@ -38,14 +38,6 @@
      The current search pattern list
      */
     NSArray* searchPatternsList;
-    
-    /*
-     While muting a room, the dedicated rule might be deleted before creating a new one.
-     The creation must be done after the deletion has been confirmed.
-     The confirmation is done with a notification.
-     */
-    NSMutableDictionary* ruleDidUpdateObserverByRoomId;
-    NSMutableDictionary* ruleDidFailUpdateObserverByRoomId;
 }
 
 @end
@@ -65,9 +57,6 @@
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
-
-        ruleDidUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
-        ruleDidFailUpdateObserverByRoomId = [[NSMutableDictionary alloc] init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionInviteRoomUpdate:) name:kMXSessionInvitedRoomsDidChangeNotification object:nil];        
     }
@@ -206,29 +195,6 @@
 
 - (void)destroy
 {
-    // remove any observer
-    if (ruleDidUpdateObserverByRoomId || ruleDidFailUpdateObserverByRoomId)
-    {
-        NSMutableArray *observers = [[NSMutableArray alloc] init];
-        
-        if (ruleDidUpdateObserverByRoomId)
-        {
-            [observers addObjectsFromArray:[ruleDidUpdateObserverByRoomId allValues]];
-            ruleDidUpdateObserverByRoomId = nil;
-        }
-        
-        if (ruleDidFailUpdateObserverByRoomId)
-        {
-            [observers addObjectsFromArray:[ruleDidFailUpdateObserverByRoomId allValues]];
-            ruleDidFailUpdateObserverByRoomId = nil;
-        }
-        
-        for(id observer in observers)
-        {
-            [[NSNotificationCenter defaultCenter] removeObserver:observer];
-        }
-    }
-    
     for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray)
     {
         [recentsDataSource destroy];
@@ -643,7 +609,7 @@
         
         [room leave:^{
             
-            // Refresh table display
+            // Trigger recents table refresh
             if (self.delegate)
             {
                 [self.delegate dataSource:self didCellChange:nil];
@@ -655,238 +621,8 @@
             
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+            
         }];
-    }
-}
-
-/**
- Update the room tag at the index path
- 
- @param indexPath the index of the cell
- @param tag the new tag value
- */
-- (void)updateRoomTagAtIndexPath:(NSIndexPath *)indexPath to:(NSString*)newtag
-{
-    MXRoom* room = [self getRoomAtIndexPath:indexPath];
-    
-    if (room)
-    {
-        NSString* oldTag = nil;
-        
-        // sanity cg
-        if (room.accountData.tags && room.accountData.tags.count)
-        {
-            oldTag = [room.accountData.tags.allKeys objectAtIndex:0];
-        }
-        
-        // support only kMXRoomTagFavourite or kMXRoomTagLowPriority tags by now
-        if (![newtag isEqualToString:kMXRoomTagFavourite] && ![newtag isEqualToString:kMXRoomTagLowPriority])
-        {
-            newtag = nil;
-        }
-        
-        NSString* tagOrder = [room.mxSession tagOrderToBeAtIndex:0 from:NSNotFound withTag:newtag];
-        
-        NSLog(@"[MXKRecentsDataSource] Update the room %@ tag from %@ to %@ with tag order %@", room.state.roomId, oldTag, newtag, tagOrder);
-        
-        [room replaceTag:oldTag
-                   byTag:newtag
-               withOrder:tagOrder
-                 success: ^{
-            
-            // Refresh table display
-            if (self.delegate)
-            {
-                [self.delegate dataSource:self didCellChange:nil];
-            }
-            
-        } failure:^(NSError *error) {
-            
-            NSLog(@"[MXKRecentsDataSource] Failed to update the tag %@ of room (%@) failed: %@", newtag, room.state.roomId, error);
-            
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-        }];
-    }
-}
-
-- (MXPushRule*)getPushRulesForRoom:(MXRoom*)room
-{
-    if (room)
-    {
-        NSArray* rules = room.mxSession.notificationCenter.rules.global.room;
-        
-        // sanity checks
-        if (rules)
-        {
-            for(MXPushRule* rule in rules)
-            {
-                // the rule id is the room Id
-                // it is the server trick to avoid duplicated rule on the same room.
-                if ([rule.ruleId isEqualToString:room.state.roomId])
-                {
-                    return rule;
-                }
-            }
-        }
-    }
-    
-    return nil;
-}
-
-/**
- Check if there is a push notification rules for the room at the position indexPath
- 
- @param indexPath the index of the cell
- @return YES if there is a push rules.
- */
-- (BOOL)isRoomNotifiedAtIndexPath:(NSIndexPath *)indexPath
-{
-    MXRoom* room = [self getRoomAtIndexPath:indexPath];
-    MXPushRule* rule = [self getPushRulesForRoom:room];
-    
-    if (rule)
-    {
-        for (MXPushRuleAction *ruleAction in rule.actions)
-        {
-            if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
-            {
-                return !rule.enabled;
-            }
-        }
-    }
-    
-    return YES;
-}
-
-- (void)muteRoomNotifications:(BOOL)mute atIndexPath:(NSIndexPath *)indexPath
-{
-    MXRoom* room = [self getRoomAtIndexPath:indexPath];
- 
-    // sanity check
-    if (room)
-    {
-        BOOL isNotified = [self isRoomNotifiedAtIndexPath:indexPath];
-        
-        // check if the state is already in the right state
-        if (isNotified == !mute)
-        {
-            return;
-        }
-        
-        MXNotificationCenter* notificationCenter = room.mxSession.notificationCenter;
-        MXPushRule* rule = [self getPushRulesForRoom:room];
-        
-        if (!mute)
-        {
-            // let the other notification rules manage the pushes.
-            [notificationCenter removeRule:rule];
-        }
-        else
-        {
-            // user does not want to have push
-            
-            // if there is no rule
-            if (!rule)
-            {
-                // add one
-                [notificationCenter addRoomRule:room.state.roomId
-                                                    notify:NO
-                                                     sound:NO
-                                                 highlight:NO];
-            }
-            else
-            {
-                // check if there is no pending update for this room
-                if ([ruleDidUpdateObserverByRoomId objectForKey:room.state.roomId])
-                {
-                    // if there is one, ignore the current request
-                    return;
-                }
-                
-                
-                // check if the user did not define one
-                BOOL hasDontNotifyRule = NO;
-                
-                for (MXPushRuleAction *ruleAction in rule.actions)
-                {
-                    if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
-                    {
-                        hasDontNotifyRule = YES;
-                        break;
-                    }
-                }
-                
-                // if the user defined one, use it
-                if (hasDontNotifyRule)
-                {
-                    [notificationCenter enableRule:rule isEnabled:YES];
-                }
-                else
-                {
-                    // if the user defined a room rule
-                    // the rule is deleted before adding new one
-                    
-                    id notificationCenterDidUpdateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXNotificationCenterDidUpdateRules object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-
-                        MXPushRule* rule = [self getPushRulesForRoom:room];
-                        
-                        // check if the rule has been deleted
-                        // there is no way to know if the notif is really for this rule..
-                        if (!rule)
-                        {
-                            id observer = [ruleDidUpdateObserverByRoomId objectForKey:room.state.roomId];
-                            
-                            if (observer)
-                            {
-                                [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                                [ruleDidUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
-                            }
-                            
-                            observer = [ruleDidFailUpdateObserverByRoomId objectForKey:room.state.roomId];
-                            
-                            if (observer)
-                            {
-                                [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                                [ruleDidFailUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
-                            }
-                            
-                            // add one
-                            [notificationCenter addRoomRule:room.state.roomId
-                                                     notify:NO
-                                                      sound:NO
-                                                  highlight:NO];
-                        }
-                    }];
-                    
-                    id notificationCenterDidFailObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXNotificationCenterDidFailRulesUpdate object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-
-                        id observer = [ruleDidUpdateObserverByRoomId objectForKey:room.state.roomId];
-                        
-                        if (observer)
-                        {
-                            [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                            [ruleDidUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
-                        }
-                        
-                        observer = [ruleDidFailUpdateObserverByRoomId objectForKey:room.state.roomId];
-                        
-                        if (observer)
-                        {
-                            [[NSNotificationCenter defaultCenter] removeObserver:observer];
-                            [ruleDidFailUpdateObserverByRoomId removeObjectForKey:room.state.roomId];
-                        }
-                    }];
-                    
-                    [ruleDidUpdateObserverByRoomId setObject:notificationCenterDidUpdateObserver forKey:room.state.roomId];
-                    [ruleDidFailUpdateObserverByRoomId setObject:notificationCenterDidFailObserver forKey:room.state.roomId];
-                    
-                    // remove the rule notification
-                    // the notifications are used to tell
-                    [notificationCenter removeRule:rule];
-                }
-            }
-        }
     }
 }
 
