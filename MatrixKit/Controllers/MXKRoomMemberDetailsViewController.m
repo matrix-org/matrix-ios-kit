@@ -100,6 +100,8 @@
         self.actionMenu = nil;
     }
     
+    [self removePendingActionMask];
+    
     [self removeObservers];
     
     self.delegate = nil;
@@ -146,7 +148,7 @@
 {
     if ([sender isKindOfClass:[UIButton class]])
     {
-        // already a pending action
+        // Check whether an action is already in progress
         if ([self hasPendingAction])
         {
             return;
@@ -276,9 +278,10 @@
                 {
                     [self addPendingActionMask];
                     
-                    [self.delegate roomMemberDetailsViewController:self startChatWithMemberId:_mxRoomMember.userId];
-                    
-                    [self removePendingActionMask];
+                    [self.delegate roomMemberDetailsViewController:self startChatWithMemberId:_mxRoomMember.userId completion:^{
+                        
+                        [self removePendingActionMask];
+                    }];
                 }
                 break;
             }

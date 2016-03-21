@@ -71,6 +71,11 @@
 @property (nonatomic) BOOL enableSearch;
 
 /**
+ Tell whether an action is already in progress.
+ */
+@property (nonatomic, readonly) BOOL hasPendingAction;
+
+/**
  The class used in creating new contact table cells.
  Only MXKContactTableCell classes or sub-classes are accepted.
  */
@@ -102,6 +107,16 @@
  The action registered on 'value changed' event of the 'UISegmentedControl' contactControls.
  */
 - (IBAction)onSegmentValueChange:(id)sender;
+
+/**
+ Add a mask in overlay to prevent a new contact selection (used when an action is on progress).
+ */
+- (void)addPendingActionMask;
+
+/**
+ Remove the potential overlay mask 
+ */
+- (void)removePendingActionMask;
 
 @end
 

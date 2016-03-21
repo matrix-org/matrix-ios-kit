@@ -167,7 +167,13 @@
 {
     if (self.delegate && sender.tag < matrixIDs.count)
     {
-        [self.delegate contactDetailsViewController:self startChatWithMatrixId:[matrixIDs objectAtIndex:sender.tag]];
+        sender.enabled = NO;
+        
+        [self.delegate contactDetailsViewController:self startChatWithMatrixId:[matrixIDs objectAtIndex:sender.tag] completion:^{
+            
+            sender.enabled = YES;
+            
+        }];
     }
 }
 
