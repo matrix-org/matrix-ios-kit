@@ -161,6 +161,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }
         
+        if ([coder decodeObjectForKey:@"pushgatewayurl"])
+        {
+            _pushGatewayURL = [coder decodeObjectForKey:@"pushgatewayurl"];
+        }
+        
         _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
@@ -186,6 +191,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [coder encodeObject:_identityServerURL forKey:@"identityserverurl"];
     }
     
+    if (self.pushGatewayURL)
+    {
+        [coder encodeObject:_pushGatewayURL forKey:@"pushgatewayurl"];
+    }
+    
     [coder encodeBool:_enablePushNotifications forKey:@"_enablePushNotifications"];
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
@@ -208,6 +218,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // By default, use the same address for the identity server
         [mxRestClient setIdentityServer:mxCredentials.homeServer];
     }
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
+- (void)setPushGatewayURL:(NSString *)pushGatewayURL
+{
+    _pushGatewayURL = pushGatewayURL.length ? pushGatewayURL : nil;
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
@@ -629,6 +647,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         return;
     }
     
+    // Check whether the Push Gateway URL has been configured.
+    if (!self.pushGatewayURL)
+    {
+        NSLog(@"[MXKAccount] Not setting pusher because the Push Gateway URL is undefined");
+        return;
+    }
+    
 #ifdef DEBUG
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdDev"];
 #else
@@ -645,7 +670,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
     NSDictionary *pushData = @{
-                               @"url": @"https://matrix.org/_matrix/push/v1/notify",
+                               @"url": self.pushGatewayURL,
                                };
     
     NSString *deviceLang = [NSLocale preferredLanguages][0];
