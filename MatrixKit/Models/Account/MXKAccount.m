@@ -951,7 +951,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }
         
-        [self onBackgroundSyncDone:[[NSError alloc] init]];
+        [self onBackgroundSyncDone:[NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]];
     }
 }
 
@@ -1053,7 +1053,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else
     {
         NSLog(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
-        failure([[NSError alloc] init]);
+        failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
     }
 }
 
