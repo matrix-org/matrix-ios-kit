@@ -290,12 +290,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         {
             // Close session (keep the storage).
             [self closeSession:NO];
-	    if (_enablePushNotifications)
-	    {
-		// Turn off pusher
-		[self enablePusher:NO success:nil failure:nil];
-	    }
-    
+            if (_enablePushNotifications)
+            {
+                // Turn off pusher
+                [self enablePusher:NO success:nil failure:nil];
+            }
+
         }
         else if (!mxSession)
         {
@@ -536,6 +536,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)pauseInBackgroundTask
 {
+    // Reset internal flag
+    isPauseRequested = NO;
+    
     if (mxSession && mxSession.state == MXSessionStateRunning)
     {
         _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -889,6 +892,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
         }
     }
+    else if (mxSession.state == MXSessionStatePaused)
+    {
+        isPauseRequested = NO;
+    }
 }
 
 - (void)prepareRESTClient
@@ -1001,8 +1008,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)backgroundSync:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
 {
-    isPauseRequested = NO;
-    
     // only work when the application is suspended
     
     // Check conditions before launching background sync
