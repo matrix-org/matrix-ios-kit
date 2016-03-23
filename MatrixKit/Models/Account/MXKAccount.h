@@ -61,6 +61,12 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic) NSString *identityServerURL;
 
 /**
+ The Push Gateway URL used to send event notifications to (nil by default).
+ This URL should be over HTTPS and never over HTTP.
+ */
+@property (nonatomic) NSString *pushGatewayURL;
+
+/**
  The matrix REST client used to make matrix API requests.
  */
 @property (nonatomic, readonly) MXRestClient *mxRestClient;
