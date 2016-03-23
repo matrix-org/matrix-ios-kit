@@ -65,13 +65,15 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 #pragma mark -
 
-- (void)openSessionForActiveAccounts
+- (void)prepareSessionForActiveAccounts
 {
     for (MXKAccount *account in mxAccounts)
     {
-        if (!account.isDisabled)
+        // Check whether the account is enabled. Open a new matrix session if none.
+        if (!account.isDisabled && !account.mxSession)
         {
-            // Open a new matrix session by default
+            NSLog(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
+            
             id<MXStore> store = [[_storeClass alloc] init];
             [account openSessionWithStore:store];
         }
@@ -104,6 +106,8 @@ static MXKAccountManager *sharedAccountManager = nil;
     if (openSession && !account.disabled)
     {
         // Open a new matrix session by default
+        NSLog(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
+        
         id<MXStore> store = [[_storeClass alloc] init];
         [account openSessionWithStore:store];
     }
