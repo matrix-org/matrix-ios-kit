@@ -48,18 +48,6 @@ extern NSString *const MXKAuthErrorDomain;
  You may add a delegate to be notified when a new account has been added successfully.
  */
 @interface MXKAuthenticationViewController : MXKViewController <UITextFieldDelegate, MXKAuthInputsViewDelegate>
-{
-@protected
-    /**
-     Array of flows supported by the home server and implemented by the view controller (for the current auth type).
-     */
-    NSMutableArray *supportedFlows;
-    
-    /**
-     The current selected login flow
-     */
-    MXLoginFlow *selectedFlow;
-}
 
 @property (weak, nonatomic) IBOutlet UIImageView *welcomeImageView;
 
@@ -99,9 +87,9 @@ extern NSString *const MXKAuthErrorDomain;
 @property (nonatomic) MXKAuthenticationType authType;
 
 /**
- The current selected login flow
+ The current view in which authentication inputs are displayed (`MXKAuthInputsView-inherited` instance).
  */
-@property (nonatomic) MXLoginFlow *selectedFlow;
+@property (nonatomic) MXKAuthInputsView *authInputsView;
 
 /**
  The default home server url (nil by default).
@@ -119,46 +107,46 @@ extern NSString *const MXKAuthErrorDomain;
 @property (nonatomic) id<MXKAuthenticationViewControllerDelegate> delegate;
 
 /**
- *  Returns the `UINib` object initialized for a `MXKAuthenticationViewController`.
- *
- *  @return The initialized `UINib` object or `nil` if there were errors during initialization
- *  or the nib file could not be located.
- *
- *  @discussion You may override this method to provide a customized nib. If you do,
- *  you should also override `authenticationViewController` to return your
- *  view controller loaded from your custom nib.
+ Returns the `UINib` object initialized for a `MXKAuthenticationViewController`.
+ 
+ @return The initialized `UINib` object or `nil` if there were errors during initialization
+ or the nib file could not be located.
+ 
+ @discussion You may override this method to provide a customized nib. If you do,
+ you should also override `authenticationViewController` to return your
+ view controller loaded from your custom nib.
  */
 + (UINib *)nib;
 
 /**
- *  Creates and returns a new `MXKAuthenticationViewController` object.
- *
- *  @discussion This is the designated initializer for programmatic instantiation.
- *
- *  @return An initialized `MXKAuthenticationViewController` object if successful, `nil` otherwise.
+ Creates and returns a new `MXKAuthenticationViewController` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ 
+ @return An initialized `MXKAuthenticationViewController` object if successful, `nil` otherwise.
  */
 + (instancetype)authenticationViewController;
 
 /**
- Register the MXKAuthInputsView class that will be used to display inputs for the designated flow and authentication type.
+ Register the MXKAuthInputsView class that will be used to display inputs for an authentication type.
  
- By default only 'MXKAuthInputsPasswordBasedView' class is registered for 'kMXLoginFlowTypePassword' flow and 'MXKAuthenticationTypeLogin' authentication.
+ By default the 'MXKAuthInputsPasswordBasedView' class is registered for 'MXKAuthenticationTypeLogin' authentication.
+ No class is registered for 'MXKAuthenticationTypeRegister' type.
  
- @param authInputsViewClass a MXKAuthInputsView-inherited class that will be used for the designated flow.
- @param flowType the concerned flow type.
+ @param authInputsViewClass a MXKAuthInputsView-inherited class.
  @param authType the concerned authentication type
  */
-- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forFlowType:(MXLoginFlowType)flowType andAuthType:(MXKAuthenticationType)authType;
+- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forAuthType:(MXKAuthenticationType)authType;
 
 /**
- Check login mechanism supported by the server and the application.
+ Refresh login/register mechanism supported by the server and the application.
  */
-- (void)refreshSupportedAuthFlow;
+- (void)refreshAuthenticationSession;
 
 /**
- Handle supported flows returned by the server.
+ Handle supported flows and associated information returned by the home server.
  */
-- (void)handleHomeServerFlows:(NSArray *)flows;
+- (void)handleAuthenticationSession:(MXAuthenticationSession *)authSession;
 
 /**
  Customize the MXHTTPClientOnUnrecognizedCertificate block that will be used to handle unrecognized certificate observed during authentication challenge from a server.

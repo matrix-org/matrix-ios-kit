@@ -41,12 +41,9 @@
 {
     [super awakeFromNib];
     
-    // Localize string
-    _displayNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_display_name_placeholder"];
-    
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
     
-    self.authType = MXKAuthenticationTypeLogin;
+    type = MXKAuthenticationTypeLogin;
 }
 
 - (instancetype)init
@@ -54,12 +51,25 @@
     self = [super init];
     if (self)
     {
-        self.authType = MXKAuthenticationTypeLogin;
+        type = MXKAuthenticationTypeLogin;
     }
     return self;
 }
 
 #pragma mark -
+
+- (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
+{
+    if (authSession)
+    {
+        type = authType;
+        session = authSession;
+        
+        return YES;
+    }
+    
+    return NO;
+}
 
 - (CGFloat)actualHeight
 {
@@ -72,32 +82,26 @@
     return YES;
 }
 
-- (void)setAuthType:(MXKAuthenticationType)authType
-{
-    if (authType == MXKAuthenticationTypeLogin)
-    {
-        self.displayNameTextField.hidden = YES;
-    }
-    else
-    {
-        self.displayNameTextField.hidden = NO;
-    }
-    _authType = authType;
-}
-
 - (void)dismissKeyboard
 {
-    [self.displayNameTextField resignFirstResponder];
+    
 }
 
 - (void)nextStep
 {
-    self.displayNameTextField.hidden = YES;
+    
 }
 
-- (void)resetStep
+#pragma mark -
+
+- (MXKAuthenticationType)authType
 {
-    self.authType = _authType;
+    return type;
+}
+
+- (MXAuthenticationSession*)authSession
+{
+    return session;
 }
 
 @end

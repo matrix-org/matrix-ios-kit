@@ -19,7 +19,6 @@
 #import "NSBundle+MatrixKit.h"
 
 @implementation MXKAuthInputsEmailCodeBasedView
-@dynamic displayNameTextField;
 
 + (UINib *)nib
 {
@@ -34,11 +33,43 @@
     _userLoginTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_user_id_placeholder"];
     _emailAndTokenTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_email_placeholder"];
     _promptEmailTokenLabel.text = [NSBundle mxk_localizedStringForKey:@"login_prompt_email_token"];
+    
+    _displayNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_display_name_placeholder"];
+}
+
+#pragma mark -
+
+- (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
+{
+    // Validate first the provided session
+    MXAuthenticationSession *validSession = [self validateAuthenticationSession:authSession];
+    
+    if ([super setAuthSession:validSession withAuthType:authType])
+    {
+        // Set initial layout
+        self.userLoginTextField.hidden = NO;
+        self.promptEmailTokenLabel.hidden = YES;
+        
+        if (type == MXKAuthenticationTypeLogin)
+        {
+            self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
+            self.displayNameTextField.hidden = YES;
+        }
+        else
+        {
+            self.emailAndTokenTextField.returnKeyType = UIReturnKeyNext;
+            self.displayNameTextField.hidden = NO;
+        }
+        
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (CGFloat)actualHeight
 {
-    if (self.authType == MXKAuthenticationTypeLogin)
+    if (type == MXKAuthenticationTypeLogin)
     {
         return self.displayNameTextField.frame.origin.y;
     }
@@ -54,28 +85,11 @@
     return ret;
 }
 
-- (void)setAuthType:(MXKAuthenticationType)authType
-{
-    // Set initial layout
-    self.userLoginTextField.hidden = NO;
-    self.promptEmailTokenLabel.hidden = YES;
-    
-    if (authType == MXKAuthenticationTypeLogin)
-    {
-        self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
-    }
-    else
-    {
-        self.emailAndTokenTextField.returnKeyType = UIReturnKeyNext;
-    }
-    
-    super.authType = authType;
-}
-
 - (void)dismissKeyboard
 {
     [self.userLoginTextField resignFirstResponder];
     [self.emailAndTokenTextField resignFirstResponder];
+    [self.displayNameTextField resignFirstResponder];
     
     [super dismissKeyboard];
 }
@@ -89,6 +103,8 @@
     self.promptEmailTokenLabel.hidden = NO;
     self.emailAndTokenTextField.placeholder = nil;
     self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
+    
+    self.displayNameTextField.hidden = YES;
 }
 
 #pragma mark UITextField delegate
@@ -120,6 +136,48 @@
     }
     
     return YES;
+}
+
+#pragma mark -
+
+- (MXAuthenticationSession*)validateAuthenticationSession:(MXAuthenticationSession*)authSession
+{
+    // Check whether at least one of the listed flow is supported.
+    BOOL isSupported = NO;
+    
+    for (MXLoginFlow *loginFlow in authSession.flows)
+    {
+        // Check whether flow type is defined (this type has been deprecated since C-S API v2)
+        if ([loginFlow.type isEqualToString:kMXLoginFlowTypeEmailCode])
+        {
+            isSupported = YES;
+            break;
+        }
+        else if (loginFlow.stages.count == 1 && [loginFlow.stages.firstObject isEqualToString:kMXLoginFlowTypeEmailCode])
+        {
+            isSupported = YES;
+            break;
+        }
+    }
+    
+    if (isSupported)
+    {
+        if (authSession.flows.count == 1)
+        {
+            // Return the original session.
+            return authSession;
+        }
+        else
+        {
+            // Keep only the supported flow.
+            MXAuthenticationSession *updatedAuthSession = [[MXAuthenticationSession alloc] init];
+            updatedAuthSession.session = authSession.session;
+            updatedAuthSession.params = authSession.params;
+            updatedAuthSession.flows = @[[MXLoginFlow modelFromJSON:@{@"stages":@[kMXLoginFlowTypeEmailCode]}]];
+        }
+    }
+    
+    return nil;
 }
 
 @end

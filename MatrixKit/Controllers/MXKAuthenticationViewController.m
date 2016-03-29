@@ -41,24 +41,19 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     MXHTTPOperation *mxCurrentOperation;
     
     /**
-     The current view in which auth inputs are displayed (`MXKAuthInputsView-inherited` instance).
-     */
-    MXKAuthInputsView *currentAuthInputsView;
-    
-    /**
      Reference to any opened alert view.
      */
     MXKAlert *alert;
     
     /**
-     The mapping between flow type and MXKAuthInputsView classes used when logging in.
+     The MXKAuthInputsView class or a sub-class used when logging in.
      */
-    NSMutableDictionary *loginAuthInputsViewMap;
+    Class loginAuthInputsViewClass;
     
     /**
-     The mapping between flow type and MXKAuthInputsView classes used when registering.
+     The MXKAuthInputsView class or a sub-class used when registering.
      */
-    NSMutableDictionary *registerAuthInputsViewMap;
+    Class registerAuthInputsViewClass;
     
     /**
      Customized block used to handle unrecognized certificate (nil by default).
@@ -79,7 +74,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 @end
 
 @implementation MXKAuthenticationViewController
-@synthesize selectedFlow;
 
 #pragma mark - Class methods
 
@@ -164,7 +158,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     _submitButton.enabled = NO;
     _authSwitchButton.enabled = YES;
-    supportedFlows = [NSMutableArray array];
     
     _homeServerTextField.text = _defaultHomeServerUrl;
     _identityServerTextField.text = _defaultIdentityServerUrl;
@@ -186,13 +179,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
     
-    // Initialize supported flows by defining authInputs views
-    loginAuthInputsViewMap = [NSMutableDictionary dictionary];
-    loginAuthInputsViewMap[kMXLoginFlowTypePassword] = MXKAuthInputsPasswordBasedView.class;
-//    loginAuthInputsViewMap[kMXLoginFlowTypeEmailCode] = MXKAuthInputsEmailCodeBasedView.class;
-    
-    registerAuthInputsViewMap = [NSMutableDictionary dictionary];
-    // No registration flow is supported yet
+    // Initialize authInputs view classes
+    loginAuthInputsViewClass = MXKAuthInputsPasswordBasedView.class;
+    registerAuthInputsViewClass = nil; // No registration flow is supported yet
 }
 
 - (void)dealloc
@@ -258,7 +247,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)destroy
 {
-    supportedFlows = nil;
+    self.authInputsView = nil;
+    
     if (mxCurrentOperation){
         [mxCurrentOperation cancel];
         mxCurrentOperation = nil;
@@ -266,9 +256,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     [mxRestClient close];
     mxRestClient = nil;
-    
-    loginAuthInputsViewMap = nil;
-    registerAuthInputsViewMap = nil;
 
     authenticationFallback = nil;
     cancelFallbackBarButton = nil;
@@ -278,21 +265,18 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - Class methods
 
-- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forFlowType:(MXLoginFlowType)flowType andAuthType:(MXKAuthenticationType)authType
+- (void)registerAuthInputsViewClass:(Class)authInputsViewClass forAuthType:(MXKAuthenticationType)authType
 {
-    if (flowType)
+    // Sanity check: accept only MXKAuthInputsView classes or sub-classes
+    NSParameterAssert([authInputsViewClass isSubclassOfClass:MXKAuthInputsView.class]);
+    
+    if (authType == MXKAuthenticationTypeLogin)
     {
-        // Sanity check: accept only MXKAuthInputsView classes or sub-classes
-        NSParameterAssert([authInputsViewClass isSubclassOfClass:MXKAuthInputsView.class]);
-        
-        if (authType == MXKAuthenticationTypeLogin)
-        {
-            loginAuthInputsViewMap[flowType] = authInputsViewClass;
-        }
-        else
-        {
-            registerAuthInputsViewMap[flowType] = authInputsViewClass;
-        }
+        loginAuthInputsViewClass = authInputsViewClass;
+    }
+    else
+    {
+        registerAuthInputsViewClass = authInputsViewClass;
     }
 }
 
@@ -317,8 +301,100 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     _authType = authType;
     
-    // Update supported authentication flow
-    [self refreshSupportedAuthFlow];
+    // Update supported authentication flow and associated information (defined in authentication session)
+    [self refreshAuthenticationSession];
+}
+
+- (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
+{
+    // Here a new view will be loaded, hide first subviews which depend on auth flow
+    _submitButton.hidden = YES;
+    _noFlowLabel.hidden = YES;
+    _retryButton.hidden = YES;
+    
+    if (_authInputsView)
+    {
+        [_authInputsView removeObserver:self forKeyPath:@"actualHeight"];
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+        {
+            [NSLayoutConstraint deactivateConstraints:_authInputsView.constraints];
+        }
+        else
+        {
+            [_authInputsContainerView removeConstraints:_authInputsView.constraints];
+        }
+        
+        [_authInputsView removeFromSuperview];
+        _authInputsView.delegate = nil;
+        _authInputsView = nil;
+    }
+    
+    _authInputsView = authInputsView;
+    
+    CGFloat previousInputsContainerViewHeight = _authInputContainerViewHeightConstraint.constant;
+    
+    if (_authInputsView)
+    {
+        _authInputsView.translatesAutoresizingMaskIntoConstraints = NO; // FIXME GFO useful or not?
+        [_authInputsContainerView addSubview:_authInputsView];
+        
+        _authInputsView.delegate = self;
+        
+        _submitButton.hidden = NO;
+        _authInputsView.hidden = NO;
+        
+        _authInputContainerViewHeightConstraint.constant = _authInputsView.actualHeight;
+        
+        NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_authInputsContainerView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:_authInputsView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0f
+                                                                          constant:0.0f];
+        
+        
+        NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_authInputsContainerView
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:_authInputsView
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f];
+        
+        NSLayoutConstraint* trailingConstraint = [NSLayoutConstraint constraintWithItem:_authInputsContainerView
+                                                                              attribute:NSLayoutAttributeTrailing
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:_authInputsView
+                                                                              attribute:NSLayoutAttributeTrailing
+                                                                             multiplier:1.0f
+                                                                               constant:0.0f];
+        
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+        {
+            [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, trailingConstraint]];
+        }
+        else
+        {
+            [_authInputsContainerView addConstraint:topConstraint];
+            [_authInputsContainerView addConstraint:leadingConstraint];
+            [_authInputsContainerView addConstraint:trailingConstraint];
+        }
+        
+        [_authInputsView addObserver:self forKeyPath:@"actualHeight" options:0 context:nil];
+    }
+    else
+    {
+        // No input fields are displayed
+        _authInputContainerViewHeightConstraint.constant = _authInputContainerViewMinHeightConstraint.constant;
+    }
+    
+    [self.view layoutIfNeeded];
+    
+    // Refresh content view height by considering the updated height of inputs container
+    _contentViewHeightConstraint.constant += (_authInputContainerViewHeightConstraint.constant - previousInputsContainerViewHeight);
 }
 
 - (void)setDefaultHomeServerUrl:(NSString *)defaultHomeServerUrl
@@ -347,7 +423,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)refreshSupportedAuthFlow
+- (void)refreshAuthenticationSession
 {
     // Remove reachability observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
@@ -365,10 +441,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         if (_authType == MXKAuthenticationTypeLogin)
         {
-            mxCurrentOperation = [mxRestClient getLoginFlow:^(NSDictionary *JSONResponse) {
+            mxCurrentOperation = [mxRestClient getLoginSession:^(MXAuthenticationSession* authSession) {
                 
-                NSArray *flows = [MXLoginFlow modelsFromJSON:JSONResponse[@"flows"]];
-                [self handleHomeServerFlows:flows];
+                [self handleAuthenticationSession:authSession];
                 
             } failure:^(NSError *error) {
                 
@@ -379,10 +454,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
         else
         {
-            mxCurrentOperation = [mxRestClient getRegisterFlow:^(NSDictionary *JSONResponse){
+            mxCurrentOperation = [mxRestClient getRegisterSession:^(MXAuthenticationSession* authSession){
                 
-                NSArray *flows = [MXLoginFlow modelsFromJSON:JSONResponse[@"flows"]];
-                [self handleHomeServerFlows:flows];
+                [self handleAuthenticationSession:authSession];
                 
             } failure:^(NSError *error){
                 
@@ -394,9 +468,163 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
+- (void)handleAuthenticationSession:(MXAuthenticationSession *)authSession
+{
+    [_authenticationActivityIndicator stopAnimating];
+    mxCurrentOperation = nil;
+    
+    // Check whether fallback is defined, and instantiate an auth inputs view (if a class is defined).
+    MXKAuthInputsView *authInputsView;
+    if (_authType == MXKAuthenticationTypeLogin)
+    {
+        authenticationFallback = [mxRestClient loginFallback];
+        
+        if (loginAuthInputsViewClass)
+        {
+            authInputsView = [loginAuthInputsViewClass authInputsView];
+        }
+    }
+    else
+    {
+        authenticationFallback = [mxRestClient registerFallback];
+        
+        if (registerAuthInputsViewClass)
+        {
+            authInputsView = [registerAuthInputsViewClass authInputsView];
+        }
+    }
+    
+    if (authInputsView)
+    {
+        // Apply authentication session on inputs view
+        if ([authInputsView setAuthSession:authSession withAuthType:_authType])
+        {
+            NSLog(@"[MXKAuthenticationVC] Received authentication settings are not supported");
+            authInputsView = nil;
+        }
+        // Check whether all listed flows in this authentication session are supported
+        // We suggest using the fallback page (if any), when at least one flow is not supported.
+        else if ((authInputsView.authSession.flows.count != authSession.flows.count) && authenticationFallback.length)
+        {
+            NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
+            authInputsView = nil;
+        }
+    }
+    
+    if (authInputsView)
+    {
+        // Refresh UI
+        self.authInputsView = authInputsView;
+    }
+    else
+    {
+        // Remove the potential auth inputs view
+        self.authInputsView = nil;
+        
+        // Notify user that no flow is supported
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
+        }
+        else
+        {
+            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
+        }
+        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
+        
+        if (authenticationFallback.length)
+        {
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+        }
+        else
+        {
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+        }
+        
+        _noFlowLabel.hidden = NO;
+        _retryButton.hidden = NO;
+    }
+}
+
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock
 {
     onUnrecognizedCertificateCustomBlock = onUnrecognizedCertificateBlock;
+}
+
+- (IBAction)onButtonPressed:(id)sender
+{
+    [self dismissKeyboard];
+    
+    if (sender == _submitButton)
+    {
+        if (mxRestClient)
+        {
+            // Disable user interaction to prevent multiple requests
+            [self setUserInteractionEnabled:NO];
+            [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
+            [_authenticationActivityIndicator startAnimating];
+            
+            if (_authType == MXKAuthenticationTypeLogin)
+            {
+                //                if ([selectedStages indexOfObject:kMXLoginFlowTypePassword] != NSNotFound) FIXME GFO
+                {
+                    MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)_authInputsView;
+                    
+                    NSString *user = authInputsView.userLoginTextField.text;
+                    user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                    
+                    [mxRestClient loginWithUser:user andPassword:authInputsView.passWordTextField.text
+                                        success:^(MXCredentials *credentials){
+                                            [_authenticationActivityIndicator stopAnimating];
+                                            
+                                            [self onSuccessfulLogin:credentials];
+                                        }
+                                        failure:^(NSError *error){
+                                            [self onFailureDuringAuthRequest:error];
+                                        }];
+                }
+                //                else
+                //                {
+                //                    // FIXME GFO
+                //                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                //                }
+            }
+            else
+            {
+                // FIXME
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+            }
+        }
+    }
+    else if (sender == _authSwitchButton)
+    {
+        if (_authType == MXKAuthenticationTypeLogin)
+        {
+            self.authType = MXKAuthenticationTypeRegister;
+        }
+        else
+        {
+            self.authType = MXKAuthenticationTypeLogin;
+        }
+    }
+    else if (sender == _retryButton)
+    {
+        if (authenticationFallback)
+        {
+            [self showAuthenticationFallBackView:authenticationFallback];
+        }
+        else
+        {
+            [self refreshAuthenticationSession];
+        }
+    }
+    else if (sender == _cancelAuthFallbackButton)
+    {
+        // Hide fallback webview
+        [self hideRegistrationFallbackView];
+    }
 }
 
 #pragma mark - Privates
@@ -477,246 +705,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setUserInteractionEnabled:(BOOL)isEnabled
 {
-    _submitButton.enabled = (isEnabled && currentAuthInputsView.areAllRequiredFieldsFilled);
+    _submitButton.enabled = (isEnabled && _authInputsView.areAllRequiredFieldsFilled);
     _authSwitchButton.enabled = isEnabled;
     
     _homeServerTextField.enabled = isEnabled;
     _identityServerTextField.enabled = isEnabled;
-}
-
-- (BOOL)isImplementedFlowType:(MXLoginFlowType)flowType forAuthType:(MXKAuthenticationType)authType
-{
-    // Sanity check
-    if (flowType)
-    {
-        NSDictionary *authInputsViewMap;
-        
-        if (authType == MXKAuthenticationTypeLogin)
-        {
-            authInputsViewMap = loginAuthInputsViewMap;
-        }
-        else
-        {
-            authInputsViewMap = registerAuthInputsViewMap;
-        }
-        
-        // A flow is supported only if an authInputsView class is registered.
-        return (authInputsViewMap[flowType] != nil);
-    }
-    
-    return NO;
-}
-
-- (void)handleHomeServerFlows:(NSArray *)flows
-{
-    [_authenticationActivityIndicator stopAnimating];
-    mxCurrentOperation = nil;
-    
-    // Check whether fallback is defined
-    if (_authType == MXKAuthenticationTypeLogin)
-    {
-        authenticationFallback = [mxRestClient loginFallback];
-    }
-    else
-    {
-        authenticationFallback = [mxRestClient registerFallback];
-    }
-    
-    // List supported flows
-    [supportedFlows removeAllObjects];
-    
-    for (MXLoginFlow* flow in flows)
-    {
-        // Check whether flow type is defined (this type has been deprecated since C-S API v2)
-        if (flow.type)
-        {
-            if ([self isImplementedFlowType:flow.type forAuthType:_authType])
-            {
-                // Check here all stages
-                BOOL isSupported = YES;
-                if (flow.stages.count)
-                {
-                    for (NSString *stage in flow.stages)
-                    {
-                        if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
-                        {
-                            NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), stage);
-                            isSupported = NO;
-                            break;
-                        }
-                    }
-                }
-                
-                if (isSupported)
-                {
-                    [supportedFlows addObject:flow];
-                }
-            }
-            else
-            {
-                NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), flow.type);
-            }
-        }
-        else
-        {
-            // Check here all stages
-            BOOL isSupported = YES;
-            if (flow.stages.count)
-            {
-                for (NSString *stage in flow.stages)
-                {
-                    if ([self isImplementedFlowType:stage forAuthType:_authType] == NO)
-                    {
-                        NSLog(@"[MXKAuthenticationVC] %@: %@ stage is not supported.", (_authType == MXKAuthenticationTypeLogin ? @"login" : @"register"), stage);
-                        isSupported = NO;
-                        break;
-                    }
-                }
-            }
-            
-            if (isSupported)
-            {
-                [supportedFlows addObject:flow];
-            }
-        }
-    }
-    
-    // We will suggest using the fallback page (if any), when at least one flow is not supported.
-    if ((supportedFlows.count != flows.count) && authenticationFallback.length)
-    {
-        NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
-
-        // Remove the potential auth inputs view
-        self.selectedFlow = nil;
-    }
-    else if (supportedFlows.count)
-    {
-        // FIXME display supported flows
-        // Currently we select the first one
-        self.selectedFlow = [supportedFlows firstObject];
-    }
-    else
-    {
-        // Remove the potential auth inputs view
-        self.selectedFlow = nil;
-    }
-    
-    if (!self.selectedFlow)
-    {
-        // Notify user that no flow is supported
-        if (_authType == MXKAuthenticationTypeLogin)
-        {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
-        }
-        else
-        {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
-        }
-        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
-        
-        if (authenticationFallback.length)
-        {
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
-        }
-        else
-        {
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
-        }
-        
-        _noFlowLabel.hidden = NO;
-        _retryButton.hidden = NO;
-    }
-}
-
-- (void)setSelectedFlow:(MXLoginFlow *)inSelectedFlow
-{
-    selectedFlow = inSelectedFlow;
-    
-    // C-S API v2: Consider the first flow from stages as current type
-    if (selectedFlow.type == nil && selectedFlow.stages.count)
-    {
-        selectedFlow.type = selectedFlow.stages.firstObject;
-    }
-    
-    // Retrieve the corresponding auth inputs view
-    NSDictionary *authInputsViewMap;
-    if (self.authType == MXKAuthenticationTypeLogin)
-    {
-        authInputsViewMap = loginAuthInputsViewMap;
-    }
-    else
-    {
-        authInputsViewMap = registerAuthInputsViewMap;
-    }
-    
-    Class class = authInputsViewMap[selectedFlow.type];
-    
-    // Keep the current view if it is still relevant
-    if (currentAuthInputsView && [currentAuthInputsView isKindOfClass:class])
-    {
-        return;
-    }
-    
-    // Here a new view will be loaded, hide first subviews which depend on auth flow
-    _submitButton.hidden = YES;
-    _noFlowLabel.hidden = YES;
-    _retryButton.hidden = YES;
-    
-    [currentAuthInputsView removeFromSuperview];
-    currentAuthInputsView.delegate = nil;
-    currentAuthInputsView = nil;
-    
-    if (class)
-    {
-        currentAuthInputsView = [class authInputsView];
-    }
-    
-    CGFloat previousInputsContainerViewHeight = _authInputContainerViewHeightConstraint.constant;
-    
-    if (currentAuthInputsView)
-    {
-        [_authInputsContainerView addSubview:currentAuthInputsView];
-        
-        currentAuthInputsView.delegate = self;
-        _submitButton.hidden = NO;
-        currentAuthInputsView.hidden = NO;
-        currentAuthInputsView.authType = _authType;
-        _authInputContainerViewHeightConstraint.constant = currentAuthInputsView.actualHeight;
-        
-        [_authInputsContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_authInputsContainerView
-                                                                             attribute:NSLayoutAttributeTop
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:currentAuthInputsView
-                                                                             attribute:NSLayoutAttributeTop
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-        [_authInputsContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_authInputsContainerView
-                                                                             attribute:NSLayoutAttributeLeading
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:currentAuthInputsView
-                                                                             attribute:NSLayoutAttributeLeading
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-        [_authInputsContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_authInputsContainerView
-                                                                             attribute:NSLayoutAttributeTrailing
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:currentAuthInputsView
-                                                                             attribute:NSLayoutAttributeTrailing
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f]];
-    }
-    else
-    {
-        // No input fields are displayed
-        _authInputContainerViewHeightConstraint.constant = _authInputContainerViewMinHeightConstraint.constant;
-    }
-    
-    [self.view layoutIfNeeded];
-    
-    // Refresh content view height by considering the updated height of inputs container
-    _contentViewHeightConstraint.constant += (_authInputContainerViewHeightConstraint.constant - previousInputsContainerViewHeight);
 }
 
 - (void)onFailureDuringMXOperation:(NSError*)error
@@ -757,22 +750,22 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             // Send a new request in 2 sec
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self refreshSupportedAuthFlow];
+                [self refreshAuthenticationSession];
             });
         }
         else
         {
             // Remove the potential auth inputs view
-            self.selectedFlow = nil;
+            self.authInputsView = nil;
         }
     }
     else
     {
         // Remove the potential auth inputs view
-        self.selectedFlow = nil;
+        self.authInputsView = nil;
     }
     
-    if (!selectedFlow)
+    if (!_authInputsView)
     {
         // Display failure reason
         _noFlowLabel.hidden = NO;
@@ -795,86 +788,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if (status == AFNetworkReachabilityStatusReachableViaWiFi || status == AFNetworkReachabilityStatusReachableViaWWAN)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self refreshSupportedAuthFlow];
+            [self refreshAuthenticationSession];
         });
     }
     else if (status == AFNetworkReachabilityStatusNotReachable)
     {
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
-    }
-}
-
-- (IBAction)onButtonPressed:(id)sender
-{
-    [self dismissKeyboard];
-    
-    if (sender == _submitButton)
-    {
-        if (mxRestClient)
-        {
-            // Disable user interaction to prevent multiple requests
-            [self setUserInteractionEnabled:NO];
-            [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
-            [_authenticationActivityIndicator startAnimating];
-            
-            if (_authType == MXKAuthenticationTypeLogin)
-            {
-                if ([self.selectedFlow.type isEqualToString:kMXLoginFlowTypePassword])
-                {
-                    MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)currentAuthInputsView;
-                    
-                    NSString *user = authInputsView.userLoginTextField.text;
-                    user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-
-                    [mxRestClient loginWithUser:user andPassword:authInputsView.passWordTextField.text
-                                        success:^(MXCredentials *credentials){
-                                            [_authenticationActivityIndicator stopAnimating];
-                                            
-                                            [self onSuccessfulLogin:credentials];
-                                        }
-                                        failure:^(NSError *error){
-                                            [self onFailureDuringAuthRequest:error];
-                                        }];
-                }
-                else
-                {
-                    // FIXME
-                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
-                }
-            }
-            else
-            {
-                // FIXME
-                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
-            }
-        }
-    }
-    else if (sender == _authSwitchButton)
-    {
-        if (_authType == MXKAuthenticationTypeLogin)
-        {
-            self.authType = MXKAuthenticationTypeRegister;
-        }
-        else
-        {
-            self.authType = MXKAuthenticationTypeLogin;
-        }
-    }
-    else if (sender == _retryButton)
-    {
-        if (authenticationFallback)
-        {
-            [self showAuthenticationFallBackView:authenticationFallback];
-        }
-        else
-        {
-            [self refreshSupportedAuthFlow];
-        }
-    }
-    else if (sender == _cancelAuthFallbackButton)
-    {
-        // Hide fallback webview
-        [self hideRegistrationFallbackView];
     }
 }
 
@@ -977,7 +896,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 - (void)dismissKeyboard
 {
     // Hide the keyboard
-    [currentAuthInputsView dismissKeyboard];
+    [_authInputsView dismissKeyboard];
     [_homeServerTextField resignFirstResponder];
     [_identityServerTextField resignFirstResponder];
 }
@@ -986,7 +905,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)onTextFieldChange:(NSNotification *)notif
 {
-    _submitButton.enabled = currentAuthInputsView.areAllRequiredFieldsFilled;
+    _submitButton.enabled = _authInputsView.areAllRequiredFieldsFilled;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
@@ -1022,7 +941,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         [self updateRESTClient];
         
         // Refresh UI
-        [self refreshSupportedAuthFlow];
+        [self refreshAuthenticationSession];
     }
     else if (textField == _identityServerTextField)
     {
@@ -1104,6 +1023,22 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [_authFallbackWebView stopLoading];
     _authenticationScrollView.hidden = NO;
     _authFallbackContentView.hidden = YES;
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([@"actualHeight" isEqualToString:keyPath])
+    {
+        // Refresh the height of the auth inputs view container.
+        _authInputContainerViewHeightConstraint.constant = _authInputsView.actualHeight;
+        [self.view setNeedsUpdateConstraints];
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 @end

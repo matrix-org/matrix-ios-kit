@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import <MatrixSDK/MatrixSDK.h>
 
 /**
  Authentication type: register or login
@@ -43,11 +43,18 @@ typedef enum {
  `MXKAuthInputsView` is a base class to handle authentication inputs.
  */
 @interface MXKAuthInputsView : UIView <UITextFieldDelegate>
-
-/**
- The authentication type (`MXKAuthenticationTypeLogin` by default).
- */
-@property (nonatomic) MXKAuthenticationType authType;
+{
+@protected
+    /**
+     The authentication type (`MXKAuthenticationTypeLogin` by default).
+     */
+    MXKAuthenticationType type;
+    
+    /**
+     The authentication session (nil by default).
+     */
+    MXAuthenticationSession *session;
+}
 
 /**
  The view delegate.
@@ -55,29 +62,47 @@ typedef enum {
 @property (nonatomic) id <MXKAuthInputsViewDelegate> delegate;
 
 /**
- The text field related to the display name (nil by default).
- This item is optional, it may be displayed in case of registration.
+ The current authentication type (`MXKAuthenticationTypeLogin` by default).
  */
-@property (weak, nonatomic) UITextField *displayNameTextField;
+@property (nonatomic, readonly) MXKAuthenticationType authType;
 
+/**
+ The current authentication session if any.
+ */
+@property (nonatomic, readonly) MXAuthenticationSession *authSession;
+
+/**
+ The layout constraint defined on the view height.
+ */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;
 
 /**
- *  Returns the `UINib` object initialized for the auth inputs view.
- *
- *  @return The initialized `UINib` object or `nil` if there were errors during
- *  initialization or the nib file could not be located.
+ Returns the `UINib` object initialized for the auth inputs view.
+ 
+ @return The initialized `UINib` object or `nil` if there were errors during
+ initialization or the nib file could not be located.
  */
 + (UINib *)nib;
 
 /**
- *  Creates and returns a new `MXKAuthInputsView` object.
- *
- *  @discussion This is the designated initializer for programmatic instantiation.
- *
- *  @return An initialized `MXKAuthInputsView` object if successful, `nil` otherwise.
+ Creates and returns a new `MXKAuthInputsView` object.
+ 
+ @discussion This is the designated initializer for programmatic instantiation.
+ 
+ @return An initialized `MXKAuthInputsView` object if successful, `nil` otherwise.
  */
 + (instancetype)authInputsView;
+
+/**
+ Finalize the authentication inputs view with a session and a type.
+ 
+ @discussion You may override this method to check/update the flows listed in the provided authentication session.
+ 
+ @param authSession the authentication session returned by the homeserver.
+ @param authType the authentication type (see 'MXKAuthenticationType').
+ @return YES if the provided session and type are supported by the MXKAuthInputsView-inherited class. Note the unsupported flows should be here removed from the stored authentication session (see the resulting session in the property named 'authSession').
+ */
+- (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
 
 /**
  The actual view height. This height takes into account shown/hidden fields.
@@ -99,8 +124,4 @@ typedef enum {
  */
 - (void)nextStep;
 
-/**
- Return in initial step of the authentication flow.
- */
-- (void)resetStep;
 @end
