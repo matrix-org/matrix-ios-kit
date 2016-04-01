@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -57,7 +57,6 @@
                 <constraint firstItem="FVM-ec-tja" firstAttribute="top" secondItem="mbS-mV-L86" secondAttribute="bottom" constant="8" id="0BV-8c-ZVg"/>
                 <constraint firstAttribute="height" constant="122" id="1nP-RR-5GK"/>
                 <constraint firstAttribute="centerX" secondItem="mbS-mV-L86" secondAttribute="centerX" id="2R2-Du-o97"/>
-                <constraint firstAttribute="bottom" secondItem="FVM-ec-tja" secondAttribute="bottom" constant="8" id="7DZ-Wm-ps6"/>
                 <constraint firstItem="oen-Yq-xJw" firstAttribute="top" secondItem="Nmn-Ry-t32" secondAttribute="top" constant="8" id="BkW-Np-qB3"/>
                 <constraint firstItem="mbS-mV-L86" firstAttribute="top" secondItem="oen-Yq-xJw" secondAttribute="bottom" constant="8" id="TRx-gf-Afp"/>
                 <constraint firstAttribute="centerX" secondItem="FVM-ec-tja" secondAttribute="centerX" id="c9K-6H-ufd"/>
