@@ -38,6 +38,16 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString *address;
 
 /**
+ The current client secret key used during email validation.
+ */
+@property (nonatomic, readonly) NSString *clientSecret;
+
+/**
+ The current session identifier during email validation.
+ */
+@property (nonatomic, readonly) NSString *sid;
+
+/**
  The id of the user on Matrix.
  nil if unknown or not yet resolved.
  */
