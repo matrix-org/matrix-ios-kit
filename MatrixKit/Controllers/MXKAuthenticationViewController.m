@@ -779,7 +779,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         }
         else
         {
-            // C-S API v2: The completed stages should be available in response data in case of unauthorized request.
+            // The completed stages should be available in response data in case of unauthorized request.
             NSDictionary *JSONResponse = nil;
             if (error.userInfo[MXHTTPClientErrorResponseDataKey])
             {
@@ -849,8 +849,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
     alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                               {}];
+    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {}];
     [alert showInViewController:self];
     
     // Handle specific error code here

@@ -139,7 +139,7 @@
     
     for (MXLoginFlow *loginFlow in authSession.flows)
     {
-        // Check whether flow type is defined (this type has been deprecated since C-S API v2)
+        // Check whether flow type is defined
         if ([loginFlow.type isEqualToString:kMXLoginFlowTypeEmailCode])
         {
             isSupported = YES;
