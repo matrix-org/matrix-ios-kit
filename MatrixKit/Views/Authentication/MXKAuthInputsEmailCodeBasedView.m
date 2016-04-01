@@ -54,26 +54,21 @@
         {
             self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
             self.displayNameTextField.hidden = YES;
+            
+            self.viewHeightConstraint.constant = self.displayNameTextField.frame.origin.y;
         }
         else
         {
             self.emailAndTokenTextField.returnKeyType = UIReturnKeyNext;
             self.displayNameTextField.hidden = NO;
+            
+            self.viewHeightConstraint.constant = 122;
         }
         
         return YES;
     }
     
     return NO;
-}
-
-- (CGFloat)actualHeight
-{
-    if (type == MXKAuthenticationTypeLogin)
-    {
-        return self.displayNameTextField.frame.origin.y;
-    }
-    return super.actualHeight;
 }
 
 - (BOOL)areAllRequiredFieldsFilled
@@ -116,11 +111,8 @@
         // "Done" key has been pressed
         [textField resignFirstResponder];
         
-        if (self.delegate && [self.delegate respondsToSelector:@selector(authInputsDoneKeyHasBeenPressed:)])
-        {
-            // Launch authentication now
-            [self.delegate authInputsDoneKeyHasBeenPressed:self];
-        }
+        // Launch authentication now
+        [self.delegate authInputsViewDidPressDoneKey:self];
     }
     else
     {

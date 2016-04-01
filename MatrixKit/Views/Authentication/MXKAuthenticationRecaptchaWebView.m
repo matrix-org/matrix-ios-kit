@@ -20,7 +20,7 @@ NSString *kMXKRecaptchaHTMLString = @"<html> \
 <head> \
 <script type=\"text/javascript\"> \
 var verifyCallback = function(response) { \
-    <!-- Generic method to make a bridge between JS and the UIWebView --> \
+    /* Generic method to make a bridge between JS and the UIWebView*/ \
     var iframe = document.createElement('iframe'); \
     iframe.setAttribute('src', 'js:' + JSON.stringify({'action': 'verifyCallback', 'response': response})); \
  \
@@ -31,18 +31,15 @@ var verifyCallback = function(response) { \
 var onloadCallback = function() { \
     grecaptcha.render('recaptcha_widget', { \
         'sitekey' : '%@', \
-        'callback': verifyCallback() \
+        'callback': verifyCallback \
     }); \
 }; \
 </script> \
 </head> \
 <body> \
-<form action=\"?\" method=\"POST\"> \
-<div id=\"recaptcha_widget\"></div> \
-</form> \
-<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit\" \
-async defer> \
-</script> \
+    <div id=\"recaptcha_widget\"></div> \
+    <script src=\"https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit\" async defer> \
+    </script> \
 </body> \
 </html>";
 
@@ -78,15 +75,10 @@ async defer> \
     activityIndicator.center = self.center;
     [self addSubview:activityIndicator];
     [activityIndicator startAnimating];
-
-//    // Delete cookies to launch login process from scratch
-//    for(NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
-//    {
-//        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
-//    }
     
+    NSString *htmlString = [NSString stringWithFormat:kMXKRecaptchaHTMLString, siteKey];
     
-    [self loadHTMLString:kMXKRecaptchaHTMLString baseURL:[NSURL URLWithString:homeServer]];
+    [self loadHTMLString:htmlString baseURL:[NSURL URLWithString:homeServer]];
 }
 
 -(void)webViewDidFinishLoad:(UIWebView *)webView

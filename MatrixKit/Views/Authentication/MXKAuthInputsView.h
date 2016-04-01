@@ -16,6 +16,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKAlert.h"
+
 /**
  Authentication type: register or login
  */
@@ -30,13 +32,26 @@ typedef enum {
  `MXKAuthInputsView` delegate
  */
 @protocol MXKAuthInputsViewDelegate <NSObject>
-@optional
+/**
+ Tells the delegate that a MXKAlert must be presented.
+ 
+ @param authInputsView the authentication inputs view.
+ @param alert the alert to present.
+ */
+- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentMXKAlert:(MXKAlert*)alert;
+
 /**
  For some input fields, the return key of the keyboard is defined as `Done` key.
- By this method, the delegate is notified when this key is pressed. The set of inputs may be considered to
- process the current authentication step.
+ By this method, the delegate is notified when this key is pressed.
  */
-- (void)authInputsDoneKeyHasBeenPressed:(MXKAuthInputsView *)mxkAuthInputsView;
+- (void)authInputsViewDidPressDoneKey:(MXKAuthInputsView *)authInputsView;
+
+@optional
+
+/**
+ The matrix REST Client used to validate potential email address.
+ */
+- (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView;
 @end
 
 /**
@@ -53,7 +68,12 @@ typedef enum {
     /**
      The authentication session (nil by default).
      */
-    MXAuthenticationSession *session;
+    MXAuthenticationSession *currentSession;
+    
+    /**
+     Alert used to display inputs error.
+     */
+    MXKAlert *inputsAlert;
 }
 
 /**
@@ -72,7 +92,7 @@ typedef enum {
 @property (nonatomic, readonly) MXAuthenticationSession *authSession;
 
 /**
- The layout constraint defined on the view height.
+ The layout constraint defined on the view height. This height takes into account shown/hidden fields.
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;
 
@@ -105,14 +125,31 @@ typedef enum {
 - (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
 
 /**
- The actual view height. This height takes into account shown/hidden fields.
+ Prepare the set of the inputs in order to launch an authentication process.
+ 
+ @param callback the block called when the parameters are prepared. The resulting parameter dictionary is nil
+ if something fails (for example when a parameter or a required input is missing).
  */
-- (CGFloat)actualHeight;
+- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback;
+
+/**
+ Update the current authentication session by providing the list of successful stages.
+ 
+ @param completedStages the list of stages the client has completed successfully. This is an array of MXLoginFlowType.
+ @param callback the block called when the parameters have been updated for the next stage. The resulting parameter dictionary is nil
+ if something fails (for example when a parameter or a required input is missing).
+ */
+- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback;
 
 /**
  YES when all required fields are filled.
  */
 - (BOOL)areAllRequiredFieldsFilled;
+
+/**
+ Tell whether the email field is empty while the email binding is supported.
+ */
+- (BOOL)shouldPromptUserForEmailAddress;
 
 /**
  Force dismiss keyboard
@@ -123,5 +160,10 @@ typedef enum {
  Switch in next authentication flow step by updating the layout.
  */
 - (void)nextStep;
+
+/**
+ Dispose any resources and listener.
+ */
+- (void)destroy;
 
 @end

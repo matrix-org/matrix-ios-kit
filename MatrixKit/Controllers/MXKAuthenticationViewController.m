@@ -41,11 +41,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     MXHTTPOperation *mxCurrentOperation;
     
     /**
-     Reference to any opened alert view.
-     */
-    MXKAlert *alert;
-    
-    /**
      The MXKAuthInputsView class or a sub-class used when logging in.
      */
     Class loginAuthInputsViewClass;
@@ -299,7 +294,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
     }
     
-    _authType = authType;
+    
+    if (_authType != authType)
+    {
+        _authType = authType;
+        
+        // Remove the current inputs view
+        self.authInputsView = nil;
+        
+        [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
+        [_authenticationActivityIndicator startAnimating];
+    }
+    
+    // Restore user interaction
+    self.userInteractionEnabled = YES;
     
     // Update supported authentication flow and associated information (defined in authentication session)
     [self refreshAuthenticationSession];
@@ -314,7 +322,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (_authInputsView)
     {
-        [_authInputsView removeObserver:self forKeyPath:@"actualHeight"];
+        [_authInputsView removeObserver:self forKeyPath:@"viewHeightConstraint.constant"];
         
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
         {
@@ -327,6 +335,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         
         [_authInputsView removeFromSuperview];
         _authInputsView.delegate = nil;
+        [_authInputsView destroy];
         _authInputsView = nil;
     }
     
@@ -336,7 +345,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (_authInputsView)
     {
-        _authInputsView.translatesAutoresizingMaskIntoConstraints = NO; // FIXME GFO useful or not?
+        _authInputsView.translatesAutoresizingMaskIntoConstraints = NO;
         [_authInputsContainerView addSubview:_authInputsView];
         
         _authInputsView.delegate = self;
@@ -344,7 +353,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         _submitButton.hidden = NO;
         _authInputsView.hidden = NO;
         
-        _authInputContainerViewHeightConstraint.constant = _authInputsView.actualHeight;
+        _authInputContainerViewHeightConstraint.constant = _authInputsView.viewHeightConstraint.constant;
         
         NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_authInputsContainerView
                                                                          attribute:NSLayoutAttributeTop
@@ -383,7 +392,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             [_authInputsContainerView addConstraint:trailingConstraint];
         }
         
-        [_authInputsView addObserver:self forKeyPath:@"actualHeight" options:0 context:nil];
+        [_authInputsView addObserver:self forKeyPath:@"viewHeightConstraint.constant" options:0 context:nil];
     }
     else
     {
@@ -423,6 +432,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
+- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled
+{
+    _submitButton.enabled = (userInteractionEnabled && _authInputsView.areAllRequiredFieldsFilled);
+    _authSwitchButton.enabled = userInteractionEnabled;
+    
+    _homeServerTextField.enabled = userInteractionEnabled;
+    _identityServerTextField.enabled = userInteractionEnabled;
+    
+    _userInteractionEnabled = userInteractionEnabled;
+}
+
 - (void)refreshAuthenticationSession
 {
     // Remove reachability observer
@@ -431,8 +451,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Cancel potential request in progress
     [mxCurrentOperation cancel];
     mxCurrentOperation = nil;
-    
-    [_authenticationActivityIndicator stopAnimating];
     
     // Reset potential authentication fallback url
     authenticationFallback = nil;
@@ -470,8 +488,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)handleAuthenticationSession:(MXAuthenticationSession *)authSession
 {
-    [_authenticationActivityIndicator stopAnimating];
     mxCurrentOperation = nil;
+    
+    [_authenticationActivityIndicator stopAnimating];
     
     // Check whether fallback is defined, and instantiate an auth inputs view (if a class is defined).
     MXKAuthInputsView *authInputsView;
@@ -497,7 +516,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if (authInputsView)
     {
         // Apply authentication session on inputs view
-        if ([authInputsView setAuthSession:authSession withAuthType:_authType])
+        if ([authInputsView setAuthSession:authSession withAuthType:_authType] == NO)
         {
             NSLog(@"[MXKAuthenticationVC] Received authentication settings are not supported");
             authInputsView = nil;
@@ -559,44 +578,59 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (sender == _submitButton)
     {
-        if (mxRestClient)
-        {
-            // Disable user interaction to prevent multiple requests
-            [self setUserInteractionEnabled:NO];
-            [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
-            [_authenticationActivityIndicator startAnimating];
+        // Disable user interaction to prevent multiple requests
+        self.userInteractionEnabled = NO;
+        [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
+        
+        // Launch authentication by preparing parameters dict
+        [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
             
-            if (_authType == MXKAuthenticationTypeLogin)
+            if (parameters && mxRestClient)
             {
-                //                if ([selectedStages indexOfObject:kMXLoginFlowTypePassword] != NSNotFound) FIXME GFO
+                [_authenticationActivityIndicator startAnimating];
+                
+                if (_authType == MXKAuthenticationTypeLogin)
                 {
-                    MXKAuthInputsPasswordBasedView *authInputsView = (MXKAuthInputsPasswordBasedView*)_authInputsView;
-                    
-                    NSString *user = authInputsView.userLoginTextField.text;
-                    user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-                    
-                    [mxRestClient loginWithUser:user andPassword:authInputsView.passWordTextField.text
-                                        success:^(MXCredentials *credentials){
-                                            [_authenticationActivityIndicator stopAnimating];
-                                            
-                                            [self onSuccessfulLogin:credentials];
-                                        }
-                                        failure:^(NSError *error){
-                                            [self onFailureDuringAuthRequest:error];
-                                        }];
+                    mxCurrentOperation = [mxRestClient login:parameters success:^(NSDictionary *JSONResponse) {
+                        
+                        MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
+                        
+                        // Sanity check
+                        if (!credentials.userId || !credentials.accessToken)
+                        {
+                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                        }
+                        else
+                        {
+                            NSLog(@"[MXKAuthenticationVC] Login process succeeded");
+                            
+                            // Workaround: HS does not return the right URL. Use the one we used to make the request
+                            credentials.homeServer = mxRestClient.homeserver;
+                            // Report the certificate trusted by user (if any)
+                            credentials.allowedCertificate = mxRestClient.allowedCertificate;
+                            
+                            [self onSuccessfulLogin:credentials];
+                        }
+                        
+                    } failure:^(NSError *error) {
+                        
+                        [self onFailureDuringAuthRequest:error];
+                        
+                    }];
                 }
-                //                else
-                //                {
-                //                    // FIXME GFO
-                //                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
-                //                }
+                else
+                {
+                    [self registerWithParameters:parameters];
+                }
             }
             else
             {
-                // FIXME
+                NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                
                 [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
             }
-        }
+            
+        }];
     }
     else if (sender == _authSwitchButton)
     {
@@ -703,26 +737,108 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)setUserInteractionEnabled:(BOOL)isEnabled
+- (void)registerWithParameters:(NSDictionary*)parameters
 {
-    _submitButton.enabled = (isEnabled && _authInputsView.areAllRequiredFieldsFilled);
-    _authSwitchButton.enabled = isEnabled;
-    
-    _homeServerTextField.enabled = isEnabled;
-    _identityServerTextField.enabled = isEnabled;
+    mxCurrentOperation = [mxRestClient registerWithParameters:parameters success:^(NSDictionary *JSONResponse) {
+        
+        MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
+        
+        // Sanity check
+        if (!credentials.userId || !credentials.accessToken)
+        {
+            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+        }
+        else
+        {
+            NSLog(@"[MXKAuthenticationVC] Registration succeeded");
+            // Workaround: HS does not return the right URL. Use the one we used to make the request
+            credentials.homeServer = mxRestClient.homeserver;
+            // Report the certificate trusted by user (if any)
+            credentials.allowedCertificate = mxRestClient.allowedCertificate;
+            
+            [self onSuccessfulLogin:credentials];
+        }
+        
+    } failure:^(NSError *error) {
+        
+        mxCurrentOperation = nil;
+        
+        // Check whether the authentication is pending (for example waiting for email validation)
+        MXError *mxError = [[MXError alloc] initWithNSError:error];
+        if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnauthorized])
+        {
+            NSLog(@"[MXKAuthenticationVC] Wait for email validation");
+            
+            // Loop
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                
+                NSLog(@"[MXKAuthenticationVC] Retry registration");
+                [self registerWithParameters:parameters];
+                
+            });
+        }
+        else
+        {
+            // C-S API v2: The completed stages should be available in response data in case of unauthorized request.
+            NSDictionary *JSONResponse = nil;
+            if (error.userInfo[MXHTTPClientErrorResponseDataKey])
+            {
+                JSONResponse = error.userInfo[MXHTTPClientErrorResponseDataKey];
+            }
+            
+            if (JSONResponse)
+            {
+                MXAuthenticationSession *authSession = [MXAuthenticationSession modelFromJSON:JSONResponse];
+                
+                if ([authSession.session isEqualToString:self.authInputsView.authSession.session])
+                {
+                    if (authSession.completed)
+                    {
+                        [_authenticationActivityIndicator stopAnimating];
+                        
+                        [self.authInputsView updateAuthSessionWithCompletedStages:authSession.completed didUpdateParameters:^(NSDictionary *parameters) {
+                            
+                            if (parameters)
+                            {
+                                NSLog(@"[MXKAuthenticationVC] Pursue registration");
+                                
+                                [_authenticationActivityIndicator startAnimating];
+                                [self registerWithParameters:parameters];
+                            }
+                            else
+                            {
+                                NSLog(@"[MXKAuthenticationVC] Failed to update parameters");
+                                
+                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                            }
+                            
+                        }];
+                        
+                        return;
+                    }
+                }
+                
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+            }
+            else
+            {
+                [self onFailureDuringAuthRequest:error];
+            }
+        }
+    }];
 }
 
 - (void)onFailureDuringMXOperation:(NSError*)error
 {
     mxCurrentOperation = nil;
     
+    [_authenticationActivityIndicator stopAnimating];
+    
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
     {
         // Ignore this error
         return;
     }
-    
-    [_authenticationActivityIndicator stopAnimating];
     
     // Alert user
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
@@ -799,8 +915,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)onFailureDuringAuthRequest:(NSError *)error
 {
+    mxCurrentOperation = nil;
     [_authenticationActivityIndicator stopAnimating];
-    [self setUserInteractionEnabled:YES];
+    self.userInteractionEnabled = YES;
     
     NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
     
@@ -816,31 +933,31 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         
         if (errCode)
         {
-            if ([errCode isEqualToString:@"M_FORBIDDEN"])
+            if ([errCode isEqualToString:kMXErrCodeStringForbidden])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
             }
-            else if ([errCode isEqualToString:@"M_UNKNOWN_TOKEN"])
+            else if ([errCode isEqualToString:kMXErrCodeStringUnknownToken])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
             }
-            else if ([errCode isEqualToString:@"M_BAD_JSON"])
+            else if ([errCode isEqualToString:kMXErrCodeStringBadJSON])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
             }
-            else if ([errCode isEqualToString:@"M_NOT_JSON"])
+            else if ([errCode isEqualToString:kMXErrCodeStringNotJSON])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
             }
-            else if ([errCode isEqualToString:@"M_LIMIT_EXCEEDED"])
+            else if ([errCode isEqualToString:kMXErrCodeStringLimitExceeded])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
             }
-            else if ([errCode isEqualToString:@"M_USER_IN_USE"])
+            else if ([errCode isEqualToString:kMXErrCodeStringUserInUse])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
             }
-            else if ([errCode isEqualToString:@"M_LOGIN_EMAIL_URL_NOT_YET"])
+            else if ([errCode isEqualToString:kMXErrCodeStringLoginEmailURLNotYet])
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
             }
@@ -860,10 +977,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
      {}];
     [alert showInViewController:self];
+    
+    // Update authentication inputs view to return in initial step
+    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
 
 - (void)onSuccessfulLogin:(MXCredentials*)credentials
 {
+    mxCurrentOperation = nil;
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+    
     // Sanity check: check whether the user is not already logged in with this id
     if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
     {
@@ -921,8 +1045,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             [mxCurrentOperation cancel];
             mxCurrentOperation = nil;
         }
-        
-        [_authenticationActivityIndicator stopAnimating];
     }
 
     return YES;
@@ -971,13 +1093,24 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - AuthInputsViewDelegate delegate
 
-- (void)authInputsDoneKeyHasBeenPressed:(MXKAuthInputsView *)authInputsView
+- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentMXKAlert:(MXKAlert*)inputsAlert
+{
+    [self dismissKeyboard];
+    [inputsAlert showInViewController:self];
+}
+
+- (void)authInputsViewDidPressDoneKey:(MXKAuthInputsView *)authInputsView
 {
     if (_submitButton.isEnabled)
     {
         // Launch authentication now
         [self onButtonPressed:_submitButton];
     }
+}
+
+- (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView
+{
+    return mxRestClient;
 }
 
 #pragma mark - Authentication Fallback
@@ -1029,11 +1162,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([@"actualHeight" isEqualToString:keyPath])
+    if ([@"viewHeightConstraint.constant" isEqualToString:keyPath])
     {
         // Refresh the height of the auth inputs view container.
-        _authInputContainerViewHeightConstraint.constant = _authInputsView.actualHeight;
-        [self.view setNeedsUpdateConstraints];
+        CGFloat previousInputsContainerViewHeight = _authInputContainerViewHeightConstraint.constant;
+        _authInputContainerViewHeightConstraint.constant = _authInputsView.viewHeightConstraint.constant;
+        
+        // Force to render the view
+        [self.view layoutIfNeeded];
+        
+        // Refresh content view height by considering the updated height of inputs container
+        _contentViewHeightConstraint.constant += (_authInputContainerViewHeightConstraint.constant - previousInputsContainerViewHeight);
     }
     else
     {

@@ -58,12 +58,12 @@
 
 #pragma mark -
 
-- (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
+- (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType
 {
     if (authSession)
     {
         type = authType;
-        session = authSession;
+        currentSession = authSession;
         
         return YES;
     }
@@ -71,15 +71,33 @@
     return NO;
 }
 
-- (CGFloat)actualHeight
+- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback
 {
-    return _viewHeightConstraint.constant;
+    // Do nothing by default
+    if (callback)
+    {
+        callback (nil);
+    }
+}
+
+- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback
+{
+    // Do nothing by default
+    if (callback)
+    {
+        callback (nil);
+    }
 }
 
 - (BOOL)areAllRequiredFieldsFilled
 {
     // Currently no field to check here
     return YES;
+}
+
+- (BOOL)shouldPromptUserForEmailAddress
+{
+    return NO;
 }
 
 - (void)dismissKeyboard
@@ -92,6 +110,15 @@
     
 }
 
+- (void)destroy
+{
+    if (inputsAlert)
+    {
+        [inputsAlert dismiss:NO];
+        inputsAlert = nil;
+    }
+}
+
 #pragma mark -
 
 - (MXKAuthenticationType)authType
@@ -101,7 +128,7 @@
 
 - (MXAuthenticationSession*)authSession
 {
-    return session;
+    return currentSession;
 }
 
 @end

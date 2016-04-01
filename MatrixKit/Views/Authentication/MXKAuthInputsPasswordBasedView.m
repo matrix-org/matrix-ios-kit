@@ -53,6 +53,8 @@
             self.emailTextField.hidden = YES;
             self.emailInfoLabel.hidden = YES;
             self.displayNameTextField.hidden = YES;
+            
+            self.viewHeightConstraint.constant = self.displayNameTextField.frame.origin.y;
         }
         else
         {
@@ -60,6 +62,8 @@
             self.emailTextField.hidden = NO;
             self.emailInfoLabel.hidden = NO;
             self.displayNameTextField.hidden = NO;
+            
+            self.viewHeightConstraint.constant = 179;
         }
         
         return YES;
@@ -68,13 +72,43 @@
     return NO;
 }
 
-- (CGFloat)actualHeight
+- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback;
 {
-    if (type == MXKAuthenticationTypeLogin)
+    if (callback)
     {
-        return self.displayNameTextField.frame.origin.y;
+        // Sanity check on required fields
+        if (self.areAllRequiredFieldsFilled == NO)
+        {
+            callback(nil);
+        }
+        
+        // Retrieve the user login and check whether it is an email or a username.
+        NSString *user = self.userLoginTextField.text;
+        user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        BOOL isEmailAddress = [MXTools isEmailAddress:user];
+        
+        NSDictionary *parameters;
+        
+        if (isEmailAddress)
+        {
+            parameters = @{
+                           @"type": kMXLoginFlowTypePassword,
+                           @"medium": @"email",
+                           @"address": user,
+                           @"password": self.passWordTextField.text
+                           };
+        }
+        else
+        {
+            parameters = @{
+                           @"type": kMXLoginFlowTypePassword,
+                           @"user": user,
+                           @"password": self.passWordTextField.text
+                           };
+        }
+        
+        callback(parameters);
     }
-    return super.actualHeight;
 }
 
 - (BOOL)areAllRequiredFieldsFilled
@@ -105,11 +139,8 @@
         // "Done" key has been pressed
         [textField resignFirstResponder];
         
-        if (self.delegate && [self.delegate respondsToSelector:@selector(authInputsDoneKeyHasBeenPressed:)])
-        {
-            // Launch authentication now
-            [self.delegate authInputsDoneKeyHasBeenPressed:self];
-        }
+        // Launch authentication now
+        [self.delegate authInputsViewDidPressDoneKey:self];
     }
     else
     {

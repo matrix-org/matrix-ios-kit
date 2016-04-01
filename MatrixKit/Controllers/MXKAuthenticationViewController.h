@@ -48,6 +48,14 @@ extern NSString *const MXKAuthErrorDomain;
  You may add a delegate to be notified when a new account has been added successfully.
  */
 @interface MXKAuthenticationViewController : MXKViewController <UITextFieldDelegate, MXKAuthInputsViewDelegate>
+{
+@protected
+    
+    /**
+     Reference to any opened alert view.
+     */
+    MXKAlert *alert;
+}
 
 @property (weak, nonatomic) IBOutlet UIImageView *welcomeImageView;
 
@@ -100,6 +108,12 @@ extern NSString *const MXKAuthErrorDomain;
  The default identity server url (nil by default).
  */
 @property (nonatomic) NSString *defaultIdentityServerUrl;
+
+/**
+ Enable/disable overall the user interaction option.
+ It is used during authentication process to prevent multiple requests.
+ */
+@property(nonatomic,getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
 
 /**
  The delegate for the view controller.
@@ -162,6 +176,11 @@ extern NSString *const MXKAuthErrorDomain;
  - 'UIControlEventValueChanged' for each UISwitch instance.
  */
 - (IBAction)onButtonPressed:(id)sender;
+
+/**
+ Force dismiss keyboard
+ */
+- (void)dismissKeyboard;
 
 @end
 
