@@ -92,6 +92,11 @@ typedef enum {
 @property (nonatomic, readonly) MXAuthenticationSession *authSession;
 
 /**
+ The current filled user identifier (nil by default).
+ */
+@property (nonatomic, readonly) NSString *userId;
+
+/**
  The layout constraint defined on the view height. This height takes into account shown/hidden fields.
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;

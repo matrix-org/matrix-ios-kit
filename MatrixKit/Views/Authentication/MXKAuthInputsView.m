@@ -131,4 +131,9 @@
     return currentSession;
 }
 
+- (NSString*)userId
+{
+    return nil;
+}
+
 @end

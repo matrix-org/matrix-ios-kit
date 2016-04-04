@@ -102,6 +102,11 @@
     self.displayNameTextField.hidden = YES;
 }
 
+- (NSString*)userId
+{
+    return self.userLoginTextField.text;
+}
+
 #pragma mark UITextField delegate
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField
