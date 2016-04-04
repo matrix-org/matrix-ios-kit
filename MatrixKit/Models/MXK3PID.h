@@ -67,6 +67,7 @@ typedef enum : NSUInteger {
 /**
  Start the validation process 
  The identity server will send a validation token to the user's address.
+ 
  In case of email, the end user must click on the link in the received email
  to validate their email address in order to be able to call add3PIDToUser successfully.
  
