@@ -72,14 +72,31 @@
     return NO;
 }
 
+- (NSString*)validateParameters
+{
+    NSString *errorMsg = [super validateParameters];
+    
+    if (!errorMsg)
+    {
+        // Check user login and pass fields
+        if (!self.areAllRequiredFieldsSet)
+        {
+            errorMsg = [NSBundle mxk_localizedStringForKey:@"login_invalid_param"];
+        }
+    }
+    
+    return errorMsg;
+}
+
 - (void)prepareParameters:(void (^)(NSDictionary *parameters))callback;
 {
     if (callback)
     {
         // Sanity check on required fields
-        if (self.areAllRequiredFieldsFilled == NO)
+        if (!self.areAllRequiredFieldsSet)
         {
             callback(nil);
+            return;
         }
         
         // Retrieve the user login and check whether it is an email or a username.
@@ -111,12 +128,13 @@
     }
 }
 
-- (BOOL)areAllRequiredFieldsFilled
+- (BOOL)areAllRequiredFieldsSet
 {
-    BOOL ret = [super areAllRequiredFieldsFilled];
+    BOOL ret = [super areAllRequiredFieldsSet];
     
     // Check user login and pass fields
     ret = (ret && self.userLoginTextField.text.length && self.passWordTextField.text.length);
+    
     return ret;
 }
 

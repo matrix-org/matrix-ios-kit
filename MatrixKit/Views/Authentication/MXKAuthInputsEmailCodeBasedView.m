@@ -71,12 +71,28 @@
     return NO;
 }
 
-- (BOOL)areAllRequiredFieldsFilled
+- (NSString*)validateParameters
 {
-    BOOL ret = [super areAllRequiredFieldsFilled];
+    NSString *errorMsg = [super validateParameters];
+    
+    if (!errorMsg)
+    {
+        if (!self.areAllRequiredFieldsSet)
+        {
+            errorMsg = [NSBundle mxk_localizedStringForKey:@"login_invalid_param"];
+        }
+    }
+    
+    return errorMsg;
+}
+
+- (BOOL)areAllRequiredFieldsSet
+{
+    BOOL ret = [super areAllRequiredFieldsSet];
     
     // Check required fields //FIXME what are required fields in this authentication flow?
     ret = (ret && self.userLoginTextField.text.length && self.emailAndTokenTextField.text.length);
+    
     return ret;
 }
 

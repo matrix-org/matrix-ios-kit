@@ -45,6 +45,8 @@
 "login_error_login_email_not_yet" = "The email link which has not been clicked yet";
 "login_use_fallback" = "Use fallback page";
 "login_leave_fallback" = "Cancel";
+"login_invalid_param" = "Invalid parameter";
+"register_error_title" = "Registration Failed";
 
 // Action
 "no" = "No";
