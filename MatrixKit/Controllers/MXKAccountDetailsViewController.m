@@ -189,7 +189,10 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         currentDisplayName = _mxAccount.userDisplayName;
         self.userDisplayName.text = currentDisplayName;
         [self updateSaveUserInfoButtonStatus];
-        
+
+        // Load linked emails
+        [self loadLinkedEmails];
+
         // Add observer on user's information
         accountUserInfoObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             // Ignore any refresh when saving is in progress
@@ -672,17 +675,12 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         // We always bind emails when registering, so let's do the same here
         [submittedEmail add3PIDToUser:YES success:^{
 
-            // Add new linked email
-            if (!linkedEmails)
-            {
-                linkedEmails = [NSMutableArray array];
-            }
-            [linkedEmails addObject:submittedEmail.address];
-
             // Release pending email and refresh table to remove related cell
             emailTextField.text = nil;
             submittedEmail = nil;
-            [self.tableView reloadData];
+
+            // Update linked emails
+            [self loadLinkedEmails];
 
         } failure:^(NSError *error) {
 
@@ -707,6 +705,35 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }];
 
     [alert showInViewController:self];
+}
+
+- (void)loadLinkedEmails
+{
+    if (!linkedEmails)
+    {
+        linkedEmails = [NSMutableArray array];
+    }
+        
+    [_mxAccount.mxRestClient threePIDs:^(NSArray<MXThirdPartyIdentifier *> *threePIDs) {
+
+        if (linkedEmails)
+        {
+            [linkedEmails removeAllObjects];
+
+            for (MXThirdPartyIdentifier *threePID in threePIDs)
+            {
+                if ([threePID.medium isEqualToString:kMX3PIDMediumEmail])
+                {
+                    [linkedEmails addObject:threePID.address];
+                }
+            }
+
+            [self.tableView reloadData];
+        }
+
+    } failure:^(NSError *error) {
+        // Silently fail
+    }];
 }
 
 #pragma mark - Actions
