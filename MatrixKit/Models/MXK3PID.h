@@ -20,6 +20,7 @@ typedef enum : NSUInteger {
     MXK3PIDAuthStateUnknown,
     MXK3PIDAuthStateTokenRequested,
     MXK3PIDAuthStateTokenReceived,
+    MXK3PIDAuthStateTokenSubmitted,
     MXK3PIDAuthStateAuthenticated
 } MXK3PIDAuthState;
 
