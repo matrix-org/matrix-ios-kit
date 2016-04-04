@@ -762,6 +762,20 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     else if (sender == emailSubmitButton)
     {
+        // Email check
+        if (![MXTools isEmailAddress:emailTextField.text])
+        {
+            MXKAlert *alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_title"] message:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_description"] style:MXKAlertStyleAlert];
+            [alertsArray addObject:alert];
+
+            alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                [alertsArray removeObject:alert];
+            }];
+            [alert showInViewController:self];
+
+            return;
+        }
+        
         if (!submittedEmail || ![submittedEmail.address isEqualToString:emailTextField.text])
         {
             submittedEmail = [[MXK3PID alloc] initWithMedium:kMX3PIDMediumEmail andAddress:emailTextField.text];
