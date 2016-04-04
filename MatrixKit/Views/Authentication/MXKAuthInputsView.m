@@ -71,6 +71,12 @@
     return NO;
 }
 
+- (NSString *)validateParameters
+{
+    // Currently no field to check here
+    return nil;
+}
+
 - (void)prepareParameters:(void (^)(NSDictionary *parameters))callback
 {
     // Do nothing by default
@@ -89,7 +95,7 @@
     }
 }
 
-- (BOOL)areAllRequiredFieldsFilled
+- (BOOL)areAllRequiredFieldsSet
 {
     // Currently no field to check here
     return YES;
@@ -129,6 +135,11 @@
 - (MXAuthenticationSession*)authSession
 {
     return currentSession;
+}
+
+- (NSString*)userId
+{
+    return nil;
 }
 
 @end

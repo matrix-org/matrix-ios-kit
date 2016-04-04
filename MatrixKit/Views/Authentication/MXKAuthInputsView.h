@@ -92,6 +92,11 @@ typedef enum {
 @property (nonatomic, readonly) MXAuthenticationSession *authSession;
 
 /**
+ The current filled user identifier (nil by default).
+ */
+@property (nonatomic, readonly) NSString *userId;
+
+/**
  The layout constraint defined on the view height. This height takes into account shown/hidden fields.
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;
@@ -125,6 +130,13 @@ typedef enum {
 - (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
 
 /**
+ Check the validity of the required parameters.
+ 
+ @return an error message in case of wrong parameters (nil by default).
+ */
+- (NSString*)validateParameters;
+
+/**
  Prepare the set of the inputs in order to launch an authentication process.
  
  @param callback the block called when the parameters are prepared. The resulting parameter dictionary is nil
@@ -142,9 +154,9 @@ typedef enum {
 - (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback;
 
 /**
- YES when all required fields are filled.
+ Tell whether all required fields are set
  */
-- (BOOL)areAllRequiredFieldsFilled;
+- (BOOL)areAllRequiredFieldsSet;
 
 /**
  Tell whether the email field is empty while the email binding is supported.
