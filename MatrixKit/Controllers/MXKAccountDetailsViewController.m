@@ -941,6 +941,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             }
             
             submittedEmailCell.mxkTextField.text = currentEmail;
+            submittedEmailCell.mxkTextField.keyboardType = UIKeyboardTypeEmailAddress;
             submittedEmailCell.mxkButton.enabled = (currentEmail.length != 0);
             [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_link_email"] forState:UIControlStateNormal];
             [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_link_email"] forState:UIControlStateHighlighted];
