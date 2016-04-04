@@ -844,32 +844,32 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             {
                 MXAuthenticationSession *authSession = [MXAuthenticationSession modelFromJSON:JSONResponse];
                 
-                if ([authSession.session isEqualToString:self.authInputsView.authSession.session])
+                if (authSession.completed)
                 {
-                    if (authSession.completed)
-                    {
-                        [_authenticationActivityIndicator stopAnimating];
+                    [_authenticationActivityIndicator stopAnimating];
+                    
+                    // Update session identifier in case of change
+                    self.authInputsView.authSession.session = authSession.session;
+                    
+                    [self.authInputsView updateAuthSessionWithCompletedStages:authSession.completed didUpdateParameters:^(NSDictionary *parameters) {
                         
-                        [self.authInputsView updateAuthSessionWithCompletedStages:authSession.completed didUpdateParameters:^(NSDictionary *parameters) {
+                        if (parameters)
+                        {
+                            NSLog(@"[MXKAuthenticationVC] Pursue registration");
                             
-                            if (parameters)
-                            {
-                                NSLog(@"[MXKAuthenticationVC] Pursue registration");
-                                
-                                [_authenticationActivityIndicator startAnimating];
-                                [self registerWithParameters:parameters];
-                            }
-                            else
-                            {
-                                NSLog(@"[MXKAuthenticationVC] Failed to update parameters");
-                                
-                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
-                            }
+                            [_authenticationActivityIndicator startAnimating];
+                            [self registerWithParameters:parameters];
+                        }
+                        else
+                        {
+                            NSLog(@"[MXKAuthenticationVC] Failed to update parameters");
                             
-                        }];
+                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                        }
                         
-                        return;
-                    }
+                    }];
+                    
+                    return;
                 }
                 
                 [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
