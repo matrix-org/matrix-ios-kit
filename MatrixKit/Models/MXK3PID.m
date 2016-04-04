@@ -32,7 +32,6 @@
 {
     self = [super init];
     if (self)
-
     {
         _medium = [medium copy];
         _address = [address copy];
@@ -117,120 +116,42 @@
     }
 }
 
-- (void)validateWithToken:(NSString*)validationToken
-                  success:(void (^)(BOOL success))success
-                  failure:(void (^)(NSError *error))failure
+- (void)add3PIDToUser:(BOOL)bind
+              success:(void (^)())success
+              failure:(void (^)(NSError *error))failure
 {
-    // Sanity check
-    if (_validationState == MXK3PIDAuthStateTokenReceived)
+    if ([self.medium isEqualToString:kMX3PIDMediumEmail])
     {
-        
-        if ([self.medium isEqualToString:kMX3PIDMediumEmail])
-        {
-            _validationState = MXK3PIDAuthStateTokenSubmitted;
-            
-            currentRequest = [mxRestClient validateEmail:self.sid validationToken:validationToken clientSecret:self.clientSecret success:^(BOOL successFlag)
-            {
-                if (successFlag)
-                {
-                    // Validation is complete
-                    _validationState = MXK3PIDAuthStateAuthenticated;
-                }
-                else
-                {
-                    // Return in previous step
-                    _validationState = MXK3PIDAuthStateTokenReceived;
-                }
-                
-                currentRequest = nil;
-                
-                if (success)
-                {
-                    success(successFlag);
-                }
-            } failure:^(NSError *error)
-            {
-                // Return in previous step
-                _validationState = MXK3PIDAuthStateTokenReceived;
-                currentRequest = nil;
-                
-                if (failure)
-                {
-                    failure (error);
-                }
-            }];
-            
-            return;
-        }
-        else if ([self.medium isEqualToString:kMX3PIDMediumMSISDN])
-        {
-            // FIXME: support msisdn as soon as identity server supports it
-            NSLog(@"[MXK3PID] validateWithToken: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
-        }
-        else
-        {
-            NSLog(@"[MXK3PID] validateWithToken: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
-        }
-    }
-    else
-    {
-        NSLog(@"[MXK3PID] Failed to valid with token 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
-    }
-    
-    // Here the validation process failed
-    if (failure)
-    {
-        failure (nil);
-    }
-}
+        currentRequest = [mxRestClient add3PID:self.sid clientSecret:self.clientSecret bind:bind success:^{
+            // Update linked userId in 3PID
+            self.userId = mxRestClient.credentials.userId;
+            currentRequest = nil;
 
-- (void)bindWithUserId:(NSString*)userId
-               success:(void (^)())success
-               failure:(void (^)(NSError *error))failure
-{
-    // Sanity check
-    if (_validationState == MXK3PIDAuthStateAuthenticated)
+            if (success)
+            {
+                success();
+            }
+        } failure:^(NSError *error) {
+            currentRequest = nil;
+
+            if (failure)
+            {
+                failure (error);
+            }
+        }];
+
+        return;
+    }
+    else if ([self.medium isEqualToString:kMX3PIDMediumMSISDN])
     {
-        
-        if ([self.medium isEqualToString:kMX3PIDMediumEmail])
-        {
-            currentRequest = [mxRestClient bind3PID:userId sid:self.sid clientSecret:self.clientSecret success:^(NSDictionary *JSONResponse)
-            {
-                // Update linked userId in 3PID
-                self.userId = userId;
-                currentRequest = nil;
-                
-                if (success)
-                {
-                    success();
-                }
-            } failure:^(NSError *error)
-            {
-                currentRequest = nil;
-                
-                if (failure)
-                {
-                    failure (error);
-                }
-            }];
-            
-            return;
-        }
-        else if ([self.medium isEqualToString:kMX3PIDMediumMSISDN])
-        {
-            // FIXME: support msisdn as soon as identity server supports it
-            NSLog(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
-        }
-        else
-        {
-            NSLog(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
-        }
+        // FIXME: support msisdn as soon as identity server supports it
+        NSLog(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
     }
     else
     {
-        NSLog(@"[MXK3PID] Failed to bind 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
+        NSLog(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
     }
-    
+
     // Here the validation process failed
     if (failure)
     {

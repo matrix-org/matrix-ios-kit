@@ -20,7 +20,6 @@ typedef enum : NSUInteger {
     MXK3PIDAuthStateUnknown,
     MXK3PIDAuthStateTokenRequested,
     MXK3PIDAuthStateTokenReceived,
-    MXK3PIDAuthStateTokenSubmitted,
     MXK3PIDAuthStateAuthenticated
 } MXK3PIDAuthState;
 
@@ -57,8 +56,8 @@ typedef enum : NSUInteger {
 /**
  Start the validation process 
  The identity server will send a validation token to the user's address.
- This validation token must be then send back to the identity server with [MXK3PID validateWithToken]
- in order to complete the 3PID authentication.
+ Use the returned sid to complete operations that require authenticated email
+ like [MXRestClient add3PIDToUser:].
  
  @param restClient used to make matrix API requests during validation process.
  @param success A block object called when the operation succeeds.
@@ -67,29 +66,17 @@ typedef enum : NSUInteger {
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure;
-
-/**
- Complete the 3rd party id validation by sending the validation token the user received.
- 
- @param validationToken the validation token the user received.
- @param success A block object called when the operation succeeds. It indicates if the
- validation has succeeded.
- @param failure A block object called when the operation fails.
- */
-- (void)validateWithToken:(NSString*)validationToken
-              success:(void (^)(BOOL success))success
-              failure:(void (^)(NSError *error))failure;
-
 /**
  Link an authenticated 3rd party id to a Matrix user id.
  
- @param userId the Matrix user id to link the 3PID with.
+ @param bind bind whether the homeserver should also bind this third party identifier
+        to the account's Matrix ID with the passed identity server.
  @param success A block object called when the operation succeeds. It provides the raw
  server response.
  @param failure A block object called when the operation fails.
  */
-- (void)bindWithUserId:(NSString*)userId
-         success:(void (^)())success
-         failure:(void (^)(NSError *error))failure;
+- (void)add3PIDToUser:(BOOL)bind
+              success:(void (^)())success
+              failure:(void (^)(NSError *error))failure;
 
 @end

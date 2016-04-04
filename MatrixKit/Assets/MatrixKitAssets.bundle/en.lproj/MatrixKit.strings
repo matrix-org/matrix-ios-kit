@@ -52,6 +52,7 @@
 "abort" = "Abort";
 "back" = "Back";
 "close" = "Close";
+"continue" = "Continue";
 "discard" = "Discard";
 "dismiss" = "Dismiss";
 "retry" = "Retry";
@@ -116,6 +117,9 @@
 "account_save_changes" = "Save changes";
 "account_link_email" = "Link Email";
 "account_linked_emails" = "Linked emails";
+"account_email_validation_title" = "Verification Pending";
+"account_email_validation_message" = "Please check your email and click on the link it contains. Once this is done, click continue.";
+"account_email_validation_error" = "Unable to verify email address. Please check your email and click on the link it contains. Once this is done, click continue";
 
 "account_error_display_name_change_failed" = "Display name change failed";
 "account_error_picture_change_failed" = "Picture change failed";
