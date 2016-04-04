@@ -67,8 +67,8 @@ typedef enum : NSUInteger {
 /**
  Start the validation process 
  The identity server will send a validation token to the user's address.
- Use the returned sid to complete operations that require authenticated email
- like [MXRestClient add3PIDToUser:].
+ In case of email, the end user must click on the link in the received email
+ to validate their email address in order to be able to call add3PIDToUser successfully.
  
  @param restClient used to make matrix API requests during validation process.
  @param success A block object called when the operation succeeds.
@@ -78,10 +78,10 @@ typedef enum : NSUInteger {
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure;
 /**
- Link an authenticated 3rd party id to a Matrix user id.
+ Link a 3rd party id to the user.
  
- @param bind bind whether the homeserver should also bind this third party identifier
-        to the account's Matrix ID with the passed identity server.
+ @param bind whether the homeserver should also bind this third party identifier
+        to the account's Matrix ID with the identity server.
  @param success A block object called when the operation succeeds. It provides the raw
  server response.
  @param failure A block object called when the operation fails.
