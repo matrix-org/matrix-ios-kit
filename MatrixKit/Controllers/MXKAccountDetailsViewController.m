@@ -52,10 +52,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     
     // account user's profile observer
     id accountUserInfoObserver;
-    
-    // Linked emails
-    // TODO: When server will provide existing linked emails, these linked emails should be stored in MXKAccount instance.
-    NSMutableArray *linkedEmails;
+
     // Dynamic rows in the Linked emails section
     NSInteger submittedEmailRowIndex;
     
@@ -347,7 +344,6 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     
     saveUserInfoButton.enabled = NO;
     
-    linkedEmails = nil;
     submittedEmail = nil;
     emailSubmitButton = nil;
     emailTextField = nil;
@@ -709,30 +705,14 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
 - (void)loadLinkedEmails
 {
-    if (!linkedEmails)
-    {
-        linkedEmails = [NSMutableArray array];
-    }
-        
-    [_mxAccount.mxRestClient threePIDs:^(NSArray<MXThirdPartyIdentifier *> *threePIDs) {
+    // Refresh the account 3PIDs list
+    [_mxAccount load3PIDs:^{
 
-        if (linkedEmails)
-        {
-            [linkedEmails removeAllObjects];
-
-            for (MXThirdPartyIdentifier *threePID in threePIDs)
-            {
-                if ([threePID.medium isEqualToString:kMX3PIDMediumEmail])
-                {
-                    [linkedEmails addObject:threePID.address];
-                }
-            }
-
-            [self.tableView reloadData];
-        }
+        [self.tableView reloadData];
 
     } failure:^(NSError *error) {
-        // Silently fail
+        // Display the data that has been loaded last time
+        [self.tableView reloadData];
     }];
 }
 
@@ -867,7 +847,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     NSInteger count = 0;
     if (section == linkedEmailsSection)
     {
-        count = linkedEmails.count;
+        count = _mxAccount.linkedEmails.count;
         submittedEmailRowIndex = count++;
     }
     else if (section == notificationsSection)
@@ -914,7 +894,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     
     if (indexPath.section == linkedEmailsSection)
     {
-        if (indexPath.row < linkedEmails.count)
+        if (indexPath.row < _mxAccount.linkedEmails.count)
         {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsLinkedEmailCellId];
             if (!cell)
@@ -923,7 +903,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             }
             
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.textLabel.text = [linkedEmails objectAtIndex:indexPath.row];
+            cell.textLabel.text = [_mxAccount.linkedEmails objectAtIndex:indexPath.row];
         }
         else if (indexPath.row == submittedEmailRowIndex)
         {

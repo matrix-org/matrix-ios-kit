@@ -94,6 +94,18 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic, readonly) NSString *fullDisplayName;
 
 /**
+ The 3PIDs linked to this account.
+ [self load3PIDs] must be called to update the property.
+ */
+@property (nonatomic, readonly) NSArray<MXThirdPartyIdentifier *> *threePIDs;
+
+/**
+ The email addresses linked to this account.
+ This is a subset of self.threePIDs.
+ */
+@property (nonatomic, readonly) NSArray<NSString *> *linkedEmails;
+
+/**
  The account user's presence (`MXPresenceUnknown` by default, available if matrix session `mxSession` is opened).
  The notification `kMXKAccountUserInfoDidChangeNotification` is posted in case of change of this property.      
  */
@@ -239,6 +251,15 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param failure A block object called when the operation fails.
  */
 - (void)changePassword:(NSString*)oldPassword with:(NSString*)newPassword success:(void (^)())success failure:(void (^)(NSError *error))failure;
+
+/**
+ Load the 3PIDs linked to this account.
+ This method must be called to refresh self.threePIDs and self.linkedEmails.
+
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)load3PIDs:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 #pragma mark - Push notification listeners
 /**
