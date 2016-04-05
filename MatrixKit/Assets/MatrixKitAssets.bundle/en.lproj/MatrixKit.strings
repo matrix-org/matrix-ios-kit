@@ -54,6 +54,7 @@
 "abort" = "Abort";
 "back" = "Back";
 "close" = "Close";
+"continue" = "Continue";
 "discard" = "Discard";
 "dismiss" = "Dismiss";
 "retry" = "Retry";
@@ -119,10 +120,15 @@
 "account_link_email" = "Link Email";
 "account_linked_emails" = "Linked emails";
 
+"account_email_validation_title" = "Verification Pending";
+"account_email_validation_message" = "Please check your email and click on the link it contains. Once this is done, click continue.";
+"account_email_validation_error" = "Unable to verify email address. Please check your email and click on the link it contains. Once this is done, click continue";
+
 "account_error_display_name_change_failed" = "Display name change failed";
 "account_error_picture_change_failed" = "Picture change failed";
-"account_error_email_link_failed" = "Failed to link email";
 "account_error_matrix_session_is_not_opened" = "Matrix session is not opened";
+"account_error_email_wrong_title" = "Invalid Email Address";
+"account_error_email_wrong_description" = "This doesn't appear to be a valid email address";
 
 // Room creation
 "room_creation_name_title" = "Room name:";

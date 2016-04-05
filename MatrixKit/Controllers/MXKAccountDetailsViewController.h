@@ -52,9 +52,7 @@ typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
     MXK3PID  *submittedEmail;
     UIButton *emailSubmitButton;
     UITextField *emailTextField;
-    UIButton *emailTokenSubmitButton;
-    UITextField *emailTokenTextField;
-    
+
     // Notifications
     UISwitch *apnsNotificationsSwitch;
     UISwitch *inAppNotificationsSwitch;

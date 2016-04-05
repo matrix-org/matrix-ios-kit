@@ -76,6 +76,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 @implementation MXKAccount
 @synthesize mxCredentials, mxSession, mxRestClient;
+@synthesize threePIDs;
 @synthesize userPresence;
 @synthesize userTintColor;
 @synthesize hideUserPresence;
@@ -148,7 +149,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
         
         [self prepareRESTClient];
-        
+
+        if ([coder decodeObjectForKey:@"threePIDs"])
+        {
+            threePIDs = [coder decodeObjectForKey:@"threePIDs"];
+        }
+
         userPresence = MXPresenceUnknown;
         
         if ([coder decodeObjectForKey:@"identityserverurl"])
@@ -185,7 +191,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         [coder encodeObject:mxCredentials.allowedCertificate forKey:@"allowedCertificate"];
     }
-    
+
+    if (self.threePIDs)
+    {
+        [coder encodeObject:threePIDs forKey:@"threePIDs"];
+    }
+
     if (self.identityServerURL)
     {
         [coder encodeObject:_identityServerURL forKey:@"identityserverurl"];
@@ -259,6 +270,26 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         return mxCredentials.userId;
     }
+}
+
+- (NSArray<MXThirdPartyIdentifier *> *)threePIDs
+{
+    return threePIDs;
+}
+
+- (NSArray<NSString *> *)linkedEmails
+{
+    NSMutableArray<NSString *> *linkedEmails = [NSMutableArray array];
+
+    for (MXThirdPartyIdentifier *threePID in threePIDs)
+    {
+        if ([threePID.medium isEqualToString:kMX3PIDMediumEmail])
+        {
+            [linkedEmails addObject:threePID.address];
+        }
+    }
+
+    return linkedEmails;
 }
 
 - (UIColor*)userTintColor
@@ -389,6 +420,28 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
     }
+}
+
+- (void)load3PIDs:(void (^)())success failure:(void (^)(NSError *))failure
+{
+    [mxRestClient threePIDs:^(NSArray<MXThirdPartyIdentifier *> *threePIDs2) {
+
+        threePIDs = threePIDs2;
+
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
+
+        if (success)
+        {
+            success();
+        }
+
+    } failure:^(NSError *error) {
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
 }
 
 - (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion
