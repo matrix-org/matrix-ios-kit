@@ -660,7 +660,9 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
     alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert){
 
-        emailSubmitButton.enabled = NO;
+        [alertsArray removeObject:alert];
+
+        emailSubmitButton.enabled = YES;
 
     }];
 
