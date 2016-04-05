@@ -412,10 +412,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (!_homeServerTextField.text.length)
     {
-        _homeServerTextField.text = _defaultHomeServerUrl;
-        
-        // Update UI
-        [self textFieldDidEndEditing:_homeServerTextField];
+        [self setHomeServerTextFieldText:defaultHomeServerUrl];
     }
 }
 
@@ -425,10 +422,44 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (!_identityServerTextField.text.length)
     {
+        [self setIdentityServerTextFieldText:defaultIdentityServerUrl];
+    }
+}
+
+- (void)setHomeServerTextFieldText:(NSString *)homeServerUrl
+{
+    if (homeServerUrl.length)
+    {
+        _homeServerTextField.text = homeServerUrl;
+    }
+    else
+    {
+        // Force refresh with default value
+        _homeServerTextField.text = _defaultHomeServerUrl;
+    }
+    
+    [self updateRESTClient];
+    
+    // Refresh UI
+    [self refreshAuthenticationSession];
+}
+
+- (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
+{
+    if (identityServerUrl.length)
+    {
+        _identityServerTextField.text = identityServerUrl;
+    }
+    else
+    {
+        // Force refresh with default value
         _identityServerTextField.text = _defaultIdentityServerUrl;
-        
-        // Update UI
-        [self textFieldDidEndEditing:_identityServerTextField];
+    }
+    
+    // Update REST client
+    if (mxRestClient)
+    {
+        [mxRestClient setIdentityServer:_identityServerTextField.text];
     }
 }
 
@@ -1124,30 +1155,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     if (textField == _homeServerTextField)
     {
-        if (!textField.text.length)
-        {
-            // Force refresh with default value
-            textField.text = _defaultHomeServerUrl;
-        }
-        
-        [self updateRESTClient];
-        
-        // Refresh UI
-        [self refreshAuthenticationSession];
+        [self setHomeServerTextFieldText:textField.text];
     }
     else if (textField == _identityServerTextField)
     {
-        if (!textField.text.length)
-        {
-            // Force refresh with default value
-            textField.text = _defaultIdentityServerUrl;
-        }
-        
-        // Update REST client
-        if (mxRestClient)
-        {
-            [mxRestClient setIdentityServer:textField.text];
-        }
+        [self setIdentityServerTextFieldText:textField.text];
     }
 }
 

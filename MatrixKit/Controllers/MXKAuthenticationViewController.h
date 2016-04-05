@@ -178,6 +178,22 @@ extern NSString *const MXKAuthErrorDomain;
 - (IBAction)onButtonPressed:(id)sender;
 
 /**
+ Set the home server url and force a new authentication session.
+ The default home server url is used when the provided url is nil.
+ 
+ @param homeServerUrl the home server url to use
+ */
+- (void)setHomeServerTextFieldText:(NSString *)homeServerUrl;
+
+/**
+ Set the identity server url.
+ The default identity server url is used when the provided url is nil.
+ 
+ @param identityServerUrl the identity server url to use
+ */
+- (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl;
+
+/**
  Force dismiss keyboard
  */
 - (void)dismissKeyboard;
