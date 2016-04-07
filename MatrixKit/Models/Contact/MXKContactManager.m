@@ -53,6 +53,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     NSDate *lastSyncDate;
     // Local contacts by contact Id
     NSMutableDictionary* localContactByContactID;
+    NSMutableArray* localEmailContacts;
     // Matrix id linked to 3PID.
     NSMutableDictionary* matrixIDBy3PID;
     // Keep history of 3PID lookup requests
@@ -280,6 +281,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return [NSArray arrayWithArray:mxSessionArray];
 }
 
+
+- (NSArray*)matrixContacts
+{
+    return [matrixContactByContactID allValues];
+}
+
 - (NSArray*)localContacts
 {
     // Return nil if the loading step is in progress.
@@ -291,9 +298,50 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return [localContactByContactID allValues];
 }
 
-- (NSArray*)matrixContacts
+- (NSArray*)localEmailContacts
 {
-    return [matrixContactByContactID allValues];
+    // Return nil if the loading step is in progress.
+    if (isLocalContactListLoading)
+    {
+        return nil;
+    }
+    
+    // Check whether the array must be prepared
+    if (!localEmailContacts)
+    {
+        // List all the known emails from the local contacts
+        NSArray *localContacts = self.localContacts;
+        NSMutableArray *emailAddresses = [NSMutableArray arrayWithCapacity:localContacts.count];
+        
+        for (MXKContact* contact in localContacts)
+        {
+            NSArray *emails = contact.emailAddresses;
+            for (MXKEmail *email in emails)
+            {
+                if (email.emailAddress.length)
+                {
+                    if ([emailAddresses indexOfObject:email.emailAddress] == NSNotFound)
+                    {
+                        [emailAddresses addObject:email.emailAddress];
+                    }
+                }
+            }
+        }
+        
+        if (emailAddresses.count)
+        {
+            // Create here the local email contacts array
+            localEmailContacts = [NSMutableArray arrayWithCapacity:localContacts.count];
+            
+            for (NSString *emailAddress in emailAddresses)
+            {
+                MXKContact *contact = [[MXKContact alloc] initMatrixContactWithDisplayName:emailAddress andMatrixID:nil];
+                [localEmailContacts addObject:contact];
+            }
+        }
+    }
+    
+    return localEmailContacts;
 }
 
 - (void)setIdentityServer:(NSString *)identityServer
@@ -476,6 +524,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
         // something has been modified in the local contact book
         if (contactBookUpdate)
         {
+            // Remove the local email contacts (This array will be prepared only if need)
+            localEmailContacts = nil;
+            
             [self cacheLocalContacts];
         }
         
@@ -679,6 +730,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     
     isLocalContactListLoading = NO;
     localContactByContactID = nil;
+    localEmailContacts = nil;
     [self cacheLocalContacts];
     
     matrixContactByContactID = nil;

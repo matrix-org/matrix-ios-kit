@@ -96,17 +96,24 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *mxSessions;
 
 /**
+ The current list of the contacts extracted from matrix data.
+ */
+@property (nonatomic, readonly) NSArray *matrixContacts;
+
+/**
  The current list of the local contacts (nil by default until the contacts are loaded).
  */
 @property (nonatomic, readonly) NSArray *localContacts;
 
 /**
- The current list of the contacts extracted from matrix data (nil by default until the contacts are loaded).
+ The current list of contacts used to handle the email addresses retrieved from the local address book.
+ Each item of this array is a MXKContact instance with an email address as display name.
  */
-@property (nonatomic, readonly) NSArray *matrixContacts;
+@property (nonatomic, readonly) NSArray *localEmailContacts;
 
 /**
- No by default. Set YES to update matrix ids for all the local contacts in only one request when device contacts are loaded and an identity server is available.
+ No by default. Set YES to update matrix ids for all the local contacts in only one request
+ when device contacts are loaded and an identity server is available.
  */
 @property (nonatomic) BOOL enableFullMatrixIdSyncOnLocalContactsDidLoad;
 
