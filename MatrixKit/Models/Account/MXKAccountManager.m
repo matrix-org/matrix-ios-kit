@@ -158,6 +158,34 @@ static MXKAccountManager *sharedAccountManager = nil;
     return nil;
 }
 
+- (MXKAccount *)accountKnowingRoomWithRoomIdOrAlias:(NSString *)roomIdOrAlias
+{
+    MXKAccount *theAccount = nil;
+
+    NSArray *mxAccounts = self.activeAccounts;
+
+    for (MXKAccount *account in mxAccounts)
+    {
+        if ([roomIdOrAlias hasPrefix:@"#"])
+        {
+            if ([account.mxSession roomWithAlias:roomIdOrAlias])
+            {
+                theAccount = account;
+                break;
+            }
+        }
+        else
+        {
+            if ([account.mxSession roomWithRoomId:roomIdOrAlias])
+            {
+                theAccount = account;
+                break;
+            }
+        }
+    }
+    return theAccount;
+}
+
 #pragma mark -
 
 - (void)setStoreClass:(Class)storeClass
