@@ -1005,6 +1005,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
     
+    // Ignore connection cancellation error
+    if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
+    {
+        return;
+    }
+    
     // Translate the error code to a human message
     NSString *title = error.localizedFailureReason;
     if (!title)
