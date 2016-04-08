@@ -162,9 +162,9 @@ static MXKAccountManager *sharedAccountManager = nil;
 {
     MXKAccount *theAccount = nil;
 
-    NSArray *mxAccounts = self.activeAccounts;
+    NSArray *activeAccounts = self.activeAccounts;
 
-    for (MXKAccount *account in mxAccounts)
+    for (MXKAccount *account in activeAccounts)
     {
         if ([roomIdOrAlias hasPrefix:@"#"])
         {
