@@ -75,10 +75,12 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 + (MXKAccountManager*)sharedManager;
 
 /**
- Open a matrix session for each enabled accounts.
- The developper must set 'storeClass' before this call if the default class is not suitable.
+ Check for each enabled account if a matrix session is already opened.
+ Open a matrix session for each enabled account which doesn't have a session.
+ The developper must set 'storeClass' before the first call of this method 
+ if the default class is not suitable.
  */
-- (void)openSessionForActiveAccounts;
+- (void)prepareSessionForActiveAccounts;
 
 /**
  Save a snapshot of the current accounts.
@@ -112,5 +114,15 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @return the user's account (nil if no account exist).
  */
 - (MXKAccount*)accountForUserId:(NSString*)userId;
+
+/**
+ Retrieve an account that knows the room with the passed id or alias.
+ 
+ Note: The method is not accurate as it returns the first account that matches.
+
+ @param roomIdOrAlias the room id or alias.
+ @return the user's account. Nil if no account matches.
+ */
+- (MXKAccount*)accountKnowingRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias;
 
 @end

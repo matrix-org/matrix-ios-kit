@@ -47,6 +47,8 @@
 #import "MXKAuthenticationViewController.h"
 #import "MXKAuthInputsPasswordBasedView.h"
 #import "MXKAuthInputsEmailCodeBasedView.h"
+#import "MXKAuthenticationFallbackWebView.h"
+#import "MXKAuthenticationRecaptchaWebView.h"
 
 #import "MXKRoomCreationInputs.h"
 

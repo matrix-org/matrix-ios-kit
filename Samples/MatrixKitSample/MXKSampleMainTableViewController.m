@@ -185,7 +185,7 @@
     // Observers have been set, we will start now a matrix session for each enabled accounts.
     // As there is no mock for MatrixSDK yet, use an actual Matrix file store to boost init
     [MXKAccountManager sharedManager].storeClass = [MXFileStore class];
-    [[MXKAccountManager sharedManager] openSessionForActiveAccounts];
+    [[MXKAccountManager sharedManager] prepareSessionForActiveAccounts];
     
     // Check whether some accounts are availables
     if (![[MXKAccountManager sharedManager] accounts].count)
@@ -880,14 +880,14 @@
 
 #pragma mark - MXKRoomMemberDetailsViewControllerDelegate
 
-- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString *)matrixId
+- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString *)matrixId completion:(void (^)(void))completion
 {
     NSLog(@"    -> Start chat with %@ is requested", matrixId);
 }
 
 #pragma mark - MXKContactDetailsViewControllerDelegate
 
-- (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString *)matrixId
+- (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString *)matrixId completion:(void (^)(void))completion
 {
     NSLog(@"    -> Start chat with %@ is requested", matrixId);
 }

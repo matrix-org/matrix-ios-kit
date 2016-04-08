@@ -41,12 +41,9 @@
 {
     [super awakeFromNib];
     
-    // Localize string
-    _displayNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_display_name_placeholder"];
-    
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
     
-    self.authType = MXKAuthenticationTypeLogin;
+    type = MXKAuthenticationTypeLogin;
 }
 
 - (instancetype)init
@@ -54,50 +51,95 @@
     self = [super init];
     if (self)
     {
-        self.authType = MXKAuthenticationTypeLogin;
+        type = MXKAuthenticationTypeLogin;
     }
     return self;
 }
 
 #pragma mark -
 
-- (CGFloat)actualHeight
+- (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType
 {
-    return _viewHeightConstraint.constant;
+    if (authSession)
+    {
+        type = authType;
+        currentSession = authSession;
+        
+        return YES;
+    }
+    
+    return NO;
 }
 
-- (BOOL)areAllRequiredFieldsFilled
+- (NSString *)validateParameters
+{
+    // Currently no field to check here
+    return nil;
+}
+
+- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback
+{
+    // Do nothing by default
+    if (callback)
+    {
+        callback (nil);
+    }
+}
+
+- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback
+{
+    // Do nothing by default
+    if (callback)
+    {
+        callback (nil);
+    }
+}
+
+- (BOOL)areAllRequiredFieldsSet
 {
     // Currently no field to check here
     return YES;
 }
 
-- (void)setAuthType:(MXKAuthenticationType)authType
+- (BOOL)shouldPromptUserForEmailAddress
 {
-    if (authType == MXKAuthenticationTypeLogin)
-    {
-        self.displayNameTextField.hidden = YES;
-    }
-    else
-    {
-        self.displayNameTextField.hidden = NO;
-    }
-    _authType = authType;
+    return NO;
 }
 
 - (void)dismissKeyboard
 {
-    [self.displayNameTextField resignFirstResponder];
+    
 }
 
 - (void)nextStep
 {
-    self.displayNameTextField.hidden = YES;
+    
 }
 
-- (void)resetStep
+- (void)destroy
 {
-    self.authType = _authType;
+    if (inputsAlert)
+    {
+        [inputsAlert dismiss:NO];
+        inputsAlert = nil;
+    }
+}
+
+#pragma mark -
+
+- (MXKAuthenticationType)authType
+{
+    return type;
+}
+
+- (MXAuthenticationSession*)authSession
+{
+    return currentSession;
+}
+
+- (NSString*)userId
+{
+    return nil;
 }
 
 @end

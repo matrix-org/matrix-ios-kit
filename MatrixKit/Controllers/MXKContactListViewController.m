@@ -46,6 +46,10 @@
     NSString* latestSearchedPattern;
     
     NSArray* collationTitles;
+    
+    // mask view while processing a request
+    UIView* pendingRequestMask;
+    UIActivityIndicatorView * pendingMaskSpinnerView;
 }
 
 @end
@@ -66,8 +70,16 @@
                                           bundle:[NSBundle bundleForClass:[MXKContactListViewController class]]];
 }
 
-- (void)dealloc{
+- (void)dealloc
+{
     searchButton = nil;
+}
+
+- (void)destroy
+{
+    [self removePendingActionMask];
+    
+    [super destroy];
 }
 
 - (void)viewDidLoad
@@ -193,6 +205,36 @@
     {
         matrixContactsArray = sharedManager.matrixContacts;
         sectionedMatrixContacts = [sharedManager getSectionedContacts:matrixContactsArray];
+    }
+}
+
+- (BOOL)hasPendingAction
+{
+    return nil != pendingMaskSpinnerView;
+}
+
+- (void)addPendingActionMask
+{
+    // add a spinner above the tableview to avoid that the user tap on any other button
+    pendingMaskSpinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    pendingMaskSpinnerView.backgroundColor = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.5];
+    pendingMaskSpinnerView.frame = self.tableView.frame;
+    pendingMaskSpinnerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
+    
+    // append it
+    [self.tableView.superview addSubview:pendingMaskSpinnerView];
+    
+    // animate it
+    [pendingMaskSpinnerView startAnimating];
+}
+
+- (void)removePendingActionMask
+{
+    if (pendingMaskSpinnerView)
+    {
+        [pendingMaskSpinnerView removeFromSuperview];
+        pendingMaskSpinnerView = nil;
+        [self.tableView reloadData];
     }
 }
 

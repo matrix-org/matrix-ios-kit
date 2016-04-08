@@ -76,6 +76,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 @implementation MXKAccount
 @synthesize mxCredentials, mxSession, mxRestClient;
+@synthesize threePIDs;
 @synthesize userPresence;
 @synthesize userTintColor;
 @synthesize hideUserPresence;
@@ -148,7 +149,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
         
         [self prepareRESTClient];
-        
+
+        if ([coder decodeObjectForKey:@"threePIDs"])
+        {
+            threePIDs = [coder decodeObjectForKey:@"threePIDs"];
+        }
+
         userPresence = MXPresenceUnknown;
         
         if ([coder decodeObjectForKey:@"identityserverurl"])
@@ -159,6 +165,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 // Update the current restClient
                 [mxRestClient setIdentityServer:_identityServerURL];
             }
+        }
+        
+        if ([coder decodeObjectForKey:@"pushgatewayurl"])
+        {
+            _pushGatewayURL = [coder decodeObjectForKey:@"pushgatewayurl"];
         }
         
         _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
@@ -180,10 +191,20 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         [coder encodeObject:mxCredentials.allowedCertificate forKey:@"allowedCertificate"];
     }
-    
+
+    if (self.threePIDs)
+    {
+        [coder encodeObject:threePIDs forKey:@"threePIDs"];
+    }
+
     if (self.identityServerURL)
     {
         [coder encodeObject:_identityServerURL forKey:@"identityserverurl"];
+    }
+    
+    if (self.pushGatewayURL)
+    {
+        [coder encodeObject:_pushGatewayURL forKey:@"pushgatewayurl"];
     }
     
     [coder encodeBool:_enablePushNotifications forKey:@"_enablePushNotifications"];
@@ -208,6 +229,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // By default, use the same address for the identity server
         [mxRestClient setIdentityServer:mxCredentials.homeServer];
     }
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
+- (void)setPushGatewayURL:(NSString *)pushGatewayURL
+{
+    _pushGatewayURL = pushGatewayURL.length ? pushGatewayURL : nil;
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
@@ -241,6 +270,26 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         return mxCredentials.userId;
     }
+}
+
+- (NSArray<MXThirdPartyIdentifier *> *)threePIDs
+{
+    return threePIDs;
+}
+
+- (NSArray<NSString *> *)linkedEmails
+{
+    NSMutableArray<NSString *> *linkedEmails = [NSMutableArray array];
+
+    for (MXThirdPartyIdentifier *threePID in threePIDs)
+    {
+        if ([threePID.medium isEqualToString:kMX3PIDMediumEmail])
+        {
+            [linkedEmails addObject:threePID.address];
+        }
+    }
+
+    return linkedEmails;
 }
 
 - (UIColor*)userTintColor
@@ -290,12 +339,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         {
             // Close session (keep the storage).
             [self closeSession:NO];
-	    if (_enablePushNotifications)
-	    {
-		// Turn off pusher
-		[self enablePusher:NO success:nil failure:nil];
-	    }
-    
+            if (_enablePushNotifications)
+            {
+                // Turn off pusher
+                [self enablePusher:NO success:nil failure:nil];
+            }
+
         }
         else if (!mxSession)
         {
@@ -371,6 +420,28 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
     }
+}
+
+- (void)load3PIDs:(void (^)())success failure:(void (^)(NSError *))failure
+{
+    [mxRestClient threePIDs:^(NSArray<MXThirdPartyIdentifier *> *threePIDs2) {
+
+        threePIDs = threePIDs2;
+
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
+
+        if (success)
+        {
+            success();
+        }
+
+    } failure:^(NSError *error) {
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
 }
 
 - (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion
@@ -536,6 +607,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)pauseInBackgroundTask
 {
+    // Reset internal flag
+    isPauseRequested = NO;
+    
     if (mxSession && mxSession.state == MXSessionStateRunning)
     {
         _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -629,6 +703,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         return;
     }
     
+    // Check whether the Push Gateway URL has been configured.
+    if (!self.pushGatewayURL)
+    {
+        NSLog(@"[MXKAccount] Not setting pusher because the Push Gateway URL is undefined");
+        return;
+    }
+    
 #ifdef DEBUG
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdDev"];
 #else
@@ -645,7 +726,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     NSString *b64Token = [[MXKAccountManager sharedManager].apnsDeviceToken base64EncodedStringWithOptions:0];
     NSDictionary *pushData = @{
-                               @"url": @"https://matrix.org/_matrix/push/v1/notify",
+                               @"url": self.pushGatewayURL,
                                };
     
     NSString *deviceLang = [NSLocale preferredLanguages][0];
@@ -889,6 +970,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
         }
     }
+    else if (mxSession.state == MXSessionStatePaused)
+    {
+        isPauseRequested = NO;
+    }
 }
 
 - (void)prepareRESTClient
@@ -951,7 +1036,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }
         
-        [self onBackgroundSyncDone:[[NSError alloc] init]];
+        [self onBackgroundSyncDone:[NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]];
     }
 }
 
@@ -1001,8 +1086,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)backgroundSync:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
 {
-    isPauseRequested = NO;
-    
     // only work when the application is suspended
     
     // Check conditions before launching background sync
@@ -1053,7 +1136,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else
     {
         NSLog(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
-        failure([[NSError alloc] init]);
+        failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
     }
 }
 

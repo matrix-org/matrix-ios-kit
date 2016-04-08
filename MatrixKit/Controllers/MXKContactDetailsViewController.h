@@ -32,8 +32,9 @@
  
  @param contactDetailsViewController the `MXKContactDetailsViewController` instance.
  @param matrixId the selected matrix id of the contact.
+ @param completion the block to execute at the end of the operation (independently if it succeeded or not).
  */
-- (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString*)matrixId;
+- (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString*)matrixId completion:(void (^)(void))completion;
 
 @end
 

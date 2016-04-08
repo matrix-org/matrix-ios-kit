@@ -51,8 +51,9 @@ typedef enum : NSUInteger
  
  @param roomMemberDetailsViewController the `MXKRoomMemberDetailsViewController` instance.
  @param matrixId the member's matrix id
+ @param completion the block to execute at the end of the operation (independently if it succeeded or not).
  */
-- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString*)matrixId;
+- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString*)matrixId completion:(void (^)(void))completion;
 
 @optional
 
@@ -164,6 +165,16 @@ typedef enum : NSUInteger
  @param value the value to set.
  */
 - (void)setPowerLevel:(NSInteger)value;
+
+/**
+ Add a mask in overlay to prevent a new contact selection (used when an action is on progress).
+ */
+- (void)addPendingActionMask;
+
+/**
+ Remove the potential overlay mask
+ */
+- (void)removePendingActionMask;
 
 @end
 

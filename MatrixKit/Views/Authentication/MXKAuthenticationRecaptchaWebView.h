@@ -1,5 +1,5 @@
 /*
- Copyright 2015 OpenMarket Ltd
+ Copyright 2016 OpenMarket Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,8 +14,17 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import <MatrixSDK/MatrixSDK.h>
 
-NSString *const MatrixKitVersion = @"0.3.5";
+@interface MXKAuthenticationRecaptchaWebView : UIWebView <UIWebViewDelegate>
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+/**
+ Open reCAPTCHA widget into a webview.
+ 
+ @param siteKey the site key.
+ @param homeServer the home server URL.
+ @param callback the block called when the user has received reCAPTCHA response.
+ */
+- (void)openRecaptchaWidgetWithSiteKey:(NSString*)siteKey fromHomeServer:(NSString*)homeServer callback:(void (^)(NSString *response))callback;
+
+@end

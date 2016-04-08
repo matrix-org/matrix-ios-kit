@@ -1,3 +1,22 @@
+Changes in MatrixKit in 0.3.5 (2016-04-08)
+===============================================
+
+Improvements:
+ * MXKAccountManager: API change - [openSessionForActiveAccounts] is replaced by [prepareSessionForActiveAccounts]. This new method checks for each enabled account if a matrix session is already opened. It opens a matrix session for each enabled account which doesn't have a session.
+ * MXK3PID: support new email binding mechanism.
+ * MXKAuthenticationViewController, MXKAuthInputsView: Support registration based on MXAuthenticationSession class.
+ * MXKAuthenticationRecaptchaWebView: Display a reCAPTCHA widget into a webview.
+ * MXKAccountDetailsViewController: Handle the linked emails.
+ * MXKAccount: Store (permanently) 3PIDs.
+ * MXKRecentsDataSource: Remove room notifications and room tags handling (These operations are handled by inherited classes).
+ * MXKContactManager: List email addresses from the local address book (see 'localEmailContacts').
+ * MXKAccountManager: Added accountKnowingRoomWithRoomIdOrAlias method.
+
+Bug fixes:
+ * Search: 'no result' label is persistent #75.
+ * MXKAccount: the push gateway URL must be configurable #76.
+ * Multiple invitations on Start Chat action.
+
 Changes in MatrixKit in 0.3.4 (2016-03-17)
 ===============================================
 

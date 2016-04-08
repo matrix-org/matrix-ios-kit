@@ -279,6 +279,7 @@
         // Display "No Results" if there is nothing
         if ([dataSource tableView:_searchTableView numberOfRowsInSection:0])
         {
+            _noResultsLabel.hidden = YES;
             _searchTableView.hidden = NO;
         }
         else
