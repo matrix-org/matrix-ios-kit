@@ -2525,7 +2525,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {
-    if (typing && savedInputToolbarPlaceholder)
+    if (typing && savedInputToolbarPlaceholder && inputToolbarView.textMessage.length)
     {
         // Reset temporary placeholder (used in case of wrong command usage)
         inputToolbarView.placeholder = savedInputToolbarPlaceholder.length ? savedInputToolbarPlaceholder : nil;
