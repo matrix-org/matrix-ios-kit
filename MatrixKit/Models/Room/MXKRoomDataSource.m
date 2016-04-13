@@ -1023,7 +1023,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             minMessageHeight = MIN(minMessageHeight,  bubbleHeight / bubbleData.events.count);
         }
     }
-    else
+    else if (minRequestMessagesCount)
     {
         NSLog(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
         // Give a chance to load data from the store before doing homeserver requests
