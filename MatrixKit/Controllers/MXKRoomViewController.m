@@ -25,6 +25,8 @@
 #import "MXKImageView.h"
 #import "MXKEventDetailsView.h"
 
+#import "MXKRoomDataSourceManager.h"
+
 #import "MXKRoomInputToolbarViewWithSimpleTextView.h"
 
 #import "MXKConstants.h"
@@ -817,6 +819,63 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 completion(NO);
             }
             
+        }];
+    }
+    else if (completion)
+    {
+        completion (NO);
+    }
+}
+
+- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
+{
+    // Check whether a join request is not already running
+    if (!joinRoomRequest)
+    {
+        [self startActivityIndicator];
+
+        joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias withSignUrl:signUrl success:^(MXRoom *room) {
+
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+
+            // The room is now part of the user's room
+            MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
+            MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES];
+
+            // And can be displayed
+            [self displayRoom:roomDataSource];
+
+            if (completion)
+            {
+                completion(YES);
+            }
+
+        } failure:^(NSError *error) {
+
+            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomIdOrAlias, error);
+
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+
+            // Show the error to the end user
+            __weak typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
+                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomIdOrAlias]
+                                                     style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                              {
+                                                  typeof(self) self = weakSelf;
+                                                  self->currentAlert = nil;
+                                              }];
+
+            [currentAlert showInViewController:self];
+
+            if (completion)
+            {
+                completion(NO);
+            }
+
         }];
     }
     else if (completion)

@@ -195,6 +195,20 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)joinRoom:(void(^)(BOOL succeed))completion;
 
 /**
+ Join the room from a 3PID invitation.
+ 
+ This operation fails if the user has already joined the room, or if the data source is not ready,
+ or if the access to the room is forbidden to the user.
+ It fails if a join request is already running too.
+ 
+ @param roomIdOrAlias the id or the alias of the room to join.
+ @param signUrl the signurl paramater passed with the 3PID invitation.
+ @param completion the block to execute at the end of the operation.
+ You may specify nil for this parameter.
+ */
+- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
+
+/**
  Update view controller appearance when the user is about to leave the displayed room.
  This method is called when the user will leave the current room (see `kMXSessionWillLeaveRoomNotification`).
  
