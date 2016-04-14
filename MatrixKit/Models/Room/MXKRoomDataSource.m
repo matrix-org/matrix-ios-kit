@@ -2340,6 +2340,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [self markAllAsRead];
     }
     
+    // PATCH: Presently no bubble must be displayed until the user joins the room.
+    // FIXME: Handle room data source in case of room preview
+    if (self.room.state.membership == MXMembershipInvite)
+    {
+        return 0;
+    }
+    
     NSInteger count;
     @synchronized(bubbles)
     {

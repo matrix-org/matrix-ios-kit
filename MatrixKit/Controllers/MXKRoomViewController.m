@@ -166,6 +166,43 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark -
 
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self)
+    {
+        [self applyDefaultConfig];
+    }
+    
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        [self applyDefaultConfig];
+    }
+    
+    return self;
+}
+
+- (void)applyDefaultConfig
+{
+    // Default pagination settings
+    _paginationThreshold = 300;
+    _paginationLimit = 30;
+    
+    // Save progress text input by default
+    _saveProgressTextInput = YES;
+    
+    // Enable auto join option by default
+    _autoJoinInvitedRoom = YES;
+}
+
+#pragma mark -
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -220,13 +257,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
-    
-    // Default pagination settings
-    _paginationThreshold = 300;
-    _paginationLimit = 30;
-    
-    // Save progress text input
-    _saveProgressTextInput = YES;
     
     // Finalize table view configuration
     [self configureBubblesTableView];
@@ -559,49 +589,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-- (void)onRoomDataSourceReady
-{
-    // If the user is only invited, auto-join the room
-    if (roomDataSource.room.state.membership == MXMembershipInvite)
-    {
-        // Check whether a join request is not already running
-        if (!joinRoomRequest)
-        {
-            [self startActivityIndicator];
-            joinRoomRequest = [roomDataSource.room join:^{
-                
-                joinRoomRequest = nil;
-                [self stopActivityIndicator];
-                
-                [self triggerInitialBackPagination];
-            } failure:^(NSError *error) {
-                
-                NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
-                
-                joinRoomRequest = nil;
-                [self stopActivityIndicator];
-                
-                // Show the error to the end user
-                __weak typeof(self) weakSelf = self;
-                currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                                       message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
-                                                         style:MXKAlertStyleAlert];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                                                  {
-                                                      typeof(self) self = weakSelf;
-                                                      self->currentAlert = nil;
-                                                  }];
-                
-                [currentAlert showInViewController:self];
-            }];
-        }
-    }
-    else
-    {
-        [self triggerInitialBackPagination];
-    }
-}
-
 - (BOOL)isBubblesTableScrollViewAtTheBottom
 {
     // Check whether the most recent message is visible.
@@ -702,6 +689,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
+- (void)onRoomDataSourceReady
+{
+    // If the user is only invited, auto-join the room if this option is enabled
+    if (roomDataSource.room.state.membership == MXMembershipInvite)
+    {
+        if (_autoJoinInvitedRoom)
+        {
+            [self joinRoom:nil];
+        }
+    }
+    else
+    {
+        [self triggerInitialBackPagination];
+    }
+}
+
 - (void)updateViewControllerAppearanceOnRoomDataSourceState
 {
     // Update UI by considering dataSource state
@@ -767,6 +770,58 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Hide by default the activity view when no room is displayed
         activitiesView.hidden = (roomDataSource == nil);
+    }
+}
+
+- (void)joinRoom:(void(^)(BOOL succeed))completion
+{
+    // Check whether a join request is not already running
+    if (!joinRoomRequest)
+    {
+        [self startActivityIndicator];
+        
+        joinRoomRequest = [roomDataSource.room join:^{
+            
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+            
+            [self triggerInitialBackPagination];
+            
+            if (completion)
+            {
+                completion(YES);
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
+            
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+            
+            // Show the error to the end user
+            __weak typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
+                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
+                                                     style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                              {
+                                                  typeof(self) self = weakSelf;
+                                                  self->currentAlert = nil;
+                                              }];
+            
+            [currentAlert showInViewController:self];
+            
+            if (completion)
+            {
+                completion(NO);
+            }
+            
+        }];
+    }
+    else if (completion)
+    {
+        completion (NO);
     }
 }
 
