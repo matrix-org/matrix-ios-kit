@@ -834,7 +834,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self startActivityIndicator];
 
-        joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias withSignUrl:signUrl success:^(MXRoom *room) {
+        void (^success)(MXRoom *room)  = ^(MXRoom *room) {
 
             joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -850,8 +850,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 completion(YES);
             }
+        };
 
-        } failure:^(NSError *error) {
+        void (^failure)(NSError *error) = ^(NSError *error) {
 
             NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomIdOrAlias, error);
 
@@ -870,13 +871,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                               }];
 
             [currentAlert showInViewController:self];
-
+            
             if (completion)
             {
                 completion(NO);
             }
+        };
 
-        }];
+        // Does the join need to be validated before?
+        if (signUrl)
+        {
+            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias withSignUrl:signUrl success:success failure:failure];
+        }
+        else
+        {
+            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias success:success failure:failure];
+        }
     }
     else if (completion)
     {

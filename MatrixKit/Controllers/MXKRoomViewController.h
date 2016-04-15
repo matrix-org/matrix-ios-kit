@@ -195,14 +195,14 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)joinRoom:(void(^)(BOOL succeed))completion;
 
 /**
- Join the room from a 3PID invitation.
- 
+ Join a room with a room id.
+
  This operation fails if the user has already joined the room, or if the data source is not ready,
  or if the access to the room is forbidden to the user.
  It fails if a join request is already running too.
  
  @param roomIdOrAlias the id or the alias of the room to join.
- @param signUrl the signurl paramater passed with the 3PID invitation.
+ @param signUrl the signurl paramater passed with a 3PID invitation. It is optional and can be nil.
  @param completion the block to execute at the end of the operation.
  You may specify nil for this parameter.
  */
