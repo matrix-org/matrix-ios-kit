@@ -222,3 +222,4 @@ typedef enum : NSUInteger {
 - (BOOL)dataSource:(MXKDataSource*)dataSource shouldDoAction:(NSString *)actionIdentifier inCell:(id<MXKCellRendering>)cell userInfo:(NSDictionary *)userInfo defaultValue:(BOOL)defaultValue;
 
 @end
+
