@@ -98,10 +98,22 @@ extern NSString *const kMXKRoomBubbleCellLongPressOnProgressView;
 extern NSString *const kMXKRoomBubbleCellLongPressOnAvatarView;
 
 /**
+ Action identifier used when the user clicked on a link.
+
+ This action is sent via the MXKCellRenderingDelegate `shouldDoAction` operation.
+
+ The `userInfo` dictionary contains a `NSURL` object under the `kMXKRoomBubbleCellUrl` key, representing the url the user wants to open.
+
+ The shouldDoAction implementation must return NO to prevent the system (safari) from opening the link.
+ */
+extern NSString *const kMXKRoomBubbleCellShouldInteractWithURL;
+
+/**
  Notifications `userInfo` keys
  */
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
+extern NSString *const kMXKRoomBubbleCellUrl;
 
 #pragma mark - MXKRoomBubbleTableViewCell
 
@@ -112,7 +124,7 @@ extern NSString *const kMXKRoomBubbleCellEventKey;
  To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
  Each inherited class should define only the actual displayed items.
  */
-@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate>
 
 /**
  The current bubble data displayed by the table view cell

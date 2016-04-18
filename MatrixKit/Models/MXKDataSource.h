@@ -207,4 +207,18 @@ typedef enum : NSUInteger {
  */
 - (void)dataSource:(MXKDataSource*)dataSource didRecognizeAction:(NSString*)actionIdentifier inCell:(id<MXKCellRendering>)cell userInfo:(NSDictionary*)userInfo;
 
+/**
+ Asks the delegate if a user action (click on a link) can be done.
+
+ @see `MXKCellRenderingDelegate` for more details.
+
+ @param dataSource the involved data source.
+ @param actionIdentifier an identifier indicating the action type (link click) and which part of the cell is concerned.
+ @param cell the cell in which action has been observed.
+ @param userInfo a dict containing additional information. It depends on actionIdentifier. May be nil.
+ @param defaultValue the value to return by default if the action is not handled.
+ @return a boolean value which depends on actionIdentifier.
+ */
+- (BOOL)dataSource:(MXKDataSource*)dataSource shouldDoAction:(NSString *)actionIdentifier inCell:(id<MXKCellRendering>)cell userInfo:(NSDictionary *)userInfo defaultValue:(BOOL)defaultValue;
+
 @end

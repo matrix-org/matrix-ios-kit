@@ -33,9 +33,11 @@ NSString *const kMXKRoomBubbleCellUnsentButtonPressed = @"kMXKRoomBubbleCellUnse
 NSString *const kMXKRoomBubbleCellLongPressOnEvent = @"kMXKRoomBubbleCellLongPressOnEvent";
 NSString *const kMXKRoomBubbleCellLongPressOnProgressView = @"kMXKRoomBubbleCellLongPressOnProgressView";
 NSString *const kMXKRoomBubbleCellLongPressOnAvatarView = @"kMXKRoomBubbleCellLongPressOnAvatarView";
+NSString *const kMXKRoomBubbleCellShouldInteractWithURL = @"kMXKRoomBubbleCellShouldInteractWithURL";
 
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
+NSString *const kMXKRoomBubbleCellUrl = @"kMXKRoomBubbleCellUrl";
 
 static BOOL _disableLongPressGestureOnEvent;
 
@@ -100,6 +102,9 @@ static BOOL _disableLongPressGestureOnEvent;
         [tapGesture setDelegate:self];
         [self.messageTextView addGestureRecognizer:tapGesture];
         self.messageTextView.userInteractionEnabled = YES;
+
+        // Listen to link click
+        self.messageTextView.delegate = self;
         
         if (_disableLongPressGestureOnEvent == NO)
         {
@@ -949,6 +954,19 @@ static NSMutableDictionary *childClasses;
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnAvatarView userInfo:@{kMXKRoomBubbleCellUserIdKey: bubbleData.senderId}];
         }
     }
+}
+
+#pragma mark - UITextView delegate
+
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
+{
+    BOOL shouldInteractWithURL = YES;
+    if (delegate)
+    {
+        // Ask the delegate if iOS can open the link
+        shouldInteractWithURL = [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:@{kMXKRoomBubbleCellUrl:URL} defaultValue:YES];
+    }
+    return shouldInteractWithURL;
 }
 
 @end
