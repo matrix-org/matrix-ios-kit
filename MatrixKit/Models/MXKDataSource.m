@@ -122,6 +122,19 @@
     }
 }
 
+- (BOOL)cell:(id<MXKCellRendering>)cell shouldDoAction:(NSString *)actionIdentifier userInfo:(NSDictionary *)userInfo defaultValue:(BOOL)defaultValue
+{
+    BOOL shouldDoAction = defaultValue;
+
+    // The data source simply relays the question to its delegate
+    if (_delegate && [_delegate respondsToSelector:@selector(dataSource:shouldDoAction:inCell:userInfo:defaultValue:)])
+    {
+        shouldDoAction = [_delegate dataSource:self shouldDoAction:actionIdentifier inCell:cell userInfo:userInfo defaultValue:defaultValue];
+    }
+
+    return shouldDoAction;
+}
+
 
 #pragma mark - Pending HTTP requests
 /**
