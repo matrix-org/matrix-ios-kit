@@ -857,7 +857,10 @@
         if (mediaPlayerError)
         {
             NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
-            
+
+            // Display the navigation bar so that the user can leave this screen
+            self.navigationController.navigationBarHidden = NO;
+
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
         }
