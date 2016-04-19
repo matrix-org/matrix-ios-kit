@@ -122,9 +122,13 @@
 {
     if ([self.medium isEqualToString:kMX3PIDMediumEmail])
     {
+        __weak typeof(self) weakSelf = self;
         currentRequest = [mxRestClient add3PID:self.sid clientSecret:self.clientSecret bind:bind success:^{
+
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+
             // Update linked userId in 3PID
-            self.userId = mxRestClient.credentials.userId;
+            strongSelf.userId = strongSelf->mxRestClient.credentials.userId;
             currentRequest = nil;
 
             if (success)

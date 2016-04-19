@@ -841,10 +841,10 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
             // The room is now part of the user's room
             MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
-            MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES];
+            MXKRoomDataSource *newRoomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES];
 
             // And can be displayed
-            [self displayRoom:roomDataSource];
+            [self displayRoom:newRoomDataSource];
 
             if (completion)
             {
