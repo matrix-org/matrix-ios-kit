@@ -66,8 +66,10 @@
     
     if (self.mxRoom)
     {
-        // replace empty string by nil : avoid having the placeholder when there is no topic
-        self.topicTextField.text = (self.mxRoom.state.topic) ? self.mxRoom.state.topic : nil;
+        // Remove new line characters
+        NSString *topic = [MXTools stripNewlineCharacters:self.mxRoom.state.topic];
+        // replace empty string by nil: avoid having the placeholder when there is no topic
+        self.topicTextField.text = (topic.length ? topic : nil);
     }
     else
     {
@@ -451,7 +453,9 @@
                 }
                 
                 // Revert change
-                textField.text = strongSelf.mxRoom.state.topic;
+                NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.state.topic];
+                textField.text = (topic.length ? topic : nil);
+
                 // Hide topic field if empty
                 strongSelf.hiddenTopic = !textField.text.length;
                 
