@@ -2509,13 +2509,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
+    if (tableView == _bubblesTableView)
+    {
+        return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
+    }
+    
+    return 0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Dismiss keyboard when user taps on messages table view content
-    [self dismissKeyboard];
+    if (tableView == _bubblesTableView)
+    {
+        // Dismiss keyboard when user taps on messages table view content
+        [self dismissKeyboard];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -2578,7 +2586,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     if (scrollView == _bubblesTableView)
@@ -2592,30 +2599,33 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    // Consider this callback to reset scrolling to bottom flag
-    isScrollingToBottom = NO;
-
-    // shouldScrollToBottomOnTableRefresh is used to inhibit false detection of
-    // scrolling action from the user when the viewVC appears or rotates
-    if (scrollView == _bubblesTableView && scrollView.contentSize.height && !shouldScrollToBottomOnTableRefresh)
+    if (scrollView == _bubblesTableView)
     {
-        // when the content size if smaller that the frame
-        // scrollViewDidEndDecelerating is not called
-        // so test it when the content offset goes back to the screen top.
-        if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
-        {
-            [self managePullToKick:scrollView];
-        }
+        // Consider this callback to reset scrolling to bottom flag
+        isScrollingToBottom = NO;
         
-        // Trigger inconspicuous pagination when user scrolls toward the top
-        if (scrollView.contentOffset.y < _paginationThreshold)
+        // shouldScrollToBottomOnTableRefresh is used to inhibit false detection of
+        // scrolling action from the user when the viewVC appears or rotates
+        if (scrollView == _bubblesTableView && scrollView.contentSize.height && !shouldScrollToBottomOnTableRefresh)
         {
-            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
-        }
-        // Enable forwards pagination when displaying non live timeline
-        else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
-        {
-            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
+            // when the content size if smaller that the frame
+            // scrollViewDidEndDecelerating is not called
+            // so test it when the content offset goes back to the screen top.
+            if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
+            {
+                [self managePullToKick:scrollView];
+            }
+            
+            // Trigger inconspicuous pagination when user scrolls toward the top
+            if (scrollView.contentOffset.y < _paginationThreshold)
+            {
+                [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
+            }
+            // Enable forwards pagination when displaying non live timeline
+            else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
+            {
+                [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
+            }
         }
     }
 }
