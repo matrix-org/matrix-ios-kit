@@ -26,7 +26,7 @@
     if (publicRoom.topic)
     {
         _roomTopic.hidden = NO;
-        _roomTopic.text = publicRoom.topic;
+        _roomTopic.text = [MXTools stripNewlineCharacters:publicRoom.topic];
     }
     else
     {
