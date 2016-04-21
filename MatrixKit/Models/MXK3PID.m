@@ -35,6 +35,7 @@
     {
         _medium = [medium copy];
         _address = [address copy];
+        self.clientSecret = [MXTools generateSecret];
     }
     return self;
 }
@@ -46,8 +47,7 @@
     [currentRequest cancel];
     currentRequest = nil;
     mxRestClient = nil;
-    
-    self.clientSecret = nil;
+
     self.sendAttempt = 1;
     self.sid = nil;
     // Removed potential linked userId
@@ -55,6 +55,7 @@
 }
 
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
+                                          nextLink:(NSString*)nextLink
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure
 {
@@ -70,11 +71,10 @@
         
         if ([self.medium isEqualToString:kMX3PIDMediumEmail])
         {
-            self.clientSecret = [MXTools generateSecret];
             _validationState = MXK3PIDAuthStateTokenRequested;
             mxRestClient = restClient;
             
-            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt success:^(NSString *sid)
+            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid)
             {
                 _validationState = MXK3PIDAuthStateTokenReceived;
                 currentRequest = nil;
