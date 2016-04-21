@@ -142,4 +142,9 @@
     return nil;
 }
 
+- (NSString*)password
+{
+    return nil;
+}
+
 @end
