@@ -97,6 +97,11 @@ typedef enum {
 @property (nonatomic, readonly) NSString *userId;
 
 /**
+ The current filled password (nil by default).
+ */
+@property (nonatomic, readonly) NSString *password;
+
+/**
  The layout constraint defined on the view height. This height takes into account shown/hidden fields.
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;

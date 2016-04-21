@@ -95,7 +95,8 @@ extern NSString *const MXKAuthErrorDomain;
 @property (nonatomic) MXKAuthenticationType authType;
 
 /**
- The current view in which authentication inputs are displayed (`MXKAuthInputsView-inherited` instance).
+ The view in which authentication inputs are displayed (`MXKAuthInputsView-inherited` instance).
+ Note about the setter: The current view is unchanged if the new view is an instance of the same class.
  */
 @property (nonatomic) MXKAuthInputsView *authInputsView;
 
