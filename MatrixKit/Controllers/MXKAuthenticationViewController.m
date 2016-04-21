@@ -315,6 +315,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
 {
+    // The current view is unchanged if the new view is an instance of the same class.
+    if (_authInputsView && (_authInputsView.class == authInputsView.class))
+    {
+        return;
+    }
+    
     // Here a new view will be loaded, hide first subviews which depend on auth flow
     _submitButton.hidden = YES;
     _noFlowLabel.hidden = YES;
