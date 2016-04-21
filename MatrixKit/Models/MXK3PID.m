@@ -40,7 +40,7 @@
     return self;
 }
 
-- (void)resetValidationParameters
+- (void)cancelCurrentRequest
 {
     _validationState = MXK3PIDAuthStateUnknown;
     
@@ -66,7 +66,7 @@
         // Reset if the current state is different than "Unknown"
         if (_validationState != MXK3PIDAuthStateUnknown)
         {
-            [self resetValidationParameters];
+            [self cancelCurrentRequest];
         }
         
         if ([self.medium isEqualToString:kMX3PIDMediumEmail])

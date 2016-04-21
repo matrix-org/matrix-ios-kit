@@ -65,6 +65,11 @@ typedef enum : NSUInteger {
 - (instancetype)initWithMedium:(NSString*)medium andAddress:(NSString*)address;
 
 /**
+ Cancel the current request, and reset parameters
+ */
+- (void)cancelCurrentRequest;
+
+/**
  Start the validation process 
  The identity server will send a validation token to the user's address.
  

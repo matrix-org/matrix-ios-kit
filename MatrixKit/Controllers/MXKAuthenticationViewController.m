@@ -64,6 +64,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
      The cancel button added in navigation bar when fallback page is opened.
      */
     UIBarButtonItem *cancelFallbackBarButton;
+    
+    /**
+     The timer used to postpone the registration when the authentication is pending (for example waiting for email validation)
+     */
+    NSTimer* registrationTimer;
 }
 
 @end
@@ -244,6 +249,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     self.authInputsView = nil;
     
+    if (registrationTimer)
+    {
+        [registrationTimer invalidate];
+        registrationTimer = nil;
+    }
+    
     if (mxCurrentOperation){
         [mxCurrentOperation cancel];
         mxCurrentOperation = nil;
@@ -315,12 +326,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
 {
-    // The current view is unchanged if the new view is an instance of the same class.
-    if (_authInputsView && (_authInputsView.class == authInputsView.class))
-    {
-        return;
-    }
-    
     // Here a new view will be loaded, hide first subviews which depend on auth flow
     _submitButton.hidden = YES;
     _noFlowLabel.hidden = YES;
@@ -529,24 +534,32 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     [_authenticationActivityIndicator stopAnimating];
     
-    // Check whether fallback is defined, and instantiate an auth inputs view (if a class is defined).
-    MXKAuthInputsView *authInputsView;
+    // Check whether fallback is defined, and retrieve the right input view class.
+    Class authInputsViewClass;
     if (_authType == MXKAuthenticationTypeLogin)
     {
         authenticationFallback = [mxRestClient loginFallback];
+        authInputsViewClass = loginAuthInputsViewClass;
         
-        if (loginAuthInputsViewClass)
-        {
-            authInputsView = [loginAuthInputsViewClass authInputsView];
-        }
     }
     else
     {
         authenticationFallback = [mxRestClient registerFallback];
-        
-        if (registerAuthInputsViewClass)
+        authInputsViewClass = registerAuthInputsViewClass;
+    }
+    
+    MXKAuthInputsView *authInputsView = nil;
+    if (authInputsViewClass)
+    {
+        // Instantiate a new auth inputs view, except if the current one is already an instance of this class.
+        if (self.authInputsView && self.authInputsView.class == authInputsViewClass)
         {
-            authInputsView = [registerAuthInputsViewClass authInputsView];
+            // Use the current view
+            authInputsView = self.authInputsView;
+        }
+        else
+        {
+            authInputsView = [authInputsViewClass authInputsView];
         }
     }
     
@@ -569,8 +582,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (authInputsView)
     {
-        // Refresh UI
-        self.authInputsView = authInputsView;
+        // Check whether the current view must be changed
+        if (self.authInputsView != authInputsView)
+        {
+            // Refresh layout
+            self.authInputsView = authInputsView;
+        }
     }
     else
     {
@@ -797,6 +814,30 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
+- (void)cancel
+{
+    NSLog(@"[MXKAuthenticationVC] cancel");
+    
+    if (registrationTimer)
+    {
+        [registrationTimer invalidate];
+        registrationTimer = nil;
+    }
+    
+    // Cancel request in progress
+    if (mxCurrentOperation)
+    {
+        [mxCurrentOperation cancel];
+        mxCurrentOperation = nil;
+    }
+    
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+    
+    // Update authentication inputs view to return in initial step
+    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+}
+
 #pragma mark - Privates
 
 - (void)updateRESTClient
@@ -905,6 +946,12 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)registerWithParameters:(NSDictionary*)parameters
 {
+    if (registrationTimer)
+    {
+        [registrationTimer invalidate];
+        registrationTimer = nil;
+    }
+    
     mxCurrentOperation = [mxRestClient registerWithParameters:parameters success:^(NSDictionary *JSONResponse) {
         
         MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
@@ -935,13 +982,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             NSLog(@"[MXKAuthenticationVC] Wait for email validation");
             
-            // Loop
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                
-                NSLog(@"[MXKAuthenticationVC] Retry registration");
-                [self registerWithParameters:parameters];
-                
-            });
+            // Postpone a new attempt in 10 sec
+            registrationTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(registrationTimerFireMethod:) userInfo:parameters repeats:NO];
         }
         else
         {
@@ -992,6 +1034,15 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             }
         }
     }];
+}
+
+- (void)registrationTimerFireMethod:(NSTimer *)timer
+{
+    if (timer == registrationTimer && timer.isValid)
+    {
+        NSLog(@"[MXKAuthenticationVC] Retry registration");
+        [self registerWithParameters:registrationTimer.userInfo];
+    }
 }
 
 - (void)onFailureDuringMXOperation:(NSError*)error
