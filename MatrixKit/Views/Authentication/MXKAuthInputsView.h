@@ -125,6 +125,7 @@ typedef enum {
 
 /**
  Finalize the authentication inputs view with a session and a type.
+ Use this method to restore the view in its initial step.
  
  @discussion You may override this method to check/update the flows listed in the provided authentication session.
  

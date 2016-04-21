@@ -96,7 +96,6 @@ extern NSString *const MXKAuthErrorDomain;
 
 /**
  The view in which authentication inputs are displayed (`MXKAuthInputsView-inherited` instance).
- Note about the setter: The current view is unchanged if the new view is an instance of the same class.
  */
 @property (nonatomic) MXKAuthInputsView *authInputsView;
 
@@ -198,6 +197,11 @@ extern NSString *const MXKAuthErrorDomain;
  Force dismiss keyboard
  */
 - (void)dismissKeyboard;
+
+/**
+ Cancel the current operation, and return to the initial step
+ */
+- (void)cancel;
 
 @end
 
