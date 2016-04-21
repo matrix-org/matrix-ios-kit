@@ -236,12 +236,12 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)setRoomTitleViewClass:(Class)roomTitleViewClass;
 
 /**
- Register the class used to instantiate the input toolbar view
- which will handle message composer and attachments selection for the room.
+ Register the class used to instantiate the input toolbar view which will handle message composer
+ and attachments selection for the room.
  
  The resulting view is added into 'roomInputToolbarContainer' view, which must be defined before calling this method.
  
- @param roomInputToolbarViewClass a MXKRoomInputToolbarView-inherited class.
+ @param roomInputToolbarViewClass a MXKRoomInputToolbarView-inherited class, or nil to remove the current view.
  */
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass;
 
@@ -250,7 +250,7 @@ extern NSString *const kCmdResetUserPowerLevel;
  
  The resulting view is added into 'roomActivitiesContainer' view, which must be defined before calling this method.
  
- @param roomActivitiesViewClass a MXKRoomActivitiesViewClass-inherited class.
+ @param roomActivitiesViewClass a MXKRoomActivitiesViewClass-inherited class, or nil to remove the current view.
  */
 - (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass;
 

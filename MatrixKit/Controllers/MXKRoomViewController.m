@@ -667,6 +667,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (dataSource)
     {
+        // Remove the input toolbar and the room activities view if the displayed timeline is not a live one
+        // We do not let the user type message in this case.
+        if (!roomDataSource.isLive)
+        {
+            [self setRoomInputToolbarViewClass:nil];
+            [self setRoomActivitiesViewClass:nil];
+        }
+        
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
         
@@ -1000,19 +1008,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass
 {
-    // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
-    NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
-    
     if (!_roomInputToolbarContainer)
     {
         NSLog(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
-        return;
-    }
-
-    // Do not show the input toolbar if the displayed timeline is not the live one
-    // We do not let the user type message in this case.
-    if (!roomDataSource.isLive)
-    {
         return;
     }
 
@@ -1030,61 +1028,66 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [inputToolbarView dismissKeyboard];
         [inputToolbarView removeFromSuperview];
         [inputToolbarView destroy];
+        inputToolbarView = nil;
     }
     
-    inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
+    if (roomDataSource && !roomDataSource.isLive)
+    {
+        // Do not show the input toolbar if the displayed timeline is not a live one
+        // We do not let the user type message in this case.
+        roomInputToolbarViewClass = nil;
+    }
     
-    inputToolbarView.delegate = self;
+    if (roomInputToolbarViewClass)
+    {
+        // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
+        NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
+        
+        inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
+        
+        inputToolbarView.delegate = self;
+        
+        // Add the input toolbar view and define edge constraints
+        [_roomInputToolbarContainer addSubview:inputToolbarView];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeBottom
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeBottom
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeTop
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeTop
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeLeading
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeLeading
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeTrailing
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeTrailing
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+    }
     
-    // Add the input toolbar view and define edge constraints
-    [_roomInputToolbarContainer addSubview:inputToolbarView];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeBottom
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeBottom
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeTop
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeTop
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeLeading
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeLeading
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeTrailing
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeTrailing
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
     [_roomInputToolbarContainer setNeedsUpdateConstraints];
 }
 
 
 - (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass
 {
-    // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
-    NSParameterAssert([roomActivitiesViewClass isSubclassOfClass:MXKRoomActivitiesView.class]);
-    
     if (!_roomActivitiesContainer)
     {
         NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
-        return;
-    }
-
-    // Do not show room activities if the displayed timeline is not the live one
-    if (!roomDataSource.isLive)
-    {
-        _roomActivitiesContainerHeightConstraint.constant = 0;
         return;
     }
 
@@ -1101,66 +1104,83 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         [activitiesView removeFromSuperview];
         [activitiesView destroy];
+        activitiesView = nil;
     }
     
-    activitiesView = [roomActivitiesViewClass roomActivitiesView];
+    if (roomDataSource && !roomDataSource.isLive)
+    {
+        // Do not show room activities if the displayed timeline is not a live one
+        roomActivitiesViewClass = nil;
+    }
     
-    // Add the view and define edge constraints
-    activitiesView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_roomActivitiesContainer addSubview:activitiesView];
-    
-    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:activitiesView
-                                                                     attribute:NSLayoutAttributeTop
-                                                                    multiplier:1.0f
-                                                                      constant:0.0f];
-    
-    
-    NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                         attribute:NSLayoutAttributeLeading
+    if (roomActivitiesViewClass)
+    {
+        // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
+        NSParameterAssert([roomActivitiesViewClass isSubclassOfClass:MXKRoomActivitiesView.class]);
+        
+        activitiesView = [roomActivitiesViewClass roomActivitiesView];
+        
+        // Add the view and define edge constraints
+        activitiesView.translatesAutoresizingMaskIntoConstraints = NO;
+        [_roomActivitiesContainer addSubview:activitiesView];
+        
+        NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                         attribute:NSLayoutAttributeTop
                                                                          relatedBy:NSLayoutRelationEqual
                                                                             toItem:activitiesView
-                                                                         attribute:NSLayoutAttributeLeading
+                                                                         attribute:NSLayoutAttributeTop
                                                                         multiplier:1.0f
                                                                           constant:0.0f];
-    
-    NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                       attribute:NSLayoutAttributeWidth
-                                                                       relatedBy:NSLayoutRelationEqual
-                                                                          toItem:activitiesView
-                                                                       attribute:NSLayoutAttributeWidth
-                                                                      multiplier:1.0f
-                                                                        constant:0.0f];
-    
-    NSLayoutConstraint* heightConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                       attribute:NSLayoutAttributeHeight
-                                                                       relatedBy:NSLayoutRelationEqual
-                                                                          toItem:activitiesView
-                                                                       attribute:NSLayoutAttributeHeight
-                                                                      multiplier:1.0f
-                                                                        constant:0.0f];
-    
-    
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-    {
-        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
+        
+        
+        NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:activitiesView
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f];
+        
+        NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                           attribute:NSLayoutAttributeWidth
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:activitiesView
+                                                                           attribute:NSLayoutAttributeWidth
+                                                                          multiplier:1.0f
+                                                                            constant:0.0f];
+        
+        NSLayoutConstraint* heightConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:activitiesView
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                           multiplier:1.0f
+                                                                             constant:0.0f];
+        
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+        {
+            [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
+        }
+        else
+        {
+            [_roomActivitiesContainer addConstraint:topConstraint];
+            [_roomActivitiesContainer addConstraint:leadingConstraint];
+            [_roomActivitiesContainer addConstraint:widthConstraint];
+            [_roomActivitiesContainer addConstraint:heightConstraint];
+        }
+        
+        // let the provide view to define a height.
+        // it could have no constrainst if there is no defined xib
+        _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
     }
     else
     {
-        [_roomActivitiesContainer addConstraint:topConstraint];
-        [_roomActivitiesContainer addConstraint:leadingConstraint];
-        [_roomActivitiesContainer addConstraint:widthConstraint];
-        [_roomActivitiesContainer addConstraint:heightConstraint];
+        _roomActivitiesContainerHeightConstraint.constant = 0;
     }
     
-    // let the provide view to define a height.
-    // it could have no constrainst if there is no defined xib
-    _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
-    
     _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomActivitiesContainerHeightConstraint.constant;
-    
+
     [_roomActivitiesContainer setNeedsUpdateConstraints];
 }
 
