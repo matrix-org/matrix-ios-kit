@@ -89,6 +89,39 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                           bundle:[NSBundle bundleForClass:[MXKAuthenticationViewController class]]];
 }
 
+#pragma mark -
+
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self)
+    {
+        [self finalizeWithDefaultConfig];
+    }
+    
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        [self finalizeWithDefaultConfig];
+    }
+    
+    return self;
+}
+
+- (void)finalizeWithDefaultConfig
+{
+    // Set initial auth type
+    _authType = MXKAuthenticationTypeLogin;
+    
+    // Initialize authInputs view classes
+    loginAuthInputsViewClass = MXKAuthInputsPasswordBasedView.class;
+    registerAuthInputsViewClass = nil; // No registration flow is supported yet
+}
 
 #pragma mark -
 
@@ -175,13 +208,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     _identityServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_info"];
     [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
     [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
-    
-    // Set initial auth type
-    _authType = MXKAuthenticationTypeLogin;
-    
-    // Initialize authInputs view classes
-    loginAuthInputsViewClass = MXKAuthInputsPasswordBasedView.class;
-    registerAuthInputsViewClass = nil; // No registration flow is supported yet
 }
 
 - (void)dealloc
@@ -288,9 +314,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setAuthType:(MXKAuthenticationType)authType
 {
-    // Cancel external registration parameters if any
-    _externalRegistrationParameters = nil;
-    
     if (authType == MXKAuthenticationTypeLogin)
     {
         _subTitleLabel.hidden = YES;
@@ -312,6 +335,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if (_authType != authType)
     {
         _authType = authType;
+        
+        // Cancel external registration parameters if any
+        _externalRegistrationParameters = nil;
         
         // Remove the current inputs view
         self.authInputsView = nil;
@@ -604,6 +630,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             {
                 [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
                 
+                _externalRegistrationParameters = nil;
+                
                 // Restore login screen on failure
                 self.authType = MXKAuthenticationTypeLogin;
             }
@@ -649,6 +677,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if (parameters.count)
     {
         NSLog(@"[MXKAuthenticationVC] setExternalRegistrationParameters");
+        
+        // Load the view controller’s view if it has not yet been loaded.
+        // This is required before updating view's textfields (homeserver url...)
+        [self loadViewIfNeeded];
         
         // Force register mode
         self.authType = MXKAuthenticationTypeRegister;
@@ -1144,9 +1176,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     mxCurrentOperation = nil;
     
-    // Cancel external registration parameters if any
-    _externalRegistrationParameters = nil;
-    
     [_authenticationActivityIndicator stopAnimating];
     
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
@@ -1154,6 +1183,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Ignore this error
         return;
     }
+    
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
     
     // Alert user
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
@@ -1235,14 +1267,14 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
     
-    // Cancel external registration parameters if any
-    _externalRegistrationParameters = nil;
-    
     // Ignore connection cancellation error
     if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
     {
         return;
     }
+    
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
     
     // Translate the error code to a human message
     NSString *title = error.localizedFailureReason;

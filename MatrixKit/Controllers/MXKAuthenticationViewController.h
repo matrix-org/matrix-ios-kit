@@ -90,7 +90,7 @@ extern NSString *const MXKAuthErrorDomain;
 @property (weak, nonatomic) IBOutlet UIButton *cancelAuthFallbackButton;
 
 /**
- The current authentication type
+ The current authentication type (MXKAuthenticationTypeLogin by default).
  */
 @property (nonatomic) MXKAuthenticationType authType;
 
