@@ -2047,11 +2047,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
     }
 
+    CGPoint contentOffset = self.bubblesTableView.contentOffset;
+
+    BOOL hasScrolledToTheBottom = [self reloadBubblesTable:YES];
+
     // If the user is scrolling while we reload the data for a new incoming message for example,
     // there will be a jump in the table view display.
     // Resetting the contentOffset after the reload fixes the issue.
-    CGPoint contentOffset = self.bubblesTableView.contentOffset;
-    if ([self reloadBubblesTable:YES] == NO)
+    if (hasScrolledToTheBottom == NO)
     {
         self.bubblesTableView.contentOffset = contentOffset;
     }
