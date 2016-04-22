@@ -110,6 +110,12 @@ extern NSString *const MXKAuthErrorDomain;
 @property (nonatomic) NSString *defaultIdentityServerUrl;
 
 /**
+ Force a registration process based on a predefined set of parameters.
+ Use this property to pursue a registration from the next_link sent in an email validation email.
+ */
+@property (nonatomic) NSDictionary* externalRegistrationParameters;
+
+/**
  Enable/disable overall the user interaction option.
  It is used during authentication process to prevent multiple requests.
  */

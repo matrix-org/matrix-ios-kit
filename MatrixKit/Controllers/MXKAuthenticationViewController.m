@@ -288,6 +288,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setAuthType:(MXKAuthenticationType)authType
 {
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
+    
     if (authType == MXKAuthenticationTypeLogin)
     {
         _subTitleLabel.hidden = YES;
@@ -582,17 +585,37 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     if (authInputsView)
     {
-        // Check whether the current view must be changed
+        // Check whether the current view must be replaced
         if (self.authInputsView != authInputsView)
         {
             // Refresh layout
             self.authInputsView = authInputsView;
+        }
+        
+        // Check whether an external set of parameters have been defined to pursue a registration
+        if (self.externalRegistrationParameters)
+        {
+            if ([authInputsView setExternalRegistrationParameters:self.externalRegistrationParameters])
+            {
+                // Launch authentication now
+                [self onButtonPressed:_submitButton];
+            }
+            else
+            {
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                
+                // Restore login screen on failure
+                self.authType = MXKAuthenticationTypeLogin;
+            }
         }
     }
     else
     {
         // Remove the potential auth inputs view
         self.authInputsView = nil;
+        
+        // Cancel external registration parameters if any
+        _externalRegistrationParameters = nil;
         
         // Notify user that no flow is supported
         if (_authType == MXKAuthenticationTypeLogin)
@@ -618,6 +641,57 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         
         _noFlowLabel.hidden = NO;
         _retryButton.hidden = NO;
+    }
+}
+
+- (void)setExternalRegistrationParameters:(NSDictionary*)parameters
+{
+    if (parameters.count)
+    {
+        NSLog(@"[MXKAuthenticationVC] setExternalRegistrationParameters");
+        
+        // Force register mode
+        self.authType = MXKAuthenticationTypeRegister;
+        
+        // Apply provided homeserver if any
+        id hs_url = parameters[@"hs_url"];
+        NSString *homeserverURL = nil;
+        if (hs_url && [hs_url isKindOfClass:NSString.class])
+        {
+            homeserverURL = hs_url;
+        }
+        [self setHomeServerTextFieldText:homeserverURL];
+        
+        // Apply provided identity server if any
+        id is_url = parameters[@"is_url"];
+        NSString *identityURL = nil;
+        if (is_url && [is_url isKindOfClass:NSString.class])
+        {
+            identityURL = is_url;
+        }
+        [self setIdentityServerTextFieldText:identityURL];
+        
+        // Disable user interaction
+        self.userInteractionEnabled = NO;
+        
+        // Cancel potential request in progress
+        [mxCurrentOperation cancel];
+        mxCurrentOperation = nil;
+        
+        // Remove the current auth inputs view
+        self.authInputsView = nil;
+        
+        // Set external parameters and trigger a refresh (the parameters will be taken into account during [handleAuthenticationSession:])
+        _externalRegistrationParameters = parameters;
+        [self refreshAuthenticationSession];
+    }
+    else
+    {
+        NSLog(@"[MXKAuthenticationVC] resetExternalRegistrationParameters");
+        _externalRegistrationParameters = nil;
+        
+        // Restore default UI
+        self.authType = _authType;
     }
 }
 
@@ -777,6 +851,24 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                         }];
                     }
                 }
+                else if (self.externalRegistrationParameters)
+                {
+                    // Launch registration by preparing parameters dict
+                    [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                        
+                        if (parameters && mxRestClient)
+                        {
+                            [_authenticationActivityIndicator startAnimating];
+                            [self registerWithParameters:parameters];
+                        }
+                        else
+                        {
+                            NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                        }
+                        
+                    }];
+                }
                 else
                 {
                     NSLog(@"[MXKAuthenticationVC] User name is missing");
@@ -817,6 +909,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 - (void)cancel
 {
     NSLog(@"[MXKAuthenticationVC] cancel");
+    
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
     
     if (registrationTimer)
     {
@@ -1049,6 +1144,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     mxCurrentOperation = nil;
     
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
+    
     [_authenticationActivityIndicator stopAnimating];
     
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
@@ -1136,6 +1234,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     self.userInteractionEnabled = YES;
     
     NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
+    
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
     
     // Ignore connection cancellation error
     if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
