@@ -536,7 +536,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKAuthenticationVC] Failed to get Login flows: %@", error);
                 [self onFailureDuringMXOperation:error];
                 
             }];
@@ -549,7 +548,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 
             } failure:^(NSError *error){
                 
-                NSLog(@"[MXKAuthenticationVC] Failed to get Register flows: %@", error);
                 [self onFailureDuringMXOperation:error];
                 
             }];
@@ -1181,8 +1179,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
     {
         // Ignore this error
+        NSLog(@"[MXKAuthenticationVC] flows request cancelled");
         return;
     }
+    
+    NSLog(@"[MXKAuthenticationVC] Failed to get %@ flows: %@", (_authType == MXKAuthenticationTypeLogin ? @"Login" : @"Register"), error);
     
     // Cancel external registration parameters if any
     _externalRegistrationParameters = nil;
@@ -1265,13 +1266,15 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [_authenticationActivityIndicator stopAnimating];
     self.userInteractionEnabled = YES;
     
-    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
-    
     // Ignore connection cancellation error
     if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
     {
+        
+        NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
         return;
     }
+    
+    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
     
     // Cancel external registration parameters if any
     _externalRegistrationParameters = nil;
