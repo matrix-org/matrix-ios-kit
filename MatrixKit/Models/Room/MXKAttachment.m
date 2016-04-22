@@ -28,11 +28,6 @@
     id onAttachmentDownloadFailureObs;
     
     /**
-     The original file name is available in event body (if any).
-     */
-    NSString *originalFileName;
-    
-    /**
      The local path used to store the attachment with its original name
      */
     NSString* documentCopyPath;
@@ -82,7 +77,7 @@
             return nil;
         }
         
-        originalFileName = [_event.content[@"body"] isKindOfClass:[NSString class]] ? _event.content[@"body"] : nil;
+        _originalFileName = [_event.content[@"body"] isKindOfClass:[NSString class]] ? _event.content[@"body"] : nil;
     }
     return self;
 }
@@ -269,11 +264,11 @@
         NSURL *fileUrl;
         
         // Check whether the original name retrieved from event body has extension
-        if (originalFileName && [originalFileName pathExtension].length)
+        if (_originalFileName && [_originalFileName pathExtension].length)
         {
             // Copy the cached file to restore its original name
             // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-            documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:originalFileName];
+            documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:_originalFileName];
             
             [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
             if ([[NSFileManager defaultManager] copyItemAtPath:_cacheFilePath toPath:documentCopyPath error:nil])

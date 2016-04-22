@@ -2404,8 +2404,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 }
 
 
-#pragma mark - Local echo suppression
-// @TODO: All these dirty methods will be removed once CS v2 is available.
+#pragma mark - Local echo handling
 
 /**
  Add a local echo event waiting for the true event coming down from the event stream.

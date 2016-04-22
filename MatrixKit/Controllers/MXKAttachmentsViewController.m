@@ -28,6 +28,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKEventFormatter.h"
+
 @interface MXKAttachmentsViewController ()
 {
     /**
@@ -150,6 +152,9 @@
     }
     
     [_attachmentsCollection reloadData];
+    
+    // Adjust content offset
+    [self refreshAttachmentCollectionContentOffset];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -282,6 +287,7 @@
 - (void)displayAttachments:(NSArray*)attachmentArray focusOn:(NSString*)eventId
 {
     NSString *currentAttachmentEventId = eventId;
+    NSString *currentAttachmentOriginalFileName = nil;
     
     if (currentAttachmentEventId.length == 0 && attachments)
     {
@@ -296,11 +302,23 @@
                 // Retrieve the event id of the first item in the current attachments array
                 MXKAttachment *attachment = attachments[0];
                 NSString *firstAttachmentEventId = attachment.event.eventId;
+                NSString *firstAttachmentOriginalFileName = nil;
+                
+                // The original file name is used when the attachment is a local echo.
+                // Indeed its event id may be replaced by the actual one in the new attachments array.
+                if ([firstAttachmentEventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix])
+                {
+                    firstAttachmentOriginalFileName = attachment.originalFileName;
+                }
                 
                 // Look for the attachment added before this attachment in new array.
                 for (attachment in attachmentArray)
                 {
-                    if ([attachment.event.eventId isEqualToString:firstAttachmentEventId])
+                    if (firstAttachmentOriginalFileName && [attachment.originalFileName isEqualToString:firstAttachmentOriginalFileName])
+                    {
+                        break;
+                    }
+                    else if ([attachment.event.eventId isEqualToString:firstAttachmentEventId])
                     {
                         break;
                     }
@@ -313,10 +331,17 @@
             // Compute the attachment index
             NSUInteger currentAttachmentIndex = (isBackPaginationInProgress ? currentVisibleItemIndex - 1 : currentVisibleItemIndex);
             
-            if (currentVisibleItemIndex < attachments.count)
+            if (currentAttachmentIndex < attachments.count)
             {
                 MXKAttachment *attachment = attachments[currentAttachmentIndex];
                 currentAttachmentEventId = attachment.event.eventId;
+                
+                // The original file name is used when the attachment is a local echo.
+                // Indeed its event id may be replaced by the actual one in the new attachments array.
+                if ([currentAttachmentEventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix])
+                {
+                    currentAttachmentOriginalFileName = attachment.originalFileName;
+                }
             }
         }
     }
@@ -327,7 +352,8 @@
     // Set/reset the attachments array
     attachments = [NSMutableArray arrayWithArray:attachmentArray];
     
-    // Update the index of the current displayed attachment according to the new attachments array
+    // Update the index of the current displayed attachment by looking for the
+    // current event id (or the current original file name, if any) in the new attachments array.
     currentVisibleItemIndex = 0;
     if (currentAttachmentEventId)
     {
@@ -335,7 +361,14 @@
         {
             MXKAttachment *attachment = attachments[index];
             
-            if ([attachment.event.eventId isEqualToString:currentAttachmentEventId])
+            // Check first the original filename if any.
+            if (currentAttachmentOriginalFileName && [attachment.originalFileName isEqualToString:currentAttachmentOriginalFileName])
+            {
+                currentVisibleItemIndex = index;
+                break;
+            }
+            // Check the event id then
+            else if ([attachment.event.eventId isEqualToString:currentAttachmentEventId])
             {
                 currentVisibleItemIndex = index;
                 break;
@@ -372,7 +405,11 @@
 
 - (void)refreshCurrentVisibleItemIndex
 {
-    currentVisibleItemIndex = _attachmentsCollection.contentOffset.x / [[UIScreen mainScreen] bounds].size.width;
+    // Check whether the collection is actually rendered
+    if (_attachmentsCollection.contentSize.width)
+    {
+        currentVisibleItemIndex = _attachmentsCollection.contentOffset.x / [[UIScreen mainScreen] bounds].size.width;
+    }
 }
 
 - (void)refreshAttachmentCollectionContentOffset
