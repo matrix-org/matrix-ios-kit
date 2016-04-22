@@ -55,6 +55,11 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSDictionary *thumbnailInfo;
 
 /**
+ The original file name retrieved from the event body (if any).
+ */
+@property (nonatomic, readonly) NSString *originalFileName;
+
+/**
  The actual attachment url
  */
 @property (nonatomic, readonly) NSString *actualURL;
