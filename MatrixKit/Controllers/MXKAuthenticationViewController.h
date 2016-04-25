@@ -90,7 +90,7 @@ extern NSString *const MXKAuthErrorDomain;
 @property (weak, nonatomic) IBOutlet UIButton *cancelAuthFallbackButton;
 
 /**
- The current authentication type
+ The current authentication type (MXKAuthenticationTypeLogin by default).
  */
 @property (nonatomic) MXKAuthenticationType authType;
 
@@ -108,6 +108,12 @@ extern NSString *const MXKAuthErrorDomain;
  The default identity server url (nil by default).
  */
 @property (nonatomic) NSString *defaultIdentityServerUrl;
+
+/**
+ Force a registration process based on a predefined set of parameters.
+ Use this property to pursue a registration from the next_link sent in an email validation email.
+ */
+@property (nonatomic) NSDictionary* externalRegistrationParameters;
 
 /**
  Enable/disable overall the user interaction option.

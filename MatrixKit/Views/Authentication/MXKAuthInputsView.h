@@ -160,6 +160,16 @@ typedef enum {
 - (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback;
 
 /**
+ Update the current authentication session by providing a set of registration parameters.
+ 
+ @discussion This operation failed if the current authentication type is MXKAuthenticationTypeLogin.
+ 
+ @param registrationParameters a set of parameters to use during the current registration process.
+ @return YES if the provided set of parameters is supported.
+ */
+- (BOOL)setExternalRegistrationParameters:(NSDictionary *)registrationParameters;
+
+/**
  Tell whether all required fields are set
  */
 - (BOOL)areAllRequiredFieldsSet;

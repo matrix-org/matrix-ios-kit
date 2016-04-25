@@ -95,6 +95,12 @@
     }
 }
 
+- (BOOL)setExternalRegistrationParameters:(NSDictionary *)registrationParameters
+{
+    // Not supported by default
+    return NO;
+}
+
 - (BOOL)areAllRequiredFieldsSet
 {
     // Currently no field to check here
