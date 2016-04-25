@@ -676,6 +676,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         NSLog(@"[MXKAuthenticationVC] setExternalRegistrationParameters");
         
+        // Cancel the current operation if any.
+        [self cancel];
+        
         // Load the view controller’s view if it has not yet been loaded.
         // This is required before updating view's textfields (homeserver url...)
         [self loadViewIfNeeded];
