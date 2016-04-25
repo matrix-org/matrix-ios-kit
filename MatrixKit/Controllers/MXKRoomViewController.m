@@ -972,6 +972,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     titleView.delegate = self;
     
     // Add the title view and define edge constraints
+    titleView.translatesAutoresizingMaskIntoConstraints = NO;
     [_roomTitleViewContainer addSubview:titleView];
     [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
                                                                         attribute:NSLayoutAttributeBottom
