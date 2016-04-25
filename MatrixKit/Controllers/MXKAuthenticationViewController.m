@@ -717,7 +717,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     else
     {
-        NSLog(@"[MXKAuthenticationVC] resetExternalRegistrationParameters");
+        NSLog(@"[MXKAuthenticationVC] reset externalRegistrationParameters");
         _externalRegistrationParameters = nil;
         
         // Restore default UI
