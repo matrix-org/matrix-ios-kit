@@ -1,3 +1,25 @@
+Changes in MatrixKit in 0.3.6 (2016-04-26)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.6).
+ * MXKRoomViewController: Support room preview.
+ * MXKRoomViewController: Added "joinRoomWithRoomId:andSignUrl:" to join a room from a 3PID invitation.
+ * MXKRoomViewController: input tool bar and activities view may be removed on demand.
+ * MXKCellRenderingDelegate: Added shouldDoAction delegate operation (a mechanism to ask the app if a link can be opened automatically by the system).
+ * Media Picker - Video playback: In case of error, display the navigation bar so that the user can leave this screen.
+ * MXKAuthenticationViewController - Registration: support next_link from email validation.
+
+Bug fixes:
+ * The hint text animated weirdly horizontally after i send msgs.
+ * MXKRoomDataSource: Fix infinite loop on initial pagination.
+ * MXKAuthenticationViewController: The filled userId and password must be associated to the authentication session before launching email validation with next_link field.
+ * MXKAuthenticationViewController: Fix registration cancellation.
+ * Chat screen: lag during the history scrolling.
+ * Chat screen: jump on an incoming messages when the user scrolls (even with no back pagination).
+ * Chat screen: wrong attachment is opened.
+ * Wrong application icon badge number.
+
 Changes in MatrixKit in 0.3.5 (2016-04-08)
 ===============================================
 

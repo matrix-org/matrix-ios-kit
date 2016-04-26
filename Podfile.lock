@@ -25,7 +25,7 @@ PODS:
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.8.11)
-  - MatrixSDK (0.6.5):
+  - MatrixSDK (0.6.6):
     - AFNetworking (~> 2.6.0)
 
 DEPENDENCIES:
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: 48e2580540dbd5bf312f75d60c8922f6e2ca11d5
+    :commit: be44b85021516f5c6c95df77b3e5a538405f49b7
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
@@ -50,6 +50,6 @@ SPEC CHECKSUMS:
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: ded33fab2c51ee847979556aa504c9e70f32d703
-  MatrixSDK: 598925faff319441724db8a6af2a9cfc21d167e5
+  MatrixSDK: dcf3a2cc6478a6a1f0c8b8eaead78b74ada7c439
 
 COCOAPODS: 0.39.0
