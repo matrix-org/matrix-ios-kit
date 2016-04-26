@@ -231,7 +231,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (MXMembershipInvite == _room.state.membership)
     {
         _hasUnread = YES;
-        _notificationCount = 0;
+        _notificationCount = 1; // Set 1 here to be able to refresh correctly the Application Icon Badge Number when app is backgrounded.
         _highlightCount = 0;
     }
     else
