@@ -103,9 +103,14 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id NSCurrentLocaleDidChangeNotificationObserver;
     
     /**
-     Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync v2.
+     Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync.
      */
-    id roomSyncWithLimitedTimelineNotification;
+    id roomSyncWithLimitedTimelineNotificationObserver;
+    
+    /**
+     Observe kMXRoomDidUpdateUnreadNotification to refresh unread counters.
+     */
+    id roomDidUpdateUnreadNotificationObserver;
 }
 
 @end
@@ -185,17 +190,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Observe NSCurrentLocaleDidChangeNotification to refresh bubbles if date/time are shown.
         // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
         NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            [self onDateTimeFormatUpdate];
-        }];
-        
-        roomSyncWithLimitedTimelineNotification = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
-            MXRoom *room = notif.object;
-            if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
-            {
-                // The existing room history has been flushed during server sync v2 because a gap has been observed between local and server storage. 
-                [self reload];
-            }
+            [self onDateTimeFormatUpdate];
+            
         }];
     }
     return self;
@@ -299,6 +296,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)reset
 {
+    if (roomSyncWithLimitedTimelineNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomSyncWithLimitedTimelineNotificationObserver];
+        roomSyncWithLimitedTimelineNotificationObserver = nil;
+    }
+    
+    if (roomDidUpdateUnreadNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidUpdateUnreadNotificationObserver];
+        roomDidUpdateUnreadNotificationObserver = nil;
+    }
+    
     if (paginationRequest)
     {
         // We have to remove here the listener. A new pagination request may be triggered whereas the cancellation of this one is in progress
@@ -400,12 +409,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         UIApplicationSignificantTimeChangeNotificationObserver = nil;
     }
     
-    if (roomSyncWithLimitedTimelineNotification)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:roomSyncWithLimitedTimelineNotification];
-        roomSyncWithLimitedTimelineNotification = nil;
-    }
-    
     [self reset];
     
     self.eventFormatter = nil;
@@ -438,6 +441,29 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Only one pagination process can be done at a time by an MXRoom object.
                     // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                     [_timeline resetPagination];
+                    
+                    // Observe sync with limited timeline
+                    roomSyncWithLimitedTimelineNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                        
+                        MXRoom *room = notif.object;
+                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+                        {
+                            // The existing room history has been flushed during server sync because a gap has been observed between local and server storage.
+                            [self reload];
+                        }
+                        
+                    }];
+                    
+                    // Observe unread notifications change
+                    roomDidUpdateUnreadNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidUpdateUnreadNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                        
+                        MXRoom *room = notif.object;
+                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+                        {
+                            [self refreshUnreadCounters];
+                        }
+                        
+                    }];
 
                     [self refreshUnreadCounters];
 
@@ -698,11 +724,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     if (0 == remainingEvents)
                     {
                         [self removeCellData:bubbleData];
-                    }
-                    
-                    if (_isLive)
-                    {
-                        [self refreshUnreadCounters];
                     }
                     
                     // Update the delegate on main thread
@@ -2285,11 +2306,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             // Notify that sync process ends
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
                         }
-                    }
-                    
-                    if (_isLive)
-                    {
-                        [self refreshUnreadCounters];
                     }
                     
                     bubbles = bubblesSnapshot;
