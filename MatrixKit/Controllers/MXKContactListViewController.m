@@ -640,4 +640,10 @@
     }
 }
 
+- (BOOL)cell:(id<MXKCellRendering>)cell shouldDoAction:(NSString *)actionIdentifier userInfo:(NSDictionary *)userInfo defaultValue:(BOOL)defaultValue
+{
+    // No such action yet on contacts
+    return defaultValue;
+}
+
 @end

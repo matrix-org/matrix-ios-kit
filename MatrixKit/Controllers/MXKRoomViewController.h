@@ -102,6 +102,12 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property BOOL saveProgressTextInput;
 
 /**
+ The invited rooms can be automatically joined when the data source is ready.
+ This property enable/disable this option. Its value is YES by default.
+ */
+@property BOOL autoJoinInvitedRoom;
+
+/**
  This object is defined when the displayed room is left. It is added into the bubbles table header.
  This label is used to display the reason why the room has been left.
  */
@@ -148,6 +154,20 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)displayRoom:(MXKRoomDataSource*)dataSource;
 
 /**
+ This method is called when the associated data source is ready.
+ 
+ By default this operation triggers the initial back pagination when the user is an actual
+ member of the room (membership = join).
+ 
+ The invited rooms are automatically joined during this operation if 'autoJoinInvitedRoom' is YES.
+ When the room is successfully joined, an initial back pagination is triggered too.
+ Else nothing is done for the invited rooms.
+ 
+ Override it to customize the view controller behavior when the data source is ready.
+ */
+- (void)onRoomDataSourceReady;
+
+/**
  Update view controller appearance according to the state of its associated data source.
  This method is called in the following use cases:
  - on data source change (see `[MXKRoomViewController displayRoom:]`).
@@ -162,6 +182,31 @@ extern NSString *const kCmdResetUserPowerLevel;
  Override it to customize view appearance according to data source state.
  */
 - (void)updateViewControllerAppearanceOnRoomDataSourceState;
+
+/**
+ Join the current displayed room.
+ 
+ This operation fails if the user has already joined the room, or if the data source is not ready.
+ It fails if a join request is already running too.
+ 
+ @param completion the block to execute at the end of the operation.
+ You may specify nil for this parameter.
+ */
+- (void)joinRoom:(void(^)(BOOL succeed))completion;
+
+/**
+ Join a room with a room id.
+
+ This operation fails if the user has already joined the room, or if the data source is not ready,
+ or if the access to the room is forbidden to the user.
+ It fails if a join request is already running too.
+ 
+ @param roomIdOrAlias the id or the alias of the room to join.
+ @param signUrl the signurl paramater passed with a 3PID invitation. It is optional and can be nil.
+ @param completion the block to execute at the end of the operation.
+ You may specify nil for this parameter.
+ */
+- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
 
 /**
  Update view controller appearance when the user is about to leave the displayed room.
@@ -191,12 +236,12 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)setRoomTitleViewClass:(Class)roomTitleViewClass;
 
 /**
- Register the class used to instantiate the input toolbar view
- which will handle message composer and attachments selection for the room.
+ Register the class used to instantiate the input toolbar view which will handle message composer
+ and attachments selection for the room.
  
  The resulting view is added into 'roomInputToolbarContainer' view, which must be defined before calling this method.
  
- @param roomInputToolbarViewClass a MXKRoomInputToolbarView-inherited class.
+ @param roomInputToolbarViewClass a MXKRoomInputToolbarView-inherited class, or nil to remove the current view.
  */
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass;
 
@@ -205,7 +250,7 @@ extern NSString *const kCmdResetUserPowerLevel;
  
  The resulting view is added into 'roomActivitiesContainer' view, which must be defined before calling this method.
  
- @param roomActivitiesViewClass a MXKRoomActivitiesViewClass-inherited class.
+ @param roomActivitiesViewClass a MXKRoomActivitiesViewClass-inherited class, or nil to remove the current view.
  */
 - (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass;
 

@@ -65,6 +65,11 @@ typedef enum : NSUInteger {
 - (instancetype)initWithMedium:(NSString*)medium andAddress:(NSString*)address;
 
 /**
+ Cancel the current request, and reset parameters
+ */
+- (void)cancelCurrentRequest;
+
+/**
  Start the validation process 
  The identity server will send a validation token to the user's address.
  
@@ -72,10 +77,12 @@ typedef enum : NSUInteger {
  to validate their email address in order to be able to call add3PIDToUser successfully.
  
  @param restClient used to make matrix API requests during validation process.
+ @param nextLink the link the validation page will automatically open. Can be nil.
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
+                                          nextLink:(NSString*)nextLink
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure;
 /**

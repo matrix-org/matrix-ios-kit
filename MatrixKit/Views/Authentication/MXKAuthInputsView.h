@@ -97,6 +97,11 @@ typedef enum {
 @property (nonatomic, readonly) NSString *userId;
 
 /**
+ The current filled password (nil by default).
+ */
+@property (nonatomic, readonly) NSString *password;
+
+/**
  The layout constraint defined on the view height. This height takes into account shown/hidden fields.
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *viewHeightConstraint;
@@ -120,6 +125,7 @@ typedef enum {
 
 /**
  Finalize the authentication inputs view with a session and a type.
+ Use this method to restore the view in its initial step.
  
  @discussion You may override this method to check/update the flows listed in the provided authentication session.
  
@@ -152,6 +158,16 @@ typedef enum {
  if something fails (for example when a parameter or a required input is missing).
  */
 - (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback;
+
+/**
+ Update the current authentication session by providing a set of registration parameters.
+ 
+ @discussion This operation failed if the current authentication type is MXKAuthenticationTypeLogin.
+ 
+ @param registrationParameters a set of parameters to use during the current registration process.
+ @return YES if the provided set of parameters is supported.
+ */
+- (BOOL)setExternalRegistrationParameters:(NSDictionary *)registrationParameters;
 
 /**
  Tell whether all required fields are set

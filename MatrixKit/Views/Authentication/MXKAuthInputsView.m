@@ -95,6 +95,12 @@
     }
 }
 
+- (BOOL)setExternalRegistrationParameters:(NSDictionary *)registrationParameters
+{
+    // Not supported by default
+    return NO;
+}
+
 - (BOOL)areAllRequiredFieldsSet
 {
     // Currently no field to check here
@@ -138,6 +144,11 @@
 }
 
 - (NSString*)userId
+{
+    return nil;
+}
+
+- (NSString*)password
 {
     return nil;
 }

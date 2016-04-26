@@ -35,19 +35,19 @@
     {
         _medium = [medium copy];
         _address = [address copy];
+        self.clientSecret = [MXTools generateSecret];
     }
     return self;
 }
 
-- (void)resetValidationParameters
+- (void)cancelCurrentRequest
 {
     _validationState = MXK3PIDAuthStateUnknown;
     
     [currentRequest cancel];
     currentRequest = nil;
     mxRestClient = nil;
-    
-    self.clientSecret = nil;
+
     self.sendAttempt = 1;
     self.sid = nil;
     // Removed potential linked userId
@@ -55,6 +55,7 @@
 }
 
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
+                                          nextLink:(NSString*)nextLink
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure
 {
@@ -65,16 +66,15 @@
         // Reset if the current state is different than "Unknown"
         if (_validationState != MXK3PIDAuthStateUnknown)
         {
-            [self resetValidationParameters];
+            [self cancelCurrentRequest];
         }
         
         if ([self.medium isEqualToString:kMX3PIDMediumEmail])
         {
-            self.clientSecret = [MXTools generateSecret];
             _validationState = MXK3PIDAuthStateTokenRequested;
             mxRestClient = restClient;
             
-            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt success:^(NSString *sid)
+            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid)
             {
                 _validationState = MXK3PIDAuthStateTokenReceived;
                 currentRequest = nil;
@@ -122,9 +122,13 @@
 {
     if ([self.medium isEqualToString:kMX3PIDMediumEmail])
     {
+        __weak typeof(self) weakSelf = self;
         currentRequest = [mxRestClient add3PID:self.sid clientSecret:self.clientSecret bind:bind success:^{
+
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+
             // Update linked userId in 3PID
-            self.userId = mxRestClient.credentials.userId;
+            strongSelf.userId = strongSelf->mxRestClient.credentials.userId;
             currentRequest = nil;
 
             if (success)

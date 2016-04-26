@@ -670,17 +670,23 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
         [alertsArray removeObject:alert];
 
+        __weak typeof(self) weakSelf = self;
+
         // We always bind emails when registering, so let's do the same here
         [submittedEmail add3PIDToUser:YES success:^{
 
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+
             // Release pending email and refresh table to remove related cell
-            emailTextField.text = nil;
-            submittedEmail = nil;
+            strongSelf->emailTextField.text = nil;
+            strongSelf->submittedEmail = nil;
 
             // Update linked emails
-            [self loadLinkedEmails];
+            [strongSelf loadLinkedEmails];
 
         } failure:^(NSError *error) {
+
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
 
             NSLog(@"[MXKAccountDetailsVC] Failed to bind email: %@", error);
 
@@ -688,7 +694,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringThreePIDAuthFailed])
             {
-                [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_error"]];
+                [strongSelf showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_error"]];
             }
             else
             {
@@ -697,7 +703,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             }
 
             // Release the pending email (even if it is Authenticated)
-            [self.tableView reloadData];
+            [strongSelf.tableView reloadData];
 
         }];
     }];
@@ -765,7 +771,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         
         emailSubmitButton.enabled = NO;
 
-        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient success:^{
+        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient nextLink:nil success:^{
 
             [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_message"]];
 

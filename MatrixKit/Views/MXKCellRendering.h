@@ -91,5 +91,19 @@
  */
 - (void)cell:(id<MXKCellRendering>)cell didRecognizeAction:(NSString*)actionIdentifier userInfo:(NSDictionary *)userInfo;
 
+/**
+ Asks the delegate if a user action (click on a link) can be done.
+
+ The action is described by the `actionIdentifier` param.
+ This identifier is specific and depends to the cell view class implementing MXKCellRendering.
+
+ @param cell the cell in which gesture has been observed.
+ @param actionIdentifier an identifier indicating the action type (link click) and which part of the cell is concerned.
+ @param userInfo a dict containing additional information. It depends on actionIdentifier. May be nil.
+ @param defaultValue the value to return by default if the action is not handled.
+ @return a boolean value which depends on actionIdentifier.
+ */
+- (BOOL)cell:(id<MXKCellRendering>)cell shouldDoAction:(NSString*)actionIdentifier userInfo:(NSDictionary *)userInfo defaultValue:(BOOL)defaultValue;
+
 @end
 

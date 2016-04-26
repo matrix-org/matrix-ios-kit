@@ -25,6 +25,8 @@
 #import "MXKImageView.h"
 #import "MXKEventDetailsView.h"
 
+#import "MXKRoomDataSourceManager.h"
+
 #import "MXKRoomInputToolbarViewWithSimpleTextView.h"
 
 #import "MXKConstants.h"
@@ -166,6 +168,43 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 #pragma mark -
 
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self)
+    {
+        [self applyDefaultConfig];
+    }
+    
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        [self applyDefaultConfig];
+    }
+    
+    return self;
+}
+
+- (void)applyDefaultConfig
+{
+    // Default pagination settings
+    _paginationThreshold = 300;
+    _paginationLimit = 30;
+    
+    // Save progress text input by default
+    _saveProgressTextInput = YES;
+    
+    // Enable auto join option by default
+    _autoJoinInvitedRoom = YES;
+}
+
+#pragma mark -
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -220,13 +259,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
-    
-    // Default pagination settings
-    _paginationThreshold = 300;
-    _paginationLimit = 30;
-    
-    // Save progress text input
-    _saveProgressTextInput = YES;
     
     // Finalize table view configuration
     [self configureBubblesTableView];
@@ -559,49 +591,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-- (void)onRoomDataSourceReady
-{
-    // If the user is only invited, auto-join the room
-    if (roomDataSource.room.state.membership == MXMembershipInvite)
-    {
-        // Check whether a join request is not already running
-        if (!joinRoomRequest)
-        {
-            [self startActivityIndicator];
-            joinRoomRequest = [roomDataSource.room join:^{
-                
-                joinRoomRequest = nil;
-                [self stopActivityIndicator];
-                
-                [self triggerInitialBackPagination];
-            } failure:^(NSError *error) {
-                
-                NSLog(@"[MXKRoomDataSource] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
-                
-                joinRoomRequest = nil;
-                [self stopActivityIndicator];
-                
-                // Show the error to the end user
-                __weak typeof(self) weakSelf = self;
-                currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                                       message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
-                                                         style:MXKAlertStyleAlert];
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                                                  {
-                                                      typeof(self) self = weakSelf;
-                                                      self->currentAlert = nil;
-                                                  }];
-                
-                [currentAlert showInViewController:self];
-            }];
-        }
-    }
-    else
-    {
-        [self triggerInitialBackPagination];
-    }
-}
-
 - (BOOL)isBubblesTableScrollViewAtTheBottom
 {
     // Check whether the most recent message is visible.
@@ -678,6 +667,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (dataSource)
     {
+        // Remove the input toolbar and the room activities view if the displayed timeline is not a live one
+        // We do not let the user type message in this case.
+        if (!roomDataSource.isLive)
+        {
+            [self setRoomInputToolbarViewClass:nil];
+            [self setRoomActivitiesViewClass:nil];
+        }
+        
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
         
@@ -700,6 +697,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
+}
+
+- (void)onRoomDataSourceReady
+{
+    // If the user is only invited, auto-join the room if this option is enabled
+    if (roomDataSource.room.state.membership == MXMembershipInvite)
+    {
+        if (_autoJoinInvitedRoom)
+        {
+            [self joinRoom:nil];
+        }
+    }
+    else
+    {
+        [self triggerInitialBackPagination];
+    }
 }
 
 - (void)updateViewControllerAppearanceOnRoomDataSourceState
@@ -767,6 +780,125 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Hide by default the activity view when no room is displayed
         activitiesView.hidden = (roomDataSource == nil);
+    }
+}
+
+- (void)joinRoom:(void(^)(BOOL succeed))completion
+{
+    // Check whether a join request is not already running
+    if (!joinRoomRequest)
+    {
+        [self startActivityIndicator];
+        
+        joinRoomRequest = [roomDataSource.room join:^{
+            
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+            
+            [self triggerInitialBackPagination];
+            
+            if (completion)
+            {
+                completion(YES);
+            }
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
+            
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+            
+            // Show the error to the end user
+            __weak typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
+                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
+                                                     style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                              {
+                                                  typeof(self) self = weakSelf;
+                                                  self->currentAlert = nil;
+                                              }];
+            
+            [currentAlert showInViewController:self];
+            
+            if (completion)
+            {
+                completion(NO);
+            }
+            
+        }];
+    }
+    else if (completion)
+    {
+        completion (NO);
+    }
+}
+
+- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
+{
+    // Check whether a join request is not already running
+    if (!joinRoomRequest)
+    {
+        [self startActivityIndicator];
+
+        void (^success)(MXRoom *room)  = ^(MXRoom *room) {
+
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+
+            // The room is now part of the user's room
+            MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
+            MXKRoomDataSource *newRoomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES];
+
+            // And can be displayed
+            [self displayRoom:newRoomDataSource];
+
+            if (completion)
+            {
+                completion(YES);
+            }
+        };
+
+        void (^failure)(NSError *error) = ^(NSError *error) {
+
+            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomIdOrAlias, error);
+
+            joinRoomRequest = nil;
+            [self stopActivityIndicator];
+
+            // Show the error to the end user
+            __weak typeof(self) weakSelf = self;
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
+                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomIdOrAlias]
+                                                     style:MXKAlertStyleAlert];
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                              {
+                                                  typeof(self) self = weakSelf;
+                                                  self->currentAlert = nil;
+                                              }];
+
+            [currentAlert showInViewController:self];
+            
+            if (completion)
+            {
+                completion(NO);
+            }
+        };
+
+        // Does the join need to be validated before?
+        if (signUrl)
+        {
+            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias withSignUrl:signUrl success:success failure:failure];
+        }
+        else
+        {
+            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias success:success failure:failure];
+        }
+    }
+    else if (completion)
+    {
+        completion (NO);
     }
 }
 
@@ -840,6 +972,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     titleView.delegate = self;
     
     // Add the title view and define edge constraints
+    titleView.translatesAutoresizingMaskIntoConstraints = NO;
     [_roomTitleViewContainer addSubview:titleView];
     [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
                                                                         attribute:NSLayoutAttributeBottom
@@ -876,19 +1009,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)setRoomInputToolbarViewClass:(Class)roomInputToolbarViewClass
 {
-    // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
-    NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
-    
     if (!_roomInputToolbarContainer)
     {
         NSLog(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
-        return;
-    }
-
-    // Do not show the input toolbar if the displayed timeline is not the live one
-    // We do not let the user type message in this case.
-    if (!roomDataSource.isLive)
-    {
         return;
     }
 
@@ -906,61 +1029,66 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [inputToolbarView dismissKeyboard];
         [inputToolbarView removeFromSuperview];
         [inputToolbarView destroy];
+        inputToolbarView = nil;
     }
     
-    inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
+    if (roomDataSource && !roomDataSource.isLive)
+    {
+        // Do not show the input toolbar if the displayed timeline is not a live one
+        // We do not let the user type message in this case.
+        roomInputToolbarViewClass = nil;
+    }
     
-    inputToolbarView.delegate = self;
+    if (roomInputToolbarViewClass)
+    {
+        // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
+        NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
+        
+        inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
+        
+        inputToolbarView.delegate = self;
+        
+        // Add the input toolbar view and define edge constraints
+        [_roomInputToolbarContainer addSubview:inputToolbarView];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeBottom
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeBottom
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeTop
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeTop
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeLeading
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeLeading
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+        [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
+                                                                               attribute:NSLayoutAttributeTrailing
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:inputToolbarView
+                                                                               attribute:NSLayoutAttributeTrailing
+                                                                              multiplier:1.0f
+                                                                                constant:0.0f]];
+    }
     
-    // Add the input toolbar view and define edge constraints
-    [_roomInputToolbarContainer addSubview:inputToolbarView];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeBottom
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeBottom
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeTop
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeTop
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeLeading
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeLeading
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
-    [_roomInputToolbarContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomInputToolbarContainer
-                                                                           attribute:NSLayoutAttributeTrailing
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:inputToolbarView
-                                                                           attribute:NSLayoutAttributeTrailing
-                                                                          multiplier:1.0f
-                                                                            constant:0.0f]];
     [_roomInputToolbarContainer setNeedsUpdateConstraints];
 }
 
 
 - (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass
 {
-    // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
-    NSParameterAssert([roomActivitiesViewClass isSubclassOfClass:MXKRoomActivitiesView.class]);
-    
     if (!_roomActivitiesContainer)
     {
         NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
-        return;
-    }
-
-    // Do not show room activities if the displayed timeline is not the live one
-    if (!roomDataSource.isLive)
-    {
-        _roomActivitiesContainerHeightConstraint.constant = 0;
         return;
     }
 
@@ -977,66 +1105,83 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         }
         [activitiesView removeFromSuperview];
         [activitiesView destroy];
+        activitiesView = nil;
     }
     
-    activitiesView = [roomActivitiesViewClass roomActivitiesView];
+    if (roomDataSource && !roomDataSource.isLive)
+    {
+        // Do not show room activities if the displayed timeline is not a live one
+        roomActivitiesViewClass = nil;
+    }
     
-    // Add the view and define edge constraints
-    activitiesView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_roomActivitiesContainer addSubview:activitiesView];
-    
-    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:activitiesView
-                                                                     attribute:NSLayoutAttributeTop
-                                                                    multiplier:1.0f
-                                                                      constant:0.0f];
-    
-    
-    NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                         attribute:NSLayoutAttributeLeading
+    if (roomActivitiesViewClass)
+    {
+        // Sanity check: accept only MXKRoomExtraInfoView classes or sub-classes
+        NSParameterAssert([roomActivitiesViewClass isSubclassOfClass:MXKRoomActivitiesView.class]);
+        
+        activitiesView = [roomActivitiesViewClass roomActivitiesView];
+        
+        // Add the view and define edge constraints
+        activitiesView.translatesAutoresizingMaskIntoConstraints = NO;
+        [_roomActivitiesContainer addSubview:activitiesView];
+        
+        NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                         attribute:NSLayoutAttributeTop
                                                                          relatedBy:NSLayoutRelationEqual
                                                                             toItem:activitiesView
-                                                                         attribute:NSLayoutAttributeLeading
+                                                                         attribute:NSLayoutAttributeTop
                                                                         multiplier:1.0f
                                                                           constant:0.0f];
-    
-    NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                       attribute:NSLayoutAttributeWidth
-                                                                       relatedBy:NSLayoutRelationEqual
-                                                                          toItem:activitiesView
-                                                                       attribute:NSLayoutAttributeWidth
-                                                                      multiplier:1.0f
-                                                                        constant:0.0f];
-    
-    NSLayoutConstraint* heightConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
-                                                                       attribute:NSLayoutAttributeHeight
-                                                                       relatedBy:NSLayoutRelationEqual
-                                                                          toItem:activitiesView
-                                                                       attribute:NSLayoutAttributeHeight
-                                                                      multiplier:1.0f
-                                                                        constant:0.0f];
-    
-    
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-    {
-        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
+        
+        
+        NSLayoutConstraint* leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:activitiesView
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f];
+        
+        NSLayoutConstraint* widthConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                           attribute:NSLayoutAttributeWidth
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:activitiesView
+                                                                           attribute:NSLayoutAttributeWidth
+                                                                          multiplier:1.0f
+                                                                            constant:0.0f];
+        
+        NSLayoutConstraint* heightConstraint = [NSLayoutConstraint constraintWithItem:_roomActivitiesContainer
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:activitiesView
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                           multiplier:1.0f
+                                                                             constant:0.0f];
+        
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+        {
+            [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
+        }
+        else
+        {
+            [_roomActivitiesContainer addConstraint:topConstraint];
+            [_roomActivitiesContainer addConstraint:leadingConstraint];
+            [_roomActivitiesContainer addConstraint:widthConstraint];
+            [_roomActivitiesContainer addConstraint:heightConstraint];
+        }
+        
+        // let the provide view to define a height.
+        // it could have no constrainst if there is no defined xib
+        _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
     }
     else
     {
-        [_roomActivitiesContainer addConstraint:topConstraint];
-        [_roomActivitiesContainer addConstraint:leadingConstraint];
-        [_roomActivitiesContainer addConstraint:widthConstraint];
-        [_roomActivitiesContainer addConstraint:heightConstraint];
+        _roomActivitiesContainerHeightConstraint.constant = 0;
     }
     
-    // let the provide view to define a height.
-    // it could have no constrainst if there is no defined xib
-    _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
-    
     _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomActivitiesContainerHeightConstraint.constant;
-    
+
     [_roomActivitiesContainer setNeedsUpdateConstraints];
 }
 
@@ -1902,8 +2047,18 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
         [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
     }
-    
-    [self reloadBubblesTable:YES];
+
+    CGPoint contentOffset = self.bubblesTableView.contentOffset;
+
+    BOOL hasScrolledToTheBottom = [self reloadBubblesTable:YES];
+
+    // If the user is scrolling while we reload the data for a new incoming message for example,
+    // there will be a jump in the table view display.
+    // Resetting the contentOffset after the reload fixes the issue.
+    if (hasScrolledToTheBottom == NO)
+    {
+        self.bubblesTableView.contentOffset = contentOffset;
+    }
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state
@@ -2385,13 +2540,21 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
+    if (tableView == _bubblesTableView)
+    {
+        return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
+    }
+    
+    return 0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Dismiss keyboard when user taps on messages table view content
-    [self dismissKeyboard];
+    if (tableView == _bubblesTableView)
+    {
+        // Dismiss keyboard when user taps on messages table view content
+        [self dismissKeyboard];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -2454,7 +2617,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     if (scrollView == _bubblesTableView)
@@ -2468,30 +2630,33 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    // Consider this callback to reset scrolling to bottom flag
-    isScrollingToBottom = NO;
-
-    // shouldScrollToBottomOnTableRefresh is used to inhibit false detection of
-    // scrolling action from the user when the viewVC appears or rotates
-    if (scrollView == _bubblesTableView && scrollView.contentSize.height && !shouldScrollToBottomOnTableRefresh)
+    if (scrollView == _bubblesTableView)
     {
-        // when the content size if smaller that the frame
-        // scrollViewDidEndDecelerating is not called
-        // so test it when the content offset goes back to the screen top.
-        if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
-        {
-            [self managePullToKick:scrollView];
-        }
+        // Consider this callback to reset scrolling to bottom flag
+        isScrollingToBottom = NO;
         
-        // Trigger inconspicuous pagination when user scrolls toward the top
-        if (scrollView.contentOffset.y < _paginationThreshold)
+        // shouldScrollToBottomOnTableRefresh is used to inhibit false detection of
+        // scrolling action from the user when the viewVC appears or rotates
+        if (scrollView == _bubblesTableView && scrollView.contentSize.height && !shouldScrollToBottomOnTableRefresh)
         {
-            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
-        }
-        // Enable forwards pagination when displaying non live timeline
-        else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
-        {
-            [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
+            // when the content size if smaller that the frame
+            // scrollViewDidEndDecelerating is not called
+            // so test it when the content offset goes back to the screen top.
+            if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
+            {
+                [self managePullToKick:scrollView];
+            }
+            
+            // Trigger inconspicuous pagination when user scrolls toward the top
+            if (scrollView.contentOffset.y < _paginationThreshold)
+            {
+                [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
+            }
+            // Enable forwards pagination when displaying non live timeline
+            else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
+            {
+                [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
+            }
         }
     }
 }
@@ -2525,7 +2690,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {
-    if (typing && savedInputToolbarPlaceholder)
+    if (typing && savedInputToolbarPlaceholder && inputToolbarView.textMessage.length)
     {
         // Reset temporary placeholder (used in case of wrong command usage)
         inputToolbarView.placeholder = savedInputToolbarPlaceholder.length ? savedInputToolbarPlaceholder : nil;
