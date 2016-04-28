@@ -29,18 +29,18 @@
 {
     [super render:cellData];
     
-    if (self.bubbleData)
+    if (bubbleData)
     {
         // Do not display activity indicator on outgoing attachments (These attachments are supposed to be stored locally)
         // Some download may append to retrieve the actual thumbnail after posting an image.
         self.attachmentView.hideActivityIndicator = YES;
         
         // Check if the image is uploading
-        MXKRoomBubbleComponent *component = self.bubbleData.bubbleComponents.firstObject;
+        MXKRoomBubbleComponent *component = bubbleData.bubbleComponents.firstObject;
         if (component.event.mxkState == MXKEventStateUploading)
         {
             // Retrieve the uploadId embedded in the fake url
-            self.bubbleData.uploadId = component.event.content[@"url"];
+            bubbleData.uploadId = component.event.content[@"url"];
             
             self.attachmentView.alpha = 0.5;
             
@@ -80,7 +80,7 @@
     
     [self.activityIndicator startAnimating];
     
-    MXKMediaLoader *uploader = [MXKMediaManager existingUploaderWithId:self.bubbleData.uploadId];
+    MXKMediaLoader *uploader = [MXKMediaManager existingUploaderWithId:bubbleData.uploadId];
     if (uploader && uploader.statisticsDict)
     {
         [self.activityIndicator stopAnimating];
@@ -111,7 +111,7 @@
     if ([notif.object isKindOfClass:[NSString class]])
     {
         NSString *uploadId = notif.object;
-        if ([uploadId isEqualToString:self.bubbleData.uploadId])
+        if ([uploadId isEqualToString:bubbleData.uploadId])
         {
             [self.activityIndicator stopAnimating];
             [self updateProgressUI:notif.userInfo];

@@ -212,7 +212,7 @@ static BOOL _disableLongPressGestureOnEvent;
         if (self.userNameLabel)
         {
             // Display sender's name except if the name appears in the displayed text (see emote and membership events)
-            if (self.bubbleData.shouldHideSenderName == NO)
+            if (bubbleData.shouldHideSenderName == NO)
             {
                 self.userNameLabel.text = bubbleData.senderDisplayName;
                 self.userNameLabel.hidden = NO;

@@ -32,12 +32,12 @@
 {
     [super render:cellData];
     
-    if (self.bubbleData)
+    if (bubbleData)
     {
         // Handle here typing badge (if any)
         if (self.typingBadge)
         {
-            if (self.bubbleData.isTyping)
+            if (bubbleData.isTyping)
             {
                 self.typingBadge.hidden = NO;
                 [self.typingBadge.superview bringSubviewToFront:self.typingBadge];

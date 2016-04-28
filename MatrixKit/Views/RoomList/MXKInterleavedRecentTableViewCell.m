@@ -16,8 +16,6 @@
 
 #import "MXKInterleavedRecentTableViewCell.h"
 
-#import "MXKRecentCellDataStoring.h"
-
 #import "MXKSessionRecentsDataSource.h"
 
 #import "MXKAccountManager.h"
@@ -46,7 +44,6 @@
     [super render:cellData];
     
     // Highlight the room owner by using his tint color.
-    id<MXKRecentCellDataStoring> roomCellData = (id<MXKRecentCellDataStoring>)cellData;
     if (roomCellData)
     {
         MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:roomCellData.roomDataSource.mxSession.myUser.userId];
