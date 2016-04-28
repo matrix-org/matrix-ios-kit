@@ -26,12 +26,12 @@
 {
     [super render:cellData];
     
-    if (self.bubbleData)
+    if (bubbleData)
     {
         // Add unsent label for failed components (except if the app customizes it) 
-        if (self.bubbleInfoContainer && (self.bubbleData.useCustomUnsentButton == NO))
+        if (self.bubbleInfoContainer && (bubbleData.useCustomUnsentButton == NO))
         {
-            for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
+            for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
             {
                 if (component.event.mxkState == MXKEventStateSendingFailed)
                 {
@@ -73,18 +73,18 @@
     if ([sender isKindOfClass:[UIButton class]] && self.delegate)
     {
         MXEvent *selectedEvent = nil;
-        if (self.bubbleData.bubbleComponents.count == 1)
+        if (bubbleData.bubbleComponents.count == 1)
         {
-            MXKRoomBubbleComponent *component = [self.bubbleData.bubbleComponents firstObject];
+            MXKRoomBubbleComponent *component = [bubbleData.bubbleComponents firstObject];
             selectedEvent = component.event;
         }
-        else if (self.bubbleData.bubbleComponents.count)
+        else if (bubbleData.bubbleComponents.count)
         {
             // Here the selected view is a textView (attachment has no more than one component)
             
             // Look for the selected component
             UIButton *unsentButton = (UIButton *)sender;
-            for (MXKRoomBubbleComponent *component in self.bubbleData.bubbleComponents)
+            for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
             {
                 if (unsentButton.frame.origin.y == component.position.y)
                 {

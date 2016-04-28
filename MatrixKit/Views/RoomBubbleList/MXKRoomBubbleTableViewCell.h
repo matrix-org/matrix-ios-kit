@@ -125,11 +125,18 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  Each inherited class should define only the actual displayed items.
  */
 @interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate>
+{
+@protected
+    /**
+     The current bubble data displayed by the table view cell
+     */
+    MXKRoomBubbleCellData *bubbleData;
+}
 
 /**
  The current bubble data displayed by the table view cell
  */
-@property (strong, nonatomic) MXKRoomBubbleCellData *bubbleData;
+@property (strong, nonatomic, readonly) MXKRoomBubbleCellData *bubbleData;
 
 /**
  Option to highlight or not the content of message text view (May be used in case of text selection)

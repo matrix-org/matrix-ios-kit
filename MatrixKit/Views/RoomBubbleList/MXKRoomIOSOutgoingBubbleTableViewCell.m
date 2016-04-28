@@ -58,7 +58,7 @@
     {
         
         // Replace only black colored texts
-        if (attrs[NSForegroundColorAttributeName] == self.bubbleData.eventFormatter.defaultTextColor)
+        if (attrs[NSForegroundColorAttributeName] == bubbleData.eventFormatter.defaultTextColor)
         {
             
             // By white
@@ -72,7 +72,7 @@
     self.messageTextView.attributedText = attributedString;
     
     // Update the bubble width to include the text view
-    self.bubbleImageViewWidthConstraint.constant = self.bubbleData.contentSize.width + 17;
+    self.bubbleImageViewWidthConstraint.constant = bubbleData.contentSize.width + 17;
     
     // Limit bubble width
     if (self.bubbleImageViewWidthConstraint.constant < 46)
@@ -81,12 +81,12 @@
     }
     
     // Mask the image with the bubble
-    if (self.bubbleData.attachment && self.bubbleData.attachment.type != MXKAttachmentTypeFile)
+    if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
     {
         self.bubbleImageView.hidden = YES;
         
         UIImageView *rightBubbleImageView = [[UIImageView alloc] initWithImage:self.class.bubbleImage];
-        rightBubbleImageView.frame = CGRectMake(0, 0, self.bubbleImageViewWidthConstraint.constant, self.bubbleData.contentSize.height + self.attachViewTopConstraint.constant - 4);
+        rightBubbleImageView.frame = CGRectMake(0, 0, self.bubbleImageViewWidthConstraint.constant, bubbleData.contentSize.height + self.attachViewTopConstraint.constant - 4);
         
         self.attachmentView.layer.mask = rightBubbleImageView.layer;
     }

@@ -18,10 +18,19 @@
 
 #import "MXKCellRendering.h"
 
+#import "MXKRecentCellDataStoring.h"
+
 /**
  `MXKRecentTableViewCell` instances display a room in the context of the recents list.
  */
 @interface MXKRecentTableViewCell : MXKTableViewCell <MXKCellRendering>
+{
+@protected
+    /**
+     The current cell data displayed by the table view cell
+     */
+    id<MXKRecentCellDataStoring> roomCellData;
+}
 
 @property (weak, nonatomic) IBOutlet UILabel *roomTitle;
 @property (weak, nonatomic) IBOutlet UILabel *lastEventDescription;
