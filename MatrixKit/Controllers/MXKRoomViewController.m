@@ -533,6 +533,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         inputToolbarView = nil;
     }
     
+    if (activitiesView)
+    {
+        [activitiesView removeFromSuperview];
+        [activitiesView destroy];
+        activitiesView = nil;
+    }
+    
     [typingTimer invalidate];
     typingTimer = nil;
     
@@ -669,7 +676,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Remove the input toolbar and the room activities view if the displayed timeline is not a live one
         // We do not let the user type message in this case.
-        if (!roomDataSource.isLive)
+        if (!dataSource.isLive)
         {
             [self setRoomInputToolbarViewClass:nil];
             [self setRoomActivitiesViewClass:nil];
