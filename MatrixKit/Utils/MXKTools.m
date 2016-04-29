@@ -31,7 +31,7 @@
     
     if (secondsInterval < 1)
     {
-        [formattedString appendFormat:@"%< 1%@", (int)secondsInterval, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];;
+        [formattedString appendFormat:@"< 1%@", [NSBundle mxk_localizedStringForKey:@"format_time_s"]];;
     }
     else if (secondsInterval < 60)
     {
@@ -66,19 +66,19 @@
         NSUInteger seconds = secondsInterval;
         if (seconds < 60)
         {
-            formattedString = [NSString stringWithFormat:@"%lu%@", seconds, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
         }
         else if (secondsInterval < 3600)
         {
-            formattedString = [NSString stringWithFormat:@"%lu%@", seconds / 60, [NSBundle mxk_localizedStringForKey:@"format_time_m"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 60, [NSBundle mxk_localizedStringForKey:@"format_time_m"]];
         }
         else if (secondsInterval < 86400)
         {
-            formattedString = [NSString stringWithFormat:@"%lu%@", seconds / 3600, [NSBundle mxk_localizedStringForKey:@"format_time_h"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 3600, [NSBundle mxk_localizedStringForKey:@"format_time_h"]];
         }
         else
         {
-            formattedString = [NSString stringWithFormat:@"%lu%@", seconds / 86400, [NSBundle mxk_localizedStringForKey:@"format_time_d"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 86400, [NSBundle mxk_localizedStringForKey:@"format_time_d"]];
         }
     }
 
