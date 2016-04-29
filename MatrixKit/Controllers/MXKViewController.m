@@ -36,14 +36,45 @@
 @synthesize activityIndicator, rageShakeManager;
 @synthesize childViewControllers;
 
+#pragma mark -
+
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self)
+    {
+        [self finalizeInit];
+    }
+    
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        [self finalizeInit];
+    }
+    
+    return self;
+}
+
+- (void)finalizeInit
+{
+    // Set default properties values
+    defaultBarTintColor = nil;
+    enableBarTintColorStatusChange = YES;
+    
+    mxSessionArray = [NSMutableArray array];
+    childViewControllers = [NSMutableArray array];
+}
+
+#pragma mark -
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    enableBarTintColorStatusChange = YES;
-    
-    childViewControllers = [NSMutableArray array];
     
     // Add default activity indicator
     activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -186,11 +217,6 @@
         return;
     }
     
-    if (!mxSessionArray)
-    {
-        mxSessionArray = [NSMutableArray array];
-    }
-    
     if (!mxSessionArray.count)
     {
         [mxSessionArray addObject:mxSession];
@@ -288,6 +314,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     mxSessionArray = nil;
+    childViewControllers = nil;
 }
 
 #pragma mark - Sessions handling
