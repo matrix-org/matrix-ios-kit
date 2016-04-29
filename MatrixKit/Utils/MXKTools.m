@@ -19,6 +19,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
 
+#import "NSBundle+MatrixKit.h"
+
 @implementation MXKTools
 
 #pragma mark - Time interval
@@ -29,21 +31,22 @@
     
     if (secondsInterval < 1)
     {
-        [formattedString appendString:@"< 1s"];
+        [formattedString appendFormat:@"%< 1%@", (int)secondsInterval, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];;
     }
     else if (secondsInterval < 60)
     {
-        [formattedString appendFormat:@"%ds", (int)secondsInterval];
+        [formattedString appendFormat:@"%ds%@", (int)secondsInterval, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
     }
     else if (secondsInterval < 3600)
     {
-        [formattedString appendFormat:@"%dm %2ds", (int)(secondsInterval/60), ((int)secondsInterval) % 60];
+        [formattedString appendFormat:@"%d%@ %2d%@", (int)(secondsInterval/60), [NSBundle mxk_localizedStringForKey:@"format_time_m"],
+         ((int)secondsInterval) % 60, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
     }
     else if (secondsInterval >= 3600)
     {
-        [formattedString appendFormat:@"%dh %dm %ds", (int)(secondsInterval / 3600),
-         ((int)(secondsInterval) % 3600) / 60,
-         (int)(secondsInterval) % 60];
+        [formattedString appendFormat:@"%d%@ %d%@ %d%@", (int)(secondsInterval / 3600), [NSBundle mxk_localizedStringForKey:@"format_time_h"],
+         ((int)(secondsInterval) % 3600) / 60, [NSBundle mxk_localizedStringForKey:@"format_time_m"],
+         (int)(secondsInterval) % 60, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
     }
     [formattedString appendString:@" left"];
     
@@ -56,26 +59,26 @@
 
     if (secondsInterval < 0)
     {
-        formattedString = @"0s";
+        formattedString = [NSString stringWithFormat:@"0%@", [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
     }
     else
     {
         NSUInteger seconds = secondsInterval;
         if (seconds < 60)
         {
-            formattedString = [NSString stringWithFormat:@"%lus", seconds];
+            formattedString = [NSString stringWithFormat:@"%lu%@", seconds, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
         }
         else if (secondsInterval < 3600)
         {
-            formattedString = [NSString stringWithFormat:@"%lum", seconds / 60];
+            formattedString = [NSString stringWithFormat:@"%lu%@", seconds / 60, [NSBundle mxk_localizedStringForKey:@"format_time_m"]];
         }
         else if (secondsInterval < 86400)
         {
-            formattedString = [NSString stringWithFormat:@"%luh", seconds / 3600];
+            formattedString = [NSString stringWithFormat:@"%lu%@", seconds / 3600, [NSBundle mxk_localizedStringForKey:@"format_time_h"]];
         }
         else
         {
-            formattedString = [NSString stringWithFormat:@"%lud", seconds / 86400];
+            formattedString = [NSString stringWithFormat:@"%lu%@", seconds / 86400, [NSBundle mxk_localizedStringForKey:@"format_time_d"]];
         }
     }
 
