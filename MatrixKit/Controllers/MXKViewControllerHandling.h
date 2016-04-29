@@ -78,6 +78,16 @@
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
 
 /**
+ Called during UIViewController initialization to set the default
+ properties values (see [initWithNibName:bundle:] and [initWithCoder:]).
+ 
+ You should not call this method directly.
+ 
+ Subclasses can override this method as needed to customize the initialization.
+ */
+- (void)finalizeInit;
+
+/**
  Add a matrix session in the list of associated sessions (see 'mxSessions' property).
  
  The session is ignored if its state is 'MXSessionStateClosed'.
