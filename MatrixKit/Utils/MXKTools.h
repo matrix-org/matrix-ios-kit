@@ -36,7 +36,7 @@
  @param secondsInterval time interval in seconds.
  @return formatted string
  */
-+ (NSString*)formatSecondsIntervalCeiled:(CGFloat)secondsInterval;
++ (NSString*)formatSecondsIntervalFloored:(CGFloat)secondsInterval;
 
 #pragma mark - File
 

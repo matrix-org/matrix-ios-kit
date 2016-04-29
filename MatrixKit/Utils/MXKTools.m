@@ -53,7 +53,7 @@
     return formattedString;
 }
 
-+ (NSString *)formatSecondsIntervalCeiled:(CGFloat)secondsInterval
++ (NSString *)formatSecondsIntervalFloored:(CGFloat)secondsInterval
 {
     NSString* formattedString;
 

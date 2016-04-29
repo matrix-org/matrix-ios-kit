@@ -201,7 +201,7 @@
     if (user)
     {
         // Prepare last active ago string
-        lastActiveTime = [MXKTools formatSecondsIntervalCeiled:(user.lastActiveAgo / 1000)];
+        lastActiveTime = [MXKTools formatSecondsIntervalFloored:(user.lastActiveAgo / 1000)];
         
         // Check presence
         switch (user.presence)
