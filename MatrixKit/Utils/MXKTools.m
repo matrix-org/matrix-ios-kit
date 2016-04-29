@@ -50,6 +50,38 @@
     return formattedString;
 }
 
++ (NSString *)formatSecondsIntervalCeiled:(CGFloat)secondsInterval
+{
+    NSString* formattedString;
+
+    if (secondsInterval < 0)
+    {
+        formattedString = @"0s";
+    }
+    else
+    {
+        NSUInteger seconds = secondsInterval;
+        if (seconds < 60)
+        {
+            formattedString = [NSString stringWithFormat:@"%lus", seconds];
+        }
+        else if (secondsInterval < 3600)
+        {
+            formattedString = [NSString stringWithFormat:@"%lum", seconds / 60];
+        }
+        else if (secondsInterval < 86400)
+        {
+            formattedString = [NSString stringWithFormat:@"%luh", seconds / 3600];
+        }
+        else
+        {
+            formattedString = [NSString stringWithFormat:@"%lud", seconds / 86400];
+        }
+    }
+
+    return formattedString;
+}
+
 #pragma mark - File
 
 // return an array of files attributes

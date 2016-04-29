@@ -25,6 +25,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKTools.h"
+
 @interface MXKRoomMemberTableViewCell ()
 {
     NSRange lastSeenRange;
@@ -199,23 +201,7 @@
     if (user)
     {
         // Prepare last active ago string
-        NSUInteger lastActiveAgoInSec = user.lastActiveAgo / 1000;
-        if (lastActiveAgoInSec < 60)
-        {
-            lastActiveTime = [NSString stringWithFormat:@"%lus", (unsigned long)lastActiveAgoInSec];
-        }
-        else if (lastActiveAgoInSec < 3600)
-        {
-            lastActiveTime = [NSString stringWithFormat:@"%lum", (unsigned long)(lastActiveAgoInSec / 60)];
-        }
-        else if (lastActiveAgoInSec < 86400)
-        {
-            lastActiveTime = [NSString stringWithFormat:@"%luh", (unsigned long)(lastActiveAgoInSec / 3600)];
-        }
-        else
-        {
-            lastActiveTime = [NSString stringWithFormat:@"%lud", (unsigned long)(lastActiveAgoInSec / 86400)];
-        }
+        lastActiveTime = [MXKTools formatSecondsIntervalCeiled:(user.lastActiveAgo / 1000)];
         
         // Check presence
         switch (user.presence)

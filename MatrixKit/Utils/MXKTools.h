@@ -21,12 +21,23 @@
 #pragma mark - Time
 
 /**
- Format time interval
+ Format time interval.
+ ex: "5m 31s"
  
  @param secondsInterval time interval in seconds.
  @return formatted string
  */
 + (NSString*)formatSecondsInterval:(CGFloat)secondsInterval;
+
+/**
+ Format time interval but rounded to the nearest biggest unit above.
+ The
+ ex: "5s", "1m", "2h" or "3d"
+
+ @param secondsInterval time interval in seconds.
+ @return formatted string
+ */
++ (NSString*)formatSecondsIntervalCeiled:(CGFloat)secondsInterval;
 
 #pragma mark - File
 
