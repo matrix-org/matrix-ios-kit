@@ -211,9 +211,7 @@
                 lastActiveTime = [NSBundle mxk_localizedStringForKey:@"offline"];
                 break;
             }
-            case MXPresenceHidden:
             case MXPresenceUnknown:
-            case MXPresenceFreeForChat:
             {
                 lastActiveTime = nil;
                 break;
