@@ -30,7 +30,7 @@
 + (NSString*)formatSecondsInterval:(CGFloat)secondsInterval;
 
 /**
- Format time interval but rounded to the nearest time unit above.
+ Format time interval but rounded to the nearest time unit below.
  ex: "5s", "1m", "2h" or "3d".
 
  @param secondsInterval time interval in seconds.
