@@ -162,6 +162,12 @@
 // Search
 "search_no_results" = "No Results";
 
+// Time
+"format_time_s" = "s";
+"format_time_m" = "m";
+"format_time_h" = "h";
+"format_time_d" = "d";
+
 // Others
 "user_id_title" = "User ID:";
 "offline" = "offline";
