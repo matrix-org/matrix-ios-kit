@@ -170,8 +170,6 @@
         case MXPresenceOffline:
             return [UIColor colorWithRed:0.8 green:0.2 blue:0.2 alpha:1.0];
         case MXPresenceUnknown:
-        case MXPresenceFreeForChat:
-        case MXPresenceHidden:
         default:
             return nil;
     }
