@@ -818,8 +818,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             
             // Show the error to the end user
             __weak typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
+            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+            if ([msg isEqualToString:@"No known servers"])
+            {
+                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
+                // 'Error when trying to join an empty room should be more explicit'
+                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
+            }
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"]
+                                                   message:msg
                                                      style:MXKAlertStyleAlert];
             currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                               {
@@ -875,9 +882,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self stopActivityIndicator];
 
             // Show the error to the end user
+            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+            if ([msg isEqualToString:@"No known servers"])
+            {
+                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
+                // 'Error when trying to join an empty room should be more explicit'
+                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
+            }
             __weak typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomIdOrAlias]
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"]
+                                                   message:msg
                                                      style:MXKAlertStyleAlert];
             currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                               {
