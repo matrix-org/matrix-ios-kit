@@ -41,6 +41,11 @@ extern NSString *const kCmdResetUserPowerLevel;
 {
 @protected
     /**
+     Current alert (if any).
+     */
+    MXKAlert *currentAlert;
+    
+    /**
      The document interaction Controller used to share attachment
      */
     UIDocumentInteractionController *documentInteractionController;

@@ -255,6 +255,7 @@
 "kick" = "Kick";
 "ban" = "Ban";
 "unban" = "Un-ban";
+"ignore" = "Ignore";
 "message_unsaved_changes" = "There are unsaved changes. Leaving will discard them.";
 
 // Login Screen 

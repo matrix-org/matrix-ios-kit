@@ -29,6 +29,7 @@ typedef enum : NSUInteger
     MXKRoomMemberDetailsActionKick,
     MXKRoomMemberDetailsActionBan,
     MXKRoomMemberDetailsActionUnban,
+    MXKRoomMemberDetailsActionIgnore,
     MXKRoomMemberDetailsActionSetDefaultPowerLevel,
     MXKRoomMemberDetailsActionSetModerator,
     MXKRoomMemberDetailsActionSetAdmin,

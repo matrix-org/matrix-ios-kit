@@ -255,6 +255,25 @@
                           }];
                 break;
             }
+            case MXKRoomMemberDetailsActionIgnore:
+            {
+                // Add the user to the blacklist: ignored users
+                [self addPendingActionMask];
+                [self.mainSession ignoreUser:_mxRoomMember.userId
+                                     success:^{
+                                         
+                                         [self removePendingActionMask];
+                                         
+                                     } failure:^(NSError *error) {
+                                         
+                                         [self removePendingActionMask];
+                                         NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed: %@", _mxRoomMember.userId, error);
+                                         // Notify MatrixKit user
+                                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                         
+                                     }];
+                break;
+            }
             case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
             {
                 break;
@@ -518,6 +537,12 @@
                 {
                     [actionsArray addObject:@(MXKRoomMemberDetailsActionBan)];
                 }
+                
+                // Check whether the option Ignore may be presented
+                if (_mxRoomMember.membership == MXMembershipJoin /*FIXME: is he already ignored ?*/)
+                {
+                    [actionsArray addObject:@(MXKRoomMemberDetailsActionIgnore)];
+                }
                 break;
             }
             case MXMembershipLeave:
@@ -587,6 +612,9 @@
             break;
         case MXKRoomMemberDetailsActionUnban:
             title = [NSBundle mxk_localizedStringForKey:@"unban"];
+            break;
+        case MXKRoomMemberDetailsActionIgnore:
+            title = [NSBundle mxk_localizedStringForKey:@"ignore"];
             break;
         case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
             title = [NSBundle mxk_localizedStringForKey:@"set_default_power_level"];
