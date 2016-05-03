@@ -2111,7 +2111,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             NSString *memberName = selectedRoomMember.displayname.length ? selectedRoomMember.displayname : selectedRoomMember.userId;
             if (inputToolbarView.textMessage.length)
             {
-                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@ %@", inputToolbarView.textMessage, memberName];
+                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@%@ ", inputToolbarView.textMessage, memberName];
             }
             else if ([selectedRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
             {
