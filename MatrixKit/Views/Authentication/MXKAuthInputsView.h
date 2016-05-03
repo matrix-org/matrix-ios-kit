@@ -19,11 +19,22 @@
 #import "MXKAlert.h"
 
 /**
- Authentication type: register or login
+ Authentication types
  */
 typedef enum {
+    /**
+     Type used to sign up.
+     */
     MXKAuthenticationTypeRegister,
-    MXKAuthenticationTypeLogin
+    /**
+     Type used to sign in.
+     */
+    MXKAuthenticationTypeLogin,
+    /**
+     Typer used to restore an existing account by reseting the password.
+     */
+    MXKAuthenticationTypeForgotPassword
+    
 } MXKAuthenticationType;
 
 @class MXKAuthInputsView;
@@ -186,6 +197,8 @@ typedef enum {
 
 /**
  Switch in next authentication flow step by updating the layout.
+
+ @discussion This method is supposed to be called only if the current operation succeeds.
  */
 - (void)nextStep;
 
