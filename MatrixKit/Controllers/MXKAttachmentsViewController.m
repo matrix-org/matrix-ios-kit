@@ -224,9 +224,8 @@
     navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
-        // Cell width will be updated, force collection refresh to take into account changes.
-        [_attachmentsCollection reloadData];
+        // Cell width will be updated, force collection layout refresh to take into account the changes
+        [_attachmentsCollection.collectionViewLayout invalidateLayout];
         
         // Refresh the current attachment display
         [self refreshAttachmentCollectionContentOffset];
@@ -254,7 +253,7 @@
     // Cell width will be updated, force collection refresh to take into account changes.
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        [_attachmentsCollection reloadData];
+        [_attachmentsCollection.collectionViewLayout invalidateLayout];
         
         // Refresh the current attachment display
         [self refreshAttachmentCollectionContentOffset];
@@ -686,7 +685,43 @@
                     selectedCell.moviePlayer.view.center = selectedCell.customView.center;
                     selectedCell.moviePlayer.view.hidden = YES;
                     [selectedCell.customView addSubview:selectedCell.moviePlayer.view];
+
+                    // Force the video to stay in fullscreen
+                    NSLayoutConstraint* topConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
+                                                                                     attribute:NSLayoutAttributeTop
+                                                                                     relatedBy:NSLayoutRelationEqual
+                                                                                        toItem:selectedCell.customView
+                                                                                     attribute:NSLayoutAttributeTop
+                                                                                    multiplier:1.0f
+                                                                                      constant:0.0f];
+
+                    NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
+                                                                                          attribute:NSLayoutAttributeLeading
+                                                                                          relatedBy:0
+                                                                                             toItem:selectedCell.customView
+                                                                                          attribute:NSLayoutAttributeLeading
+                                                                                         multiplier:1.0
+                                                                                           constant:0];
+
+                    NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
+                                                                                        attribute:NSLayoutAttributeBottom
+                                                                                        relatedBy:0
+                                                                                           toItem:selectedCell.customView
+                                                                                        attribute:NSLayoutAttributeBottom
+                                                                                       multiplier:1
+                                                                                         constant:0];
+
+                    NSLayoutConstraint *tailingConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
+                                                                                         attribute:NSLayoutAttributeTrailing
+                                                                                         relatedBy:0
+                                                                                            toItem:selectedCell.customView
+                                                                                         attribute:NSLayoutAttributeTrailing
+                                                                                        multiplier:1.0
+                                                                                          constant:0];
                     
+                    selectedCell.moviePlayer.view.translatesAutoresizingMaskIntoConstraints = NO;
+                    [NSLayoutConstraint activateConstraints:@[topConstraint, trailingConstraint, bottomConstraint, tailingConstraint]];
+
                     [[NSNotificationCenter defaultCenter] addObserver:self
                                                              selector:@selector(moviePlayerPlaybackDidFinishNotification:)
                                                                  name:MPMoviePlayerPlaybackDidFinishNotification
