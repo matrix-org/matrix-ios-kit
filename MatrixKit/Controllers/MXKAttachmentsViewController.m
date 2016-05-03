@@ -720,7 +720,19 @@
                                                                                           constant:0];
                     
                     selectedCell.moviePlayer.view.translatesAutoresizingMaskIntoConstraints = NO;
-                    [NSLayoutConstraint activateConstraints:@[topConstraint, trailingConstraint, bottomConstraint, tailingConstraint]];
+
+                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+                    {
+                        [NSLayoutConstraint activateConstraints:@[topConstraint, trailingConstraint, bottomConstraint, tailingConstraint]];
+                    }
+                    else
+                    {
+                        // iOS < 8 support
+                        [self.view addConstraint:topConstraint];
+                        [self.view addConstraint:trailingConstraint];
+                        [self.view addConstraint:bottomConstraint];
+                        [self.view addConstraint:tailingConstraint];
+                    }
 
                     [[NSNotificationCenter defaultCenter] addObserver:self
                                                              selector:@selector(moviePlayerPlaybackDidFinishNotification:)
