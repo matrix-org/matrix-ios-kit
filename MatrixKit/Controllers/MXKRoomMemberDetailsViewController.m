@@ -295,7 +295,25 @@
             }
             case MXKRoomMemberDetailsActionUnignore:
             {
-                // FIXME Remove the member from the ignored user list.
+                // Remove the member from the ignored user list.
+                [self addPendingActionMask];
+                __weak __typeof(self) weakSelf = self;
+                [self.mainSession unIgnoreUsers:@[self.mxRoomMember.userId]
+                                            success:^{
+
+                                                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                                [strongSelf removePendingActionMask];
+
+                                            } failure:^(NSError *error) {
+
+                                                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                                [strongSelf removePendingActionMask];
+                                                NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed: %@", strongSelf.mxRoomMember.userId, error);
+
+                                                // Notify MatrixKit user
+                                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+
+                                            }];
                 break;
             }
             case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
