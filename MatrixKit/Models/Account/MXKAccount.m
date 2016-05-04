@@ -97,8 +97,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         case MXPresenceOffline:
             return [[MXKAppSettings standardAppSettings] presenceColorForOfflineUser];
         case MXPresenceUnknown:
-        case MXPresenceFreeForChat:
-        case MXPresenceHidden:
         default:
             return nil;
     }

@@ -80,6 +80,8 @@
 "answer_call" = "Answer Call";
 "reject_call" = "Reject Call";
 "end_call" = "End Call";
+"ignore" = "Ignore";
+"unignore" = "Unignore";
 
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
@@ -141,10 +143,14 @@
 
 // Room
 "room_please_select" = "Please select a room";
-"room_error_join_failed" = "Failed to join room (%@)";
+"room_error_join_failed_title" = "Failed to join room";
+"room_error_join_failed_empty_room" = "It is not currently possible to re-join an empty room.";
 "room_error_name_edition_not_authorized" = "You are not authorized to edit this room name";
 "room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
 "room_left" = "You left the room";
+
+// Room members
+"room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
 
 // Attachment
 "attachment_size_prompt" = "Do you want to send as:";
@@ -161,6 +167,12 @@
 
 // Search
 "search_no_results" = "No Results";
+
+// Time
+"format_time_s" = "s";
+"format_time_m" = "m";
+"format_time_h" = "h";
+"format_time_d" = "d";
 
 // Others
 "user_id_title" = "User ID:";

@@ -60,11 +60,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKEventDetailsView *eventDetailsView;
     
     /**
-     Current alert (if any).
-     */
-    MXKAlert *currentAlert;
-    
-    /**
      Boolean value used to scroll to bottom the bubble history after refresh.
      */
     BOOL shouldScrollToBottomOnTableRefresh;
@@ -454,8 +449,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Deduce max height of the message text input by considering the minimum height of the table view.
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
-    // Scroll the tableview content when a new keyboard is presented.
-    if (!super.keyboardHeight && keyboardHeight)
+    // Scroll the tableview content when a new keyboard is presented (except if an alert is presented).
+    if (!super.keyboardHeight && keyboardHeight && !currentAlert)
     {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
@@ -531,6 +526,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         [inputToolbarView removeFromSuperview];
         [inputToolbarView destroy];
         inputToolbarView = nil;
+    }
+    
+    if (activitiesView)
+    {
+        [activitiesView removeFromSuperview];
+        [activitiesView destroy];
+        activitiesView = nil;
     }
     
     [typingTimer invalidate];
@@ -669,7 +671,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         // Remove the input toolbar and the room activities view if the displayed timeline is not a live one
         // We do not let the user type message in this case.
-        if (!roomDataSource.isLive)
+        if (!dataSource.isLive)
         {
             [self setRoomInputToolbarViewClass:nil];
             [self setRoomActivitiesViewClass:nil];
@@ -811,8 +813,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             
             // Show the error to the end user
             __weak typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomDataSource.room.state.displayname]
+            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+            if ([msg isEqualToString:@"No known servers"])
+            {
+                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
+                // 'Error when trying to join an empty room should be more explicit'
+                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
+            }
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"]
+                                                   message:msg
                                                      style:MXKAlertStyleAlert];
             currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                               {
@@ -868,9 +877,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             [self stopActivityIndicator];
 
             // Show the error to the end user
+            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+            if ([msg isEqualToString:@"No known servers"])
+            {
+                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
+                // 'Error when trying to join an empty room should be more explicit'
+                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
+            }
             __weak typeof(self) weakSelf = self;
-            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                                   message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed"], roomIdOrAlias]
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"]
+                                                   message:msg
                                                      style:MXKAlertStyleAlert];
             currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
                                               {
@@ -2079,9 +2095,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         NSLog(@"    -> A message has been tapped");
     }
-    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnSenderNameLabel] || [actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
     {
-        //NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+//        NSLog(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
         
         // Add the member display name in text input
         MXRoomMember *selectedRoomMember = [roomDataSource.room.state memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
@@ -2090,7 +2106,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             NSString *memberName = selectedRoomMember.displayname.length ? selectedRoomMember.displayname : selectedRoomMember.userId;
             if (inputToolbarView.textMessage.length)
             {
-                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@ %@", inputToolbarView.textMessage, memberName];
+                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@%@ ", inputToolbarView.textMessage, memberName];
             }
             else if ([selectedRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
             {

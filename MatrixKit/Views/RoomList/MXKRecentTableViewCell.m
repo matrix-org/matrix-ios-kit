@@ -16,17 +16,16 @@
 
 #import "MXKRecentTableViewCell.h"
 
-#import "MXKRecentCellDataStoring.h"
-
 #import "MXKSessionRecentsDataSource.h"
 
 @implementation MXKRecentTableViewCell
+@synthesize delegate;
 
 #pragma mark - Class methods
 
 - (void)render:(MXKCellData *)cellData
 {
-    id<MXKRecentCellDataStoring> roomCellData = (id<MXKRecentCellDataStoring>)cellData;
+    roomCellData = (id<MXKRecentCellDataStoring>)cellData;
     if (roomCellData)
     {
         

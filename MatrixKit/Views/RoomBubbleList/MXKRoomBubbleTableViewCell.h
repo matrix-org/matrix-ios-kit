@@ -35,6 +35,13 @@
 extern NSString *const kMXKRoomBubbleCellTapOnMessageTextView;
 
 /**
+ Action identifier used when the user tapped on user name label.
+ 
+ The `userInfo` dictionary contains an `NSString` object under the `kMXKRoomBubbleCellUserIdKey` key, representing the user id of the tapped name label.
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnSenderNameLabel;
+
+/**
  Action identifier used when the user tapped on avatar view.
  
  The `userInfo` dictionary contains an `NSString` object under the `kMXKRoomBubbleCellUserIdKey` key, representing the user id of the tapped avatar.
@@ -125,11 +132,18 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  Each inherited class should define only the actual displayed items.
  */
 @interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate>
+{
+@protected
+    /**
+     The current bubble data displayed by the table view cell
+     */
+    MXKRoomBubbleCellData *bubbleData;
+}
 
 /**
  The current bubble data displayed by the table view cell
  */
-@property (strong, nonatomic) MXKRoomBubbleCellData *bubbleData;
+@property (strong, nonatomic, readonly) MXKRoomBubbleCellData *bubbleData;
 
 /**
  Option to highlight or not the content of message text view (May be used in case of text selection)
