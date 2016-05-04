@@ -22,6 +22,7 @@
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
+NSString *const kMXKRoomBubbleCellTapOnSenderNameLabel = @"kMXKRoomBubbleCellTapOnSenderNameLabel";
 NSString *const kMXKRoomBubbleCellTapOnAvatarView = @"kMXKRoomBubbleCellTapOnAvatarView";
 NSString *const kMXKRoomBubbleCellTapOnDateTimeContainer = @"kMXKRoomBubbleCellTapOnDateTimeContainer";
 NSString *const kMXKRoomBubbleCellTapOnAttachmentView = @"kMXKRoomBubbleCellTapOnAttachmentView";
@@ -74,6 +75,17 @@ static BOOL _disableLongPressGestureOnEvent;
 - (void)awakeFromNib
 {
     [super awakeFromNib];
+    
+    if (self.userNameLabel)
+    {
+        // Listen to name tap
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onSenderNameTap:)];
+        [tapGesture setNumberOfTouchesRequired:1];
+        [tapGesture setNumberOfTapsRequired:1];
+        [tapGesture setDelegate:self];
+        [self.userNameLabel addGestureRecognizer:tapGesture];
+        self.userNameLabel.userInteractionEnabled = YES;
+    }
     
     if (self.pictureView)
     {
@@ -828,6 +840,14 @@ static NSMutableDictionary *childClasses;
             
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
         }
+    }
+}
+
+- (IBAction)onSenderNameTap:(UITapGestureRecognizer*)sender
+{
+    if (delegate)
+    {
+        [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnSenderNameLabel userInfo:@{kMXKRoomBubbleCellUserIdKey: bubbleData.senderId}];
     }
 }
 

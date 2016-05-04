@@ -35,6 +35,13 @@
 extern NSString *const kMXKRoomBubbleCellTapOnMessageTextView;
 
 /**
+ Action identifier used when the user tapped on user name label.
+ 
+ The `userInfo` dictionary contains an `NSString` object under the `kMXKRoomBubbleCellUserIdKey` key, representing the user id of the tapped name label.
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnSenderNameLabel;
+
+/**
  Action identifier used when the user tapped on avatar view.
  
  The `userInfo` dictionary contains an `NSString` object under the `kMXKRoomBubbleCellUserIdKey` key, representing the user id of the tapped avatar.
