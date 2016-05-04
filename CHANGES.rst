@@ -1,3 +1,21 @@
+Changes in MatrixKit in 0.3.7 (2016-05-04)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.7).
+ * MXKRecentTableViewCell: Support user's action on recent cell.
+ * MXKTools: Add formatSecondsIntervalFloored (Format time interval but rounded to the nearest time unit below).
+ * MXKTools: i18n'ed formatSecondsInterval methods.
+ * MXKRoomBubbleTableViewCell: Support tap on sender name label
+ * MXKRoomViewController: Insert sender name in text input by tapping on avatar or display name.
+ * Ability to report abuse
+ * Ability to ignore users
+
+Bug fixes:
+ * Handle the error on joining a room where everyone has left.
+ * Video playback stops when you rotate the device.
+ * Enable notifications on your device' toggle spills over the side on an iPhone 5 display.
+
 Changes in MatrixKit in 0.3.6 (2016-04-26)
 ===============================================
 
