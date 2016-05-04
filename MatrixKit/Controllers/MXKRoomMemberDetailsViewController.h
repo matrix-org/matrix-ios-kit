@@ -19,6 +19,8 @@
 #import "MXKViewController.h"
 #import "MXKImageView.h"
 
+#import "MXKAlert.h"
+
 /**
  Available actions on room member
  */
@@ -77,6 +79,11 @@ typedef enum : NSUInteger
 @interface MXKRoomMemberDetailsViewController : MXKViewController <UITableViewDelegate, UITableViewDataSource>
 {
 @protected
+    /**
+     Current alert (if any).
+     */
+    MXKAlert *currentAlert;
+    
     /**
      List of the allowed actions on this member.
      */

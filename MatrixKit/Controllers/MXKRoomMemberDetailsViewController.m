@@ -19,7 +19,7 @@
 #import "MXKTableViewCellWithButtons.h"
 
 #import "MXKMediaManager.h"
-#import "MXKAlert.h"
+
 #import "NSBundle+MatrixKit.h"
 
 #import "MXKAppSettings.h"
@@ -37,8 +37,6 @@
     // Observe left rooms
     id leaveRoomNotificationObserver;
 }
-
-@property (strong, nonatomic) MXKAlert *actionMenu;
 
 @end
 
@@ -94,10 +92,10 @@
 - (void)destroy
 {
     // close any pending actionsheet
-    if (self.actionMenu)
+    if (currentAlert)
     {
-        [self.actionMenu dismiss:NO];
-        self.actionMenu = nil;
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
     }
     
     [self removePendingActionMask];
@@ -257,21 +255,42 @@
             }
             case MXKRoomMemberDetailsActionIgnore:
             {
-                // Add the user to the blacklist: ignored users
-                [self addPendingActionMask];
-                [self.mainSession ignoreUser:_mxRoomMember.userId
-                                     success:^{
-                                         
-                                         [self removePendingActionMask];
-                                         
-                                     } failure:^(NSError *error) {
-                                         
-                                         [self removePendingActionMask];
-                                         NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed: %@", _mxRoomMember.userId, error);
-                                         // Notify MatrixKit user
-                                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                         
-                                     }];
+                // Prompt user to ignore content from this user
+                __weak __typeof(self) weakSelf = self;
+                [currentAlert dismiss:NO];
+                currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_ignore_prompt"]  message:nil style:MXKAlertStyleAlert];
+                
+                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                    
+                    // Add the user to the blacklist: ignored users
+                    [strongSelf addPendingActionMask];
+                    [strongSelf.mainSession ignoreUser:strongSelf.mxRoomMember.userId
+                                         success:^{
+                                             
+                                             [strongSelf removePendingActionMask];
+                                             
+                                         } failure:^(NSError *error) {
+                                             
+                                             [strongSelf removePendingActionMask];
+                                             NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed: %@", strongSelf.mxRoomMember.userId, error);
+                                             
+                                             // Notify MatrixKit user
+                                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                             
+                                         }];
+                    
+                }];
+                
+                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
+                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    strongSelf->currentAlert = nil;
+                }];
+                
+                [currentAlert showInViewController:self];
                 break;
             }
             case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
@@ -391,10 +410,10 @@
             if (direction == MXTimelineDirectionForwards)
             {
                 // Hide potential action sheet
-                if (self.actionMenu)
+                if (currentAlert)
                 {
-                    [self.actionMenu dismiss:NO];
-                    self.actionMenu = nil;
+                    [currentAlert dismiss:NO];
+                    currentAlert = nil;
                 }
                 
                 MXRoomMember* nextRoomMember = nil;
@@ -734,17 +753,20 @@
     {
         __weak typeof(self) weakSelf = self;
         
-        [weakSelf addPendingActionMask];
+        [self addPendingActionMask];
         
         // Reset user power level
         [self.mxRoom setPowerLevelOfUserWithUserID:_mxRoomMember.userId powerLevel:value success:^{
             
-            [weakSelf removePendingActionMask];
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            [strongSelf removePendingActionMask];
             
         } failure:^(NSError *error) {
             
-            [weakSelf removePendingActionMask];
-            NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", weakSelf.mxRoomMember.userId, error);
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            [strongSelf removePendingActionMask];
+            NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", strongSelf.mxRoomMember.userId, error);
+            
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
             
@@ -757,35 +779,41 @@
     __weak typeof(self) weakSelf = self;
     
     // Ask for the power level to set
-    self.actionMenu = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"]  message:nil style:MXKAlertStyleAlert];
+    [currentAlert dismiss:NO];
+    currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"]  message:nil style:MXKAlertStyleAlert];
     
     if (![self.mainSession.myUser.userId isEqualToString:_mxRoomMember.userId])
     {
-        self.actionMenu.cancelButtonIndex = [self.actionMenu addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
         {
-            weakSelf.actionMenu = nil;
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            strongSelf->currentAlert = nil;
             
-            [weakSelf setPowerLevel:weakSelf.mxRoom.state.powerLevels.usersDefault];
+            [strongSelf setPowerLevel:strongSelf.mxRoom.state.powerLevels.usersDefault];
         }];
     }
-    [self.actionMenu addTextFieldWithConfigurationHandler:^(UITextField *textField)
+    [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%zd", [weakSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:weakSelf.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%zd", [strongSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:strongSelf.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
-    [self.actionMenu addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
     {
         UITextField *textField = [alert textFieldAtIndex:0];
-        weakSelf.actionMenu = nil;
+        
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        strongSelf->currentAlert = nil;
         
         if (textField.text.length > 0)
         {
-            [weakSelf setPowerLevel:[textField.text integerValue]];
+            [strongSelf setPowerLevel:[textField.text integerValue]];
         }
     }];
-    [self.actionMenu showInViewController:self];
+    [currentAlert showInViewController:self];
 }
 
 @end

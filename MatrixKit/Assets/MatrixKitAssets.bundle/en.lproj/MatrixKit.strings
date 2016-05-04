@@ -147,6 +147,11 @@
 "room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
 "room_left" = "You left the room";
 
+// Room members
+"ignore" = "Ignore";
+"unignore" = "Unignore";
+"room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
+
 // Attachment
 "attachment_size_prompt" = "Do you want to send as:";
 "attachment_original" = "Actual Size: %@";
@@ -255,7 +260,6 @@
 "kick" = "Kick";
 "ban" = "Ban";
 "unban" = "Un-ban";
-"ignore" = "Ignore";
 "message_unsaved_changes" = "There are unsaved changes. Leaving will discard them.";
 
 // Login Screen 
