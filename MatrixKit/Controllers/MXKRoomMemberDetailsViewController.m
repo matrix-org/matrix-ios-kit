@@ -293,6 +293,11 @@
                 [currentAlert showInViewController:self];
                 break;
             }
+            case MXKRoomMemberDetailsActionUnignore:
+            {
+                // FIXME Remove the member from the ignored user list.
+                break;
+            }
             case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
             {
                 break;
@@ -558,9 +563,17 @@
                 }
                 
                 // Check whether the option Ignore may be presented
-                if (_mxRoomMember.membership == MXMembershipJoin /*FIXME: is he already ignored ?*/)
+                if (_mxRoomMember.membership == MXMembershipJoin)
                 {
-                    [actionsArray addObject:@(MXKRoomMemberDetailsActionIgnore)];
+                    //FIXME: is he already ignored ?
+//                    if ()
+                    {
+                        [actionsArray addObject:@(MXKRoomMemberDetailsActionIgnore)];
+                    }
+//                    else
+//                    {
+//                        [actionsArray addObject:@(MXKRoomMemberDetailsActionUnignore)];
+//                    }
                 }
                 break;
             }
@@ -634,6 +647,9 @@
             break;
         case MXKRoomMemberDetailsActionIgnore:
             title = [NSBundle mxk_localizedStringForKey:@"ignore"];
+            break;
+        case MXKRoomMemberDetailsActionUnignore:
+            title = [NSBundle mxk_localizedStringForKey:@"unignore"];
             break;
         case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
             title = [NSBundle mxk_localizedStringForKey:@"set_default_power_level"];
