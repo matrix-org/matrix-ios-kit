@@ -60,11 +60,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     MXKEventDetailsView *eventDetailsView;
     
     /**
-     Current alert (if any).
-     */
-    MXKAlert *currentAlert;
-    
-    /**
      Boolean value used to scroll to bottom the bubble history after refresh.
      */
     BOOL shouldScrollToBottomOnTableRefresh;
@@ -454,8 +449,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     // Deduce max height of the message text input by considering the minimum height of the table view.
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
-    // Scroll the tableview content when a new keyboard is presented.
-    if (!super.keyboardHeight && keyboardHeight)
+    // Scroll the tableview content when a new keyboard is presented (except if an alert is presented).
+    if (!super.keyboardHeight && keyboardHeight && !currentAlert)
     {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
