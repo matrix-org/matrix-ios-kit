@@ -267,7 +267,7 @@
                     
                     // Add the user to the blacklist: ignored users
                     [strongSelf addPendingActionMask];
-                    [strongSelf.mainSession ignoreUser:strongSelf.mxRoomMember.userId
+                    [strongSelf.mainSession ignoreUsers:@[strongSelf.mxRoomMember.userId]
                                          success:^{
                                              
                                              [strongSelf removePendingActionMask];
@@ -565,15 +565,15 @@
                 // Check whether the option Ignore may be presented
                 if (_mxRoomMember.membership == MXMembershipJoin)
                 {
-                    //FIXME: is he already ignored ?
-//                    if ()
+                    // is he already ignored ?
+                    if (![self.mainSession isUserIgnored:_mxRoomMember.userId])
                     {
                         [actionsArray addObject:@(MXKRoomMemberDetailsActionIgnore)];
                     }
-//                    else
-//                    {
-//                        [actionsArray addObject:@(MXKRoomMemberDetailsActionUnignore)];
-//                    }
+                    else
+                    {
+                        [actionsArray addObject:@(MXKRoomMemberDetailsActionUnignore)];
+                    }
                 }
                 break;
             }
