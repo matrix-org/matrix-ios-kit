@@ -80,6 +80,8 @@
 "answer_call" = "Answer Call";
 "reject_call" = "Reject Call";
 "end_call" = "End Call";
+"ignore" = "Ignore";
+"unignore" = "Unignore";
 
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
@@ -148,8 +150,6 @@
 "room_left" = "You left the room";
 
 // Room members
-"ignore" = "Ignore";
-"unignore" = "Unignore";
 "room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
 
 // Attachment
