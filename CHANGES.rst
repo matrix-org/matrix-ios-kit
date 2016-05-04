@@ -8,6 +8,8 @@ Improvements:
  * MXKTools: i18n'ed formatSecondsInterval methods.
  * MXKRoomBubbleTableViewCell: Support tap on sender name label
  * MXKRoomViewController: Insert sender name in text input by tapping on avatar or display name.
+ * Ability to report abuse
+ * Ability to ignore users
 
 Bug fixes:
  * Handle the error on joining a room where everyone has left.
