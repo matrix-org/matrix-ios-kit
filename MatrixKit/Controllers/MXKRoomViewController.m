@@ -2100,9 +2100,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         NSLog(@"    -> A message has been tapped");
     }
-    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnSenderNameLabel])
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnSenderNameLabel] || [actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
     {
-//        NSLog(@"    -> Name of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+//        NSLog(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
         
         // Add the member display name in text input
         MXRoomMember *selectedRoomMember = [roomDataSource.room.state memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
@@ -2126,11 +2126,6 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             
             [inputToolbarView becomeFirstResponder];
         }
-    }
-    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
-    {
-        NSLog(@"    -> Avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
-        // Do nothing by default
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnDateTimeContainer])
     {
