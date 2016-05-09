@@ -496,8 +496,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     [self updateRESTClient];
     
-    // Refresh UI
-    [self refreshAuthenticationSession];
+    if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
+    {
+        // Refresh UI
+        [self refreshAuthenticationSession];
+    }
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
@@ -1032,7 +1035,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Ignore connection cancellation error
     if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
     {
-        
         NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
         return;
     }
@@ -1050,9 +1052,13 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             title = [NSBundle mxk_localizedStringForKey:@"login_error_title"];
         }
-        else
+        else if (self.authType == MXKAuthenticationTypeRegister)
         {
             title = [NSBundle mxk_localizedStringForKey:@"register_error_title"];
+        }
+        else
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"error"];
         }
     }
     NSString* message = error.localizedDescription;
@@ -1063,6 +1069,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         NSString* localizedError = [dict valueForKey:@"error"];
         NSString* errCode = [dict valueForKey:@"errcode"];
+        
+        if (localizedError.length > 0)
+        {
+            message = localizedError;
+        }
         
         if (errCode)
         {
@@ -1094,14 +1105,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
             }
-            else
+            else if (!message.length)
             {
                 message = errCode;
             }
-        }
-        else if (localizedError.length > 0)
-        {
-            message = localizedError;
         }
     }
     
@@ -1409,7 +1416,18 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         {
             NSLog(@"[MXKAuthenticationVC] Forgot Password: not found");
             
-            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_not_found"]}]];
+            NSMutableDictionary *userInfo;
+            if (error.userInfo)
+            {
+                userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
+            }
+            else
+            {
+                userInfo = [NSMutableDictionary dictionary];
+            }
+            userInfo[NSLocalizedDescriptionKey] = [NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_not_found"];
+            
+            [self onFailureDuringAuthRequest:[NSError errorWithDomain:kMXNSErrorDomain code:0 userInfo:userInfo]];
         }
         else
         {
