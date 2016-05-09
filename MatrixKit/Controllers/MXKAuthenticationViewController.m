@@ -1023,6 +1023,103 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
 
+- (void)onFailureDuringAuthRequest:(NSError *)error
+{
+    mxCurrentOperation = nil;
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+    
+    // Ignore connection cancellation error
+    if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
+    {
+        
+        NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
+        return;
+    }
+    
+    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
+    
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
+    
+    // Translate the error code to a human message
+    NSString *title = error.localizedFailureReason;
+    if (!title)
+    {
+        if (self.authType == MXKAuthenticationTypeLogin)
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"login_error_title"];
+        }
+        else
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"register_error_title"];
+        }
+    }
+    NSString* message = error.localizedDescription;
+    NSDictionary* dict = error.userInfo;
+    
+    // detect if it is a Matrix SDK issue
+    if (dict)
+    {
+        NSString* localizedError = [dict valueForKey:@"error"];
+        NSString* errCode = [dict valueForKey:@"errcode"];
+        
+        if (errCode)
+        {
+            if ([errCode isEqualToString:kMXErrCodeStringForbidden])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringUnknownToken])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringBadJSON])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringNotJSON])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringLimitExceeded])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringUserInUse])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringLoginEmailURLNotYet])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
+            }
+            else
+            {
+                message = errCode;
+            }
+        }
+        else if (localizedError.length > 0)
+        {
+            message = localizedError;
+        }
+    }
+    
+    // Alert user
+    if (alert)
+    {
+        [alert dismiss:NO];
+    }
+    
+    alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
+    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
+     {}];
+    [alert showInViewController:self];
+    
+    // Update authentication inputs view to return in initial step
+    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+}
+
 #pragma mark - Privates
 
 - (void)refreshForgotPasswordSession
@@ -1410,106 +1507,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
     }
-}
-
-- (void)onFailureDuringAuthRequest:(NSError *)error
-{
-    mxCurrentOperation = nil;
-    [_authenticationActivityIndicator stopAnimating];
-    self.userInteractionEnabled = YES;
-    
-    // Ignore connection cancellation error
-    if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
-    {
-        NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
-        return;
-    }
-    
-    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
-    
-    // Cancel external registration parameters if any
-    _externalRegistrationParameters = nil;
-    
-    // Translate the error code to a human message
-    NSString *title = error.localizedFailureReason;
-    if (!title)
-    {
-        if (self.authType == MXKAuthenticationTypeLogin)
-        {
-            title = [NSBundle mxk_localizedStringForKey:@"login_error_title"];
-        }
-        else if (self.authType == MXKAuthenticationTypeRegister)
-        {
-            title = [NSBundle mxk_localizedStringForKey:@"register_error_title"];
-        }
-        else
-        {
-            title = [NSBundle mxk_localizedStringForKey:@"error"];
-        }
-    }
-    NSString* message = error.localizedDescription;
-    NSDictionary* dict = error.userInfo;
-    
-    // detect if it is a Matrix SDK issue
-    if (dict)
-    {
-        NSString* localizedError = [dict valueForKey:@"error"];
-        NSString* errCode = [dict valueForKey:@"errcode"];
-        
-        if (errCode)
-        {
-            if ([errCode isEqualToString:kMXErrCodeStringForbidden])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringUnknownToken])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringBadJSON])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringNotJSON])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringLimitExceeded])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringUserInUse])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringLoginEmailURLNotYet])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
-            }
-            else
-            {
-                message = errCode;
-            }
-        }
-        else if (localizedError.length > 0)
-        {
-            message = localizedError;
-        }
-    }
-    
-    // Alert user
-    if (alert)
-    {
-        [alert dismiss:NO];
-    }
-    
-    alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
-    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
-     {}];
-    [alert showInViewController:self];
-    
-    // Update authentication inputs view to return in initial step
-    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
 
 - (void)onSuccessfulLogin:(MXCredentials*)credentials

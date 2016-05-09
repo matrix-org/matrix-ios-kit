@@ -216,5 +216,12 @@ extern NSString *const MXKAuthErrorDomain;
  */
 - (void)cancel;
 
+/**
+ Handle the error received during an authentication request.
+ 
+ @param error the received error.
+ */
+- (void)onFailureDuringAuthRequest:(NSError *)error;
+
 @end
 
