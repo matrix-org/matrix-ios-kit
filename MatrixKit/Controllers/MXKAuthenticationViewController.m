@@ -1385,6 +1385,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     mxCurrentOperation = [mxRestClient resetPasswordWithParameters:parameters success:^() {
         
+        NSLog(@"[MXKAuthenticationVC] Reset password succeeded");
+        
         mxCurrentOperation = nil;
         [_authenticationActivityIndicator stopAnimating];
         
