@@ -31,7 +31,7 @@ typedef enum {
      */
     MXKAuthenticationTypeLogin,
     /**
-     Typer used to restore an existing account by reseting the password.
+     Type used to restore an existing account by reseting the password.
      */
     MXKAuthenticationTypeForgotPassword
     
