@@ -42,31 +42,34 @@
 
 - (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
 {
-    // Validate first the provided session
-    MXAuthenticationSession *validSession = [self validateAuthenticationSession:authSession];
-    
-    if ([super setAuthSession:validSession withAuthType:authType])
+    if (type == MXKAuthenticationTypeLogin || type == MXKAuthenticationTypeRegister)
     {
-        if (type == MXKAuthenticationTypeLogin)
-        {
-            self.passWordTextField.returnKeyType = UIReturnKeyDone;
-            self.emailTextField.hidden = YES;
-            self.emailInfoLabel.hidden = YES;
-            self.displayNameTextField.hidden = YES;
-            
-            self.viewHeightConstraint.constant = self.displayNameTextField.frame.origin.y;
-        }
-        else
-        {
-            self.passWordTextField.returnKeyType = UIReturnKeyNext;
-            self.emailTextField.hidden = NO;
-            self.emailInfoLabel.hidden = NO;
-            self.displayNameTextField.hidden = NO;
-            
-            self.viewHeightConstraint.constant = 179;
-        }
+        // Validate first the provided session
+        MXAuthenticationSession *validSession = [self validateAuthenticationSession:authSession];
         
-        return YES;
+        if ([super setAuthSession:validSession withAuthType:authType])
+        {
+            if (type == MXKAuthenticationTypeLogin)
+            {
+                self.passWordTextField.returnKeyType = UIReturnKeyDone;
+                self.emailTextField.hidden = YES;
+                self.emailInfoLabel.hidden = YES;
+                self.displayNameTextField.hidden = YES;
+                
+                self.viewHeightConstraint.constant = self.displayNameTextField.frame.origin.y;
+            }
+            else
+            {
+                self.passWordTextField.returnKeyType = UIReturnKeyNext;
+                self.emailTextField.hidden = NO;
+                self.emailInfoLabel.hidden = NO;
+                self.displayNameTextField.hidden = NO;
+                
+                self.viewHeightConstraint.constant = 179;
+            }
+            
+            return YES;
+        }
     }
     
     return NO;
