@@ -660,7 +660,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
             }];
         }
-        else if (mxSession.state == MXSessionStateStoreDataReady)
+        else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateInitialSyncFailed)
         {
             // The session initialisation was uncompleted, we try to complete it here.
             [self launchInitialServerSync];
@@ -874,7 +874,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     initialServerSyncTimer = nil;
     
     // Sanity check
-    if (!mxSession || mxSession.state != MXSessionStateStoreDataReady)
+    if (!mxSession || (mxSession.state != MXSessionStateStoreDataReady && mxSession.state != MXSessionStateInitialSyncFailed))
     {
         NSLog(@"[MXKAccount] Initial server sync is applicable only when store data is ready to complete session initialisation");
         return;
@@ -897,12 +897,22 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
         }
         
-        // Check network reachability
-        if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNotConnectedToInternet)
+        // Check if it is a network connectivity issue
+        AFNetworkReachabilityManager *networkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
+        NSLog(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
+        
+        if (networkReachabilityManager.isReachable)
         {
+            // The problem is not the network
+            // Postpone a new attempt in 10 sec
+            initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
+        }
+        else
+        {
+            // The device is not connected to the internet, wait for the connection to be up again before retrying
             // Add observer to launch a new attempt according to reachability.
-            reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note)
-            {
+            reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+                
                 NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
                 if (statusItem)
                 {
@@ -913,12 +923,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                         [self launchInitialServerSync];
                     }
                 }
+                
             }];
-        }
-        else
-        {
-            // Postpone a new attempt in 10 sec
-            initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
         }
     }];
 }
