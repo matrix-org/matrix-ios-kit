@@ -555,11 +555,13 @@ static NSMutableDictionary *fileExtensionByContentType = nil;
     // Export video file
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
 
+        AVAssetExportSessionStatus status = exportSession.status;
+
         // Come back to the UI thread to avoid race conditions
         dispatch_async(dispatch_get_main_queue(), ^{
 
             // Check status
-            if ([exportSession status] == AVAssetExportSessionStatusCompleted)
+            if (status == AVAssetExportSessionStatusCompleted)
             {
 
                 AVURLAsset* asset = [AVURLAsset URLAssetWithURL:outputVideoLocalURL
@@ -596,7 +598,7 @@ static NSMutableDictionary *fileExtensionByContentType = nil;
             else
             {
 
-                NSLog(@"[MXKTools] convertVideoToMP4: Video export failed. exportSession.status: %d", (int)exportSession.status);
+                NSLog(@"[MXKTools] convertVideoToMP4: Video export failed. exportSession.status: %tu", status);
 
                 // Remove output file (if any)
                 [[NSFileManager defaultManager] removeItemAtPath:[outputVideoLocalURL path] error:nil];
