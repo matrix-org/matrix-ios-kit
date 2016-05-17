@@ -820,6 +820,10 @@
                             }
                             
                             NSLog(@"[MXKAttachmentsVC] video download failed: %@", error);
+
+                            // Display the navigation bar so that the user can leave this screen
+                            self.navigationController.navigationBarHidden = NO;
+
                             // Notify MatrixKit user
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                             
