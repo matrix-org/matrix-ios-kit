@@ -83,8 +83,16 @@ static BOOL _disableLongPressGestureOnEvent;
         [tapGesture setNumberOfTouchesRequired:1];
         [tapGesture setNumberOfTapsRequired:1];
         [tapGesture setDelegate:self];
-        [self.userNameLabel addGestureRecognizer:tapGesture];
-        self.userNameLabel.userInteractionEnabled = YES;
+        
+        if (self.userNameTapGestureMaskView)
+        {
+            [self.userNameTapGestureMaskView addGestureRecognizer:tapGesture];
+        }
+        else
+        {
+            [self.userNameLabel addGestureRecognizer:tapGesture];
+            self.userNameLabel.userInteractionEnabled = YES;
+        }
     }
     
     if (self.pictureView)
@@ -228,10 +236,12 @@ static BOOL _disableLongPressGestureOnEvent;
             {
                 self.userNameLabel.text = bubbleData.senderDisplayName;
                 self.userNameLabel.hidden = NO;
+                self.userNameTapGestureMaskView.userInteractionEnabled = YES;
             }
             else
             {
                 self.userNameLabel.hidden = YES;
+                self.userNameTapGestureMaskView.userInteractionEnabled = NO;
             }
         }
         
