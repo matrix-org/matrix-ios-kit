@@ -1468,7 +1468,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }];
         
-    } failure:^(NSError *error) {
+    } failure:^() {
         
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
@@ -1476,7 +1476,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         if (failure)
         {
-            failure(error);
+            failure(nil);
         }
     }];
 }
