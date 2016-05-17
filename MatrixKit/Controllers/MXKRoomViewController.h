@@ -268,6 +268,12 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (BOOL)isIRCStyleCommand:(NSString*)string;
 
 /**
+ Mention the member display name in the current text of the message composer.
+ The message composer becomes then the first responder.
+ */
+- (void)mention:(MXRoomMember*)roomMember;
+
+/**
  Force to dismiss keyboard if any
  */
 - (void)dismissKeyboard;
