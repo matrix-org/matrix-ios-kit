@@ -2924,16 +2924,24 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (roomBubbleTableViewCell.bubbleData.isAttachmentWithThumbnail)
     {
-        NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
-        
-        // Present an attachment viewer
-        attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
-        attachmentsViewer.delegate = self;
-        attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
-        attachmentsViewer.hidesBottomBarWhenPushed = YES;
-        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+        if (selectedAttachment.event.mxkState == MXKEventStateDefault || selectedAttachment.event.mxkState == MXKEventStateBing)
+        {
+            NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
 
-        [self.navigationController pushViewController:attachmentsViewer animated:YES];
+            // Present an attachment viewer
+            attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+            attachmentsViewer.delegate = self;
+            attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
+            attachmentsViewer.hidesBottomBarWhenPushed = YES;
+            [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+
+            [self.navigationController pushViewController:attachmentsViewer animated:YES];
+        }
+        else
+        {
+            // Let's the application do something
+            NSLog(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
+        }
     }
     else if (selectedAttachment.type == MXKAttachmentTypeAudio)
     {
