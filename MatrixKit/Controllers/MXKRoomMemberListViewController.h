@@ -41,6 +41,13 @@
  This view controller displays members of a room. Only one matrix session is handled by this view controller.
  */
 @interface MXKRoomMemberListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate, UISearchBarDelegate>
+{
+@protected    
+    /**
+     Used to auto scroll at the top when search session is started or cancelled.
+     */
+    BOOL shouldScrollToTopOnRefresh;
+}
 
 @property (weak, nonatomic) IBOutlet UISearchBar *membersSearchBar;
 @property (weak, nonatomic) IBOutlet UITableView *membersTableView;
@@ -98,5 +105,12 @@
  @param listDataSource the data source providing the members list.
  */
 - (void)displayList:(MXKRoomMemberListDataSource*)listDataSource;
+
+/**
+ Scroll the members list to the top.
+ 
+ @param animated YES to animate the transition at a constant velocity to the new offset, NO to make the transition immediate.
+ */
+- (void)scrollToTop:(BOOL)animated;
 
 @end

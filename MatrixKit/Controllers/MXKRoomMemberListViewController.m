@@ -53,11 +53,6 @@
     BOOL ignoreSearchRequest;
     
     /**
-     Used to auto scroll at the top when search session is started or cancelled.
-     */
-    BOOL shouldScrollToTopOnRefresh;
-    
-    /**
      Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
      */
     id leaveRoomNotificationObserver;
@@ -284,15 +279,6 @@
 
 #pragma mark - Internal methods
 
-- (void)scrollToTop
-{
-    // stop any scrolling effect
-    [UIView setAnimationsEnabled:NO];
-    // before scrolling to the tableview top
-    self.membersTableView.contentOffset = CGPointMake(-self.membersTableView.contentInset.left, -self.membersTableView.contentInset.top);
-    [UIView setAnimationsEnabled:YES];
-}
-
 - (void)updateMembersActivityInfo
 {
     for (id memberCell in self.membersTableView.visibleCells)
@@ -378,6 +364,11 @@
     }
 }
 
+- (void)scrollToTop:(BOOL)animated
+{
+    [self.membersTableView setContentOffset:CGPointMake(-self.membersTableView.contentInset.left, -self.membersTableView.contentInset.top) animated:animated];
+}
+
 #pragma mark - MXKDataSourceDelegate
 
 - (Class<MXKCellRendering>)cellViewClassForCellData:(MXKCellData*)cellData
@@ -405,7 +396,7 @@
     
     if (shouldScrollToTopOnRefresh)
     {
-        [self scrollToTop];
+        [self scrollToTop:NO];
         shouldScrollToTopOnRefresh = NO;
     }
     
