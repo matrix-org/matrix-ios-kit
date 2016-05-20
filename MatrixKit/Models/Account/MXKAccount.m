@@ -302,6 +302,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (BOOL)pushNotificationServiceIsActive
 {
+    NSLog(@"[MXKAccount] pushNotificationServiceIsActive: %d %@", _enablePushNotifications, mxSession);
+    
     return ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications && mxSession);
 }
 
