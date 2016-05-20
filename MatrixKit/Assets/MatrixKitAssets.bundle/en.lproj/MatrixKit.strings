@@ -212,8 +212,10 @@
 "notice_display_name_removed" = "%@ removed their display name";
 "notice_topic_changed" = "%@ changed the topic to: %@";
 "notice_room_name_changed" = "%@ changed the room name to: %@";
-"notice_outgoing_call" = "Outgoing Call";
-"notice_incoming_call" = "Incoming Call";
+"notice_placed_voice_call" = "%@ placed a voice call";
+"notice_placed_video_call" = "%@ placed a video call";
+"notice_answered_video_call" = "%@ answered the call";
+"notice_ended_video_call" = "%@ ended the call";
 
 // Room Screen 
 
