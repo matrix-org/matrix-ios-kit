@@ -516,19 +516,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Complete session registration by launching live stream
         __strong __typeof(weakSelf)strongSelf = weakSelf;
         
-        // Restore pusher (if it is enabled)
-        if (strongSelf->_enablePushNotifications)
-        {
-            [strongSelf enablePusher:strongSelf->_enablePushNotifications
-                             success:nil
-                             failure:^(NSError *error) {
-                                 
-                                 strongSelf->_enablePushNotifications = NO;
-                                 
-                                 // Archive updated field
-                                 [[MXKAccountManager sharedManager] saveAccounts];
-                             }];
-        }
+        // Refresh pusher state
+        [strongSelf refreshPusher];
         
         // Launch server sync
         [strongSelf launchInitialServerSync];
@@ -602,7 +591,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Turn off pusher
         [self enablePusher:NO success:nil failure:nil];
     }
-    
 }
 
 - (void)pauseInBackgroundTask
@@ -675,6 +663,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             _bgTask = UIBackgroundTaskInvalid;
             NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
         }
+        
+        [self refreshPusher];
     }
 }
 
@@ -693,7 +683,32 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 #pragma mark - Push notifications
 
-// Update the pusher for this device and this account on the Home Server.
+// Refresh the pusher state for this account on this device.
+- (void)refreshPusher
+{
+    // Restore pusher (if it is enabled)
+    if (self.pushNotificationServiceIsActive)
+    {
+        [self enablePusher:YES
+                   success:nil
+                   failure:^(NSError *error) {
+                       
+                       _enablePushNotifications = NO;
+                       
+                       // Archive updated field
+                       [[MXKAccountManager sharedManager] saveAccounts];
+                   }];
+    }
+    else if (_enablePushNotifications && mxSession)
+    {
+        // Turn off pusher if user denied remote notification.
+        NSLog(@"[MXKAccount] Turn off pusher for %@ account", self.mxCredentials.userId);
+        [self enablePusher:NO success:nil failure:nil];
+    }
+}
+
+
+// Enable/Disable the pusher for this account on this device on the Home Server.
 - (void)enablePusher:(BOOL)enabled success:(void (^)())success failure:(void (^)(NSError *))failure
 {
     // Refuse to try & turn push on if we're not logged in, it's nonsensical.
@@ -758,7 +773,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     MXRestClient *restCli = self.mxRestClient;
     
     [restCli setPusherWithPushkey:b64Token kind:kind appId:appId appDisplayName:appDisplayName deviceDisplayName:[[UIDevice currentDevice] name] profileTag:profileTag lang:deviceLang data:pushData append:append success:^{
-        NSLog(@"[MXKAccount] Succeeded to update pusher for %@", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount] Succeeded to update pusher for %@ (%d)", self.mxCredentials.userId, enabled);
         
         if (success)
         {

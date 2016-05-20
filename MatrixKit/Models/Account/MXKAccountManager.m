@@ -277,9 +277,9 @@ static MXKAccountManager *sharedAccountManager = nil;
             // Resync APNS to on if we think APNS is on, but the token has changed.
             for (MXKAccount *account in mxAccounts)
             {
-                NSLog(@"[MXKAccountManager] Resync APNS %d, %d", account.enablePushNotifications, account.pushNotificationServiceIsActive);
-                if (account.enablePushNotifications)
+                if (account.pushNotificationServiceIsActive)
                 {
+                    NSLog(@"[MXKAccountManager] Resync APNS for %@ account", account.mxCredentials.userId);
                     account.enablePushNotifications = YES;
                 }
             }
