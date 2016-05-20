@@ -232,6 +232,17 @@ static MXKAccountManager *sharedAccountManager = nil;
     NSData *oldToken = self.apnsDeviceToken;
     if (!apnsDeviceToken.length)
     {
+        NSLog(@"[MXKAccountManager] reset APNS device token");
+        
+        if (oldToken)
+        {
+            // turn off the Apns flag for all accounts if any
+            for (MXKAccount *account in mxAccounts)
+            {
+                account.enablePushNotifications = NO;
+            }
+        }
+        
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -243,6 +254,8 @@ static MXKAccountManager *sharedAccountManager = nil;
         
         if (!oldToken)
         {
+            NSLog(@"[MXKAccountManager] set APNS device token");
+            
             // Reset the append flag before resync APNS for active account
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
             [[NSUserDefaults standardUserDefaults] synchronize];
@@ -255,6 +268,8 @@ static MXKAccountManager *sharedAccountManager = nil;
         }
         else if (![oldToken isEqualToData:apnsDeviceToken])
         {
+            NSLog(@"[MXKAccountManager] update APNS device token");
+            
             // Reset the append flag before resync APNS for active account
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
             [[NSUserDefaults standardUserDefaults] synchronize];
@@ -264,6 +279,7 @@ static MXKAccountManager *sharedAccountManager = nil;
             {
                 if (account.pushNotificationServiceIsActive)
                 {
+                    NSLog(@"[MXKAccountManager] Resync APNS for %@ account", account.mxCredentials.userId);
                     account.enablePushNotifications = YES;
                 }
             }
@@ -285,18 +301,29 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 - (BOOL)isAPNSAvailable
 {
-    BOOL isRegisteredForRemoteNotifications = NO;
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)])
+    // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
+    // remote notifications or not. However receiving remote notifications does not mean it
+    // will also display them to the user.
+    // To check whether the user allowed or denied remote notification or in fact changed
+    // the notifications permissions later in iOS setting, we have to call
+    // [UIApplication currentUserNotificationSettings].
+    
+    BOOL isRemoteNotificationsAllowed = NO;
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)])
     {
         // iOS 8 and later
-        isRegisteredForRemoteNotifications = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+        UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        
+        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
     }
     else
     {
-        isRegisteredForRemoteNotifications = [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone;
+        isRemoteNotificationsAllowed = [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone;
     }
     
-    return (isRegisteredForRemoteNotifications && self.apnsDeviceToken);
+    NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    
+    return (isRemoteNotificationsAllowed && self.apnsDeviceToken);
 }
 
 #pragma mark -
