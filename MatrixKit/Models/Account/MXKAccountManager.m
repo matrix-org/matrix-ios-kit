@@ -252,6 +252,8 @@ static MXKAccountManager *sharedAccountManager = nil;
         [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
+        NSArray *activeAccounts = self.activeAccounts;
+        
         if (!oldToken)
         {
             NSLog(@"[MXKAccountManager] set APNS device token");
@@ -261,7 +263,7 @@ static MXKAccountManager *sharedAccountManager = nil;
             [[NSUserDefaults standardUserDefaults] synchronize];
             
             // turn on the Apns flag for all accounts, when the Apns registration succeeds for the first time
-            for (MXKAccount *account in mxAccounts)
+            for (MXKAccount *account in activeAccounts)
             {
                 account.enablePushNotifications = YES;
             }
@@ -275,7 +277,7 @@ static MXKAccountManager *sharedAccountManager = nil;
             [[NSUserDefaults standardUserDefaults] synchronize];
             
             // Resync APNS to on if we think APNS is on, but the token has changed.
-            for (MXKAccount *account in mxAccounts)
+            for (MXKAccount *account in activeAccounts)
             {
                 if (account.pushNotificationServiceIsActive)
                 {

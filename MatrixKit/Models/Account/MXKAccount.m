@@ -664,7 +664,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
         }
         
-        [self refreshPusher];
+        if (mxSession.state > MXSessionStateInitialised)
+        {
+            [self refreshPusher];
+        }
     }
 }
 
@@ -767,7 +770,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     NSObject *kind = enabled ? @"http" : [NSNull null];
     
     // Retrieve the append flag from manager to handle multiple accounts registration
-    BOOL append = [MXKAccountManager sharedManager].apnsAppendFlag;
+    BOOL append = NO;//FIXME [MXKAccountManager sharedManager].apnsAppendFlag;
     NSLog(@"[MXKAccount] append flag: %d", append);
     
     MXRestClient *restCli = self.mxRestClient;
