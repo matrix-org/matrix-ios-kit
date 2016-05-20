@@ -259,9 +259,9 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIFont *stateEventTextFont;
 
 /**
- Text font used to display call invite.
+ Text font used to display call notices (invite, answer, hangup.
  Default is italic SFUIText-Regular 14.
  */
-@property (nonatomic) UIFont *callInviteTextFont;
+@property (nonatomic) UIFont *callNoticesTextFont;
 
 @end

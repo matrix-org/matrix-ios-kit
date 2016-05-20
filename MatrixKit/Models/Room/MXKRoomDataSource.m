@@ -165,7 +165,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomMessageFeedback,
                                              kMXEventTypeStringRoomRedaction,
                                              kMXEventTypeStringRoomThirdPartyInvite,
-                                             kMXEventTypeStringCallInvite
+                                             kMXEventTypeStringCallInvite,
+                                             kMXEventTypeStringCallAnswer,
+                                             kMXEventTypeStringCallHangup
                                              ];
         }
         else
@@ -177,7 +179,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomMember,
                                              kMXEventTypeStringRoomMessage,
                                              kMXEventTypeStringRoomThirdPartyInvite,
-                                             kMXEventTypeStringCallInvite
+                                             kMXEventTypeStringCallInvite,
+                                             kMXEventTypeStringCallAnswer,
+                                             kMXEventTypeStringCallHangup
                                              ];
         }
 
