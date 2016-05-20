@@ -978,6 +978,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         isPauseRequested = NO;
     }
+    else if (mxSession.state == MXSessionStateUnknownToken)
+    {
+        // Logout this account
+        [[MXKAccountManager sharedManager] removeAccount:self];
+    }
 }
 
 - (void)prepareRESTClient
