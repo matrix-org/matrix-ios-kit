@@ -140,7 +140,6 @@ static MXKAccountManager *sharedAccountManager = nil;
     
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
     // Be sure that no account survive in local storage
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -220,7 +219,6 @@ static MXKAccountManager *sharedAccountManager = nil;
     if (!token.length)
     {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         token = nil;
     }
@@ -244,22 +242,17 @@ static MXKAccountManager *sharedAccountManager = nil;
         }
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
-        [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
         NSArray *activeAccounts = self.activeAccounts;
         
         if (!oldToken)
         {
             NSLog(@"[MXKAccountManager] set APNS device token");
             
-            // Reset the append flag before resync APNS for active account
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
+            [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
             // turn on the Apns flag for all accounts, when the Apns registration succeeds for the first time
@@ -272,11 +265,17 @@ static MXKAccountManager *sharedAccountManager = nil;
         {
             NSLog(@"[MXKAccountManager] update APNS device token");
             
-            // Reset the append flag before resync APNS for active account
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
+            // Delete the pushers related to the old token
+            for (MXKAccount *account in activeAccounts)
+            {
+                [account deletePusher];
+            }
+            
+            // Update the token
+            [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
-            // Resync APNS to on if we think APNS is on, but the token has changed.
+            // Refresh pushers with the new token.
             for (MXKAccount *account in activeAccounts)
             {
                 if (account.pushNotificationServiceIsActive)
@@ -287,18 +286,6 @@ static MXKAccountManager *sharedAccountManager = nil;
             }
         }
     }
-}
-
-- (BOOL)apnsAppendFlag
-{
-    BOOL appendFlag = [[NSUserDefaults standardUserDefaults] boolForKey:@"apnsAppendFlag"];
-    if (!appendFlag)
-    {
-        // Turn on 'append' flag to be able to add another pusher with the given pushkey and App ID to any others user IDs
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"apnsAppendFlag"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-    return appendFlag;
 }
 
 - (BOOL)isAPNSAvailable

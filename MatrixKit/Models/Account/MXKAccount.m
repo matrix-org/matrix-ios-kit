@@ -309,16 +309,32 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)setEnablePushNotifications:(BOOL)enablePushNotifications
 {
-    // Update the pusher, report the new value only on success.
-    [self enablePusher:enablePushNotifications
-               success:^{
-                   
-                   _enablePushNotifications = enablePushNotifications;
-                   
-                   // Archive updated field
-                   [[MXKAccountManager sharedManager] saveAccounts];
-               }
-               failure:nil];
+    if (enablePushNotifications)
+    {
+        NSLog(@"[MXKAccount] Refresh pusher for %@ account", self.mxCredentials.userId);
+        
+        _enablePushNotifications = YES;
+        
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
+        
+        [self refreshPusher];
+    }
+    else if (_enablePushNotifications)
+    {
+        NSLog(@"[MXKAccount] Disable pusher for %@ account", self.mxCredentials.userId);
+        
+        // Delete the pusher, report the new value only on success.
+        [self enablePusher:NO
+                   success:^{
+                       
+                       _enablePushNotifications = NO;
+                       
+                       // Archive updated field
+                       [[MXKAccountManager sharedManager] saveAccounts];
+                   }
+                   failure:nil];
+    }
 }
 
 - (void)setEnableInAppNotifications:(BOOL)enableInAppNotifications
@@ -337,14 +353,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         if (_disabled)
         {
+            [self deletePusher];
+            
             // Close session (keep the storage).
             [self closeSession:NO];
-            if (_enablePushNotifications)
-            {
-                // Turn off pusher
-                [self enablePusher:NO success:nil failure:nil];
-            }
-
         }
         else if (!mxSession)
         {
@@ -585,10 +597,15 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)logout
 {
+    [self deletePusher];
+    
     [self closeSession:YES];
-    if (_enablePushNotifications)
+}
+
+- (void)deletePusher
+{
+    if (self.pushNotificationServiceIsActive)
     {
-        // Turn off pusher
         [self enablePusher:NO success:nil failure:nil];
     }
 }
@@ -689,9 +706,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 // Refresh the pusher state for this account on this device.
 - (void)refreshPusher
 {
-    // Restore pusher (if it is enabled)
+    // Check the conditions required to run the pusher
     if (self.pushNotificationServiceIsActive)
     {
+        // Create/restore the pusher
         [self enablePusher:YES
                    success:nil
                    failure:^(NSError *error) {
@@ -705,11 +723,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else if (_enablePushNotifications && mxSession)
     {
         // Turn off pusher if user denied remote notification.
-        NSLog(@"[MXKAccount] Turn off pusher for %@ account", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount] Disable pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
         [self enablePusher:NO success:nil failure:nil];
     }
 }
-
 
 // Enable/Disable the pusher for this account on this device on the Home Server.
 - (void)enablePusher:(BOOL)enabled success:(void (^)())success failure:(void (^)(NSError *))failure
@@ -769,8 +786,18 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     NSObject *kind = enabled ? @"http" : [NSNull null];
     
-    // Retrieve the append flag from manager to handle multiple accounts registration
-    BOOL append = NO;//FIXME [MXKAccountManager sharedManager].apnsAppendFlag;
+    // Use the append flag to handle multiple accounts registration.
+    BOOL append = NO;
+    // Check whether a pusher is running for another account
+    NSArray *activeAccounts = [MXKAccountManager sharedManager].activeAccounts;
+    for (MXKAccount *account in activeAccounts)
+    {
+        if (![account.mxCredentials.userId isEqualToString:self.mxCredentials.userId] && account.pushNotificationServiceIsActive)
+        {
+            append = YES;
+            break;
+        }
+    }
     NSLog(@"[MXKAccount] append flag: %d", append);
     
     MXRestClient *restCli = self.mxRestClient;
