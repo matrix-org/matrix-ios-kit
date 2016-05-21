@@ -58,11 +58,6 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 @property (nonatomic, copy) NSData *apnsDeviceToken;
 
 /**
- In case of multiple accounts, this flag is used to create multiple pushers during Push notifications registration.
- */
-@property (nonatomic, readonly) BOOL apnsAppendFlag;
-
-/**
  The APNS status: YES when app is registered for remote notif, and devive token is known.
  */
 @property (nonatomic) BOOL isAPNSAvailable;

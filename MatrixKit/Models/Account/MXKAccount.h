@@ -193,7 +193,13 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 /**
  Close the matrix session, and delete all store data.
  */
--(void)logout;
+- (void)logout;
+
+/**
+ Delete the potential pusher used to receive push notifications, without changing 'enablePushNotifications' property.
+ Used to delete existing pusher related to out-of-date device token.
+ */
+- (void)deletePusher;
 
 /**
  Pause the current matrix session.
