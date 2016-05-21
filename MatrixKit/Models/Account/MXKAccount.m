@@ -665,12 +665,20 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             // Resume SDK and update user presence
             [mxSession resume:^{
                 [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
+                
+                [self refreshPusher];
             }];
         }
         else if (mxSession.state == MXSessionStateStoreDataReady || mxSession.state == MXSessionStateInitialSyncFailed)
         {
             // The session initialisation was uncompleted, we try to complete it here.
             [self launchInitialServerSync];
+            
+            [self refreshPusher];
+        }
+        else if (mxSession.state == MXSessionStateSyncInProgress)
+        {
+            [self refreshPusher];
         }
         
         if (_bgTask)
@@ -679,11 +687,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
             _bgTask = UIBackgroundTaskInvalid;
             NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
-        }
-        
-        if (mxSession.state > MXSessionStateInitialised)
-        {
-            [self refreshPusher];
         }
     }
 }
