@@ -302,8 +302,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (BOOL)pushNotificationServiceIsActive
 {
-    NSLog(@"[MXKAccount] pushNotificationServiceIsActive: %d %@", _enablePushNotifications, mxSession);
-    
     return ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications && mxSession);
 }
 
@@ -311,8 +309,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     if (enablePushNotifications)
     {
-        NSLog(@"[MXKAccount] Refresh pusher for %@ account", self.mxCredentials.userId);
-        
         _enablePushNotifications = YES;
         
         // Archive updated field
@@ -712,6 +708,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     // Check the conditions required to run the pusher
     if (self.pushNotificationServiceIsActive)
     {
+        NSLog(@"[MXKAccount] Refresh pusher for %@ account", self.mxCredentials.userId);
+        
         // Create/restore the pusher
         [self enablePusher:YES
                    success:nil
