@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -11,6 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="20U-7H-xmi" id="cFw-g7-Cgn">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="HgP-TQ-bd1">
@@ -27,6 +28,10 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="mxkSearchBar" destination="HgP-TQ-bd1" id="2YT-dI-X4U"/>
+                <outlet property="mxkSearchBarBottomConstraint" destination="9RG-MY-amb" id="CFM-k7-uGe"/>
+                <outlet property="mxkSearchBarLeadingConstraint" destination="duA-9h-WEA" id="5vm-V4-Qsu"/>
+                <outlet property="mxkSearchBarTopConstraint" destination="csH-4b-32a" id="NHJ-WR-9Hm"/>
+                <outlet property="mxkSearchBarTrailingConstraint" destination="y0I-NU-96o" id="lb1-cE-sE0"/>
             </connections>
         </tableViewCell>
     </objects>

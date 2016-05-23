@@ -16,9 +16,24 @@
 
 #import "MXKTableViewCell.h"
 
+/**
+ 'MXKTableViewCellWithLabelAndSubLabel' inherits 'MXKTableViewCell' class.
+ It constains two 'UILabel' instances.
+ */
 @interface MXKTableViewCellWithLabelAndSubLabel : MXKTableViewCell
 
 @property (strong, nonatomic) IBOutlet UILabel* mxkLabel;
 @property (strong, nonatomic) IBOutlet UILabel* mxkSublabel;
+
+/**
+ Leading/Trailing constraints define here spacing to nearest neighbor (no relative to margin)
+ */
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelTrailingConstraint;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkSublabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkSublabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkSublabelBottomConstraint;
 
 @end
