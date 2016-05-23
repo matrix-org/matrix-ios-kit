@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -11,6 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="70"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R1k-d9-UZq" id="TrF-Sd-htc">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="69"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HwF-3u-e5Q">
@@ -39,23 +40,30 @@
                     </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="KoB-y6-MAj" firstAttribute="centerY" secondItem="HwF-3u-e5Q" secondAttribute="centerY" id="0j3-Pg-l0f"/>
                     <constraint firstAttribute="trailing" secondItem="KoB-y6-MAj" secondAttribute="trailing" constant="8" id="Bed-gz-IoV"/>
-                    <constraint firstAttribute="bottom" secondItem="KoB-y6-MAj" secondAttribute="bottom" constant="6" id="RNm-5d-edX"/>
-                    <constraint firstItem="KoB-y6-MAj" firstAttribute="top" secondItem="TrF-Sd-htc" secondAttribute="top" constant="33" id="Sta-gP-gN0"/>
                     <constraint firstItem="9Ez-M7-s8I" firstAttribute="top" secondItem="TrF-Sd-htc" secondAttribute="top" constant="8" id="UiT-hp-y64"/>
                     <constraint firstAttribute="bottom" secondItem="HwF-3u-e5Q" secondAttribute="bottom" constant="6" id="VBI-N7-ubO"/>
-                    <constraint firstItem="KoB-y6-MAj" firstAttribute="top" secondItem="9Ez-M7-s8I" secondAttribute="bottom" constant="4" id="Y4r-97-vqM"/>
                     <constraint firstAttribute="trailing" secondItem="9Ez-M7-s8I" secondAttribute="trailing" constant="8" id="cKm-EC-j6C"/>
+                    <constraint firstItem="HwF-3u-e5Q" firstAttribute="top" secondItem="9Ez-M7-s8I" secondAttribute="bottom" constant="4" id="hsT-zv-aFU"/>
                     <constraint firstItem="HwF-3u-e5Q" firstAttribute="leading" secondItem="TrF-Sd-htc" secondAttribute="leading" constant="8" id="uYR-ZY-FTK"/>
                     <constraint firstItem="KoB-y6-MAj" firstAttribute="leading" secondItem="HwF-3u-e5Q" secondAttribute="trailing" constant="8" id="vZw-2I-IYg"/>
-                    <constraint firstItem="HwF-3u-e5Q" firstAttribute="top" secondItem="TrF-Sd-htc" secondAttribute="top" constant="33" id="yFk-Fd-8eL"/>
                     <constraint firstItem="9Ez-M7-s8I" firstAttribute="leading" secondItem="TrF-Sd-htc" secondAttribute="leading" constant="8" id="z1S-ho-Niu"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="mxkButton" destination="KoB-y6-MAj" id="HtV-Hu-sJB"/>
+                <outlet property="mxkButtonLeadingConstraint" destination="vZw-2I-IYg" id="tSD-e8-387"/>
+                <outlet property="mxkButtonMinWidthConstraint" destination="8Yl-vg-asf" id="Ysh-Vs-QYO"/>
+                <outlet property="mxkButtonTrailingConstraint" destination="Bed-gz-IoV" id="3KC-1v-buQ"/>
                 <outlet property="mxkLabel" destination="9Ez-M7-s8I" id="RAD-Qz-GHK"/>
+                <outlet property="mxkLabelLeadingConstraint" destination="z1S-ho-Niu" id="nPj-Hs-eA6"/>
+                <outlet property="mxkLabelTopConstraint" destination="UiT-hp-y64" id="Fq9-DJ-zQN"/>
+                <outlet property="mxkLabelTrailingConstraint" destination="cKm-EC-j6C" id="nA3-he-Wll"/>
                 <outlet property="mxkTextField" destination="HwF-3u-e5Q" id="aTc-9G-9BE"/>
+                <outlet property="mxkTextFieldBottomConstraint" destination="VBI-N7-ubO" id="iwS-Hp-9EQ"/>
+                <outlet property="mxkTextFieldLeadingConstraint" destination="uYR-ZY-FTK" id="kOH-F3-xGk"/>
+                <outlet property="mxkTextFieldTopConstraint" destination="hsT-zv-aFU" id="n5u-Lo-TOd"/>
             </connections>
         </tableViewCell>
     </objects>

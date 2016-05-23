@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -12,6 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aCf-VI-ocb" id="Eg5-vl-rni">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xx4-AP-OQs">
@@ -23,13 +23,13 @@
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="F9Q-h1-mTt">
                         <rect key="frame" x="559" y="5" width="33" height="33"/>
                         <constraints>
-                            <constraint firstAttribute="width" secondItem="F9Q-h1-mTt" secondAttribute="height" multiplier="1:1" id="J2z-s6-Hd6"/>
+                            <constraint firstAttribute="width" constant="33" id="Mbb-3z-EJx"/>
+                            <constraint firstAttribute="height" constant="33" id="SN2-B2-NSE"/>
                         </constraints>
                     </imageView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="F9Q-h1-mTt" firstAttribute="top" secondItem="Eg5-vl-rni" secondAttribute="top" constant="5" id="RXN-gG-xtc"/>
-                    <constraint firstAttribute="bottom" secondItem="F9Q-h1-mTt" secondAttribute="bottom" constant="5" id="TQp-cT-E0o"/>
+                    <constraint firstItem="F9Q-h1-mTt" firstAttribute="centerY" secondItem="Eg5-vl-rni" secondAttribute="centerY" id="2I6-r3-K1d"/>
                     <constraint firstItem="Xx4-AP-OQs" firstAttribute="leading" secondItem="Eg5-vl-rni" secondAttribute="leading" constant="8" id="Wih-ke-1dd"/>
                     <constraint firstItem="F9Q-h1-mTt" firstAttribute="leading" secondItem="Xx4-AP-OQs" secondAttribute="trailing" priority="750" constant="8" id="mXu-V2-6Sm"/>
                     <constraint firstAttribute="trailing" secondItem="F9Q-h1-mTt" secondAttribute="trailing" constant="8" id="v4T-uD-LAm"/>
@@ -38,7 +38,12 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="mxkImageView" destination="F9Q-h1-mTt" id="4Lx-au-5RN"/>
+                <outlet property="mxkImageViewHeightConstraint" destination="SN2-B2-NSE" id="Zql-LZ-nsj"/>
+                <outlet property="mxkImageViewLeadingConstraint" destination="mXu-V2-6Sm" id="Ecf-aj-MJv"/>
+                <outlet property="mxkImageViewTrailingConstraint" destination="v4T-uD-LAm" id="HLK-AJ-Gj9"/>
+                <outlet property="mxkImageViewWidthConstraint" destination="Mbb-3z-EJx" id="10m-q5-Yok"/>
                 <outlet property="mxkLabel" destination="Xx4-AP-OQs" id="PHz-Lv-lrf"/>
+                <outlet property="mxkLabelLeadingConstraint" destination="Wih-ke-1dd" id="tyK-6D-jiQ"/>
             </connections>
         </tableViewCell>
     </objects>

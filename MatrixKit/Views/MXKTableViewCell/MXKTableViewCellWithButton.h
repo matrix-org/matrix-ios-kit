@@ -16,6 +16,10 @@
 
 #import "MXKTableViewCell.h"
 
+/**
+ 'MXKTableViewCellWithButton' inherits 'MXKTableViewCell' class.
+ It constains a 'UIButton' centered in cell content view.
+ */
 @interface MXKTableViewCellWithButton : MXKTableViewCell
 
 @property (strong, nonatomic) IBOutlet UIButton *mxkButton;
