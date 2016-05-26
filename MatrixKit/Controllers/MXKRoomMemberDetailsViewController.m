@@ -102,7 +102,8 @@
     
     [self removeObservers];
     
-    self.delegate = nil;
+    _delegate = nil;
+    _mxRoomMember = nil;
     
     [super destroy];
 }
@@ -130,6 +131,16 @@
 - (UIImage*)picturePlaceholder
 {
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
+}
+
+- (void)setEnableMention:(BOOL)enableMention
+{
+    if (_enableMention != enableMention)
+    {
+        _enableMention = enableMention;
+        
+        [self updateMemberInfo];
+    }
 }
 
 - (void)setEnableVoipCall:(BOOL)enableVoipCall
@@ -410,6 +421,23 @@
                 }
                 break;
             }
+            case MXKRoomMemberDetailsActionMention:
+            {
+                // Sanity check
+                if (_delegate && [_delegate respondsToSelector:@selector(roomMemberDetailsViewController:mention:)])
+                {
+                    id<MXKRoomMemberDetailsViewControllerDelegate> delegate = _delegate;
+                    MXRoomMember *member = _mxRoomMember;
+                    
+                    // Withdraw the current view controller, and let the delegate mention the member
+                    [self withdrawViewControllerAnimated:YES completion:^{
+                        
+                        [delegate roomMemberDetailsViewController:self mention:member];
+
+                    }];
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -639,6 +667,12 @@
         }
     }
     
+    if (_enableMention)
+    {
+        // Add mention option
+        [actionsArray addObject:@(MXKRoomMemberDetailsActionMention)];
+    }
+    
     return (actionsArray.count + 1) / 2;
 }
 
@@ -689,6 +723,9 @@
             break;
         case MXKRoomMemberDetailsActionStartVideoCall:
             title = [NSBundle mxk_localizedStringForKey:@"start_video_call"];
+            break;
+        case MXKRoomMemberDetailsActionMention:
+            title = [NSBundle mxk_localizedStringForKey:@"mention"];
             break;
         default:
             break;

@@ -69,6 +69,7 @@
 "start_chat" = "Start Chat";
 "start_voice_call" = "Start Voice Call";
 "start_video_call" = "Start Video Call";
+"mention" = "Mention";
 "select_account" = "Select an account";
 "attach_media" = "Attach Media from Library";
 "capture_media" = "Take Photo/Video";
