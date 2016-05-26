@@ -19,9 +19,13 @@
 /**
  'MXKWebViewViewController' instance is used to display a webview.
  */
-@interface MXKWebViewViewController : MXKViewController
+@interface MXKWebViewViewController : MXKViewController <UIWebViewDelegate>
 {
 @protected
+    /**
+     The back button displayed as the right bar button item.
+     */
+    UIBarButtonItem *backButton;
     
     /**
      The content of this screen is fully displayed by this webview
@@ -37,8 +41,21 @@
 - (id)initWithURL:(NSString*)URL;
 
 /**
+ Init 'MXKWebViewViewController' instance with a local HTML file path.
+ 
+ @param localHTMLFile The path of the local HTML file.
+ */
+- (id)initWithLocalHTMLFile:(NSString*)localHTMLFile;
+
+/**
  Define the web content url to open
+ Don’t use this property to load local HTML files, instead use 'localHTMLFile'.
  */
 @property (nonatomic) NSString *URL;
+
+/**
+ Define the local HTML file path to load
+ */
+@property (nonatomic) NSString *localHTMLFile;
 
 @end

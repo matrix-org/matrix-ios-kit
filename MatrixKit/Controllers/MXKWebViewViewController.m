@@ -16,6 +16,8 @@
 
 #import "MXKWebViewViewController.h"
 
+#import "NSBundle+MatrixKit.h"
+
 @implementation MXKWebViewViewController
 
 - (id)initWithURL:(NSString*)URL
@@ -28,6 +30,16 @@
     return self;
 }
 
+- (id)initWithLocalHTMLFile:(NSString*)localHTMLFile
+{
+    self = [super init];
+    if (self)
+    {
+        _localHTMLFile = localHTMLFile;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -35,6 +47,8 @@
     // Init the webview
     webView = [[UIWebView alloc] initWithFrame:self.view.frame];
     webView.backgroundColor= [UIColor whiteColor];
+    webView.delegate = self;
+    webView.scalesPageToFit = YES;
     
     [webView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.view addSubview:webView];
@@ -82,19 +96,32 @@
         [self.view addConstraint:bottomConstraint];
     }
     
-    if (self.URL.length)
+    backButton = [[UIBarButtonItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(goBack)];
+    
+    if (_URL.length)
     {
-        // And load the expected URL
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:self.URL]];
-        [webView loadRequest:request];
+        self.URL = _URL;
+    }
+    else if (_localHTMLFile.length)
+    {
+        self.localHTMLFile = _localHTMLFile;
     }
 }
 
 - (void)destroy
 {
-    [webView stopLoading];
-    [webView removeFromSuperview];
-    webView = nil;
+    if (webView)
+    {
+        webView.delegate = nil;
+        [webView stopLoading];
+        [webView removeFromSuperview];
+        webView = nil;
+    }
+    
+    backButton = nil;
+    
+    _URL = nil;
+    _localHTMLFile = nil;
 
     [super destroy];
 }
@@ -109,11 +136,62 @@
     [webView stopLoading];
     
     _URL = URL;
+    _localHTMLFile = nil;
     
     if (URL.length)
     {
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:URL]];
         [webView loadRequest:request];
+    }
+}
+
+- (void)setLocalHTMLFile:(NSString *)localHTMLFile
+{
+    [webView stopLoading];
+    
+    _localHTMLFile = localHTMLFile;
+    _URL = nil;
+    
+    if (localHTMLFile.length)
+    {
+        NSString* htmlString = [NSString stringWithContentsOfFile:localHTMLFile encoding:NSUTF8StringEncoding error:nil];
+        [webView loadHTMLString:htmlString baseURL:nil];
+    }
+}
+
+- (void)goBack
+{
+    if (webView.canGoBack)
+    {
+        [webView goBack];
+    }
+    else if (_localHTMLFile.length)
+    {
+        // Reload local html file
+        self.localHTMLFile = _localHTMLFile;
+    }
+}
+
+#pragma mark - UIWebViewDelegate
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    // Handle back button visibility here
+    BOOL canGoBack = webView.canGoBack;
+    
+    if (_localHTMLFile.length && !canGoBack)
+    {
+        // Check whether the current content is not the local html file
+        canGoBack = (![webView.request.URL.absoluteString isEqualToString:@"about:blank"]);
+    }
+    
+    if (canGoBack)
+    {
+        self.navigationItem.rightBarButtonItem = backButton;
+    }
+    else
+    {
+        self.navigationItem.rightBarButtonItem = nil;
     }
 }
 
