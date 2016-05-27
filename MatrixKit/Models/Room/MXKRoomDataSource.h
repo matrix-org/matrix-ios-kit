@@ -269,7 +269,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
  @param index the index of the cell in the array.
  @param maxWidth the maximum available width.
- @return the cell height.
+ @return the cell height (0 if no data is available for this cell, or if the delegate is undefined).
  */
 - (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth;
 
@@ -289,7 +289,8 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
 /**
  Load enough messages to fill the rect.
- This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`).
+ This method fails (with nil error) if the data source is not ready (see `MXKDataSourceStateReady`),
+ or if the delegate is undefined (this delegate is required to compute the actual size of the cells).
  
  @param rect the rect to fill.
  @param direction backwards or forwards.
