@@ -174,24 +174,27 @@
 
 #pragma mark - UIWebViewDelegate
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(UIWebView *)theWebView
 {
-    // Handle back button visibility here
-    BOOL canGoBack = webView.canGoBack;
-    
-    if (_localHTMLFile.length && !canGoBack)
+    if (theWebView == webView)
     {
-        // Check whether the current content is not the local html file
-        canGoBack = (![webView.request.URL.absoluteString isEqualToString:@"about:blank"]);
-    }
-    
-    if (canGoBack)
-    {
-        self.navigationItem.rightBarButtonItem = backButton;
-    }
-    else
-    {
-        self.navigationItem.rightBarButtonItem = nil;
+        // Handle back button visibility here
+        BOOL canGoBack = webView.canGoBack;
+        
+        if (_localHTMLFile.length && !canGoBack)
+        {
+            // Check whether the current content is not the local html file
+            canGoBack = (![webView.request.URL.absoluteString isEqualToString:@"about:blank"]);
+        }
+        
+        if (canGoBack)
+        {
+            self.navigationItem.rightBarButtonItem = backButton;
+        }
+        else
+        {
+            self.navigationItem.rightBarButtonItem = nil;
+        }
     }
 }
 
