@@ -50,7 +50,7 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
     
     self.thumbnailView.backgroundColor = [UIColor clearColor];
     
-    self.thumbnailDisplayBoxType = MXKContactTableCellThumbnailDisplayBoxTypeDefault;
+    self.thumbnailDisplayBoxType = MXKTableViewCellDisplayBoxTypeDefault;
     
     // No accessory view by default
     self.contactAccessoryViewType = MXKContactTableCellAccessoryCustom;
@@ -62,16 +62,21 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 {
     [super layoutSubviews];
     
-    if (self.thumbnailDisplayBoxType == MXKContactTableCellThumbnailDisplayBoxTypeCircle)
+    if (self.thumbnailDisplayBoxType == MXKTableViewCellDisplayBoxTypeCircle)
     {
         // Round image view for thumbnail
         self.thumbnailView.layer.cornerRadius = self.thumbnailView.frame.size.width / 2;
         self.thumbnailView.clipsToBounds = YES;
     }
-    else if (self.thumbnailDisplayBoxType == MXKContactTableCellThumbnailDisplayBoxTypeRoundedCorner)
+    else if (self.thumbnailDisplayBoxType == MXKTableViewCellDisplayBoxTypeRoundedCorner)
     {
         self.thumbnailView.layer.cornerRadius = 5;
         self.thumbnailView.clipsToBounds = YES;
+    }
+    else
+    {
+        self.thumbnailView.layer.cornerRadius = 0;
+        self.thumbnailView.clipsToBounds = NO;
     }
 }
 

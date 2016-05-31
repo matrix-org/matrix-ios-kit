@@ -38,4 +38,9 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkImageViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkImageViewHeightConstraint;
 
+/**
+ The MXKImageView display box type ('MXKTableViewCellDisplayBoxTypeDefault' by default)
+ */
+@property (nonatomic) MXKTableViewCellDisplayBoxType mxkImageViewDisplayBoxType;
+
 @end

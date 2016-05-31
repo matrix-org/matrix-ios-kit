@@ -17,6 +17,25 @@
 #import <UIKit/UIKit.h>
 
 /**
+ List the display box types for the cell subviews.
+ */
+typedef enum : NSUInteger {
+    /**
+     By default the view display box is unchanged.
+     */
+    MXKTableViewCellDisplayBoxTypeDefault,
+    /**
+     Define a circle box based on the smaller size of the view frame, some portion of content may be clipped.
+     */
+    MXKTableViewCellDisplayBoxTypeCircle,
+    /**
+     Round the corner of the display box of the view.
+     */
+    MXKTableViewCellDisplayBoxTypeRoundedCorner
+    
+} MXKTableViewCellDisplayBoxType;
+
+/**
  'MXKTableViewCell' class is used to define custom UITableViewCell.
  Each 'MXKTableViewCell-inherited' class has its own 'reuseIdentifier'.
  */

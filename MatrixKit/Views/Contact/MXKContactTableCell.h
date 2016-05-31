@@ -20,25 +20,6 @@
 #import "MXKImageView.h"
 
 /**
- List the display box types for contact thumbnail.
- */
-typedef enum : NSUInteger {
-    /**
-     By default the thumbnail display box is a square.
-     */
-    MXKContactTableCellThumbnailDisplayBoxTypeDefault,
-    /**
-     Display the contact's thumbnail into a circle box.
-     */
-    MXKContactTableCellThumbnailDisplayBoxTypeCircle,
-    /**
-     Display the contact's thumbnail into a square box with rounded corner.
-     */
-    MXKContactTableCellThumbnailDisplayBoxTypeRoundedCorner
-    
-} MXKContactTableCellThumbnailDisplayBoxType;
-
-/**
  List the accessory view types for a 'MXKContactTableCell' instance.
  */
 typedef enum : NSUInteger {
@@ -91,9 +72,9 @@ extern NSString *const kMXKContactCellContactIdKey;
 @property (nonatomic) UIImage *picturePlaceholder;
 
 /**
- The thumbnail display box type ('MXKContactTableCellThumbnailDisplayBoxTypeDefault' by default)
+ The thumbnail display box type ('MXKTableViewCellDisplayBoxTypeDefault' by default)
  */
-@property (nonatomic) MXKContactTableCellThumbnailDisplayBoxType thumbnailDisplayBoxType;
+@property (nonatomic) MXKTableViewCellDisplayBoxType thumbnailDisplayBoxType;
 
 /**
  The accessory view type ('MXKContactTableCellAccessoryCustom' by default)
