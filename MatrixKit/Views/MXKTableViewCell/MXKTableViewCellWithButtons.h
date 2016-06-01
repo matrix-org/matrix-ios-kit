@@ -17,7 +17,9 @@
 #import "MXKTableViewCell.h"
 
 /**
- Display several buttons with the system style in a UITableViewCell. All buttons have the same width and they are horizontally aligned.
+ 'MXKTableViewCellWithButtons' inherits 'MXKTableViewCell' class.
+ It displays several buttons with the system style in a UITableViewCell. All buttons have the same width and they are horizontally aligned.
+ They are vertically centered.
  */
 @interface MXKTableViewCellWithButtons : MXKTableViewCell
 

@@ -61,7 +61,7 @@
     /**
      The index of the current visible collection item
      */
-    NSUInteger currentVisibleItemIndex;
+    NSInteger currentVisibleItemIndex;
     
     /**
      The document interaction Controller used to share attachment
@@ -325,7 +325,7 @@
                 }
             }
         }
-        else
+        else if (currentVisibleItemIndex != NSNotFound)
         {
             // Compute the attachment index
             NSUInteger currentAttachmentIndex = (isBackPaginationInProgress ? currentVisibleItemIndex - 1 : currentVisibleItemIndex);
@@ -409,14 +409,78 @@
     {
         currentVisibleItemIndex = _attachmentsCollection.contentOffset.x / [[UIScreen mainScreen] bounds].size.width;
     }
+    else
+    {
+        currentVisibleItemIndex = NSNotFound;
+    }
 }
 
 - (void)refreshAttachmentCollectionContentOffset
 {
-    // Set the content offset to display the current attachment
-    CGPoint contentOffset = _attachmentsCollection.contentOffset;
-    contentOffset.x = currentVisibleItemIndex * [[UIScreen mainScreen] bounds].size.width;
-    _attachmentsCollection.contentOffset = contentOffset;
+    if (currentVisibleItemIndex != NSNotFound)
+    {
+        // Set the content offset to display the current attachment
+        CGPoint contentOffset = _attachmentsCollection.contentOffset;
+        contentOffset.x = currentVisibleItemIndex * [[UIScreen mainScreen] bounds].size.width;
+        _attachmentsCollection.contentOffset = contentOffset;
+    }
+}
+
+- (void)refreshCurrentVisibleCell
+{
+    // In case of attached image, load here the high res image.
+    
+    [self refreshCurrentVisibleItemIndex];
+    
+    if (currentVisibleItemIndex != NSNotFound)
+    {
+        NSInteger item = currentVisibleItemIndex;
+        if (isBackPaginationInProgress)
+        {
+            if (item == 0)
+            {
+                return;
+            }
+            
+            item --;
+        }
+        
+        if (item < attachments.count)
+        {
+            MXKAttachment *attachment = attachments[item];
+            NSString *attachmentURL = attachment.actualURL;
+            NSString *mimeType = attachment.contentInfo[@"mimetype"];
+            
+            // Check attachment type
+            if (attachment.type == MXKAttachmentTypeImage && attachmentURL.length && ![mimeType isEqualToString:@"image/gif"])
+            {
+                // Retrieve the related cell
+                UICollectionViewCell *cell = [_attachmentsCollection cellForItemAtIndexPath:[NSIndexPath indexPathForItem:currentVisibleItemIndex inSection:0]];
+                
+                if ([cell isKindOfClass:[MXKMediaCollectionViewCell class]])
+                {
+                    MXKMediaCollectionViewCell *mediaCollectionViewCell = (MXKMediaCollectionViewCell*)cell;
+                    
+                    // Load high res image
+                    mediaCollectionViewCell.mxkImageView.stretchable = YES;
+                    mediaCollectionViewCell.mxkImageView.enableInMemoryCache = NO;
+                    
+                    // Use the current image as preview
+                    UIImage *preview = mediaCollectionViewCell.mxkImageView.image;
+                    if (!preview)
+                    {
+                        // Check whether the thumbnail has just been downloaded and cached
+                        NSString *previewCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:attachment.thumbnailURL
+                                                                                           andType:mimeType
+                                                                                          inFolder:attachment.event.roomId];
+                        preview = [MXKMediaManager loadPictureFromFilePath:previewCacheFilePath];
+                    }
+                    
+                    [mediaCollectionViewCell.mxkImageView setImageURL:attachmentURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
+                }
+            }
+        }
+    }
 }
 
 - (void)stopBackPaginationActivity
@@ -598,7 +662,7 @@
                     
                 }];
             }
-            else
+            else if (indexPath.item == currentVisibleItemIndex)
             {
                 // Load high res image
                 cell.mxkImageView.mediaFolder = attachment.event.roomId;
@@ -607,9 +671,20 @@
                 
                 [cell.mxkImageView setImageURL:attachmentURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
             }
+            else
+            {
+                // Use the thumbnail here - Full res images should only be downloaded explicitly when requested (see [self refreshCurrentVisibleItemIndex])
+                cell.mxkImageView.mediaFolder = attachment.event.roomId;
+                cell.mxkImageView.stretchable = YES;
+                cell.mxkImageView.enableInMemoryCache = YES;
+                
+                [cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
+            }
         }
         else if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
         {
+            cell.mxkImageView.mediaFolder = attachment.event.roomId;
+            cell.mxkImageView.stretchable = NO;
             cell.mxkImageView.enableInMemoryCache = YES;
             // Display video thumbnail, the video is played only when user selects this cell
             [cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:attachment.thumbnailOrientation previewImage:nil];
@@ -820,6 +895,10 @@
                             }
                             
                             NSLog(@"[MXKAttachmentsVC] video download failed: %@", error);
+
+                            // Display the navigation bar so that the user can leave this screen
+                            self.navigationController.navigationBarHidden = NO;
+
                             // Notify MatrixKit user
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                             
@@ -912,10 +991,17 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    if (scrollView == self.attachmentsCollection && isBackPaginationInProgress)
+    if (scrollView == self.attachmentsCollection)
     {
-        MXKAttachment *attachment = self.attachments.firstObject;
-        self.complete = ![self.delegate attachmentsViewController:self paginateAttachmentBefore:attachment.event.eventId];
+        if (isBackPaginationInProgress)
+        {
+            MXKAttachment *attachment = self.attachments.firstObject;
+            self.complete = ![self.delegate attachmentsViewController:self paginateAttachmentBefore:attachment.event.eventId];
+        }
+        else
+        {
+            [self refreshCurrentVisibleCell];
+        }
     }
 }
 

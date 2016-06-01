@@ -53,7 +53,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         _prefixTextFont = [UIFont systemFontOfSize:14];
         _bingTextFont = [UIFont systemFontOfSize:14];
         _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
-        _callInviteTextFont = [UIFont italicSystemFontOfSize:14];
+        _callNoticesTextFont = [UIFont italicSystemFontOfSize:14];
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
@@ -641,18 +641,29 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeCallInvite:
         {
-            // outgoing call?
-            if ([event.sender isEqualToString:mxSession.myUser.userId])
+            MXCallInviteEventContent *callInviteEventContent = [MXCallInviteEventContent modelFromJSON:event.content];
+
+            if (callInviteEventContent.isVideoCall)
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_outgoing_call"];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
             }
             else
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_incoming_call"];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
             }
             break;
         }
-            
+        case MXEventTypeCallAnswer:
+        {
+            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_answered_video_call"], senderDisplayName];
+            break;
+        }
+        case MXEventTypeCallHangup:
+        {
+            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_ended_video_call"], senderDisplayName];
+            break;
+        }
+
         default:
             *error = MXKEventFormatterErrorUnknownEventType;
             break;
@@ -765,9 +776,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     {
         font = _stateEventTextFont;
     }
-    else if (event.eventType == MXEventTypeCallInvite)
+    else if (event.eventType == MXEventTypeCallInvite || event.eventType == MXEventTypeCallAnswer || event.eventType == MXEventTypeCallHangup)
     {
-        font = _callInviteTextFont;
+        font = _callNoticesTextFont;
     }
     else if (event.mxkState == MXKEventStateBing)
     {        

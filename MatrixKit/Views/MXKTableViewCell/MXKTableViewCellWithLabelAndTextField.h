@@ -16,6 +16,10 @@
 
 #import "MXKTableViewCell.h"
 
+/**
+ 'MXKTableViewCellWithLabelAndTextField' inherits 'MXKTableViewCell' class.
+ It constains a 'UILabel' and a 'UITextField' vertically centered.
+ */
 @interface MXKTableViewCellWithLabelAndTextField : MXKTableViewCell <UITextFieldDelegate>
 {
 @protected
@@ -31,5 +35,12 @@
  the accessory view when the text field become the first responder.
  */
 @property (readonly) UIView *inputAccessoryView;
+
+/**
+ Leading/Trailing constraints define here spacing to nearest neighbor (no relative to margin)
+ */
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldTrailingConstraint;
 
 @end

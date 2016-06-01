@@ -25,12 +25,12 @@
 @interface MXKSampleMainTableViewController ()
 {
     /**
-     Observer matrix sessions to handle new opened session
+     Observer matrix sessions state.
      */
     id matrixSessionStateObserver;
     
     /**
-     Observer used to handle call
+     Observer used to handle call.
      */
     id callObserver;
     
@@ -86,7 +86,7 @@
 {
     [super viewDidLoad];
     
-    self.tableView.tableHeaderView.hidden = YES;
+    self.tableView.tableHeaderView.hidden = ![MXKAccountManager sharedManager].activeAccounts.count;
     self.tableView.allowsSelection = YES;
     
     // Register matrix session state observer
@@ -94,20 +94,28 @@
         
         MXSession *mxSession = (MXSession*)notif.object;
         
-        // Check whether the concerned session is a new one
-        if (mxSession.state == MXSessionStateInitialised)
-        {
-            // Report created matrix session
-            [self addMatrixSession:mxSession];
-            [[MXKContactManager sharedManager] addMatrixSession:mxSession];
-            
-            self.tableView.tableHeaderView.hidden = NO;
-            [self.tableView reloadData];
-        }
-        else if (mxSession.state == MXSessionStateClosed)
+        if (mxSession.state == MXSessionStateClosed)
         {
             [self removeMatrixSession:mxSession];
             [[MXKContactManager sharedManager] removeMatrixSession:mxSession];
+        }
+        else
+        {
+            // Check whether the concerned session is a new one
+            if ([self.mxSessions indexOfObject:mxSession] == NSNotFound)
+            {
+                // Report created matrix session
+                [self addMatrixSession:mxSession];
+                [[MXKContactManager sharedManager] addMatrixSession:mxSession];
+            }
+        }
+        
+        // Check whether the room selection is available, and update table header visibility
+        BOOL isRoomSelectionEnabled = [MXKAccountManager sharedManager].activeAccounts.count;
+        if (self.tableView.tableHeaderView.hidden == isRoomSelectionEnabled)
+        {
+            self.tableView.tableHeaderView.hidden = !isRoomSelectionEnabled;
+            [self.tableView reloadData];
         }
     }];
     
@@ -134,6 +142,9 @@
     
     // Add observer to handle new account
     [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountManagerDidAddAccountNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        
+        // Check whether room selection is available
+        self.tableView.tableHeaderView.hidden = ![MXKAccountManager sharedManager].activeAccounts.count;
         
         // Refresh table to add this new account
         [self.tableView reloadData];
@@ -171,6 +182,9 @@
         }
         else
         {
+            // Check whether room selection is available
+            self.tableView.tableHeaderView.hidden = ![MXKAccountManager sharedManager].activeAccounts.count;
+            
             // Refresh table to remove this account
             [self.tableView reloadData];
         }

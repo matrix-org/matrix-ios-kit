@@ -162,6 +162,7 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (nonatomic) ReadReceiptsAlignment readReceiptsAlignment;
 
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
+@property (weak, nonatomic) IBOutlet UIView *userNameTapGestureMaskView;
 @property (strong, nonatomic) IBOutlet MXKImageView *pictureView;
 @property (weak, nonatomic) IBOutlet UITextView  *messageTextView;
 @property (strong, nonatomic) IBOutlet MXKImageView *attachmentView;

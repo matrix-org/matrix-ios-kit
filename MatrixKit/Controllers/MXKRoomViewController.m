@@ -1448,6 +1448,28 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     return YES;
 }
 
+- (void)mention:(MXRoomMember*)roomMember
+{
+    NSString *memberName = roomMember.displayname.length ? roomMember.displayname : roomMember.userId;
+
+    if (inputToolbarView.textMessage.length)
+    {
+        inputToolbarView.textMessage = [NSString stringWithFormat:@"%@%@ ", inputToolbarView.textMessage, memberName];
+    }
+    else if ([roomMember.userId isEqualToString:self.mainSession.myUser.userId])
+    {
+        // Prepare emote
+        inputToolbarView.textMessage = @"/me ";
+    }
+    else
+    {
+        // Bing the member
+        inputToolbarView.textMessage = [NSString stringWithFormat:@"%@: ", memberName];
+    }
+    
+    [inputToolbarView becomeFirstResponder];
+}
+
 - (void)dismissKeyboard
 {
     [titleView dismissKeyboard];
@@ -2103,23 +2125,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         MXRoomMember *selectedRoomMember = [roomDataSource.room.state memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
         if (selectedRoomMember)
         {
-            NSString *memberName = selectedRoomMember.displayname.length ? selectedRoomMember.displayname : selectedRoomMember.userId;
-            if (inputToolbarView.textMessage.length)
-            {
-                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@%@ ", inputToolbarView.textMessage, memberName];
-            }
-            else if ([selectedRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
-            {
-                // Prepare emote
-                inputToolbarView.textMessage = @"/me ";
-            }
-            else
-            {
-                // Bing the member
-                inputToolbarView.textMessage = [NSString stringWithFormat:@"%@: ", memberName];
-            }
-            
-            [inputToolbarView becomeFirstResponder];
+            [self mention:selectedRoomMember];
         }
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnDateTimeContainer])
@@ -2918,16 +2924,24 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     if (roomBubbleTableViewCell.bubbleData.isAttachmentWithThumbnail)
     {
-        NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
-        
-        // Present an attachment viewer
-        attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
-        attachmentsViewer.delegate = self;
-        attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
-        attachmentsViewer.hidesBottomBarWhenPushed = YES;
-        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+        if (selectedAttachment.event.mxkState == MXKEventStateDefault || selectedAttachment.event.mxkState == MXKEventStateBing)
+        {
+            NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
 
-        [self.navigationController pushViewController:attachmentsViewer animated:YES];
+            // Present an attachment viewer
+            attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+            attachmentsViewer.delegate = self;
+            attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
+            attachmentsViewer.hidesBottomBarWhenPushed = YES;
+            [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+
+            [self.navigationController pushViewController:attachmentsViewer animated:YES];
+        }
+        else
+        {
+            // Let's the application do something
+            NSLog(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
+        }
     }
     else if (selectedAttachment.type == MXKAttachmentTypeAudio)
     {

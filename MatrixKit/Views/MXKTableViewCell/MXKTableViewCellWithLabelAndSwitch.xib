@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
@@ -33,7 +34,10 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="mxkLabel" destination="Xx4-AP-OQs" id="jTM-zE-gtP"/>
+                <outlet property="mxkLabelLeadingConstraint" destination="Wih-ke-1dd" id="b2U-OW-efL"/>
                 <outlet property="mxkSwitch" destination="9dA-E8-w3v" id="sko-Dh-EsF"/>
+                <outlet property="mxkSwitchLeadingConstraint" destination="hms-8a-BYd" id="ACm-RB-bE8"/>
+                <outlet property="mxkSwitchTrailingConstraint" destination="oN3-Ph-hS5" id="Y17-Ii-c3Y"/>
             </connections>
         </tableViewCell>
     </objects>

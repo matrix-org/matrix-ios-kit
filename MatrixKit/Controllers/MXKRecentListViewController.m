@@ -462,12 +462,36 @@
     }
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    if (scrollView == _recentsTableView && scrollView.contentSize.height)
+    {
+        if (scrollView.contentOffset.y <= 0)
+        {
+            self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        }
+        else
+        {
+            self.recentsTableView.backgroundColor = [UIColor clearColor];
+        }
+    }
+}
+
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
     // Detect vertical bounce at the top of the tableview to trigger pagination
     if (scrollView == _recentsTableView)
     {
         [self detectPullToKick:scrollView];
+        
+        if (targetContentOffset->y <= 0 && scrollView.contentSize.height)
+        {
+            self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        }
+        else
+        {
+            self.recentsTableView.backgroundColor = [UIColor clearColor];
+        }
     }
 }
 
@@ -546,15 +570,18 @@
 {
     if (!reconnectingView)
     {
-        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [spinner sizeToFit];
+        UIActivityIndicatorView* spinner  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        spinner.transform = CGAffineTransformMakeScale(0.75f, 0.75f);
+        CGRect frame = spinner.frame;
+        frame.size.height = 80; // 80 * 0.75 = 60
+        spinner.bounds = frame;
+        
+        spinner.color = [UIColor darkGrayColor];
         spinner.hidesWhenStopped = NO;
         spinner.backgroundColor = [UIColor clearColor];
         [spinner startAnimating];
         
-        // no need to manage constraints here
-        // IOS defines them.
-        // since IOS7 the spinner is centered so need to create a background and add it.
+        // no need to manage constraints here, IOS defines them.
         _recentsTableView.tableHeaderView = reconnectingView = spinner;
     }
 }
@@ -576,7 +603,7 @@
     if (!reconnectingView)
     {
         // detect if the user scrolls over the tableview top
-        restartConnection = (scrollView.contentOffset.y < 128);
+        restartConnection = (scrollView.contentOffset.y < -128);
         
         if (restartConnection)
         {

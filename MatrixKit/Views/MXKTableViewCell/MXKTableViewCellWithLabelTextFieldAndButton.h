@@ -16,6 +16,11 @@
 
 #import "MXKTableViewCell.h"
 
+/**
+ 'MXKTableViewCellWithLabelTextFieldAndButton' inherits 'MXKTableViewCell' class.
+ It constains a 'UILabel' on the first line. The second line is composed with a 'UITextField' and a 'UIButton'
+ vertically aligned.
+ */
 @interface MXKTableViewCellWithLabelTextFieldAndButton : MXKTableViewCell <UITextFieldDelegate>
 {
 @protected
@@ -32,6 +37,21 @@
  the accessory view when the text field become the first responder.
  */
 @property (readonly) UIView *inputAccessoryView;
+
+/**
+ Leading/Trailing constraints define here spacing to nearest neighbor (no relative to margin)
+ */
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelTrailingConstraint;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldBottomConstraint;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkButtonLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkButtonTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkButtonMinWidthConstraint;
 
 - (IBAction)textFieldEditingChanged:(id)sender;
 

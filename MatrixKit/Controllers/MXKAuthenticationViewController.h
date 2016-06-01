@@ -55,6 +55,12 @@ extern NSString *const MXKAuthErrorDomain;
      Reference to any opened alert view.
      */
     MXKAlert *alert;
+    
+    /**
+     Tell whether the password has been reseted with success.
+     Used to return on login screen on submit button pressed.
+     */
+    BOOL isPasswordReseted;
 }
 
 @property (weak, nonatomic) IBOutlet UIImageView *welcomeImageView;
@@ -152,6 +158,7 @@ extern NSString *const MXKAuthErrorDomain;
  
  By default the 'MXKAuthInputsPasswordBasedView' class is registered for 'MXKAuthenticationTypeLogin' authentication.
  No class is registered for 'MXKAuthenticationTypeRegister' type.
+ No class is registered for 'MXKAuthenticationTypeForgotPassword' type.
  
  @param authInputsViewClass a MXKAuthInputsView-inherited class.
  @param authType the concerned authentication type
@@ -208,6 +215,13 @@ extern NSString *const MXKAuthErrorDomain;
  Cancel the current operation, and return to the initial step
  */
 - (void)cancel;
+
+/**
+ Handle the error received during an authentication request.
+ 
+ @param error the received error.
+ */
+- (void)onFailureDuringAuthRequest:(NSError *)error;
 
 @end
 

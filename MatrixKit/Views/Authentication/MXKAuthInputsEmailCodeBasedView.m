@@ -41,31 +41,34 @@
 
 - (BOOL)setAuthSession:(MXAuthenticationSession *)authSession withAuthType:(MXKAuthenticationType)authType;
 {
-    // Validate first the provided session
-    MXAuthenticationSession *validSession = [self validateAuthenticationSession:authSession];
-    
-    if ([super setAuthSession:validSession withAuthType:authType])
+    if (type == MXKAuthenticationTypeLogin || type == MXKAuthenticationTypeRegister)
     {
-        // Set initial layout
-        self.userLoginTextField.hidden = NO;
-        self.promptEmailTokenLabel.hidden = YES;
+        // Validate first the provided session
+        MXAuthenticationSession *validSession = [self validateAuthenticationSession:authSession];
         
-        if (type == MXKAuthenticationTypeLogin)
+        if ([super setAuthSession:validSession withAuthType:authType])
         {
-            self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
-            self.displayNameTextField.hidden = YES;
+            // Set initial layout
+            self.userLoginTextField.hidden = NO;
+            self.promptEmailTokenLabel.hidden = YES;
             
-            self.viewHeightConstraint.constant = self.displayNameTextField.frame.origin.y;
-        }
-        else
-        {
-            self.emailAndTokenTextField.returnKeyType = UIReturnKeyNext;
-            self.displayNameTextField.hidden = NO;
+            if (type == MXKAuthenticationTypeLogin)
+            {
+                self.emailAndTokenTextField.returnKeyType = UIReturnKeyDone;
+                self.displayNameTextField.hidden = YES;
+                
+                self.viewHeightConstraint.constant = self.displayNameTextField.frame.origin.y;
+            }
+            else
+            {
+                self.emailAndTokenTextField.returnKeyType = UIReturnKeyNext;
+                self.displayNameTextField.hidden = NO;
+                
+                self.viewHeightConstraint.constant = 122;
+            }
             
-            self.viewHeightConstraint.constant = 122;
+            return YES;
         }
-        
-        return YES;
     }
     
     return NO;

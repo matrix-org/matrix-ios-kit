@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -108,6 +108,10 @@
                             <constraint firstAttribute="trailing" secondItem="eU5-iK-u8i" secondAttribute="trailing" id="teG-8q-BOX"/>
                         </constraints>
                     </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GGt-zb-6zg">
+                        <rect key="frame" x="48" y="0.0" width="486" height="26"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </view>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
@@ -116,16 +120,20 @@
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="leading" secondItem="hgp-Z5-rAj" secondAttribute="trailing" constant="3" id="6mM-Ag-m0K"/>
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" constant="18" id="96U-67-5TP"/>
                     <constraint firstAttribute="trailing" secondItem="q9c-0p-QyP" secondAttribute="trailing" constant="69" id="Bkh-h2-JOQ"/>
+                    <constraint firstItem="GGt-zb-6zg" firstAttribute="leading" secondItem="q9c-0p-QyP" secondAttribute="leading" constant="-3" id="CsE-Bf-Wq7"/>
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="centerY" secondItem="Cot-3X-2cU" secondAttribute="centerY" id="H5t-l6-fL1"/>
                     <constraint firstItem="q9c-0p-QyP" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" constant="3" id="Ixr-7h-f8j"/>
+                    <constraint firstItem="GGt-zb-6zg" firstAttribute="trailing" secondItem="q9c-0p-QyP" secondAttribute="trailing" constant="3" id="Ku9-ad-hb4"/>
                     <constraint firstAttribute="bottom" secondItem="kwd-hP-feC" secondAttribute="bottom" id="LQg-cI-Nkn"/>
                     <constraint firstAttribute="bottom" secondItem="5IE-JS-uf3" secondAttribute="bottom" constant="8" id="SHN-tC-zsJ"/>
                     <constraint firstAttribute="bottom" secondItem="IOg-Kt-8vW" secondAttribute="bottom" id="TPw-iE-nii"/>
                     <constraint firstItem="IOg-Kt-8vW" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" constant="18" id="XSL-TG-m62"/>
                     <constraint firstItem="q9c-0p-QyP" firstAttribute="leading" secondItem="hgp-Z5-rAj" secondAttribute="trailing" constant="3" id="YWK-C2-15w"/>
+                    <constraint firstItem="GGt-zb-6zg" firstAttribute="top" secondItem="q9c-0p-QyP" secondAttribute="top" constant="-3" id="cqf-j2-9vP"/>
                     <constraint firstItem="zwq-eh-8Fb" firstAttribute="leading" secondItem="ef1-Tq-U3Z" secondAttribute="leading" constant="5" id="dgK-4e-UuE"/>
                     <constraint firstAttribute="trailing" secondItem="kwd-hP-feC" secondAttribute="trailing" id="f2V-Ka-kU3"/>
                     <constraint firstAttribute="trailing" secondItem="IOg-Kt-8vW" secondAttribute="trailing" constant="8" id="hQV-lO-7aQ"/>
+                    <constraint firstItem="GGt-zb-6zg" firstAttribute="bottom" secondItem="q9c-0p-QyP" secondAttribute="bottom" constant="3" id="kYd-0y-Rcu"/>
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="leading" secondItem="K9X-gn-noF" secondAttribute="leading" id="p93-5h-lvW"/>
                     <constraint firstItem="5IE-JS-uf3" firstAttribute="centerX" secondItem="Cot-3X-2cU" secondAttribute="centerX" id="sF7-QL-vdj"/>
                     <constraint firstItem="zwq-eh-8Fb" firstAttribute="top" secondItem="ef1-Tq-U3Z" secondAttribute="top" id="tUd-UR-lzA"/>
@@ -152,6 +160,7 @@
                 <outlet property="statsLabel" destination="eU5-iK-u8i" id="MSm-kU-RSY"/>
                 <outlet property="typingBadge" destination="zwq-eh-8Fb" id="4vs-Dk-vWt"/>
                 <outlet property="userNameLabel" destination="q9c-0p-QyP" id="JId-R7-LoM"/>
+                <outlet property="userNameTapGestureMaskView" destination="GGt-zb-6zg" id="uV1-Jm-vLT"/>
             </connections>
         </tableViewCell>
     </objects>

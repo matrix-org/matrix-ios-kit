@@ -39,7 +39,8 @@ typedef enum : NSUInteger
     MXKRoomMemberDetailsActionSetCustomPowerLevel,
     MXKRoomMemberDetailsActionStartChat,
     MXKRoomMemberDetailsActionStartVoiceCall,
-    MXKRoomMemberDetailsActionStartVideoCall
+    MXKRoomMemberDetailsActionStartVideoCall,
+    MXKRoomMemberDetailsActionMention
     
 } MXKRoomMemberDetailsAction;
 
@@ -60,6 +61,15 @@ typedef enum : NSUInteger
 - (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString*)matrixId completion:(void (^)(void))completion;
 
 @optional
+/**
+ Tells the delegate that the user wants to mention the room member.
+ 
+ @discussion the `MXKRoomMemberDetailsViewController` instance is withdrawn automatically.
+ 
+ @param roomMemberDetailsViewController the `MXKRoomMemberDetailsViewController` instance.
+ @param member the room member to mention.
+ */
+- (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController mention:(MXRoomMember*)member;
 
 /**
  Tells the delegate that the user wants to place a voip call with the room member.
@@ -106,6 +116,11 @@ typedef enum : NSUInteger
  */
 @property (nonatomic, readonly) MXRoomMember *mxRoomMember;
 @property (nonatomic, readonly) MXRoom *mxRoom;
+
+/**
+ Enable mention option. NO by default
+ */
+@property (nonatomic) BOOL enableMention;
 
 /**
  Enable voip call (voice/video). NO by default
@@ -160,7 +175,7 @@ typedef enum : NSUInteger
 /**
  The following method is registered on `UIControlEventTouchUpInside` event for all displayed action buttons.
  
- The start chat option is transferred to the delegate.
+ The start chat and mention options are transferred to the delegate.
  All the other actions are handled by the current implementation.
  
  If the delegate responds to selector: @selector(roomMemberDetailsViewController:placeVoipCallWithMemberId:andVideo:), the voip options

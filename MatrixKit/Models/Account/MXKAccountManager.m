@@ -140,7 +140,6 @@ static MXKAccountManager *sharedAccountManager = nil;
     
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
     // Be sure that no account survive in local storage
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -220,7 +219,6 @@ static MXKAccountManager *sharedAccountManager = nil;
     if (!token.length)
     {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         token = nil;
     }
@@ -232,38 +230,57 @@ static MXKAccountManager *sharedAccountManager = nil;
     NSData *oldToken = self.apnsDeviceToken;
     if (!apnsDeviceToken.length)
     {
+        NSLog(@"[MXKAccountManager] reset APNS device token");
+        
+        if (oldToken)
+        {
+            // turn off the Apns flag for all accounts if any
+            for (MXKAccount *account in mxAccounts)
+            {
+                account.enablePushNotifications = NO;
+            }
+        }
+        
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
-        [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        NSArray *activeAccounts = self.activeAccounts;
         
         if (!oldToken)
         {
-            // Reset the append flag before resync APNS for active account
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
+            NSLog(@"[MXKAccountManager] set APNS device token");
+            
+            [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
             // turn on the Apns flag for all accounts, when the Apns registration succeeds for the first time
-            for (MXKAccount *account in mxAccounts)
+            for (MXKAccount *account in activeAccounts)
             {
                 account.enablePushNotifications = YES;
             }
         }
         else if (![oldToken isEqualToData:apnsDeviceToken])
         {
-            // Reset the append flag before resync APNS for active account
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsAppendFlag"];
+            NSLog(@"[MXKAccountManager] update APNS device token");
+            
+            // Delete the pushers related to the old token
+            for (MXKAccount *account in activeAccounts)
+            {
+                [account deletePusher];
+            }
+            
+            // Update the token
+            [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
-            // Resync APNS to on if we think APNS is on, but the token has changed.
-            for (MXKAccount *account in mxAccounts)
+            // Refresh pushers with the new token.
+            for (MXKAccount *account in activeAccounts)
             {
                 if (account.pushNotificationServiceIsActive)
                 {
+                    NSLog(@"[MXKAccountManager] Resync APNS for %@ account", account.mxCredentials.userId);
                     account.enablePushNotifications = YES;
                 }
             }
@@ -271,32 +288,31 @@ static MXKAccountManager *sharedAccountManager = nil;
     }
 }
 
-- (BOOL)apnsAppendFlag
-{
-    BOOL appendFlag = [[NSUserDefaults standardUserDefaults] boolForKey:@"apnsAppendFlag"];
-    if (!appendFlag)
-    {
-        // Turn on 'append' flag to be able to add another pusher with the given pushkey and App ID to any others user IDs
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"apnsAppendFlag"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-    return appendFlag;
-}
-
 - (BOOL)isAPNSAvailable
 {
-    BOOL isRegisteredForRemoteNotifications = NO;
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)])
+    // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
+    // remote notifications or not. However receiving remote notifications does not mean it
+    // will also display them to the user.
+    // To check whether the user allowed or denied remote notification or in fact changed
+    // the notifications permissions later in iOS setting, we have to call
+    // [UIApplication currentUserNotificationSettings].
+    
+    BOOL isRemoteNotificationsAllowed = NO;
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)])
     {
         // iOS 8 and later
-        isRegisteredForRemoteNotifications = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+        UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        
+        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
     }
     else
     {
-        isRegisteredForRemoteNotifications = [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone;
+        isRemoteNotificationsAllowed = [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone;
     }
     
-    return (isRegisteredForRemoteNotifications && self.apnsDeviceToken);
+    NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    
+    return (isRemoteNotificationsAllowed && self.apnsDeviceToken);
 }
 
 #pragma mark -

@@ -244,7 +244,7 @@
     }
     else
     {
-        // Restore the user crolling point by computing the offset introduced by new cells
+        // Restore the user scrolling point by computing the offset introduced by new cells
         // New cells are always introduced at the top of the table
         NSIndexSet *insertedIndexes = (NSIndexSet*)changes;
 
@@ -276,16 +276,16 @@
     {
         [self stopActivityIndicator];
 
-        // Display "No Results" if there is nothing
-        if ([dataSource tableView:_searchTableView numberOfRowsInSection:0])
-        {
-            _noResultsLabel.hidden = YES;
-            _searchTableView.hidden = NO;
-        }
-        else
+        // Display "No Results" if a search is active with an empty result
+        if (dataSource.searchText.length && ![dataSource tableView:_searchTableView numberOfRowsInSection:0])
         {
             _noResultsLabel.hidden = NO;
             _searchTableView.hidden = YES;
+        }
+        else
+        {
+            _noResultsLabel.hidden = YES;
+            _searchTableView.hidden = NO;
         }
     }
 }

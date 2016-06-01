@@ -51,6 +51,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     Class registerAuthInputsViewClass;
     
     /**
+     The MXKAuthInputsView class or a sub-class used to handle forgot password case.
+     */
+    Class forgotPasswordAuthInputsViewClass;
+    
+    /**
      Customized block used to handle unrecognized certificate (nil by default).
      */
     MXHTTPClientOnUnrecognizedCertificate onUnrecognizedCertificateCustomBlock;
@@ -91,36 +96,17 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark -
 
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+- (void)finalizeInit
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self)
-    {
-        [self finalizeWithDefaultConfig];
-    }
+    [super finalizeInit];
     
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self)
-    {
-        [self finalizeWithDefaultConfig];
-    }
-    
-    return self;
-}
-
-- (void)finalizeWithDefaultConfig
-{
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
     
     // Initialize authInputs view classes
     loginAuthInputsViewClass = MXKAuthInputsPasswordBasedView.class;
     registerAuthInputsViewClass = nil; // No registration flow is supported yet
+    forgotPasswordAuthInputsViewClass = nil;
 }
 
 #pragma mark -
@@ -189,6 +175,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     _authenticationScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
+    _subTitleLabel.numberOfLines = 0;
+    
     _submitButton.enabled = NO;
     _authSwitchButton.enabled = YES;
     
@@ -199,7 +187,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self updateRESTClient];
     
     // Localize labels
-    _subTitleLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
     _homeServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_title"];
     _homeServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
     _homeServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_info"];
@@ -224,7 +211,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 {
     [super viewWillAppear:animated];
     
-    // Update supported authentication flow
+    // Force UI update and check the supported authentication flows for the current authentication type.
     self.authType = _authType;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTextFieldChange:) name:UITextFieldTextDidChangeNotification object:nil];
@@ -306,32 +293,18 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         loginAuthInputsViewClass = authInputsViewClass;
     }
-    else
+    else if (authType == MXKAuthenticationTypeRegister)
     {
         registerAuthInputsViewClass = authInputsViewClass;
+    }
+    else if (authType == MXKAuthenticationTypeForgotPassword)
+    {
+        forgotPasswordAuthInputsViewClass = authInputsViewClass;
     }
 }
 
 - (void)setAuthType:(MXKAuthenticationType)authType
 {
-    if (authType == MXKAuthenticationTypeLogin)
-    {
-        _subTitleLabel.hidden = YES;
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateHighlighted];
-    }
-    else
-    {
-        _subTitleLabel.hidden = NO;
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
-    }
-    
-    
     if (_authType != authType)
     {
         _authType = authType;
@@ -342,6 +315,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         // Remove the current inputs view
         self.authInputsView = nil;
         
+        isPasswordReseted = NO;
+        
         [self.authInputsContainerView bringSubviewToFront: _authenticationActivityIndicator];
         [_authenticationActivityIndicator startAnimating];
     }
@@ -349,8 +324,49 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Restore user interaction
     self.userInteractionEnabled = YES;
     
-    // Update supported authentication flow and associated information (defined in authentication session)
-    [self refreshAuthenticationSession];
+    if (authType == MXKAuthenticationTypeLogin)
+    {
+        _subTitleLabel.hidden = YES;
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateHighlighted];
+        
+        // Update supported authentication flow and associated information (defined in authentication session)
+        [self refreshAuthenticationSession];
+    }
+    else if (authType == MXKAuthenticationTypeRegister)
+    {
+        _subTitleLabel.hidden = NO;
+        _subTitleLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
+        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
+        
+        // Update supported authentication flow and associated information (defined in authentication session)
+        [self refreshAuthenticationSession];
+    }
+    else if (authType == MXKAuthenticationTypeForgotPassword)
+    {
+        _subTitleLabel.hidden = YES;
+        
+        if (isPasswordReseted)
+        {
+            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
+            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
+        }
+        else
+        {
+            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"submit"] forState:UIControlStateNormal];
+            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"submit"] forState:UIControlStateHighlighted];
+            
+            [self refreshForgotPasswordSession];
+        }
+        
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
+    }
 }
 
 - (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
@@ -480,8 +496,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     [self updateRESTClient];
     
-    // Refresh UI
-    [self refreshAuthenticationSession];
+    if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
+    {
+        // Refresh UI
+        [self refreshAuthenticationSession];
+    }
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
@@ -540,7 +559,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 
             }];
         }
-        else
+        else if (_authType == MXKAuthenticationTypeRegister)
         {
             mxCurrentOperation = [mxRestClient getRegisterSession:^(MXAuthenticationSession* authSession){
                 
@@ -551,6 +570,11 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 [self onFailureDuringMXOperation:error];
                 
             }];
+        }
+        else
+        {
+            // Not supported for other types
+            NSLog(@"[MXKAuthenticationVC] refreshAuthenticationSession is ignored");
         }
     }
 }
@@ -569,10 +593,16 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         authInputsViewClass = loginAuthInputsViewClass;
         
     }
-    else
+    else if (_authType == MXKAuthenticationTypeRegister)
     {
         authenticationFallback = [mxRestClient registerFallback];
         authInputsViewClass = registerAuthInputsViewClass;
+    }
+    else
+    {
+        // Not supported for other types
+        NSLog(@"[MXKAuthenticationVC] handleAuthenticationSession is ignored");
+        return;
     }
     
     MXKAuthInputsView *authInputsView = nil;
@@ -615,6 +645,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             // Refresh layout
             self.authInputsView = authInputsView;
         }
+        
+        // Refresh user interaction
+        self.userInteractionEnabled = _userInteractionEnabled;
         
         // Check whether an external set of parameters have been defined to pursue a registration
         if (self.externalRegistrationParameters)
@@ -771,7 +804,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     
                 }];
             }
-            else
+            else if (_authType == MXKAuthenticationTypeRegister)
             {
                 // Check here the availability of the userId
                 if (self.authInputsView.userId.length)
@@ -908,6 +941,33 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_invalid_user_name"]}]];
                 }
             }
+            else if (_authType == MXKAuthenticationTypeForgotPassword)
+            {
+                // Check whether the password has been reseted
+                if (isPasswordReseted)
+                {
+                    // Return to login screen
+                    self.authType = MXKAuthenticationTypeLogin;
+                }
+                else
+                {
+                    // Prepare the parameters dict
+                    [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                        
+                        if (parameters && mxRestClient)
+                        {
+                            [_authenticationActivityIndicator startAnimating];
+                            [self resetPasswordWithParameters:parameters];
+                        }
+                        else
+                        {
+                            NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                        }
+                        
+                    }];
+                }
+            }
         }
     }
     else if (sender == _authSwitchButton)
@@ -966,7 +1026,155 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
 
+- (void)onFailureDuringAuthRequest:(NSError *)error
+{
+    mxCurrentOperation = nil;
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+    
+    // Ignore connection cancellation error
+    if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
+    {
+        NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
+        return;
+    }
+    
+    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
+    
+    // Cancel external registration parameters if any
+    _externalRegistrationParameters = nil;
+    
+    // Translate the error code to a human message
+    NSString *title = error.localizedFailureReason;
+    if (!title)
+    {
+        if (self.authType == MXKAuthenticationTypeLogin)
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"login_error_title"];
+        }
+        else if (self.authType == MXKAuthenticationTypeRegister)
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"register_error_title"];
+        }
+        else
+        {
+            title = [NSBundle mxk_localizedStringForKey:@"error"];
+        }
+    }
+    NSString* message = error.localizedDescription;
+    NSDictionary* dict = error.userInfo;
+    
+    // detect if it is a Matrix SDK issue
+    if (dict)
+    {
+        NSString* localizedError = [dict valueForKey:@"error"];
+        NSString* errCode = [dict valueForKey:@"errcode"];
+        
+        if (localizedError.length > 0)
+        {
+            message = localizedError;
+        }
+        
+        if (errCode)
+        {
+            if ([errCode isEqualToString:kMXErrCodeStringForbidden])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringUnknownToken])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringBadJSON])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringNotJSON])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringLimitExceeded])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringUserInUse])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
+            }
+            else if ([errCode isEqualToString:kMXErrCodeStringLoginEmailURLNotYet])
+            {
+                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
+            }
+            else if (!message.length)
+            {
+                message = errCode;
+            }
+        }
+    }
+    
+    // Alert user
+    if (alert)
+    {
+        [alert dismiss:NO];
+    }
+    
+    alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
+    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
+     {}];
+    [alert showInViewController:self];
+    
+    // Update authentication inputs view to return in initial step
+    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+}
+
 #pragma mark - Privates
+
+- (void)refreshForgotPasswordSession
+{
+    [_authenticationActivityIndicator stopAnimating];
+    
+    MXKAuthInputsView *authInputsView = nil;
+    if (forgotPasswordAuthInputsViewClass)
+    {
+        // Instantiate a new auth inputs view, except if the current one is already an instance of this class.
+        if (self.authInputsView && self.authInputsView.class == forgotPasswordAuthInputsViewClass)
+        {
+            // Use the current view
+            authInputsView = self.authInputsView;
+        }
+        else
+        {
+            authInputsView = [forgotPasswordAuthInputsViewClass authInputsView];
+        }
+    }
+    
+    if (authInputsView)
+    {
+        // Update authentication inputs view to return in initial step
+        [authInputsView setAuthSession:nil withAuthType:MXKAuthenticationTypeForgotPassword];
+        
+        // Check whether the current view must be replaced
+        if (self.authInputsView != authInputsView)
+        {
+            // Refresh layout
+            self.authInputsView = authInputsView;
+        }
+        
+        // Refresh user interaction
+        self.userInteractionEnabled = _userInteractionEnabled;
+    }
+    else
+    {
+        // Remove the potential auth inputs view
+        self.authInputsView = nil;
+        
+        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_forgot_password_is_not_supported"];
+        
+        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
+        
+        _noFlowLabel.hidden = NO;
+    }
+}
 
 - (void)updateRESTClient
 {
@@ -1173,6 +1381,64 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
+- (void)resetPasswordWithParameters:(NSDictionary*)parameters
+{
+    mxCurrentOperation = [mxRestClient resetPasswordWithParameters:parameters success:^() {
+        
+        NSLog(@"[MXKAuthenticationVC] Reset password succeeded");
+        
+        mxCurrentOperation = nil;
+        [_authenticationActivityIndicator stopAnimating];
+        
+        isPasswordReseted = YES;
+        
+        // Force UI update to refresh submit button title.
+        self.authType = _authType;
+        
+        // Refresh the authentication inputs view on success.
+        [self.authInputsView nextStep];
+        
+    } failure:^(NSError *error) {
+        
+        MXError *mxError = [[MXError alloc] initWithNSError:error];
+        if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnauthorized])
+        {
+            NSLog(@"[MXKAuthenticationVC] Forgot Password: wait for email validation");
+            
+            mxCurrentOperation = nil;
+            [_authenticationActivityIndicator stopAnimating];
+            
+            [alert dismiss:NO];
+            alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] style:MXKAlertStyleAlert];
+            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
+             {}];
+            [alert showInViewController:self];
+        }
+        else if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
+        {
+            NSLog(@"[MXKAuthenticationVC] Forgot Password: not found");
+            
+            NSMutableDictionary *userInfo;
+            if (error.userInfo)
+            {
+                userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
+            }
+            else
+            {
+                userInfo = [NSMutableDictionary dictionary];
+            }
+            userInfo[NSLocalizedDescriptionKey] = [NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_not_found"];
+            
+            [self onFailureDuringAuthRequest:[NSError errorWithDomain:kMXNSErrorDomain code:0 userInfo:userInfo]];
+        }
+        else
+        {
+            [self onFailureDuringAuthRequest:error];
+        }
+        
+    }];
+}
+
 - (void)onFailureDuringMXOperation:(NSError*)error
 {
     mxCurrentOperation = nil;
@@ -1261,103 +1527,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
     }
-}
-
-- (void)onFailureDuringAuthRequest:(NSError *)error
-{
-    mxCurrentOperation = nil;
-    [_authenticationActivityIndicator stopAnimating];
-    self.userInteractionEnabled = YES;
-    
-    // Ignore connection cancellation error
-    if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
-    {
-        
-        NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
-        return;
-    }
-    
-    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
-    
-    // Cancel external registration parameters if any
-    _externalRegistrationParameters = nil;
-    
-    // Translate the error code to a human message
-    NSString *title = error.localizedFailureReason;
-    if (!title)
-    {
-        if (self.authType == MXKAuthenticationTypeLogin)
-        {
-            title = [NSBundle mxk_localizedStringForKey:@"login_error_title"];
-        }
-        else
-        {
-            title = [NSBundle mxk_localizedStringForKey:@"register_error_title"];
-        }
-    }
-    NSString* message = error.localizedDescription;
-    NSDictionary* dict = error.userInfo;
-    
-    // detect if it is a Matrix SDK issue
-    if (dict)
-    {
-        NSString* localizedError = [dict valueForKey:@"error"];
-        NSString* errCode = [dict valueForKey:@"errcode"];
-        
-        if (errCode)
-        {
-            if ([errCode isEqualToString:kMXErrCodeStringForbidden])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringUnknownToken])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringBadJSON])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringNotJSON])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringLimitExceeded])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringUserInUse])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
-            }
-            else if ([errCode isEqualToString:kMXErrCodeStringLoginEmailURLNotYet])
-            {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
-            }
-            else
-            {
-                message = errCode;
-            }
-        }
-        else if (localizedError.length > 0)
-        {
-            message = localizedError;
-        }
-    }
-    
-    // Alert user
-    if (alert)
-    {
-        [alert dismiss:NO];
-    }
-    
-    alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
-    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
-     {}];
-    [alert showInViewController:self];
-    
-    // Update authentication inputs view to return in initial step
-    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
 
 - (void)onSuccessfulLogin:(MXCredentials*)credentials

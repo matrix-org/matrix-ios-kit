@@ -47,6 +47,7 @@
 "login_leave_fallback" = "Cancel";
 "login_invalid_param" = "Invalid parameter";
 "register_error_title" = "Registration Failed";
+"login_error_forgot_password_is_not_supported" = "Forgot password is not currently supported";
 
 // Action
 "no" = "No";
@@ -59,6 +60,7 @@
 "dismiss" = "Dismiss";
 "retry" = "Retry";
 "sign_up" = "Sign up";
+"submit" = "Submit";
 "submit_code" = "Submit code";
 "set_power_level" = "Set Power Level";
 "set_default_power_level" = "Reset Power Level";
@@ -67,6 +69,7 @@
 "start_chat" = "Start Chat";
 "start_voice_call" = "Start Voice Call";
 "start_video_call" = "Start Video Call";
+"mention" = "Mention";
 "select_account" = "Select an account";
 "attach_media" = "Attach Media from Library";
 "capture_media" = "Take Photo/Video";
@@ -210,8 +213,10 @@
 "notice_display_name_removed" = "%@ removed their display name";
 "notice_topic_changed" = "%@ changed the topic to: %@";
 "notice_room_name_changed" = "%@ changed the room name to: %@";
-"notice_outgoing_call" = "Outgoing Call";
-"notice_incoming_call" = "Incoming Call";
+"notice_placed_voice_call" = "%@ placed a voice call";
+"notice_placed_video_call" = "%@ placed a video call";
+"notice_answered_video_call" = "%@ answered the call";
+"notice_ended_video_call" = "%@ ended the call";
 
 // Room Screen 
 

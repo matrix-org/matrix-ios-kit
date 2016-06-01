@@ -165,7 +165,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomMessageFeedback,
                                              kMXEventTypeStringRoomRedaction,
                                              kMXEventTypeStringRoomThirdPartyInvite,
-                                             kMXEventTypeStringCallInvite
+                                             kMXEventTypeStringCallInvite,
+                                             kMXEventTypeStringCallAnswer,
+                                             kMXEventTypeStringCallHangup
                                              ];
         }
         else
@@ -177,7 +179,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomMember,
                                              kMXEventTypeStringRoomMessage,
                                              kMXEventTypeStringRoomThirdPartyInvite,
-                                             kMXEventTypeStringCallInvite
+                                             kMXEventTypeStringCallInvite,
+                                             kMXEventTypeStringCallAnswer,
+                                             kMXEventTypeStringCallHangup
                                              ];
         }
 
@@ -1018,6 +1022,19 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
     NSLog(@"[MXKRoomDataSource] paginateToFillRect: %@", NSStringFromCGRect(rect));
+    
+    // During the first call of this method, the delegate is supposed defined.
+    // This delegate may be removed whereas this method is called by itself after a pagination request.
+    // The delegate is required here to be able to compute cell height (and prevent infinite loop in case of reentrancy).
+    if (!self.delegate)
+    {
+        NSLog(@"[MXKRoomDataSource] paginateToFillRect ignored (delegate is undefined)");
+        if (failure)
+        {
+            failure(nil);
+        }
+        return;
+    }
 
     // Get the total height of cells already loaded in memory
     CGFloat minMessageHeight = CGFLOAT_MAX;
@@ -1029,19 +1046,22 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         for (NSInteger i = bubbles.count - 1; i >= 0; i--)
         {
             CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
-
-            bubblesTotalHeight += bubbleHeight;
-
-            if (bubblesTotalHeight > rect.size.height)
+            // Sanity check
+            if (bubbleHeight)
             {
-                // No need to compute more cells heights, there are enough to fill the rect
-                NSLog(@"[MXKRoomDataSource] -> %tu already loaded bubbles are enough to fill the screen", bubbles.count - i);
-                break;
+                bubblesTotalHeight += bubbleHeight;
+                
+                if (bubblesTotalHeight > rect.size.height)
+                {
+                    // No need to compute more cells heights, there are enough to fill the rect
+                    NSLog(@"[MXKRoomDataSource] -> %tu already loaded bubbles are enough to fill the screen", bubbles.count - i);
+                    break;
+                }
+                
+                // Compute the minimal height an event takes
+                id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+                minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
             }
-
-            // Compute the minimal height an event takes
-            id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
-            minMessageHeight = MIN(minMessageHeight,  bubbleHeight / bubbleData.events.count);
         }
     }
     else if (minRequestMessagesCount)
@@ -1468,7 +1488,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }];
         
-    } failure:^(NSError *error) {
+    } failure:^() {
         
         // Update the local echo with the error state
         localEcho.mxkState = MXKEventStateSendingFailed;
@@ -1476,7 +1496,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         if (failure)
         {
-            failure(error);
+            failure(nil);
         }
     }];
 }

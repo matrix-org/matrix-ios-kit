@@ -554,51 +554,58 @@ static NSMutableDictionary *fileExtensionByContentType = nil;
     
     // Export video file
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        
-        // Check status
-        if ([exportSession status] == AVAssetExportSessionStatusCompleted)
-        {
-            
-            AVURLAsset* asset = [AVURLAsset URLAssetWithURL:outputVideoLocalURL
-                                                    options:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                             [NSNumber numberWithBool:YES],
-                                                             AVURLAssetPreferPreciseDurationAndTimingKey,
-                                                             nil]
-                                 ];
-            
-            double durationInMs = (1000 * CMTimeGetSeconds(asset.duration));
-            
-            // Extract the video size
-            CGSize videoSize;
-            NSArray *videoTracks = [asset tracksWithMediaType:AVMediaTypeVideo];
-            if (videoTracks.count > 0)
+
+        AVAssetExportSessionStatus status = exportSession.status;
+
+        // Come back to the UI thread to avoid race conditions
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            // Check status
+            if (status == AVAssetExportSessionStatusCompleted)
             {
-                
-                AVAssetTrack *videoTrack = [videoTracks objectAtIndex:0];
-                videoSize = videoTrack.naturalSize;
-                
-                // The operation is complete
-                success(outputVideoLocalURL, mimetype, videoSize, durationInMs);
+
+                AVURLAsset* asset = [AVURLAsset URLAssetWithURL:outputVideoLocalURL
+                                                        options:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                 [NSNumber numberWithBool:YES],
+                                                                 AVURLAssetPreferPreciseDurationAndTimingKey,
+                                                                 nil]
+                                     ];
+
+                double durationInMs = (1000 * CMTimeGetSeconds(asset.duration));
+
+                // Extract the video size
+                CGSize videoSize;
+                NSArray *videoTracks = [asset tracksWithMediaType:AVMediaTypeVideo];
+                if (videoTracks.count > 0)
+                {
+
+                    AVAssetTrack *videoTrack = [videoTracks objectAtIndex:0];
+                    videoSize = videoTrack.naturalSize;
+
+                    // The operation is complete
+                    success(outputVideoLocalURL, mimetype, videoSize, durationInMs);
+                }
+                else
+                {
+
+                    NSLog(@"[MXKTools] convertVideoToMP4: Video export failed. Cannot extract video size.");
+
+                    // Remove output file (if any)
+                    [[NSFileManager defaultManager] removeItemAtPath:[outputVideoLocalURL path] error:nil];
+                    failure();
+                }
             }
             else
             {
-                
-                NSLog(@"[MXKTools] convertVideoToMP4: Video export failed. Cannot extract video size.");
-                
+
+                NSLog(@"[MXKTools] convertVideoToMP4: Video export failed. exportSession.status: %tu", status);
+
                 // Remove output file (if any)
                 [[NSFileManager defaultManager] removeItemAtPath:[outputVideoLocalURL path] error:nil];
                 failure();
             }
-        }
-        else
-        {
-            
-            NSLog(@"[MXKTools] convertVideoToMP4: Video export failed. exportSession.status: %d", (int)exportSession.status);
-            
-            // Remove output file (if any)
-            [[NSFileManager defaultManager] removeItemAtPath:[outputVideoLocalURL path] error:nil];
-            failure();
-        }
+        });
+
     }];
 }
 

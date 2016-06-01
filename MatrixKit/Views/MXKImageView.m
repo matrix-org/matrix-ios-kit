@@ -533,6 +533,10 @@
         // Set preview until the image is loaded
         self.image = previewImage;
         // update the progress UI with the current info
+        if (!_hideActivityIndicator)
+        {
+            [self startActivityIndicator];
+        }
         [self updateProgressUI:loader.statisticsDict];
         
         // Add observers

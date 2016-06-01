@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -12,21 +11,26 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="164"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="q82-Um-cU7" id="aBM-uR-U5E">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="163"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hrr-rd-eoA">
-                        <rect key="frame" x="8" y="1" width="584" height="162"/>
+                        <rect key="frame" x="8" y="8" width="584" height="147"/>
                     </pickerView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="hrr-rd-eoA" firstAttribute="top" secondItem="aBM-uR-U5E" secondAttribute="topMargin" id="J6o-ID-bDs"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="hrr-rd-eoA" secondAttribute="trailing" id="SSs-GG-jvP"/>
-                    <constraint firstItem="hrr-rd-eoA" firstAttribute="leading" secondItem="aBM-uR-U5E" secondAttribute="leadingMargin" id="V0R-Eb-PWo"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="hrr-rd-eoA" secondAttribute="bottom" id="h2E-4o-qec"/>
+                    <constraint firstItem="hrr-rd-eoA" firstAttribute="top" secondItem="aBM-uR-U5E" secondAttribute="top" constant="8" id="J6o-ID-bDs"/>
+                    <constraint firstAttribute="trailing" secondItem="hrr-rd-eoA" secondAttribute="trailing" constant="8" id="SSs-GG-jvP"/>
+                    <constraint firstItem="hrr-rd-eoA" firstAttribute="leading" secondItem="aBM-uR-U5E" secondAttribute="leading" constant="8" id="V0R-Eb-PWo"/>
+                    <constraint firstAttribute="bottom" secondItem="hrr-rd-eoA" secondAttribute="bottom" constant="8" id="h2E-4o-qec"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="mxkPickerView" destination="hrr-rd-eoA" id="HBG-aN-sZg"/>
+                <outlet property="mxkPickerViewBottomConstraint" destination="h2E-4o-qec" id="2eo-oT-tUZ"/>
+                <outlet property="mxkPickerViewLeadingConstraint" destination="V0R-Eb-PWo" id="uBh-Jo-oOn"/>
+                <outlet property="mxkPickerViewTopConstraint" destination="J6o-ID-bDs" id="pEK-EQ-1IJ"/>
+                <outlet property="mxkPickerViewTrailingConstraint" destination="SSs-GG-jvP" id="8JI-Zy-LfB"/>
             </connections>
         </tableViewCell>
     </objects>

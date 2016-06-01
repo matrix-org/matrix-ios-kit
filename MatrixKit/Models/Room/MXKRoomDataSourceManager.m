@@ -87,7 +87,7 @@ static Class _roomDataSourceClass;
     }
 }
 
-+ (NSUInteger)notificationCount
++ (NSUInteger)missedNotificationsCount
 {
     NSUInteger notificationCount = 0;
     
@@ -110,6 +110,34 @@ static Class _roomDataSourceClass;
     }
     
     return notificationCount;
+}
+
++ (NSUInteger)missedDiscussionsCount
+{
+    NSUInteger roomCount = 0;
+    
+    // Sum here all the room with missed notifications (retrieved from the existing room data sources)
+    @synchronized(_roomDataSourceManagers)
+    {
+        NSArray *mxSessionIds = _roomDataSourceManagers.allKeys;
+        for (NSString *mxSessionId in mxSessionIds)
+        {
+            MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
+            if (roomDataSourceManager)
+            {
+                NSArray *roomDataSources = roomDataSourceManager->roomDataSources.allValues;
+                for (MXKRoomDataSource *roomDataSource in roomDataSources)
+                {
+                    if (roomDataSource.notificationCount)
+                    {
+                        roomCount ++;
+                    }
+                }
+            }
+        }
+    }
+    
+    return roomCount;
 }
 
 + (void)registerRoomDataSourceClass:(Class)roomDataSourceClass

@@ -70,22 +70,32 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 {
     if (![_searchText isEqualToString:text])
     {
-        NSLog(@"[MXKSearchDataSource] searchMessageText: %@", text);
-
         // Reset data before making the new search
         if (searchRequest)
         {
             [searchRequest cancel];
             searchRequest = nil;
         }
+        
         _searchText = text;
         _serverCount = 0;
         _canPaginate = NO;
         nextBatch = nil;
+        
         self.state = MXKDataSourceStatePreparing;
         [cellDataArray removeAllObjects];
-
-        [self doSearch];
+        
+        if (text.length)
+        {
+            NSLog(@"[MXKSearchDataSource] searchMessageText: %@", text);
+            [self doSearch];
+        }
+        else
+        {
+            // Refresh table display.
+            self.state = MXKDataSourceStateReady;
+            [self.delegate dataSource:self didCellChange:nil];
+        }
     }
 }
 
