@@ -49,6 +49,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)loadAvatarWithSize:(CGSize)avatarSize
 {
     // Check whether the avatar image is already set
