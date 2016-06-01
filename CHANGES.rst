@@ -1,3 +1,30 @@
+Changes in MatrixKit in 0.3.8 (2016-06-01)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.8).
+ * MXKRoomDataSource: Display all call events (invite, answer, hangup).
+ * MXKAuthenticationViewController: Expose [onFailureDuringAuthRequest:].
+ * MXKAuthenticationViewController: Support "Forgot Password".
+ * MXKRoomMemberListViewController: Expose scrollToTop method.
+ * MXKAccount: logout when the access token is no more valid.
+ * MXKAccount: Refresh pusher (if any) when the app is resumed.
+ * MXKRoomViewController: Do nothing when clicking on an unsent media.
+ * MXKTableViewCell: expose layout constraints.
+ * MXKTableViewCell: Define display box types.
+ * MXKWebViewViewController: Support local HTML file + Handle goBack option.
+ * MXKRoomMemberDetailsViewController: Support 'Mention' option.
+ * MXKRecentListViewController: Apply apple look&feel on overscroll.
+ * MXKRoomDataSourceManager: add missed discussions count.
+ * MXKSearchViewController: Handle correctly end of search.
+
+Bug fixes:
+ * Application can crash when a video failed to be converted before sending.
+ * Loading one image thumbnail in a sequence seems to set all fullres images downloading.
+ * It's too hard to press names to auto-insert nicks.
+ * It sound like something is filling up the logs.
+ * App crashes on room members.
+
 Changes in MatrixKit in 0.3.7 (2016-05-04)
 ===============================================
 
