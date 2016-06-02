@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.3.9 (2016-06-02)
+===============================================
+
+Bug fix:
+ * Invitation preview button is broken.
+
 Changes in MatrixKit in 0.3.8 (2016-06-01)
 ===============================================
 
