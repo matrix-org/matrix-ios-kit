@@ -414,10 +414,7 @@
             UITableViewCell<MXKCellRendering> *cell  = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
             
             // Make sure we listen to user actions on the cell
-            if (!cell.delegate)
-            {
-                cell.delegate = self;
-            }
+            cell.delegate = self;
             
             // Make the bubble display the data
             [cell render:roomData];

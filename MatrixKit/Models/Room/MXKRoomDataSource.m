@@ -2406,10 +2406,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
             
             // Make sure we listen to user actions on the cell
-            if (!cell.delegate)
-            {
-                cell.delegate = self;
-            }
+            cell.delegate = self;
             
             // Update typing flag before rendering
             bubbleData.isTyping = _showTypingNotifications && currentTypingUsers && ([currentTypingUsers indexOfObject:bubbleData.senderId] != NSNotFound);
