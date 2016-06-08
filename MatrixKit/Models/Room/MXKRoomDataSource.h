@@ -110,6 +110,12 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic, readonly) BOOL isLive;
 
 /**
+ Flag indicating if the data source is used to peek into a room, ie it gets data from
+ a room the user has not joined yet.
+ */
+@property (nonatomic, readonly) BOOL isPeeking;
+
+/**
  The last event in the room that matches the `eventsFilterForMessages` property.
  */
 @property (nonatomic, readonly) MXEvent *lastMessage;
@@ -219,6 +225,18 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @return the newly created instance.
  */
 - (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
+
+/**
+ Initialise the data source to peek into a room.
+ 
+ The data source will close the `peekingRoom` instance on [self destroy].
+
+ @param peekingRoom the room to peek.
+ @param initialEventId the id of the event where to start the timeline. nil means the live
+                       timeline.
+ @return the newly created instance.
+ */
+- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom AndInitialEventId:(NSString*)initialEventId;
 
 /**
  Mark all messages as read
