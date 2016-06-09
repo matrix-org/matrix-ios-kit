@@ -72,6 +72,13 @@ extern NSString *const kCmdResetUserPowerLevel;
 @property (nonatomic, readonly) MXKRoomDataSource *roomDataSource;
 
 /**
+ Flag indicating if this instance has the memory ownership of its `roomDataSource`.
+ If YES, it will release it on [self destroy] call;
+ Default is NO.
+ */
+@property (nonatomic) BOOL hasRoomDataSourceOwnership;
+
+/**
  The current title view defined into the view controller.
  */
 @property (nonatomic, readonly) MXKRoomTitleView* titleView;

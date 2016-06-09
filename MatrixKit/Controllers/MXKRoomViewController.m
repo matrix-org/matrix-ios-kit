@@ -196,6 +196,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Enable auto join option by default
     _autoJoinInvitedRoom = YES;
+
+    // Do not take ownership of room data source by default
+    _hasRoomDataSourceOwnership = NO;
 }
 
 #pragma mark -
@@ -504,9 +507,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
 
-    // Non live and peeking room data sources are not managed by the MXKDataSourceManager
-    // Destroy them once they are no more displayed
-    if (!roomDataSource.isLive || roomDataSource.isPeeking)
+    // If we have the ownership, release the room data source
+    if (_hasRoomDataSourceOwnership)
     {
         [roomDataSource destroy];
     }
