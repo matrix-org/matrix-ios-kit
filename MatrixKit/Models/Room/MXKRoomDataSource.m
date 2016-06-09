@@ -222,7 +222,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     return self;
 }
 
-- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom2 AndInitialEventId:(NSString*)initialEventId
+- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom2 andInitialEventId:(NSString*)initialEventId
 {
     self = [self initWithRoomId:peekingRoom2.roomId initialEventId:initialEventId andMatrixSession:peekingRoom2.mxSession];
     if (self)

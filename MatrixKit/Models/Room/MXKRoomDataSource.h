@@ -236,7 +236,7 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
                        timeline.
  @return the newly created instance.
  */
-- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom AndInitialEventId:(NSString*)initialEventId;
+- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId;
 
 /**
  Mark all messages as read
