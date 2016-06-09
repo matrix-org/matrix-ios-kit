@@ -504,9 +504,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
 
-    // Non live room data sources are not managed by the MXKDataSourceManager
+    // Non live and peeking room data sources are not managed by the MXKDataSourceManager
     // Destroy them once they are no more displayed
-    if (!roomDataSource.isLive)
+    if (!roomDataSource.isLive || roomDataSource.isPeeking)
     {
         [roomDataSource destroy];
     }
