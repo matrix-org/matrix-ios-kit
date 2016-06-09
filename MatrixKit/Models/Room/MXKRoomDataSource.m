@@ -93,6 +93,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSMutableArray *bubblesSnapshot;
     
     /**
+     The room being peeked, if any.
+     */
+    MXPeekingRoom *peekingRoom;
+    
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
@@ -207,10 +212,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     self = [self initWithRoomId:roomId andMatrixSession:mxSession];
     if (self)
     {
-        initialEventId = initialEventId2;
-        _isLive = NO;
+        if (initialEventId2)
+        {
+            initialEventId = initialEventId2;
+            _isLive = NO;
+        }
     }
 
+    return self;
+}
+
+- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom2 andInitialEventId:(NSString*)initialEventId
+{
+    self = [self initWithRoomId:peekingRoom2.roomId initialEventId:initialEventId andMatrixSession:peekingRoom2.mxSession];
+    if (self)
+    {
+        peekingRoom = peekingRoom2;
+        _isPeeking = YES;
+    }
     return self;
 }
 
@@ -412,7 +431,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
         UIApplicationSignificantTimeChangeNotificationObserver = nil;
     }
-    
+
+    // If the room data source was used to peek into a room, stop the events stream on this room
+    if (peekingRoom)
+    {
+        [_room.mxSession stopPeeking:peekingRoom];
+    }
+
     [self reset];
     
     self.eventFormatter = nil;
@@ -433,7 +458,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Check whether the room is not already set
         if (!_room)
         {
-            _room = [self.mxSession roomWithRoomId:_roomId];
+            // Are we peeking into a random room or displaying a room the user is part of?
+            if (peekingRoom)
+            {
+                _room = peekingRoom;
+            }
+            else
+            {
+                _room = [self.mxSession roomWithRoomId:_roomId];
+            }
+
             if (_room)
             {
                 // This is the time to set up the timeline according to the called init method
