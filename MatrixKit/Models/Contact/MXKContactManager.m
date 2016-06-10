@@ -593,7 +593,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                  {
                                                      id matrixID = [userIds objectAtIndex:index];
                                                      NSString* pid = [pids objectAtIndex:index];
-                                                     NSString *currentMatrixID = [matrixIDBy3PID valueForKey:pid];
+                                                     NSString *currentMatrixID = [matrixIDBy3PID objectForKey:pid];
                                                      
                                                      if ([matrixID isEqual:[NSNull null]])
                                                      {
@@ -607,7 +607,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                      {
                                                          if (![currentMatrixID isEqualToString:matrixID])
                                                          {
-                                                             [matrixIDBy3PID setValue:matrixID forKey:pid];
+                                                             [matrixIDBy3PID setObject:matrixID forKey:pid];
                                                              isUpdated = YES;
                                                          }
                                                      }
@@ -983,7 +983,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         if (email.emailAddress.length > 0)
         {
-            id matrixID = [matrixIDBy3PID valueForKey:email.emailAddress];
+            id matrixID = [matrixIDBy3PID objectForKey:email.emailAddress];
             
             if ([matrixID isKindOfClass:[NSString class]])
             {
