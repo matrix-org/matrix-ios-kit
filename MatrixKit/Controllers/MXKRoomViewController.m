@@ -506,14 +506,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.dataSource = nil;
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
-
-    // If we have the ownership, release the room data source
-    if (_hasRoomDataSourceOwnership)
-    {
-        [roomDataSource destroy];
-    }
     
     roomDataSource.delegate = nil;
+    
+    if (_hasRoomDataSourceOwnership)
+    {
+        // Release the room data source
+        [roomDataSource destroy];
+    }
     roomDataSource = nil;
     
     if (titleView)
@@ -665,18 +665,32 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (roomDataSource)
     {
+        roomDataSource.delegate = nil;
+        
+        if (self.hasRoomDataSourceOwnership)
+        {
+            // Release the room data source
+            [roomDataSource destroy];
+        }
         roomDataSource = nil;
+        
         [self removeMatrixSession:self.mainSession];
     }
     
     if (dataSource)
     {
-        // Remove the input toolbar and the room activities view if the displayed timeline is not a live one
-        // We do not let the user type message in this case.
         if (!dataSource.isLive)
         {
+            // Remove the input toolbar and the room activities view if the displayed timeline is not a live one.
+            // We do not let the user type message in this case.
             [self setRoomInputToolbarViewClass:nil];
             [self setRoomActivitiesViewClass:nil];
+        }
+        else if (dataSource.isPeeking)
+        {
+            // Remove the input toolbar in case of peeking.
+            // We do not let the user type message in this case.
+            [self setRoomInputToolbarViewClass:nil];
         }
         
         roomDataSource = dataSource;
@@ -853,7 +867,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     {
         [self startActivityIndicator];
 
-        void (^success)(MXRoom *room)  = ^(MXRoom *room) {
+        void (^success)(MXRoom *room) = ^(MXRoom *room) {
 
             joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -945,6 +959,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     
     roomDataSource.delegate = nil;
+    
+    if (self.hasRoomDataSourceOwnership)
+    {
+        // Release the room data source
+        [roomDataSource destroy];
+    }
     roomDataSource = nil;
     
     // Add reason label
@@ -1050,9 +1070,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         inputToolbarView = nil;
     }
     
-    if (roomDataSource && !roomDataSource.isLive)
+    if (roomDataSource && (!roomDataSource.isLive || roomDataSource.isPeeking))
     {
-        // Do not show the input toolbar if the displayed timeline is not a live one
+        // Do not show the input toolbar if the displayed timeline is not a live one, or in case of peeking.
         // We do not let the user type message in this case.
         roomInputToolbarViewClass = nil;
     }
