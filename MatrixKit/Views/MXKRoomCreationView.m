@@ -496,7 +496,7 @@
             
             // Create new room
             [selectedSession createRoom:roomName
-                             visibility:(_roomVisibilityControl.selectedSegmentIndex == 0) ? kMXRoomVisibilityPublic : kMXRoomVisibilityPrivate
+                             visibility:(_roomVisibilityControl.selectedSegmentIndex == 0) ? kMXRoomDirectoryVisibilityPublic : kMXRoomDirectoryVisibilityPrivate
                               roomAlias:self.alias
                                   topic:nil
                                 success:^(MXRoom *room) {

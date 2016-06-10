@@ -51,7 +51,7 @@
 /**
  The room visibility (kMXRoomVisibilityPrivate by default).
  */
-@property (nonatomic) MXRoomVisibility roomVisibility;
+@property (nonatomic) MXRoomDirectoryVisibility roomVisibility;
 
 /**
  The room participants (nil by default).
