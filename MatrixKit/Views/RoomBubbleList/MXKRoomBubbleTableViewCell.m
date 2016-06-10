@@ -259,6 +259,9 @@ static BOOL _disableLongPressGestureOnEvent;
             [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];        
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
             self.pictureView.clipsToBounds = YES;
+            
+            // Clear the default background color of a MXKImageView instance
+            self.pictureView.backgroundColor = [UIColor clearColor];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)
