@@ -1224,6 +1224,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
+        
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
@@ -1322,6 +1323,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
+        
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
@@ -1412,6 +1414,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // Before sending data to the server, convert the video to MP4
     [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs) {
+        
         // Upload thumbnail
         [uploader uploadData:videoThumbnailData filename:nil mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
             
@@ -1440,6 +1443,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 [videoUploader uploadData:videoData filename:filename mimeType:mimetype success:^(NSString *videoUrl) {
                     
+                    // Update the local echo state: move from content uploading to event sending
+                    localEcho.mxkState = MXKEventStateSending;
+                    [self updateLocalEcho:localEcho];
+                    
                     // Write the video to the actual cacheFile path
                     NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:videoUrl];
                     NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
@@ -1455,7 +1462,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     
                     localEcho.content = msgContent;
                     [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-                    [self updateLocalEcho:localEcho];
                     
                     // And send the Matrix room message video event to the homeserver
                     [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {
