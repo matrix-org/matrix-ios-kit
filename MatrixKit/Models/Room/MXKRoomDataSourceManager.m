@@ -179,7 +179,7 @@ static Class _roomDataSourceClass;
         // Observe UIApplicationDidReceiveMemoryWarningNotification
         UIApplicationDidReceiveMemoryWarningNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
-            NSLog(@"MXKRoomDataSourceManager %@: Received memory warning.", self);
+            NSLog(@"[MXKRoomDataSourceManager] %@: Received memory warning.", self);
             
             // Reload all data sources (except the current used ones) to reduce memory usage.
             for (MXKRoomDataSource *roomDataSource in roomDataSources.allValues)
@@ -265,10 +265,14 @@ static Class _roomDataSourceClass;
 
 - (void)closeRoomDataSource:(MXKRoomDataSource *)roomDataSource forceClose:(BOOL)forceRelease
 {
+    // Check first whether this roomDataSource is well handled by this manager
+    if (!roomDataSource.roomId || !roomDataSources[roomDataSource.roomId])
+    {
+        NSLog(@"[MXKRoomDataSourceManager] Failed to close an unknown room id: %@", roomDataSource.roomId);
+    }
+
     // According to the policy, it is interesting to keep the room data source in life: it can keep managing echo messages
     // in background for instance
-    
-    
     MXKRoomDataSourceManagerReleasePolicy releasePolicy = _releasePolicy;
     if (forceRelease)
     {
