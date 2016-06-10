@@ -269,6 +269,7 @@ static Class _roomDataSourceClass;
     if (!roomDataSource.roomId || !roomDataSources[roomDataSource.roomId])
     {
         NSLog(@"[MXKRoomDataSourceManager] Failed to close an unknown room id: %@", roomDataSource.roomId);
+        return;
     }
 
     // According to the policy, it is interesting to keep the room data source in life: it can keep managing echo messages
