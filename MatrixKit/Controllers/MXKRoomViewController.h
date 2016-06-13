@@ -267,6 +267,14 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass;
 
 /**
+ Register the class used to instantiate the viewer dedicated to the attachments with thumbnail.
+ By default 'MXKAttachmentsViewController' class is used.
+ 
+ @param attachmentsViewerClass a MXKAttachmentsViewController-inherited class, or nil to restore the default class.
+ */
+- (void)setAttachmentsViewerClass:(Class)attachmentsViewerClass;
+
+/**
  Detect and process potential IRC command in provided string.
  
  @param string to analyse

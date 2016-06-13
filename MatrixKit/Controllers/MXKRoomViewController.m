@@ -124,7 +124,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     /**
      The attachments viewer for image and video.
      */
-     MXKAttachmentsViewController *attachmentsViewer;
+    MXKAttachmentsViewController *attachmentsViewer;
+    
+    /**
+     The class used to instantiate attachments viewer for image and video..
+     */
+    Class attachmentsViewerClass;
     
     /**
      The reconnection animated view.
@@ -1221,6 +1226,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableViewBottomConstraint.constant = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant +_roomActivitiesContainerHeightConstraint.constant;
 
     [_roomActivitiesContainer setNeedsUpdateConstraints];
+}
+
+- (void)setAttachmentsViewerClass:(Class)theAttachmentsViewerClass
+{
+    if (theAttachmentsViewerClass)
+    {
+        // Sanity check: accept only MXKAttachmentsViewController classes or sub-classes
+        NSParameterAssert([theAttachmentsViewerClass isSubclassOfClass:MXKAttachmentsViewController.class]);
+    }
+    
+    attachmentsViewerClass = theAttachmentsViewerClass;
 }
 
 - (BOOL)isIRCStyleCommand:(NSString*)string
@@ -2951,7 +2967,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
 
             // Present an attachment viewer
-            attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+            if (attachmentsViewerClass)
+            {
+                attachmentsViewer = [attachmentsViewerClass attachmentsViewController];
+            }
+            else
+            {
+                attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+            }
+            
             attachmentsViewer.delegate = self;
             attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
             attachmentsViewer.hidesBottomBarWhenPushed = YES;
@@ -2996,7 +3020,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-// MXKAttachmentsViewControllerDelegate
+#pragma mark - MXKAttachmentsViewControllerDelegate
+
 - (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId
 {
     [self triggerAttachmentBackPagination:eventId];
