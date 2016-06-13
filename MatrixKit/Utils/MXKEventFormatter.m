@@ -83,12 +83,14 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     
     if (event.eventType == MXEventTypeRoomMessage)
     {
-        NSString *msgtype = event.content[@"msgtype"];
+        NSString *msgtype;
+        MXJSONModelSetString(msgtype, event.content[@"msgtype"]);
+        
         NSString *requiredField;
         
         if ([msgtype isEqualToString:kMXMessageTypeImage])
         {
-            requiredField = event.content[@"url"];
+            MXJSONModelSetString(requiredField, event.content[@"url"]);
             if (requiredField.length)
             {
                 isSupportedAttachment = YES;
@@ -100,7 +102,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         else if ([msgtype isEqualToString:kMXMessageTypeVideo])
         {
-            requiredField = event.content[@"url"];
+            MXJSONModelSetString(requiredField, event.content[@"url"]);
             if (requiredField)
             {
                 isSupportedAttachment = YES;
@@ -112,7 +114,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         else if ([msgtype isEqualToString:kMXMessageTypeFile])
         {
-            requiredField = event.content[@"url"];
+            MXJSONModelSetString(requiredField, event.content[@"url"]);
             if (requiredField)
             {
                 isSupportedAttachment = YES;
@@ -130,11 +132,15 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
     NSString *senderDisplayName = [roomState memberName:event.sender];
     // Check whether this sender name is updated by the current event (This happens in case of new joined member)
-    NSString* membership = event.content[@"membership"];
-    if (membership && [membership isEqualToString:@"join"] && [event.content[@"displayname"] length])
+    NSString* membership;
+    MXJSONModelSetString(membership, event.content[@"membership"]);
+    NSString* displayname;
+    MXJSONModelSetString(displayname, event.content[@"displayname"]);
+    
+    if (membership && [membership isEqualToString:@"join"] && [displayname length])
     {
         // Use the actual display name
-        senderDisplayName = event.content[@"displayname"];
+        senderDisplayName = displayname;
     }
     return senderDisplayName;
 }
@@ -145,14 +151,18 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
     
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
-    NSString* membership = event.content[@"membership"];
-    if (membership && [membership isEqualToString:@"join"] && [event.content[@"avatar_url"] length])
+    NSString* membership;
+    MXJSONModelSetString(membership, event.content[@"membership"]);
+    NSString* avatarUrl;
+    MXJSONModelSetString(avatarUrl, event.content[@"avatar_url"]);
+    
+    if (membership && [membership isEqualToString:@"join"] && [avatarUrl length])
     {
         // We ignore non mxc avatar url
-        if ([event.content[@"avatar_url"] hasPrefix:kMXContentUriScheme])
+        if ([avatarUrl hasPrefix:kMXContentUriScheme])
         {
             // Use the actual avatar
-            senderAvatarUrl = event.content[@"avatar_url"];
+            senderAvatarUrl = avatarUrl;
         }
         else
         {
@@ -232,7 +242,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     {
         case MXEventTypeRoomName:
         {
-            NSString *roomName = event.content[@"name"];
+            NSString *roomName;
+            MXJSONModelSetString(roomName, event.content[@"name"]);
+            
             if (isRedacted)
             {
                 if (!redactedInfo)
@@ -255,7 +267,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeRoomTopic:
         {
-            NSString *roomTopic = event.content[@"topic"];
+            NSString *roomTopic;
+            MXJSONModelSetString(roomTopic, event.content[@"topic"]);
+            
             if (isRedacted)
             {
                 if (!redactedInfo)
@@ -282,11 +296,13 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             // Presently only change on membership, display name and avatar are supported
             
             // Retrieve membership
-            NSString* membership = event.content[@"membership"];
+            NSString* membership;
+            MXJSONModelSetString(membership, event.content[@"membership"]);
+            
             NSString *prevMembership = nil;
             if (event.prevContent)
             {
-                prevMembership = event.prevContent[@"membership"];
+                MXJSONModelSetString(prevMembership, event.prevContent[@"membership"]);
             }
             
             // Check whether the sender has updated his profile (the membership is then unchanged)
@@ -305,8 +321,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 else
                 {
                     // Check whether the display name has been changed
-                    NSString *displayname = event.content[@"displayname"];
-                    NSString *prevDisplayname =  event.prevContent[@"displayname"];
+                    NSString *displayname;
+                    MXJSONModelSetString(displayname, event.content[@"displayname"]);
+                    NSString *prevDisplayname;
+                    MXJSONModelSetString(prevDisplayname, event.prevContent[@"displayname"]);
+                    
                     if (!displayname.length)
                     {
                         displayname = nil;
@@ -332,8 +351,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     }
                     
                     // Check whether the avatar has been changed
-                    NSString *avatar = event.content[@"avatar_url"];
-                    NSString *prevAvatar = event.prevContent[@"avatar_url"];
+                    NSString *avatar;
+                    MXJSONModelSetString(avatar, event.content[@"avatar_url"]);
+                    NSString *prevAvatar;
+                    MXJSONModelSetString(prevAvatar, event.prevContent[@"avatar_url"]);
+                    
                     if (!avatar.length)
                     {
                         avatar = nil;
@@ -423,7 +445,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeRoomCreate:
         {
-            NSString *creatorId = event.content[@"creator"];
+            NSString *creatorId;
+            MXJSONModelSetString(creatorId, event.content[@"creator"]);
+            
             if (creatorId)
             {
                 displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState memberName:creatorId] : creatorId)];
@@ -437,7 +461,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeRoomJoinRules:
         {
-            NSString *joinRule = event.content[@"join_rule"];
+            NSString *joinRule;
+            MXJSONModelSetString(joinRule, event.content[@"join_rule"]);
+            
             if (joinRule)
             {
                 displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
@@ -452,7 +478,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         case MXEventTypeRoomPowerLevels:
         {
             displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
-            NSDictionary *users = event.content[@"users"];
+            NSDictionary *users;
+            MXJSONModelSetDictionary(users, event.content[@"users"]);
+            
             for (NSString *key in users.allKeys)
             {
                 displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, key, [users objectForKey:key]];
@@ -481,7 +509,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             
             displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_event_requirement"]];
-            NSDictionary *events = event.content[@"events"];
+            
+            NSDictionary *events;
+            MXJSONModelSetDictionary(events, event.content[@"events"]);
             for (NSString *key in events.allKeys)
             {
                 displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, key, [events objectForKey:key]];
@@ -504,7 +534,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeRoomAliases:
         {
-            NSArray *aliases = event.content[@"aliases"];
+            NSArray *aliases;
+            MXJSONModelSetArray(aliases, event.content[@"aliases"]);
             if (aliases)
             {
                 displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
@@ -530,7 +561,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             else
             {
-                NSString *msgtype = event.content[@"msgtype"];
+                NSString *msgtype;
+                MXJSONModelSetString(msgtype, event.content[@"msgtype"]);
+                
                 displayText = [event.content[@"body"] isKindOfClass:[NSString class]] ? event.content[@"body"] : nil;
                 
                 if ([msgtype isEqualToString:kMXMessageTypeEmote])
@@ -615,8 +648,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeRoomMessageFeedback:
         {
-            NSString *type = event.content[@"type"];
-            NSString *eventId = event.content[@"target_event_id"];
+            NSString *type;
+            MXJSONModelSetString(type, event.content[@"type"]);
+            NSString *eventId;
+            MXJSONModelSetString(eventId, event.content[@"target_event_id"]);
+            
             if (type && eventId)
             {
                 displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_feedback"], eventId, type];
