@@ -865,7 +865,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
 {
     // Check whether a join request is not already running
     if (!joinRoomRequest)

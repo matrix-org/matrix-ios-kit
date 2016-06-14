@@ -207,7 +207,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)joinRoom:(void(^)(BOOL succeed))completion;
 
 /**
- Join a room with a room id.
+ Join a room with a room id or an alias.
 
  This operation fails if the user has already joined the room, or if the data source is not ready,
  or if the access to the room is forbidden to the user.
@@ -218,7 +218,7 @@ extern NSString *const kCmdResetUserPowerLevel;
  @param completion the block to execute at the end of the operation.
  You may specify nil for this parameter.
  */
-- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
 
 /**
  Update view controller appearance when the user is about to leave the displayed room.
