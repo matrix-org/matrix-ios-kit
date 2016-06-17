@@ -66,6 +66,14 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     return self;
 }
 
+- (void)destroy
+{
+    cellDataArray = nil;
+    _eventFormatter = nil;
+    
+    [super destroy];
+}
+
 - (void)searchMessageText:(NSString *)text
 {
     if (![_searchText isEqualToString:text])

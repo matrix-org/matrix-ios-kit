@@ -25,7 +25,7 @@ limitations under the License.
  
  According to its dataSource configuration the search can be done all user's rooms or a set of rooms.
  */
-@interface MXKSearchViewController : MXKViewController <UITableViewDelegate, MXKDataSourceDelegate>
+@interface MXKSearchViewController : MXKViewController <UITableViewDelegate, MXKDataSourceDelegate, UISearchBarDelegate>
 
 @property (weak, nonatomic) IBOutlet UISearchBar *searchSearchBar;
 @property (weak, nonatomic) IBOutlet UITableView *searchTableView;
@@ -40,7 +40,7 @@ limitations under the License.
 @property (nonatomic, readonly) MXKSearchDataSource *dataSource;
 
 /**
- Enable the search in room members list according to the member's display name (YES by default).
+ Enable the search (YES by default).
  Set NO this property to disable this option and hide the related bar button.
  */
 @property (nonatomic) BOOL enableSearchButton;
@@ -63,14 +63,12 @@ limitations under the License.
 + (instancetype)searchViewController;
 
 /**
- Display the recents described in the provided data source.
+ Display the search results described in the provided data source.
  
- Note1: The provided data source will replace the current data source if any. The caller
- should dispose properly this data source if it is not used anymore.
- 
- Note2: You may provide here a MXKInterleavedRecentsDataSource instance to display interleaved recents.
+ Note: The provided data source replaces the current data source if any. The current
+ data source is released.
 
- @param listDataSource the data source providing the recents list.
+ @param searchDataSource the data source providing the search results.
  */
 - (void)displaySearch:(MXKSearchDataSource*)searchDataSource;
 

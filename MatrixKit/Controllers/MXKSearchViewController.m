@@ -170,8 +170,8 @@
     _searchTableView.delegate = nil;
     _searchTableView = nil;
 
-    [dataSource destroy];
     dataSource.delegate = nil;
+    [dataSource destroy];
     dataSource = nil;
     
     [super destroy];
@@ -181,8 +181,22 @@
 
 - (void)displaySearch:(MXKSearchDataSource*)searchDataSource
 {
+    // Cancel registration on existing dataSource if any
+    if (dataSource)
+    {
+        dataSource.delegate = nil;
+        
+        // Remove associated matrix sessions
+        [self removeMatrixSession:dataSource.mxSession];
+        
+        [dataSource destroy];
+    }
+
     dataSource = searchDataSource;
     dataSource.delegate = self;
+    
+    // Report the related matrix sessions at view controller level to update UI according to sessions state
+    [self addMatrixSession:searchDataSource.mxSession];
 
     if (_searchTableView)
     {
