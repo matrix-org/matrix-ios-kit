@@ -104,7 +104,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateLocalContactsNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onContactsRefresh:) name:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:nil];
     
-    if (!_contactTableViewCellClass) {
+    if (!_contactTableViewCellClass)
+    {
         // Set default table view cell class
         self.contactTableViewCellClass = [MXKContactTableCell class];
     }
@@ -156,7 +157,7 @@
     NSParameterAssert([contactTableViewCellClass isSubclassOfClass:MXKContactTableCell.class]);
     
     _contactTableViewCellClass = contactTableViewCellClass;
-    [self.tableView registerClass:contactTableViewCellClass forCellReuseIdentifier:[MXKContactTableCell defaultReuseIdentifier]];
+    [self.tableView registerClass:contactTableViewCellClass forCellReuseIdentifier:[contactTableViewCellClass defaultReuseIdentifier]];
 }
 
 - (void)setEnableSearch:(BOOL)enableSearch
@@ -337,7 +338,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:[MXKContactTableCell defaultReuseIdentifier] forIndexPath:indexPath];
+    MXKContactTableCell* cell = [tableView dequeueReusableCellWithIdentifier:[_contactTableViewCellClass defaultReuseIdentifier] forIndexPath:indexPath];
     cell.thumbnailDisplayBoxType = MXKTableViewCellDisplayBoxTypeCircle;
     
     MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);

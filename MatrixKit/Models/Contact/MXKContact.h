@@ -45,6 +45,11 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
 @property (nonatomic, readwrite) NSString *displayName;
 
 /**
+ The sorting display name built by trimming the symbols [_!~`@#$%^&*-+();:={}[],.<>?\/"'] from the display name.
+ */
+@property (nonatomic) NSString* sortingDisplayName;
+
+/**
  The contact thumbnail. Default size: 256 X 256 pixels
  */
 @property (nonatomic, copy, readonly) UIImage *thumbnail;
