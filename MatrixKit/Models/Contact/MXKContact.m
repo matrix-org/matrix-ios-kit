@@ -261,13 +261,15 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
 
 - (BOOL)hasPrefix:(NSString*)prefix
 {
+    prefix = [prefix lowercaseString];
+    
     // Check first display name
     if (_displayName.length)
     {
-        NSArray *components = [_displayName componentsSeparatedByString:@""];
+        NSArray *components = [_displayName componentsSeparatedByString:@" "];
         for (NSString *component in components)
         {
-            NSString *theComponent = [component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            NSString *theComponent = [[component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
             if ([theComponent hasPrefix:prefix])
             {
                 return YES;
@@ -280,7 +282,7 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     NSString *idPrefix = [NSString stringWithFormat:@"@%@", prefix];
     for (NSString* mxId in identifiers)
     {
-        if ([mxId hasPrefix:idPrefix])
+        if ([[mxId lowercaseString] hasPrefix:idPrefix])
         {
             return YES;
         }
@@ -289,7 +291,7 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     // Check email
     for (MXKEmail* email in _emailAddresses)
     {
-        if ([email.emailAddress hasPrefix:prefix])
+        if ([[email.emailAddress lowercaseString] hasPrefix:prefix])
         {
             return YES;
         }
