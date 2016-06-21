@@ -31,7 +31,6 @@
     id membersListener;
     
     // mask view while processing a request
-    UIView* pendingRequestMask;
     UIActivityIndicatorView * pendingMaskSpinnerView;
     
     // Observe left rooms
