@@ -22,10 +22,14 @@
 
 
 /**
- define the threshold which triggers a bubbles count flush.
+ Define the threshold which triggers a bubbles count flush.
  */
-
 #define MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD 30
+
+/**
+ Define the number of messages to preload around the initial event.
+ */
+#define MXKROOMDATASOURCE_PAGINATION_LIMIT_AROUND_INITIAL_EVENT 30
 
 /**
  List the supported pagination of the rendered room bubble cells
@@ -204,6 +208,12 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  The default value is 30.
  */
 @property (nonatomic) unsigned long maxBackgroundCachedBubblesCount;
+
+/**
+ The number of messages to preload around the initial event.
+ The default value is 30.
+ */
+@property (nonatomic) NSUInteger paginationLimitAroundInitialEvent;
 
 #pragma mark - Life cycle
 /**

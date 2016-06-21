@@ -194,7 +194,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     // Default pagination settings
     _paginationThreshold = 300;
-    _paginationLimit = 30;
+    self.paginationLimit = 30;
     
     // Save progress text input by default
     _saveProgressTextInput = YES;
@@ -983,6 +983,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
 
+- (void)setPaginationLimit:(NSUInteger)paginationLimit
+{
+    _paginationLimit = paginationLimit;
+
+    // Use the same value when loading messages around the initial event
+    roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
+}
+
 - (void)setRoomTitleViewClass:(Class)roomTitleViewClass
 {
     // Sanity check: accept only MXKRoomTitleView classes or sub-classes
@@ -1556,6 +1564,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 
                                    // Reload table
                                    [self reloadBubblesTable:YES];
+
+                                   if (roomDataSource.timeline.initialEventId)
+                                   {
+                                       // Center the table view to the cell that contains this event
+                                       NSInteger index = [roomDataSource indexOfCellDataWithEventId:roomDataSource.timeline.initialEventId];
+                                       [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+                                   }
 
                                }
                                failure:^(NSError *error) {
@@ -2692,6 +2707,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (scrollView == _bubblesTableView)
     {
+        BOOL wasScrollingToBottom = isScrollingToBottom;
+
         // Consider this callback to reset scrolling to bottom flag
         isScrollingToBottom = NO;
         
@@ -2713,7 +2730,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
             }
             // Enable forwards pagination when displaying non live timeline
-            else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
+            else if (!roomDataSource.isLive && !wasScrollingToBottom && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
             {
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
             }
