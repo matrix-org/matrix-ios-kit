@@ -113,9 +113,17 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
 - (UIImage*)thumbnailWithPreferedSize:(CGSize)size;
 
 /**
+ Tell whether a component of the contact's displayName, or one of his matrix id/email has the provided prefix.
+ 
+ @param prefix a non empty string.
+ @return YES when at least one matrix id, email or a component of the display name has this prefix.
+ */
+- (BOOL)hasPrefix:(NSString*)prefix;
+
+/**
  Check if the patterns can match with this contact
  */
-- (BOOL) matchedWithPatterns:(NSArray*)patterns;
+- (BOOL)matchedWithPatterns:(NSArray*)patterns;
 
 /**
  Internationalize the contact phonenumbers
