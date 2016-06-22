@@ -700,6 +700,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
+        roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
         
         // Report the matrix session at view controller level to update UI according to session state
         [self addMatrixSession:roomDataSource.mxSession];
@@ -981,6 +982,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView reloadData];
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
+}
+
+- (void)setPaginationLimit:(NSUInteger)paginationLimit
+{
+    _paginationLimit = paginationLimit;
+
+    // Use the same value when loading messages around the initial event
+    roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
 }
 
 - (void)setRoomTitleViewClass:(Class)roomTitleViewClass
@@ -1557,6 +1566,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                    // Reload table
                                    [self reloadBubblesTable:YES];
 
+                                   if (roomDataSource.timeline.initialEventId)
+                                   {
+                                       // Center the table view to the cell that contains this event
+                                       NSInteger index = [roomDataSource indexOfCellDataWithEventId:roomDataSource.timeline.initialEventId];
+
+                                       // Let iOS put the cell at the top of the table view
+                                       [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+
+                                       // And apply an offset to display the top of the targeted component at the center of the screen
+                                       MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)[_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+                                       CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
+
+                                       CGPoint contentOffset = _bubblesTableView.contentOffset;
+                                       contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
+                                       _bubblesTableView.contentOffset = contentOffset;
+                                   }
                                }
                                failure:^(NSError *error) {
 
@@ -2692,6 +2717,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (scrollView == _bubblesTableView)
     {
+        BOOL wasScrollingToBottom = isScrollingToBottom;
+
         // Consider this callback to reset scrolling to bottom flag
         isScrollingToBottom = NO;
         
@@ -2713,7 +2740,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
             }
             // Enable forwards pagination when displaying non live timeline
-            else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
+            else if (!roomDataSource.isLive && !wasScrollingToBottom && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
             {
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
             }
