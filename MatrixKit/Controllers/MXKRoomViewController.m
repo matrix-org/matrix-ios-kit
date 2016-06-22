@@ -46,11 +46,14 @@
 NSString *const kCmdChangeDisplayName = @"/nick";
 NSString *const kCmdEmote = @"/me";
 NSString *const kCmdJoinRoom = @"/join";
+NSString *const kCmdPartRoom = @"/part";
+NSString *const kCmdInviteUser = @"/invite";
 NSString *const kCmdKickUser = @"/kick";
 NSString *const kCmdBanUser = @"/ban";
 NSString *const kCmdUnbanUser = @"/unban";
 NSString *const kCmdSetUserPowerLevel = @"/op";
 NSString *const kCmdResetUserPowerLevel = @"/deop";
+NSString *const kCmdChangeRoomTopic = @"/topic";
 
 @interface MXKRoomViewController ()
 {
@@ -1324,6 +1327,82 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             inputToolbarView.placeholder = @"Usage: /join <room_alias>";
         }
     }
+    else if ([string hasPrefix:kCmdPartRoom])
+    {
+        // Leave this room or another one
+        NSString *roomId;
+        
+        NSString *roomIdOrAlias = [string substringFromIndex:kCmdPartRoom.length + 1];
+        // Remove white space from both ends
+        roomIdOrAlias = [roomIdOrAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+        // Check
+        if (roomIdOrAlias.length)
+        {
+            // Leave another room
+            if ([MXTools isMatrixRoomAlias:roomIdOrAlias])
+            {
+                // Convert the alias to a room ID
+                MXRoom *room = [roomDataSource.mxSession roomWithAlias:roomIdOrAlias];
+                if (room)
+                {
+                    roomId = room.roomId;
+                }
+            }
+            else if ([MXTools isMatrixRoomIdentifier:roomIdOrAlias])
+            {
+                roomId = roomIdOrAlias;
+            }
+        }
+        else
+        {
+            // Leave the current room
+            roomId = roomDataSource.roomId;
+        }
+
+        if (roomId.length)
+        {
+            [roomDataSource.mxSession leaveRoom:roomId success:^{
+
+            } failure:^(NSError *error) {
+
+                NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed: %@", roomIdOrAlias, roomId, error);
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
+            }];
+        }
+        else
+        {
+            // Display cmd usage in text input as placeholder
+            inputToolbarView.placeholder = @"Usage: /part [<room_alias>]";
+        }
+    }
+    else if ([string hasPrefix:kCmdChangeRoomTopic])
+    {
+        // Change topic
+        NSString *topic = [string substringFromIndex:kCmdChangeRoomTopic.length + 1];
+        // Remove white space from both ends
+        topic = [topic stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+        if (topic.length)
+        {
+            [roomDataSource.room setTopic:topic success:^{
+                
+            } failure:^(NSError *error) {
+
+                NSLog(@"[MXKRoomVC] Set topic failed: %@", error);
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+
+            }];
+        }
+        else
+        {
+            // Display cmd usage in text input as placeholder
+            inputToolbarView.placeholder = @"Usage: /topic <topic>";
+        }
+    }
     else
     {
         // Retrieve userId
@@ -1340,7 +1419,28 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             userId = nil;
         }
         
-        if ([cmd isEqualToString:kCmdKickUser])
+        if ([cmd isEqualToString:kCmdInviteUser])
+        {
+            if (userId)
+            {
+                // Invite the user
+                [roomDataSource.room inviteUser:userId success:^{
+
+                } failure:^(NSError *error) {
+
+                    NSLog(@"[MXKRoomVC] Invite user (%@) failed: %@", userId, error);
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+
+                }];
+            }
+            else
+            {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /invite <userId>";
+            }
+        }
+        else if ([cmd isEqualToString:kCmdKickUser])
         {
             if (userId)
             {
@@ -1470,13 +1570,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Reset user power level
                 [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
-                    
+
                 } failure:^(NSError *error) {
-                    
+
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                    
+
                 }];
             }
             else
