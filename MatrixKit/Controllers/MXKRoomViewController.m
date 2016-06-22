@@ -700,6 +700,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
+        roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
         
         // Report the matrix session at view controller level to update UI according to session state
         [self addMatrixSession:roomDataSource.mxSession];
