@@ -1570,14 +1570,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                        // Center the table view to the cell that contains this event
                                        NSInteger index = [roomDataSource indexOfCellDataWithEventId:roomDataSource.timeline.initialEventId];
 
-                                       MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)[_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-
-                                       CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
-
                                        // Let iOS put the cell at the top of the table view
                                        [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 
                                        // And apply an offset to display the top of the targeted component at the center of the screen
+                                       MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)[_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+                                       CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
+
                                        CGPoint contentOffset = _bubblesTableView.contentOffset;
                                        contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
                                        _bubblesTableView.contentOffset = contentOffset;
