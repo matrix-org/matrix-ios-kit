@@ -208,6 +208,28 @@ static BOOL _disableLongPressGestureOnEvent;
     }
 }
 
+- (CGFloat)topPositionOfEvent:(NSString*)eventId
+{
+    CGFloat topPositionOfEvent = 0;
+
+    // Retrieve the component that hosts the event
+    MXKRoomBubbleComponent *theComponent;
+    for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+    {
+        if ([component.event.eventId isEqualToString:eventId])
+        {
+            theComponent = component;
+            break;
+        }
+    }
+
+    if (theComponent)
+    {
+        topPositionOfEvent = theComponent.position.y + self.msgTextViewTopConstraint.constant;
+    }
+    return topPositionOfEvent;
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];

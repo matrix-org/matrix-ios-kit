@@ -1570,36 +1570,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                        // Center the table view to the cell that contains this event
                                        NSInteger index = [roomDataSource indexOfCellDataWithEventId:roomDataSource.timeline.initialEventId];
 
-                                       MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData *)[roomDataSource cellDataAtIndex:index];
-                                       [bubbleData prepareBubbleComponentsPosition];
+                                       MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)[_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
 
-                                       if (bubbleData.bubbleComponents.count == 1)
-                                       {
-                                           // Let iOS to center on the unique component of the cell
-                                           [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-                                       }
-                                       else
-                                       {
-                                           // Retrieve the component that hosts the event
-                                           NSUInteger componentIndex = 0;
-                                           MXKRoomBubbleComponent *theComponent;
-                                           for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
-                                           {
-                                               if ([component.event.eventId isEqualToString:roomDataSource.timeline.initialEventId])
-                                               {
-                                                   theComponent = component;
-                                                   break;
-                                               }
-                                           }
+                                       CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
 
-                                           // Put the cell at the top of the table view
-                                           [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                                       // Let iOS put the cell at the top of the table view
+                                       [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 
-                                           // And apply an offset to center the targeted component at the center of the screen
-                                           CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                           contentOffset.y += theComponent.position.y - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
-                                           _bubblesTableView.contentOffset = contentOffset;
-                                       }
+                                       // And apply an offset to display the top of the targeted component at the center of the screen
+                                       CGPoint contentOffset = _bubblesTableView.contentOffset;
+                                       contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
+                                       _bubblesTableView.contentOffset = contentOffset;
                                    }
                                }
                                failure:^(NSError *error) {
