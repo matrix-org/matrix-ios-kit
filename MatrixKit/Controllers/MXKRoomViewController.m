@@ -194,7 +194,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     // Default pagination settings
     _paginationThreshold = 300;
-    self.paginationLimit = 30;
+    _paginationLimit = 30;
     
     // Save progress text input by default
     _saveProgressTextInput = YES;
