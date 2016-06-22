@@ -23,19 +23,28 @@
 
 /**
  Posted when the matrix contact list is loaded or updated.
- The notification object is nil.
+ The notification object is:
+ - a contact Id when a matrix contact has been added/updated/removed.
+ or
+ - nil when all matrix contacts are concerned.
  */
 extern NSString *const kMXKContactManagerDidUpdateMatrixContactsNotification;
 
 /**
  Posted when the local contact list is loaded and updated.
- The notification object is nil.
+ The notification object is:
+ - a contact Id when a local contact has been added/updated/removed.
+ or
+ - nil when all local contacts are concerned.
  */
 extern NSString *const kMXKContactManagerDidUpdateLocalContactsNotification;
 
 /**
  Posted when local contact matrix ids is updated.
- The notification object is a contact Id or nil when all local contacts are concerned.
+ The notification object is:
+ - a contact Id when a local contact has been added/updated/removed.
+ or
+ - nil when all local contacts are concerned.
  */
 extern NSString *const kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification;
 

@@ -48,7 +48,6 @@
     NSArray* collationTitles;
     
     // mask view while processing a request
-    UIView* pendingRequestMask;
     UIActivityIndicatorView * pendingMaskSpinnerView;
 }
 
@@ -447,17 +446,22 @@
 
 - (void)onContactsRefresh:(NSNotification *)notif
 {
-    // Consider here only global notifications, ignore notifications related to a specific contact.
-    if (notif.object) {
-        return;
-    }
-    
     if ([notif.name isEqualToString:kMXKContactManagerDidUpdateMatrixContactsNotification])
     {
         [self updateSectionedMatrixContacts:YES];
     }
-    else
+    else if ([notif.name isEqualToString:kMXKContactManagerDidUpdateLocalContactsNotification])
     {
+        [self updateSectionedLocalContacts:YES];
+    }
+    else //if ([notif.name isEqualToString:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification])
+    {
+        // Consider here only global notifications, ignore notifications related to a specific contact.
+        if (notif.object)
+        {
+            return;
+        }
+        
         [self updateSectionedLocalContacts:YES];
     }
     

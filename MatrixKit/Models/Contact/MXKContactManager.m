@@ -850,7 +850,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         matrixContactByContactID = nil;
         [self cacheMatrixContacts];
     }
-    else  if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
+    else if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
     {
         if (!matrixContactByContactID)
         {
@@ -929,7 +929,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                         contact.displayName = userDisplayName;
                         
                         [self cacheMatrixContacts];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
                     }
                 }
                 else
@@ -941,7 +941,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                     [matrixContactByContactID setValue:contact forKey:contact.contactID];
                     
                     [self cacheMatrixContacts];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
                 }
                 
                 // Done
@@ -958,7 +958,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         [matrixContactByMatrixID removeObjectForKey:matrixId];
         
         [self cacheMatrixContacts];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
     }
 }
 
