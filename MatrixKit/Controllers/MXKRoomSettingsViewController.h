@@ -70,6 +70,6 @@
 /**
  Set the dedicated session and the room Id
  */
-- (void) initWithSession:(MXSession*)session andRoomId:(NSString*)roomId;
+- (void)initWithSession:(MXSession*)session andRoomId:(NSString*)roomId;
 
 @end

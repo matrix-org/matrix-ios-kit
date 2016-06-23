@@ -861,7 +861,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         NSMutableDictionary *updatedMatrixContactByMatrixID = [[NSMutableDictionary alloc] initWithCapacity:matrixContactByMatrixID.count];
         for (MXSession *mxSession in mxSessions)
         {
-            // Check for all users if a one-to-one room exist
+            // Check all existing users
             NSArray *mxUsers = mxSession.users;
 
             for (MXUser *user in mxUsers)

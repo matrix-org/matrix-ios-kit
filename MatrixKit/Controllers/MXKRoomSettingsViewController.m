@@ -22,6 +22,9 @@
 {    
     // the room events listener
     id roomListener;
+    
+    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+    id leaveRoomNotificationObserver;
 }
 @end
 
@@ -60,27 +63,37 @@
     if (mxRoom)
     {
         // Register a listener to handle messages related to room name, topic...
-        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias]
-                                             onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
-                        {
-                            // Consider only live events
-                            if (direction == MXTimelineDirectionForwards)
-                            {
-                                if (event.eventType != MXEventTypeRoomMember || !self.isEditing)
-                                {
-                                    [self refreshDisplay:mxRoom.state];
-                                }
-                            }
-                        }];
+        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
+            // Consider only live events
+            if (direction == MXTimelineDirectionForwards)
+            {
+                [self refreshDisplay:mxRoom.state];
+            }
+            
+        }];
+        
+        // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+        leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            // Check whether the user will leave the room related to the displayed participants
+            if (notif.object == _session)
+            {
+                NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
+                if (roomId && [roomId isEqualToString:_roomId])
+                {
+                    // We remove the current view controller.
+                    [self withdrawViewControllerAnimated:YES completion:nil];
+                }
+            }
+            
+        }];
         
         mxRoomState = mxRoom.state;
         [self checkIfSuperUser];
     }
     
     self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];
-    
-    UIBarButtonItem* saveButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(onSave:)];
-    self.navigationItem.rightBarButtonItem = saveButton;
 }
 
 #pragma mark - private methods
@@ -111,14 +124,11 @@
         [mxRoom.liveTimeline removeListener:roomListener];
         roomListener = nil;
     }
-}
-
-#pragma mark - Action
-
-- (IBAction) onSave:(id)sender
-{
-    // should check if there are some updates before closing ?
-    [self.navigationController popViewControllerAnimated:YES];
+    if (leaveRoomNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
+        leaveRoomNotificationObserver = nil;
+    }
 }
 
 #pragma mark - UITableViewDataSource
