@@ -19,6 +19,8 @@
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKTools.h"
+
 NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 @interface MXKEventFormatter ()
@@ -183,6 +185,18 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 #pragma mark - Events to strings conversion methods
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
 {
+    NSString *stringFromEvent;
+    NSAttributedString *attributedStringFromEvent = [self attributedStringFromEvent:event withRoomState:roomState error:error];
+    if (*error == MXKEventFormatterErrorNone)
+    {
+        stringFromEvent = attributedStringFromEvent.string;
+    }
+
+    return stringFromEvent;
+}
+
+- (NSAttributedString *)attributedStringFromEvent:(MXEvent *)event withRoomState:(MXRoomState *)roomState error:(MXKEventFormatterError *)error
+{
     // Check we can output the error
     NSParameterAssert(error);
     
@@ -228,7 +242,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     
     // Prepare returned description
     NSString *displayText = nil;
-    
+    NSMutableAttributedString *attributedDisplayText = nil;
+
     // Prepare display name for concerned users
     NSString *senderDisplayName;
     senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.sender;
@@ -563,84 +578,111 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             {
                 NSString *msgtype;
                 MXJSONModelSetString(msgtype, event.content[@"msgtype"]);
-                
-                displayText = [event.content[@"body"] isKindOfClass:[NSString class]] ? event.content[@"body"] : nil;
-                
-                if ([msgtype isEqualToString:kMXMessageTypeEmote])
+
+                NSString *body;
+                BOOL isHTML = NO;
+
+                // Use the HTML formatted string if provided
+                if ([event.content[@"format"] isEqualToString:@"org.matrix.custom.html"]
+                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
                 {
-                    displayText = [NSString stringWithFormat:@"* %@ %@", senderDisplayName, displayText];
+                    isHTML =YES;
+                    body = event.content[@"formatted_body"];
                 }
-                else if ([msgtype isEqualToString:kMXMessageTypeImage])
+                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
                 {
-                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_image_attachment"];
-                    // Check attachment validity
-                    if (![self isSupportedAttachment:event])
+                    body = event.content[@"body"];
+                }
+
+                if (body)
+                {
+                    if ([msgtype isEqualToString:kMXMessageTypeEmote])
                     {
-                        NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
-                        *error = MXKEventFormatterErrorUnsupported;
+                        body = [NSString stringWithFormat:@"* %@ %@", senderDisplayName, body];
                     }
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeAudio])
-                {
-                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_audio_attachment"];
-                    if (![self isSupportedAttachment:event])
+                    else if ([msgtype isEqualToString:kMXMessageTypeImage])
                     {
-                        NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
+                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_image_attachment"];
+                        // Check attachment validity
+                        if (![self isSupportedAttachment:event])
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            *error = MXKEventFormatterErrorUnsupported;
                         }
-                        else
-                        {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
-                        }
-                        *error = MXKEventFormatterErrorUnsupported;
                     }
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeVideo])
-                {
-                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_video_attachment"];
-                    if (![self isSupportedAttachment:event])
+                    else if ([msgtype isEqualToString:kMXMessageTypeAudio])
                     {
-                        NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
+                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_audio_attachment"];
+                        if (![self isSupportedAttachment:event])
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
+                            {
+                                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            }
+                            else
+                            {
+                                body = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
+                            }
+                            *error = MXKEventFormatterErrorUnsupported;
                         }
-                        else
-                        {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
-                        }
-                        *error = MXKEventFormatterErrorUnsupported;
                     }
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-                {
-                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_location_attachment"];
-                    if (![self isSupportedAttachment:event])
+                    else if ([msgtype isEqualToString:kMXMessageTypeVideo])
                     {
-                        NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
+                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_video_attachment"];
+                        if (![self isSupportedAttachment:event])
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
+                            {
+                                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            }
+                            else
+                            {
+                                body = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
+                            }
+                            *error = MXKEventFormatterErrorUnsupported;
                         }
-                        else
-                        {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
-                        }
-                        *error = MXKEventFormatterErrorUnsupported;
                     }
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeFile])
-                {
-                    displayText = displayText? displayText : [NSBundle mxk_localizedStringForKey:@"notice_file_attachment"];
-                    // Check attachment validity
-                    if (![self isSupportedAttachment:event])
+                    else if ([msgtype isEqualToString:kMXMessageTypeLocation])
                     {
-                        NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
-                        *error = MXKEventFormatterErrorUnsupported;
+                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_location_attachment"];
+                        if (![self isSupportedAttachment:event])
+                        {
+                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
+                            {
+                                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            }
+                            else
+                            {
+                                body = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
+                            }
+                            *error = MXKEventFormatterErrorUnsupported;
+                        }
+                    }
+                    else if ([msgtype isEqualToString:kMXMessageTypeFile])
+                    {
+                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_file_attachment"];
+                        // Check attachment validity
+                        if (![self isSupportedAttachment:event])
+                        {
+                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            *error = MXKEventFormatterErrorUnsupported;
+                        }
+                    }
+
+                    if (isHTML)
+                    {
+                        // Build the attributed string from the HTML string
+                        attributedDisplayText = [self renderHTMLString:body forEvent:event];
+                    }
+                    else
+                    {
+                        // Build the attributed string with the right font and color from the string
+                        attributedDisplayText = [self renderString:body forEvent:event];
                     }
                 }
             }
@@ -704,13 +746,18 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             *error = MXKEventFormatterErrorUnknownEventType;
             break;
     }
+
+    if (!attributedDisplayText && displayText)
+    {
+        // Build the attributed string with the right font and color from the string
+        attributedDisplayText = [self renderString:displayText forEvent:event];
+    }
     
-    if (!displayText)
+    if (!attributedDisplayText)
     {
         NSLog(@"[MXKEventFormatter] Warning: Unsupported event %@)", event.description);
         if (_settings.showUnsupportedEventsInRoomHistory)
         {
-            
             if (MXKEventFormatterErrorNone == *error)
             {
                 *error = MXKEventFormatterErrorUnsupported;
@@ -744,21 +791,24 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 // Return a short error description
                 displayText = shortDescription;
             }
+
+            // Build the attributed string with the right font and color from the string
+            attributedDisplayText = [self renderString:displayText forEvent:event];
         }
     }
     
-    return displayText;
+    return attributedDisplayText;
 }
 
 - (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix
 {
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
     NSRange wholeString;
-    
+
     if (prefix.length)
     {
         wholeString = NSMakeRange(prefix.length, str.length - prefix.length);
-        
+
         // Apply prefix attributes
         [str addAttribute:NSForegroundColorAttributeName value:_prefixTextColor range:NSMakeRange(0, prefix.length)];
         [str addAttribute:NSFontAttributeName value:_prefixTextFont range:NSMakeRange(0, prefix.length)];
@@ -767,7 +817,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     {
         wholeString = NSMakeRange(0, str.length);
     }
-    
+
     // Select the text color
     UIColor *textColor;
     switch (event.mxkState)
@@ -805,7 +855,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             break;
     }
-    
+
     // Select text font
     UIFont *font = _defaultTextFont;
     if (event.isState)
@@ -817,10 +867,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         font = _callNoticesTextFont;
     }
     else if (event.mxkState == MXKEventStateBing)
-    {        
+    {
         font = _bingTextFont;
     }
-    
+
     // Apply selected color and font
     [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
     [str addAttribute:NSFontAttributeName value:font range:wholeString];
@@ -856,8 +906,162 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
         }
     }
+    
+    return str;
+}
+
+#pragma mark - Conversion private methods
+
+/**
+ Apply the right font and the text color to a string.
+
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
+{
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:string];
+
+    NSRange wholeString = NSMakeRange(0, str.length);
+
+    // Apply color and font corresponding to the event state
+    [str addAttribute:NSForegroundColorAttributeName value:[self textColorForEvent:event] range:wholeString];
+    [str addAttribute:NSFontAttributeName value:[self fontForEvent:event] range:wholeString];
+
+    // If enabled, make links clicable
+    if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
+          [[_settings httpsLinkScheme] isEqualToString: @"https"]))
+    {
+        NSError *error = NULL;
+        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+
+        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
+        for (NSTextCheckingResult *match in matches)
+        {
+            NSRange matchRange = [match range];
+            NSURL *matchUrl = [match URL];
+            NSURLComponents *url = [[NSURLComponents new] initWithURL:matchUrl resolvingAgainstBaseURL:NO];
+
+            if (url)
+            {
+                if ([url.scheme isEqualToString: @"http"])
+                {
+                    url.scheme = [_settings httpLinkScheme];
+                }
+                else if ([url.scheme isEqualToString: @"https"])
+                {
+                    url.scheme = [_settings httpsLinkScheme];
+                }
+
+                if (url.URL)
+                {
+                    [str addAttribute:NSLinkAttributeName value:url.URL range:matchRange];
+                }
+            }
+        }
+    }
 
     return str;
+}
+
+/**
+ Render an html string into an attributed string.
+
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
+{
+    // Apply the css style that corresponds to the event state
+    // @TODO: use the defined font
+    NSString *cssStyledHtmlString = [NSString stringWithFormat:@"<span style=\"font-family: '-apple-system', 'HelveticaNeue'; color: #%X; font-size: %f; text-decoration: none\">%@</span>",
+            [MXKTools rgbValueWithColor:_defaultTextColor],
+            _defaultTextFont.pointSize,
+            htmlString];
+
+    NSDictionary *options = @{
+                              NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+                              NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)
+                              };
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithData:[cssStyledHtmlString dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL error:NULL];
+
+    // Do not underline links
+    [str addAttribute:NSUnderlineStyleAttributeName value:@(0) range:NSMakeRange(0, str.length)];
+
+    return str;
+}
+
+/**
+ Get the text color to use according to the event state.
+ 
+ @param event the event.
+ @return the text color.
+ */
+- (UIColor*)textColorForEvent:(MXEvent*)event
+{
+    // Select the text color
+    UIColor *textColor;
+    switch (event.mxkState)
+    {
+        case MXKEventStateDefault:
+            if (_isForSubtitle)
+            {
+                textColor = _subTitleTextColor;
+            }
+            else
+            {
+                textColor = _defaultTextColor;
+            }
+            break;
+        case MXKEventStateBing:
+            textColor = _bingTextColor;
+            break;
+        case MXKEventStateSending:
+            textColor = _sendingTextColor;
+            break;
+        case MXKEventStateSendingFailed:
+        case MXKEventStateUnsupported:
+        case MXKEventStateUnexpected:
+        case MXKEventStateUnknownType:
+            textColor = _errorTextColor;
+            break;
+        default:
+            if (_isForSubtitle)
+            {
+                textColor = _subTitleTextColor;
+            }
+            else
+            {
+                textColor = _defaultTextColor;
+            }
+            break;
+    }
+    return textColor;
+}
+
+/**
+ Get the text font to use according to the event state.
+
+ @param event the event.
+ @return the text font.
+ */
+- (UIFont*)fontForEvent:(MXEvent*)event
+{
+    // Select text font
+    UIFont *font = _defaultTextFont;
+    if (event.isState)
+    {
+        font = _stateEventTextFont;
+    }
+    else if (event.eventType == MXEventTypeCallInvite || event.eventType == MXEventTypeCallAnswer || event.eventType == MXEventTypeCallHangup)
+    {
+        font = _callNoticesTextFont;
+    }
+    else if (event.mxkState == MXKEventStateBing)
+    {
+        font = _bingTextFont;
+    }
+    return font;
 }
 
 

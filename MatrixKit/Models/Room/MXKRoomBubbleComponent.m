@@ -27,7 +27,8 @@
         // Build text component related to this event
         _eventFormatter = formatter;
         MXKEventFormatterError error;
-        NSString *eventString = [_eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
+
+        NSAttributedString *eventString = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
         if (eventString.length)
         {
             // Manage error
@@ -44,15 +45,15 @@
                     case MXKEventFormatterErrorUnknownEventType:
                         event.mxkState = MXKEventStateUnknownType;
                         break;
-                        
+
                     default:
                         break;
                 }
             }
-            
-            _textMessage = eventString;
-            _attributedTextMessage = nil;
-            
+
+            _textMessage = nil;
+            _attributedTextMessage = eventString;
+
             // Set date time
             if (event.originServerTs != kMXUndefinedTimestamp)
             {
@@ -98,14 +99,13 @@
     }
 }
 
-- (NSAttributedString*)attributedTextMessage
+- (NSString *)textMessage
 {
-    if (!_attributedTextMessage)
+    if (!_textMessage)
     {
-        _attributedTextMessage = [_eventFormatter attributedStringFromString:_textMessage forEvent:_event withPrefix:nil];
+        _textMessage = _attributedTextMessage.string;
     }
-    
-    return _attributedTextMessage;
+    return _textMessage;
 }
 
 @end

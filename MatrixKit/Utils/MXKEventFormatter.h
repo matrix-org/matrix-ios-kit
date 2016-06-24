@@ -133,6 +133,16 @@ typedef enum : NSUInteger {
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
+ Generate a displayable attributed string representating the event.
+
+ @param event the event to format.
+ @param roomState the room state right before the event.
+ @param error the error code. In case of formatting error, the formatter may return non nil string as a proposal.
+ @return the attributed string for the event.
+ */
+- (NSAttributedString*)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
+
+/**
  Return attributed string for the displayable string representing the event.
  
  @param text pre-computed text representation of the event
