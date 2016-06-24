@@ -56,6 +56,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         _bingTextFont = [UIFont systemFontOfSize:14];
         _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
         _callNoticesTextFont = [UIFont italicSystemFontOfSize:14];
+
+        // -apple-system is available from iOS9 and corresponds to the system font.
+        // Previous iOS versions will fallback to HelveticaNeue
+        _defaultCSSFontFamily = _prefixCSSFontFamily = _bingCSSFontFamily =
+        _stateEventCSSFontFamily = _callNoticesCSSFontFamily = @"'-apple-system', 'HelveticaNeue'";
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
@@ -973,10 +978,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
     // Apply the css style that corresponds to the event state
-    // @TODO: use the defined font
-    NSString *cssStyledHtmlString = [NSString stringWithFormat:@"<span style=\"font-family: '-apple-system', 'HelveticaNeue'; color: #%X; font-size: %f; text-decoration: none\">%@</span>",
-            [MXKTools rgbValueWithColor:_defaultTextColor],
-            _defaultTextFont.pointSize,
+    NSString *cssStyledHtmlString = [NSString stringWithFormat:@"<span style=\"font-family: %@; color: #%X; font-size: %f; text-decoration: none\">%@</span>",
+            [self cssFontFamilyForEvent:event],
+            [MXKTools rgbValueWithColor:[self textColorForEvent:event]],
+            [self fontForEvent:event].pointSize,
             htmlString];
 
     NSDictionary *options = @{
@@ -1062,6 +1067,31 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         font = _bingTextFont;
     }
     return font;
+}
+
+/**
+ Get the css font family to use according to the event state.
+
+ @param event the event.
+ @return the css font family.
+ */
+- (NSString*)cssFontFamilyForEvent:(MXEvent*)event
+{
+    // Select text font
+    NSString *cssFontFamily = _defaultCSSFontFamily;
+    if (event.isState)
+    {
+        cssFontFamily = _stateEventCSSFontFamily;
+    }
+    else if (event.eventType == MXEventTypeCallInvite || event.eventType == MXEventTypeCallAnswer || event.eventType == MXEventTypeCallHangup)
+    {
+        cssFontFamily = _callNoticesCSSFontFamily;
+    }
+    else if (event.mxkState == MXKEventStateBing)
+    {
+        cssFontFamily = _bingCSSFontFamily;
+    }
+    return cssFontFamily;
 }
 
 

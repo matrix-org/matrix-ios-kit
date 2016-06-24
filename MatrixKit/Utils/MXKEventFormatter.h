@@ -250,10 +250,22 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIFont *defaultTextFont;
 
 /**
+ The CSS font family corresponding to defaultTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *defaultCSSFontFamily;
+
+/**
  Font applied on the event description prefix used to display for example the message sender name.
  Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *prefixTextFont;
+
+/**
+ The CSS font family corresponding to prefixTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *prefixCSSFontFamily;
 
 /**
  Text font used when the event must be bing to the end user. This happens when the event
@@ -263,15 +275,33 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIFont *bingTextFont;
 
 /**
+ The CSS font family corresponding to bingTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *bingCSSFontFamily;
+
+/**
  Text font used when the event is a state event.
- Default is italic SFUIText-Regular 14.
+ Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *stateEventTextFont;
 
 /**
- Text font used to display call notices (invite, answer, hangup.
- Default is italic SFUIText-Regular 14.
+ The CSS font family corresponding to stateEventTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *stateEventCSSFontFamily;
+
+/**
+ Text font used to display call notices (invite, answer, hangup).
+ Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *callNoticesTextFont;
+
+/**
+ The CSS font family corresponding to callNoticesTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *callNoticesCSSFontFamily;
 
 @end
