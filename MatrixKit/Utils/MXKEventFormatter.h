@@ -143,7 +143,7 @@ typedef enum : NSUInteger {
 - (NSAttributedString*)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
- Render a string into an attributed string with the font and the text color
+ Render a random string into an attributed string with the font and the text color
  that correspond to the passed event.
 
  @param string the string to render.
@@ -153,14 +153,14 @@ typedef enum : NSUInteger {
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event;
 
 /**
- Render an html string into an attributed string with the font and the text color
+ Render a random html string into an attributed string with the font and the text color
  that correspond to the passed event.
 
  @param htmlString the HTLM string to render.
  @param event the event associated to the string.
  @return an attributed string.
  */
-- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event;
 
 #pragma mark - Fake event objects creation
 
@@ -292,7 +292,7 @@ typedef enum : NSUInteger {
 
 /**
  Text font used when the event is a state event.
- Default is SFUIText-Regular 14.
+ Default is italic SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *stateEventTextFont;
 

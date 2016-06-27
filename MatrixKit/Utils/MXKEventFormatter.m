@@ -686,7 +686,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     }
                     else
                     {
-                        // Build the attributed string with the right font and color from the string
+                        // Build the attributed string with the right font and color for the event
                         attributedDisplayText = [self renderString:body forEvent:event];
                     }
                 }
@@ -754,7 +754,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
     if (!attributedDisplayText && displayText)
     {
-        // Build the attributed string with the right font and color from the string
+        // Build the attributed string with the right font and color for the event
         attributedDisplayText = [self renderString:displayText forEvent:event];
     }
     
@@ -797,7 +797,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 displayText = shortDescription;
             }
 
-            // Build the attributed string with the right font and color from the string
+            // Build the attributed string with the right font for the event
             attributedDisplayText = [self renderString:displayText forEvent:event];
         }
     }
