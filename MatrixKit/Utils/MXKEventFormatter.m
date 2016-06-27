@@ -588,7 +588,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 BOOL isHTML = NO;
 
                 // Use the HTML formatted string if provided
-                if ([event.content[@"format"] isEqualToString:@"org.matrix.custom.html"]
+                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
                     && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
                 {
                     isHTML =YES;
