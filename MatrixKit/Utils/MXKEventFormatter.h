@@ -162,6 +162,16 @@ typedef enum : NSUInteger {
  */
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event;
 
+#pragma mark - Conversion tools
+
+/**
+ Convert a Markdown string to HTML.
+ 
+ @param markdownString the string to convert.
+ @return an HTML formatted string.
+ */
+- (NSString*)htmlStringFromMarkdownString:(NSString*)markdownString;
+
 #pragma mark - Fake event objects creation
 
 /**

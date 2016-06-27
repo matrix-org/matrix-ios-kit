@@ -26,5 +26,6 @@ Pod::Spec.new do |s|
   s.dependency 'MatrixSDK', '~> 0.6.8'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.8.7'
+  s.dependency 'GHMarkdownParser', '~> 0.1.2'
 
 end

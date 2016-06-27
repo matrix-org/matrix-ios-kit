@@ -1167,13 +1167,31 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Remove "/me " string
         text = [text substringFromIndex:4];
     }
-    
+
     // Prepare the message content
-    NSDictionary *msgContent = @{
-                                 @"msgtype": msgType,
-                                 @"body": text
-                                 };
-    
+    NSDictionary *msgContent;
+
+    // Did user use Markdown text?
+    NSString *html = [_eventFormatter htmlStringFromMarkdownString:text];
+    if ([html isEqualToString:text])
+    {
+        // This is a simple text message
+        msgContent = @{
+                       @"msgtype": msgType,
+                       @"body": text
+                       };
+    }
+    else
+    {
+        // Send the Markdown string as an HTML formatted string
+        msgContent = @{
+                       @"msgtype": msgType,
+                       @"body": text,
+                       @"formatted_body": html,
+                       @"format": kMXRoomMessageFormatHTML
+                       };
+    }
+
     [self sendMessageOfType:msgType content:msgContent success:success failure:failure];
 }
 
