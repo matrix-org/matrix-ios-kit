@@ -57,7 +57,6 @@
 
 - (void)dealloc
 {
-    [self destroy];
 }
 
 - (void)refreshDisplay
