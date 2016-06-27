@@ -20,8 +20,8 @@
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MXKRoomActivitiesView class])
-                          bundle:[NSBundle bundleForClass:[MXKRoomActivitiesView class]]];
+    // No 'MXKRoomActivitiesView.xib' has been defined yet
+    return nil;
 }
 
 + (instancetype)roomActivitiesView
