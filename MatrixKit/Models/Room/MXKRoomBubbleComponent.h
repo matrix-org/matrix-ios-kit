@@ -66,10 +66,9 @@
 /**
  Update the event because its mxkState changed or it is has been redacted.
 
- @see [MXKRoomBubbleCellDataStoring updateWithEvent:].
-
  @param event the new event data.
+ @param roomState the up-to-date state of the room.
  */
-- (void)updateWithEvent:(MXEvent*)event;
+- (void)updateWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState;
 
 @end
