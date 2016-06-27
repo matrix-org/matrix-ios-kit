@@ -143,14 +143,24 @@ typedef enum : NSUInteger {
 - (NSAttributedString*)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
- Return attributed string for the displayable string representing the event.
- 
- @param text pre-computed text representation of the event
- @param event the event.
- @param prefix this string defines the potential prefix on which the prefix attributes (font and color) are applied (used to customized message sender name if any).
- @return NSAttributedString for displaying the event.
+ Render a string into an attributed string with the font and the text color
+ that correspond to the passed event.
+
+ @param string the string to render.
+ @param event the event associated to the string.
+ @return an attributed string.
  */
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix;
+- (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event;
+
+/**
+ Render an html string into an attributed string with the font and the text color
+ that correspond to the passed event.
+
+ @param htmlString the HTLM string to render.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 
 #pragma mark - Fake event objects creation
 

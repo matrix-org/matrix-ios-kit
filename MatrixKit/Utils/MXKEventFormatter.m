@@ -805,124 +805,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     return attributedDisplayText;
 }
 
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix
-{
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString: text];
-    NSRange wholeString;
-
-    if (prefix.length)
-    {
-        wholeString = NSMakeRange(prefix.length, str.length - prefix.length);
-
-        // Apply prefix attributes
-        [str addAttribute:NSForegroundColorAttributeName value:_prefixTextColor range:NSMakeRange(0, prefix.length)];
-        [str addAttribute:NSFontAttributeName value:_prefixTextFont range:NSMakeRange(0, prefix.length)];
-    }
-    else
-    {
-        wholeString = NSMakeRange(0, str.length);
-    }
-
-    // Select the text color
-    UIColor *textColor;
-    switch (event.mxkState)
-    {
-        case MXKEventStateDefault:
-            if (_isForSubtitle)
-            {
-                textColor = _subTitleTextColor;
-            }
-            else
-            {
-                textColor = _defaultTextColor;
-            }
-            break;
-        case MXKEventStateBing:
-            textColor = _bingTextColor;
-            break;
-        case MXKEventStateSending:
-            textColor = _sendingTextColor;
-            break;
-        case MXKEventStateSendingFailed:
-        case MXKEventStateUnsupported:
-        case MXKEventStateUnexpected:
-        case MXKEventStateUnknownType:
-            textColor = _errorTextColor;
-            break;
-        default:
-            if (_isForSubtitle)
-            {
-                textColor = _subTitleTextColor;
-            }
-            else
-            {
-                textColor = _defaultTextColor;
-            }
-            break;
-    }
-
-    // Select text font
-    UIFont *font = _defaultTextFont;
-    if (event.isState)
-    {
-        font = _stateEventTextFont;
-    }
-    else if (event.eventType == MXEventTypeCallInvite || event.eventType == MXEventTypeCallAnswer || event.eventType == MXEventTypeCallHangup)
-    {
-        font = _callNoticesTextFont;
-    }
-    else if (event.mxkState == MXKEventStateBing)
-    {
-        font = _bingTextFont;
-    }
-
-    // Apply selected color and font
-    [str addAttribute:NSForegroundColorAttributeName value:textColor range:wholeString];
-    [str addAttribute:NSFontAttributeName value:font range:wholeString];
-
-    if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
-          [[_settings httpsLinkScheme] isEqualToString: @"https"]))
-    {
-        NSError *error = NULL;
-        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-
-        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
-        for (NSTextCheckingResult *match in matches)
-        {
-            NSRange matchRange = [match range];
-            NSURL *matchUrl = [match URL];
-            NSURLComponents *url = [[NSURLComponents new] initWithURL:matchUrl resolvingAgainstBaseURL:NO];
-
-            if (url)
-            {
-                if ([url.scheme isEqualToString: @"http"])
-                {
-                    url.scheme = [_settings httpLinkScheme];
-                }
-                else if ([url.scheme isEqualToString: @"https"])
-                {
-                    url.scheme = [_settings httpsLinkScheme];
-                }
-
-                if (url.URL)
-                {
-                    [str addAttribute:NSLinkAttributeName value:url.URL range:matchRange];
-                }
-            }
-        }
-    }
-    
-    return str;
-}
-
-#pragma mark - Conversion private methods
-
-/**
- Apply the right font and the text color to a string.
-
- @param event the event associated to the string.
- @return an attributed string.
- */
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
 {
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:string];
@@ -969,12 +851,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     return str;
 }
 
-/**
- Render an html string into an attributed string.
-
- @param event the event associated to the string.
- @return an attributed string.
- */
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
     // Apply the css style that corresponds to the event state
@@ -995,6 +871,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
     return str;
 }
+
+#pragma mark - Conversion private methods
 
 /**
  Get the text color to use according to the event state.
@@ -1093,7 +971,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     }
     return cssFontFamily;
 }
-
 
 #pragma mark - Fake event objects creation
 

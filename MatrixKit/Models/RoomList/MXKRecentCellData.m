@@ -116,7 +116,7 @@
         }
         
         // Compute the attribute text message
-        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent withPrefix:prefix];
+        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage forEvent:lastEvent];
     }
 }
 
