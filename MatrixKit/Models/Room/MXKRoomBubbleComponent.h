@@ -72,3 +72,4 @@
 - (void)updateWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState;
 
 @end
+
