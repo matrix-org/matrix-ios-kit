@@ -23,6 +23,7 @@ pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :br
 pod 'libPhoneNumber-iOS', '~> 0.8.7'
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.2.0'
+pod 'GHMarkdownParser', '~> 0.1.2'
 
 end
 

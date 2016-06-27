@@ -21,6 +21,8 @@
 
 #import "MXKTools.h"
 
+#import "GHMarkdownParser.h"
+
 NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 @interface MXKEventFormatter ()
@@ -29,6 +31,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
      The matrix session. Used to get contextual data.
      */
     MXSession *mxSession;
+
+    /**
+     The Markdown to HTML parser.
+     */
+    GHMarkdownParser *markdownParser;
 }
 @end
 
@@ -42,6 +49,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         mxSession = matrixSession;
         
         [self initDateTimeFormatters];
+
+        markdownParser = [[GHMarkdownParser alloc] init];
+        markdownParser.options = kGHMarkdownAutoLink;
+        markdownParser.githubFlavored = YES;        // This is the Markdown flavor we use in Matrix apps
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -970,6 +981,25 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         cssFontFamily = _bingCSSFontFamily;
     }
     return cssFontFamily;
+}
+
+#pragma mark - Conversion tools
+
+- (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
+{
+    NSString *htmlString = [markdownParser HTMLStringFromMarkdownString:markdownString];
+
+    // Strip start and end <p> tags else you get 'orrible spacing
+    if ([htmlString hasPrefix:@"<p>"])
+    {
+        htmlString = [htmlString substringFromIndex:3];
+    }
+    if ([htmlString hasSuffix:@"</p>"])
+    {
+        htmlString = [htmlString substringToIndex:htmlString.length - 4];
+    }
+
+    return htmlString;
 }
 
 #pragma mark - Fake event objects creation
