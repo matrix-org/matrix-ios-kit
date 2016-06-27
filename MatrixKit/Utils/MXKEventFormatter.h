@@ -133,14 +133,34 @@ typedef enum : NSUInteger {
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
- Return attributed string for the displayable string representing the event.
- 
- @param text pre-computed text representation of the event
- @param event the event.
- @param prefix this string defines the potential prefix on which the prefix attributes (font and color) are applied (used to customized message sender name if any).
- @return NSAttributedString for displaying the event.
+ Generate a displayable attributed string representating the event.
+
+ @param event the event to format.
+ @param roomState the room state right before the event.
+ @param error the error code. In case of formatting error, the formatter may return non nil string as a proposal.
+ @return the attributed string for the event.
  */
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix;
+- (NSAttributedString*)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
+
+/**
+ Render a random string into an attributed string with the font and the text color
+ that correspond to the passed event.
+
+ @param string the string to render.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event;
+
+/**
+ Render a random html string into an attributed string with the font and the text color
+ that correspond to the passed event.
+
+ @param htmlString the HTLM string to render.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event;
 
 #pragma mark - Fake event objects creation
 
@@ -240,10 +260,22 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIFont *defaultTextFont;
 
 /**
+ The CSS font family corresponding to defaultTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *defaultCSSFontFamily;
+
+/**
  Font applied on the event description prefix used to display for example the message sender name.
  Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *prefixTextFont;
+
+/**
+ The CSS font family corresponding to prefixTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *prefixCSSFontFamily;
 
 /**
  Text font used when the event must be bing to the end user. This happens when the event
@@ -253,15 +285,33 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIFont *bingTextFont;
 
 /**
+ The CSS font family corresponding to bingTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *bingCSSFontFamily;
+
+/**
  Text font used when the event is a state event.
  Default is italic SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *stateEventTextFont;
 
 /**
- Text font used to display call notices (invite, answer, hangup.
- Default is italic SFUIText-Regular 14.
+ The CSS font family corresponding to stateEventTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *stateEventCSSFontFamily;
+
+/**
+ Text font used to display call notices (invite, answer, hangup).
+ Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *callNoticesTextFont;
+
+/**
+ The CSS font family corresponding to callNoticesTextFont.
+ Default is "'-apple-system', 'HelveticaNeue'"
+ */
+@property (nonatomic) NSString *callNoticesCSSFontFamily;
 
 @end
