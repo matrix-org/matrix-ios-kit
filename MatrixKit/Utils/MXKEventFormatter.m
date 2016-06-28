@@ -21,6 +21,7 @@
 
 #import "MXKTools.h"
 
+#import "DTCoreText.h"
 #import "GHMarkdownParser.h"
 
 NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
@@ -67,11 +68,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         _bingTextFont = [UIFont systemFontOfSize:14];
         _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
         _callNoticesTextFont = [UIFont italicSystemFontOfSize:14];
-
-        // -apple-system is available from iOS9 and corresponds to the system font.
-        // Previous iOS versions will fallback to HelveticaNeue
-        _defaultCSSFontFamily = _prefixCSSFontFamily = _bingCSSFontFamily =
-        _stateEventCSSFontFamily = _callNoticesCSSFontFamily = @"'-apple-system', 'HelveticaNeue'";
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
@@ -599,15 +595,13 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 BOOL isHTML = NO;
 
                 // Use the HTML formatted string if provided
-
-// FIXME: Disable HTML rendering as NSAttributedString block the UI thread
-//                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
-//                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
-//                {
-//                    isHTML =YES;
-//                    body = event.content[@"formatted_body"];
-//                }
-//                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
+                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
+                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
+                {
+                    isHTML =YES;
+                    body = event.content[@"formatted_body"];
+                }
+                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
                 {
                     body = event.content[@"body"];
                 }
@@ -867,22 +861,21 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
     // Apply the css style that corresponds to the event state
-    NSString *cssStyledHtmlString = [NSString stringWithFormat:@"<span style=\"font-family: %@; color: #%X; font-size: %f; text-decoration: none\">%@</span>",
-            [self cssFontFamilyForEvent:event],
-            [MXKTools rgbValueWithColor:[self textColorForEvent:event]],
-            [self fontForEvent:event].pointSize,
-            htmlString];
-
+    UIFont *font = [self fontForEvent:event];
     NSDictionary *options = @{
-                              NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
-                              NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)
+                              DTUseiOS6Attributes: @(YES),              // Enable it to be able to display the attributed string in a UITextView
+                              DTDefaultFontFamily: font.familyName,
+                              DTDefaultFontName: font.fontName,
+                              DTDefaultFontSize: @(font.pointSize),
+                              DTDefaultTextColor: [self textColorForEvent:event],
+                              DTDefaultLinkDecoration: @(NO),
                               };
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithData:[cssStyledHtmlString dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL error:NULL];
 
-    // Do not underline links
-    [str addAttribute:NSUnderlineStyleAttributeName value:@(0) range:NSMakeRange(0, str.length)];
-
-    return str;
+    // Do not use the default HTML renderer of NSAttributedString because this method
+    // runs on the UI thread which we want to avoid because renderHTMLString is called
+    // most of the time from a background thread.
+    // Use DTCoreText HTML renderer instead.
+    return [[NSAttributedString alloc] initWithHTMLData:[htmlString dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 }
 
 #pragma mark - Conversion private methods
@@ -958,31 +951,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         font = _bingTextFont;
     }
     return font;
-}
-
-/**
- Get the css font family to use according to the event state.
-
- @param event the event.
- @return the css font family.
- */
-- (NSString*)cssFontFamilyForEvent:(MXEvent*)event
-{
-    // Select text font
-    NSString *cssFontFamily = _defaultCSSFontFamily;
-    if (event.isState)
-    {
-        cssFontFamily = _stateEventCSSFontFamily;
-    }
-    else if (event.eventType == MXEventTypeCallInvite || event.eventType == MXEventTypeCallAnswer || event.eventType == MXEventTypeCallHangup)
-    {
-        cssFontFamily = _callNoticesCSSFontFamily;
-    }
-    else if (event.mxkState == MXKEventStateBing)
-    {
-        cssFontFamily = _bingCSSFontFamily;
-    }
-    return cssFontFamily;
 }
 
 #pragma mark - Conversion tools
