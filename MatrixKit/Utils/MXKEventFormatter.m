@@ -887,6 +887,31 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     return [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 }
 
+- (NSAttributedString *)renderString:(NSString *)string withPrefix:(NSString *)prefix forEvent:(MXEvent *)event
+{
+    NSMutableAttributedString *str;
+
+    if (prefix)
+    {
+        str = [[NSMutableAttributedString alloc] initWithString:prefix];
+
+        // Apply the prefix font and color on the prefix
+        NSRange prefixRange = NSMakeRange(0, prefix.length);
+        [str addAttribute:NSForegroundColorAttributeName value:_prefixTextColor range:prefixRange];
+        [str addAttribute:NSFontAttributeName value:_prefixTextFont range:prefixRange];
+
+        // And append the string rendered according to event state
+        [str appendAttributedString:[self renderString:string forEvent:event]];
+    }
+    else
+    {
+        // Use the legacy method
+        str = [self renderString:string forEvent:event];
+    }
+
+    return str;
+}
+
 #pragma mark - Conversion private methods
 
 /**

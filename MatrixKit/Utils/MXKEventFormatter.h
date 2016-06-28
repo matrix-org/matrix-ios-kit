@@ -162,6 +162,17 @@ typedef enum : NSUInteger {
  */
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event;
 
+/**
+ Same as [self renderString:forEvent:] but add a prefix.
+ The prefix will be rendered with 'prefixTextFont' and 'prefixTextColor'.
+ 
+ @param string the string to render.
+ @param prefix the prefix to add.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderString:(NSString*)string withPrefix:(NSString*)prefix forEvent:(MXEvent*)event;
+
 #pragma mark - Conversion tools
 
 /**
