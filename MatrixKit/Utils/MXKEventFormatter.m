@@ -871,6 +871,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                               DTDefaultLinkDecoration: @(NO),
                               };
 
+    // Do not use the default HTML renderer of NSAttributedString because this method
+    // runs on the UI thread which we want to avoid because renderHTMLString is called
+    // most of the time from a background thread.
+    // Use DTCoreText HTML renderer instead.
     return [[NSAttributedString alloc] initWithHTMLData:[htmlString dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 }
 
