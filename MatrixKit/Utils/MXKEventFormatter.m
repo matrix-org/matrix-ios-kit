@@ -599,13 +599,15 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 BOOL isHTML = NO;
 
                 // Use the HTML formatted string if provided
-                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
-                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
-                {
-                    isHTML =YES;
-                    body = event.content[@"formatted_body"];
-                }
-                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
+
+// FIXME: Disable HTML rendering as NSAttributedString block the UI thread
+//                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
+//                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
+//                {
+//                    isHTML =YES;
+//                    body = event.content[@"formatted_body"];
+//                }
+//                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
                 {
                     body = event.content[@"body"];
                 }
