@@ -860,6 +860,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
+    // Do some sanitisation before rendering the string
+    // FIXME: Find a way to manage an HTML tags whitelist
+
+    // Image tag is not part of this whitelist
+    NSString *html = [htmlString stringByReplacingOccurrencesOfString:@"<img[^>]*>" withString:@"" options:NSRegularExpressionSearch | NSCaseInsensitiveSearch range:NSMakeRange(0, htmlString.length)];
+
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
     NSDictionary *options = @{
@@ -875,7 +881,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // runs on the UI thread which we want to avoid because renderHTMLString is called
     // most of the time from a background thread.
     // Use DTCoreText HTML renderer instead.
-    return [[NSAttributedString alloc] initWithHTMLData:[htmlString dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
+    // Using DTCoreText, which renders static string, helps to avoid code injection attacks
+    // that could happen with the default HTML renderer of NSAttributedString which is a
+    // webview.
+    return [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 }
 
 #pragma mark - Conversion private methods
