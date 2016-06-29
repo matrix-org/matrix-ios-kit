@@ -52,7 +52,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         [self initDateTimeFormatters];
 
         markdownParser = [[GHMarkdownParser alloc] init];
-        markdownParser.options = kGHMarkdownAutoLink;
+        markdownParser.options = kGHMarkdownAutoLink | kGHMarkdownNoSmartQuotes;
         markdownParser.githubFlavored = YES;        // This is the Markdown flavor we use in Matrix apps
 
         // Use the same list as matrix-react-sdk ( https://github.com/matrix-org/matrix-react-sdk/blob/24223ae2b69debb33fa22fcda5aeba6fa93c93eb/src/HtmlUtils.js#L25 )
