@@ -173,6 +173,14 @@ typedef enum : NSUInteger {
  */
 - (NSAttributedString*)renderString:(NSString*)string withPrefix:(NSString*)prefix forEvent:(MXEvent*)event;
 
+/**
+ Sanitise an HTML string to keep permitted HTML tags defined by 'allowedHTMLTags'.
+
+ @param htmlString the HTML code to sanitise.
+ @return a sanitised HTML string.
+ */
+- (NSString*)sanitiseHTML:(NSString*)htmlString;
+
 #pragma mark - Conversion tools
 
 /**
@@ -237,6 +245,11 @@ typedef enum : NSUInteger {
 
 
 # pragma mark - Customisation
+/**
+ The list of allowed HTML tags in rendered attributed strings.
+ */
+@property (nonatomic) NSArray<NSString*> *allowedHTMLTags;
+
 /**
  Default color used to display text content of event.
  Default is [UIColor blackColor].
