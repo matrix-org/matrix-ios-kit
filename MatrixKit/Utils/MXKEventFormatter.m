@@ -891,12 +891,39 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // Using DTCoreText, which renders static string, helps to avoid code injection attacks
     // that could happen with the default HTML renderer of NSAttributedString which is a
     // webview.
+    NSAttributedString *str = [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 
     // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
-    // To avoid this, surround html with <span>
-    html = [NSString stringWithFormat:@"<span>%@</span>", html];
+    // or after a blockquote section.
+    // Trim trailing newlines
+    return [self removeTrailingNewlines:str];
 
-    return [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
+}
+
+- (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
+{
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+
+    // Trim trailing whitespace and newlines in the string content
+    while ([str.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
+    {
+        [str deleteCharactersInRange:NSMakeRange(str.length - 1, 1)];
+    }
+
+    // New lines may have also been introduced by the paragraph style
+    // Make sure the last paragraph style has no spacing
+    [str enumerateAttributesInRange:NSMakeRange(0, str.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        if (attrs[NSParagraphStyleAttributeName])
+        {
+            NSMutableParagraphStyle *paragraphStyle = attrs[NSParagraphStyleAttributeName];
+            paragraphStyle.paragraphSpacing = 0;
+        }
+
+        // Check only the last paragraph
+        *stop = YES;
+    }];
+
+    return str;
 }
 
 - (NSAttributedString *)renderString:(NSString *)string withPrefix:(NSString *)prefix forEvent:(MXEvent *)event
