@@ -264,7 +264,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     
     // Prepare returned description
     NSString *displayText = nil;
-    NSMutableAttributedString *attributedDisplayText = nil;
+    NSAttributedString *attributedDisplayText = nil;
 
     // Prepare display name for concerned users
     NSString *senderDisplayName;
@@ -941,14 +941,14 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
         // And append the string rendered according to event state
         [str appendAttributedString:[self renderString:string forEvent:event]];
+
+        return str;
     }
     else
     {
         // Use the legacy method
-        str = [self renderString:string forEvent:event];
+        return [self renderString:string forEvent:event];
     }
-
-    return str;
 }
 
 - (NSString*)sanitiseHTML:(NSString*)htmlString
@@ -981,7 +981,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             tagsToRemoveString  = [tagsToRemoveString stringByAppendingString:[NSString stringWithFormat:@"|%@", tagsToRemove[i]]];
         }
 
-        html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<\/?(%@)[^>]*>", tagsToRemoveString]
+        html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<\\/?(%@)[^>]*>", tagsToRemoveString]
                                                withString:@""
                                                   options:NSRegularExpressionSearch | NSCaseInsensitiveSearch
                                                     range:NSMakeRange(0, html.length)];
