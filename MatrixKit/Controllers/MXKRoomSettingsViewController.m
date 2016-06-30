@@ -115,7 +115,7 @@
     if (mxRoom)
     {
         // Register a listener to handle messages related to room name, topic...
-        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomJoinRules, kMXEventTypeStringRoomGuestAccess, kMXEventTypeStringRoomHistoryVisibility] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
             
             // Consider only live events
             if (direction == MXTimelineDirectionForwards)
