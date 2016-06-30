@@ -35,7 +35,7 @@
     }
     else if (secondsInterval < 60)
     {
-        [formattedString appendFormat:@"%ds%@", (int)secondsInterval, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+        [formattedString appendFormat:@"%d%@", (int)secondsInterval, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
     }
     else if (secondsInterval < 3600)
     {
