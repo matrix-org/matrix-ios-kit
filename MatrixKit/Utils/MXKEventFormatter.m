@@ -52,8 +52,18 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         [self initDateTimeFormatters];
 
         markdownParser = [[GHMarkdownParser alloc] init];
-        markdownParser.options = kGHMarkdownAutoLink;
+        markdownParser.options = kGHMarkdownAutoLink | kGHMarkdownNoSmartQuotes;
         markdownParser.githubFlavored = YES;        // This is the Markdown flavor we use in Matrix apps
+
+        // Use the same list as matrix-react-sdk ( https://github.com/matrix-org/matrix-react-sdk/blob/24223ae2b69debb33fa22fcda5aeba6fa93c93eb/src/HtmlUtils.js#L25 )
+        _allowedHTMLTags = @[
+                             @"font", // custom to matrix for IRC-style font coloring
+                             @"del", // for markdown
+                             // deliberately no h1/h2 to stop people shouting.
+                             @"h3", @"h4", @"h5", @"h6", @"blockquote", @"p", @"a", @"ul", @"ol",
+                             @"nl", @"li", @"b", @"i", @"u", @"strong", @"em", @"strike", @"code", @"hr", @"br", @"div",
+                             @"table", @"thead", @"caption", @"tbody", @"tr", @"th", @"td", @"pre"
+                             ];
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -254,7 +264,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     
     // Prepare returned description
     NSString *displayText = nil;
-    NSMutableAttributedString *attributedDisplayText = nil;
+    NSAttributedString *attributedDisplayText = nil;
 
     // Prepare display name for concerned users
     NSString *senderDisplayName;
@@ -861,10 +871,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
     // Do some sanitisation before rendering the string
-    // FIXME: Find a way to manage an HTML tags whitelist
-
-    // Image tag is not part of this whitelist
-    NSString *html = [htmlString stringByReplacingOccurrencesOfString:@"<img[^>]*>" withString:@"" options:NSRegularExpressionSearch | NSCaseInsensitiveSearch range:NSMakeRange(0, htmlString.length)];
+    NSString *html = [self sanitiseHTML:htmlString];
 
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
@@ -884,7 +891,39 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // Using DTCoreText, which renders static string, helps to avoid code injection attacks
     // that could happen with the default HTML renderer of NSAttributedString which is a
     // webview.
-    return [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
+    NSAttributedString *str = [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
+
+    // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
+    // or after a blockquote section.
+    // Trim trailing newlines
+    return [self removeTrailingNewlines:str];
+
+}
+
+- (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
+{
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+
+    // Trim trailing whitespace and newlines in the string content
+    while ([str.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
+    {
+        [str deleteCharactersInRange:NSMakeRange(str.length - 1, 1)];
+    }
+
+    // New lines may have also been introduced by the paragraph style
+    // Make sure the last paragraph style has no spacing
+    [str enumerateAttributesInRange:NSMakeRange(0, str.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        if (attrs[NSParagraphStyleAttributeName])
+        {
+            NSMutableParagraphStyle *paragraphStyle = attrs[NSParagraphStyleAttributeName];
+            paragraphStyle.paragraphSpacing = 0;
+        }
+
+        // Check only the last paragraph
+        *stop = YES;
+    }];
+
+    return str;
 }
 
 - (NSAttributedString *)renderString:(NSString *)string withPrefix:(NSString *)prefix forEvent:(MXEvent *)event
@@ -902,14 +941,55 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
         // And append the string rendered according to event state
         [str appendAttributedString:[self renderString:string forEvent:event]];
+
+        return str;
     }
     else
     {
         // Use the legacy method
-        str = [self renderString:string forEvent:event];
+        return [self renderString:string forEvent:event];
+    }
+}
+
+- (NSString*)sanitiseHTML:(NSString*)htmlString
+{
+    NSString *html = htmlString;
+
+    // List all HTML tags used in htmlString
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [regex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
+
+    // Find those that are not allowed
+    NSMutableSet *tagsToRemoveSet = [NSMutableSet set];
+    for (NSTextCheckingResult *result in tagsInTheHTML)
+    {
+        NSString *tag = [htmlString substringWithRange:[result rangeAtIndex:1]].lowercaseString;
+        if ([_allowedHTMLTags indexOfObject:tag] == NSNotFound)
+        {
+            [tagsToRemoveSet addObject:tag];
+        }
     }
 
-    return str;
+    // And remove them from the HTML string
+    if (tagsToRemoveSet.count)
+    {
+        NSArray *tagsToRemove = tagsToRemoveSet.allObjects;
+
+        NSString *tagsToRemoveString = tagsToRemove[0];
+        for (NSInteger i = 1; i < tagsToRemove.count; i++)
+        {
+            tagsToRemoveString  = [tagsToRemoveString stringByAppendingString:[NSString stringWithFormat:@"|%@", tagsToRemove[i]]];
+        }
+
+        html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<\\/?(%@)[^>]*>", tagsToRemoveString]
+                                               withString:@""
+                                                  options:NSRegularExpressionSearch | NSCaseInsensitiveSearch
+                                                    range:NSMakeRange(0, html.length)];
+    }
+
+    // TODO: Sanitise other things: attributes, URL schemes, etc
+    
+    return html;
 }
 
 #pragma mark - Conversion private methods
