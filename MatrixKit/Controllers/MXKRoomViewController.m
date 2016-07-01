@@ -1279,9 +1279,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     else if ([string hasPrefix:kCmdChangeDisplayName])
     {
         // Change display name
-        NSString *displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
-        // Remove white space from both ends
-        displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *displayName;
+        
+        // Sanity check
+        if (string.length > kCmdChangeDisplayName.length)
+        {
+            displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
+            
+            // Remove white space from both ends
+            displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
         
         if (displayName.length)
         {
@@ -1304,9 +1311,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     else if ([string hasPrefix:kCmdJoinRoom])
     {
         // Join a room
-        NSString *roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
-        // Remove white space from both ends
-        roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *roomAlias;
+        
+        // Sanity check
+        if (string.length > kCmdJoinRoom.length)
+        {
+            roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
+            
+            // Remove white space from both ends
+            roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
         
         // Check
         if (roomAlias.length)
@@ -1331,10 +1345,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // Leave this room or another one
         NSString *roomId;
+        NSString *roomIdOrAlias;
         
-        NSString *roomIdOrAlias = [string substringFromIndex:kCmdPartRoom.length + 1];
-        // Remove white space from both ends
-        roomIdOrAlias = [roomIdOrAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        // Sanity check
+        if (string.length > kCmdPartRoom.length)
+        {
+            roomIdOrAlias = [string substringFromIndex:kCmdPartRoom.length + 1];
+            
+            // Remove white space from both ends
+            roomIdOrAlias = [roomIdOrAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
 
         // Check
         if (roomIdOrAlias.length)
@@ -1381,9 +1401,15 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     else if ([string hasPrefix:kCmdChangeRoomTopic])
     {
         // Change topic
-        NSString *topic = [string substringFromIndex:kCmdChangeRoomTopic.length + 1];
-        // Remove white space from both ends
-        topic = [topic stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *topic;
+        
+        // Sanity check
+        if (string.length > kCmdChangeRoomTopic.length)
+        {
+            topic = [string substringFromIndex:kCmdChangeRoomTopic.length + 1];
+            // Remove white space from both ends
+            topic = [topic stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
 
         if (topic.length)
         {
