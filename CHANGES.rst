@@ -1,3 +1,33 @@
+Changes in MatrixKit in 0.3.10 (2016-07-01)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.9).
+ * MXKRoomDataSource: Add the ability to peek into a room.
+ * MXKRoomDataSource: Add Markdown typing support.
+ * MXKRoomViewController: Use room peeking in room preview.
+ * MXKRoomViewController: when opening a permalink, center the correspoding event on the screen.
+ * MXKRoomViewController: Add missing slash commands: /invite, /part and /topic (https://github.com/vector-im/vector-ios/issues/223)
+ * MXKRoomViewController: Expose [setAttachmentsViewerClass:].
+ * MXKRoomViewController: Rename joinRoomWithRoomId to joinRoomWithRoomIdOrAlias.
+ * MXKRecentListViewController: Add sanity check to prevent infinite loop.
+ * MXKSearchViewController: Improved memory management.
+ * MXKContact: add sorting display name definition.
+ * MXKContact: Add hasPrefix method.
+ * MXKEventFormatter: Support of display of "org.matrix.custom.html" formatted message body (#124).
+ * MXKTableViewCellWithLabelAndSwitch: Update UISwitch constraints.
+
+Bug fixes:
+ * Room screen:  Tap on attached video does nothing (https://github.com/vector-im/vector-ios/issues/380)
+ * Hitting back after search results does not refresh results (https://github.com/vector-im/vector-ios/issues/190)
+ * App crashes on : [<__NSDictionaryM> valueForUndefinedKey:] this class is not key value coding-compliant for the key <redacted>.
+ * MXKEventFormatter: Add sanity check on event content values to "-[__NSCFDictionary length]: unrecognized selector sent to instance"
+ * MXKRoomActivitiesView: Fix exception on undefined MXKRoomActivitiesView.xib.
+ * App freezes on iOS8 when user goes back on Recents from a Room Chat.
+ * MXKTools: The unit of formatted seconds interval is 'ss' instead of 's'.
+ * Room settings: refresh on room state change.
+ 
+
 Changes in MatrixKit in 0.3.9 (2016-06-02)
 ===============================================
 
