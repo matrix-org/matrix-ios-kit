@@ -31,7 +31,6 @@
     id membersListener;
     
     // mask view while processing a request
-    UIView* pendingRequestMask;
     UIActivityIndicatorView * pendingMaskSpinnerView;
     
     // Observe left rooms
@@ -386,7 +385,7 @@
                     {
                         // Create a new room
                         [self.mainSession createRoom:nil
-                                          visibility:kMXRoomVisibilityPrivate
+                                          visibility:kMXRoomDirectoryVisibilityPrivate
                                            roomAlias:nil
                                                topic:nil
                                              success:^(MXRoom *room) {

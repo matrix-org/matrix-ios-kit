@@ -29,20 +29,12 @@
     
     // the room state
     MXRoomState* mxRoomState;
-    
-    // tell if the user can update the room info
-    BOOL isSuperUser;
 }
 
 /**
  The dedicated roomId.
  */
 @property (nonatomic, readonly) NSString *roomId;
-
-/**
- The dedicated session
- */
-@property (nonatomic, readonly) MXSession *session;
 
 
 #pragma mark - Class methods
@@ -70,6 +62,13 @@
 /**
  Set the dedicated session and the room Id
  */
-- (void) initWithSession:(MXSession*)session andRoomId:(NSString*)roomId;
+- (void)initWithSession:(MXSession*)session andRoomId:(NSString*)roomId;
+
+/**
+ Refresh the displayed room settings. By default this method reload the table view.
+ 
+ @discusion You may override this method to handle the table refresh.
+ */
+- (void)refreshRoomSettings;
 
 @end

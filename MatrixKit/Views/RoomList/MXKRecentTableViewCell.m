@@ -44,7 +44,7 @@
         }
         
         // Set in bold public room name
-        if (roomCellData.roomDataSource.room.state.isPublic)
+        if (roomCellData.roomDataSource.room.state.isJoinRulePublic)
         {
             _roomTitle.font = [UIFont boldSystemFontOfSize:20];
         }

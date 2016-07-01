@@ -46,11 +46,14 @@
 NSString *const kCmdChangeDisplayName = @"/nick";
 NSString *const kCmdEmote = @"/me";
 NSString *const kCmdJoinRoom = @"/join";
+NSString *const kCmdPartRoom = @"/part";
+NSString *const kCmdInviteUser = @"/invite";
 NSString *const kCmdKickUser = @"/kick";
 NSString *const kCmdBanUser = @"/ban";
 NSString *const kCmdUnbanUser = @"/unban";
 NSString *const kCmdSetUserPowerLevel = @"/op";
 NSString *const kCmdResetUserPowerLevel = @"/deop";
+NSString *const kCmdChangeRoomTopic = @"/topic";
 
 @interface MXKRoomViewController ()
 {
@@ -124,7 +127,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     /**
      The attachments viewer for image and video.
      */
-     MXKAttachmentsViewController *attachmentsViewer;
+    MXKAttachmentsViewController *attachmentsViewer;
+    
+    /**
+     The class used to instantiate attachments viewer for image and video..
+     */
+    Class attachmentsViewerClass;
     
     /**
      The reconnection animated view.
@@ -196,6 +204,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     
     // Enable auto join option by default
     _autoJoinInvitedRoom = YES;
+
+    // Do not take ownership of room data source by default
+    _hasRoomDataSourceOwnership = NO;
 }
 
 #pragma mark -
@@ -503,15 +514,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.dataSource = nil;
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
-
-    // Non live room data sources are not managed by the MXKDataSourceManager
-    // Destroy them once they are no more displayed
-    if (!roomDataSource.isLive)
-    {
-        [roomDataSource destroy];
-    }
     
     roomDataSource.delegate = nil;
+    
+    if (_hasRoomDataSourceOwnership)
+    {
+        // Release the room data source
+        [roomDataSource destroy];
+    }
     roomDataSource = nil;
     
     if (titleView)
@@ -663,22 +673,37 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (roomDataSource)
     {
+        roomDataSource.delegate = nil;
+        
+        if (self.hasRoomDataSourceOwnership)
+        {
+            // Release the room data source
+            [roomDataSource destroy];
+        }
         roomDataSource = nil;
+        
         [self removeMatrixSession:self.mainSession];
     }
     
     if (dataSource)
     {
-        // Remove the input toolbar and the room activities view if the displayed timeline is not a live one
-        // We do not let the user type message in this case.
         if (!dataSource.isLive)
         {
+            // Remove the input toolbar and the room activities view if the displayed timeline is not a live one.
+            // We do not let the user type message in this case.
             [self setRoomInputToolbarViewClass:nil];
             [self setRoomActivitiesViewClass:nil];
+        }
+        else if (dataSource.isPeeking)
+        {
+            // Remove the input toolbar in case of peeking.
+            // We do not let the user type message in this case.
+            [self setRoomInputToolbarViewClass:nil];
         }
         
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
+        roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
         
         // Report the matrix session at view controller level to update UI according to session state
         [self addMatrixSession:roomDataSource.mxSession];
@@ -844,14 +869,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
 {
     // Check whether a join request is not already running
     if (!joinRoomRequest)
     {
         [self startActivityIndicator];
 
-        void (^success)(MXRoom *room)  = ^(MXRoom *room) {
+        void (^success)(MXRoom *room) = ^(MXRoom *room) {
 
             joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -943,6 +968,12 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     _bubblesTableView.delegate = nil;
     
     roomDataSource.delegate = nil;
+    
+    if (self.hasRoomDataSourceOwnership)
+    {
+        // Release the room data source
+        [roomDataSource destroy];
+    }
     roomDataSource = nil;
     
     // Add reason label
@@ -954,6 +985,14 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_bubblesTableView reloadData];
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
+}
+
+- (void)setPaginationLimit:(NSUInteger)paginationLimit
+{
+    _paginationLimit = paginationLimit;
+
+    // Use the same value when loading messages around the initial event
+    roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
 }
 
 - (void)setRoomTitleViewClass:(Class)roomTitleViewClass
@@ -1048,9 +1087,9 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
         inputToolbarView = nil;
     }
     
-    if (roomDataSource && !roomDataSource.isLive)
+    if (roomDataSource && (!roomDataSource.isLive || roomDataSource.isPeeking))
     {
-        // Do not show the input toolbar if the displayed timeline is not a live one
+        // Do not show the input toolbar if the displayed timeline is not a live one, or in case of peeking.
         // We do not let the user type message in this case.
         roomInputToolbarViewClass = nil;
     }
@@ -1201,6 +1240,17 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     [_roomActivitiesContainer setNeedsUpdateConstraints];
 }
 
+- (void)setAttachmentsViewerClass:(Class)theAttachmentsViewerClass
+{
+    if (theAttachmentsViewerClass)
+    {
+        // Sanity check: accept only MXKAttachmentsViewController classes or sub-classes
+        NSParameterAssert([theAttachmentsViewerClass isSubclassOfClass:MXKAttachmentsViewController.class]);
+    }
+    
+    attachmentsViewerClass = theAttachmentsViewerClass;
+}
+
 - (BOOL)isIRCStyleCommand:(NSString*)string
 {
     // Check whether the provided text may be an IRC-style command
@@ -1229,9 +1279,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     else if ([string hasPrefix:kCmdChangeDisplayName])
     {
         // Change display name
-        NSString *displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
-        // Remove white space from both ends
-        displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *displayName;
+        
+        // Sanity check
+        if (string.length > kCmdChangeDisplayName.length)
+        {
+            displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
+            
+            // Remove white space from both ends
+            displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
         
         if (displayName.length)
         {
@@ -1254,9 +1311,16 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     else if ([string hasPrefix:kCmdJoinRoom])
     {
         // Join a room
-        NSString *roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
-        // Remove white space from both ends
-        roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *roomAlias;
+        
+        // Sanity check
+        if (string.length > kCmdJoinRoom.length)
+        {
+            roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
+            
+            // Remove white space from both ends
+            roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
         
         // Check
         if (roomAlias.length)
@@ -1277,6 +1341,94 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             inputToolbarView.placeholder = @"Usage: /join <room_alias>";
         }
     }
+    else if ([string hasPrefix:kCmdPartRoom])
+    {
+        // Leave this room or another one
+        NSString *roomId;
+        NSString *roomIdOrAlias;
+        
+        // Sanity check
+        if (string.length > kCmdPartRoom.length)
+        {
+            roomIdOrAlias = [string substringFromIndex:kCmdPartRoom.length + 1];
+            
+            // Remove white space from both ends
+            roomIdOrAlias = [roomIdOrAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
+
+        // Check
+        if (roomIdOrAlias.length)
+        {
+            // Leave another room
+            if ([MXTools isMatrixRoomAlias:roomIdOrAlias])
+            {
+                // Convert the alias to a room ID
+                MXRoom *room = [roomDataSource.mxSession roomWithAlias:roomIdOrAlias];
+                if (room)
+                {
+                    roomId = room.roomId;
+                }
+            }
+            else if ([MXTools isMatrixRoomIdentifier:roomIdOrAlias])
+            {
+                roomId = roomIdOrAlias;
+            }
+        }
+        else
+        {
+            // Leave the current room
+            roomId = roomDataSource.roomId;
+        }
+
+        if (roomId.length)
+        {
+            [roomDataSource.mxSession leaveRoom:roomId success:^{
+
+            } failure:^(NSError *error) {
+
+                NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed: %@", roomIdOrAlias, roomId, error);
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
+            }];
+        }
+        else
+        {
+            // Display cmd usage in text input as placeholder
+            inputToolbarView.placeholder = @"Usage: /part [<room_alias>]";
+        }
+    }
+    else if ([string hasPrefix:kCmdChangeRoomTopic])
+    {
+        // Change topic
+        NSString *topic;
+        
+        // Sanity check
+        if (string.length > kCmdChangeRoomTopic.length)
+        {
+            topic = [string substringFromIndex:kCmdChangeRoomTopic.length + 1];
+            // Remove white space from both ends
+            topic = [topic stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        }
+
+        if (topic.length)
+        {
+            [roomDataSource.room setTopic:topic success:^{
+                
+            } failure:^(NSError *error) {
+
+                NSLog(@"[MXKRoomVC] Set topic failed: %@", error);
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+
+            }];
+        }
+        else
+        {
+            // Display cmd usage in text input as placeholder
+            inputToolbarView.placeholder = @"Usage: /topic <topic>";
+        }
+    }
     else
     {
         // Retrieve userId
@@ -1293,7 +1445,28 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             userId = nil;
         }
         
-        if ([cmd isEqualToString:kCmdKickUser])
+        if ([cmd isEqualToString:kCmdInviteUser])
+        {
+            if (userId)
+            {
+                // Invite the user
+                [roomDataSource.room inviteUser:userId success:^{
+
+                } failure:^(NSError *error) {
+
+                    NSLog(@"[MXKRoomVC] Invite user (%@) failed: %@", userId, error);
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+
+                }];
+            }
+            else
+            {
+                // Display cmd usage in text input as placeholder
+                inputToolbarView.placeholder = @"Usage: /invite <userId>";
+            }
+        }
+        else if ([cmd isEqualToString:kCmdKickUser])
         {
             if (userId)
             {
@@ -1423,13 +1596,13 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             {
                 // Reset user power level
                 [roomDataSource.room setPowerLevelOfUserWithUserID:userId powerLevel:0 success:^{
-                    
+
                 } failure:^(NSError *error) {
-                    
+
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                    
+
                 }];
             }
             else
@@ -1519,6 +1692,22 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                                    // Reload table
                                    [self reloadBubblesTable:YES];
 
+                                   if (roomDataSource.timeline.initialEventId)
+                                   {
+                                       // Center the table view to the cell that contains this event
+                                       NSInteger index = [roomDataSource indexOfCellDataWithEventId:roomDataSource.timeline.initialEventId];
+
+                                       // Let iOS put the cell at the top of the table view
+                                       [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+
+                                       // And apply an offset to display the top of the targeted component at the center of the screen
+                                       MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)[_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+                                       CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
+
+                                       CGPoint contentOffset = _bubblesTableView.contentOffset;
+                                       contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
+                                       _bubblesTableView.contentOffset = contentOffset;
+                                   }
                                }
                                failure:^(NSError *error) {
 
@@ -2654,6 +2843,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
 {
     if (scrollView == _bubblesTableView)
     {
+        BOOL wasScrollingToBottom = isScrollingToBottom;
+
         // Consider this callback to reset scrolling to bottom flag
         isScrollingToBottom = NO;
         
@@ -2675,7 +2866,7 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionBackwards];
             }
             // Enable forwards pagination when displaying non live timeline
-            else if (!roomDataSource.isLive && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
+            else if (!roomDataSource.isLive && !wasScrollingToBottom && ((scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.size.height) < _paginationThreshold))
             {
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
             }
@@ -2929,7 +3120,15 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
             NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
 
             // Present an attachment viewer
-            attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+            if (attachmentsViewerClass)
+            {
+                attachmentsViewer = [attachmentsViewerClass attachmentsViewController];
+            }
+            else
+            {
+                attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+            }
+            
             attachmentsViewer.delegate = self;
             attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
             attachmentsViewer.hidesBottomBarWhenPushed = YES;
@@ -2974,7 +3173,8 @@ NSString *const kCmdResetUserPowerLevel = @"/deop";
     }
 }
 
-// MXKAttachmentsViewControllerDelegate
+#pragma mark - MXKAttachmentsViewControllerDelegate
+
 - (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId
 {
     [self triggerAttachmentBackPagination:eventId];

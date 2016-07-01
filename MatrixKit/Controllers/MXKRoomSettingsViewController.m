@@ -22,6 +22,9 @@
 {    
     // the room events listener
     id roomListener;
+    
+    // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+    id leaveRoomNotificationObserver;
 }
 @end
 
@@ -41,68 +44,16 @@
                                           bundle:[NSBundle bundleForClass:[MXKRoomSettingsViewController class]]];
 }
 
-#pragma mark - Public API
+#pragma mark -
 
-/**
- Set the dedicated session and the room Id
- */
-- (void)initWithSession:(MXSession*)aSession andRoomId:(NSString*)aRoomId
+- (void)viewWillAppear:(BOOL)animated
 {
-    _session = aSession;
-    _roomId = aRoomId;
+    [super viewWillAppear:animated];
     
-    // sanity checks
-    if (aSession && aRoomId)
-    {
-        mxRoom = [aSession roomWithRoomId:aRoomId];
-    }
-    
-    if (mxRoom)
-    {
-        // Register a listener to handle messages related to room name, topic...
-        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias]
-                                             onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
-                        {
-                            // Consider only live events
-                            if (direction == MXTimelineDirectionForwards)
-                            {
-                                if (event.eventType != MXEventTypeRoomMember || !self.isEditing)
-                                {
-                                    [self refreshDisplay:mxRoom.state];
-                                }
-                            }
-                        }];
-        
-        mxRoomState = mxRoom.state;
-        [self checkIfSuperUser];
-    }
-    
-    self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];
-    
-    UIBarButtonItem* saveButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(onSave:)];
-    self.navigationItem.rightBarButtonItem = saveButton;
+    [self refreshRoomSettings];
 }
 
-#pragma mark - private methods
-
-- (void)checkIfSuperUser
-{
-    // Check whether the user has enough power to rename the room
-    MXRoomPowerLevels *powerLevels = [mxRoomState powerLevels];
-    NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_session.myUser.userId];
-    
-    isSuperUser = (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName]);
-}
-
-- (void)refreshDisplay:(MXRoomState*)newRoomState
-{
-    // the inherited classes could partially disable the refresh
-    // e.g. if the user set a new value, the refresh could be locked
-    mxRoomState = newRoomState.copy;
-    
-    [self checkIfSuperUser];
-    [self.tableView reloadData];
-}
+#pragma mark - Override MXKTableViewController
 
 - (void)destroy
 {
@@ -111,14 +62,103 @@
         [mxRoom.liveTimeline removeListener:roomListener];
         roomListener = nil;
     }
+    
+    if (leaveRoomNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
+        leaveRoomNotificationObserver = nil;
+    }
+    
+    mxRoom = nil;
+    mxRoomState = nil;
+    
+    [super destroy];
 }
 
-#pragma mark - Action
-
-- (IBAction) onSave:(id)sender
+- (void)onMatrixSessionStateDidChange:(NSNotification *)notif;
 {
-    // should check if there are some updates before closing ?
-    [self.navigationController popViewControllerAnimated:YES];
+    // Check this is our Matrix session that has changed
+    if (notif.object == self.mainSession)
+    {
+        // refresh when the session sync is done.
+        if (MXSessionStateRunning == self.mainSession.state)
+        {
+            [self refreshRoomSettings];
+        }
+    }
+}
+
+#pragma mark - Public API
+
+/**
+ Set the dedicated session and the room Id
+ */
+- (void)initWithSession:(MXSession*)mxSession andRoomId:(NSString*)roomId
+{
+    // Update the matrix session
+    if (self.mainSession)
+    {
+        [self removeMatrixSession:self.mainSession];
+    }
+    mxRoom = nil;
+    
+    // Sanity checks
+    if (mxSession && roomId)
+    {
+        [self addMatrixSession:mxSession];
+        
+        // Report the room identifier
+        _roomId = roomId;
+        mxRoom = [mxSession roomWithRoomId:roomId];
+    }
+    
+    if (mxRoom)
+    {
+        // Register a listener to handle messages related to room name, topic...
+        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomJoinRules, kMXEventTypeStringRoomGuestAccess, kMXEventTypeStringRoomHistoryVisibility] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
+            // Consider only live events
+            if (direction == MXTimelineDirectionForwards)
+            {
+                [self updateRoomState:mxRoom.state];
+            }
+            
+        }];
+        
+        // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+        leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            // Check whether the user will leave the room related to the displayed participants
+            if (notif.object == self.mainSession)
+            {
+                NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
+                if (roomId && [roomId isEqualToString:_roomId])
+                {
+                    // We remove the current view controller.
+                    [self withdrawViewControllerAnimated:YES completion:nil];
+                }
+            }
+            
+        }];
+        
+        [self updateRoomState:mxRoom.state];
+    }
+    
+    self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];
+}
+
+- (void)refreshRoomSettings
+{
+    [self.tableView reloadData];
+}
+
+#pragma mark - private methods
+
+- (void)updateRoomState:(MXRoomState*)newRoomState
+{
+    mxRoomState = newRoomState.copy;
+    
+    [self refreshRoomSettings];
 }
 
 #pragma mark - UITableViewDataSource

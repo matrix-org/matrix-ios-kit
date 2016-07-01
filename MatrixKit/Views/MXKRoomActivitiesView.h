@@ -24,6 +24,18 @@
 @property (nonatomic) CGFloat height;
 
 /**
+ Returns the `UINib` object initialized for a `MXKRoomActivitiesView`.
+ 
+ @return The initialized `UINib` object or `nil` if there were errors during initialization
+ or the nib file could not be located.
+ 
+ @discussion You may override this method to provide a customized nib. If you do,
+ you should also override `roomActivitiesView` to return your
+ view controller loaded from your custom nib.
+ */
++ (UINib *)nib;
+
+/**
  Creates and returns a new `MXKRoomActivitiesView-inherited` object.
  
  @discussion This is the designated initializer for programmatic instantiation.

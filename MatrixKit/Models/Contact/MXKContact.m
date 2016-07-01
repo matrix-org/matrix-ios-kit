@@ -239,6 +239,67 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
 
 #pragma mark -
 
+- (NSString*)sortingDisplayName
+{
+    if (!_sortingDisplayName)
+    {
+        // Sanity check - display name should not be nil here
+        if (self.displayName)
+        {
+            NSCharacterSet *specialCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"_!~`@#$%^&*-+();:={}[],.<>?\\/\"\'"];
+            
+            _sortingDisplayName = [self.displayName stringByTrimmingCharactersInSet:specialCharacterSet];
+        }
+        else
+        {
+            return @"";
+        }
+    }
+    
+    return _sortingDisplayName;
+}
+
+- (BOOL)hasPrefix:(NSString*)prefix
+{
+    prefix = [prefix lowercaseString];
+    
+    // Check first display name
+    if (_displayName.length)
+    {
+        NSArray *components = [_displayName componentsSeparatedByString:@" "];
+        for (NSString *component in components)
+        {
+            NSString *theComponent = [[component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+            if ([theComponent hasPrefix:prefix])
+            {
+                return YES;
+            }
+        }
+    }
+    
+    // Check matrix identifiers
+    NSArray *identifiers = self.matrixIdentifiers;
+    NSString *idPrefix = [NSString stringWithFormat:@"@%@", prefix];
+    for (NSString* mxId in identifiers)
+    {
+        if ([[mxId lowercaseString] hasPrefix:idPrefix])
+        {
+            return YES;
+        }
+    }
+    
+    // Check email
+    for (MXKEmail* email in _emailAddresses)
+    {
+        if ([[email.emailAddress lowercaseString] hasPrefix:prefix])
+        {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
 - (BOOL)matchedWithPatterns:(NSArray*)patterns
 {
     BOOL matched = NO;

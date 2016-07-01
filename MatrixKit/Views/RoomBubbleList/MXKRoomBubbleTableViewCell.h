@@ -246,4 +246,14 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  */
 - (void)highlightTextMessageForEvent:(NSString*)eventId;
 
+/**
+ The top position of an event in the cell.
+ 
+ A cell can display several events. The method returns the vertical position of a given
+ event in the cell.
+ 
+ @return the y position (in pixel) of the event in the cell.
+ */
+- (CGFloat)topPositionOfEvent:(NSString*)eventId;
+
 @end

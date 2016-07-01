@@ -29,7 +29,7 @@
     self = [super init];
     if (self)
     {
-        _roomVisibility = kMXRoomVisibilityPrivate;
+        _roomVisibility = kMXRoomDirectoryVisibilityPrivate;
     }
     return self;
 }

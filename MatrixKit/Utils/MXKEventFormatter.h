@@ -133,14 +133,63 @@ typedef enum : NSUInteger {
 - (NSString*)stringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
- Return attributed string for the displayable string representing the event.
- 
- @param text pre-computed text representation of the event
- @param event the event.
- @param prefix this string defines the potential prefix on which the prefix attributes (font and color) are applied (used to customized message sender name if any).
- @return NSAttributedString for displaying the event.
+ Generate a displayable attributed string representating the event.
+
+ @param event the event to format.
+ @param roomState the room state right before the event.
+ @param error the error code. In case of formatting error, the formatter may return non nil string as a proposal.
+ @return the attributed string for the event.
  */
-- (NSAttributedString *)attributedStringFromString:(NSString *)text forEvent:(MXEvent*)event withPrefix:(NSString*)prefix;
+- (NSAttributedString*)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
+
+/**
+ Render a random string into an attributed string with the font and the text color
+ that correspond to the passed event.
+
+ @param string the string to render.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event;
+
+/**
+ Render a random html string into an attributed string with the font and the text color
+ that correspond to the passed event.
+
+ @param htmlString the HTLM string to render.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event;
+
+/**
+ Same as [self renderString:forEvent:] but add a prefix.
+ The prefix will be rendered with 'prefixTextFont' and 'prefixTextColor'.
+ 
+ @param string the string to render.
+ @param prefix the prefix to add.
+ @param event the event associated to the string.
+ @return an attributed string.
+ */
+- (NSAttributedString*)renderString:(NSString*)string withPrefix:(NSString*)prefix forEvent:(MXEvent*)event;
+
+/**
+ Sanitise an HTML string to keep permitted HTML tags defined by 'allowedHTMLTags'.
+
+ @param htmlString the HTML code to sanitise.
+ @return a sanitised HTML string.
+ */
+- (NSString*)sanitiseHTML:(NSString*)htmlString;
+
+#pragma mark - Conversion tools
+
+/**
+ Convert a Markdown string to HTML.
+ 
+ @param markdownString the string to convert.
+ @return an HTML formatted string.
+ */
+- (NSString*)htmlStringFromMarkdownString:(NSString*)markdownString;
 
 #pragma mark - Fake event objects creation
 
@@ -196,6 +245,11 @@ typedef enum : NSUInteger {
 
 
 # pragma mark - Customisation
+/**
+ The list of allowed HTML tags in rendered attributed strings.
+ */
+@property (nonatomic) NSArray<NSString*> *allowedHTMLTags;
+
 /**
  Default color used to display text content of event.
  Default is [UIColor blackColor].
@@ -259,8 +313,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIFont *stateEventTextFont;
 
 /**
- Text font used to display call notices (invite, answer, hangup.
- Default is italic SFUIText-Regular 14.
+ Text font used to display call notices (invite, answer, hangup).
+ Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *callNoticesTextFont;
 

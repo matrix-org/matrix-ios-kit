@@ -20,12 +20,12 @@
 #import "MXKEventFormatter.h"
 
 /**
- String identifying the object used to store and prepare a search cell data.
+ String identifying the object used to store and prepare the cell data of a result during a message search.
  */
 extern NSString *const kMXKSearchCellDataIdentifier;
 
 /**
- The data source for `MXKRoomMemberListViewController`.
+ The data source for `MXKSearchViewController` in case of message search.
  
  Use the `initWithMatrixSession:` constructor to search in all user's rooms.
  Use the `initWithRoomId:andMatrixSession: constructor to search in a specific room.

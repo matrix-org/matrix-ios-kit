@@ -42,6 +42,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
      Observe NSCurrentLocaleDidChangeNotification to trigger cell change on time formatting change.
      */
     id NSCurrentLocaleDidChangeNotificationObserver;
+    
+    /**
+     Store the current search patterns list.
+     */
+    NSArray* searchPatternsList;
 }
 
 @end
@@ -124,6 +129,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     
     _eventFormatter = nil;
     
+    searchPatternsList = nil;
+    
     [super destroy];
 }
 
@@ -205,6 +212,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 {
     if (patternsList.count)
     {
+        searchPatternsList = patternsList;
+        
         if (filteredCellDataArray)
         {
             [filteredCellDataArray removeAllObjects];
@@ -229,6 +238,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     else
     {
         filteredCellDataArray = nil;
+        searchPatternsList = nil;
     }
     
     [self.delegate dataSource:self didCellChange:nil];
@@ -431,6 +441,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     
     // Snapshot the cell data array
     cellDataArray = [internalCellDataArray copy];
+    
+    // Update search result if any
+    if (searchPatternsList)
+    {
+        [self searchWithPatterns:searchPatternsList];
+    }
     
     // Update here data source state
     if (state != MXKDataSourceStateReady)

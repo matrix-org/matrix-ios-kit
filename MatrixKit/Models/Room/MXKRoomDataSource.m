@@ -93,6 +93,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     NSMutableArray *bubblesSnapshot;
     
     /**
+     The room being peeked, if any.
+     */
+    MXPeekingRoom *peekingRoom;
+    
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
@@ -148,6 +153,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         self.useCustomUnsentButton = NO;
         
         _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
+        _paginationLimitAroundInitialEvent = MXKROOMDATASOURCE_PAGINATION_LIMIT_AROUND_INITIAL_EVENT;
         
         // Check here whether the app user wants to display all the events
         if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory])
@@ -207,10 +213,24 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     self = [self initWithRoomId:roomId andMatrixSession:mxSession];
     if (self)
     {
-        initialEventId = initialEventId2;
-        _isLive = NO;
+        if (initialEventId2)
+        {
+            initialEventId = initialEventId2;
+            _isLive = NO;
+        }
     }
 
+    return self;
+}
+
+- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom2 andInitialEventId:(NSString*)theInitialEventId
+{
+    self = [self initWithRoomId:peekingRoom2.roomId initialEventId:theInitialEventId andMatrixSession:peekingRoom2.mxSession];
+    if (self)
+    {
+        peekingRoom = peekingRoom2;
+        _isPeeking = YES;
+    }
     return self;
 }
 
@@ -412,7 +432,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
         UIApplicationSignificantTimeChangeNotificationObserver = nil;
     }
-    
+
+    // If the room data source was used to peek into a room, stop the events stream on this room
+    if (peekingRoom)
+    {
+        [_room.mxSession stopPeeking:peekingRoom];
+    }
+
     [self reset];
     
     self.eventFormatter = nil;
@@ -433,7 +459,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Check whether the room is not already set
         if (!_room)
         {
-            _room = [self.mxSession roomWithRoomId:_roomId];
+            // Are we peeking into a random room or displaying a room the user is part of?
+            if (peekingRoom)
+            {
+                _room = peekingRoom;
+            }
+            else
+            {
+                _room = [self.mxSession roomWithRoomId:_roomId];
+            }
+
             if (_room)
             {
                 // This is the time to set up the timeline according to the called init method
@@ -511,15 +546,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // Force to set the filter at the MXRoom level
                     self.eventsFilterForMessages = _eventsFilterForMessages;
 
-                    // Preload no messages before and after the intial event so that
-                    // this event will be displayed at the bottom of the screen.
-                    // The reason is we do not have tool yet to ask the table view to focus
-                    // on a given event.
-                    // TODO: Load more messages and center the table view on the initial event
-                    [_timeline resetPaginationAroundInitialEventWithLimit:0 success:^{
+                    // Preload the state and some messages around the initial event
+                    [_timeline resetPaginationAroundInitialEventWithLimit:_paginationLimitAroundInitialEvent success:^{
 
-                        // Do a "classic" reset. The room view controller will back paginate
-                        // from the most recent event stored in the timeline store, which is the initial event
+                        // Do a "classic" reset. The room view controller will paginate
+                        // from the events stored in the timeline store
                         [_timeline resetPagination];
 
                         // Update here data source state if it is not already ready
@@ -1136,13 +1167,31 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         // Remove "/me " string
         text = [text substringFromIndex:4];
     }
-    
+
     // Prepare the message content
-    NSDictionary *msgContent = @{
-                                 @"msgtype": msgType,
-                                 @"body": text
-                                 };
-    
+    NSDictionary *msgContent;
+
+    // Did user use Markdown text?
+    NSString *html = [_eventFormatter htmlStringFromMarkdownString:text];
+    if ([html isEqualToString:text])
+    {
+        // This is a simple text message
+        msgContent = @{
+                       @"msgtype": msgType,
+                       @"body": text
+                       };
+    }
+    else
+    {
+        // Send the Markdown string as an HTML formatted string
+        msgContent = @{
+                       @"msgtype": msgType,
+                       @"body": text,
+                       @"formatted_body": html,
+                       @"format": kMXRoomMessageFormatHTML
+                       };
+    }
+
     [self sendMessageOfType:msgType content:msgContent success:success failure:failure];
 }
 
@@ -1190,6 +1239,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
+        
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
@@ -1288,6 +1338,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
+        
         // Update the local echo state: move from content uploading to event sending
         localEcho.mxkState = MXKEventStateSending;
         [self updateLocalEcho:localEcho];
@@ -1378,6 +1429,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     // Before sending data to the server, convert the video to MP4
     [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs) {
+        
         // Upload thumbnail
         [uploader uploadData:videoThumbnailData filename:nil mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
             
@@ -1406,6 +1458,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 
                 [videoUploader uploadData:videoData filename:filename mimeType:mimetype success:^(NSString *videoUrl) {
                     
+                    // Update the local echo state: move from content uploading to event sending
+                    localEcho.mxkState = MXKEventStateSending;
+                    [self updateLocalEcho:localEcho];
+                    
                     // Write the video to the actual cacheFile path
                     NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:videoUrl];
                     NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
@@ -1421,7 +1477,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     
                     localEcho.content = msgContent;
                     [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-                    [self updateLocalEcho:localEcho];
                     
                     // And send the Matrix room message video event to the homeserver
                     [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {

@@ -27,7 +27,8 @@
         // Build text component related to this event
         _eventFormatter = formatter;
         MXKEventFormatterError error;
-        NSString *eventString = [_eventFormatter stringFromEvent:event withRoomState:roomState error:&error];
+
+        NSAttributedString *eventString = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
         if (eventString.length)
         {
             // Manage error
@@ -44,15 +45,15 @@
                     case MXKEventFormatterErrorUnknownEventType:
                         event.mxkState = MXKEventStateUnknownType;
                         break;
-                        
+
                     default:
                         break;
                 }
             }
-            
-            _textMessage = eventString;
-            _attributedTextMessage = nil;
-            
+
+            _textMessage = nil;
+            _attributedTextMessage = eventString;
+
             // Set date time
             if (event.originServerTs != kMXUndefinedTimestamp)
             {
@@ -79,33 +80,33 @@
 {
 }
 
-- (void)updateWithEvent:(MXEvent*)event
+- (void)updateWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
 {
     // Report the new event
     _event = event;
-    
-    // Reseting `attributedTextMessage` is enough to take into account the new event state
-    // as it is only a font color change, there is no need to update `textMessage`
-    // (Actually, we are unable to recompute `textMessage` as we do not have the room state)
-    _attributedTextMessage = nil;
-    
-    // text message must be updated here in case of redaction, or for media attachment (see body update during video upload) 
-    if (_event.isRedactedEvent || _event.isMediaAttachment)
+
+    if (_event.isRedactedEvent)
     {
-        // Build text component related to this event (Note: we don't have valid room state here, userId will be used as display name)
-        MXKEventFormatterError error;
-        _textMessage = [_eventFormatter stringFromEvent:event withRoomState:nil error:&error];
+        // Do not use the live room state for redacted events as they occured in the past
+        // Note: as we don't have valid room state in this case, userId will be used as display name
+        roomState = nil;
     }
+    // Other calls to updateWithEvent are made to update the state of an event (ex: MXKEventStateSending to MXKEventStateDefault).
+    // They occur in live so we can use the room up-to-date state without making huge errors
+
+    _textMessage = nil;
+
+    MXKEventFormatterError error;
+    _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
 }
 
-- (NSAttributedString*)attributedTextMessage
+- (NSString *)textMessage
 {
-    if (!_attributedTextMessage)
+    if (!_textMessage)
     {
-        _attributedTextMessage = [_eventFormatter attributedStringFromString:_textMessage forEvent:_event withPrefix:nil];
+        _textMessage = _attributedTextMessage.string;
     }
-    
-    return _attributedTextMessage;
+    return _textMessage;
 }
 
 @end

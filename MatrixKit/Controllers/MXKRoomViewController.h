@@ -28,11 +28,14 @@ limitations under the License.
 extern NSString *const kCmdChangeDisplayName;
 extern NSString *const kCmdEmote;
 extern NSString *const kCmdJoinRoom;
+extern NSString *const kCmdPartRoom;
+extern NSString *const kCmdInviteUser;
 extern NSString *const kCmdKickUser;
 extern NSString *const kCmdBanUser;
 extern NSString *const kCmdUnbanUser;
 extern NSString *const kCmdSetUserPowerLevel;
 extern NSString *const kCmdResetUserPowerLevel;
+extern NSString *const kCmdChangeRoomTopic;
 
 /**
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
@@ -70,6 +73,13 @@ extern NSString *const kCmdResetUserPowerLevel;
  The current data source associated to the view controller.
  */
 @property (nonatomic, readonly) MXKRoomDataSource *roomDataSource;
+
+/**
+ Flag indicating if this instance has the memory ownership of its `roomDataSource`.
+ If YES, it will release it on [self destroy] call;
+ Default is NO.
+ */
+@property (nonatomic) BOOL hasRoomDataSourceOwnership;
 
 /**
  The current title view defined into the view controller.
@@ -200,7 +210,7 @@ extern NSString *const kCmdResetUserPowerLevel;
 - (void)joinRoom:(void(^)(BOOL succeed))completion;
 
 /**
- Join a room with a room id.
+ Join a room with a room id or an alias.
 
  This operation fails if the user has already joined the room, or if the data source is not ready,
  or if the access to the room is forbidden to the user.
@@ -211,7 +221,7 @@ extern NSString *const kCmdResetUserPowerLevel;
  @param completion the block to execute at the end of the operation.
  You may specify nil for this parameter.
  */
-- (void)joinRoomWithRoomId:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
 
 /**
  Update view controller appearance when the user is about to leave the displayed room.
@@ -258,6 +268,14 @@ extern NSString *const kCmdResetUserPowerLevel;
  @param roomActivitiesViewClass a MXKRoomActivitiesViewClass-inherited class, or nil to remove the current view.
  */
 - (void)setRoomActivitiesViewClass:(Class)roomActivitiesViewClass;
+
+/**
+ Register the class used to instantiate the viewer dedicated to the attachments with thumbnail.
+ By default 'MXKAttachmentsViewController' class is used.
+ 
+ @param attachmentsViewerClass a MXKAttachmentsViewController-inherited class, or nil to restore the default class.
+ */
+- (void)setAttachmentsViewerClass:(Class)attachmentsViewerClass;
 
 /**
  Detect and process potential IRC command in provided string.

@@ -593,7 +593,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                  {
                                                      id matrixID = [userIds objectAtIndex:index];
                                                      NSString* pid = [pids objectAtIndex:index];
-                                                     NSString *currentMatrixID = [matrixIDBy3PID valueForKey:pid];
+                                                     NSString *currentMatrixID = [matrixIDBy3PID objectForKey:pid];
                                                      
                                                      if ([matrixID isEqual:[NSNull null]])
                                                      {
@@ -607,7 +607,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                      {
                                                          if (![currentMatrixID isEqualToString:matrixID])
                                                          {
-                                                             [matrixIDBy3PID setValue:matrixID forKey:pid];
+                                                             [matrixIDBy3PID setObject:matrixID forKey:pid];
                                                              isUpdated = YES;
                                                          }
                                                      }
@@ -850,7 +850,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         matrixContactByContactID = nil;
         [self cacheMatrixContacts];
     }
-    else  if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
+    else if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
     {
         if (!matrixContactByContactID)
         {
@@ -861,7 +861,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         NSMutableDictionary *updatedMatrixContactByMatrixID = [[NSMutableDictionary alloc] initWithCapacity:matrixContactByMatrixID.count];
         for (MXSession *mxSession in mxSessions)
         {
-            // Check for all users if a one-to-one room exist
+            // Check all existing users
             NSArray *mxUsers = mxSession.users;
 
             for (MXUser *user in mxUsers)
@@ -929,7 +929,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                         contact.displayName = userDisplayName;
                         
                         [self cacheMatrixContacts];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
                     }
                 }
                 else
@@ -941,7 +941,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                     [matrixContactByContactID setValue:contact forKey:contact.contactID];
                     
                     [self cacheMatrixContacts];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
                 }
                 
                 // Done
@@ -958,7 +958,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         [matrixContactByMatrixID removeObjectForKey:matrixId];
         
         [self cacheMatrixContacts];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
     }
 }
 
@@ -983,7 +983,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         if (email.emailAddress.length > 0)
         {
-            id matrixID = [matrixIDBy3PID valueForKey:email.emailAddress];
+            id matrixID = [matrixIDBy3PID objectForKey:email.emailAddress];
             
             if ([matrixID isKindOfClass:[NSString class]])
             {

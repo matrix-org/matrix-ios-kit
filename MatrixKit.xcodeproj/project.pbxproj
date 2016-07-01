@@ -38,7 +38,7 @@
 		719E5AF51BDE241600F63021 /* MXKLRUCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 719E5AF41BDE241600F63021 /* MXKLRUCache.m */; };
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
-		8B9E9737BF25A512725372BE /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C994EE81FBAC79EE746DF4E5 /* libPods-MatrixKitSample.a */; };
+		ACD9DAA6B4DCFC7E33E12A97 /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */; };
 		F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */; };
 		F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */; };
 		F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */; };
@@ -200,7 +200,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0606B0702D98FE702AAED75B /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		321313C61AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIOSOutgoingBubbleTableViewCell.h; sourceTree = "<group>"; };
 		321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSOutgoingBubbleTableViewCell.m; sourceTree = "<group>"; };
 		321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIOSOutgoingBubbleTableViewCell.xib; sourceTree = "<group>"; };
@@ -251,6 +250,8 @@
 		32CEE22A1AB1EC9B00F7C74D /* MXKRecentCellDataStoring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentCellDataStoring.h; sourceTree = "<group>"; };
 		32CEE22E1AB1EE0900F7C74D /* MXKRecentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentTableViewCell.h; sourceTree = "<group>"; };
 		32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRecentTableViewCell.m; sourceTree = "<group>"; };
+		392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
+		665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		71352D521C0ED240001D50B0 /* MXKRoomSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomSettingsViewController.h; sourceTree = "<group>"; };
 		71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomSettingsViewController.m; sourceTree = "<group>"; };
 		71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomSettingsViewController.xib; sourceTree = "<group>"; };
@@ -263,8 +264,7 @@
 		71DE22E61BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellDataWithIncomingAppendingMode.h; sourceTree = "<group>"; };
 		71EBE6611C04608100E7D953 /* MXKRoomActivitiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomActivitiesView.h; sourceTree = "<group>"; };
 		71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomActivitiesView.m; sourceTree = "<group>"; };
-		C994EE81FBAC79EE746DF4E5 /* libPods-MatrixKitSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D473CAF02D2D0996B98A23E8 /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
+		C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F0026B641C91EED1001D2C04 /* MXKWebViewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKWebViewViewController.h; sourceTree = "<group>"; };
 		F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKWebViewViewController.m; sourceTree = "<group>"; };
 		F0036EEC1AB98DC40008E432 /* MXKRoomInputToolbarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarView.h; sourceTree = "<group>"; };
@@ -520,7 +520,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B9E9737BF25A512725372BE /* libPods-MatrixKitSample.a in Frameworks */,
+				ACD9DAA6B4DCFC7E33E12A97 /* libPods-MatrixKitSample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,14 +534,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1DD79E62F9F3BB9FC50C503F /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				C994EE81FBAC79EE746DF4E5 /* libPods-MatrixKitSample.a */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		3219CB5F1AA6F2780027D7E2 = {
 			isa = PBXGroup;
 			children = (
@@ -549,8 +541,8 @@
 				3219CB6A1AA6F2780027D7E2 /* MatrixKit */,
 				3219CB871AA6F2780027D7E2 /* MatrixKitTests */,
 				3219CB691AA6F2780027D7E2 /* Products */,
-				8140E85B615322EF09C3A764 /* Pods */,
-				1DD79E62F9F3BB9FC50C503F /* Frameworks */,
+				69833E0CA8F7B8F25C6CC7C7 /* Pods */,
+				CC4E6F6D4101B9B731F29FB7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -824,13 +816,21 @@
 			path = RoomList;
 			sourceTree = "<group>";
 		};
-		8140E85B615322EF09C3A764 /* Pods */ = {
+		69833E0CA8F7B8F25C6CC7C7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				D473CAF02D2D0996B98A23E8 /* Pods-MatrixKitSample.debug.xcconfig */,
-				0606B0702D98FE702AAED75B /* Pods-MatrixKitSample.release.xcconfig */,
+				C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */,
+				392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		CC4E6F6D4101B9B731F29FB7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F00BB4471AB840B300AE388E /* RoomInputToolbar */ = {
@@ -1140,12 +1140,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3219CB8E1AA6F2790027D7E2 /* Build configuration list for PBXNativeTarget "MatrixKitSample" */;
 			buildPhases = (
-				C4EF25314B5653164693070B /* Check Pods Manifest.lock */,
+				C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */,
 				3219CB641AA6F2780027D7E2 /* Sources */,
 				3219CB651AA6F2780027D7E2 /* Frameworks */,
 				3219CB661AA6F2780027D7E2 /* Resources */,
-				823C4FED456AD37C7A8B72D0 /* Copy Pods Resources */,
-				FC08C2D46757964161ED45BA /* Embed Pods Frameworks */,
+				823C4FED456AD37C7A8B72D0 /* [CP] Copy Pods Resources */,
+				FC08C2D46757964161ED45BA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1287,14 +1287,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		823C4FED456AD37C7A8B72D0 /* Copy Pods Resources */ = {
+		823C4FED456AD37C7A8B72D0 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1302,14 +1302,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C4EF25314B5653164693070B /* Check Pods Manifest.lock */ = {
+		C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1317,14 +1317,14 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		FC08C2D46757964161ED45BA /* Embed Pods Frameworks */ = {
+		FC08C2D46757964161ED45BA /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1580,7 +1580,7 @@
 		};
 		3219CB8F1AA6F2790027D7E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D473CAF02D2D0996B98A23E8 /* Pods-MatrixKitSample.debug.xcconfig */;
+			baseConfigurationReference = C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1593,7 +1593,7 @@
 		};
 		3219CB901AA6F2790027D7E2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0606B0702D98FE702AAED75B /* Pods-MatrixKitSample.release.xcconfig */;
+			baseConfigurationReference = 392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;

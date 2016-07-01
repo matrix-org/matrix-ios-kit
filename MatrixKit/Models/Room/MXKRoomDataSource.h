@@ -22,10 +22,14 @@
 
 
 /**
- define the threshold which triggers a bubbles count flush.
+ Define the threshold which triggers a bubbles count flush.
  */
-
 #define MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD 30
+
+/**
+ Define the number of messages to preload around the initial event.
+ */
+#define MXKROOMDATASOURCE_PAGINATION_LIMIT_AROUND_INITIAL_EVENT 30
 
 /**
  List the supported pagination of the rendered room bubble cells
@@ -108,6 +112,12 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  Flag indicating if the data source manages, or will manage, a live timeline.
  */
 @property (nonatomic, readonly) BOOL isLive;
+
+/**
+ Flag indicating if the data source is used to peek into a room, ie it gets data from
+ a room the user has not joined yet.
+ */
+@property (nonatomic, readonly) BOOL isPeeking;
 
 /**
  The last event in the room that matches the `eventsFilterForMessages` property.
@@ -199,6 +209,12 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 @property (nonatomic) unsigned long maxBackgroundCachedBubblesCount;
 
+/**
+ The number of messages to preload around the initial event.
+ The default value is 30.
+ */
+@property (nonatomic) NSUInteger paginationLimitAroundInitialEvent;
+
 #pragma mark - Life cycle
 /**
  Initialise the data source to serve data corresponding to the passed room.
@@ -219,6 +235,18 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  @return the newly created instance.
  */
 - (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
+
+/**
+ Initialise the data source to peek into a room.
+ 
+ The data source will close the `peekingRoom` instance on [self destroy].
+
+ @param peekingRoom the room to peek.
+ @param initialEventId the id of the event where to start the timeline. nil means the live
+                       timeline.
+ @return the newly created instance.
+ */
+- (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId;
 
 /**
  Mark all messages as read

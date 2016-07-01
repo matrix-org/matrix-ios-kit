@@ -59,8 +59,6 @@
 - (void)dealloc
 {
     inputAccessoryView = nil;
-    
-    [self destroy];
 }
 
 - (void)refreshDisplay

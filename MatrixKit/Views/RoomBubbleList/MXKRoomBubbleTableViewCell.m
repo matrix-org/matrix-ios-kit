@@ -208,6 +208,28 @@ static BOOL _disableLongPressGestureOnEvent;
     }
 }
 
+- (CGFloat)topPositionOfEvent:(NSString*)eventId
+{
+    CGFloat topPositionOfEvent = 0;
+
+    // Retrieve the component that hosts the event
+    MXKRoomBubbleComponent *theComponent;
+    for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+    {
+        if ([component.event.eventId isEqualToString:eventId])
+        {
+            theComponent = component;
+            break;
+        }
+    }
+
+    if (theComponent)
+    {
+        topPositionOfEvent = theComponent.position.y + self.msgTextViewTopConstraint.constant;
+    }
+    return topPositionOfEvent;
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
@@ -259,6 +281,9 @@ static BOOL _disableLongPressGestureOnEvent;
             [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];        
             [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
             self.pictureView.clipsToBounds = YES;
+            
+            // Clear the default background color of a MXKImageView instance
+            self.pictureView.backgroundColor = [UIColor clearColor];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)

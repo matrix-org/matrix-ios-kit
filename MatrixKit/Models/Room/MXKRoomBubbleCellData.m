@@ -104,7 +104,7 @@
             MXKRoomBubbleComponent *roomBubbleComponent = [bubbleComponents objectAtIndex:index];
             if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
             {
-                [roomBubbleComponent updateWithEvent:event];
+                [roomBubbleComponent updateWithEvent:event andRoomState:roomDataSource.room.state];
                 if (!roomBubbleComponent.textMessage.length)
                 {
                     [bubbleComponents removeObjectAtIndex:index];
@@ -118,7 +118,7 @@
                 if (attachment)
                 {
                     // Check the current content url, to update it with the actual one
-                    if (! [attachment.contentURL isEqualToString:event.content[@"url"]])
+                    if (![attachment.event.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:event.content[@"url"]])
                     {
                         MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
                         

@@ -182,9 +182,9 @@
     // sanity check
     if ([notif.object isKindOfClass:[NSString class]])
     {
-        NSString* matrixID = notif.object;
+        NSString* contactID = notif.object;
         
-        if ([matrixID isEqualToString:self.contact.contactID])
+        if ([contactID isEqualToString:self.contact.contactID])
         {
             if (_contact.thumbnail)
             {

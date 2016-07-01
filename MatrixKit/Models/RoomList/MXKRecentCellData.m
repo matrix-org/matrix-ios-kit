@@ -111,12 +111,11 @@
                 NSString *senderDisplayName = roomDataSource.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomDataSource.room.state] : lastEvent.sender;
                 
                 prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
-                lastEventTextMessage = [NSString stringWithFormat:@"%@%@", prefix, lastEventTextMessage];
             }
         }
         
         // Compute the attribute text message
-        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter attributedStringFromString:lastEventTextMessage forEvent:lastEvent withPrefix:prefix];
+        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage withPrefix:prefix forEvent:lastEvent];
     }
 }
 
