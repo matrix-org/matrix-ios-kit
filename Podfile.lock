@@ -20,18 +20,32 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - DTCoreText (1.6.17):
+    - DTFoundation/Core (~> 1.7.5)
+    - DTFoundation/DTAnimatedGIF (~> 1.7.5)
+    - DTFoundation/DTHTMLParser (~> 1.7.5)
+    - DTFoundation/UIKit (~> 1.7.5)
+  - DTFoundation/Core (1.7.10)
+  - DTFoundation/DTAnimatedGIF (1.7.10)
+  - DTFoundation/DTHTMLParser (1.7.10):
+    - DTFoundation/Core
+  - DTFoundation/UIKit (1.7.10):
+    - DTFoundation/Core
+  - GHMarkdownParser (0.1.2)
   - HPGrowingTextView (1.1)
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.13)
-  - MatrixSDK (0.6.8):
+  - libPhoneNumber-iOS (0.8.14)
+  - MatrixSDK (0.6.9):
     - AFNetworking (~> 2.6.0)
 
 DEPENDENCIES:
+  - DTCoreText (~> 1.6.17)
+  - GHMarkdownParser (~> 0.1.2)
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
-  - libPhoneNumber-iOS (~> 0.8.7)
+  - libPhoneNumber-iOS (~> 0.8.14)
   - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
 
 EXTERNAL SOURCES:
@@ -41,15 +55,20 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   MatrixSDK:
-    :commit: cfd8ecefbb052616c98b98126da0ef666188dc56
+    :commit: 34a74838efff4bb3344b4580503f22111be5a149
     :git: https://github.com/matrix-org/matrix-ios-sdk.git
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
+  DTCoreText: 3ea8bba23dd2141ba18adb227a7dd33a822df1c4
+  DTFoundation: 3b6b1b817d2a7fb02e7eaf2596c922a68145bd43
+  GHMarkdownParser: 14cbf59d0ab9450017d843dffd4a3ef691e5bd77
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: 3a37004baf779b4262ab29a31a87d2ae668159d4
-  MatrixSDK: 6810a9781ad61ac26a52bd127b136000af7eb622
+  libPhoneNumber-iOS: fb165271ebe7fb32e55da97b83219382f2f9d409
+  MatrixSDK: 46b12fd15ef0d50c6ac189989897855b47ce6ba2
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: 5a2e44cfae477be1ea0fc4c5537a6adc9f6461e6
+
+COCOAPODS: 1.0.1
