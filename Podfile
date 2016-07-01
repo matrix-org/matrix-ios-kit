@@ -20,7 +20,7 @@ pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :br
 # Note that MatrixSDK must be cloned into a folder called matrix-ios-sdk next to the MatrixKit folder
 #pod 'MatrixSDK', :path => '../matrix-ios-sdk/MatrixSDK.podspec'
 
-pod 'libPhoneNumber-iOS', '~> 0.8.7'
+pod 'libPhoneNumber-iOS', '~> 0.8.14'
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.2.0'
 pod 'DTCoreText', '~> 1.6.17'
