@@ -6,7 +6,7 @@ Improvements:
  * MXKRoomDataSource: Add the ability to peek into a room.
  * MXKRoomDataSource: Add Markdown typing support.
  * MXKRoomViewController: Use room peeking in room preview.
- * MXKRoomViewController: when opening a permalink, center the correspoding event on the screen.
+ * MXKRoomViewController: when opening a permalink, center the corresponding event on the screen.
  * MXKRoomViewController: Add missing slash commands: /invite, /part and /topic (https://github.com/vector-im/vector-ios/issues/223)
  * MXKRoomViewController: Expose [setAttachmentsViewerClass:].
  * MXKRoomViewController: Rename joinRoomWithRoomId to joinRoomWithRoomIdOrAlias.
@@ -26,7 +26,7 @@ Bug fixes:
  * App freezes on iOS8 when user goes back on Recents from a Room Chat.
  * MXKTools: The unit of formatted seconds interval is 'ss' instead of 's'.
  * Room settings: refresh on room state change.
- 
+ * App crashes on '/join' command when no param is provided.
 
 Changes in MatrixKit in 0.3.9 (2016-06-02)
 ===============================================
