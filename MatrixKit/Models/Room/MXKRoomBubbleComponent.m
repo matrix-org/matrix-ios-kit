@@ -94,6 +94,8 @@
     // Other calls to updateWithEvent are made to update the state of an event (ex: MXKEventStateSending to MXKEventStateDefault).
     // They occur in live so we can use the room up-to-date state without making huge errors
 
+    _textMessage = nil;
+
     MXKEventFormatterError error;
     _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
 }
