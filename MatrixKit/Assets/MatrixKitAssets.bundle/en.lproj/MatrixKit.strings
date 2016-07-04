@@ -112,6 +112,10 @@
 "notice_error_unsupported_event" = "Unsupported event";
 "notice_error_unexpected_event" = "Unexpected event";
 "notice_error_unknown_event_type" = "Unknown event type";
+"notice_room_history_visible_to_anyone" = "%@ made future room history visible to anyone.";
+"notice_room_history_visible_to_members" = "%@ made future room history visible to all room members.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ made future room history visible to all room members, from the point they are invited.";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
 
 // Settings
 "settings_enable_inapp_notifications" = "Enable In-App notifications";

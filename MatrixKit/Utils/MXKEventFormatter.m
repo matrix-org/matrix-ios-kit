@@ -584,6 +584,46 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             break;
         }
+        case MXEventTypeRoomHistoryVisibility:
+        {
+            if (isRedacted)
+            {
+                displayText = redactedInfo;
+            }
+            else
+            {
+                MXRoomHistoryVisibility historyVisibility;
+                MXJSONModelSetString(historyVisibility, event.content[@"history_visibility"]);
+                
+                if (historyVisibility)
+                {
+                    NSString *formattedString;
+                    
+                    if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"];
+                    }
+                    else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityShared])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"];
+                    }
+                    else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityInvited])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"];
+                    }
+                    else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityJoined])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"];
+                    }
+                    
+                    if (formattedString)
+                    {
+                        displayText = [NSString stringWithFormat:formattedString, senderDisplayName];
+                    }
+                }
+            }
+            break;
+        }
         case MXEventTypeRoomMessage:
         {
             // Is redacted?
