@@ -1071,7 +1071,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
-    NSString *htmlString = [markdownParser HTMLStringFromMarkdownString:markdownString];
+    // In GitHub Flavored Mardown, the '#' sign creates an HTML header only if is following by a space.
+    // But GHMarkdownParser creates an HTML header everytime it finds a '#' sign which kills room aliases.
+    // So, escape them if they are not followed by a space
+    NSString *str = [markdownString stringByReplacingOccurrencesOfString:@"(#+)[^( |#)]" withString:@"\\\\$0" options:NSRegularExpressionSearch range:NSMakeRange(0, markdownString.length)];
+
+    NSString *htmlString = [markdownParser HTMLStringFromMarkdownString:str];
 
     // Strip start and end <p> tags else you get 'orrible spacing
     if ([htmlString hasPrefix:@"<p>"])
