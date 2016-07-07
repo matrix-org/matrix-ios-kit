@@ -59,7 +59,8 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
     }
     else
     {
-        if (operation.operation.executing)
+        if (operation && operation.operation
+            && operation.operation.state != NSURLSessionTaskStateCanceling && operation.operation.state != NSURLSessionTaskStateCompleted)
         {
             NSLog(@"[MXKMediaLoader] Media upload has been cancelled");
             [operation cancel];
@@ -251,6 +252,7 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
 - (void)uploadData:(NSData *)data filename:(NSString*)filename mimeType:(NSString *)mimeType success:(blockMXKMediaLoader_onSuccess)success failure:(blockMXKMediaLoader_onError)failure
 {
     statsStartTime = CFAbsoluteTimeGetCurrent();
+    lastTotalBytesWritten = 0;
     
     operation = [mxSession.matrixRestClient uploadContent:data
                                                  filename:filename
@@ -272,13 +274,20 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
                                                       [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadDidFailNotification
                                                                                                           object:_uploadId
                                                                                                         userInfo:@{kMXKMediaLoaderErrorKey:error}];
-                                                  } uploadProgress:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-                                                      [self updateUploadProgressWithBytesWritten:bytesWritten totalBytesWritten:totalBytesWritten andTotalBytesExpectedToWrite:totalBytesExpectedToWrite];
+                                                  } uploadProgress:^(NSProgress *uploadProgress) {
+                                                      [self updateUploadProgress:uploadProgress];
                                                   }];
 }
 
-- (void)updateUploadProgressWithBytesWritten:(NSUInteger)bytesWritten totalBytesWritten:(long long)totalBytesWritten andTotalBytesExpectedToWrite:(long long)totalBytesExpectedToWrite
+- (void)updateUploadProgress:(NSProgress*)uploadProgress
 {
+    int64_t totalBytesWritten = uploadProgress.completedUnitCount;
+    int64_t totalBytesExpectedToWrite = uploadProgress.totalUnitCount;
+
+    // Compute the bytes written since last time
+    int64_t bytesWritten = totalBytesWritten - lastTotalBytesWritten;
+    lastTotalBytesWritten = totalBytesWritten;
+
     CFAbsoluteTime currentTime = CFAbsoluteTimeGetCurrent();
     if (!statisticsDict)
     {
