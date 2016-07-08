@@ -28,3 +28,6 @@ pod 'GHMarkdownParser', '~> 0.1.2'
 
 end
 
+target "MatrixKitTests" do
+
+end

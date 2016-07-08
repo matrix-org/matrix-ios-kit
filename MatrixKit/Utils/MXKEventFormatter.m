@@ -37,6 +37,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
      The Markdown to HTML parser.
      */
     GHMarkdownParser *markdownParser;
+
+    /**
+     The default CSS converted in DTCoreText object.
+     */
+    DTCSSStylesheet *dtCSS;
 }
 @end
 
@@ -64,6 +69,14 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                              @"nl", @"li", @"b", @"i", @"u", @"strong", @"em", @"strike", @"code", @"hr", @"br", @"div",
                              @"table", @"thead", @"caption", @"tbody", @"tr", @"th", @"td", @"pre"
                              ];
+
+        self.defaultCSS = @" \
+            pre,code { \
+                display: block; \
+                font-family: monospace; \
+                white-space: pre; \
+                -coretext-fontname: Courier; \
+            }";
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -922,6 +935,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                               DTDefaultFontSize: @(font.pointSize),
                               DTDefaultTextColor: [self textColorForEvent:event],
                               DTDefaultLinkDecoration: @(NO),
+                              DTDefaultStyleSheet: dtCSS
                               };
 
     // Do not use the default HTML renderer of NSAttributedString because this method
@@ -937,7 +951,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // or after a blockquote section.
     // Trim trailing newlines
     return [self removeTrailingNewlines:str];
-
 }
 
 - (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
@@ -1030,6 +1043,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // TODO: Sanitise other things: attributes, URL schemes, etc
     
     return html;
+}
+
+- (void)setDefaultCSS:(NSString*)defaultCSS
+{
+    _defaultCSS = defaultCSS;
+    dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }
 
 #pragma mark - Conversion private methods

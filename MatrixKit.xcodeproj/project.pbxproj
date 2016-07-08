@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
 		321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */; };
-		3219CB8B1AA6F2780027D7E2 /* MatrixKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219CB8A1AA6F2780027D7E2 /* MatrixKitTests.m */; };
 		3219CBC01AA6FB470027D7E2 /* MXKRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */; };
 		3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3230A3711ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m */; };
 		3230A3751ACADC1800CC57F5 /* MXKRoomDataSourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3230A3741ACADC1800CC57F5 /* MXKRoomDataSourceManager.m */; };
@@ -19,6 +18,7 @@
 		3235CD7C1C32DEBF0084EA40 /* MXKSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD7A1C32DEBF0084EA40 /* MXKSearchViewController.xib */; };
 		3235CD801C33C6640084EA40 /* MXKSearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */; };
 		3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */; };
+		32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
 		327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */; };
 		328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */; };
 		328AC4891AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4881AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m */; };
@@ -38,6 +38,7 @@
 		719E5AF51BDE241600F63021 /* MXKLRUCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 719E5AF41BDE241600F63021 /* MXKLRUCache.m */; };
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
+		79FA5AB121247287B85FA151 /* libPods-MatrixKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */; };
 		ACD9DAA6B4DCFC7E33E12A97 /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */; };
 		F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */; };
 		F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */; };
@@ -190,23 +191,22 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3219CB851AA6F2780027D7E2 /* PBXContainerItemProxy */ = {
+		3203F26D1D2E9CAE0021F170 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3219CB601AA6F2780027D7E2 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 3219CB671AA6F2780027D7E2;
-			remoteInfo = MatrixKit;
+			remoteInfo = MatrixKitSample;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3203F26C1D2E9CAE0021F170 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		321313C61AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIOSOutgoingBubbleTableViewCell.h; sourceTree = "<group>"; };
 		321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSOutgoingBubbleTableViewCell.m; sourceTree = "<group>"; };
 		321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIOSOutgoingBubbleTableViewCell.xib; sourceTree = "<group>"; };
 		3219CB681AA6F2780027D7E2 /* MatrixKitSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MatrixKitSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3219CB841AA6F2780027D7E2 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3219CB891AA6F2780027D7E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3219CB8A1AA6F2780027D7E2 /* MatrixKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MatrixKitTests.m; sourceTree = "<group>"; };
 		3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomViewController.h; sourceTree = "<group>"; };
 		3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomViewController.m; sourceTree = "<group>"; };
 		3219CBC11AA6FB6B0027D7E2 /* MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixKit.h; sourceTree = "<group>"; };
@@ -225,6 +225,7 @@
 		3235CD7E1C33C6640084EA40 /* MXKSearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MXKSearchTableViewCell.h; path = Search/MXKSearchTableViewCell.h; sourceTree = "<group>"; };
 		3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MXKSearchTableViewCell.m; path = Search/MXKSearchTableViewCell.m; sourceTree = "<group>"; };
 		3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MXKSearchTableViewCell.xib; path = Search/MXKSearchTableViewCell.xib; sourceTree = "<group>"; };
+		32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventFormatterTests.m; sourceTree = "<group>"; };
 		327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRecentTableViewCell.xib; sourceTree = "<group>"; };
 		328AC4841AA75E000044A6FB /* MXKRoomBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleTableViewCell.h; sourceTree = "<group>"; };
 		328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomBubbleTableViewCell.m; sourceTree = "<group>"; };
@@ -264,6 +265,9 @@
 		71DE22E61BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellDataWithIncomingAppendingMode.h; sourceTree = "<group>"; };
 		71EBE6611C04608100E7D953 /* MXKRoomActivitiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomActivitiesView.h; sourceTree = "<group>"; };
 		71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomActivitiesView.m; sourceTree = "<group>"; };
+		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F0026B641C91EED1001D2C04 /* MXKWebViewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKWebViewViewController.h; sourceTree = "<group>"; };
 		F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKWebViewViewController.m; sourceTree = "<group>"; };
@@ -516,6 +520,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3203F2651D2E9CAE0021F170 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79FA5AB121247287B85FA151 /* libPods-MatrixKitTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3219CB651AA6F2780027D7E2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -524,22 +536,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3219CB811AA6F2780027D7E2 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3203F2691D2E9CAE0021F170 /* MatrixKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
+				3203F26C1D2E9CAE0021F170 /* Info.plist */,
+			);
+			path = MatrixKitTests;
+			sourceTree = "<group>";
+		};
 		3219CB5F1AA6F2780027D7E2 = {
 			isa = PBXGroup;
 			children = (
 				3219CB941AA6F5ED0027D7E2 /* Samples */,
 				3219CB6A1AA6F2780027D7E2 /* MatrixKit */,
-				3219CB871AA6F2780027D7E2 /* MatrixKitTests */,
+				3203F2691D2E9CAE0021F170 /* MatrixKitTests */,
 				3219CB691AA6F2780027D7E2 /* Products */,
 				69833E0CA8F7B8F25C6CC7C7 /* Pods */,
 				CC4E6F6D4101B9B731F29FB7 /* Frameworks */,
@@ -550,7 +564,7 @@
 			isa = PBXGroup;
 			children = (
 				3219CB681AA6F2780027D7E2 /* MatrixKitSample.app */,
-				3219CB841AA6F2780027D7E2 /* MatrixKitTests.xctest */,
+				3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -567,23 +581,6 @@
 				3219CBC11AA6FB6B0027D7E2 /* MatrixKit.h */,
 			);
 			path = MatrixKit;
-			sourceTree = "<group>";
-		};
-		3219CB871AA6F2780027D7E2 /* MatrixKitTests */ = {
-			isa = PBXGroup;
-			children = (
-				3219CB8A1AA6F2780027D7E2 /* MatrixKitTests.m */,
-				3219CB881AA6F2780027D7E2 /* Supporting Files */,
-			);
-			path = MatrixKitTests;
-			sourceTree = "<group>";
-		};
-		3219CB881AA6F2780027D7E2 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				3219CB891AA6F2780027D7E2 /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		3219CB941AA6F5ED0027D7E2 /* Samples */ = {
@@ -821,6 +818,8 @@
 			children = (
 				C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */,
 				392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */,
+				BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */,
+				8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -829,6 +828,7 @@
 			isa = PBXGroup;
 			children = (
 				665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */,
+				9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1136,6 +1136,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3203F2671D2E9CAE0021F170 /* MatrixKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3203F26F1D2E9CAE0021F170 /* Build configuration list for PBXNativeTarget "MatrixKitTests" */;
+			buildPhases = (
+				12BF6DF765B9099EF974259F /* [CP] Check Pods Manifest.lock */,
+				3203F2641D2E9CAE0021F170 /* Sources */,
+				3203F2651D2E9CAE0021F170 /* Frameworks */,
+				3203F2661D2E9CAE0021F170 /* Resources */,
+				AEBAA4F0588E97BD06D45369 /* [CP] Embed Pods Frameworks */,
+				31DF541766F395AA9A742AC8 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3203F26E1D2E9CAE0021F170 /* PBXTargetDependency */,
+			);
+			name = MatrixKitTests;
+			productName = MatrixKitTests;
+			productReference = 3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3219CB671AA6F2780027D7E2 /* MatrixKitSample */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3219CB8E1AA6F2790027D7E2 /* Build configuration list for PBXNativeTarget "MatrixKitSample" */;
@@ -1156,24 +1177,6 @@
 			productReference = 3219CB681AA6F2780027D7E2 /* MatrixKitSample.app */;
 			productType = "com.apple.product-type.application";
 		};
-		3219CB831AA6F2780027D7E2 /* MatrixKitTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3219CB911AA6F2790027D7E2 /* Build configuration list for PBXNativeTarget "MatrixKitTests" */;
-			buildPhases = (
-				3219CB801AA6F2780027D7E2 /* Sources */,
-				3219CB811AA6F2780027D7E2 /* Frameworks */,
-				3219CB821AA6F2780027D7E2 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3219CB861AA6F2780027D7E2 /* PBXTargetDependency */,
-			);
-			name = MatrixKitTests;
-			productName = MatrixKitTests;
-			productReference = 3219CB841AA6F2780027D7E2 /* MatrixKitTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1183,12 +1186,12 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = matrix.org;
 				TargetAttributes = {
+					3203F2671D2E9CAE0021F170 = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 3219CB671AA6F2780027D7E2;
+					};
 					3219CB671AA6F2780027D7E2 = {
 						CreatedOnToolsVersion = 6.1.1;
-					};
-					3219CB831AA6F2780027D7E2 = {
-						CreatedOnToolsVersion = 6.1.1;
-						TestTargetID = 3219CB671AA6F2780027D7E2;
 					};
 				};
 			};
@@ -1206,12 +1209,19 @@
 			projectRoot = "";
 			targets = (
 				3219CB671AA6F2780027D7E2 /* MatrixKitSample */,
-				3219CB831AA6F2780027D7E2 /* MatrixKitTests */,
+				3203F2671D2E9CAE0021F170 /* MatrixKitTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3203F2661D2E9CAE0021F170 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3219CB661AA6F2780027D7E2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1277,16 +1287,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3219CB821AA6F2780027D7E2 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		12BF6DF765B9099EF974259F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		31DF541766F395AA9A742AC8 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		823C4FED456AD37C7A8B72D0 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1300,6 +1333,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AEBAA4F0588E97BD06D45369 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */ = {
@@ -1335,6 +1383,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3203F2641D2E9CAE0021F170 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3219CB641AA6F2780027D7E2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1462,21 +1518,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3219CB801AA6F2780027D7E2 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3219CB8B1AA6F2780027D7E2 /* MatrixKitTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3219CB861AA6F2780027D7E2 /* PBXTargetDependency */ = {
+		3203F26E1D2E9CAE0021F170 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3219CB671AA6F2780027D7E2 /* MatrixKitSample */;
-			targetProxy = 3219CB851AA6F2780027D7E2 /* PBXContainerItemProxy */;
+			targetProxy = 3203F26D1D2E9CAE0021F170 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1500,6 +1548,43 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3203F2701D2E9CAE0021F170 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = MatrixKitTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.matrix.MatrixKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatrixKitSample.app/MatrixKitSample";
+			};
+			name = Debug;
+		};
+		3203F2711D2E9CAE0021F170 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = MatrixKitTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.matrix.MatrixKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatrixKitSample.app/MatrixKitSample";
+			};
+			name = Release;
+		};
 		3219CB8C1AA6F2790027D7E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1604,43 +1689,18 @@
 			};
 			name = Release;
 		};
-		3219CB921AA6F2790027D7E2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = MatrixKitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatrixKitSample.app/MatrixKitSample";
-			};
-			name = Debug;
-		};
-		3219CB931AA6F2790027D7E2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = MatrixKitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatrixKitSample.app/MatrixKitSample";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3203F26F1D2E9CAE0021F170 /* Build configuration list for PBXNativeTarget "MatrixKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3203F2701D2E9CAE0021F170 /* Debug */,
+				3203F2711D2E9CAE0021F170 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3219CB631AA6F2780027D7E2 /* Build configuration list for PBXProject "MatrixKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1655,15 +1715,6 @@
 			buildConfigurations = (
 				3219CB8F1AA6F2790027D7E2 /* Debug */,
 				3219CB901AA6F2790027D7E2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3219CB911AA6F2790027D7E2 /* Build configuration list for PBXNativeTarget "MatrixKitTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3219CB921AA6F2790027D7E2 /* Debug */,
-				3219CB931AA6F2790027D7E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
