@@ -312,7 +312,22 @@
         selectedTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
         selectedTextView.attributedText = attributedText;
             
-        return [selectedTextView sizeThatFits:measurementTextView.frame.size];
+        CGSize size = [selectedTextView sizeThatFits:measurementTextView.frame.size];
+
+        // Manage the case where a string attribute has a single paragraph with a left indent
+        // In this case, [UITextViex sizeThatFits] ignores the indent and return the width
+        // of the text only.
+        // So, add this indent afterwards
+        NSRange textRange = NSMakeRange(0, attributedText.length);
+        NSRange longestEffectiveRange;
+        NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 longestEffectiveRange:&longestEffectiveRange inRange:textRange];
+
+        if (NSEqualRanges(textRange, longestEffectiveRange))
+        {
+            size.width = size.width + paragraphStyle.headIndent;
+        }
+
+        return size;
     }
     
     return CGSizeZero;
