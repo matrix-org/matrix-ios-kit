@@ -63,7 +63,7 @@
     [as enumerateAttributesInRange:NSMakeRange(0, as.length) options:(0) usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 
         UIFont *font = attrs[NSFontAttributeName];
-        XCTAssertEqualObjects(font.fontName, @"Courier", "The font for <pre> and <code> should be monospace");
+        XCTAssertEqualObjects(font.fontName, @"Menlo-Regular", "The font for <pre> and <code> should be monospace");
     }];
 
 }
