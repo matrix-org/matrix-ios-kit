@@ -879,6 +879,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
 {
+    // Sanity check
+    if (!string)
+    {
+        return nil;
+    }
+    
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:string];
 
     NSRange wholeString = NSMakeRange(0, str.length);
