@@ -72,7 +72,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
         self.defaultCSS = @" \
             pre,code { \
-                display: block; \
+                background-color: #eeeeee; \
+                display: inline; \
                 font-family: monospace; \
                 white-space: pre; \
                 -coretext-fontname: Courier; \
