@@ -76,7 +76,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 display: inline; \
                 font-family: monospace; \
                 white-space: pre; \
-                -coretext-fontname: Courier; \
+                -coretext-fontname: Menlo; \
+                font-size: small; \
             }";
 
         // Set default colors
