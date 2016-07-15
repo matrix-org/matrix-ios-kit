@@ -1,3 +1,19 @@
+Changes in MatrixKit in 0.3.11 (2016-07-15)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.10).
+ * MXKRoomDataSource: Display room history visibility changes.
+ * MXKEventFormatter: Add the defaultCSS property to enrich the defaultCSS used by DTCoreText.
+ * MatrixKitTests: Create first MatrixKit unitary test.
+
+Bug fixes:
+ * Markdown swallows leading #'s even if there are less than 3 (https://github.com/vector-im/vector-ios/issues/423).
+ * Fix the rendering of <code> tags: line breaks are kept, the Menlo font is used with a light grey background.
+ * HTML blockquote is badly rendered: some characters can miss (https://github.com/vector-im/vector-ios/issues/437).
+ * MXKRoomSettingsViewController: Infinite loading wheel on bad network.
+ * MXKEventFormatter - Fix crash on NSConcreteMutableAttributedString initWithString:: nil value.
+
 Changes in MatrixKit in 0.3.10 (2016-07-01)
 ===============================================
 
