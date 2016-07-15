@@ -80,6 +80,8 @@
     // Check this is our Matrix session that has changed
     if (notif.object == self.mainSession)
     {
+        [super onMatrixSessionStateDidChange:notif];
+        
         // refresh when the session sync is done.
         if (MXSessionStateRunning == self.mainSession.state)
         {

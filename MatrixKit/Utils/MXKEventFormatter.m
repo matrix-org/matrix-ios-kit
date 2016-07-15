@@ -37,6 +37,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
      The Markdown to HTML parser.
      */
     GHMarkdownParser *markdownParser;
+
+    /**
+     The default CSS converted in DTCoreText object.
+     */
+    DTCSSStylesheet *dtCSS;
 }
 @end
 
@@ -64,6 +69,16 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                              @"nl", @"li", @"b", @"i", @"u", @"strong", @"em", @"strike", @"code", @"hr", @"br", @"div",
                              @"table", @"thead", @"caption", @"tbody", @"tr", @"th", @"td", @"pre"
                              ];
+
+        self.defaultCSS = @" \
+            pre,code { \
+                background-color: #eeeeee; \
+                display: inline; \
+                font-family: monospace; \
+                white-space: pre; \
+                -coretext-fontname: Menlo; \
+                font-size: small; \
+            }";
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -584,6 +599,46 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             break;
         }
+        case MXEventTypeRoomHistoryVisibility:
+        {
+            if (isRedacted)
+            {
+                displayText = redactedInfo;
+            }
+            else
+            {
+                MXRoomHistoryVisibility historyVisibility;
+                MXJSONModelSetString(historyVisibility, event.content[@"history_visibility"]);
+                
+                if (historyVisibility)
+                {
+                    NSString *formattedString;
+                    
+                    if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"];
+                    }
+                    else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityShared])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"];
+                    }
+                    else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityInvited])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"];
+                    }
+                    else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityJoined])
+                    {
+                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"];
+                    }
+                    
+                    if (formattedString)
+                    {
+                        displayText = [NSString stringWithFormat:formattedString, senderDisplayName];
+                    }
+                }
+            }
+            break;
+        }
         case MXEventTypeRoomMessage:
         {
             // Is redacted?
@@ -824,6 +879,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
 {
+    // Sanity check
+    if (!string)
+    {
+        return nil;
+    }
+    
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:string];
 
     NSRange wholeString = NSMakeRange(0, str.length);
@@ -882,6 +943,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                               DTDefaultFontSize: @(font.pointSize),
                               DTDefaultTextColor: [self textColorForEvent:event],
                               DTDefaultLinkDecoration: @(NO),
+                              DTDefaultStyleSheet: dtCSS
                               };
 
     // Do not use the default HTML renderer of NSAttributedString because this method
@@ -897,7 +959,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // or after a blockquote section.
     // Trim trailing newlines
     return [self removeTrailingNewlines:str];
-
 }
 
 - (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
@@ -992,6 +1053,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     return html;
 }
 
+- (void)setDefaultCSS:(NSString*)defaultCSS
+{
+    _defaultCSS = defaultCSS;
+    dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
+}
+
 #pragma mark - Conversion private methods
 
 /**
@@ -1071,7 +1138,14 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
-    NSString *htmlString = [markdownParser HTMLStringFromMarkdownString:markdownString];
+    // In GitHub Flavored Mardown, the '#' sign creates an HTML header only if it is
+    // followed by the space char.
+    // But GHMarkdownParser creates an HTML header everytime it finds a '#' sign which
+    // kills room aliases (like #matrix:matrix.org).
+    // So, escape them if they are not followed by a space
+    NSString *str = [markdownString stringByReplacingOccurrencesOfString:@"(#+)[^( |#)]" withString:@"\\\\$0" options:NSRegularExpressionSearch range:NSMakeRange(0, markdownString.length)];
+
+    NSString *htmlString = [markdownParser HTMLStringFromMarkdownString:str];
 
     // Strip start and end <p> tags else you get 'orrible spacing
     if ([htmlString hasPrefix:@"<p>"])

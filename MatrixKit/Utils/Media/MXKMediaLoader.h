@@ -107,6 +107,7 @@ extern NSString *const kMXKMediaUploadIdPrefix;
     CFAbsoluteTime statsStartTime;
     CFAbsoluteTime downloadStartTime;
     CFAbsoluteTime lastProgressEventTimeStamp;
+    int64_t lastTotalBytesWritten;
     NSTimer* progressCheckTimer;
 }
 

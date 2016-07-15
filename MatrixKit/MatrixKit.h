@@ -25,6 +25,8 @@
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKEventFormatter.h"
+
 #import "MXKTools.h"
 #import "MXKAlert.h"
 #import "MXKMediaManager.h"

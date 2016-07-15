@@ -251,6 +251,11 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSArray<NSString*> *allowedHTMLTags;
 
 /**
+ The style sheet used by the 'renderHTMLString' method.
+*/
+@property (nonatomic) NSString *defaultCSS;
+
+/**
  Default color used to display text content of event.
  Default is [UIColor blackColor].
  */
