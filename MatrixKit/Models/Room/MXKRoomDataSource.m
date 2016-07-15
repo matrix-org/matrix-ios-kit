@@ -108,9 +108,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id NSCurrentLocaleDidChangeNotificationObserver;
     
     /**
-     Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync.
+     Observe kMXRoomDidFlushMessagesNotification to trigger cell change when existing room history has been flushed during server sync.
      */
-    id roomSyncWithLimitedTimelineNotificationObserver;
+    id roomDidFlushMessagesNotificationObserver;
     
     /**
      Observe kMXRoomDidUpdateUnreadNotification to refresh unread counters.
@@ -322,10 +322,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)reset
 {
-    if (roomSyncWithLimitedTimelineNotificationObserver)
+    if (roomDidFlushMessagesNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:roomSyncWithLimitedTimelineNotificationObserver];
-        roomSyncWithLimitedTimelineNotificationObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushMessagesNotificationObserver];
+        roomDidFlushMessagesNotificationObserver = nil;
     }
     
     if (roomDidUpdateUnreadNotificationObserver)
@@ -483,8 +483,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                     [_timeline resetPagination];
                     
-                    // Observe sync with limited timeline
-                    roomSyncWithLimitedTimelineNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    // Observe room history flush (sync with limited timeline, or state event redaction)
+                    roomDidFlushMessagesNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushMessagesNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
                         MXRoom *room = notif.object;
                         if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
