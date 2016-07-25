@@ -800,7 +800,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
             if (callInviteEventContent.isVideoCall)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_video_call"], senderDisplayName];
             }
             else
             {
