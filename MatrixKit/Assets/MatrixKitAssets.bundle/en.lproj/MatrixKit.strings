@@ -158,6 +158,7 @@
 
 // Room members
 "room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
+"room_member_power_level_prompt" = "You will not be able to undo this change as you are promoting the user to have the same power level as yourself.\nAre you sure?";
 
 // Attachment
 "attachment_size_prompt" = "Do you want to send as:";

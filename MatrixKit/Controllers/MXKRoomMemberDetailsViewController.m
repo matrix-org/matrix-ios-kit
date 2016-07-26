@@ -814,7 +814,7 @@
     }
 }
 
-- (void)setPowerLevel:(NSInteger)value
+- (void)setPowerLevel:(NSInteger)value promptUser:(BOOL)promptUser
 {
     NSInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     
@@ -822,25 +822,51 @@
     if (value != currentPowerLevel)
     {
         __weak typeof(self) weakSelf = self;
-        
-        [self addPendingActionMask];
-        
-        // Reset user power level
-        [self.mxRoom setPowerLevelOfUserWithUserID:_mxRoomMember.userId powerLevel:value success:^{
-            
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            [strongSelf removePendingActionMask];
-            
-        } failure:^(NSError *error) {
-            
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            [strongSelf removePendingActionMask];
-            NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", strongSelf.mxRoomMember.userId, error);
-            
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-            
-        }];
+
+        if (promptUser && value == [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId])
+        {
+            // If the user is setting the same power level as his to another user, ask him for a confirmation
+            [currentAlert dismiss:NO];
+            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_power_level_prompt"]  message:nil style:MXKAlertStyleAlert];
+
+            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+            }];
+
+            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf->currentAlert = nil;
+
+                // The user confirms. Apply the power level
+                [strongSelf setPowerLevel:value promptUser:NO];
+            }];
+
+            [currentAlert showInViewController:self];
+        }
+        else
+        {
+            [self addPendingActionMask];
+
+            // Reset user power level
+            [self.mxRoom setPowerLevelOfUserWithUserID:_mxRoomMember.userId powerLevel:value success:^{
+
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf removePendingActionMask];
+
+            } failure:^(NSError *error) {
+
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf removePendingActionMask];
+                NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", strongSelf.mxRoomMember.userId, error);
+
+                // Notify MatrixKit user
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                
+            }];
+        }
     }
 }
 
@@ -859,7 +885,7 @@
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             strongSelf->currentAlert = nil;
             
-            [strongSelf setPowerLevel:strongSelf.mxRoom.state.powerLevels.usersDefault];
+            [strongSelf setPowerLevel:strongSelf.mxRoom.state.powerLevels.usersDefault promptUser:YES];
         }];
     }
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
@@ -880,7 +906,7 @@
         
         if (textField.text.length > 0)
         {
-            [strongSelf setPowerLevel:[textField.text integerValue]];
+            [strongSelf setPowerLevel:[textField.text integerValue] promptUser:YES];
         }
     }];
     [currentAlert showInViewController:self];
