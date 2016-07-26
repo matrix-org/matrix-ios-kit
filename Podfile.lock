@@ -30,8 +30,8 @@ PODS:
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.14)
-  - MatrixSDK (0.6.10):
+  - libPhoneNumber-iOS (0.8.15)
+  - MatrixSDK (0.6.11):
     - AFNetworking (~> 3.1.0)
 
 DEPENDENCIES:
@@ -40,17 +40,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.8.14)
-  - MatrixSDK (from `https://github.com/matrix-org/matrix-ios-sdk.git`, branch `develop`)
-
-EXTERNAL SOURCES:
-  MatrixSDK:
-    :branch: develop
-    :git: https://github.com/matrix-org/matrix-ios-sdk.git
-
-CHECKOUT OPTIONS:
-  MatrixSDK:
-    :commit: c40327d49a2f6485cd1e9aacbf4ecf98f15e6551
-    :git: https://github.com/matrix-org/matrix-ios-sdk.git
+  - MatrixSDK (= 0.6.11)
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
@@ -60,9 +50,9 @@ SPEC CHECKSUMS:
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: fb165271ebe7fb32e55da97b83219382f2f9d409
-  MatrixSDK: 39f5fd09a729e88ce7f159a66f2d2515c7252664
+  libPhoneNumber-iOS: 62a740e1ea5741060f5cec0f788b52071115cf31
+  MatrixSDK: 22c13b3d2e16954944977eb1093c4e6926a339a5
 
-PODFILE CHECKSUM: bb3c8b88dd13e8bf99f9c48473fbaeca9a7a26ef
+PODFILE CHECKSUM: 64ef7db99fb50e8a382abb950f0c5da05e908822
 
 COCOAPODS: 1.0.1
