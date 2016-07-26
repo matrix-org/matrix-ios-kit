@@ -410,7 +410,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     else if (sender == muteButton)
     {
-        mxCall.audioMuted != mxCall.audioMuted;
+        mxCall.audioMuted = !mxCall.audioMuted;
     }
     else if (sender == speakerButton)
     {
