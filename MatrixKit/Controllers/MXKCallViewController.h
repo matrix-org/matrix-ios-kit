@@ -15,6 +15,8 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
+
 #import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKViewController.h"
@@ -46,7 +48,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 /**
  'MXKCallViewController' instance displays a call. Only one matrix session is supported by this view controller.
  */
-@interface MXKCallViewController : MXKViewController <MXCallDelegate>
+@interface MXKCallViewController : MXKViewController <MXCallDelegate, AVAudioPlayerDelegate>
 
 @property (weak, nonatomic, readonly) IBOutlet MXKImageView *backgroundImageView;
 

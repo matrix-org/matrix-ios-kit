@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-#import <MediaPlayer/MediaPlayer.h>
 
 #import "MXKCallViewController.h"
 
@@ -500,7 +499,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             {
                 NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
             }
-            
+
+            // Listen (audioPlayerDidFinishPlaying) for the end of the playback of "callend"
+            // to release the audio session
+            audioPlayer.delegate = self;
+
             audioPlayer.numberOfLoops = 0;
             [audioPlayer play];
 
@@ -545,6 +548,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // And interrupt the call
         [mxCall hangup];
     }
+}
+
+#pragma mark - AVAudioPlayerDelegate
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+{
+    // Release the audio session to allow resuming of background music app
+    [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
 }
 
 #pragma mark - Internal
