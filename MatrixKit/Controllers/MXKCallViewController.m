@@ -21,6 +21,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKTools.h"
+
 NSString *const kMXKCallViewControllerWillAppearNotification = @"kMXKCallViewControllerWillAppearNotification";
 NSString *const kMXKCallViewControllerAppearedNotification = @"kMXKCallViewControllerAppearedNotification";
 NSString *const kMXKCallViewControllerWillDisappearNotification = @"kMXKCallViewControllerWillDisappearNotification";
@@ -272,17 +274,29 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         if (call.isVideoCall)
         {
-            localPreviewContainerView.hidden = NO;
-            remotePreviewContainerView.hidden = NO;
-            
-            call.selfVideoView = localPreviewContainerView;
-            call.remoteVideoView = remotePreviewContainerView;
-            [self applyDeviceOrientation:YES];
-            
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(deviceOrientationDidChange)
-                                                         name:UIDeviceOrientationDidChangeNotification
-                                                       object:nil];
+            // Access to the camera is mandatory to display the self view
+            // Check the permission right now
+            NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+            [MXKTools checkAccessForMediaType:AVMediaTypeVideo
+                          manualChangeMessage:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"camera_access_not_granted_for_call"], appDisplayName]
+
+                    showPopUpInViewController:self completionHandler:^(BOOL granted) {
+
+                   if (granted)
+                   {
+                       localPreviewContainerView.hidden = NO;
+                       remotePreviewContainerView.hidden = NO;
+
+                       call.selfVideoView = localPreviewContainerView;
+                       call.remoteVideoView = remotePreviewContainerView;
+                       [self applyDeviceOrientation:YES];
+
+                       [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                selector:@selector(deviceOrientationDidChange)
+                                                                    name:UIDeviceOrientationDidChangeNotification
+                                                                  object:nil];
+                   }
+               }];
         }
         else
         {
@@ -394,7 +408,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 {
     if (sender == answerCallButton)
     {
-        [mxCall answer];
+        // If we are here, we have access to the camera
+        // The following check is mainly to check microphone access permission
+        NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+
+        [MXKTools checkAccessForCall:mxCall.isVideoCall
+         manualChangeMessageForAudio:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"microphone_access_not_granted_for_call"], appDisplayName]
+         manualChangeMessageForVideo:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"camera_access_not_granted_for_call"], appDisplayName]
+           showPopUpInViewController:self completionHandler:^(BOOL granted) {
+
+               if (granted)
+               {
+                   [mxCall answer];
+               }
+           }];
     }
     else if (sender == rejectCallButton || sender == endCallButton)
     {

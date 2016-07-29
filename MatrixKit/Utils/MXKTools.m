@@ -21,6 +21,9 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKAlert.h"
+#import "MXCall.h"
+
 @implementation MXKTools
 
 #pragma mark - Time interval
@@ -657,6 +660,82 @@ static NSMutableDictionary* backgroundByImageNameDict;
     }
     
     return bgColor;
+}
+
++ (void)checkAccessForMediaType:(NSString *)mediaType
+            manualChangeMessage:(NSString *)manualChangeMessage
+      showPopUpInViewController:(UIViewController *)viewController
+              completionHandler:(void (^)(BOOL))handler
+{
+    [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            if (granted)
+            {
+                handler(YES);
+            }
+            else
+            {
+                // Access not granted to mediaType
+                // Display manualChangeMessage
+                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+
+                // On iOS >= 8, add a shortcut to the app settings
+                if (UIApplicationOpenSettingsURLString)
+                {
+                    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                        [[UIApplication sharedApplication] openURL:url];
+
+                        // Note: it does not worth to check if the user changes the permission
+                        // because iOS restarts the app in case of change of app privacy settings
+                        handler(NO);
+                    }];
+                }
+
+                alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                    
+                    handler(NO);
+                }];
+                
+                [alert showInViewController:viewController];
+            }
+            
+        });
+    }];
+}
+
++ (void)checkAccessForCall:(BOOL)isVideoCall
+manualChangeMessageForAudio:(NSString*)manualChangeMessageForAudio
+manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
+ showPopUpInViewController:(UIViewController*)viewController
+         completionHandler:(void (^)(BOOL granted))handler
+{
+    // Check first microphone permission
+    [MXKTools checkAccessForMediaType:AVMediaTypeAudio manualChangeMessage:manualChangeMessageForAudio showPopUpInViewController:viewController completionHandler:^(BOOL granted) {
+
+        if (granted)
+        {
+            // Check camera permission in case of video call
+            if (isVideoCall)
+            {
+                [MXKTools checkAccessForMediaType:AVMediaTypeVideo manualChangeMessage:manualChangeMessageForVideo showPopUpInViewController:viewController completionHandler:^(BOOL granted) {
+
+                    handler(granted);
+                }];
+            }
+            else
+            {
+                handler(YES);
+            }
+        }
+        else
+        {
+            handler(NO);
+        }
+    }];
 }
 
 @end

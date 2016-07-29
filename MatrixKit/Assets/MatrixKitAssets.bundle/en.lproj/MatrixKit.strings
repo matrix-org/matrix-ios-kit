@@ -118,6 +118,7 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
 
 // Settings
+"settings" = "Settings";
 "settings_enable_inapp_notifications" = "Enable In-App notifications";
 "settings_enable_push_notifications" = "Enable push notifications";
 "settings_enter_validation_token_for" = "Enter validation token for %@:";
@@ -195,6 +196,11 @@
 "network_error_not_reachable" = "Please check your network connectivity";
 "user_id_placeholder" = "ex: @bob:homeserver";
 "ssl_homeserver_url" = "Home Server URL: %@";
+
+// Permissions
+"camera_access_not_granted_for_call" = "Video calls require access to the Camera but %@ doesn't have permission to use it";
+"microphone_access_not_granted_for_call" = "Calls require access to the Microphone but %@ doesn't have permission to use it";
+
 
 /* -*- 
    Automatic localization for en
