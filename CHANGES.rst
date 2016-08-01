@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.3.13 (2016-08-01)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.12).
+ * MXTools: Added methods to check media access permissions like Camera or Microphone.
+ * MXCallViewController: Check permissions before accessing the microphone or the camera.
+
+Bug fixes:
+ * Vector is turning off my music now that VoIP is implemented (https://github.com/vector-im/vector-ios#476)
+ 
 Changes in MatrixKit in 0.3.12 (2016-07-26)
 ===============================================
 
