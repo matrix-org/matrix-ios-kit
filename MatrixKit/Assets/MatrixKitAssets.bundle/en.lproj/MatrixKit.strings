@@ -169,6 +169,8 @@
 "attachment_large" = "Large: %@";
 "attachment_cancel_download" = "Cancel the download?";
 "attachment_cancel_upload" = "Cancel the upload?";
+"attachment_multiselection_size_prompt" = "Do you want to send images as:";
+"attachment_multiselection_original" = "Actual Size";
 
 // Contacts
 "contact_mx_users" = "Matrix Users";

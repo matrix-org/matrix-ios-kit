@@ -609,6 +609,115 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     }
 }
 
+- (void)sendSelectedAssets:(NSArray<PHAsset*>*)assets withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
+{
+    if (compressionMode == MXKRoomInputToolbarCompressionModePrompt)
+    {
+        // If there are images, we need to ask the user which resizing mode to apply
+        BOOL hasImage = NO;
+        for (PHAsset *asset in assets)
+        {
+            if (asset.mediaType == PHAssetMediaTypeImage)
+            {
+                hasImage = YES;
+                break;
+            }
+        }
+        
+        if (hasImage)
+        {
+            compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
+            __weak typeof(self) weakSelf = self;
+
+            NSString *resolution = [NSString stringWithFormat:@"%tu x %tu max.", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeSmall)];
+            }];
+
+            resolution = [NSString stringWithFormat:@"%tu x %tu max.", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE];
+            title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeMedium)];
+            }];
+
+            resolution = [NSString stringWithFormat:@"%tu x %tu max.", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE];
+            title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeLarge)];
+            }];
+
+            title = [NSBundle mxk_localizedStringForKey:@"attachment_multiselection_original"];
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeNone)];
+            }];
+
+            compressionPrompt.cancelButtonIndex = [compressionPrompt addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                [strongSelf dismissCompressionPrompt];
+            }];
+
+            compressionPrompt.sourceView = self;
+
+            [self.delegate roomInputToolbarView:self presentMXKAlert:compressionPrompt];
+        }
+        else
+        {
+            [self sendSelectedAssets:assets withCompressionMode:MXKRoomInputToolbarCompressionModeNone];
+        }
+    }
+    else
+    {
+        PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
+
+        for (PHAsset *asset in assets)
+        {
+            [asset requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    if (contentEditingInput.mediaType == PHAssetMediaTypeImage)
+                    {
+                        // Retrieve the fullSizeImage thanks to its local file path
+                        NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+                        UIImage *image = [UIImage imageWithData:data];
+
+                        [self sendSelectedImage:image withCompressionMode:compressionMode andLocalURL:contentEditingInput.fullSizeImageURL];
+                    }
+                    else if (contentEditingInput.mediaType == PHAssetMediaTypeVideo)
+                    {
+                        if ([contentEditingInput.avAsset isKindOfClass:[AVURLAsset class]])
+                        {
+                            AVURLAsset *avURLAsset = (AVURLAsset*)contentEditingInput.avAsset;
+                            [self sendSelectedVideo:avURLAsset.URL isPhotoLibraryAsset:YES];
+                        }
+                        else
+                        {
+                            NSLog(@"[MediaPickerVC] Selected video asset is not initialized from an URL!");
+                        }
+                    }
+                });
+            }];
+        }
+    }
+}
+
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
