@@ -251,8 +251,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         else
         {
-            // Only one-to-one room are supported.
-            // TODO: Handle conference call
+            // For 1:1 call, find the other peer
+            // Else, the room information will be used to display information about the call
             NSArray *members = call.room.state.members;
             if (members.count == 2)
             {
@@ -268,7 +268,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
             [self updatePeerInfoDisplay];
         }
-        
         
         // Observe call state change
         call.delegate = self;
