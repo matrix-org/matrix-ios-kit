@@ -92,7 +92,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [super viewDidLoad];
     
     // Load peer info
-    self.peer = _peer;
+    [self updatePeerInfoDisplay];
     
     updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTimeStatusLabel) userInfo:nil repeats:YES];
     
@@ -265,6 +265,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                     }
                 }
             }
+
+            [self updatePeerInfoDisplay];
         }
         
         
@@ -308,32 +310,42 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     mxCall = call;
 }
 
-- (void)setPeer:(MXUser *)peer
+- (void)updatePeerInfoDisplay
 {
-    _peer = peer;
-    
-    if (peer)
+    NSString *peerDisplayName;
+    NSString *peerAvatarURL;
+
+    if (_peer)
     {
-        // Display caller info
-        callerNameLabel.text = [peer displayname];
-        if (!callerNameLabel.text.length)
+        peerDisplayName = [_peer displayname];
+        if (!peerDisplayName.length)
         {
-            callerNameLabel.text = peer.userId;
+            peerDisplayName = _peer.userId;
         }
-        
+
+        // TODO add observer on this user to be able update his display name and avatar.
+    }
+    else if (mxCall.isConferenceCall)
+    {
+        peerDisplayName = mxCall.room.state.displayname;
+        peerAvatarURL = mxCall.room.state.avatar;
+
+        // TODO add observer on this room to be able update its display name and avatar.
+    }
+
+    callerNameLabel.text = peerDisplayName;
+    if (peerAvatarURL)
+    {
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
+        NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peerAvatarURL toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
         callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         callerImageView.enableInMemoryCache = YES;
         [callerImageView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];
         callerImageView.clipsToBounds = YES;
-        
-        // TODO add observer on this user to be able update his display name and avatar.
     }
     else
     {
-        callerNameLabel.text = nil;
         callerImageView.image = self.picturePlaceholder;
     }
 }
