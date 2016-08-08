@@ -501,6 +501,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateConnected:
             self.isRinging = NO;
             [self updateTimeStatusLabel];
+
+            if (call.isVideoCall && call.isConferenceCall)
+            {
+                // Do not show self view anymore because it is returned by the conference bridge
+                self.localPreviewContainerView.hidden = YES;
+
+                // Well, hide does not work. So, shrink the view to nil
+                self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
+            }
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
