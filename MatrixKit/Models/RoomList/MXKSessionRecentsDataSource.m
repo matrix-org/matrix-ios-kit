@@ -293,11 +293,15 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     for (MXRoom *room in self.mxSession.rooms)
     {
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
-        
-        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
-        if (cellData)
+
+        // Filter out private rooms with conference users 
+        if (!room.state.isConferenceUserRoom)
         {
-            [internalCellDataArray addObject:cellData];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+            if (cellData)
+            {
+                [internalCellDataArray addObject:cellData];
+            }
         }
     }
     

@@ -18,6 +18,8 @@
 
 #import "MXKRoomMemberCellData.h"
 
+#import "MXCallManager.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
@@ -200,7 +202,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         
         for (MXRoomMember* member in membersList)
         {
-            if (member.membership != MXMembershipLeave)
+            // Filter out left users. And conference users from non conference user rooms
+            if (member.membership != MXMembershipLeave && !(mxRoom.state.isConferenceUserRoom && [MXCallManager isConferenceUser:member.userId]))
             {
                 [filteredMembers addObject:member];
             }
