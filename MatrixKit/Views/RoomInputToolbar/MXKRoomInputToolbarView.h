@@ -136,6 +136,13 @@ typedef enum : NSUInteger
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView placeCallWithVideo:(BOOL)video;
 
 /**
+ Tells the delegate that the user wants to hangup the current call.
+
+ @param toolbarView the room input toolbar view.
+ */
+- (void)roomInputToolbarViewHangupCall:(MXKRoomInputToolbarView*)toolbarView;
+
+/**
  Tells the delegate to present a view controller modally.
  
  Note: Media attachment is available only if the delegate implements this method.
