@@ -380,6 +380,94 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     }
 }
 
+/**
+ Structure representing an the size of an image and its file size.
+ */
+typedef struct
+{
+    CGSize imageSize;
+    NSUInteger fileSize;
+
+} MXKImageCompressionSize;
+
+/**
+ Structure representing the sizes of image (image size and file size) according to
+ different level of compression.
+ */
+typedef struct
+{
+    MXKImageCompressionSize small;
+    MXKImageCompressionSize medium;
+    MXKImageCompressionSize large;
+    MXKImageCompressionSize original;
+
+    CGFloat actualLargeSize;
+
+} MXKImageCompressionSizes;
+
+- (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
+{
+    MXKImageCompressionSizes compressionSizes;
+
+    // Store the original
+    compressionSizes.original.imageSize = image.size;
+    compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
+
+    NSLog(@"Selected image size : %f %f", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
+    NSLog(@"- image file size: %tu", compressionSizes.original.fileSize);
+
+    compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
+
+    // Compute the file size for each compression level
+    CGFloat maxSize = MAX(compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
+    if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)
+    {
+        compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE) canExpand:NO];
+
+        compressionSizes.small.fileSize = [MXKTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
+
+        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
+        {
+            compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE) canExpand:NO];
+
+            compressionSizes.medium.fileSize = [MXKTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
+
+            if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
+            {
+                // In case of panorama the large resolution (1024 x ...) is not relevant. We prefer consider the third of the panarama width.
+                compressionSizes.actualLargeSize = maxSize / 3;
+                if (compressionSizes.actualLargeSize < MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
+                {
+                    compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
+                }
+                else
+                {
+                    // Keep a multiple of predefined large size
+                    compressionSizes.actualLargeSize = floor(compressionSizes.actualLargeSize / MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE) * MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
+                }
+
+                compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
+
+                compressionSizes.large.fileSize = [MXKTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
+            }
+            else
+            {
+                NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
+            }
+        }
+        else
+        {
+            NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
+        }
+    }
+    else
+    {
+        NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
+    }
+
+    return compressionSizes;
+}
+
 - (void)sendImage:(UIImage*)image withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
 {
     if (optionsListView)
@@ -401,82 +489,23 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
         }
         return;
     }
-    
-    CGSize originalSize = image.size;
-    NSLog(@"Selected image size : %f %f", originalSize.width, originalSize.height);
-    
-    CGSize smallSize;
-    CGSize mediumSize;
-    CGSize largeSize;
-    
-    long long smallFilesize  = 0;
-    long long mediumFilesize = 0;
-    long long largeFilesize  = 0;
-    
-    CGFloat actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-    
-    // Compute the file size of the selected image
-    NSData *selectedImageFileData = UIImageJPEGRepresentation(image, 0.9);
-    long long originalFileSize = selectedImageFileData.length;
-    NSLog(@"- image file size: %tu", originalFileSize);
-    
-    // Compute the file size for each compression level
-    CGFloat maxSize = MAX(originalSize.width, originalSize.height);
-    if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)
-    {
-        smallSize = [MXKTools resizeImageSize:originalSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE) canExpand:NO];
-        
-        smallFilesize = [MXKTools roundFileSize:(long long)(smallSize.width * smallSize.height * 0.20)];
-        
-        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
-        {
-            mediumSize = [MXKTools resizeImageSize:originalSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE) canExpand:NO];
-            
-            mediumFilesize = [MXKTools roundFileSize:(long long)(mediumSize.width * mediumSize.height * 0.20)];
-            
-            if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
-            {
-                // In case of panorama the large resolution (1024 x ...) is not relevant. We prefer consider the third of the panarama width.
-                actualLargeSize = maxSize / 3;
-                if (actualLargeSize < MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
-                {
-                    actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-                }
-                else
-                {
-                    // Keep a multiple of predefined large size
-                    actualLargeSize = floor(actualLargeSize / MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE) * MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-                }
-                
-                largeSize = [MXKTools resizeImageSize:originalSize toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize) canExpand:NO];
-                
-                largeFilesize = [MXKTools roundFileSize:(long long)(largeSize.width * largeSize.height * 0.20)];
-            }
-            else
-            {
-                NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
-            }
-        }
-        else
-        {
-            NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
-        }
-    }
-    else
-    {
-        NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
-    }
-    
+
+    // Get availabe sizes for this image
+    MXKImageCompressionSizes compressionSizes = [self availableCompressionSizesForImage:image];
+
     // Apply the compression mode
-    if (compressionMode == MXKRoomInputToolbarCompressionModePrompt && (smallFilesize || mediumFilesize || largeFilesize))
+    if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
+        && (compressionSizes.small.fileSize || compressionSizes.medium.fileSize || compressionSizes.large.fileSize))
     {
         compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
         __weak typeof(self) weakSelf = self;
         
-        if (smallFilesize)
+        if (compressionSizes.small.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString: (int)smallFilesize], (int)smallSize.width, (int)smallSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.small.fileSize], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
+
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
+
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
@@ -488,10 +517,12 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
             }];
         }
         
-        if (mediumFilesize)
+        if (compressionSizes.medium.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString: (int)mediumFilesize], (int)mediumSize.width, (int)mediumSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.medium.fileSize], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
+
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
+
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
@@ -503,23 +534,27 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
             }];
         }
         
-        if (largeFilesize)
+        if (compressionSizes.large.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString: (int)largeFilesize], (int)largeSize.width, (int)largeSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.large.fileSize], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
+
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
+
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 
                 // Send the large image
-                UIImage *largeImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize)];
+                UIImage *largeImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize)];
                 [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:largeImage];
                 
                 [strongSelf dismissCompressionPrompt];
             }];
         }
         
-        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString: (int)originalFileSize], (int)originalSize.width, (int)originalSize.height];
+        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.original.fileSize], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
+
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], resolution];
+
         [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             
@@ -550,23 +585,23 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
                 break;
                 
             case MXKRoomInputToolbarCompressionModeSmall:
-                if (smallFilesize)
+                if (compressionSizes.small.fileSize)
                 {
                     finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
                 }
                 break;
                 
             case MXKRoomInputToolbarCompressionModeMedium:
-                if (mediumFilesize)
+                if (compressionSizes.medium.fileSize)
                 {
                     finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
                 }
                 break;
                 
             case MXKRoomInputToolbarCompressionModeLarge:
-                if (largeFilesize)
+                if (compressionSizes.large.fileSize)
                 {
-                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(actualLargeSize, actualLargeSize)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize)];
                 }
                 break;
                 
