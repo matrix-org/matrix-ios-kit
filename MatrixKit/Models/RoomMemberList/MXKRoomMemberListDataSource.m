@@ -194,7 +194,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)loadData
 {
-    NSArray* membersList = [mxRoom.state members];
+    NSArray* membersList = [mxRoom.state membersWithoutConferenceUser];
     
     if (!_settings.showLeftMembersInRoomMemberList)
     {
@@ -202,8 +202,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         
         for (MXRoomMember* member in membersList)
         {
-            // Filter out left users. And conference users from non conference user rooms
-            if (member.membership != MXMembershipLeave && !(mxRoom.state.isConferenceUserRoom && [MXCallManager isConferenceUser:member.userId]))
+            // Filter out left users
+            if (member.membership != MXMembershipLeave)
             {
                 [filteredMembers addObject:member];
             }
