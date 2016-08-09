@@ -293,92 +293,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     [self dismissCompressionPrompt];
 }
 
-#pragma mark - Attachment handling
-
-- (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL
-{
-    // Retrieve image mimetype if the image is saved in photos library
-    NSString *mimetype = nil;
-    if (imageURL)
-    {
-        CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[imageURL.path pathExtension] , NULL);
-        mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
-        CFRelease(uti);
-    }
-    else if (_enableAutoSaving)
-    {
-        // Save the original image in user's photos library
-        [MXKMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
-    }
-    
-    // Send data without compression if the image type is not jpeg
-    if (mimetype && [mimetype isEqualToString:@"image/jpeg"] == NO && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:withMimeType:)])
-    {
-        // Check whether the url references the image in the AssetsLibrary framework
-        if ([imageURL.scheme isEqualToString:@"assets-library"])
-        {
-            // Retrieve the local full-sized image URL
-            // Use the Photos framework on iOS 8 and later (use AssetsLibrary framework on iOS < 8).
-            Class PHAsset_class = NSClassFromString(@"PHAsset");
-            if (PHAsset_class)
-            {
-                PHFetchResult *result = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
-                if (result.count)
-                {
-                    PHAsset *asset = result[0];
-                    PHContentEditingInputRequestOptions *option = [[PHContentEditingInputRequestOptions alloc] init];
-                    [asset requestContentEditingInputWithOptions:option completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
-                        
-                        [self.delegate roomInputToolbarView:self sendImage:contentEditingInput.fullSizeImageURL withMimeType:mimetype];
-                        
-                    }];
-                }
-                else
-                {
-                    NSLog(@"[MXKRoomInputToolbarView] Attach image failed");
-                }
-            }
-            else
-            {
-                ALAssetsLibrary *assetLibrary=[[ALAssetsLibrary alloc] init];
-                [assetLibrary assetForURL:imageURL resultBlock:^(ALAsset *asset) {
-                    
-                    // asset may be nil if the image is not saved in photos library
-                    if (asset)
-                    {
-                        ALAssetRepresentation* assetRepresentation = [asset defaultRepresentation];
-                        [self.delegate roomInputToolbarView:self sendImage:assetRepresentation.url withMimeType:mimetype];
-                    }
-                    else
-                    {
-                        NSLog(@"[MXKRoomInputToolbarView] Attach image failed");
-                    }
-                    
-                } failureBlock:^(NSError *err) {
-                    
-                    NSLog(@"[MXKRoomInputToolbarView] Attach image failed: %@", err);
-                    
-                }];
-            }
-        }
-        else
-        {
-            // Consider the provided URL as the filesystem one
-            [self.delegate roomInputToolbarView:self sendImage:imageURL withMimeType:mimetype];
-        }
-    }
-    else
-    {
-        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
-        {
-            [self sendImage:selectedImage withCompressionMode:compressionMode];
-        }
-        else
-        {
-            NSLog(@"[MXKRoomInputToolbarView] Attach image is not supported");
-        }
-    }
-}
+#pragma mark - MXKImageCompressionSize
 
 /**
  Structure representing an the size of an image and its file size.
@@ -466,6 +381,93 @@ typedef struct
     }
 
     return compressionSizes;
+}
+
+#pragma mark - Attachment handling
+
+- (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL
+{
+    // Retrieve image mimetype if the image is saved in photos library
+    NSString *mimetype = nil;
+    if (imageURL)
+    {
+        CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[imageURL.path pathExtension] , NULL);
+        mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+        CFRelease(uti);
+    }
+    else if (_enableAutoSaving)
+    {
+        // Save the original image in user's photos library
+        [MXKMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
+    }
+
+    // Send data without compression if the image type is not jpeg
+    if (mimetype && [mimetype isEqualToString:@"image/jpeg"] == NO && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:withMimeType:)])
+    {
+        // Check whether the url references the image in the AssetsLibrary framework
+        if ([imageURL.scheme isEqualToString:@"assets-library"])
+        {
+            // Retrieve the local full-sized image URL
+            // Use the Photos framework on iOS 8 and later (use AssetsLibrary framework on iOS < 8).
+            Class PHAsset_class = NSClassFromString(@"PHAsset");
+            if (PHAsset_class)
+            {
+                PHFetchResult *result = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+                if (result.count)
+                {
+                    PHAsset *asset = result[0];
+                    PHContentEditingInputRequestOptions *option = [[PHContentEditingInputRequestOptions alloc] init];
+                    [asset requestContentEditingInputWithOptions:option completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+
+                        [self.delegate roomInputToolbarView:self sendImage:contentEditingInput.fullSizeImageURL withMimeType:mimetype];
+
+                    }];
+                }
+                else
+                {
+                    NSLog(@"[MXKRoomInputToolbarView] Attach image failed");
+                }
+            }
+            else
+            {
+                ALAssetsLibrary *assetLibrary=[[ALAssetsLibrary alloc] init];
+                [assetLibrary assetForURL:imageURL resultBlock:^(ALAsset *asset) {
+
+                    // asset may be nil if the image is not saved in photos library
+                    if (asset)
+                    {
+                        ALAssetRepresentation* assetRepresentation = [asset defaultRepresentation];
+                        [self.delegate roomInputToolbarView:self sendImage:assetRepresentation.url withMimeType:mimetype];
+                    }
+                    else
+                    {
+                        NSLog(@"[MXKRoomInputToolbarView] Attach image failed");
+                    }
+
+                } failureBlock:^(NSError *err) {
+
+                    NSLog(@"[MXKRoomInputToolbarView] Attach image failed: %@", err);
+
+                }];
+            }
+        }
+        else
+        {
+            // Consider the provided URL as the filesystem one
+            [self.delegate roomInputToolbarView:self sendImage:imageURL withMimeType:mimetype];
+        }
+    }
+    else
+    {
+        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
+        {
+            [self sendImage:selectedImage withCompressionMode:compressionMode];
+        }
+        else
+        {
+            NSLog(@"[MXKRoomInputToolbarView] Attach image is not supported");
+        }
+    }
 }
 
 - (void)sendImage:(UIImage*)image withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
