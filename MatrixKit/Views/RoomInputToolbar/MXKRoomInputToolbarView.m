@@ -419,9 +419,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     return [NSString stringWithFormat:@"small: %tu - medium: %tu - large: %tu - original: %tu", sizes.small, sizes.medium, sizes.large, sizes.original];
 }
 
-- (MXKFileSizes)availableCompressionSizesForAsset:(PHAsset*)asset andContentEditingInput:(PHContentEditingInput*)contentEditingInput
+- (void)availableCompressionSizesForAsset:(PHAsset*)asset andContentEditingInput:(PHContentEditingInput*)contentEditingInput onComplete:(void(^)(MXKFileSizes sizes))onComplete
 {
-    MXKFileSizes sizes;
+    __block MXKFileSizes sizes;
     MXKFileSizes_init(&sizes);
 
     if (asset.mediaType == PHAssetMediaTypeImage)
@@ -436,26 +436,74 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         sizes.medium = compressionSizes.medium.fileSize;
         sizes.large = compressionSizes.large.fileSize;
         sizes.original = compressionSizes.original.fileSize;
+
+        onComplete(sizes);
     }
     else if (asset.mediaType == PHAssetMediaTypeVideo)
     {
-        // @TODO
-    }
+        [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:nil resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+            if ([asset isKindOfClass:[AVURLAsset class]])
+            {
+                AVURLAsset* urlAsset = (AVURLAsset*)asset;
 
-    return sizes;
+                NSNumber *size;
+                [urlAsset.URL getResourceValue:&size forKey:NSURLFileSizeKey error:nil];
+
+                sizes.original = size.unsignedIntegerValue;
+                sizes.small = sizes.original;
+                sizes.medium = sizes.original;
+                sizes.large = sizes.original;
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    onComplete(sizes);
+                });
+            }
+        }];
+    }
+    else
+    {
+        onComplete(sizes);
+    }
 }
 
-- (MXKFileSizes)availableCompressionSizesForAssets:(NSArray<PHAsset*>*)assets andContentEditingInputs:(NSArray<PHContentEditingInput*> *)contentEditingInputs
+
+- (void)availableCompressionSizesForAssets:(NSArray<PHAsset*>*)assets contentEditingInputs:(NSArray<PHContentEditingInput*> *)contentEditingInputs index:(NSUInteger)index appendTo:(MXKFileSizes)sizes onComplete:(void(^)(MXKFileSizes fileSizes))onComplete
 {
-    MXKFileSizes sizes;
+    [self availableCompressionSizesForAsset:assets[index] andContentEditingInput:contentEditingInputs[index] onComplete:^(MXKFileSizes assetSizes) {
+
+        MXKFileSizes intermediateSizes = MXKFileSizes_add(sizes, assetSizes);
+
+        if (index == assets.count - 1)
+        {
+            // Filter the sizes that are similar
+            if (intermediateSizes.medium >= intermediateSizes.large)
+            {
+                intermediateSizes.large = 0;
+            }
+            if (intermediateSizes.small >= intermediateSizes.medium)
+            {
+                intermediateSizes.medium = 0;
+            }
+            if (intermediateSizes.small >= intermediateSizes.original)
+            {
+                intermediateSizes.small = 0;
+            }
+
+            onComplete(intermediateSizes);
+        }
+        else
+        {
+            [self availableCompressionSizesForAssets:assets contentEditingInputs:contentEditingInputs index:(index + 1) appendTo:intermediateSizes onComplete:onComplete];
+        }
+    }];
+}
+
+- (void)availableCompressionSizesForAssets:(NSArray<PHAsset*>*)assets contentEditingInputs:(NSArray<PHContentEditingInput*> *)contentEditingInputs onComplete:(void(^)(MXKFileSizes fileSizes))onComplete
+{
+    __block MXKFileSizes sizes;
     MXKFileSizes_init(&sizes);
 
-    for (NSUInteger i = 0; i < assets.count; i++)
-    {
-        sizes = MXKFileSizes_add(sizes, [self availableCompressionSizesForAsset:assets[i] andContentEditingInput:contentEditingInputs[i]]);
-    }
-
-    return sizes;
+    [self availableCompressionSizesForAssets:assets contentEditingInputs:contentEditingInputs index:0 appendTo:sizes onComplete:onComplete];
 }
 
 #pragma mark - Attachment handling
@@ -728,12 +776,10 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
     [self contentEditingInputsForAssets:assets withResult:contentEditingInputs onComplete:^{
 
-        NSLog(@"%@", contentEditingInputs);
+        [self availableCompressionSizesForAssets:assets contentEditingInputs:contentEditingInputs onComplete:^(MXKFileSizes fileSizes) {
 
-        MXKFileSizes fileSizes = [self availableCompressionSizesForAssets:assets andContentEditingInputs:contentEditingInputs];
-
-        [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:compressionMode];
-
+            [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:compressionMode];
+        }];
     }];
 }
 
@@ -742,9 +788,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
         && (fileSizes.small || fileSizes.medium || fileSizes.large))
     {
-            compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
-            __weak typeof(self) weakSelf = self;
-
+        // Ask the user for the compression value
+        compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
+        __weak typeof(self) weakSelf = self;
 
         if (fileSizes.small)
         {
@@ -806,6 +852,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
     else
     {
+        // Send all media with the selected compression mode
         for (PHContentEditingInput *contentEditingInput in contentEditingInputs)
         {
             if (contentEditingInput.mediaType == PHAssetMediaTypeImage)
