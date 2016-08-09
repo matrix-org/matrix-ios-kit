@@ -323,13 +323,13 @@ typedef struct
 - (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
 {
     MXKImageCompressionSizes compressionSizes;
+    memset(&compressionSizes, 0, sizeof(MXKImageCompressionSizes));
 
     // Store the original
     compressionSizes.original.imageSize = image.size;
     compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
 
-    NSLog(@"Selected image size : %f %f", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
-    NSLog(@"- image file size: %tu", compressionSizes.original.fileSize);
+   NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
 
     compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
 
@@ -367,17 +367,17 @@ typedef struct
             }
             else
             {
-                NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
+                NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
             }
         }
         else
         {
-            NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
+            NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
         }
     }
     else
     {
-        NSLog(@"- too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
+        NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
     }
 
     return compressionSizes;
