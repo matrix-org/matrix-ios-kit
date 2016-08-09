@@ -383,6 +383,81 @@ typedef struct
     return compressionSizes;
 }
 
+#pragma mark - MXKFileSizes
+
+/**
+ Structure representing the file sizes of a media according to different level of
+ compression.
+ */
+typedef struct
+{
+    NSUInteger small;
+    NSUInteger medium;
+    NSUInteger large;
+    NSUInteger original;
+
+} MXKFileSizes;
+
+MXKFileSizes MXKFileSizes_init(MXKFileSizes *sizes)
+{
+    memset(sizes, 0, sizeof(MXKFileSizes));
+}
+
+MXKFileSizes MXKFileSizes_add(MXKFileSizes sizes1, MXKFileSizes sizes2)
+{
+    MXKFileSizes sizes;
+    sizes.small = sizes1.small + sizes2.small;
+    sizes.medium = sizes1.medium + sizes2.medium;
+    sizes.large = sizes1.large + sizes2.large;
+    sizes.original = sizes1.original + sizes2.original;
+
+    return sizes;
+}
+
+NSString* MXKFileSizes_description(MXKFileSizes sizes)
+{
+    return [NSString stringWithFormat:@"small: %tu - medium: %tu - large: %tu - original: %tu", sizes.small, sizes.medium, sizes.large, sizes.original];
+}
+
+- (MXKFileSizes)availableCompressionSizesForAsset:(PHAsset*)asset andContentEditingInput:(PHContentEditingInput*)contentEditingInput
+{
+    MXKFileSizes sizes;
+    MXKFileSizes_init(&sizes);
+
+    if (asset.mediaType == PHAssetMediaTypeImage)
+    {
+        // Retrieve the fullSizeImage thanks to its local file path
+        NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+        UIImage *image = [UIImage imageWithData:data];
+
+        MXKImageCompressionSizes compressionSizes = [self availableCompressionSizesForImage:image];
+
+        sizes.small = compressionSizes.small.fileSize;
+        sizes.medium = compressionSizes.medium.fileSize;
+        sizes.large = compressionSizes.large.fileSize;
+        sizes.original = compressionSizes.original.fileSize;
+    }
+    else if (asset.mediaType == PHAssetMediaTypeVideo)
+    {
+        // @TODO
+    }
+
+    return sizes;
+}
+
+- (MXKFileSizes)availableCompressionSizesForAssets:(NSArray<PHAsset*>*)assets andContentEditingInputs:(NSArray<PHContentEditingInput*> *)contentEditingInputs
+{
+    MXKFileSizes sizes;
+    MXKFileSizes_init(&sizes);
+
+    for (NSUInteger i = 0; i < assets.count; i++)
+    {
+        sizes = MXKFileSizes_add(sizes, [self availableCompressionSizesForAsset:assets[i] andContentEditingInput:contentEditingInputs[i]]);
+    }
+
+    return sizes;
+}
+
 #pragma mark - Attachment handling
 
 - (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL
@@ -648,111 +723,138 @@ typedef struct
 
 - (void)sendSelectedAssets:(NSArray<PHAsset*>*)assets withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
 {
-    if (compressionMode == MXKRoomInputToolbarCompressionModePrompt)
+    // Get metadata about selected media
+    NSMutableArray<PHContentEditingInput*> *contentEditingInputs = [NSMutableArray arrayWithCapacity:assets.count];
+
+    [self contentEditingInputsForAssets:assets withResult:contentEditingInputs onComplete:^{
+
+        NSLog(@"%@", contentEditingInputs);
+
+        MXKFileSizes fileSizes = [self availableCompressionSizesForAssets:assets andContentEditingInputs:contentEditingInputs];
+
+        [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:compressionMode];
+
+    }];
+}
+
+- (void)sendSelectedAssets:(NSMutableArray<PHContentEditingInput*> *)contentEditingInputs withFileSizes:(MXKFileSizes)fileSizes andCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
+{
+    if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
+        && (fileSizes.small || fileSizes.medium || fileSizes.large))
     {
-        // If there are images, we need to ask the user which resizing mode to apply
-        BOOL hasImage = NO;
-        for (PHAsset *asset in assets)
-        {
-            if (asset.mediaType == PHAssetMediaTypeImage)
-            {
-                hasImage = YES;
-                break;
-            }
-        }
-        
-        if (hasImage)
-        {
             compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
             __weak typeof(self) weakSelf = self;
 
-            NSString *resolution = [NSString stringWithFormat:@"%tu x %tu max.", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE];
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
 
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeSmall)];
-            }];
-
-            resolution = [NSString stringWithFormat:@"%tu x %tu max.", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE];
-            title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeMedium)];
-            }];
-
-            resolution = [NSString stringWithFormat:@"%tu x %tu max.", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE];
-            title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeLarge)];
-            }];
-
-            title = [NSBundle mxk_localizedStringForKey:@"attachment_multiselection_original"];
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:assets withCompressionMode:(MXKRoomInputToolbarCompressionModeNone)];
-            }];
-
-            compressionPrompt.cancelButtonIndex = [compressionPrompt addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf dismissCompressionPrompt];
-            }];
-
-            compressionPrompt.sourceView = self;
-
-            [self.delegate roomInputToolbarView:self presentMXKAlert:compressionPrompt];
-        }
-        else
+        if (fileSizes.small)
         {
-            [self sendSelectedAssets:assets withCompressionMode:MXKRoomInputToolbarCompressionModeNone];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXKTools fileSizeToString:fileSizes.small]];
+
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeSmall];
+            }];
         }
+
+        if (fileSizes.medium)
+        {
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXKTools fileSizeToString:fileSizes.medium]];
+
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeMedium];
+            }];
+        }
+
+        if (fileSizes.large)
+        {
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXKTools fileSizeToString:fileSizes.large]];
+
+            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+                [strongSelf dismissCompressionPrompt];
+
+                [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeLarge];
+            }];
+        }
+
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXKTools fileSizeToString:fileSizes.original]];
+
+        [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+            [strongSelf dismissCompressionPrompt];
+
+            [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeNone];
+        }];
+
+        compressionPrompt.cancelButtonIndex = [compressionPrompt addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            [strongSelf dismissCompressionPrompt];
+        }];
+
+        compressionPrompt.sourceView = self;
+
+        [self.delegate roomInputToolbarView:self presentMXKAlert:compressionPrompt];
     }
     else
     {
-        PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
-
-        for (PHAsset *asset in assets)
+        for (PHContentEditingInput *contentEditingInput in contentEditingInputs)
         {
-            [asset requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+            if (contentEditingInput.mediaType == PHAssetMediaTypeImage)
+            {
+                // Retrieve the fullSizeImage thanks to its local file path
+                NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+                UIImage *image = [UIImage imageWithData:data];
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-
-                    if (contentEditingInput.mediaType == PHAssetMediaTypeImage)
-                    {
-                        // Retrieve the fullSizeImage thanks to its local file path
-                        NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
-                        UIImage *image = [UIImage imageWithData:data];
-
-                        [self sendSelectedImage:image withCompressionMode:compressionMode andLocalURL:contentEditingInput.fullSizeImageURL];
-                    }
-                    else if (contentEditingInput.mediaType == PHAssetMediaTypeVideo)
-                    {
-                        if ([contentEditingInput.avAsset isKindOfClass:[AVURLAsset class]])
-                        {
-                            AVURLAsset *avURLAsset = (AVURLAsset*)contentEditingInput.avAsset;
-                            [self sendSelectedVideo:avURLAsset.URL isPhotoLibraryAsset:YES];
-                        }
-                        else
-                        {
-                            NSLog(@"[MediaPickerVC] Selected video asset is not initialized from an URL!");
-                        }
-                    }
-                });
-            }];
+                [self sendSelectedImage:image withCompressionMode:compressionMode andLocalURL:contentEditingInput.fullSizeImageURL];
+            }
+            else if (contentEditingInput.mediaType == PHAssetMediaTypeVideo)
+            {
+                if ([contentEditingInput.avAsset isKindOfClass:[AVURLAsset class]])
+                {
+                    AVURLAsset *avURLAsset = (AVURLAsset*)contentEditingInput.avAsset;
+                    [self sendSelectedVideo:avURLAsset.URL isPhotoLibraryAsset:YES];
+                }
+                else
+                {
+                    NSLog(@"[MediaPickerVC] Selected video asset is not initialized from an URL!");
+                }
+            }
         }
     }
+}
+
+- (void)contentEditingInputsForAssets:(NSArray<PHAsset*>*)assets withResult:(NSMutableArray<PHContentEditingInput*> *)contentEditingInputs onComplete:(void(^)())onComplete
+{
+    NSParameterAssert(contentEditingInputs);
+
+    PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
+
+    [assets[contentEditingInputs.count] requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            [contentEditingInputs addObject:contentEditingInput];
+            if (contentEditingInputs.count == assets.count)
+            {
+                // We get all results
+                onComplete();
+            }
+            else
+            {
+                // Continue recursively
+                [self contentEditingInputsForAssets:assets withResult:contentEditingInputs onComplete:onComplete];
+            }
+        });
+    }];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
