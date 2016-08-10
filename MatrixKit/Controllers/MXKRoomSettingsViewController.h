@@ -71,4 +71,11 @@
  */
 - (void)refreshRoomSettings;
 
+/**
+ Updates the display with a new room state.
+ 
+ @param newRoomState the new room state.
+ */
+- (void)updateRoomState:(MXRoomState*)newRoomState;
+
 @end

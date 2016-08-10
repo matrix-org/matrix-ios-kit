@@ -209,4 +209,37 @@
  @return the pattern color which can be used to define the background color of a view in order to display the provided image as its background.
  */
 + (UIColor*)convertImageToPatternColor:(NSString*)reourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize;
+
+/**
+ Check permission to access a media.
+ 
+@discussion
+ If the access was not yet granted, a dialog will be shown to the user.
+ If it is the first attempt to access the media, the dialog is the classic iOS one.
+ Else, the dialog will ask the user to manually change the permission in the app settings.
+
+ @param mediaType the media type, either AVMediaTypeVideo or AVMediaTypeAudio.
+ @param manualChangeMessage the message to display if the end user must change the app settings manually.
+ @param viewController the view controller to attach the dialog displaying manualChangeMessage.
+ @param handler the block called with the result of requesting access
+ */
++ (void)checkAccessForMediaType:(NSString *)mediaType
+            manualChangeMessage:(NSString*)manualChangeMessage
+      showPopUpInViewController:(UIViewController*)viewController
+              completionHandler:(void (^)(BOOL granted))handler;
+
+/**
+ Check required permission for the provided call.
+
+ @param isVideoCall flag set to YES in case of video call.
+ @param manualChangeMessage the message to display if the end user must change the app settings manually.
+ @param viewController the view controller to attach the dialog displaying manualChangeMessage.
+ @param handler the block called with the result of requesting access
+ */
++ (void)checkAccessForCall:(BOOL)isVideoCall
+manualChangeMessageForAudio:(NSString*)manualChangeMessageForAudio
+manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
+ showPopUpInViewController:(UIViewController*)viewController
+         completionHandler:(void (^)(BOOL granted))handler;
+
 @end

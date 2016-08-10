@@ -154,8 +154,6 @@
     [self.tableView reloadData];
 }
 
-#pragma mark - private methods
-
 - (void)updateRoomState:(MXRoomState*)newRoomState
 {
     mxRoomState = newRoomState.copy;

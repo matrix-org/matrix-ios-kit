@@ -118,6 +118,7 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
 
 // Settings
+"settings" = "Settings";
 "settings_enable_inapp_notifications" = "Enable In-App notifications";
 "settings_enable_push_notifications" = "Enable push notifications";
 "settings_enter_validation_token_for" = "Enter validation token for %@:";
@@ -158,6 +159,7 @@
 
 // Room members
 "room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
+"room_member_power_level_prompt" = "You will not be able to undo this change as you are promoting the user to have the same power level as yourself.\nAre you sure?";
 
 // Attachment
 "attachment_size_prompt" = "Do you want to send as:";
@@ -167,6 +169,8 @@
 "attachment_large" = "Large: %@";
 "attachment_cancel_download" = "Cancel the download?";
 "attachment_cancel_upload" = "Cancel the upload?";
+"attachment_multiselection_size_prompt" = "Do you want to send images as:";
+"attachment_multiselection_original" = "Actual Size";
 
 // Contacts
 "contact_mx_users" = "Matrix Users";
@@ -195,6 +199,11 @@
 "user_id_placeholder" = "ex: @bob:homeserver";
 "ssl_homeserver_url" = "Home Server URL: %@";
 
+// Permissions
+"camera_access_not_granted_for_call" = "Video calls require access to the Camera but %@ doesn't have permission to use it";
+"microphone_access_not_granted_for_call" = "Calls require access to the Microphone but %@ doesn't have permission to use it";
+
+
 /* -*- 
    Automatic localization for en
 
@@ -221,6 +230,9 @@
 "notice_placed_video_call" = "%@ placed a video call";
 "notice_answered_video_call" = "%@ answered the call";
 "notice_ended_video_call" = "%@ ended the call";
+"notice_conference_call_request" = "%@ requested a VoIP conference";
+"notice_conference_call_started" = "VoIP conference started";
+"notice_conference_call_finished" = "VoIP conference finished";
 
 // Room Screen 
 

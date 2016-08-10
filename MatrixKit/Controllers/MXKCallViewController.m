@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-#import <MediaPlayer/MediaPlayer.h>
 
 #import "MXKCallViewController.h"
 
@@ -21,6 +20,8 @@
 #import "MXKAlert.h"
 
 #import "NSBundle+MatrixKit.h"
+
+#import "MXKTools.h"
 
 NSString *const kMXKCallViewControllerWillAppearNotification = @"kMXKCallViewControllerWillAppearNotification";
 NSString *const kMXKCallViewControllerAppearedNotification = @"kMXKCallViewControllerAppearedNotification";
@@ -91,7 +92,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [super viewDidLoad];
     
     // Load peer info
-    self.peer = _peer;
+    [self updatePeerInfoDisplay];
     
     updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTimeStatusLabel) userInfo:nil repeats:YES];
     
@@ -250,8 +251,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         else
         {
-            // Only one-to-one room are supported.
-            // TODO: Handle conference call
+            // For 1:1 call, find the other peer
+            // Else, the room information will be used to display information about the call
             NSArray *members = call.room.state.members;
             if (members.count == 2)
             {
@@ -264,8 +265,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                     }
                 }
             }
+
+            [self updatePeerInfoDisplay];
         }
-        
         
         // Observe call state change
         call.delegate = self;
@@ -273,17 +275,29 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         if (call.isVideoCall)
         {
-            localPreviewContainerView.hidden = NO;
-            remotePreviewContainerView.hidden = NO;
-            
-            call.selfVideoView = localPreviewContainerView;
-            call.remoteVideoView = remotePreviewContainerView;
-            [self applyDeviceOrientation:YES];
-            
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(deviceOrientationDidChange)
-                                                         name:UIDeviceOrientationDidChangeNotification
-                                                       object:nil];
+            // Access to the camera is mandatory to display the self view
+            // Check the permission right now
+            NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+            [MXKTools checkAccessForMediaType:AVMediaTypeVideo
+                          manualChangeMessage:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"camera_access_not_granted_for_call"], appDisplayName]
+
+                    showPopUpInViewController:self completionHandler:^(BOOL granted) {
+
+                   if (granted)
+                   {
+                       localPreviewContainerView.hidden = NO;
+                       remotePreviewContainerView.hidden = NO;
+
+                       call.selfVideoView = localPreviewContainerView;
+                       call.remoteVideoView = remotePreviewContainerView;
+                       [self applyDeviceOrientation:YES];
+
+                       [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                selector:@selector(deviceOrientationDidChange)
+                                                                    name:UIDeviceOrientationDidChangeNotification
+                                                                  object:nil];
+                   }
+               }];
         }
         else
         {
@@ -295,32 +309,42 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     mxCall = call;
 }
 
-- (void)setPeer:(MXUser *)peer
+- (void)updatePeerInfoDisplay
 {
-    _peer = peer;
-    
-    if (peer)
+    NSString *peerDisplayName;
+    NSString *peerAvatarURL;
+
+    if (_peer)
     {
-        // Display caller info
-        callerNameLabel.text = [peer displayname];
-        if (!callerNameLabel.text.length)
+        peerDisplayName = [_peer displayname];
+        if (!peerDisplayName.length)
         {
-            callerNameLabel.text = peer.userId;
+            peerDisplayName = _peer.userId;
         }
-        
+
+        // TODO add observer on this user to be able update his display name and avatar.
+    }
+    else if (mxCall.isConferenceCall)
+    {
+        peerDisplayName = mxCall.room.state.displayname;
+        peerAvatarURL = mxCall.room.state.avatar;
+
+        // TODO add observer on this room to be able update its display name and avatar.
+    }
+
+    callerNameLabel.text = peerDisplayName;
+    if (peerAvatarURL)
+    {
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peer.avatarUrl toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
+        NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peerAvatarURL toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
         callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         callerImageView.enableInMemoryCache = YES;
         [callerImageView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];
         callerImageView.clipsToBounds = YES;
-        
-        // TODO add observer on this user to be able update his display name and avatar.
     }
     else
     {
-        callerNameLabel.text = nil;
         callerImageView.image = self.picturePlaceholder;
     }
 }
@@ -395,7 +419,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 {
     if (sender == answerCallButton)
     {
-        [mxCall answer];
+        // If we are here, we have access to the camera
+        // The following check is mainly to check microphone access permission
+        NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+
+        [MXKTools checkAccessForCall:mxCall.isVideoCall
+         manualChangeMessageForAudio:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"microphone_access_not_granted_for_call"], appDisplayName]
+         manualChangeMessageForVideo:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"camera_access_not_granted_for_call"], appDisplayName]
+           showPopUpInViewController:self completionHandler:^(BOOL granted) {
+
+               if (granted)
+               {
+                   [mxCall answer];
+               }
+           }];
     }
     else if (sender == rejectCallButton || sender == endCallButton)
     {
@@ -410,7 +447,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     else if (sender == muteButton)
     {
-        // TODO
+        mxCall.audioMuted = !mxCall.audioMuted;
     }
     else if (sender == speakerButton)
     {
@@ -475,6 +512,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateConnected:
             self.isRinging = NO;
             [self updateTimeStatusLabel];
+
+            if (call.isVideoCall && call.isConferenceCall)
+            {
+                // Do not show self view anymore because it is returned by the conference bridge
+                self.localPreviewContainerView.hidden = YES;
+
+                // Well, hide does not work. So, shrink the view to nil
+                self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
+            }
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
@@ -500,7 +546,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             {
                 NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
             }
-            
+
+            // Listen (audioPlayerDidFinishPlaying) for the end of the playback of "callend"
+            // to release the audio session
+            audioPlayer.delegate = self;
+
             audioPlayer.numberOfLoops = 0;
             [audioPlayer play];
 
@@ -545,6 +595,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // And interrupt the call
         [mxCall hangup];
     }
+}
+
+#pragma mark - AVAudioPlayerDelegate
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+{
+    // Release the audio session to allow resuming of background music app
+    [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
 }
 
 #pragma mark - Internal

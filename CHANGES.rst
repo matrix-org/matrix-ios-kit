@@ -1,3 +1,25 @@
+Changes in MatrixKit in 0.3.13 (2016-08-01)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.12).
+ * MXTools: Added methods to check media access permissions like Camera or Microphone.
+ * MXCallViewController: Check permissions before accessing the microphone or the camera.
+
+Bug fixes:
+ * Vector is turning off my music now that VoIP is implemented (https://github.com/vector-im/vector-ios#476)
+ 
+Changes in MatrixKit in 0.3.12 (2016-07-26)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.11).
+
+Bug fixes:
+ * Confirmation prompt before opping someone to same power level (https://github.com/vector-im/vector-ios/issues/461).
+ * Fixed string displayed on outgoing video call (it said "xxx placed a voice call)
+ * Room Settings: The room privacy setting text doesn't fit in phone mode (https://github.com/vector-im/vector-ios/issues/429).
+
 Changes in MatrixKit in 0.3.11 (2016-07-15)
 ===============================================
 

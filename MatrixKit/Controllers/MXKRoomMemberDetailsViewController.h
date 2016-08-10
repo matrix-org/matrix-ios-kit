@@ -187,8 +187,9 @@ typedef enum : NSUInteger
  Set the power level of the room member
  
  @param value the value to set.
+ @param promptUser prompt the user if they ops a member with the same power level.
  */
-- (void)setPowerLevel:(NSInteger)value;
+- (void)setPowerLevel:(NSInteger)value promptUser:(BOOL)promptUser;
 
 /**
  Add a mask in overlay to prevent a new contact selection (used when an action is on progress).

@@ -440,18 +440,39 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                        if ([MXCallManager isConferenceUser:event.stateKey])
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_conference_call_request"], senderDisplayName];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                        }
                     }
                 }
                 else if ([membership isEqualToString:@"join"])
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
+                    if ([MXCallManager isConferenceUser:event.stateKey])
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_started"];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
+                    }
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
                     if ([event.sender isEqualToString:event.stateKey])
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                        if ([MXCallManager isConferenceUser:event.stateKey])
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_finished"];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                        }
                     }
                     else if (prevMembership)
                     {
@@ -800,7 +821,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
             if (callInviteEventContent.isVideoCall)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_video_call"], senderDisplayName];
             }
             else
             {

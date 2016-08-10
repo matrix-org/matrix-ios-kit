@@ -29,6 +29,7 @@
 @property (weak, nonatomic) IBOutlet MXKImageView *mxkImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *centerIcon;
 @property (weak, nonatomic) IBOutlet UIImageView *bottomLeftIcon;
+@property (weak, nonatomic) IBOutlet UIImageView *bottomRightIcon;
 @property (weak, nonatomic) IBOutlet UIImageView *topRightIcon;
 
 /**

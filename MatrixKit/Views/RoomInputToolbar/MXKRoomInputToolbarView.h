@@ -16,6 +16,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <Photos/Photos.h>
+
 #import "MXKAlert.h"
 
 /**
@@ -134,6 +136,13 @@ typedef enum : NSUInteger
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView placeCallWithVideo:(BOOL)video;
 
 /**
+ Tells the delegate that the user wants to hangup the current call.
+
+ @param toolbarView the room input toolbar view.
+ */
+- (void)roomInputToolbarViewHangupCall:(MXKRoomInputToolbarView*)toolbarView;
+
+/**
  Tells the delegate to present a view controller modally.
  
  Note: Media attachment is available only if the delegate implements this method.
@@ -245,6 +254,14 @@ typedef enum : NSUInteger
  @param isPhotoLibraryAsset tell whether the video has been selected from user's photos library.
  */
 - (void)sendSelectedVideo:(NSURL*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset;
+
+/**
+ Handle multiple media attachments according to the compression mode.
+ 
+ @param assets the selected assets.
+ @param compressionMode the compression mode to apply on the media. This option is considered only for jpeg image.
+ */
+- (void)sendSelectedAssets:(NSArray<PHAsset*>*)assets withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode;
 
 /**
  The maximum height of the toolbar.
