@@ -339,13 +339,13 @@ typedef struct
     {
         compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE) canExpand:NO];
 
-        compressionSizes.small.fileSize = [MXKTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
+        compressionSizes.small.fileSize = (NSUInteger)[MXKTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
 
         if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
         {
             compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE) canExpand:NO];
 
-            compressionSizes.medium.fileSize = [MXKTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
+            compressionSizes.medium.fileSize = (NSUInteger)[MXKTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
 
             if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
             {
@@ -363,7 +363,7 @@ typedef struct
 
                 compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
 
-                compressionSizes.large.fileSize = [MXKTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
+                compressionSizes.large.fileSize = (NSUInteger)[MXKTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
             }
             else
             {
@@ -398,7 +398,7 @@ typedef struct
 
 } MXKFileSizes;
 
-MXKFileSizes MXKFileSizes_init(MXKFileSizes *sizes)
+void MXKFileSizes_init(MXKFileSizes *sizes)
 {
     memset(sizes, 0, sizeof(MXKFileSizes));
 }
