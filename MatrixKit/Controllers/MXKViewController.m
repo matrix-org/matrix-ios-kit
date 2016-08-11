@@ -558,7 +558,17 @@
     {
         return;
     }
-    
+
+    // Detect if an external keyboard is used by checking that
+    // the bottom of the provided keyboard frame is outside of the screen
+    BOOL hasExternalKeyboard = NO;
+    CGRect keyboard = [self.view convertRect:endRect fromView:self.view.window];
+    CGFloat height = self.view.frame.size.height;
+    if ((keyboard.origin.y + keyboard.size.height) > height)
+    {
+        hasExternalKeyboard = YES;
+    }
+
     // Get the animation info
     NSNumber *curveValue = [[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
     UIViewAnimationCurve animationCurve = curveValue.intValue;
@@ -567,8 +577,17 @@
     
     // Apply keyboard animation
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | (animationCurve << 16) animations:^{
-        // Set the new keyboard height by checking screen orientation
-        self.keyboardHeight = (endRect.origin.y == 0) ? endRect.size.width : endRect.size.height;
+        if (!hasExternalKeyboard)
+        {
+            // Set the new virtual keyboard height by checking screen orientation
+            self.keyboardHeight = (endRect.origin.y == 0) ? endRect.size.width : endRect.size.height;
+        }
+        else
+        {
+            // The virtual keyboard is not shown on the screen but its toolbar is still displayed.
+            // Manage the height of this one
+            self.keyboardHeight =  height - keyboard.origin.y;
+        }
     } completion:^(BOOL finished)
     {
         [self onKeyboardShowAnimationComplete];
