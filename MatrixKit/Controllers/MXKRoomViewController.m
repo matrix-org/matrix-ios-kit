@@ -3085,7 +3085,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                             lastTypingDate = nil;
                                         } failure:^(NSError *error)
     {
-        NSLog(@"[MXKRoomVC] Failed to send typing notification (%d) failed: %@", typing, error);
+        NSLog(@"[MXKRoomVC] Failed to send typing notification (%d)", typing);
+        
         // Cancel timer (if any)
         [typingTimer invalidate];
         typingTimer = nil;
