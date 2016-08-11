@@ -728,54 +728,65 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
                 if (bubbleData)
                 {
-                    NSUInteger remainingEvents = 0;
+                    BOOL shouldRemoveBubbleData = NO;
+                    BOOL hasChanged = NO;
                     
                     @synchronized (bubbleData)
                     {
                         // Retrieve the original event to redact it
                         NSArray *events = bubbleData.events;
                         MXEvent *redactedEvent = nil;
+                        
                         for (MXEvent *event in events)
                         {
                             if ([event.eventId isEqualToString:redactionEvent.redacts])
                             {
-                                redactedEvent = [event prune];
-                                redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
+                                // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
+                                if (!event.redactedBecause)
+                                {
+                                    redactedEvent = [event prune];
+                                    redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
+                                }
+                                
                                 break;
                             }
                         }
                         
-                        if (redactedEvent.isState)
-                        {
-                            // FIXME: The room state must be refreshed here since this redacted event.
-                            NSLog(@"[MXKRoomVC] Warning: A state event has been redacted, room state may not be up to date");
-                        }
-                        
                         if (redactedEvent)
                         {
-                            remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
+                            // Update bubble data
+                            NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
+                            
+                            hasChanged = YES;
+                            
+                            // Remove the bubble if there is no more events
+                            shouldRemoveBubbleData = (remainingEvents == 0);
                         }
                     }
                     
-                    // If there is no more events, remove the bubble
-                    if (0 == remainingEvents)
+                    // Check whether the bubble should be removed
+                    if (shouldRemoveBubbleData)
                     {
                         [self removeCellData:bubbleData];
                     }
                     
-                    // Update the delegate on main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        if (self.delegate)
-                        {
-                            [self.delegate dataSource:self didCellChange:nil];
-                        }
-                        
-                        // Notify the last message may have changed
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-                        
-                    });
+                    if (hasChanged)
+                    {
+                        // Update the delegate on main thread
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            if (self.delegate)
+                            {
+                                [self.delegate dataSource:self didCellChange:nil];
+                            }
+                            
+                            // Notify the last message may have changed
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+                            
+                        });
+                    }
                 }
+                
             });
         }
     }];
