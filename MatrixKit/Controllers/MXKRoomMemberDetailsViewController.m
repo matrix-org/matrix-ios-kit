@@ -35,6 +35,9 @@
     
     // Observe left rooms
     id leaveRoomNotificationObserver;
+    
+    // Observe kMXRoomDidFlushMessagesNotification to take into account the updated room members when the room history is flushed.
+    id roomDidFlushMessagesNotificationObserver;
 }
 
 @end
@@ -459,37 +462,7 @@
             // consider only live event
             if (direction == MXTimelineDirectionForwards)
             {
-                // Hide potential action sheet
-                if (currentAlert)
-                {
-                    [currentAlert dismiss:NO];
-                    currentAlert = nil;
-                }
-                
-                MXRoomMember* nextRoomMember = nil;
-                
-                // get the updated memmber
-                NSArray* membersList = [self.mxRoom.state members];
-                for (MXRoomMember* member in membersList)
-                {
-                    if ([member.userId isEqualToString:_mxRoomMember.userId])
-                    {
-                        nextRoomMember = member;
-                        break;
-                    }
-                }
-                
-                // does the member still exist ?
-                if (nextRoomMember)
-                {
-                    // Refresh member
-                    _mxRoomMember = nextRoomMember;
-                    [self updateMemberInfo];
-                }
-                else
-                {
-                    [self withdrawViewControllerAnimated:YES completion:nil];
-                }
+                [self refreshRoomMember];
             }
             
         }];
@@ -508,6 +481,19 @@
                 }
             }
         }];
+        
+        // Observe room history flush (sync with limited timeline, or state event redaction)
+        roomDidFlushMessagesNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushMessagesNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            MXRoom *room = notif.object;
+            if (self.mainSession == room.mxSession && [mxRoom.state.roomId isEqualToString:room.state.roomId])
+            {
+                // The existing room history has been flushed during server sync.
+                // Take into account the updated room members list by updating the room member instance
+                [self refreshRoomMember];
+            }
+            
+        }];
     }
     
     [self updateMemberInfo];
@@ -520,12 +506,53 @@
         [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
         leaveRoomNotificationObserver = nil;
     }
+    if (roomDidFlushMessagesNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushMessagesNotificationObserver];
+        roomDidFlushMessagesNotificationObserver = nil;
+    }
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     if (membersListener && mxRoom)
     {
         [mxRoom.liveTimeline removeListener:membersListener];
         membersListener = nil;
+    }
+}
+
+- (void)refreshRoomMember
+{
+    // Hide potential action sheet
+    if (currentAlert)
+    {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
+    MXRoomMember* nextRoomMember = nil;
+    
+    // get the updated memmber
+    NSArray* membersList = [self.mxRoom.state members];
+    for (MXRoomMember* member in membersList)
+    {
+        if ([member.userId isEqualToString:_mxRoomMember.userId])
+        {
+            nextRoomMember = member;
+            break;
+        }
+    }
+    
+    // does the member still exist ?
+    if (nextRoomMember)
+    {
+        // Refresh member
+        _mxRoomMember = nextRoomMember;
+        [self updateMemberInfo];
+    }
+    else
+    {
+        [self withdrawViewControllerAnimated:YES completion:nil];
     }
 }
 

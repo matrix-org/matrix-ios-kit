@@ -25,6 +25,9 @@
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
     id leaveRoomNotificationObserver;
+    
+    // Observe kMXRoomDidFlushMessagesNotification to take into account the updated room state when the room history is flushed.
+    id roomDidFlushMessagesNotificationObserver;
 }
 @end
 
@@ -67,6 +70,12 @@
     {
         [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
         leaveRoomNotificationObserver = nil;
+    }
+    
+    if (roomDidFlushMessagesNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushMessagesNotificationObserver];
+        roomDidFlushMessagesNotificationObserver = nil;
     }
     
     mxRoom = nil;
@@ -139,6 +148,18 @@
                     // We remove the current view controller.
                     [self withdrawViewControllerAnimated:YES completion:nil];
                 }
+            }
+            
+        }];
+        
+        // Observe room history flush (sync with limited timeline, or state event redaction)
+        roomDidFlushMessagesNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushMessagesNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            MXRoom *room = notif.object;
+            if (self.mainSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+            {
+                // The existing room history has been flushed during server sync. Take into account the updated room state.
+                [self updateRoomState:room.state];
             }
             
         }];
