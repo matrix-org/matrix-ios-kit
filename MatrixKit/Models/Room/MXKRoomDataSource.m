@@ -742,7 +742,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             if ([event.eventId isEqualToString:redactionEvent.redacts])
                             {
                                 // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
-                                if (!event.redactedBecause)
+                                if (!event.isRedactedEvent)
                                 {
                                     redactedEvent = [event prune];
                                     redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
