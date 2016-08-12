@@ -108,9 +108,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id NSCurrentLocaleDidChangeNotificationObserver;
     
     /**
-     Observe kMXRoomDidFlushMessagesNotification to trigger cell change when existing room history has been flushed during server sync.
+     Observe kMXRoomDidFlushDataNotification to trigger cell change when existing room history has been flushed during server sync.
      */
-    id roomDidFlushMessagesNotificationObserver;
+    id roomDidFlushDataNotificationObserver;
     
     /**
      Observe kMXRoomDidUpdateUnreadNotification to refresh unread counters.
@@ -322,10 +322,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)reset
 {
-    if (roomDidFlushMessagesNotificationObserver)
+    if (roomDidFlushDataNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushMessagesNotificationObserver];
-        roomDidFlushMessagesNotificationObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushDataNotificationObserver];
+        roomDidFlushDataNotificationObserver = nil;
     }
     
     if (roomDidUpdateUnreadNotificationObserver)
@@ -484,7 +484,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     [_timeline resetPagination];
                     
                     // Observe room history flush (sync with limited timeline, or state event redaction)
-                    roomDidFlushMessagesNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushMessagesNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
                         MXRoom *room = notif.object;
                         if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])

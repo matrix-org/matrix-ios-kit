@@ -16,7 +16,6 @@
 
 #import "MXKEventDetailsView.h"
 
-#import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
 
 #import "MXKConstants.h"

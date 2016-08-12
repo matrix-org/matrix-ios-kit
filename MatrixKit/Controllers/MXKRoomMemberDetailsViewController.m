@@ -36,8 +36,8 @@
     // Observe left rooms
     id leaveRoomNotificationObserver;
     
-    // Observe kMXRoomDidFlushMessagesNotification to take into account the updated room members when the room history is flushed.
-    id roomDidFlushMessagesNotificationObserver;
+    // Observe kMXRoomDidFlushDataNotification to take into account the updated room members when the room history is flushed.
+    id roomDidFlushDataNotificationObserver;
 }
 
 @end
@@ -483,7 +483,7 @@
         }];
         
         // Observe room history flush (sync with limited timeline, or state event redaction)
-        roomDidFlushMessagesNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushMessagesNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
             if (self.mainSession == room.mxSession && [mxRoom.state.roomId isEqualToString:room.state.roomId])
@@ -506,10 +506,10 @@
         [[NSNotificationCenter defaultCenter] removeObserver:leaveRoomNotificationObserver];
         leaveRoomNotificationObserver = nil;
     }
-    if (roomDidFlushMessagesNotificationObserver)
+    if (roomDidFlushDataNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushMessagesNotificationObserver];
-        roomDidFlushMessagesNotificationObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushDataNotificationObserver];
+        roomDidFlushDataNotificationObserver = nil;
     }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
