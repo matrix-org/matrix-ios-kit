@@ -347,18 +347,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         {
             // Presently only change on membership, display name and avatar are supported
             
-            // Retrieve membership
-            NSString* membership;
-            MXJSONModelSetString(membership, event.content[@"membership"]);
-            
-            NSString *prevMembership = nil;
-            if (event.prevContent)
-            {
-                MXJSONModelSetString(prevMembership, event.prevContent[@"membership"]);
-            }
-            
-            // Check whether the sender has updated his profile (the membership is then unchanged)
-            if (prevMembership && membership && [membership isEqualToString:prevMembership])
+            // Check whether the sender has updated his profile
+            if (event.isUserProfileChange)
             {
                 // Is redacted event?
                 if (isRedacted)
@@ -431,6 +421,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             else
             {
+                // Retrieve membership
+                NSString* membership;
+                MXJSONModelSetString(membership, event.content[@"membership"]);
+                
                 // Consider here a membership change
                 if ([membership isEqualToString:@"invite"])
                 {
@@ -463,6 +457,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
+                    NSString *prevMembership = nil;
+                    if (event.prevContent)
+                    {
+                        MXJSONModelSetString(prevMembership, event.prevContent[@"membership"]);
+                    }
+                    
                     if ([event.sender isEqualToString:event.stateKey])
                     {
                         if ([MXCallManager isConferenceUser:event.stateKey])
