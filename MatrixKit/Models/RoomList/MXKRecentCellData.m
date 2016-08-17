@@ -51,6 +51,12 @@
     lastEvent = roomDataSource.lastMessage;
     roomDisplayname = roomDataSource.room.state.displayname;
     
+    // Check whether the user profile changes are ignored during the last message handling
+    if (lastEvent.isUserProfileChange && recentsDataSource.mxSession.ignoreProfileChangesDuringLastMessageProcessing)
+    {
+        lastEvent = nil;
+    }
+    
     if (lastEvent)
     {
         lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
