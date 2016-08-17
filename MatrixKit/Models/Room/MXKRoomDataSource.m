@@ -127,7 +127,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     self = [super initWithMatrixSession:matrixSession];
     if (self)
     {
-        NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
+        //NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
         
         _roomId = roomId;
         _isLive = YES;
