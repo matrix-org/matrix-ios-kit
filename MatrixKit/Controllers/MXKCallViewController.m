@@ -46,11 +46,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
      The popup showed in case of call stack error.
      */
     MXKAlert *errorAlert;
+    
+    // the room events listener
+    id roomListener;
+    
+    // Observe kMXRoomDidFlushDataNotification to take into account the updated room members when the room history is flushed.
+    id roomDidFlushDataNotificationObserver;
 }
-
-@property (nonatomic) MXCall *mxCall;
-
-@property (nonatomic) MXUser *peer;
 
 @property (nonatomic, assign) Boolean isRinging;
 @property (nonatomic, assign) Boolean isSpeakerPhone;
@@ -63,7 +65,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 @synthesize localPreviewContainerView, localPreviewActivityView, remotePreviewContainerView;
 @synthesize overlayContainerView, callContainerView, callerImageView, callerNameLabel, callStatusLabel;
 @synthesize callToolBar, rejectCallButton, answerCallButton, endCallButton;
-@synthesize callControlContainerView, speakerButton, muteButton;
+@synthesize callControlContainerView, speakerButton, audioMuteButton, videoMuteButton;
 @synthesize backToAppButton;
 @synthesize backToAppStatusWindow;
 @synthesize mxCall;
@@ -80,6 +82,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 {
     MXKCallViewController* instance = [[[self class] alloc] initWithNibName:NSStringFromClass([MXKCallViewController class])
                                                                      bundle:[NSBundle bundleForClass:[MXKCallViewController class]]];
+    
+    // Load the view controller's view now (buttons and views will then be available).
+    if ([instance respondsToSelector:@selector(loadViewIfNeeded)])
+    {
+        // iOS 9 and later
+        [instance loadViewIfNeeded];
+    }
+    else if (instance.view)
+    {
+        // Patch: on iOS < 9.0, we load the view by calling its getter.
+    }
+    
     instance.mxCall = call;
     
     return instance;
@@ -91,26 +105,22 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 {
     [super viewDidLoad];
     
-    // Load peer info
-    [self updatePeerInfoDisplay];
-    
     updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTimeStatusLabel) userInfo:nil repeats:YES];
-    
-    // TODO: handle speaker and mute options
-    speakerButton.hidden = YES;
-    muteButton.hidden = YES;
     
     self.callerImageView.backgroundColor = [UIColor clearColor];
     self.backToAppButton.backgroundColor = [UIColor clearColor];
-    self.muteButton.backgroundColor = [UIColor clearColor];
+    self.audioMuteButton.backgroundColor = [UIColor clearColor];
+    self.videoMuteButton.backgroundColor = [UIColor clearColor];
     self.speakerButton.backgroundColor = [UIColor clearColor];
     
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateNormal];
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateHighlighted];
-    [self.muteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_mute"] forState:UIControlStateNormal];
-    [self.muteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_mute"] forState:UIControlStateSelected];
-    [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker"] forState:UIControlStateNormal];
-    [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker"] forState:UIControlStateSelected];
+    [self.audioMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_audio_unmute"] forState:UIControlStateNormal];
+    [self.audioMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_audio_mute"] forState:UIControlStateSelected];
+    [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_unmute"] forState:UIControlStateNormal];
+    [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_mute"] forState:UIControlStateSelected];
+    [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_off"] forState:UIControlStateNormal];
+    [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_on"] forState:UIControlStateSelected];
     
     // Localize string
     [answerCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"answer_call"] forState:UIControlStateNormal];
@@ -142,6 +152,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     if (mxCall)
     {
+        // Refresh call display according to the call room state.
+        [self callRoomStateDidChange];
+        
         // Refresh call status
         [self call:mxCall stateDidChange:mxCall.state reason:nil];
     }
@@ -184,11 +197,24 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerDisappearedNotification object:nil];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        [self updateLocalPreviewLayout];
+        
+        [self showOverlayContainer:YES];
+        
+    });
+}
+
 - (void)dismiss
 {
     if (_delegate)
     {
-        [_delegate dismissCallViewController:self];
+        [_delegate dismissCallViewController:self completion:nil];
     }
     else
     {
@@ -234,46 +260,57 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         mxCall.selfVideoView = nil;
         mxCall.remoteVideoView = nil;
         [self removeMatrixSession:self.mainSession];
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        
+        [self removeObservers];
+        
+        mxCall = nil;
     }
-    
     
     if (call && call.room)
     {
-        MXSession *mxSession = mxCall.room.mxSession;
+        mxCall = call;
         
-        [self addMatrixSession:mxSession];
+        [self addMatrixSession:mxCall.room.mxSession];
         
-        // Handle peer here
-        if (call.isIncoming)
-        {
-            self.peer = [mxSession userWithUserId:call.callerId];
-        }
-        else
-        {
-            // For 1:1 call, find the other peer
-            // Else, the room information will be used to display information about the call
-            NSArray *members = call.room.state.members;
-            if (members.count == 2)
+        // Register a listener to handle messages related to room name, members...
+        roomListener = [mxCall.room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
+            // Consider only live events
+            if (mxCall && direction == MXTimelineDirectionForwards)
             {
-                for (MXUser *member in members)
-                {
-                    if (![member.userId isEqualToString:call.callerId])
-                    {
-                        self.peer = member;
-                        break;
-                    }
-                }
+                // The room state has been changed
+                [self callRoomStateDidChange];
             }
-
-            [self updatePeerInfoDisplay];
-        }
+            
+        }];
+        
+        // Observe room history flush (sync with limited timeline, or state event redaction)
+        roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            MXRoom *room = notif.object;
+            if (mxCall && self.mainSession == room.mxSession && [mxCall.room.state.roomId isEqualToString:room.state.roomId])
+            {
+                // The existing room history has been flushed during server sync.
+                // Take into account the updated room state
+                [self callRoomStateDidChange];
+            }
+            
+        }];
+        
+        // Display room call information
+        [self callRoomStateDidChange];
+        
+        // Hide video mute on voice call
+        self.videoMuteButton.hidden = !call.isVideoCall;
+        
+        // Turn on speaker on video call
+        mxCall.audioToSpeaker = speakerButton.selected = call.isVideoCall;
         
         // Observe call state change
         call.delegate = self;
         [self call:call stateDidChange:call.state reason:nil];
         
-        if (call.isVideoCall)
+        if (call.isVideoCall && localPreviewContainerView)
         {
             // Access to the camera is mandatory to display the self view
             // Check the permission right now
@@ -305,15 +342,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             remotePreviewContainerView.hidden = YES;
         }
     }
+}
+
+- (void)setPeer:(MXUser *)peer
+{
+    _peer = peer;
     
-    mxCall = call;
+    [self updatePeerInfoDisplay];
 }
 
 - (void)updatePeerInfoDisplay
 {
     NSString *peerDisplayName;
     NSString *peerAvatarURL;
-
+    
     if (_peer)
     {
         peerDisplayName = [_peer displayname];
@@ -321,17 +363,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         {
             peerDisplayName = _peer.userId;
         }
-
-        // TODO add observer on this user to be able update his display name and avatar.
+        peerAvatarURL = _peer.avatarUrl;
     }
     else if (mxCall.isConferenceCall)
     {
         peerDisplayName = mxCall.room.state.displayname;
         peerAvatarURL = mxCall.room.state.avatar;
-
-        // TODO add observer on this room to be able update its display name and avatar.
     }
-
+    
     callerNameLabel.text = peerDisplayName;
     if (peerAvatarURL)
     {
@@ -340,20 +379,21 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
         callerImageView.enableInMemoryCache = YES;
         [callerImageView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
-        [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];
-        callerImageView.clipsToBounds = YES;
     }
     else
     {
         callerImageView.image = self.picturePlaceholder;
     }
+    
+    // Round caller image view
+    [callerImageView.layer setCornerRadius:callerImageView.frame.size.width / 2];
+    callerImageView.clipsToBounds = YES;
 }
 
 - (void)setIsRinging:(Boolean)isRinging
 {
     if (_isRinging != isRinging)
     {
-        
         if (isRinging)
         {
             if (audioPlayer)
@@ -445,20 +485,27 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             [self dismiss];
         }
     }
-    else if (sender == muteButton)
+    else if (sender == audioMuteButton)
     {
         mxCall.audioMuted = !mxCall.audioMuted;
+        audioMuteButton.selected = mxCall.audioMuted;
+    }
+    else if (sender == videoMuteButton)
+    {
+        mxCall.videoMuted = !mxCall.videoMuted;
+        videoMuteButton.selected = mxCall.videoMuted;
     }
     else if (sender == speakerButton)
     {
-        // TODO
+        mxCall.audioToSpeaker = !mxCall.audioToSpeaker;
+        speakerButton.selected = mxCall.audioToSpeaker;
     }
     else if (sender == backToAppButton)
     {
         if (_delegate)
         {
             // Dismiss the view controller whereas the call is still running
-            [_delegate dismissCallViewController:self];
+            [_delegate dismissCallViewController:self completion:nil];
         }
     }
 }
@@ -607,12 +654,105 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - Internal
 
+- (void)removeObservers
+{
+    if (roomDidFlushDataNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushDataNotificationObserver];
+        roomDidFlushDataNotificationObserver = nil;
+    }
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    if (roomListener && mxCall.room)
+    {
+        [mxCall.room.liveTimeline removeListener:roomListener];
+        roomListener = nil;
+    }
+}
+
+- (void)callRoomStateDidChange
+{
+    // Handle peer here
+    if (mxCall.isIncoming)
+    {
+        self.peer = [mxCall.room.mxSession getOrCreateUser:mxCall.callerId];
+    }
+    else
+    {
+        // For 1:1 call, find the other peer
+        // Else, the room information will be used to display information about the call
+        NSArray *members = mxCall.room.state.members;
+        MXUser *theMember = nil;
+        if (members.count == 2)
+        {
+            for (MXUser *member in members)
+            {
+                if (![member.userId isEqualToString:mxCall.callerId])
+                {
+                    theMember = member;
+                    break;
+                }
+            }
+        }
+        
+        self.peer = theMember;
+    }
+}
+
 - (void)vibrate
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
 #pragma mark - UI methods
+
+- (void)updateLocalPreviewLayout
+{
+    UIInterfaceOrientation screenOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    CGFloat maxPreviewFrameSize, minPreviewFrameSize;
+    
+    if (_localPreviewContainerViewWidthConstraint.constant < _localPreviewContainerViewHeightConstraint.constant)
+    {
+        maxPreviewFrameSize = _localPreviewContainerViewHeightConstraint.constant;
+        minPreviewFrameSize = _localPreviewContainerViewWidthConstraint.constant;
+    }
+    else
+    {
+        minPreviewFrameSize = _localPreviewContainerViewHeightConstraint.constant;
+        maxPreviewFrameSize = _localPreviewContainerViewWidthConstraint.constant;
+    }
+    
+    if (UIInterfaceOrientationIsLandscape(screenOrientation))
+    {
+        _localPreviewContainerViewHeightConstraint.constant = minPreviewFrameSize;
+        _localPreviewContainerViewWidthConstraint.constant = maxPreviewFrameSize;
+    }
+    else
+    {
+        _localPreviewContainerViewHeightConstraint.constant = maxPreviewFrameSize;
+        _localPreviewContainerViewWidthConstraint.constant = minPreviewFrameSize;
+    }
+    
+    CGRect bounds = self.view.bounds;
+    CGFloat midX = bounds.size.width / 2.0;
+    CGFloat midY = bounds.size.height / 2.0;
+    
+    CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
+    
+    if (previewOrigin.x != 20)
+    {
+        CGFloat posX = (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0);
+        _localPreviewContainerViewLeadingConstraint.constant = posX;
+    }
+    
+    if (previewOrigin.y != 20)
+    {
+        CGFloat posY = (bounds.size.height - _localPreviewContainerViewHeightConstraint.constant - 20.0);
+        _localPreviewContainerViewTopConstraint.constant = posY;
+    }
+}
 
 - (void)showOverlayContainer:(BOOL)isShown
 {
@@ -678,35 +818,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
 {
-    UITouch *touch = [touches anyObject];
-    CGPoint point = [touch locationInView:self.view];
-    CGPoint lastPoint = [touch previousLocationInView:self.view];
     if (isMovingLocalPreview)
     {
+        UITouch *touch = [touches anyObject];
+        CGPoint point = [touch locationInView:self.view];
+        
         CGRect bounds = self.view.bounds;
         CGFloat midX = bounds.size.width / 2.0;
         CGFloat midY = bounds.size.height / 2.0;
         
-        CGRect frame = self.localPreviewContainerView.frame;
+        CGFloat posX = (point.x < midX) ? 20.0 : (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0);
+        CGFloat posY = (point.y < midY) ? 20.0 : (bounds.size.height - _localPreviewContainerViewHeightConstraint.constant - 20.0);
         
-        CGFloat dx = (point.x-lastPoint.x);
-        CGFloat dy = (point.y-lastPoint.y);
-        if ((dx*dx + dy*dy) > 60.0)
-        {
-            frame.origin.x = (dx < 0.0) ? 20.0 : (bounds.size.width - frame.size.width - 20.0);
-            frame.origin.y = (dy < 0.0) ? 20.0 : (bounds.size.height - frame.size.height - 20.0);
-        }
-        else
-        {
-            frame.origin.x = (point.x < midX) ? 20.0 : (bounds.size.width - frame.size.width - 20.0);
-            frame.origin.y = (point.y < midY) ? 20.0 : (bounds.size.height - frame.size.height - 20.0);
-        }
-        
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.2];
-        [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-        self.localPreviewContainerView.frame = frame;
-        [UIView commitAnimations];
+        _localPreviewContainerViewLeadingConstraint.constant = posX;
+        _localPreviewContainerViewTopConstraint.constant = posY;
     }
     else
     {

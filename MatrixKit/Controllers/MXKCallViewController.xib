@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKCallViewController">
             <connections>
                 <outlet property="answerCallButton" destination="0DL-0m-uZo" id="iYW-vl-A5W"/>
+                <outlet property="audioMuteButton" destination="fxP-zM-kfT" id="J6M-is-5me"/>
                 <outlet property="backToAppButton" destination="nff-fB-sTq" id="UEn-bg-xuA"/>
                 <outlet property="backgroundImageView" destination="v1I-LH-wvv" id="HvS-WI-vnb"/>
                 <outlet property="callContainerView" destination="W2P-Hy-nV2" id="b0q-Lj-daE"/>
@@ -19,11 +19,15 @@
                 <outlet property="endCallButton" destination="lVK-d8-Dqf" id="zgE-Go-bo6"/>
                 <outlet property="localPreviewActivityView" destination="Bhz-hS-5B6" id="2yA-xn-ITf"/>
                 <outlet property="localPreviewContainerView" destination="6gQ-zo-2Zw" id="6Ba-YZ-OmX"/>
-                <outlet property="muteButton" destination="fxP-zM-kfT" id="Bx3-VX-Vse"/>
+                <outlet property="localPreviewContainerViewHeightConstraint" destination="dZW-ZL-5rV" id="0qv-ne-6vn"/>
+                <outlet property="localPreviewContainerViewLeadingConstraint" destination="3Fs-0f-Aws" id="s4D-aK-1qx"/>
+                <outlet property="localPreviewContainerViewTopConstraint" destination="3kN-Qi-Klq" id="zT0-lf-noP"/>
+                <outlet property="localPreviewContainerViewWidthConstraint" destination="gyu-kv-SLy" id="h6P-sv-f69"/>
                 <outlet property="overlayContainerView" destination="JAR-tn-sGN" id="09u-3G-1UA"/>
                 <outlet property="rejectCallButton" destination="cst-tR-uHV" id="Ust-PL-R6A"/>
                 <outlet property="remotePreviewContainerView" destination="Tjb-57-yB1" id="MaR-IC-ZKw"/>
                 <outlet property="speakerButton" destination="UHM-u9-ODN" id="PFN-R6-3b3"/>
+                <outlet property="videoMuteButton" destination="QWZ-Xg-1VM" id="kbc-Ut-yse"/>
                 <outlet property="view" destination="iN0-l3-epB" id="JDF-cz-roW"/>
             </connections>
         </placeholder>
@@ -49,7 +53,7 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <accessibility key="accessibilityConfiguration">
-                        <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
+                        <accessibilityTraits key="traits" notEnabled="YES"/>
                     </accessibility>
                     <constraints>
                         <constraint firstAttribute="height" constant="120" id="dZW-ZL-5rV"/>
@@ -83,8 +87,8 @@
                         <view opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nk9-Un-LVP" userLabel="Call Control Container View">
                             <rect key="frame" x="0.0" y="260" width="600" height="60"/>
                             <subviews>
-                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxP-zM-kfT" userLabel="Mute">
-                                    <rect key="frame" x="15" y="0.0" width="270" height="60"/>
+                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxP-zM-kfT" userLabel="Audio Mute Btn">
+                                    <rect key="frame" x="15" y="0.0" width="170" height="60"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="-69" minY="61" maxX="0.0" maxY="0.0"/>
@@ -99,8 +103,24 @@
                                         <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="CgE-f8-nPS"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UHM-u9-ODN" userLabel="Speaker">
-                                    <rect key="frame" x="315" y="0.0" width="270" height="60"/>
+                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QWZ-Xg-1VM" userLabel="Video Mute Btn">
+                                    <rect key="frame" x="215" y="0.0" width="170" height="60"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
+                                    <inset key="titleEdgeInsets" minX="-69" minY="61" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="highlighted">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="yRT-8e-Sed"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UHM-u9-ODN" userLabel="Speaker Btn">
+                                    <rect key="frame" x="415" y="0.0" width="170" height="60"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                                     <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="4" maxY="0.0"/>
@@ -120,14 +140,18 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstItem="UHM-u9-ODN" firstAttribute="top" secondItem="nk9-Un-LVP" secondAttribute="top" id="9WM-jp-uJ2"/>
+                                <constraint firstItem="QWZ-Xg-1VM" firstAttribute="width" secondItem="fxP-zM-kfT" secondAttribute="width" id="Puj-8p-VO4"/>
                                 <constraint firstItem="fxP-zM-kfT" firstAttribute="width" secondItem="UHM-u9-ODN" secondAttribute="width" id="Q6p-5w-4pM"/>
                                 <constraint firstAttribute="bottom" secondItem="fxP-zM-kfT" secondAttribute="bottom" id="Qly-U3-yZz"/>
+                                <constraint firstItem="QWZ-Xg-1VM" firstAttribute="leading" secondItem="fxP-zM-kfT" secondAttribute="trailing" constant="30" id="Tfa-tC-stW"/>
                                 <constraint firstAttribute="height" constant="60" id="eS5-qj-HTc"/>
                                 <constraint firstAttribute="trailing" secondItem="UHM-u9-ODN" secondAttribute="trailing" constant="15" id="fcg-Sk-9GA"/>
                                 <constraint firstAttribute="bottom" secondItem="UHM-u9-ODN" secondAttribute="bottom" id="g18-gQ-ckj"/>
-                                <constraint firstItem="UHM-u9-ODN" firstAttribute="leading" secondItem="fxP-zM-kfT" secondAttribute="trailing" constant="30" id="res-AE-ksy"/>
+                                <constraint firstItem="QWZ-Xg-1VM" firstAttribute="top" secondItem="nk9-Un-LVP" secondAttribute="top" id="g1k-AA-jae"/>
+                                <constraint firstItem="UHM-u9-ODN" firstAttribute="leading" secondItem="QWZ-Xg-1VM" secondAttribute="trailing" constant="30" id="ltE-Ou-T1h"/>
                                 <constraint firstItem="fxP-zM-kfT" firstAttribute="leading" secondItem="nk9-Un-LVP" secondAttribute="leading" constant="15" id="tkX-xK-GQj"/>
                                 <constraint firstItem="fxP-zM-kfT" firstAttribute="top" secondItem="nk9-Un-LVP" secondAttribute="top" id="xKI-k3-zBC"/>
+                                <constraint firstAttribute="bottom" secondItem="QWZ-Xg-1VM" secondAttribute="bottom" id="ygd-qE-SAS"/>
                             </constraints>
                         </view>
                         <view opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4h9-hF-BH8" userLabel="Call Bottom Bar View">
@@ -247,16 +271,18 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="6gQ-zo-2Zw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" placeholder="YES" id="Cxe-Ae-cXy"/>
+                <constraint firstItem="6gQ-zo-2Zw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="3Fs-0f-Aws"/>
+                <constraint firstItem="6gQ-zo-2Zw" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" id="3kN-Qi-Klq"/>
                 <constraint firstAttribute="trailing" secondItem="JAR-tn-sGN" secondAttribute="trailing" id="IGf-YS-JEj"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="6gQ-zo-2Zw" secondAttribute="trailing" id="IZd-Uv-ucs"/>
                 <constraint firstAttribute="bottom" secondItem="JAR-tn-sGN" secondAttribute="bottom" id="KDu-Kr-vji"/>
                 <constraint firstItem="v1I-LH-wvv" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="VF9-js-1ub"/>
                 <constraint firstItem="JAR-tn-sGN" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Z6W-gz-KKT"/>
                 <constraint firstItem="Tjb-57-yB1" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="aKy-Ol-bhc"/>
                 <constraint firstAttribute="bottom" secondItem="Tjb-57-yB1" secondAttribute="bottom" id="akt-pO-kWM"/>
-                <constraint firstItem="6gQ-zo-2Zw" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" placeholder="YES" id="ava-hT-dSM"/>
                 <constraint firstItem="v1I-LH-wvv" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="cq1-0k-TFN"/>
                 <constraint firstAttribute="trailing" secondItem="v1I-LH-wvv" secondAttribute="trailing" id="eL2-a4-lJd"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="6gQ-zo-2Zw" secondAttribute="bottom" id="hS1-8y-3t8"/>
                 <constraint firstItem="Tjb-57-yB1" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="mW3-RA-hx2"/>
                 <constraint firstAttribute="bottom" secondItem="v1I-LH-wvv" secondAttribute="bottom" id="o10-x3-vgo"/>
                 <constraint firstItem="JAR-tn-sGN" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="pei-Ab-VHX"/>
