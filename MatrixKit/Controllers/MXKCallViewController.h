@@ -155,6 +155,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 - (void)showOverlayContainer:(BOOL)isShown;
 
 /**
+ Set up or teardown the promixity monitoring and enable/disable the idle timer according to call type, state & audio route.
+ */
+- (void)updateProximityAndSleep;
+
+/**
  Action registered on the event 'UIControlEventTouchUpInside' for each UIButton instance.
  */
 - (IBAction)onButtonPressed:(id)sender;
