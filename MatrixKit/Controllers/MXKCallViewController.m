@@ -55,8 +55,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 }
 
 @property (nonatomic, assign) Boolean isRinging;
-@property (nonatomic, assign) Boolean isSpeakerPhone;
-@property (nonatomic, assign) Boolean isMuted;
 
 @end
 
@@ -508,6 +506,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             [_delegate dismissCallViewController:self completion:nil];
         }
     }
+    
+    [self updateProximityAndSleep];
 }
 
 #pragma mark - MXCallDelegate
@@ -612,6 +612,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         default:
             break;
     }
+    
+    [self updateProximityAndSleep];
 }
 
 - (void)call:(MXCall *)call didEncounterError:(NSError *)error
@@ -794,6 +796,29 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         NSUInteger mins = (duration - secs) / 60;
         callStatusLabel.text = [NSString stringWithFormat:@"%02tu:%02tu", mins, secs];
     }
+}
+
+- (void)updateProximityAndSleep
+{
+    BOOL headset = NO; // TODO check whether headset is used (see audio route).
+    
+    BOOL inCall = (mxCall.state == MXCallStateConnected || mxCall.state == MXCallStateRinging || mxCall.state == MXCallStateInviteSent || mxCall.state == MXCallStateConnecting || mxCall.state == MXCallStateCreateOffer || mxCall.state == MXCallStateCreateAnswer);
+    // || (mxCall.state == MXCallStateWaitLocalMedia) || (mxCall.state == MXCallStateFledgling);
+    
+    BOOL proxEnabled = (!mxCall.audioToSpeaker) && (!headset) && (!mxCall.isVideoCall) && inCall;
+    [[UIDevice currentDevice] setProximityMonitoringEnabled:proxEnabled];
+    
+    // Note: if the device is locked, VOIP calling get dropped if an incoming GSM call is received
+    BOOL disableIdleTimer = (mxCall.state != MXCallStateEnded) && (mxCall.state != MXCallStateAnsweredElseWhere) && (mxCall.state != MXCallStateInviteExpired);
+    
+    // on voice call
+    if (!mxCall.isVideoCall)
+    {
+        // disable the timer only when a VoIP call is performed without headset or Speaker
+        disableIdleTimer &= (headset || mxCall.audioToSpeaker);
+    }
+    
+    [UIApplication sharedApplication].idleTimerDisabled = disableIdleTimer;
 }
 
 #pragma mark - UIResponder Touch Events
