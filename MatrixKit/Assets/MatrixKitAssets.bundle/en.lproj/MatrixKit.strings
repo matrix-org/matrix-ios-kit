@@ -214,7 +214,7 @@
 
 "notice_room_invite" = "%@ invited %@";
 "notice_room_third_party_invite" = "%@ sent an invitation to %@ to join the room";
-"notice_room_third_party_registered_invite" = "%@ registered as %@ and received an invitation from %@";
+"notice_room_third_party_registered_invite" = "%@ accepted the invitation for %@";
 "notice_room_join" = "%@ joined";
 "notice_room_leave" = "%@ left";
 "notice_room_kick" = "%@ kicked %@";

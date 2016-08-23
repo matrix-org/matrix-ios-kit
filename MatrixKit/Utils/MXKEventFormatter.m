@@ -430,7 +430,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 {
                     if (event.content[@"third_party_invite"])
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], event.content[@"third_party_invite"][@"display_name"], targetDisplayName, senderDisplayName];
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], targetDisplayName, event.content[@"third_party_invite"][@"display_name"]];
                     }
                     else
                     {
