@@ -52,6 +52,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Observe kMXRoomDidFlushDataNotification to take into account the updated room members when the room history is flushed.
     id roomDidFlushDataNotificationObserver;
+    
+    // Observe AVAudioSessionRouteChangeNotification
+    id audioSessionRouteChangeNotificationObserver;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
@@ -295,14 +298,17 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
         }];
         
+        audioSessionRouteChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            
+            [self updateProximityAndSleep];
+            
+        }];
+        
         // Display room call information
         [self callRoomStateDidChange];
         
         // Hide video mute on voice call
         self.videoMuteButton.hidden = !call.isVideoCall;
-        
-        // Turn on speaker on video call
-        mxCall.audioToSpeaker = speakerButton.selected = call.isVideoCall;
         
         // Observe call state change
         call.delegate = self;
@@ -581,6 +587,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 // Well, hide does not work. So, shrink the view to nil
                 self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
             }
+            
+            // Turn on speaker on video call (ONLY when the built-in receiver is currently used)
+            call.audioToSpeaker = (call.isVideoCall && self.isBuiltInReceiverAudioOuput);
+            speakerButton.selected = call.audioToSpeaker;
+            
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
@@ -677,6 +688,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         roomDidFlushDataNotificationObserver = nil;
     }
     
+    if (audioSessionRouteChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:audioSessionRouteChangeNotificationObserver];
+        audioSessionRouteChangeNotificationObserver = nil;
+    }
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     if (roomListener && mxCall.room)
@@ -718,6 +735,22 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 - (void)vibrate
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+}
+
+- (BOOL)isBuiltInReceiverAudioOuput
+{
+    BOOL isBuiltInReceiverUsed = NO;
+    
+    // Check whether the audio output is the built-in receiver
+    AVAudioSessionRouteDescription *audioRoute= [[AVAudioSession sharedInstance] currentRoute];
+    if (audioRoute.outputs.count)
+    {
+        // TODO: handle the case where multiple outputs are returned
+        AVAudioSessionPortDescription *audioOutputs = audioRoute.outputs.firstObject;
+        isBuiltInReceiverUsed = ([audioOutputs.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]);
+    }
+    
+    return isBuiltInReceiverUsed;
 }
 
 #pragma mark - UI methods
@@ -813,24 +846,17 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)updateProximityAndSleep
 {
-    BOOL headset = NO; // TODO check whether headset is used (see audio route).
+    BOOL isBuiltInReceiverUsed = self.isBuiltInReceiverAudioOuput;
     
     BOOL inCall = (mxCall.state == MXCallStateConnected || mxCall.state == MXCallStateRinging || mxCall.state == MXCallStateInviteSent || mxCall.state == MXCallStateConnecting || mxCall.state == MXCallStateCreateOffer || mxCall.state == MXCallStateCreateAnswer);
-    // || (mxCall.state == MXCallStateWaitLocalMedia) || (mxCall.state == MXCallStateFledgling);
     
-    BOOL proxEnabled = (!mxCall.audioToSpeaker) && (!headset) && (!mxCall.isVideoCall) && inCall;
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:proxEnabled];
+    // Enable the proximity monitoring when the built in receiver is used as the audio output.
+    BOOL enableProxMonitoring = inCall && isBuiltInReceiverUsed;
+    [[UIDevice currentDevice] setProximityMonitoringEnabled:enableProxMonitoring];
     
-    // Note: if the device is locked, VOIP calling get dropped if an incoming GSM call is received
-    BOOL disableIdleTimer = (mxCall.state != MXCallStateEnded) && (mxCall.state != MXCallStateAnsweredElseWhere) && (mxCall.state != MXCallStateInviteExpired);
-    
-    // on voice call
-    if (!mxCall.isVideoCall)
-    {
-        // disable the timer only when a VoIP call is performed without headset or Speaker
-        disableIdleTimer &= (headset || mxCall.audioToSpeaker);
-    }
-    
+    // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
+    // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
+    BOOL disableIdleTimer = inCall && (mxCall.isVideoCall || isBuiltInReceiverUsed);
     [UIApplication sharedApplication].idleTimerDisabled = disableIdleTimer;
 }
 
@@ -841,7 +867,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
     if ((!self.localPreviewContainerView.hidden) && CGRectContainsPoint(self.localPreviewContainerView.frame, point))
-        
     {
         // Starting to move the local preview view
         isSelectingLocalPreview = YES;
