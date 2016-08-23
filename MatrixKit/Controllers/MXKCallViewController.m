@@ -410,6 +410,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             if (mxCall.isIncoming)
             {
                 audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"ring"];
+                
+                // Vibrate on incoming call
+                vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:1.24875 target:self selector:@selector(vibrate) userInfo:nil repeats:YES];
             }
             else
             {
@@ -425,8 +428,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             audioPlayer.numberOfLoops = -1;
             [audioPlayer play];
-            
-            vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:1.24875 target:self selector:@selector(vibrate) userInfo:nil repeats:YES];
         }
         else
         {
