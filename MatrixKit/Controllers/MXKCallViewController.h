@@ -77,6 +77,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *backToAppButton;
+@property (weak, nonatomic) IBOutlet UIButton *cameraSwitchButton;
 
 @property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewLeadingConstraint;
 @property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewTopConstraint;

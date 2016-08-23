@@ -64,7 +64,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 @synthesize overlayContainerView, callContainerView, callerImageView, callerNameLabel, callStatusLabel;
 @synthesize callToolBar, rejectCallButton, answerCallButton, endCallButton;
 @synthesize callControlContainerView, speakerButton, audioMuteButton, videoMuteButton;
-@synthesize backToAppButton;
+@synthesize backToAppButton, cameraSwitchButton;
 @synthesize backToAppStatusWindow;
 @synthesize mxCall;
 
@@ -497,6 +497,19 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         mxCall.audioToSpeaker = !mxCall.audioToSpeaker;
         speakerButton.selected = mxCall.audioToSpeaker;
+    }
+    else if (sender == cameraSwitchButton)
+    {
+        switch (mxCall.cameraPosition)
+        {
+            case AVCaptureDevicePositionFront:
+                mxCall.cameraPosition = AVCaptureDevicePositionBack;
+                break;
+                
+            default:
+                mxCall.cameraPosition = AVCaptureDevicePositionFront;
+                break;
+        }
     }
     else if (sender == backToAppButton)
     {
