@@ -590,6 +590,42 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
 }
 
+- (MXEvent *)lastMessage
+{
+    MXEvent *lastMessage;
+
+    // Look for the most recent message (ignore events without timestamp).
+    id<MXKRoomBubbleCellDataStoring> bubbleData;
+    @synchronized(bubbles)
+    {
+        NSInteger index = bubbles.count;
+        while (index--)
+        {
+            bubbleData = bubbles[index];
+            if (bubbleData.date)
+            {
+                break;
+            }
+        }
+    }
+
+    if (bubbleData)
+    {
+        NSInteger index = bubbleData.events.count;
+        while (index--)
+        {
+            lastMessage = bubbleData.events[index];
+            if (lastMessage.originServerTs != kMXUndefinedTimestamp)
+            {
+                break;
+            }
+            lastMessage = nil;
+        }
+    }
+
+    return lastMessage;
+}
+
 - (NSArray *)attachmentsWithThumbnail
 {
     NSMutableArray *attachments = [NSMutableArray array];

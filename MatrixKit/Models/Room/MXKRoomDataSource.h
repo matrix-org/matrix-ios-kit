@@ -120,6 +120,11 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 @property (nonatomic, readonly) BOOL isPeeking;
 
 /**
+ The last event in the room that matches the `eventsFilterForMessages` property.
+ */
+@property (nonatomic, readonly) MXEvent *lastMessage;
+
+/**
  The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
  */
 @property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
