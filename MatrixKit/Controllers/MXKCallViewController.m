@@ -911,7 +911,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)deviceOrientationDidChange
 {
-    [self applyDeviceOrientation:YES];
+    [self applyDeviceOrientation:NO];
     
     [self showOverlayContainer:YES];
 }
@@ -926,13 +926,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         if (UIDeviceOrientationPortrait == deviceOrientation || UIDeviceOrientationLandscapeLeft == deviceOrientation || UIDeviceOrientationLandscapeRight == deviceOrientation)
         {
             mxCall.selfOrientation = deviceOrientation;
+            [self updateLocalPreviewLayout];
         }
         else if (forcePortrait)
         {
             mxCall.selfOrientation = UIDeviceOrientationPortrait;
-        }
-        
-        [self updateLocalPreviewLayout];
+            [self updateLocalPreviewLayout];
+        }        
     }
 }
 
