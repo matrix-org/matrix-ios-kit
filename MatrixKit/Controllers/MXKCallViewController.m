@@ -149,6 +149,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerWillAppearNotification object:nil];
     
+    [self updateLocalPreviewLayout];
     [self showOverlayContainer:YES];
     
     if (mxCall)
@@ -196,19 +197,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 {
     [super viewDidDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKCallViewControllerDisappearedNotification object:nil];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
-{
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
-        [self updateLocalPreviewLayout];
-        
-        [self showOverlayContainer:YES];
-        
-    });
 }
 
 - (void)dismiss
@@ -784,7 +772,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         _localPreviewContainerViewWidthConstraint.constant = minPreviewFrameSize;
     }
     
-    CGRect bounds = self.view.bounds;
+    CGRect bounds = [[UIScreen mainScreen] bounds];
     CGFloat midX = bounds.size.width / 2.0;
     CGFloat midY = bounds.size.height / 2.0;
     
@@ -896,6 +884,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         _localPreviewContainerViewLeadingConstraint.constant = posX;
         _localPreviewContainerViewTopConstraint.constant = posY;
+        
+        [self.view setNeedsUpdateConstraints];
     }
     else
     {
@@ -922,6 +912,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 - (void)deviceOrientationDidChange
 {
     [self applyDeviceOrientation:NO];
+    
+    [self showOverlayContainer:YES];
 }
 
 - (void)applyDeviceOrientation:(BOOL)forcePortrait
@@ -934,41 +926,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         if (UIDeviceOrientationPortrait == deviceOrientation || UIDeviceOrientationLandscapeLeft == deviceOrientation || UIDeviceOrientationLandscapeRight == deviceOrientation)
         {
             mxCall.selfOrientation = deviceOrientation;
+            [self updateLocalPreviewLayout];
         }
         else if (forcePortrait)
         {
             mxCall.selfOrientation = UIDeviceOrientationPortrait;
-        }
-
-        // Rotate the self view so that it shows the user like in a mirror
-        // The translation is required in landscape because else the self video view
-        // goes out of the screen
-        float selfVideoRotation = 0;
-        float translation = 0;
-        switch (mxCall.selfOrientation) {
-            case UIInterfaceOrientationLandscapeLeft:
-                selfVideoRotation = M_PI/2;
-                translation = -20;
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                selfVideoRotation = -M_PI/2;
-                translation = 20;
-                break;
-            case UIInterfaceOrientationPortraitUpsideDown:
-                selfVideoRotation = M_PI;
-                break;
-            default:
-                break;
-        }
-
-        if (!forcePortrait) {
-            [UIView animateWithDuration:.3
-                             animations:^{
-                                 CGAffineTransform transform = CGAffineTransformMakeRotation(selfVideoRotation);
-                                 transform = CGAffineTransformTranslate(transform, 0, translation);
-                                 mxCall.selfVideoView.transform = transform;
-                             }];
-        }
+            [self updateLocalPreviewLayout];
+        }        
     }
 }
 
