@@ -773,8 +773,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     
     CGRect bounds = [[UIScreen mainScreen] bounds];
-    CGFloat midX = bounds.size.width / 2.0;
-    CGFloat midY = bounds.size.height / 2.0;
     
     CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
     

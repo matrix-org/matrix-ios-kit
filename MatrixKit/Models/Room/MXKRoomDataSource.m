@@ -592,7 +592,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (MXEvent *)lastMessage
 {
-    MXEvent *lastMessage;
+    MXEvent *theLastMessage;
 
     // Look for the most recent message (ignore events without timestamp).
     id<MXKRoomBubbleCellDataStoring> bubbleData;
@@ -614,16 +614,16 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSInteger index = bubbleData.events.count;
         while (index--)
         {
-            lastMessage = bubbleData.events[index];
-            if (lastMessage.originServerTs != kMXUndefinedTimestamp)
+            theLastMessage = bubbleData.events[index];
+            if (theLastMessage.originServerTs != kMXUndefinedTimestamp)
             {
                 break;
             }
-            lastMessage = nil;
+            theLastMessage = nil;
         }
     }
 
-    return lastMessage;
+    return theLastMessage;
 }
 
 - (NSArray *)attachmentsWithThumbnail
@@ -1911,7 +1911,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     while ((event = enumerator.nextEvent))
     {
         // Check that the event formatter can display the event
-        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
+        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:error];
         if (eventTextMessage.length)
         {
             lastDisplayableEvent = event;
@@ -1930,7 +1930,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         while ((event = enumerator.nextEvent))
         {
             // Check that the event formatter can display the event
-            NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
+            NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:error];
             if (eventTextMessage.length)
             {
                 lastDisplayableEvent = event;

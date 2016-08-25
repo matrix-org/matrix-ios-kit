@@ -834,7 +834,7 @@
 
 #pragma mark - MXKCallViewControllerDelegate
 
-- (void)dismissCallViewController:(MXKCallViewController *)callViewController
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)())completion
 {
     if (callViewController == currentCallViewController)
     {
@@ -850,6 +850,11 @@
                 if (!callIsEnded)
                 {
                     [self addCallStatusBar];
+                }
+
+                if (completion)
+                {
+                    completion();
                 }
             }];
             
@@ -870,7 +875,7 @@
             // Here the presentation of the call view controller is in progress
             // Postpone the dismiss
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self dismissCallViewController:callViewController];
+                [self dismissCallViewController:callViewController completion:completion];
             });
         }
     }
