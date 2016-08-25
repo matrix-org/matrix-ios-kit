@@ -1,3 +1,22 @@
+Changes in MatrixKit in 0.3.14 (2016-08-25)
+===============================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.13).
+ * MXCallViewController: Add conference call support.
+ * MXCallViewController: Add camera switch.
+ * MXKRoomInputToolbarView: Manage sending of a multiselection of media (https://github.com/vector-im/vector-ios#301).
+ * MXKRoomSettingsViewController: increase section header height.
+
+Bug fixes:
+ * Redacting membership events should immediately reset the displayname & avatar of room members (https://github.com/vector-im/vector-ios/issues/443).
+ * Profile changes shouldn't reorder the room list (https://github.com/vector-im/vector-ios/issues/494).
+ * When the last message is redacted, [MXKRecentCellData update] makes paginations loops (https://github.com/vector-im/vector-ios/issues/520).
+ * Call: the remote and local video are not scaled to fill the video container (https://github.com/vector-im/vector-ios/issues/537).
+ * Call: Screen still tries to turn off when on a VC (https://github.com/vector-im/vector-ios/issues/521).
+ * Call: Do not vibrate when outgoing call is placed.
+ * The message displayed in a room when a 3pid invited user has registered is not clear (https://github.com/vector-im/vector-ios/issues/74).
+ 
 Changes in MatrixKit in 0.3.13 (2016-08-01)
 ===============================================
 
