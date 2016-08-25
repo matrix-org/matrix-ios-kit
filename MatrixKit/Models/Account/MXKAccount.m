@@ -1120,19 +1120,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
     {
-        UIBackgroundTaskIdentifier localBackgroundSyncBgTask = backgroundSyncBgTask;
+        // End background task
+        [[UIApplication sharedApplication] endBackgroundTask:backgroundSyncBgTask];
         backgroundSyncBgTask = UIBackgroundTaskInvalid;
-        
-        // give some times to perform other stuff like store saving...
-        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            
-            if (localBackgroundSyncBgTask != UIBackgroundTaskInvalid)
-            {
-                // Cancel background task
-                [[UIApplication sharedApplication] endBackgroundTask:localBackgroundSyncBgTask];
-                NSLog(@"[MXKAccount] onBackgroundSyncDone: %08lX stop", (unsigned long)localBackgroundSyncBgTask);
-            }
-        });
+        NSLog(@"[MXKAccount] onBackgroundSyncDone: %08lX stop", (unsigned long)backgroundSyncBgTask);
     }
 }
 
