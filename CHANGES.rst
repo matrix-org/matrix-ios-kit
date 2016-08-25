@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.3.15 (2016-08-25)
+===============================================
+
+Bug fixes:
+ * Fix crash in recents screen.
+
 Changes in MatrixKit in 0.3.14 (2016-08-25)
 ===============================================
 
