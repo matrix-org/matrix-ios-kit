@@ -475,4 +475,19 @@ extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
  */
 - (void)handleUnsentMessages;
 
+/**
+ The last event in the room.
+ 
+ This event must match several criteria:
+     - its type must be in `eventsFilterForMessages`
+     - it must follow the mxSession.ignoreProfileChangesDuringLastMessageProcessing
+       setting
+     - it must be displayable, ie the passed eventFormatter must return a non empty
+       string for it
+
+ @param eventFormatter the event formatter in order to check the displayability of events.
+ @param onComplete a block call when the operation completes. The provided lastMessage can be nil.
+ */
+- (void)lastMessageWithEventFormatter:(MXKEventFormatter*)eventFormatter onComplete:(void(^)(MXEvent *lastMessage))onComplete;
+
 @end

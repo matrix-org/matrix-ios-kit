@@ -98,6 +98,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXPeekingRoom *peekingRoom;
     
     /**
+     The cache for the last message returned by [self lastMessageWithEventFormatter:]
+     */
+    MXEvent *lastMessage;
+    
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
@@ -108,9 +113,9 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     id NSCurrentLocaleDidChangeNotificationObserver;
     
     /**
-     Observe kMXRoomSyncWithLimitedTimelineNotification to trigger cell change when existing room history has been flushed during server sync.
+     Observe kMXRoomDidFlushDataNotification to trigger cell change when existing room history has been flushed during server sync.
      */
-    id roomSyncWithLimitedTimelineNotificationObserver;
+    id roomDidFlushDataNotificationObserver;
     
     /**
      Observe kMXRoomDidUpdateUnreadNotification to refresh unread counters.
@@ -127,7 +132,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     self = [super initWithMatrixSession:matrixSession];
     if (self)
     {
-        NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
+        //NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
         
         _roomId = roomId;
         _isLive = YES;
@@ -322,10 +327,10 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (void)reset
 {
-    if (roomSyncWithLimitedTimelineNotificationObserver)
+    if (roomDidFlushDataNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:roomSyncWithLimitedTimelineNotificationObserver];
-        roomSyncWithLimitedTimelineNotificationObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushDataNotificationObserver];
+        roomDidFlushDataNotificationObserver = nil;
     }
     
     if (roomDidUpdateUnreadNotificationObserver)
@@ -378,6 +383,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         
         [bubbles removeAllObjects];
         [eventIdToBubbleMap removeAllObjects];
+        lastMessage = nil;
         
         _room = nil;
     }
@@ -447,6 +453,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     
     eventsToProcess = nil;
     bubbles = nil;
+    lastMessage = nil;
     eventIdToBubbleMap = nil;
 
     [_timeline destroy];
@@ -483,8 +490,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                     // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
                     [_timeline resetPagination];
                     
-                    // Observe sync with limited timeline
-                    roomSyncWithLimitedTimelineNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSyncWithLimitedTimelineNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    // Observe room history flush (sync with limited timeline, or state event redaction)
+                    roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
                         MXRoom *room = notif.object;
                         if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
@@ -585,8 +592,8 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 - (MXEvent *)lastMessage
 {
-    MXEvent *lastMessage;
-    
+    MXEvent *theLastMessage;
+
     // Look for the most recent message (ignore events without timestamp).
     id<MXKRoomBubbleCellDataStoring> bubbleData;
     @synchronized(bubbles)
@@ -601,30 +608,22 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             }
         }
     }
-    
+
     if (bubbleData)
     {
         NSInteger index = bubbleData.events.count;
         while (index--)
         {
-            lastMessage = bubbleData.events[index];
-            if (lastMessage.originServerTs != kMXUndefinedTimestamp)
+            theLastMessage = bubbleData.events[index];
+            if (theLastMessage.originServerTs != kMXUndefinedTimestamp)
             {
                 break;
             }
-            lastMessage = nil;
+            theLastMessage = nil;
         }
     }
-    
-    if (!lastMessage)
-    {
-        // Use here the stored data for this room
-        lastMessage = [_room lastMessageWithTypeIn:_eventsFilterForMessages];
-        
-        // Check if this event is a bing event
-        [self checkBing:lastMessage];
-    }
-    return lastMessage;
+
+    return theLastMessage;
 }
 
 - (NSArray *)attachmentsWithThumbnail
@@ -728,54 +727,71 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                 id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
                 if (bubbleData)
                 {
-                    NSUInteger remainingEvents = 0;
-                    
+                    BOOL shouldRemoveBubbleData = NO;
+                    BOOL hasChanged = NO;
+                    MXEvent *redactedEvent = nil;
+
                     @synchronized (bubbleData)
                     {
                         // Retrieve the original event to redact it
                         NSArray *events = bubbleData.events;
-                        MXEvent *redactedEvent = nil;
+
                         for (MXEvent *event in events)
                         {
                             if ([event.eventId isEqualToString:redactionEvent.redacts])
                             {
-                                redactedEvent = [event prune];
-                                redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
+                                // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
+                                if (!event.isRedactedEvent)
+                                {
+                                    redactedEvent = [event prune];
+                                    redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
+                                }
+                                
                                 break;
                             }
                         }
                         
-                        if (redactedEvent.isState)
-                        {
-                            // FIXME: The room state must be refreshed here since this redacted event.
-                            NSLog(@"[MXKRoomVC] Warning: A state event has been redacted, room state may not be up to date");
-                        }
-                        
                         if (redactedEvent)
                         {
-                            remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
+                            // Update bubble data
+                            NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
+                            
+                            hasChanged = YES;
+                            
+                            // Remove the bubble if there is no more events
+                            shouldRemoveBubbleData = (remainingEvents == 0);
                         }
                     }
                     
-                    // If there is no more events, remove the bubble
-                    if (0 == remainingEvents)
+                    // Check whether the bubble should be removed
+                    if (shouldRemoveBubbleData)
                     {
                         [self removeCellData:bubbleData];
                     }
                     
-                    // Update the delegate on main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        if (self.delegate)
-                        {
-                            [self.delegate dataSource:self didCellChange:nil];
-                        }
-                        
-                        // Notify the last message may have changed
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-                        
-                    });
+                    if (hasChanged)
+                    {
+                        // Update the delegate on main thread
+                        dispatch_async(dispatch_get_main_queue(), ^{
+
+                            // Reset lastMessage if it has been redacted
+                            if ([lastMessage.eventId isEqualToString:redactedEvent.eventId])
+                            {
+                                lastMessage = nil;
+                            }
+
+                            if (self.delegate)
+                            {
+                                [self.delegate dataSource:self didCellChange:nil];
+                            }
+                            
+                            // Notify the last message may have changed
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+                            
+                        });
+                    }
                 }
+                
             });
         }
     }];
@@ -1802,6 +1818,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
         // Remove the event from the outgoing messages storage
         [_room removeOutgoingMessage:eventId];
+
+        // Reset lastMessage if it has been removed
+        if ([lastMessage.eventId isEqualToString:eventId])
+        {
+            lastMessage = nil;
+        }
     
         // Update the delegate
         if (self.delegate)
@@ -1863,6 +1885,98 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (shouldProcessQueuedEvents)
     {
         [self processQueuedEvents:nil];
+    }
+}
+
+- (void)lastMessageWithEventFormatter:(MXKEventFormatter*)eventFormatter onComplete:(void(^)(MXEvent *))onComplete
+{
+    // The last message can
+
+    // Firstly, check if it has been cached
+    if (lastMessage)
+    {
+        NSLog(@"lastMessage: case #1 for %@", self.roomId);
+        onComplete(lastMessage);
+        return;
+    }
+
+    MXEvent *lastDisplayableEvent;
+    MXEvent *event;
+    MXKEventFormatterError *error;
+
+    // Secondly, search for a matching event in the outgoing messages
+    id<MXEventsEnumerator> enumerator = [[MXEventsByTypesEnumeratorOnArray alloc] initWithMessages:_room.outgoingMessages
+                                                                                        andTypesIn:self.eventsFilterForMessages
+                                                                        ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
+    while ((event = enumerator.nextEvent))
+    {
+        // Check that the event formatter can display the event
+        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:error];
+        if (eventTextMessage.length)
+        {
+            lastDisplayableEvent = event;
+            NSLog(@"lastMessage: case #2 for %@", self.roomId);
+            break;
+        }
+    }
+
+    if (!lastDisplayableEvent)
+    {
+        // Thirdly, search for a matching event in the messages already in the store
+        // for this room
+        enumerator = [self.room enumeratorForStoredMessagesWithTypeIn:self.eventsFilterForMessages
+                                           ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
+
+        while ((event = enumerator.nextEvent))
+        {
+            // Check that the event formatter can display the event
+            NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:error];
+            if (eventTextMessage.length)
+            {
+                lastDisplayableEvent = event;
+                NSLog(@"lastMessage: case #3 for %@", self.roomId);
+                break;
+            }
+        }
+    }
+
+    if (lastDisplayableEvent)
+    {
+        // Cache it for future reuse
+        lastMessage = lastDisplayableEvent;
+        onComplete(lastDisplayableEvent);
+    }
+    else
+    {
+        if ([_timeline canPaginate: MXTimelineDirectionBackwards])
+        {
+            // Finally, as there is no matching events locally, get more messages from 
+            // the homeserver
+            NSLog(@"lastMessage: case #4 for %@", self.roomId);
+
+            // Trigger asynchronously this back pagination to not block the UI thread.
+            dispatch_async(dispatch_get_main_queue(), ^{
+
+                // Make the data source load more messages than available in the store to
+                // force it to get them from the homeserver
+                [self paginate:(self.room.storedMessagesCount + 30) direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+
+                    [self lastMessageWithEventFormatter:eventFormatter onComplete:onComplete];
+
+                } failure:^(NSError *error) {
+                    
+                    onComplete(nil);
+                    
+                }];
+            });
+        }
+        else
+        {
+            // All the room history has been loaded locally but no message matches the
+            // criteria
+            NSLog(@"lastMessage: case #5 for %@", self.roomId);
+            onComplete(nil);
+        }
     }
 }
 
@@ -1953,6 +2067,15 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     if (0 == remainingEvents)
     {
         [self removeCellData:bubbleData];
+    }
+
+    // Update lastMessage if it has been replaced
+    if ([lastMessage.eventId isEqualToString:localEcho.eventId])
+    {
+        // The new event should have the same characteristics as localEcho: it should
+        // match [self lastMessageWithEventFormatter:] criteria and can replace it as
+        // as the last message
+        lastMessage = event;
     }
     
     // Update the delegate
@@ -2177,6 +2300,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         NSUInteger serverSyncEventCount = 0;
         NSUInteger addedHistoryCellCount = 0;
         NSUInteger addedLiveCellCount = 0;
+        BOOL lastMessageHasChanged = NO;
         
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(eventsToProcessSnapshot)
@@ -2360,6 +2484,12 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
                         }
                     }
+
+                    if (queuedEvent.direction == MXTimelineDirectionForwards)
+                    {
+                        // There is a new last message
+                        lastMessageHasChanged = YES;
+                    }
                 }
             }
             eventsToProcessSnapshot = nil;
@@ -2371,7 +2501,13 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             // Updated data can be displayed now
             // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
             dispatch_sync(dispatch_get_main_queue(), ^{
-                
+
+                // Reset the last message cache if new live events have been received
+                if (lastMessageHasChanged)
+                {
+                    lastMessage = nil;
+                }
+
                 // Check whether self has not been reloaded or destroyed
                 if (self.state == MXKDataSourceStateReady && bubblesSnapshot)
                 {

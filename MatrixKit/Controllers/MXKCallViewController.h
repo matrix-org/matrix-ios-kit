@@ -34,8 +34,11 @@
  Tells the delegate to dismiss the call view controller.
  This callback is called when the user wants to go back into the app during a call or when the call is ended.
  The delegate should check the state of the associated call to know the actual reason.
+ 
+ @param callViewController the call view controller.
+ @param completion the block to execute at the end of the operation.
  */
-- (void)dismissCallViewController:(MXKCallViewController *)callViewController;
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)())completion;
 
 @end
 
@@ -50,29 +53,36 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  */
 @interface MXKCallViewController : MXKViewController <MXCallDelegate, AVAudioPlayerDelegate>
 
-@property (weak, nonatomic, readonly) IBOutlet MXKImageView *backgroundImageView;
+@property (weak, nonatomic) IBOutlet MXKImageView *backgroundImageView;
 
 @property (weak, nonatomic, readonly) IBOutlet UIView *localPreviewContainerView;
-@property (weak, nonatomic, readonly) IBOutlet UIActivityIndicatorView *localPreviewActivityView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *localPreviewActivityView;
 
 @property (weak, nonatomic, readonly) IBOutlet UIView *remotePreviewContainerView;
 
-@property (weak, nonatomic, readonly) IBOutlet UIView *overlayContainerView;
-@property (weak, nonatomic, readonly) IBOutlet UIView *callContainerView;
-@property (weak, nonatomic, readonly) IBOutlet MXKImageView *callerImageView;
-@property (weak, nonatomic, readonly) IBOutlet UILabel *callerNameLabel;
-@property (weak, nonatomic, readonly) IBOutlet UILabel *callStatusLabel;
+@property (weak, nonatomic) IBOutlet UIView *overlayContainerView;
+@property (weak, nonatomic) IBOutlet UIView *callContainerView;
+@property (weak, nonatomic) IBOutlet MXKImageView *callerImageView;
+@property (weak, nonatomic) IBOutlet UILabel *callerNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *callStatusLabel;
 
-@property (weak, nonatomic, readonly) IBOutlet UIView *callToolBar;
-@property (weak, nonatomic, readonly) IBOutlet UIButton *rejectCallButton;
-@property (weak, nonatomic, readonly) IBOutlet UIButton *answerCallButton;
-@property (weak, nonatomic, readonly) IBOutlet UIButton *endCallButton;
+@property (weak, nonatomic) IBOutlet UIView *callToolBar;
+@property (weak, nonatomic) IBOutlet UIButton *rejectCallButton;
+@property (weak, nonatomic) IBOutlet UIButton *answerCallButton;
+@property (weak, nonatomic) IBOutlet UIButton *endCallButton;
 
-@property (weak, nonatomic, readonly) IBOutlet UIView *callControlContainerView;
-@property (weak, nonatomic, readonly) IBOutlet UIButton *speakerButton;
-@property (weak, nonatomic, readonly) IBOutlet UIButton *muteButton;
+@property (weak, nonatomic) IBOutlet UIView *callControlContainerView;
+@property (weak, nonatomic) IBOutlet UIButton *speakerButton;
+@property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
+@property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
 
-@property (weak, nonatomic, readonly) IBOutlet UIButton *backToAppButton;
+@property (weak, nonatomic) IBOutlet UIButton *backToAppButton;
+@property (weak, nonatomic) IBOutlet UIButton *cameraSwitchButton;
+
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewLeadingConstraint;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewTopConstraint;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewHeightConstraint;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewWidthConstraint;
 
 /**
  The default picture displayed when no picture is available.
@@ -87,7 +97,12 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 /**
  The current call
  */
-@property (nonatomic, readonly) MXCall *mxCall;
+@property (nonatomic) MXCall *mxCall;
+
+/**
+ The current peer
+ */
+@property (nonatomic, readonly) MXUser *peer;
 
 /**
  YES when the presentation of the view controller is complete.
@@ -123,13 +138,31 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  */
 + (instancetype)callViewController:(MXCall*)call;
 
-///**
-// Display an incoming call.
-// 
-// @param call MXCall instance.
-// */
-//- (void)handleCall:(MXCall*)call;
+/**
+ Refresh the peer information in the call viewcontroller's view.
+ */
+- (void)updatePeerInfoDisplay;
 
+/**
+ Adjust the layout of the preview container.
+ */
+- (void)updateLocalPreviewLayout;
+
+/**
+ Show/Hide the overlay view.
+ 
+ @param isShown tell whether the overlay is shown or not.
+ */
+- (void)showOverlayContainer:(BOOL)isShown;
+
+/**
+ Set up or teardown the promixity monitoring and enable/disable the idle timer according to call type, state & audio route.
+ */
+- (void)updateProximityAndSleep;
+
+/**
+ Action registered on the event 'UIControlEventTouchUpInside' for each UIButton instance.
+ */
 - (IBAction)onButtonPressed:(id)sender;
 
 @end

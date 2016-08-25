@@ -347,18 +347,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         {
             // Presently only change on membership, display name and avatar are supported
             
-            // Retrieve membership
-            NSString* membership;
-            MXJSONModelSetString(membership, event.content[@"membership"]);
-            
-            NSString *prevMembership = nil;
-            if (event.prevContent)
-            {
-                MXJSONModelSetString(prevMembership, event.prevContent[@"membership"]);
-            }
-            
-            // Check whether the sender has updated his profile (the membership is then unchanged)
-            if (prevMembership && membership && [membership isEqualToString:prevMembership])
+            // Check whether the sender has updated his profile
+            if (event.isUserProfileChange)
             {
                 // Is redacted event?
                 if (isRedacted)
@@ -431,27 +421,58 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             else
             {
+                // Retrieve membership
+                NSString* membership;
+                MXJSONModelSetString(membership, event.content[@"membership"]);
+                
                 // Consider here a membership change
                 if ([membership isEqualToString:@"invite"])
                 {
                     if (event.content[@"third_party_invite"])
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], event.content[@"third_party_invite"][@"display_name"], targetDisplayName, senderDisplayName];
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], targetDisplayName, event.content[@"third_party_invite"][@"display_name"]];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                        if ([MXCallManager isConferenceUser:event.stateKey])
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_conference_call_request"], senderDisplayName];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                        }
                     }
                 }
                 else if ([membership isEqualToString:@"join"])
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
+                    if ([MXCallManager isConferenceUser:event.stateKey])
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_started"];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
+                    }
                 }
                 else if ([membership isEqualToString:@"leave"])
                 {
+                    NSString *prevMembership = nil;
+                    if (event.prevContent)
+                    {
+                        MXJSONModelSetString(prevMembership, event.prevContent[@"membership"]);
+                    }
+                    
                     if ([event.sender isEqualToString:event.stateKey])
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                        if ([MXCallManager isConferenceUser:event.stateKey])
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_finished"];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                        }
                     }
                     else if (prevMembership)
                     {

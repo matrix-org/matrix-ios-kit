@@ -47,76 +47,67 @@
 
 - (void)update
 {
-    // Keep ref on displayed last event
-    lastEvent = roomDataSource.lastMessage;
-    roomDisplayname = roomDataSource.room.state.displayname;
-    
-    if (lastEvent)
-    {
-        lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
-        
-        // Compute the text message
-        MXKEventFormatterError error;
-        lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
-        
-        // Manage error
-        if (error != MXKEventFormatterErrorNone)
+    // Let the room data source return the last displayable message
+    [roomDataSource lastMessageWithEventFormatter:recentsDataSource.eventFormatter onComplete:^(MXEvent *lastMessage) {
+
+        // Keep ref on displayed last event
+        lastEvent = lastMessage;
+        roomDisplayname = roomDataSource.room.state.displayname;
+
+        if (lastEvent)
         {
-            switch (error)
+            lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
+
+            // Compute the text message
+            MXKEventFormatterError error;
+            lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
+
+            // Manage error
+            if (error != MXKEventFormatterErrorNone)
             {
-                case MXKEventFormatterErrorUnsupported:
-                    lastEvent.mxkState = MXKEventStateUnsupported;
-                    break;
-                case MXKEventFormatterErrorUnexpected:
-                    lastEvent.mxkState = MXKEventStateUnexpected;
-                    break;
-                case MXKEventFormatterErrorUnknownEventType:
-                    lastEvent.mxkState = MXKEventStateUnknownType;
-                    break;
+                switch (error)
+                {
+                    case MXKEventFormatterErrorUnsupported:
+                        lastEvent.mxkState = MXKEventStateUnsupported;
+                        break;
+                    case MXKEventFormatterErrorUnexpected:
+                        lastEvent.mxkState = MXKEventStateUnexpected;
+                        break;
+                    case MXKEventFormatterErrorUnknownEventType:
+                        lastEvent.mxkState = MXKEventStateUnknownType;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        if (0 == lastEventTextMessage.length)
+        {
+            lastEventTextMessage = @"";
+            lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:@""];
+        }
+        else
+        {
+            // Check whether the sender name has to be added
+            NSString *prefix = nil;
+
+            if (lastEvent.eventType == MXEventTypeRoomMessage)
+            {
+                NSString *msgtype = lastEvent.content[@"msgtype"];
+                if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
+                {
+                    NSString *senderDisplayName = roomDataSource.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomDataSource.room.state] : lastEvent.sender;
                     
-                default:
-                    break;
+                    prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
+                }
             }
-        }
-    }
-    else
-    {
-        lastEventTextMessage = nil;
-    }
-    
-    if (0 == lastEventTextMessage.length)
-    {
-        lastEventTextMessage = @"";
-        
-        // Trigger a back pagination to retrieve the actual last message.
-        // Trigger asynchronously this back pagination to not block the UI thread.
-        dispatch_async(dispatch_get_main_queue(), ^{
-        
-            [roomDataSource paginate:5 direction:MXTimelineDirectionBackwards onlyFromStore:NO success:nil failure:nil];
             
-        });
-        
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString: @""];
-    }
-    else
-    {
-        // Check whether the sender name has to be added
-        NSString *prefix = nil;
-        
-        if (lastEvent.eventType == MXEventTypeRoomMessage)
-        {
-            NSString *msgtype = lastEvent.content[@"msgtype"];
-            if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
-            {
-                NSString *senderDisplayName = roomDataSource.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomDataSource.room.state] : lastEvent.sender;
-                
-                prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
-            }
+            // Compute the attribute text message
+            lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage withPrefix:prefix forEvent:lastEvent];
         }
-        
-        // Compute the attribute text message
-        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage withPrefix:prefix forEvent:lastEvent];
-    }
+    }];
 }
 
 - (void)dealloc

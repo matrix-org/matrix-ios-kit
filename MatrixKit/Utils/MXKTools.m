@@ -677,6 +677,8 @@ static NSMutableDictionary* backgroundByImageNameDict;
             }
             else
             {
+
+                //sdsd
                 // Access not granted to mediaType
                 // Display manualChangeMessage
                 MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];

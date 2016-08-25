@@ -156,6 +156,7 @@
 "room_error_name_edition_not_authorized" = "You are not authorized to edit this room name";
 "room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
 "room_left" = "You left the room";
+"room_no_power_to_create_conference_call" = "You need permission to invite to start a conference in this room";
 
 // Room members
 "room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
@@ -169,6 +170,8 @@
 "attachment_large" = "Large: %@";
 "attachment_cancel_download" = "Cancel the download?";
 "attachment_cancel_upload" = "Cancel the upload?";
+"attachment_multiselection_size_prompt" = "Do you want to send images as:";
+"attachment_multiselection_original" = "Actual Size";
 
 // Contacts
 "contact_mx_users" = "Matrix Users";
@@ -211,7 +214,7 @@
 
 "notice_room_invite" = "%@ invited %@";
 "notice_room_third_party_invite" = "%@ sent an invitation to %@ to join the room";
-"notice_room_third_party_registered_invite" = "%@ registered as %@ and received an invitation from %@";
+"notice_room_third_party_registered_invite" = "%@ accepted the invitation for %@";
 "notice_room_join" = "%@ joined";
 "notice_room_leave" = "%@ left";
 "notice_room_kick" = "%@ kicked %@";
@@ -228,6 +231,9 @@
 "notice_placed_video_call" = "%@ placed a video call";
 "notice_answered_video_call" = "%@ answered the call";
 "notice_ended_video_call" = "%@ ended the call";
+"notice_conference_call_request" = "%@ requested a VoIP conference";
+"notice_conference_call_started" = "VoIP conference started";
+"notice_conference_call_finished" = "VoIP conference finished";
 
 // Room Screen 
 

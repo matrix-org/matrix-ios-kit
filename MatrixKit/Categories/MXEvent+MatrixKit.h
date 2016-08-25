@@ -75,16 +75,6 @@ typedef enum : NSUInteger
 - (void)setMxkState:(MXKEventState)mxkState;
 
 /**
- Indicates if the event has been redacted
- */
-- (BOOL)isRedactedEvent;
-
-/**
- Return YES if the event is an emote event
- */
-- (BOOL)isEmote;
-
-/**
  Return YES if the event contains a media: image, audio, video or file.
  */
 - (BOOL)isMediaAttachment;
