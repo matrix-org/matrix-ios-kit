@@ -1902,7 +1902,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
     MXEvent *lastDisplayableEvent;
     MXEvent *event;
-    MXKEventFormatterError *error;
+    MXKEventFormatterError error;
 
     // Secondly, search for a matching event in the outgoing messages
     id<MXEventsEnumerator> enumerator = [[MXEventsByTypesEnumeratorOnArray alloc] initWithMessages:_room.outgoingMessages
@@ -1911,7 +1911,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     while ((event = enumerator.nextEvent))
     {
         // Check that the event formatter can display the event
-        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:error];
+        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
         if (eventTextMessage.length)
         {
             lastDisplayableEvent = event;
@@ -1930,7 +1930,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         while ((event = enumerator.nextEvent))
         {
             // Check that the event formatter can display the event
-            NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:error];
+            NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
             if (eventTextMessage.length)
             {
                 lastDisplayableEvent = event;
