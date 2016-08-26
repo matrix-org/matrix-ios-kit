@@ -81,6 +81,12 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isForSubtitle;
 
 /**
+ Flag indicating if the formatter must create clickable links for Matrix user ids.
+ Default is NO.
+ */
+@property (nonatomic) BOOL treatMatrixUserIdAsLink;
+
+/**
  Initialise the event formatter.
 
  @param mxSession the Matrix to retrieve contextual data.

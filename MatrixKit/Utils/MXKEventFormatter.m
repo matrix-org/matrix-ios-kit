@@ -914,7 +914,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     [str addAttribute:NSForegroundColorAttributeName value:[self textColorForEvent:event] range:wholeString];
     [str addAttribute:NSFontAttributeName value:[self fontForEvent:event] range:wholeString];
 
-    // If enabled, make links clicable
+    // If enabled, make links clickable
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
           [[_settings httpsLinkScheme] isEqualToString: @"https"]))
     {
@@ -947,6 +947,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
     }
 
+    // Apply additional treatments
+    str = [self postRenderAttributedString:str];
+
     return str;
 }
 
@@ -976,10 +979,39 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // webview.
     NSAttributedString *str = [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 
+    // Apply additional treatments
+    str = [self postRenderAttributedString:str];
+
     // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
     // or after a blockquote section.
     // Trim trailing newlines
     return [self removeTrailingNewlines:str];
+}
+
+- (NSAttributedString*)postRenderAttributedString:(NSAttributedString*)attributedString
+{
+    __block NSMutableAttributedString *postRenderAttributedString;
+
+    // If enabled, make user id clickable
+    if (_treatMatrixUserIdAsLink)
+    {
+        // Look for each user id present in the string
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@[A-Z0-9]+:[A-Z0-9.-]+\\.[A-Z]{2,}" options:NSRegularExpressionCaseInsensitive error:nil];
+
+        [regex enumerateMatchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
+
+            if (!postRenderAttributedString)
+            {
+                postRenderAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+            }
+
+            // And make it clickable
+            NSString *userId = [attributedString.string substringWithRange:match.range];
+            [postRenderAttributedString addAttribute:NSLinkAttributeName value:userId range:match.range];
+        }];
+    }
+
+    return postRenderAttributedString ? postRenderAttributedString : attributedString;
 }
 
 - (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
