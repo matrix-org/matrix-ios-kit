@@ -2561,14 +2561,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // The view controller is going to display all messages
-    // Automatically reset the counters
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-    {
-        [self markAllAsRead];
-    }
-    
+{    
     // PATCH: Presently no bubble must be displayed until the user joins the room.
     // FIXME: Handle room data source in case of room preview
     if (self.room.state.membership == MXMembershipInvite)

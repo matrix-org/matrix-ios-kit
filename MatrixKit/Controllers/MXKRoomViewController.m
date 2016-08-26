@@ -334,8 +334,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // Retrieve the potential message partially typed during last room display.
         // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
         inputToolbarView.textMessage = roomDataSource.partialTextMessage;
-        
-        [roomDataSource markAllAsRead];
     }
     
     shouldScrollToBottomOnTableRefresh = NO;
@@ -699,6 +697,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             // Remove the input toolbar in case of peeking.
             // We do not let the user type message in this case.
             [self setRoomInputToolbarViewClass:nil];
+        }
+        else
+        {
+            // The view controller is going to display all unread messages
+            // Automatically reset the counters
+            [dataSource markAllAsRead];
         }
         
         roomDataSource = dataSource;
