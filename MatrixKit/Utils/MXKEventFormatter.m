@@ -42,6 +42,14 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
      The default CSS converted in DTCoreText object.
      */
     DTCSSStylesheet *dtCSS;
+
+    /**
+     Regex for finding Matrix ids in events content.
+     */
+    NSRegularExpression *userIdRegex;
+    NSRegularExpression *roomIdRegex;
+    NSRegularExpression *roomAliasRegex;
+    NSRegularExpression *eventIdRegex;
 }
 @end
 
@@ -113,6 +121,59 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterNoStyle];
     [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
+}
+
+#pragma mark - Event formatter settings
+- (void)setTreatMatrixUserIdAsLink:(BOOL)treatMatrixUserIdAsLink
+{
+    _treatMatrixUserIdAsLink = treatMatrixUserIdAsLink;
+    if (_treatMatrixUserIdAsLink && !userIdRegex)
+    {
+        userIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixUserIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    else
+    {
+        userIdRegex = nil;
+    }
+}
+
+- (void)setTreatMatrixRoomIdAsLink:(BOOL)treatMatrixRoomIdAsLink
+{
+    _treatMatrixRoomIdAsLink = treatMatrixRoomIdAsLink;
+    if (_treatMatrixRoomIdAsLink && !roomIdRegex)
+    {
+        roomIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixRoomIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    else
+    {
+        roomIdRegex = nil;
+    }
+}
+
+- (void)setTreatMatrixRoomAliasAsLink:(BOOL)treatMatrixRoomAliasAsLink
+{
+    _treatMatrixRoomAliasAsLink = treatMatrixRoomAliasAsLink;
+    if (_treatMatrixRoomAliasAsLink && !roomAliasRegex)
+    {
+        roomAliasRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixRoomAlias options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    else
+    {
+        roomAliasRegex = nil;
+    }
+}
+
+- (void)setTreatMatrixEventIdAsLink:(BOOL)treatMatrixEventIdAsLink
+{
+    _treatMatrixEventIdAsLink = treatMatrixEventIdAsLink;
+    if (_treatMatrixEventIdAsLink && !eventIdRegex)
+    {
+        eventIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixEventIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    else
+    {
+        eventIdRegex = nil;
+    }
 }
 
 // Checks whether the event is related to an attachment and if it is supported
@@ -914,7 +975,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     [str addAttribute:NSForegroundColorAttributeName value:[self textColorForEvent:event] range:wholeString];
     [str addAttribute:NSFontAttributeName value:[self fontForEvent:event] range:wholeString];
 
-    // If enabled, make links clicable
+    // If enabled, make links clickable
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
           [[_settings httpsLinkScheme] isEqualToString: @"https"]))
     {
@@ -947,7 +1008,8 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
     }
 
-    return str;
+    // Apply additional treatments
+    return [self postRenderAttributedString:str];
 }
 
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
@@ -976,10 +1038,80 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     // webview.
     NSAttributedString *str = [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
 
+    // Apply additional treatments
+    str = [self postRenderAttributedString:str];
+
     // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
     // or after a blockquote section.
     // Trim trailing newlines
     return [self removeTrailingNewlines:str];
+}
+
+- (NSAttributedString*)postRenderAttributedString:(NSAttributedString*)attributedString
+{
+    if (!attributedString)
+    {
+        return nil;
+    }
+    
+    NSMutableAttributedString *postRenderAttributedString;
+
+    // If enabled, make user id clickable
+    if (userIdRegex)
+    {
+        [self createLinksInAttributedString:attributedString matchingRegex:userIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+
+    // If enabled, make room id clickable
+    if (roomIdRegex)
+    {
+        [self createLinksInAttributedString:attributedString matchingRegex:roomIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+
+    // If enabled, make room alias clickable
+    if (roomAliasRegex)
+    {
+        [self createLinksInAttributedString:attributedString matchingRegex:roomAliasRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+
+    // If enabled, make event id clickable
+    if (eventIdRegex)
+    {
+        [self createLinksInAttributedString:attributedString matchingRegex:eventIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+
+    return postRenderAttributedString ? postRenderAttributedString : attributedString;
+}
+
+- (void)createLinksInAttributedString:(NSAttributedString*)attributedString matchingRegex:(NSRegularExpression*)regex withWorkingAttributedString:(NSMutableAttributedString**)mutableAttributedString
+{
+    // Enumerate each string matching the regex
+    [regex enumerateMatchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
+
+        // Do not create a link if there is already one on the found match
+        __block BOOL hasAlreadyLink = NO;
+        [attributedString enumerateAttributesInRange:match.range options:0 usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+
+            if (attrs[NSLinkAttributeName])
+            {
+                hasAlreadyLink = YES;
+                *stop = YES;
+            }
+        }];
+
+        if (!hasAlreadyLink)
+        {
+            // Create the output string only if it is necessary because attributed strings cost CPU
+            if (!*mutableAttributedString)
+            {
+                *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+            }
+
+            // And make the match clickable
+            NSString *userId = [attributedString.string substringWithRange:match.range];
+            [*mutableAttributedString addAttribute:NSLinkAttributeName value:userId range:match.range];
+        }
+    }];
 }
 
 - (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
