@@ -2562,8 +2562,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // The view controller is going to display all messages
-    // Automatically reset the counters
+    // Automatically reset the unread counters
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
     {
         [self markAllAsRead];

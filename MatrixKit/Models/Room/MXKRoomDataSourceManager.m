@@ -140,6 +140,27 @@ static Class _roomDataSourceClass;
     return roomCount;
 }
 
++ (void)markAllMessagesAsRead
+{
+    // Reset the unread count in all the existing room data sources.
+    @synchronized(_roomDataSourceManagers)
+    {
+        NSArray *mxSessionIds = _roomDataSourceManagers.allKeys;
+        for (NSString *mxSessionId in mxSessionIds)
+        {
+            MXKRoomDataSourceManager *roomDataSourceManager = [_roomDataSourceManagers objectForKey:mxSessionId];
+            if (roomDataSourceManager)
+            {
+                NSArray *roomDataSources = roomDataSourceManager->roomDataSources.allValues;
+                for (MXKRoomDataSource *roomDataSource in roomDataSources)
+                {
+                    [roomDataSource markAllAsRead];
+                }
+            }
+        }
+    }
+}
+
 + (void)registerRoomDataSourceClass:(Class)roomDataSourceClass
 {
     // Sanity check: accept only MXKRoomDataSource classes or sub-classes
