@@ -42,6 +42,13 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
      The default CSS converted in DTCoreText object.
      */
     DTCSSStylesheet *dtCSS;
+
+    /**
+     Regex for finding Matrix ids in events content
+     */
+    NSRegularExpression *userIdRegex;
+    NSRegularExpression *roomAliasRegex;
+    NSRegularExpression *roomIdRegex;
 }
 @end
 
@@ -113,6 +120,20 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterNoStyle];
     [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
+}
+
+#pragma mark - Event formatter settings
+- (void)setTreatMatrixUserIdAsLink:(BOOL)treatMatrixUserIdAsLink
+{
+    _treatMatrixUserIdAsLink = treatMatrixUserIdAsLink;
+    if (_treatMatrixUserIdAsLink && !userIdRegex)
+    {
+        userIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixUserIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    else
+    {
+        userIdRegex = nil;
+    }
 }
 
 // Checks whether the event is related to an attachment and if it is supported
@@ -948,9 +969,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     }
 
     // Apply additional treatments
-    str = [self postRenderAttributedString:str];
-
-    return str;
+    return [self postRenderAttributedString:str];
 }
 
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
@@ -990,15 +1009,19 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
 
 - (NSAttributedString*)postRenderAttributedString:(NSAttributedString*)attributedString
 {
+    // Sanity check
+    if (!attributedString)
+    {
+        return nil;
+    }
+    
     __block NSMutableAttributedString *postRenderAttributedString;
 
     // If enabled, make user id clickable
-    if (_treatMatrixUserIdAsLink)
+    if (userIdRegex)
     {
         // Look for each user id present in the string
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@[A-Z0-9]+:[A-Z0-9.-]+\\.[A-Z]{2,}" options:NSRegularExpressionCaseInsensitive error:nil];
-
-        [regex enumerateMatchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
+        [userIdRegex enumerateMatchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
 
             if (!postRenderAttributedString)
             {
