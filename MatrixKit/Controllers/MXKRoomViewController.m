@@ -286,7 +286,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
-    
+
+    // Observe timeline failure
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTimelineError:) name:kMXKRoomDataSourceTimelineError object:nil];
+
     // Observe the server sync
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
     
@@ -344,6 +347,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceTimelineError object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
     [self removeReconnectingView];
@@ -811,6 +815,53 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // Hide by default the activity view when no room is displayed
         activitiesView.hidden = (roomDataSource == nil);
+    }
+}
+
+- (void)onTimelineError:(NSNotification *)notif
+{
+    if (notif.object == roomDataSource)
+    {
+        [self stopActivityIndicator];
+
+        // Compute the message to display to the end user
+        NSString *errorTitle;
+        NSString *errorMessage;
+
+        NSError *error = notif.userInfo[kMXKRoomDataSourceTimelineErrorErrorKey];
+        if ([MXError isMXError:error])
+        {
+            MXError *mxError = [[MXError alloc] initWithNSError:error];
+            if ([mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
+            {
+                errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_timeline_event_not_found_title"];
+                errorMessage = [NSBundle mxk_localizedStringForKey:@"room_error_timeline_event_not_found"];
+            }
+            else
+            {
+                errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_cannot_load_timeline"];
+                errorMessage = mxError.error;
+            }
+        }
+        else
+        {
+            errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_cannot_load_timeline"];
+        }
+
+        // And show it
+        [currentAlert dismiss:NO];
+
+        __weak typeof(self) weakSelf = self;
+        currentAlert = [[MXKAlert alloc] initWithTitle:errorTitle
+                                               message:errorMessage
+                                                 style:MXKAlertStyleAlert];
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                          {
+                                              typeof(self) self = weakSelf;
+                                              self->currentAlert = nil;
+                                          }];
+
+        [currentAlert showInViewController:self];
     }
 }
 

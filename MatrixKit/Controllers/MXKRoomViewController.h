@@ -199,6 +199,15 @@ extern NSString *const kCmdChangeRoomTopic;
 - (void)updateViewControllerAppearanceOnRoomDataSourceState;
 
 /**
+ This method is called when the associated data source has encountered an error on the timeline.
+
+ Override it to customize the view controller behavior.
+
+ @param the notification data sent with kMXKRoomDataSourceTimelineError notif.
+ */
+- (void)onTimelineError:(NSNotification *)notif;
+
+/**
  Join the current displayed room.
  
  This operation fails if the user has already joined the room, or if the data source is not ready.

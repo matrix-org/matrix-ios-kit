@@ -70,6 +70,18 @@ extern NSString *const kMXKRoomDataSourceMetaDataChanged;
  */
 extern NSString *const kMXKRoomDataSourceSyncStatusChanged;
 
+/**
+ Posted when the data source has failed to paginate around an event.
+ The notification object is the `MXKRoomDataSource` instance. The `userInfo` dictionary contains the following key:
+     - kMXKRoomDataTimelineErrorErrorKey: The NSError.
+ */
+extern NSString *const kMXKRoomDataSourceTimelineError;
+
+/**
+ Notifications `userInfo` keys
+ */
+extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
+
 #pragma mark - MXKRoomDataSource
 @protocol MXKRoomBubbleCellDataStoring;
 

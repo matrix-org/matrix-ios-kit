@@ -33,6 +33,9 @@ NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdent
 
 NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
 NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncStatusChanged";
+NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSourceFailToLoadTimelinePosition";
+NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
+NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTimelineErrorErrorKey";
 
 @interface MXKRoomDataSource ()
 {
@@ -570,9 +573,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             [self.delegate dataSource:self didStateChange:state];
                         }
 
-                    } failure:nil];
-                }
+                    } failure:^(NSError *error) {
 
+                        NSLog(@"[MXKRoomDataSource] Failed to resetPaginationAroundInitialEventWithLimit: %@", error);
+
+                        // Notify the error
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceTimelineError
+                                                                            object:self
+                                                                          userInfo:@{
+                                                                                     kMXKRoomDataSourceTimelineErrorErrorKey: error
+                                                                                     }];
+                    }];
+                }
             }
             else
             {
