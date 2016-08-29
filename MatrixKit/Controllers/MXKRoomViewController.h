@@ -305,4 +305,14 @@ extern NSString *const kCmdChangeRoomTopic;
  */
 - (void)dismissKeyboard;
 
+/**
+ Tell whether the most recent message of the room history is visible.
+ */
+- (BOOL)isBubblesTableScrollViewAtTheBottom;
+
+/**
+ Scroll the room history until the most recent message.
+ */
+- (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated;
+
 @end
