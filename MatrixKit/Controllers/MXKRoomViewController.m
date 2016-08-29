@@ -3155,7 +3155,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }
     else if (selectedAttachment.type == MXKAttachmentTypeFile)
     {
+        // Start activity indicator as feedback on file selection.3
+        [self startActivityIndicator];
+        
         [selectedAttachment prepareShare:^(NSURL *fileURL) {
+            
+            [self stopActivityIndicator];
             
             documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
             [documentInteractionController setDelegate:self];
@@ -3171,7 +3176,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 }
             }
             
-        } failure:nil];
+        } failure:^(NSError *error) {
+            
+            [self stopActivityIndicator];
+            
+        }];
         
         // Start animation in case of download
         [roomBubbleTableViewCell startProgressUI];
