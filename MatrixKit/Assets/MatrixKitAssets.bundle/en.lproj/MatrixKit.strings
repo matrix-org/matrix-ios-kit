@@ -155,6 +155,9 @@
 "room_error_join_failed_empty_room" = "It is not currently possible to re-join an empty room.";
 "room_error_name_edition_not_authorized" = "You are not authorized to edit this room name";
 "room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
+"room_error_cannot_load_timeline" = "Failed to load timeline";
+"room_error_timeline_event_not_found_title" = "Failed to load timeline position";
+"room_error_timeline_event_not_found" = "The application was trying to load a specific point in this room's timeline but was unable to find it";
 "room_left" = "You left the room";
 "room_no_power_to_create_conference_call" = "You need permission to invite to start a conference in this room";
 
