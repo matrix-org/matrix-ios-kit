@@ -270,7 +270,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     else
     {
-        _hasUnread = _room.hasUnreadEvents;
+        _hasUnread = (_room.localUnreadEventCount != 0);
         _notificationCount = _room.notificationCount;
         _highlightCount = _room.highlightCount;
     }
@@ -2574,12 +2574,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Automatically reset the unread counters
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-    {
-        [self markAllAsRead];
-    }
-    
     // PATCH: Presently no bubble must be displayed until the user joins the room.
     // FIXME: Handle room data source in case of room preview
     if (self.room.state.membership == MXMembershipInvite)
