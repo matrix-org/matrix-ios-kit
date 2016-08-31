@@ -714,6 +714,8 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger item = indexPath.item;
+
+    BOOL navigationBarDisplayHandled = NO;
     
     if (isBackPaginationInProgress)
     {
@@ -820,9 +822,40 @@
             {
                 if (selectedCell.moviePlayer.playbackState == MPMoviePlaybackStatePlaying)
                 {
-                    [selectedCell.moviePlayer stop];
-                    selectedCell.moviePlayer.view.hidden = YES;
-                    selectedCell.centerIcon.hidden = NO;
+                    // Show or hide the navigation bar
+
+                    // The video controls bar display is automatically managed by MPMoviePlayerController.
+                    // We have no control on it and no notifications about its displays changes.
+                    // The following code synchronizes the display of the navigation bar with the
+                    // MPMoviePlayerController controls bar.
+
+                    // Check the MPMoviePlayerController controls bar display status by an hacky way
+                    BOOL controlsVisible = NO;
+                    for(id views in [[selectedCell.moviePlayer view] subviews])
+                    {
+                        for(id subViews in [views subviews])
+                        {
+                            for (id controlView in [subViews subviews])
+                            {
+                                if ([controlView isKindOfClass:[UIView class]] && ((UIView*)controlView).tag == 1004)
+                                {
+                                    controlsVisible = ([controlView alpha] <= 0.0) ? NO : YES;
+                                }
+                            }
+                        }
+                    }
+
+                    // Apply the same display to the navigation bar
+                    self.navigationController.navigationBarHidden = !controlsVisible;
+
+                    navigationBarDisplayHandled = YES;
+                    if (!self.navigationController.navigationBarHidden)
+                    {
+                        // Automaticaly hide the nav bar after 5s. This is the same timer value that
+                        // MPMoviePlayerController uses for its controls bar
+                        [navigationBarDisplayTimer invalidate];
+                        navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
+                    }
                 }
                 else
                 {
@@ -912,16 +945,19 @@
         }
     }
     
-    // Animate navigation bar
-    if (self.navigationController.navigationBarHidden)
+    // Animate navigation bar if it is has not been handled
+    if (!navigationBarDisplayHandled)
     {
-        self.navigationController.navigationBarHidden = NO;
-        [navigationBarDisplayTimer invalidate];
-        navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
-    }
-    else
-    {
-        [self hideNavigationBar];
+        if (self.navigationController.navigationBarHidden)
+        {
+            self.navigationController.navigationBarHidden = NO;
+            [navigationBarDisplayTimer invalidate];
+            navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
+        }
+        else
+        {
+            [self hideNavigationBar];
+        }
     }
 }
 
