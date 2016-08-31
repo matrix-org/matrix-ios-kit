@@ -989,7 +989,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
     // Check the current data source state, and the actual user membership for this room.
-    if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
+    if (state != MXKDataSourceStateReady || ((self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite) && ![self.room.state.historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable]))
     {
         // Back pagination is not available here.
         if (failure)
