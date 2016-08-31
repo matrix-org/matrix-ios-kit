@@ -1907,7 +1907,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // Firstly, check if it has been cached
     if (lastMessage)
     {
-        NSLog(@"lastMessage: case #1 for %@", self.roomId);
+        //NSLog(@"lastMessage: case #1 for %@", self.roomId);
         onComplete(lastMessage);
         return;
     }
@@ -1927,7 +1927,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         if (eventTextMessage.length)
         {
             lastDisplayableEvent = event;
-            NSLog(@"lastMessage: case #2 for %@", self.roomId);
+            //NSLog(@"lastMessage: case #2 for %@", self.roomId);
             break;
         }
     }
@@ -1946,7 +1946,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             if (eventTextMessage.length)
             {
                 lastDisplayableEvent = event;
-                NSLog(@"lastMessage: case #3 for %@", self.roomId);
+                //NSLog(@"lastMessage: case #3 for %@", self.roomId);
                 break;
             }
         }
@@ -1964,7 +1964,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         {
             // Finally, as there is no matching events locally, get more messages from 
             // the homeserver
-            NSLog(@"lastMessage: case #4 for %@", self.roomId);
+            //NSLog(@"lastMessage: case #4 for %@", self.roomId);
 
             // Trigger asynchronously this back pagination to not block the UI thread.
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1986,7 +1986,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         {
             // All the room history has been loaded locally but no message matches the
             // criteria
-            NSLog(@"lastMessage: case #5 for %@", self.roomId);
+            //NSLog(@"lastMessage: case #5 for %@", self.roomId);
             onComplete(nil);
         }
     }
