@@ -289,6 +289,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     // Retrieve the MXKCellData class to manage the data
     Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
     NSAssert([class conformsToProtocol:@protocol(MXKRecentCellDataStoring)], @"MXKSessionRecentsDataSource only manages MXKCellData that conforms to MXKRecentCellDataStoring protocol");
+
+    NSDate *startDate = [NSDate date];
     
     for (MXRoom *room in self.mxSession.rooms)
     {
@@ -304,7 +306,9 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             }
         }
     }
-    
+
+    NSLog(@"[MXKSessionRecentsDataSource] Loaded %tu recents in %.3fms", self.mxSession.rooms.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+
     // Report loaded array except if sync is in progress
     if (!roomDataSourceManager.isServerSyncInProgress)
     {
