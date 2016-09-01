@@ -397,14 +397,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             NSURL *audioUrl;
             if (mxCall.isIncoming)
             {
-                audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"ring"];
+                audioUrl = [self audioURLWithName:@"ring"];
                 
                 // Vibrate on incoming call
                 vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:1.24875 target:self selector:@selector(vibrate) userInfo:nil repeats:YES];
             }
             else
             {
-                audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"ringback"];
+                audioUrl = [self audioURLWithName:@"ringback"];
             }
             
             audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
@@ -444,6 +444,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         backToAppButton.hidden = YES;
     }
+}
+
+#pragma mark - Sounds
+
+- (NSURL*)audioURLWithName:(NSString*)soundName
+{
+    return [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:soundName];
 }
 
 #pragma mark - Actions
@@ -600,7 +607,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             NSError* error = nil;
             NSURL *audioUrl;
-            audioUrl = [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:@"callend"];
+            audioUrl = [self audioURLWithName:@"callend"];
             audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
             if (error)
             {
