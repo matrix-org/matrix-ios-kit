@@ -1867,7 +1867,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
         if (direction == MXTimelineDirectionBackwards)
         {
-            [self upateCurrentEventIdAtTableBottom:NO];
+            [self updateCurrentEventIdAtTableBottom:NO];
         }
 
     } failure:^(NSError *error) {
@@ -2185,7 +2185,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     return shouldScrollToBottom;
 }
 
-- (void)upateCurrentEventIdAtTableBottom:(BOOL)acknowledge
+- (void)updateCurrentEventIdAtTableBottom:(BOOL)acknowledge
 {
     // Update the identifier of the event displayed at the bottom of the table, except if a rotation or other size transition is in progress.
     if (! isSizeTransitionInProgress)
@@ -2235,6 +2235,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 if (acknowledge)
                 {
+                    NSLog(@"#### %@", [NSThread callStackSymbols]);
+
                     // Indicate to the homeserver that the user has read up to this event.
                     [self.roomDataSource.room acknowledgeEvent:component.event];
                 }
@@ -2323,7 +2325,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
+    NSLog(@"#### didCellChange: %tu", [UIApplication sharedApplication].applicationState);
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
     {
         // Do nothing at the UI level if the application do a sync in background
         return;
@@ -2890,7 +2893,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // else it will be done in scrollViewDidEndDecelerating
         if (!decelerate)
         {
-            [self upateCurrentEventIdAtTableBottom:YES];
+            [self updateCurrentEventIdAtTableBottom:YES];
         }
     }
 }
@@ -2901,7 +2904,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // do not dispatch the upateCurrentEventIdAtTableBottom call
         // else it might triggers weird UI lags.
-        [self upateCurrentEventIdAtTableBottom:YES];
+        [self updateCurrentEventIdAtTableBottom:YES];
         [self managePullToKick:scrollView];
     }
 }
@@ -2912,7 +2915,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // do not dispatch the upateCurrentEventIdAtTableBottom call
         // else it might triggers weird UI lags.
-        [self upateCurrentEventIdAtTableBottom:YES];
+        [self updateCurrentEventIdAtTableBottom:YES];
     }
 }
 
@@ -2953,7 +2956,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         {
             // When scrolling to the bottom is performed without animation, 'scrollViewDidEndScrollingAnimation' is not called.
             // upateCurrentEventIdAtTableBottom must be called here (without dispatch).
-            [self upateCurrentEventIdAtTableBottom:YES];
+            [self updateCurrentEventIdAtTableBottom:YES];
         }
     }
 }
