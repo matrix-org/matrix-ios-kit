@@ -1917,28 +1917,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXKEventFormatterError error;
 
     // Secondly, search for a matching event in the outgoing messages
-    id<MXEventsEnumerator> enumerator = [[MXEventsByTypesEnumeratorOnArray alloc] initWithMessages:_room.outgoingMessages
-                                                                                        andTypesIn:self.eventsFilterForMessages
-                                                                        ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
-    while ((event = enumerator.nextEvent))
+    @autoreleasepool
     {
-        // Check that the event formatter can display the event
-        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
-        if (eventTextMessage.length)
-        {
-            lastDisplayableEvent = event;
-            //NSLog(@"lastMessage: case #2 for %@", self.roomId);
-            break;
-        }
-    }
-
-    if (!lastDisplayableEvent)
-    {
-        // Thirdly, search for a matching event in the messages already in the store
-        // for this room
-        enumerator = [self.room enumeratorForStoredMessagesWithTypeIn:self.eventsFilterForMessages
-                                           ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
-
+        id<MXEventsEnumerator> enumerator = [[MXEventsByTypesEnumeratorOnArray alloc] initWithMessages:_room.outgoingMessages
+                                                                                            andTypesIn:self.eventsFilterForMessages
+                                                                            ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
         while ((event = enumerator.nextEvent))
         {
             // Check that the event formatter can display the event
@@ -1946,8 +1929,31 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             if (eventTextMessage.length)
             {
                 lastDisplayableEvent = event;
-                //NSLog(@"lastMessage: case #3 for %@", self.roomId);
+                //NSLog(@"lastMessage: case #2 for %@", self.roomId);
                 break;
+            }
+        }
+    }
+
+    if (!lastDisplayableEvent)
+    {
+        // Thirdly, search for a matching event in the messages already in the store
+        // for this room
+        @autoreleasepool
+        {
+            id<MXEventsEnumerator>  enumerator = [self.room enumeratorForStoredMessagesWithTypeIn:self.eventsFilterForMessages
+                                               ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
+
+            while ((event = enumerator.nextEvent))
+            {
+                // Check that the event formatter can display the event
+                NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
+                if (eventTextMessage.length)
+                {
+                    lastDisplayableEvent = event;
+                    //NSLog(@"lastMessage: case #3 for %@", self.roomId);
+                    break;
+                }
             }
         }
     }
