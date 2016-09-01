@@ -2323,6 +2323,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
+    {
+        // Do nothing at the UI level if the application do a sync in background
+        return;
+    }
+
     if (isPaginationInProgress)
     {
         // Ignore these changes, the table will be full updated at the end of pagination.
