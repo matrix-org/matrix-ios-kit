@@ -37,6 +37,15 @@
     inputAccessoryView = nil;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    // Fix the minimum width of the label in order to keep it visible when the textfield width is increasing.
+    [_mxkLabel sizeToFit];
+    _mxkLabelMinWidthConstraint.constant = _mxkLabel.frame.size.width;
+}
+
 #pragma mark - UITextField delegate
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField
