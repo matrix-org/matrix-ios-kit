@@ -2235,8 +2235,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 if (acknowledge)
                 {
-                    NSLog(@"#### %@", [NSThread callStackSymbols]);
-
                     // Indicate to the homeserver that the user has read up to this event.
                     [self.roomDataSource.room acknowledgeEvent:component.event];
                 }
@@ -2325,7 +2323,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    NSLog(@"#### didCellChange: %tu", [UIApplication sharedApplication].applicationState);
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
     {
         // Do nothing at the UI level if the application do a sync in background
