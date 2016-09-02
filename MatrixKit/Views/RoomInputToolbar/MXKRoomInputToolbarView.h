@@ -288,6 +288,11 @@ typedef enum : NSUInteger
 @property (readonly) UIView *inputAccessoryView;
 
 /**
+ Display the keyboard.
+ */
+- (BOOL)becomeFirstResponder;
+
+/**
  Force dismiss keyboard.
  */
 - (void)dismissKeyboard;
