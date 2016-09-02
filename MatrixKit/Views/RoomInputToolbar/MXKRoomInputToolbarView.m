@@ -253,6 +253,11 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     _placeholder = inPlaceholder;
 }
 
+- (BOOL)becomeFirstResponder
+{
+    
+}
+
 - (void)dismissKeyboard
 {
     
