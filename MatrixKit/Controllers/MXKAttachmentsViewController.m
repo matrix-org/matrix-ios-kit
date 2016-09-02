@@ -152,9 +152,6 @@
     }
     
     [_attachmentsCollection reloadData];
-    
-    // Adjust content offset
-    [self refreshAttachmentCollectionContentOffset];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -183,6 +180,7 @@
     if (savedAVAudioSessionCategory)
     {
         [[AVAudioSession sharedInstance] setCategory:savedAVAudioSessionCategory error:nil];
+        savedAVAudioSessionCategory = nil;
     }
     
     [navigationBarDisplayTimer invalidate];
@@ -290,8 +288,6 @@
     
     if (currentAttachmentEventId.length == 0 && attachments)
     {
-        [self refreshCurrentVisibleItemIndex];
-        
         if (isBackPaginationInProgress && currentVisibleItemIndex == 0)
         {
             // Here the spinner were displayed, we update the viewer by displaying the first added attachment
@@ -417,7 +413,7 @@
 
 - (void)refreshAttachmentCollectionContentOffset
 {
-    if (currentVisibleItemIndex != NSNotFound)
+    if (currentVisibleItemIndex != NSNotFound && _attachmentsCollection)
     {
         // Set the content offset to display the current attachment
         CGPoint contentOffset = _attachmentsCollection.contentOffset;
