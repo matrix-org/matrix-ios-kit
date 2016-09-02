@@ -255,7 +255,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
 
 - (BOOL)becomeFirstResponder
 {
-    
+    return NO;
 }
 
 - (void)dismissKeyboard
