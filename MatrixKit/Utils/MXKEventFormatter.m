@@ -84,7 +84,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 display: inline; \
                 font-family: monospace; \
                 white-space: pre; \
-                -coretext-fontname: Menlo; \
+                -coretext-fontname: Menlo-Regular; \
                 font-size: small; \
             }";
 
