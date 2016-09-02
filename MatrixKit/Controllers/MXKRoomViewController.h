@@ -315,4 +315,11 @@ extern NSString *const kCmdChangeRoomTopic;
  */
 - (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated;
 
+/**
+ Display a popup with the event detais.
+ 
+ @param event the event to inspect.
+ */
+- (void)showEventDetails:(MXEvent *)event;
+
 @end
