@@ -74,6 +74,11 @@ typedef enum : NSUInteger {
 + (NSUInteger)missedDiscussionsCount;
 
 /**
+ The current number of rooms with unread highlighted messages.
+ */
++ (NSUInteger)missedHighlightDiscussionsCount;
+
+/**
  Mark all messages as read.
  */
 + (void)markAllMessagesAsRead;
