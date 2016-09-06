@@ -279,7 +279,12 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     
     // Check matrix identifiers
     NSArray *identifiers = self.matrixIdentifiers;
-    NSString *idPrefix = [NSString stringWithFormat:@"@%@", prefix];
+    NSString *idPrefix = prefix;
+    if (![prefix hasPrefix:@"@"])
+    {
+        idPrefix = [NSString stringWithFormat:@"@%@", prefix];
+    }
+    
     for (NSString* mxId in identifiers)
     {
         if ([[mxId lowercaseString] hasPrefix:idPrefix])
