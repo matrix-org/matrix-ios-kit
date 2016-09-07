@@ -101,6 +101,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         _bingTextFont = [UIFont systemFontOfSize:14];
         _stateEventTextFont = [UIFont italicSystemFontOfSize:14];
         _callNoticesTextFont = [UIFont italicSystemFontOfSize:14];
+        _encryptedMessagesTextFont = [UIFont italicSystemFontOfSize:14];
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
@@ -679,6 +680,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     displayText = [NSString stringWithFormat:@"%@\n %@", displayText, redactedInfo];
                 }
             }
+            break;
+        }
+        case MXEventTypeRoomEncrypted:
+        {
+            // E2e encryption is not yet supported
+            displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
             break;
         }
         case MXEventTypeRoomHistoryVisibility:
@@ -1283,6 +1290,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     else if (event.mxkState == MXKEventStateBing)
     {
         font = _bingTextFont;
+    }
+    else if (event.eventType == MXEventTypeRoomEncrypted)
+    {
+        font = _encryptedMessagesTextFont;
     }
     return font;
 }

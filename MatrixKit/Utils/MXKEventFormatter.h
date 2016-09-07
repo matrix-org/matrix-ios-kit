@@ -333,4 +333,10 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) UIFont *callNoticesTextFont;
 
+/**
+ Text font used to display encrypted messages.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *encryptedMessagesTextFont;
+
 @end
