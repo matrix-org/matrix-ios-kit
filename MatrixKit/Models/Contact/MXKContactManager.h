@@ -121,6 +121,11 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *localEmailContacts;
 
 /**
+ The current list of the contacts for whom a 1:1 room exists.
+ */
+@property (nonatomic, readonly) NSArray *oneToOneMatrixContacts;
+
+/**
  No by default. Set YES to update matrix ids for all the local contacts in only one request
  when device contacts are loaded and an identity server is available.
  */

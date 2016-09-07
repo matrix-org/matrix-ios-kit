@@ -344,6 +344,32 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return localEmailContacts;
 }
 
+- (NSArray*)oneToOneMatrixContacts
+{
+    NSMutableDictionary *oneToOneContacts = [NSMutableDictionary dictionary];
+    
+    NSArray *mxSessions = self.mxSessions;
+    
+    for (MXSession *mxSession in mxSessions)
+    {
+        // Check all existing users for whom a 1:1 room exists
+        NSArray *mxUserIds = mxSession.privateOneToOneUsers;
+        
+        for (NSString *mxUserId in mxUserIds)
+        {
+            MXKContact* contact = [matrixContactByMatrixID objectForKey:mxUserId];
+            
+            // Sanity check - the contact must be already defined here
+            if (contact)
+            {
+                [oneToOneContacts setValue:contact forKey:mxUserId];
+            }
+        }
+    }
+    
+    return oneToOneContacts.allValues;
+}
+
 - (void)setIdentityServer:(NSString *)identityServer
 {
     _identityServer = identityServer;
