@@ -370,6 +370,52 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return oneToOneContacts.allValues;
 }
 
+- (NSArray*)privateMatrixContacts:(MXSession *)mxSession
+{
+    NSMutableDictionary *privateContacts = [NSMutableDictionary dictionary];
+    
+    // List all the known matrix users from the private rooms
+    NSArray *rooms = mxSession.rooms;
+    for (MXRoom *room in rooms)
+    {
+        if (!room.state.isJoinRulePublic && !room.state.isConferenceUserRoom)
+        {
+            NSArray *members = room.state.members;
+            
+            for (MXRoomMember *member in members)
+            {
+                if ((member.membership == MXMembershipJoin || member.membership == MXMembershipInvite)
+                    && [MXCallManager isConferenceUser:member.userId] == NO)
+                {
+                    MXKContact* contact = [matrixContactByMatrixID objectForKey:member.userId];
+                    if (!contact)
+                    {
+                        MXUser *mxUser = [mxSession userWithUserId:member.userId];
+                        
+                        // Sanity check - mxUser should not be nil here
+                        if (mxUser)
+                        {
+                            contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((mxUser.displayname.length > 0) ? mxUser.displayname : member.userId) andMatrixID:member.userId];
+                            [matrixContactByMatrixID setValue:contact forKey:member.userId];
+                        }
+                    }
+                    
+                    if (contact)
+                    {
+                        [privateContacts setValue:contact forKey:member.userId];
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    // Remove the user himself
+    [privateContacts removeObjectForKey:mxSession.myUser.userId];
+    
+    return privateContacts.allValues;
+}
+
 - (void)setIdentityServer:(NSString *)identityServer
 {
     _identityServer = identityServer;
