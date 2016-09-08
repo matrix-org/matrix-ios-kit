@@ -123,6 +123,13 @@ extern NSString *const kCmdChangeRoomTopic;
 @property BOOL autoJoinInvitedRoom;
 
 /**
+ Tell whether the room history is automatically scrolled to the most recent messages
+ when a keyboard is presented. YES by default.
+ This option is ignored when an alert is presented.
+ */
+@property BOOL scrollHistoryToTheBottomOnKeyboardPresentation;
+
+/**
  This object is defined when the displayed room is left. It is added into the bubbles table header.
  This label is used to display the reason why the room has been left.
  */

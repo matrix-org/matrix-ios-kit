@@ -207,6 +207,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
     // Do not take ownership of room data source by default
     _hasRoomDataSourceOwnership = NO;
+    
+    // Scroll to the bottom when a keyboard is presented
+    _scrollHistoryToTheBottomOnKeyboardPresentation = YES;
 }
 
 #pragma mark -
@@ -463,7 +466,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
     // Scroll the tableview content when a new keyboard is presented (except if an alert is presented).
-    if (!super.keyboardHeight && keyboardHeight && !currentAlert)
+    if (_scrollHistoryToTheBottomOnKeyboardPresentation && !super.keyboardHeight && keyboardHeight && !currentAlert)
     {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
