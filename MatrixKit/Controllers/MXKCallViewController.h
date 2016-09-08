@@ -139,6 +139,14 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 + (instancetype)callViewController:(MXCall*)call;
 
 /**
+ Return an audio file url based on the provided name.
+ 
+ @param name audio file name without extension.
+ @return a NSURL instance.
+ */
+- (NSURL*)audioURLWithName:(NSString*)soundName;
+
+/**
  Refresh the peer information in the call viewcontroller's view.
  */
 - (void)updatePeerInfoDisplay;

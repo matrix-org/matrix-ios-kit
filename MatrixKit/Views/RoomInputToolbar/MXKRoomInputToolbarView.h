@@ -288,6 +288,11 @@ typedef enum : NSUInteger
 @property (readonly) UIView *inputAccessoryView;
 
 /**
+ Display the keyboard.
+ */
+- (BOOL)becomeFirstResponder;
+
+/**
  Force dismiss keyboard.
  */
 - (void)dismissKeyboard;
@@ -296,5 +301,15 @@ typedef enum : NSUInteger
  Dispose any resources and listener.
  */
 - (void)destroy;
+
+/**
+ Paste a text in textMessage.
+ 
+ The text is pasted at the current cursor location in the message composer or it
+ replaces the currently selected text.
+ 
+ @param text the text to paste.
+ */
+- (void)pasteText:(NSString*)text;
 
 @end

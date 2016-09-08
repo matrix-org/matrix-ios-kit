@@ -40,6 +40,7 @@
  Leading/Trailing constraints define here spacing to nearest neighbor (no relative to margin)
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkLabelMinWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mxkTextFieldTrailingConstraint;
 

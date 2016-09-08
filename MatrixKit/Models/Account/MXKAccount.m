@@ -641,8 +641,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [initialServerSyncTimer invalidate];
         initialServerSyncTimer = nil;
         
-        if (mxSession.state == MXSessionStateSyncInProgress)
+        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised || mxSession.state == MXSessionStateStoreDataReady)
         {
+            NSLog(@"[MXKAccount] Pause is delayed at the end of sync (current state %tu)", mxSession.state);
             isPauseRequested = YES;
         }
     }
@@ -656,7 +657,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         [self cancelBackgroundSync];
         
-        if (mxSession.state == MXSessionStatePaused)
+        if (mxSession.state == MXSessionStatePaused || mxSession.state == MXSessionStatePauseRequested)
         {
             // Resume SDK and update user presence
             [mxSession resume:^{
@@ -984,6 +985,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Check if pause has been requested
         if (isPauseRequested)
         {
+            NSLog(@"[MXKAccount] Apply the pending pause.");
             [self pauseInBackgroundTask];
             return;
         }

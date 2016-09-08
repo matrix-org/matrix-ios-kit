@@ -100,6 +100,7 @@
 "notice_room_power_level_acting_requirement" = "The minimum power levels that a user must have before acting are:";
 "notice_room_power_level_event_requirement" = "The minimum power levels related to events are:";
 "notice_room_aliases" = "The room aliases are: %@";
+"notice_encrypted_message" = "Encrypted message";
 "notice_image_attachment" = "image attachment";
 "notice_audio_attachment" = "audio attachment";
 "notice_video_attachment" = "video attachment";
@@ -155,6 +156,9 @@
 "room_error_join_failed_empty_room" = "It is not currently possible to re-join an empty room.";
 "room_error_name_edition_not_authorized" = "You are not authorized to edit this room name";
 "room_error_topic_edition_not_authorized" = "You are not authorized to edit this room topic";
+"room_error_cannot_load_timeline" = "Failed to load timeline";
+"room_error_timeline_event_not_found_title" = "Failed to load timeline position";
+"room_error_timeline_event_not_found" = "The application was trying to load a specific point in this room's timeline but was unable to find it";
 "room_left" = "You left the room";
 "room_no_power_to_create_conference_call" = "You need permission to invite to start a conference in this room";
 
@@ -221,6 +225,7 @@
 "notice_room_unban" = "%@ unbanned %@";
 "notice_room_ban" = "%@ banned %@";
 "notice_room_withdraw" = "%@ withdrew %@'s invitation";
+"notice_room_reason" = ". Reason: %@";
 "notice_avatar_url_changed" = "%@ changed their avatar";
 "notice_display_name_set" = "%@ set their display name to %@";
 "notice_display_name_changed_from" = "%@ changed their display name from %@ to %@";

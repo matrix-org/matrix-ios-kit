@@ -81,6 +81,16 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isForSubtitle;
 
 /**
+ Flags indicating if the formatter must create clickable links for Matrix user ids,
+ room ids, room aliases or event ids.
+ Default is NO.
+ */
+@property (nonatomic) BOOL treatMatrixUserIdAsLink;
+@property (nonatomic) BOOL treatMatrixRoomIdAsLink;
+@property (nonatomic) BOOL treatMatrixRoomAliasAsLink;
+@property (nonatomic) BOOL treatMatrixEventIdAsLink;
+
+/**
  Initialise the event formatter.
 
  @param mxSession the Matrix to retrieve contextual data.
@@ -322,5 +332,11 @@ typedef enum : NSUInteger {
  Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *callNoticesTextFont;
+
+/**
+ Text font used to display encrypted messages.
+ Default is SFUIText-Regular 14.
+ */
+@property (nonatomic) UIFont *encryptedMessagesTextFont;
 
 @end

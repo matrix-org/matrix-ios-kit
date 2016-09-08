@@ -21,9 +21,12 @@
                             <outlet property="delegate" destination="5Je-1y-foH" id="Nie-b5-gB9"/>
                         </connections>
                     </textField>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="584" translatesAutoresizingMaskIntoConstraints="NO" id="DE7-uC-Oz2">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="584" translatesAutoresizingMaskIntoConstraints="NO" id="DE7-uC-Oz2">
                         <rect key="frame" x="8" y="11" width="42" height="21"/>
                         <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="10" id="Qzq-Ej-Wdb"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -40,6 +43,7 @@
             <connections>
                 <outlet property="mxkLabel" destination="DE7-uC-Oz2" id="CTb-my-hkV"/>
                 <outlet property="mxkLabelLeadingConstraint" destination="qse-r7-x6e" id="WiE-p0-3PB"/>
+                <outlet property="mxkLabelMinWidthConstraint" destination="Qzq-Ej-Wdb" id="SJc-IC-N5T"/>
                 <outlet property="mxkTextField" destination="SBE-PS-i6p" id="jLi-27-mbO"/>
                 <outlet property="mxkTextFieldLeadingConstraint" destination="h1v-HS-kzp" id="Sx7-JU-SeG"/>
                 <outlet property="mxkTextFieldTrailingConstraint" destination="7NM-6p-4fc" id="tBw-Gt-9pm"/>

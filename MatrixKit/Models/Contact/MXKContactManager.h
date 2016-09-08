@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *mxSessions;
 
 /**
- The current list of the contacts extracted from matrix data.
+ The current list of the contacts extracted from matrix data. Depends on 'contactManagerMXRoomSource'.
  */
 @property (nonatomic, readonly) NSArray *matrixContacts;
 
@@ -119,6 +119,18 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
  Each item of this array is a MXKContact instance with an email address as display name.
  */
 @property (nonatomic, readonly) NSArray *localEmailContacts;
+
+/**
+ The current list of the contacts for whom a 1:1 room exists.
+ */
+@property (nonatomic, readonly) NSArray *oneToOneMatrixContacts;
+
+/**
+ List the contacts who share at least a private room with the current user of the provided matrix session.
+ 
+ @param mxSession the concerned matrix session.
+ */
+- (NSArray *)privateMatrixContacts:(MXSession*)mxSession;
 
 /**
  No by default. Set YES to update matrix ids for all the local contacts in only one request

@@ -344,6 +344,84 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return localEmailContacts;
 }
 
+- (NSArray*)oneToOneMatrixContacts
+{
+    NSMutableDictionary *oneToOneContacts = [NSMutableDictionary dictionary];
+    
+    NSArray *mxSessions = self.mxSessions;
+    
+    for (MXSession *mxSession in mxSessions)
+    {
+        // Check all existing users for whom a 1:1 room exists
+        NSArray *mxUserIds = mxSession.privateOneToOneUsers;
+        
+        for (NSString *mxUserId in mxUserIds)
+        {
+            MXKContact* contact = [matrixContactByMatrixID objectForKey:mxUserId];
+            
+            // Sanity check - the contact must be already defined here
+            if (contact)
+            {
+                [oneToOneContacts setValue:contact forKey:mxUserId];
+            }
+        }
+    }
+    
+    return oneToOneContacts.allValues;
+}
+
+- (NSArray*)privateMatrixContacts:(MXSession *)mxSession
+{
+    // Sanity check
+    if (!mxSession)
+    {
+        return nil;
+    }
+    
+    NSMutableDictionary *privateContacts = [NSMutableDictionary dictionary];
+    
+    // List all the known matrix users from the private rooms
+    NSArray *rooms = mxSession.rooms;
+    for (MXRoom *room in rooms)
+    {
+        if (!room.state.isJoinRulePublic && !room.state.isConferenceUserRoom)
+        {
+            NSArray *members = room.state.members;
+            
+            for (MXRoomMember *member in members)
+            {
+                if ((member.membership == MXMembershipJoin || member.membership == MXMembershipInvite)
+                    && [MXCallManager isConferenceUser:member.userId] == NO)
+                {
+                    MXKContact* contact = [matrixContactByMatrixID objectForKey:member.userId];
+                    if (!contact)
+                    {
+                        MXUser *mxUser = [mxSession userWithUserId:member.userId];
+                        
+                        // Sanity check - mxUser should not be nil here
+                        if (mxUser)
+                        {
+                            contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((mxUser.displayname.length > 0) ? mxUser.displayname : member.userId) andMatrixID:member.userId];
+                            [matrixContactByMatrixID setValue:contact forKey:member.userId];
+                        }
+                    }
+                    
+                    if (contact)
+                    {
+                        [privateContacts setValue:contact forKey:member.userId];
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    // Remove the user himself
+    [privateContacts removeObjectForKey:mxSession.myUser.userId];
+    
+    return privateContacts.allValues;
+}
+
 - (void)setIdentityServer:(NSString *)identityServer
 {
     _identityServer = identityServer;

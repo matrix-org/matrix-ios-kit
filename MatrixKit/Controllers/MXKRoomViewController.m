@@ -207,6 +207,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
     // Do not take ownership of room data source by default
     _hasRoomDataSourceOwnership = NO;
+    
+    // Scroll to the bottom when a keyboard is presented
+    _scrollHistoryToTheBottomOnKeyboardPresentation = YES;
 }
 
 #pragma mark -
@@ -286,7 +289,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
-    
+
+    // Observe timeline failure
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTimelineError:) name:kMXKRoomDataSourceTimelineError object:nil];
+
     // Observe the server sync
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
     
@@ -334,8 +340,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // Retrieve the potential message partially typed during last room display.
         // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
         inputToolbarView.textMessage = roomDataSource.partialTextMessage;
-        
-        [roomDataSource markAllAsRead];
     }
     
     shouldScrollToBottomOnTableRefresh = NO;
@@ -346,6 +350,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceTimelineError object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
     [self removeReconnectingView];
@@ -461,7 +466,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
     // Scroll the tableview content when a new keyboard is presented (except if an alert is presented).
-    if (!super.keyboardHeight && keyboardHeight && !currentAlert)
+    if (_scrollHistoryToTheBottomOnKeyboardPresentation && !super.keyboardHeight && keyboardHeight && !currentAlert)
     {
         [self scrollBubblesTableViewToBottomAnimated:NO];
     }
@@ -603,41 +608,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }
 }
 
-- (BOOL)isBubblesTableScrollViewAtTheBottom
-{
-    // Check whether the most recent message is visible.
-    // Compute the max vertical position visible according to contentOffset
-    CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
-    // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
-    maxPositionY += 30;
-    BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
-    
-    // Consider the table view at the bottom if a scrolling to bottom is in progress too
-    return (isScrolledToBottom || isScrollingToBottom);
-}
-
-- (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated
-{
-    if (_bubblesTableView.contentSize.height)
-    {
-        CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom;
-        if (visibleHeight < _bubblesTableView.contentSize.height)
-        {
-            CGFloat wantedOffsetY = _bubblesTableView.contentSize.height - visibleHeight - _bubblesTableView.contentInset.top;
-            CGFloat currentOffsetY = _bubblesTableView.contentOffset.y;
-            if (wantedOffsetY != currentOffsetY)
-            {
-                isScrollingToBottom = YES;
-                [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
-            }
-        }
-        else
-        {
-            _bubblesTableView.contentOffset = CGPointMake(0, -_bubblesTableView.contentInset.top);
-        }
-    }
-}
-
 #pragma mark -
 
 - (void)dismissTemporarySubViews
@@ -699,6 +669,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             // Remove the input toolbar in case of peeking.
             // We do not let the user type message in this case.
             [self setRoomInputToolbarViewClass:nil];
+        }
+        else
+        {
+            // The view controller is going to display all unread messages
+            // Automatically reset the counters
+            [dataSource markAllAsRead];
         }
         
         roomDataSource = dataSource;
@@ -807,6 +783,53 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // Hide by default the activity view when no room is displayed
         activitiesView.hidden = (roomDataSource == nil);
+    }
+}
+
+- (void)onTimelineError:(NSNotification *)notif
+{
+    if (notif.object == roomDataSource)
+    {
+        [self stopActivityIndicator];
+
+        // Compute the message to display to the end user
+        NSString *errorTitle;
+        NSString *errorMessage;
+
+        NSError *error = notif.userInfo[kMXKRoomDataSourceTimelineErrorErrorKey];
+        if ([MXError isMXError:error])
+        {
+            MXError *mxError = [[MXError alloc] initWithNSError:error];
+            if ([mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
+            {
+                errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_timeline_event_not_found_title"];
+                errorMessage = [NSBundle mxk_localizedStringForKey:@"room_error_timeline_event_not_found"];
+            }
+            else
+            {
+                errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_cannot_load_timeline"];
+                errorMessage = mxError.error;
+            }
+        }
+        else
+        {
+            errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_cannot_load_timeline"];
+        }
+
+        // And show it
+        [currentAlert dismiss:NO];
+
+        __weak typeof(self) weakSelf = self;
+        currentAlert = [[MXKAlert alloc] initWithTitle:errorTitle
+                                               message:errorMessage
+                                                 style:MXKAlertStyleAlert];
+        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                                          {
+                                              typeof(self) self = weakSelf;
+                                              self->currentAlert = nil;
+                                          }];
+
+        [currentAlert showInViewController:self];
     }
 }
 
@@ -1627,7 +1650,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
     if (inputToolbarView.textMessage.length)
     {
-        inputToolbarView.textMessage = [NSString stringWithFormat:@"%@%@ ", inputToolbarView.textMessage, memberName];
+        [inputToolbarView pasteText:memberName];
     }
     else if ([roomMember.userId isEqualToString:self.mainSession.myUser.userId])
     {
@@ -1647,6 +1670,41 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 {
     [titleView dismissKeyboard];
     [inputToolbarView dismissKeyboard];
+}
+
+- (BOOL)isBubblesTableScrollViewAtTheBottom
+{
+    // Check whether the most recent message is visible.
+    // Compute the max vertical position visible according to contentOffset
+    CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+    // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
+    maxPositionY += 30;
+    BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
+    
+    // Consider the table view at the bottom if a scrolling to bottom is in progress too
+    return (isScrolledToBottom || isScrollingToBottom);
+}
+
+- (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated
+{
+    if (_bubblesTableView.contentSize.height)
+    {
+        CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom;
+        if (visibleHeight < _bubblesTableView.contentSize.height)
+        {
+            CGFloat wantedOffsetY = _bubblesTableView.contentSize.height - visibleHeight - _bubblesTableView.contentInset.top;
+            CGFloat currentOffsetY = _bubblesTableView.contentOffset.y;
+            if (wantedOffsetY != currentOffsetY)
+            {
+                isScrollingToBottom = YES;
+                [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
+            }
+        }
+        else
+        {
+            _bubblesTableView.contentOffset = CGPointMake(0, -_bubblesTableView.contentInset.top);
+        }
+    }
 }
 
 #pragma mark - activity indicator
@@ -1812,7 +1870,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
         if (direction == MXTimelineDirectionBackwards)
         {
-            [self upateCurrentEventIdAtTableBottom];
+            [self updateCurrentEventIdAtTableBottom:NO];
         }
 
     } failure:^(NSError *error) {
@@ -2130,9 +2188,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     return shouldScrollToBottom;
 }
 
-
-
-- (void)upateCurrentEventIdAtTableBottom
+- (void)updateCurrentEventIdAtTableBottom:(BOOL)acknowledge
 {
     // Update the identifier of the event displayed at the bottom of the table, except if a rotation or other size transition is in progress.
     if (! isSizeTransitionInProgress)
@@ -2165,9 +2221,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
                 
                 NSInteger componentIndex = roomBubbleTableViewCell.bubbleData.bubbleComponents.count;
+                MXKRoomBubbleComponent *component;
                 while (componentIndex --)
                 {
-                    MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[componentIndex];
+                    component = roomBubbleTableViewCell.bubbleData.bubbleComponents[componentIndex];
                     currentEventIdAtTableBottom = component.event.eventId;
                     
                     // Check the component start position.
@@ -2178,6 +2235,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                         break;
                     }
                 }
+                
+                if (acknowledge)
+                {
+                    // Indicate to the homeserver that the user has read up to this event.
+                    [self.roomDataSource.room acknowledgeEvent:component.event];
+                }
+                
                 break;
             }
         }
@@ -2262,6 +2326,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+    {
+        // Do nothing at the UI level if the application do a sync in background
+        return;
+    }
+
     if (isPaginationInProgress)
     {
         // Ignore these changes, the table will be full updated at the end of pagination.
@@ -2823,7 +2893,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // else it will be done in scrollViewDidEndDecelerating
         if (!decelerate)
         {
-            [self upateCurrentEventIdAtTableBottom];
+            [self updateCurrentEventIdAtTableBottom:YES];
         }
     }
 }
@@ -2834,8 +2904,18 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // do not dispatch the upateCurrentEventIdAtTableBottom call
         // else it might triggers weird UI lags.
-        [self upateCurrentEventIdAtTableBottom];
+        [self updateCurrentEventIdAtTableBottom:YES];
         [self managePullToKick:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    if (scrollView == _bubblesTableView)
+    {
+        // do not dispatch the upateCurrentEventIdAtTableBottom call
+        // else it might triggers weird UI lags.
+        [self updateCurrentEventIdAtTableBottom:YES];
     }
 }
 
@@ -2870,6 +2950,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             {
                 [self triggerPagination:_paginationLimit direction:MXTimelineDirectionForwards];
             }
+        }
+        
+        if (wasScrollingToBottom)
+        {
+            // When scrolling to the bottom is performed without animation, 'scrollViewDidEndScrollingAnimation' is not called.
+            // upateCurrentEventIdAtTableBottom must be called here (without dispatch).
+            [self updateCurrentEventIdAtTableBottom:YES];
         }
     }
 }
@@ -3151,7 +3238,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }
     else if (selectedAttachment.type == MXKAttachmentTypeFile)
     {
+        // Start activity indicator as feedback on file selection.
+        [self startActivityIndicator];
+        
         [selectedAttachment prepareShare:^(NSURL *fileURL) {
+            
+            [self stopActivityIndicator];
             
             documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
             [documentInteractionController setDelegate:self];
@@ -3167,7 +3259,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 }
             }
             
-        } failure:nil];
+        } failure:^(NSError *error) {
+            
+            [self stopActivityIndicator];
+            
+            // Notify MatrixKit user
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+            
+        }];
         
         // Start animation in case of download
         [roomBubbleTableViewCell startProgressUI];

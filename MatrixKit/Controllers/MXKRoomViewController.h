@@ -123,6 +123,13 @@ extern NSString *const kCmdChangeRoomTopic;
 @property BOOL autoJoinInvitedRoom;
 
 /**
+ Tell whether the room history is automatically scrolled to the most recent messages
+ when a keyboard is presented. YES by default.
+ This option is ignored when an alert is presented.
+ */
+@property BOOL scrollHistoryToTheBottomOnKeyboardPresentation;
+
+/**
  This object is defined when the displayed room is left. It is added into the bubbles table header.
  This label is used to display the reason why the room has been left.
  */
@@ -197,6 +204,15 @@ extern NSString *const kCmdChangeRoomTopic;
  Override it to customize view appearance according to data source state.
  */
 - (void)updateViewControllerAppearanceOnRoomDataSourceState;
+
+/**
+ This method is called when the associated data source has encountered an error on the timeline.
+
+ Override it to customize the view controller behavior.
+
+ @param the notification data sent with kMXKRoomDataSourceTimelineError notif.
+ */
+- (void)onTimelineError:(NSNotification *)notif;
 
 /**
  Join the current displayed room.
@@ -295,5 +311,22 @@ extern NSString *const kCmdChangeRoomTopic;
  Force to dismiss keyboard if any
  */
 - (void)dismissKeyboard;
+
+/**
+ Tell whether the most recent message of the room history is visible.
+ */
+- (BOOL)isBubblesTableScrollViewAtTheBottom;
+
+/**
+ Scroll the room history until the most recent message.
+ */
+- (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated;
+
+/**
+ Display a popup with the event detais.
+ 
+ @param event the event to inspect.
+ */
+- (void)showEventDetails:(MXEvent *)event;
 
 @end

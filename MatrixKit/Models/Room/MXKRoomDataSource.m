@@ -33,6 +33,9 @@ NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdent
 
 NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
 NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncStatusChanged";
+NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSourceFailToLoadTimelinePosition";
+NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
+NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTimelineErrorErrorKey";
 
 @interface MXKRoomDataSource ()
 {
@@ -169,6 +172,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomTopic,
                                              kMXEventTypeStringRoomMember,
                                              kMXEventTypeStringRoomCreate,
+                                             kMXEventTypeStringRoomEncrypted,
                                              kMXEventTypeStringRoomJoinRules,
                                              kMXEventTypeStringRoomPowerLevels,
                                              kMXEventTypeStringRoomAliases,
@@ -189,6 +193,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                                              kMXEventTypeStringRoomName,
                                              kMXEventTypeStringRoomTopic,
                                              kMXEventTypeStringRoomMember,
+                                             kMXEventTypeStringRoomEncrypted,
                                              kMXEventTypeStringRoomHistoryVisibility,
                                              kMXEventTypeStringRoomMessage,
                                              kMXEventTypeStringRoomThirdPartyInvite,
@@ -267,7 +272,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     }
     else
     {
-        _hasUnread = _room.hasUnreadEvents;
+        _hasUnread = (_room.localUnreadEventCount != 0);
         _notificationCount = _room.notificationCount;
         _highlightCount = _room.highlightCount;
     }
@@ -570,9 +575,18 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
                             [self.delegate dataSource:self didStateChange:state];
                         }
 
-                    } failure:nil];
-                }
+                    } failure:^(NSError *error) {
 
+                        NSLog(@"[MXKRoomDataSource] Failed to resetPaginationAroundInitialEventWithLimit: %@", error);
+
+                        // Notify the error
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceTimelineError
+                                                                            object:self
+                                                                          userInfo:@{
+                                                                                     kMXKRoomDataSourceTimelineErrorErrorKey: error
+                                                                                     }];
+                    }];
+                }
             }
             else
             {
@@ -977,7 +991,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 - (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
     // Check the current data source state, and the actual user membership for this room.
-    if (state != MXKDataSourceStateReady || self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite)
+    if (state != MXKDataSourceStateReady || ((self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite) && ![self.room.state.historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable]))
     {
         // Back pagination is not available here.
         if (failure)
@@ -1895,7 +1909,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     // Firstly, check if it has been cached
     if (lastMessage)
     {
-        NSLog(@"lastMessage: case #1 for %@", self.roomId);
+        //NSLog(@"lastMessage: case #1 for %@", self.roomId);
         onComplete(lastMessage);
         return;
     }
@@ -1905,28 +1919,11 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
     MXKEventFormatterError error;
 
     // Secondly, search for a matching event in the outgoing messages
-    id<MXEventsEnumerator> enumerator = [[MXEventsByTypesEnumeratorOnArray alloc] initWithMessages:_room.outgoingMessages
-                                                                                        andTypesIn:self.eventsFilterForMessages
-                                                                        ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
-    while ((event = enumerator.nextEvent))
+    @autoreleasepool
     {
-        // Check that the event formatter can display the event
-        NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
-        if (eventTextMessage.length)
-        {
-            lastDisplayableEvent = event;
-            NSLog(@"lastMessage: case #2 for %@", self.roomId);
-            break;
-        }
-    }
-
-    if (!lastDisplayableEvent)
-    {
-        // Thirdly, search for a matching event in the messages already in the store
-        // for this room
-        enumerator = [self.room enumeratorForStoredMessagesWithTypeIn:self.eventsFilterForMessages
-                                           ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
-
+        id<MXEventsEnumerator> enumerator = [[MXEventsByTypesEnumeratorOnArray alloc] initWithMessages:_room.outgoingMessages
+                                                                                            andTypesIn:self.eventsFilterForMessages
+                                                                            ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
         while ((event = enumerator.nextEvent))
         {
             // Check that the event formatter can display the event
@@ -1934,8 +1931,31 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
             if (eventTextMessage.length)
             {
                 lastDisplayableEvent = event;
-                NSLog(@"lastMessage: case #3 for %@", self.roomId);
+                //NSLog(@"lastMessage: case #2 for %@", self.roomId);
                 break;
+            }
+        }
+    }
+
+    if (!lastDisplayableEvent)
+    {
+        // Thirdly, search for a matching event in the messages already in the store
+        // for this room
+        @autoreleasepool
+        {
+            id<MXEventsEnumerator>  enumerator = [self.room enumeratorForStoredMessagesWithTypeIn:self.eventsFilterForMessages
+                                               ignoreMemberProfileChanges:self.mxSession.ignoreProfileChangesDuringLastMessageProcessing];
+
+            while ((event = enumerator.nextEvent))
+            {
+                // Check that the event formatter can display the event
+                NSString *eventTextMessage = [eventFormatter stringFromEvent:event withRoomState:_room.state error:&error];
+                if (eventTextMessage.length)
+                {
+                    lastDisplayableEvent = event;
+                    //NSLog(@"lastMessage: case #3 for %@", self.roomId);
+                    break;
+                }
             }
         }
     }
@@ -1952,7 +1972,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // Finally, as there is no matching events locally, get more messages from 
             // the homeserver
-            NSLog(@"lastMessage: case #4 for %@", self.roomId);
+            //NSLog(@"lastMessage: case #4 for %@", self.roomId);
 
             // Trigger asynchronously this back pagination to not block the UI thread.
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1974,7 +1994,7 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
         {
             // All the room history has been loaded locally but no message matches the
             // criteria
-            NSLog(@"lastMessage: case #5 for %@", self.roomId);
+            //NSLog(@"lastMessage: case #5 for %@", self.roomId);
             onComplete(nil);
         }
     }
@@ -2562,13 +2582,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // The view controller is going to display all messages
-    // Automatically reset the counters
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-    {
-        [self markAllAsRead];
-    }
-    
     // PATCH: Presently no bubble must be displayed until the user joins the room.
     // FIXME: Handle room data source in case of room preview
     if (self.room.state.membership == MXMembershipInvite)
