@@ -298,6 +298,13 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     [self dismissCompressionPrompt];
 }
 
+- (void)pasteText:(NSString *)text
+{
+    // We cannot do more than appending text to self.textMessage
+    // Let 'MXKRoomInputToolbarView' children classes do the job
+    self.textMessage = [NSString stringWithFormat:@"%@%@", self.textMessage, text];
+}
+
 #pragma mark - MXKImageCompressionSize
 
 /**
