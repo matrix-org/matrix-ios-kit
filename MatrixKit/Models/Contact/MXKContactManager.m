@@ -372,6 +372,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (NSArray*)privateMatrixContacts:(MXSession *)mxSession
 {
+    // Sanity check
+    if (!mxSession)
+    {
+        return nil;
+    }
+    
     NSMutableDictionary *privateContacts = [NSMutableDictionary dictionary];
     
     // List all the known matrix users from the private rooms
