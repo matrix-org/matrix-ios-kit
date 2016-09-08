@@ -1,3 +1,33 @@
+Changes in MatrixKit in 0.3.16 (2016-09-08)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.14).
+ * Hyperlink mxids and room aliases  (https://github.com/vector-im/vector-ios/issues/442).
+ * Handle 404 (Event not found) on permalinks (https://github.com/vector-im/vector-ios/issues/484).
+ * MXKRoomDataSourceManager: Add API to mark all messages as read (https://github.com/vector-im/vector-ios/issues/442).
+ * Chat screen: New message(s) notification (https://github.com/vector-im/vector-ios/issues/532).
+ * MXKCallViewController: support custom audio sounds.
+ * MXKRoomInputToolbarView: Expose the becomeFirstResponder method.
+ * MXKRoomViewController: expose showEventDetails method.
+ * MXKEventFormatted: Save 2 seconds on app startup when a last message is a HTLM code block.
+ * MXKRoomDataSourceManager: Add missedHighlightDiscussionsCount method (https://github.com/vector-im/vector-ios/issues/563).
+ * MXKContactManager: Expose the current list of the contacts for whom a 1:1 room exists (https://github.com/vector-im/vector-ios/issues/529).
+ * MXKEventFormatter: Until e2e is impl'd, encrypted msgs should be shown in the UI as unencryptable warning text (https://github.com/vector-im/vector-ios/issues/559).
+ * MXKEventFormatter: Change how the kick reason is displayed (https://github.com/vector-im/vector-ios/issues/549).
+
+Bug fixes:
+ * Room Settings: some addresses are missing (https://github.com/vector-im/vector-ios/issues/528).
+ * Sync has got stuck while the app was backgrounded (https://github.com/vector-im/vector-ios/issues/506).
+ * Chat screen: wrong attachment is opened (https://github.com/vector-im/vector-ios/issues/387).
+ * Chat screen: mention the member name at the cursor position (not a the end) (https://github.com/vector-im/vector-ios/issues/issues/385).
+ * Chat screen: Add feedback when user clicks on attached files (https://github.com/vector-im/vector-ios/issues/534).
+ * MXKTableViewCellWithLabelAndTextField: Label is cropped when text field value is too long.
+ * Attachment viewer: Video controls are buggy (https://github.com/vector-im/vector-ios/issues/460).
+ * Preview on world readable room failed.  (https://github.com/vector-im/vector-ios/issues/556).
+ * Vector automatically marks incoming messages as read in background (https://github.com/vector-im/vector-ios/issues/558).
+ * Call Locking phone whilst setting up a call interrupts the call setup (https://github.com/vector-im/vector-ios/issues/161).
+
 Changes in MatrixKit in 0.3.15 (2016-08-25)
 ===============================================
 
@@ -11,7 +41,7 @@ Improvements:
  * Upgrade MatrixSDK version (v0.6.13).
  * MXCallViewController: Add conference call support.
  * MXCallViewController: Add camera switch.
- * MXKRoomInputToolbarView: Manage sending of a multiselection of media (https://github.com/vector-im/vector-ios#301).
+ * MXKRoomInputToolbarView: Manage sending of a multiselection of media (https://github.com/vector-im/vector-ios/301).
  * MXKRoomSettingsViewController: increase section header height.
 
 Bug fixes:
@@ -32,7 +62,7 @@ Improvements:
  * MXCallViewController: Check permissions before accessing the microphone or the camera.
 
 Bug fixes:
- * Vector is turning off my music now that VoIP is implemented (https://github.com/vector-im/vector-ios#476)
+ * Vector is turning off my music now that VoIP is implemented (https://github.com/vector-im/vector-ios/476)
  
 Changes in MatrixKit in 0.3.12 (2016-07-26)
 ===============================================
