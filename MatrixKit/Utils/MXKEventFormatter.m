@@ -541,13 +541,18 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                         if ([prevMembership isEqualToString:@"invite"])
                         {
                             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw"], senderDisplayName, targetDisplayName];
+                            if (event.content[@"reason"])
+                            {
+                                displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
+                            }
+
                         }
                         else if ([prevMembership isEqualToString:@"join"])
                         {
                             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
                             if (event.content[@"reason"])
                             {
-                                displayText = [NSString stringWithFormat:@"%@: %@", displayText, event.content[@"reason"]];
+                                displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
                             }
                         }
                         else if ([prevMembership isEqualToString:@"ban"])
@@ -561,7 +566,7 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
                     if (event.content[@"reason"])
                     {
-                        displayText = [NSString stringWithFormat:@"%@: %@", displayText, event.content[@"reason"]];
+                        displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
                     }
                 }
                 
