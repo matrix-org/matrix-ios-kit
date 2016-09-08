@@ -657,7 +657,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         [self cancelBackgroundSync];
         
-        if (mxSession.state == MXSessionStatePaused)
+        if (mxSession.state == MXSessionStatePaused || mxSession.state == MXSessionStatePauseRequested)
         {
             // Resume SDK and update user presence
             [mxSession resume:^{
