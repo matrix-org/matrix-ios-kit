@@ -302,4 +302,14 @@ typedef enum : NSUInteger
  */
 - (void)destroy;
 
+/**
+ Paste a text in textMessage.
+ 
+ The text is pasted at the current cursor location in the message composer or it
+ replaces the currently selected text.
+ 
+ @param text the text to paste.
+ */
+- (void)pasteText:(NSString*)text;
+
 @end

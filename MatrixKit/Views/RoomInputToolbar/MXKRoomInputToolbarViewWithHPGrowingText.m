@@ -111,6 +111,11 @@
     }
 }
 
+- (void)pasteText:(NSString *)text
+{
+    self.textMessage = [growingTextView.text stringByReplacingCharactersInRange:growingTextView.selectedRange withString:text];
+}
+
 - (void)setPlaceholder:(NSString *)inPlaceholder
 {
     [super setPlaceholder:inPlaceholder];

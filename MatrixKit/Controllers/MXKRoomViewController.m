@@ -1647,7 +1647,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
     if (inputToolbarView.textMessage.length)
     {
-        inputToolbarView.textMessage = [NSString stringWithFormat:@"%@%@ ", inputToolbarView.textMessage, memberName];
+        [inputToolbarView pasteText:memberName];
     }
     else if ([roomMember.userId isEqualToString:self.mainSession.myUser.userId])
     {

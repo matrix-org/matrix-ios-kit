@@ -54,6 +54,11 @@
     }
 }
 
+- (void)pasteText:(NSString *)text
+{
+    self.textMessage = [_messageComposerTextView.text stringByReplacingCharactersInRange:_messageComposerTextView.selectedRange withString:text];
+}
+
 - (BOOL)becomeFirstResponder
 {
     return [_messageComposerTextView becomeFirstResponder];
