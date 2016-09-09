@@ -188,4 +188,13 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
  */
 - (void)internationalizePhoneNumbers:(NSString*)countryCode;
 
+/**
+ Request user permission for syncing local contacts.
+
+ @param viewController the view controller to attach the dialog to the user.
+ @param handler the block called with the result of requesting access
+ */
++ (void)requestUserConfirmationForLocalContactsSyncInViewController:(UIViewController*)viewController
+                                             completionHandler:(void (^)(BOOL granted))handler;
+
 @end

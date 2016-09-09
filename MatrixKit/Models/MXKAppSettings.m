@@ -28,7 +28,7 @@ static MXKAppSettings *standardAppSettings = nil;
 @implementation MXKAppSettings
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
-@synthesize syncLocalContacts, phonebookCountryCode;
+@synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 
 + (MXKAppSettings *)standardAppSettings
@@ -327,6 +327,31 @@ static MXKAppSettings *standardAppSettings = nil;
     else
     {
         syncLocalContacts = boolValue;
+    }
+}
+
+- (BOOL)syncLocalContactsPermissionRequested
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"syncLocalContactsPermissionRequested"];
+    }
+    else
+    {
+        return syncLocalContactsPermissionRequested;
+    }
+}
+
+- (void)setSyncLocalContactsPermissionRequested:(BOOL)theSyncLocalContactsPermissionRequested
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:theSyncLocalContactsPermissionRequested forKey:@"syncLocalContactsPermissionRequested"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        syncLocalContactsPermissionRequested = theSyncLocalContactsPermissionRequested;
     }
 }
 

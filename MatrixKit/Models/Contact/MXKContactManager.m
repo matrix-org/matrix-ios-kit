@@ -20,6 +20,9 @@
 #import "MXKEmail.h"
 
 #import "MXKAppSettings.h"
+#import "MXKTools.h"
+#import "MXKAlert.h"
+#import "NSBundle+MatrixKit.h"
 
 NSString *const kMXKContactManagerDidUpdateMatrixContactsNotification = @"kMXKContactManagerDidUpdateMatrixContactsNotification";
 
@@ -476,154 +479,141 @@ static MXKContactManager* sharedMXKContactManager = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
         return;
     }
-    
-    // Check if the application is allowed to list the contacts
-    ABAuthorizationStatus cbStatus = ABAddressBookGetAuthorizationStatus();
-    if (cbStatus == kABAuthorizationStatusNotDetermined)
-    {
-        // request address book access
-        ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
-        
-        if (ab)
+
+    __weak typeof(self) weakSelf = self;
+    [MXKTools checkAccessForContacts:nil showPopUpInViewController:nil completionHandler:^(BOOL granted) {
+
+        if (weakSelf && granted)
         {
-            ABAddressBookRequestAccessWithCompletion(ab, ^(bool granted, CFErrorRef error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self loadLocalContacts];
-                });
-                
-            });
-            
-            CFRelease(ab);
-        }
-        
-        return;
-    }
-    
-    isLocalContactListLoading = YES;
-    
-    // Reset history of 3PID lookup requests
-    pending3PIDs = nil;
-    checked3PIDs = nil;
-    
-    // cold start
-    // launch the dict from the file system
-    // It is cached to improve UX.
-    if (!matrixIDBy3PID)
-    {
-        [self loadCachedMatrixIDsDict];
-    }
-    
-    dispatch_async(processingQueue, ^{
-        
-        // in case of cold start
-        // get the info from the file system
-        if (!lastSyncDate)
-        {
-            // load cached contacts
-            [self loadCachedLocalContacts];
-            [self loadCachedContactBookInfo];
-            
-            // no local contact -> assume that the last sync date is useless
-            if (localContactByContactID.count == 0)
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+
+            isLocalContactListLoading = YES;
+
+            // Reset history of 3PID lookup requests
+            pending3PIDs = nil;
+            checked3PIDs = nil;
+
+            // cold start
+            // launch the dict from the file system
+            // It is cached to improve UX.
+            if (!matrixIDBy3PID)
             {
-                lastSyncDate = nil;
+                [strongSelf loadCachedMatrixIDsDict];
             }
-        }
-        
-        BOOL contactBookUpdate = NO;
-        
-        NSMutableArray* deletedContactIDs = [NSMutableArray arrayWithArray:[localContactByContactID allKeys]];
-        
-        // can list local contacts?
-        if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-        {
-            NSString* countryCode = [[MXKAppSettings standardAppSettings] phonebookCountryCode];
-            
-            ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
-            ABRecordRef      contactRecord;
-            CFIndex          index;
-            CFMutableArrayRef people = (CFMutableArrayRef)ABAddressBookCopyArrayOfAllPeople(ab);
-            
-            if (nil != people)
-            {
-                CFIndex peopleCount = CFArrayGetCount(people);
-                
-                for (index = 0; index < peopleCount; index++)
+
+            dispatch_async(processingQueue, ^{
+
+                // in case of cold start
+                // get the info from the file system
+                if (!lastSyncDate)
                 {
-                    contactRecord = (ABRecordRef)CFArrayGetValueAtIndex(people, index);
-                    
-                    NSString* contactID = [MXKContact contactID:contactRecord];
-                    
-                    // the contact still exists
-                    [deletedContactIDs removeObject:contactID];
-                    
-                    if (lastSyncDate)
+                    // load cached contacts
+                    [strongSelf loadCachedLocalContacts];
+                    [strongSelf loadCachedContactBookInfo];
+
+                    // no local contact -> assume that the last sync date is useless
+                    if (localContactByContactID.count == 0)
                     {
-                        // ignore unchanged contacts since the previous sync
-                        CFDateRef lastModifDate = ABRecordCopyValue(contactRecord, kABPersonModificationDateProperty);
-                        if (kCFCompareGreaterThan != CFDateCompare (lastModifDate, (__bridge CFDateRef)lastSyncDate, nil))
-                            
+                        lastSyncDate = nil;
+                    }
+                }
+
+                BOOL contactBookUpdate = NO;
+
+                NSMutableArray* deletedContactIDs = [NSMutableArray arrayWithArray:[localContactByContactID allKeys]];
+
+                // can list local contacts?
+                if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+                {
+                    NSString* countryCode = [[MXKAppSettings standardAppSettings] phonebookCountryCode];
+
+                    ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
+                    ABRecordRef      contactRecord;
+                    CFIndex          index;
+                    CFMutableArrayRef people = (CFMutableArrayRef)ABAddressBookCopyArrayOfAllPeople(ab);
+
+                    if (nil != people)
+                    {
+                        CFIndex peopleCount = CFArrayGetCount(people);
+
+                        for (index = 0; index < peopleCount; index++)
                         {
-                            CFRelease(lastModifDate);
-                            continue;
+                            contactRecord = (ABRecordRef)CFArrayGetValueAtIndex(people, index);
+
+                            NSString* contactID = [MXKContact contactID:contactRecord];
+
+                            // the contact still exists
+                            [deletedContactIDs removeObject:contactID];
+
+                            if (lastSyncDate)
+                            {
+                                // ignore unchanged contacts since the previous sync
+                                CFDateRef lastModifDate = ABRecordCopyValue(contactRecord, kABPersonModificationDateProperty);
+                                if (kCFCompareGreaterThan != CFDateCompare (lastModifDate, (__bridge CFDateRef)lastSyncDate, nil))
+
+                                {
+                                    CFRelease(lastModifDate);
+                                    continue;
+                                }
+                                CFRelease(lastModifDate);
+                            }
+
+                            contactBookUpdate = YES;
+
+                            MXKContact* contact = [[MXKContact alloc] initLocalContactWithABRecord:contactRecord];
+
+                            if (countryCode)
+                            {
+                                [contact internationalizePhonenumbers:countryCode];
+                            }
+
+                            // update the local contacts list
+                            [localContactByContactID setValue:contact forKey:contactID];
                         }
-                        CFRelease(lastModifDate);
+
+                        CFRelease(people);
                     }
-                    
-                    contactBookUpdate = YES;
-                    
-                    MXKContact* contact = [[MXKContact alloc] initLocalContactWithABRecord:contactRecord];
-                    
-                    if (countryCode)
+
+                    if (ab)
                     {
-                        [contact internationalizePhonenumbers:countryCode];
+                        CFRelease(ab);
                     }
+                }
+
+                // some contacts have been deleted
+                for (NSString* contactID in deletedContactIDs)
+                {
+                    contactBookUpdate = YES;
+                    [localContactByContactID removeObjectForKey:contactID];
+                }
+
+                // something has been modified in the local contact book
+                if (contactBookUpdate)
+                {
+                    // Remove the local email contacts (This array will be prepared only if need)
+                    localEmailContacts = nil;
                     
-                    // update the local contacts list
-                    [localContactByContactID setValue:contact forKey:contactID];
+                    [strongSelf cacheLocalContacts];
                 }
                 
-                CFRelease(people);
-            }
-            
-            if (ab)
-            {
-                CFRelease(ab);
-            }
+                lastSyncDate = [NSDate date];
+                [strongSelf cacheContactBookInfo];
+                
+                // Update loaded contacts with the known dict 3PID -> matrix ID
+                [strongSelf updateAllLocalContactsMatrixIDs];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // Contacts are loaded, post a notification
+                    isLocalContactListLoading = NO;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
+                    
+                    if (strongSelf.enableFullMatrixIdSyncOnLocalContactsDidLoad) {
+                        [strongSelf updateMatrixIDsForAllLocalContacts];
+                    }
+                });
+            });
         }
-        
-        // some contacts have been deleted
-        for (NSString* contactID in deletedContactIDs)
-        {
-            contactBookUpdate = YES;
-            [localContactByContactID removeObjectForKey:contactID];
-        }
-        
-        // something has been modified in the local contact book
-        if (contactBookUpdate)
-        {
-            // Remove the local email contacts (This array will be prepared only if need)
-            localEmailContacts = nil;
-            
-            [self cacheLocalContacts];
-        }
-        
-        lastSyncDate = [NSDate date];
-        [self cacheContactBookInfo];
-        
-        // Update loaded contacts with the known dict 3PID -> matrix ID
-        [self updateAllLocalContactsMatrixIDs];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Contacts are loaded, post a notification
-            isLocalContactListLoading = NO;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
-            
-            if (self.enableFullMatrixIdSyncOnLocalContactsDidLoad) {
-                [self updateMatrixIDsForAllLocalContacts];
-            }
-        });
-    });
+    }];
 }
 
 - (void)updateMatrixIDsForLocalContact:(MXKContact *)contact
@@ -913,6 +903,52 @@ static MXKContactManager* sharedMXKContactManager = nil;
     }
     
     return [[MXKSectionedContacts alloc] initWithContacts:shortSectionsArray andTitles:tmpSectionedContactsTitle andCount:contactsCount];
+}
+
++ (void)requestUserConfirmationForLocalContactsSyncInViewController:(UIViewController *)viewController completionHandler:(void (^)(BOOL))handler
+{
+    NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+
+    [MXKContactManager requestUserConfirmationForLocalContactsSyncWithTitle:[NSBundle mxk_localizedStringForKey:@"local_contacts_access_discovery_warning_title"]
+                                                                    message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"local_contacts_access_discovery_warning"], appDisplayName]
+                                                manualPermissionChangeMessage:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"local_contacts_access_not_granted"], appDisplayName]
+                                                    showPopUpInViewController:viewController
+                                                            completionHandler:handler];
+}
+
++ (void)requestUserConfirmationForLocalContactsSyncWithTitle:(NSString*)title
+                                                     message:(NSString*)message
+                                           manualPermissionChangeMessage:(NSString*)manualPermissionChangeMessage
+                                     showPopUpInViewController:(UIViewController*)viewController
+                                             completionHandler:(void (^)(BOOL granted))handler
+{
+    if ([[MXKAppSettings standardAppSettings] syncLocalContacts])
+    {
+        handler(YES);
+    }
+    else
+    {
+        MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
+
+        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+            [alert dismiss:NO];
+
+            [MXKTools checkAccessForContacts:manualPermissionChangeMessage showPopUpInViewController:viewController completionHandler:^(BOOL granted) {
+
+                handler(granted);
+            }];
+
+        }];
+
+        alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+            handler(NO);
+        }];
+
+
+        [alert showInViewController:viewController];
+    }
 }
 
 #pragma mark - Internals
