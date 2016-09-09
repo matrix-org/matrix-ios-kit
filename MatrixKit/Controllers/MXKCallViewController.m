@@ -710,10 +710,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         // For 1:1 call, find the other peer
         // Else, the room information will be used to display information about the call
-        NSArray *members = mxCall.room.state.members;
         MXUser *theMember = nil;
-        if (members.count == 2)
+        if (!mxCall.isConferenceCall)
         {
+            NSArray *members = mxCall.room.state.joinedMembers;
             for (MXUser *member in members)
             {
                 if (![member.userId isEqualToString:mxCall.callerId])
