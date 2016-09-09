@@ -751,7 +751,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         handler(YES);
     }
-    if (cbStatus == kABAuthorizationStatusNotDetermined)
+    else if (cbStatus == kABAuthorizationStatusNotDetermined)
     {
         // Request address book access
         ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);

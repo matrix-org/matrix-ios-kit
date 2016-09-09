@@ -473,7 +473,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
 - (void)loadLocalContacts
 {
     // Check if the user allowed to sync local contacts
-    if (![[MXKAppSettings standardAppSettings] syncLocalContacts])
+    if (![MXKAppSettings standardAppSettings].syncLocalContacts)
     {
         // Local contacts list is empty if the user did not allow to sync local contacts
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
@@ -483,7 +483,14 @@ static MXKContactManager* sharedMXKContactManager = nil;
     __weak typeof(self) weakSelf = self;
     [MXKTools checkAccessForContacts:nil showPopUpInViewController:nil completionHandler:^(BOOL granted) {
 
-        if (weakSelf && granted)
+        if (!granted)
+        {
+            // The user authorised syncLocalContacts and allowed access to his contacts
+            // but he then removed contacts access from app permissions.
+            // So, reset syncLocalContacts value
+            [MXKAppSettings standardAppSettings].syncLocalContacts = NO;
+        }
+        else if (weakSelf)
         {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
 
