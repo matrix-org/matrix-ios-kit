@@ -95,6 +95,14 @@
 @property (nonatomic) BOOL syncLocalContacts;
 
 /**
+ Return YES if the user has been already asked for local contacts sync permission.
+
+ This boolean value is defined in shared settings object with the key: `syncLocalContactsRequested`.
+ Return NO if no value is defined.
+ */
+@property (nonatomic) BOOL syncLocalContactsPermissionRequested;
+
+/**
  The current selected country code for the phonebook.
  
  This value is defined in shared settings object with the key: `phonebookCountryCode`.

@@ -207,6 +207,10 @@
 // Permissions
 "camera_access_not_granted_for_call" = "Video calls require access to the Camera but %@ doesn't have permission to use it";
 "microphone_access_not_granted_for_call" = "Calls require access to the Microphone but %@ doesn't have permission to use it";
+"local_contacts_access_not_granted" = "Users discovery from local contacts requires access to you contacts but %@ doesn't have permission to use it";
+
+"local_contacts_access_discovery_warning_title" = "Users discovery";
+"local_contacts_access_discovery_warning" = "%@ wants to upload emails from your Contacts in order to discover users";
 
 
 /* -*- 

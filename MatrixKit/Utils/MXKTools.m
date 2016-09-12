@@ -18,6 +18,7 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AddressBook/AddressBook.h>
 
 #import "NSBundle+MatrixKit.h"
 
@@ -662,6 +663,8 @@ static NSMutableDictionary* backgroundByImageNameDict;
     return bgColor;
 }
 
+#pragma mark - App permissions
+
 + (void)checkAccessForMediaType:(NSString *)mediaType
             manualChangeMessage:(NSString *)manualChangeMessage
       showPopUpInViewController:(UIViewController *)viewController
@@ -677,8 +680,6 @@ static NSMutableDictionary* backgroundByImageNameDict;
             }
             else
             {
-
-                //sdsd
                 // Access not granted to mediaType
                 // Display manualChangeMessage
                 MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
@@ -738,6 +739,74 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
             handler(NO);
         }
     }];
+}
+
++ (void)checkAccessForContacts:(NSString *)manualChangeMessage
+     showPopUpInViewController:(UIViewController *)viewController
+             completionHandler:(void (^)(BOOL granted))handler
+{
+    // Check if the application is allowed to list the contacts
+    ABAuthorizationStatus cbStatus = ABAddressBookGetAuthorizationStatus();
+    if (cbStatus == kABAuthorizationStatusAuthorized)
+    {
+        handler(YES);
+    }
+    else if (cbStatus == kABAuthorizationStatusNotDetermined)
+    {
+        // Request address book access
+        ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
+        if (ab)
+        {
+            ABAddressBookRequestAccessWithCompletion(ab, ^(bool granted, CFErrorRef error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    if (granted)
+                    {
+                        handler(YES);
+                    }
+
+                });
+            });
+
+            CFRelease(ab);
+        }
+        else
+        {
+            // No phonebook
+            handler(YES);
+        }
+    }
+    else if (cbStatus == kABAuthorizationStatusDenied && viewController && manualChangeMessage)
+    {
+        // Access not granted to the local contacts
+        // Display manualChangeMessage
+        MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+
+        // On iOS >= 8, add a shortcut to the app settings
+        if (UIApplicationOpenSettingsURLString)
+        {
+            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [[UIApplication sharedApplication] openURL:url];
+
+                // Note: it does not worth to check if the user changes the permission
+                // because iOS restarts the app in case of change of app privacy settings
+                handler(NO);
+            }];
+        }
+
+        alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+
+            handler(NO);
+        }];
+
+        [alert showInViewController:viewController];
+    }
+    else
+    {
+        handler(NO);
+    }
 }
 
 @end

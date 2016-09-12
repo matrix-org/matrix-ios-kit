@@ -210,6 +210,8 @@
  */
 + (UIColor*)convertImageToPatternColor:(NSString*)reourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize;
 
+#pragma mark - App permissions
+
 /**
  Check permission to access a media.
  
@@ -241,5 +243,22 @@ manualChangeMessageForAudio:(NSString*)manualChangeMessageForAudio
 manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
  showPopUpInViewController:(UIViewController*)viewController
          completionHandler:(void (^)(BOOL granted))handler;
+
+/**
+ Check permission to access Contacts.
+
+ @discussion
+ If the access was not yet granted, a dialog will be shown to the user.
+ If it is the first attempt to access the media, the dialog is the classic iOS one.
+ Else, the dialog will ask the user to manually change the permission in the app settings.
+
+ @param manualChangeMessage the message to display if the end user must change the app settings manually.
+                            If nil, the dialog for displaying manualChangeMessage will not be shown.
+ @param viewController the view controller to attach the dialog displaying manualChangeMessage.
+ @param handler the block called with the result of requesting access
+ */
++ (void)checkAccessForContacts:(NSString*)manualChangeMessage
+     showPopUpInViewController:(UIViewController*)viewController
+             completionHandler:(void (^)(BOOL granted))handler;
 
 @end
