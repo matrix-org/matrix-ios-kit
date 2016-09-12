@@ -457,18 +457,24 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
     _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
     
-    // Force layout immediately to take into account new constraint
-    [self.view layoutIfNeeded];
+    // Invalidate the current layout to take into account the new constraints in the next update cycle.
+    [self.view setNeedsLayout];
     
     // Compute the visible area (tableview + toolbar) at the end of animation
     CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardHeight;
     // Deduce max height of the message text input by considering the minimum height of the table view.
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
-    // Scroll the tableview content when a new keyboard is presented (except if an alert is presented).
-    if (_scrollHistoryToTheBottomOnKeyboardPresentation && !super.keyboardHeight && keyboardHeight && !currentAlert)
+    // Check conditions before scrolling the tableview content when a new keyboard is presented.
+    if ((_scrollHistoryToTheBottomOnKeyboardPresentation || [self isBubblesTableScrollViewAtTheBottom]) && !super.keyboardHeight && keyboardHeight && !currentAlert)
     {
+        // Force here the layout update to scroll correctly the table content.
+        [self.view layoutIfNeeded];
         [self scrollBubblesTableViewToBottomAnimated:NO];
+    }
+    else
+    {
+        [self updateCurrentEventIdAtTableBottom:NO];
     }
     
     super.keyboardHeight = keyboardHeight;
