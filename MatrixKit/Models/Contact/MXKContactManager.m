@@ -120,7 +120,26 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 -(void)dealloc
 {
-    [self reset];
+    matrixIDBy3PID = nil;
+
+    localContactByContactID = nil;
+    localEmailContacts = nil;
+    
+    matrixContactByContactID = nil;
+    matrixContactByMatrixID = nil;
+    
+    lastSyncDate = nil;
+    
+    while (mxSessionArray.count) {
+        [self removeMatrixSession:mxSessionArray.lastObject];
+    }
+    mxSessionArray = nil;
+    mxEventListeners = nil;
+    _identityServer = nil;
+    _identityRESTClient = nil;
+    
+    pending3PIDs = nil;
+    checked3PIDs = nil;
     
     [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"syncLocalContacts"];
     [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"phonebookCountryCode"];
@@ -472,23 +491,25 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)loadLocalContacts
 {
-    // Check if the user allowed to sync local contacts
-    if (![MXKAppSettings standardAppSettings].syncLocalContacts)
-    {
-        // Local contacts list is empty if the user did not allow to sync local contacts
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
-        return;
-    }
-
     __weak typeof(self) weakSelf = self;
     [MXKTools checkAccessForContacts:nil showPopUpInViewController:nil completionHandler:^(BOOL granted) {
 
         if (!granted)
         {
-            // The user authorised syncLocalContacts and allowed access to his contacts
-            // but he then removed contacts access from app permissions.
-            // So, reset syncLocalContacts value
-            [MXKAppSettings standardAppSettings].syncLocalContacts = NO;
+            if ([MXKAppSettings standardAppSettings].syncLocalContacts)
+            {
+                // The user authorised syncLocalContacts and allowed access to his contacts
+                // but he then removed contacts access from app permissions.
+                // So, reset syncLocalContacts value
+                [MXKAppSettings standardAppSettings].syncLocalContacts = NO;
+            }
+            
+            // Local contacts list is empty if the access is denied.
+            localContactByContactID = nil;
+            localEmailContacts = nil;
+            [self cacheLocalContacts];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
         }
         else if (weakSelf)
         {
@@ -625,7 +646,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)updateMatrixIDsForLocalContact:(MXKContact *)contact
 {
-    if (!contact.isMatrixContact && self.identityRESTClient)
+    // Check if the user allowed to sync local contacts.
+    // + Check if at least an identity server is available.
+    if ([MXKAppSettings standardAppSettings].syncLocalContacts && !contact.isMatrixContact && self.identityRESTClient)
     {
         if (!pending3PIDs)
         {
@@ -716,8 +739,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)updateMatrixIDsForAllLocalContacts
 {
-    // Check if at least an identity server is available, and if the loading step is not in progress
-    if (!self.identityRESTClient || isLocalContactListLoading)
+    // Check if the user allowed to sync local contacts.
+    // + Check if at least an identity server is available, and if the loading step is not in progress.
+    if (![MXKAppSettings standardAppSettings].syncLocalContacts || !self.identityRESTClient || isLocalContactListLoading)
     {
         return;
     }
@@ -798,8 +822,6 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)reset
 {
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
-    
     matrixIDBy3PID = nil;
     [self cacheMatrixIDsDict];
     
@@ -1118,6 +1140,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)updateAllLocalContactsMatrixIDs
 {
+    // Check if the user allowed to sync local contacts
+    if (![MXKAppSettings standardAppSettings].syncLocalContacts)
+    {
+        return;
+    }
+    
     NSArray* localContacts = [localContactByContactID allValues];
     
     // update the contacts info
