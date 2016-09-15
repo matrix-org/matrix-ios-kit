@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.3.17 (2016-09-15)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.16).
+ * MXKCallViewController: For 1:1 call, display the other peer information instead of the room information.
+ 
+ Bug fixes:
+ * Chat screen: unexpected scroll up on new sent messages (https://github.com/vector-im/vector-ios/issues/600).
+
 Changes in MatrixKit in 0.3.16 (2016-09-08)
 ===========================================
 
