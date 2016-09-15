@@ -760,10 +760,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
             ABAddressBookRequestAccessWithCompletion(ab, ^(bool granted, CFErrorRef error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
 
-                    if (granted)
-                    {
-                        handler(YES);
-                    }
+                    handler(granted);
 
                 });
             });
