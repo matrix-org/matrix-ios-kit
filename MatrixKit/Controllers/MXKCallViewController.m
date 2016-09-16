@@ -55,6 +55,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Observe AVAudioSessionRouteChangeNotification
     id audioSessionRouteChangeNotificationObserver;
+
+    // Cache of the current audio session category
+    NSString *savedAVAudioSessionCategory;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
@@ -392,6 +395,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             {
                 [audioPlayer stop];
             }
+
+            // Make the ringback ringing even in silent mode
+            if (!savedAVAudioSessionCategory)
+            {
+                savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
+            }
+            
+            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
             
             NSError* error = nil;
             NSURL *audioUrl;
@@ -672,6 +683,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 {
     // Release the audio session to allow resuming of background music app
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+
+    // Restore audio category
+    if (savedAVAudioSessionCategory)
+    {
+        [[AVAudioSession sharedInstance] setCategory:savedAVAudioSessionCategory error:nil];
+        savedAVAudioSessionCategory = nil;
+    }
 }
 
 #pragma mark - Internal
