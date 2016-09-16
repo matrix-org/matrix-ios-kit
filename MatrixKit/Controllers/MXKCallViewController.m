@@ -595,9 +595,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
             }
             
-            // Turn on speaker on video call (ONLY when the built-in receiver is currently used)
-            call.audioToSpeaker = (call.isVideoCall && self.isBuiltInReceiverAudioOuput);
-            speakerButton.selected = call.audioToSpeaker;
+            // Check whether it is an actual state change or just a refresh
+            if (event)
+            {
+                // Turn on speaker on connected video call (ONLY when the built-in receiver is currently used)
+                call.audioToSpeaker = (call.isVideoCall && self.isBuiltInReceiverAudioOuput);
+                speakerButton.selected = call.audioToSpeaker;
+            }
             
             break;
         case MXCallStateInviteExpired:
