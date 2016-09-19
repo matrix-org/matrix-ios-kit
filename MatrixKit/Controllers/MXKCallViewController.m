@@ -301,6 +301,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Hide video mute on voice call
         self.videoMuteButton.hidden = !call.isVideoCall;
         
+        // Hide camera switch on voice call
+        self.cameraSwitchButton.hidden = !call.isVideoCall;
+        
         // Observe call state change
         call.delegate = self;
         [self call:call stateDidChange:call.state reason:nil];
