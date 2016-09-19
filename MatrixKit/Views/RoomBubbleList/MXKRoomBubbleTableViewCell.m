@@ -343,7 +343,7 @@ static BOOL _disableLongPressGestureOnEvent;
             self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setImageURL:url withType:mimetype andImageOrientation:bubbleData.attachment.thumbnailOrientation previewImage:preview];
             
-            if (url && bubbleData.attachment.actualURL)
+            if (bubbleData.attachment.actualURL)
             {
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
