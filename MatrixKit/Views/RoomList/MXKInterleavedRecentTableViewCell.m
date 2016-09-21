@@ -26,6 +26,8 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
+
     CAShapeLayer *userFlagMaskLayer = [[CAShapeLayer alloc] init];
     userFlagMaskLayer.frame = _userFlag.bounds;
     
