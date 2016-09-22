@@ -533,7 +533,14 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                            if (prevMembership && [prevMembership isEqualToString:@"invite"])
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reject"], senderDisplayName];
+                            }
+                            else
+                            {
+                               displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                            }
                         }
                     }
                     else if (prevMembership)

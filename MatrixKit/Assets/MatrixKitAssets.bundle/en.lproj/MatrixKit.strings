@@ -225,6 +225,7 @@
 "notice_room_third_party_registered_invite" = "%@ accepted the invitation for %@";
 "notice_room_join" = "%@ joined";
 "notice_room_leave" = "%@ left";
+"notice_room_reject" = "%@ rejected the invitation";
 "notice_room_kick" = "%@ kicked %@";
 "notice_room_unban" = "%@ unbanned %@";
 "notice_room_ban" = "%@ banned %@";
