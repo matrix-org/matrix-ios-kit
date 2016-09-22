@@ -18,7 +18,11 @@
 
 @interface MXKPieChartView : UIView
 
-// 0 -> 1
+/**
+ The current progress level in [0, 1] range.
+ The pie chart is automatically hidden if progress <= 0.
+ It is shown for other progress values.
+ */
 @property (nonatomic) CGFloat progress;
 
 @property (strong, nonatomic) UIColor* progressColor;

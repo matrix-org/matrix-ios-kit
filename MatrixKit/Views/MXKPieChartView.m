@@ -21,11 +21,6 @@
     // graphical items
     CAShapeLayer* backgroundContainerLayer;
     CAShapeLayer* powerContainerLayer;
-    
-    CGFloat _progress;
-    
-    UIColor* _progressColor;
-    UIColor* _unprogressColor;
 }
 @end
 
@@ -33,20 +28,18 @@
 
 - (void)setProgress:(CGFloat)progress
 {
-    _progress = progress;
-    
-    // no power level -> hide the pie
-    if (0 >= progress)
+    // Consider only positive progress value
+    if (progress <= 0)
     {
+        _progress = 0;
         self.hidden = YES;
-        return;
     }
-    
-    // ensure that the progress value does not excceed 1.0
-    progress = MIN(progress, 1.0);
-    
-    // display it
-    self.hidden = NO;
+    else
+    {
+        // Ensure that the progress value does not excceed 1.0
+        _progress = MIN(progress, 1.0);
+        self.hidden = NO;
+    }
     
     // defines the view settings
     CGFloat radius = self.frame.size.width / 2;
@@ -62,6 +55,7 @@
     if (powerContainerLayer)
     {
         [powerContainerLayer removeFromSuperlayer];
+        powerContainerLayer = nil;
     }
     
     // define default colors
@@ -80,7 +74,6 @@
     // add an other layer fixes the UX.
     if (!backgroundContainerLayer)
     {
-        
         backgroundContainerLayer = [CAShapeLayer layer];
         [backgroundContainerLayer setZPosition:0];
         [backgroundContainerLayer setStrokeColor:NULL];
@@ -100,31 +93,29 @@
         [layer addSublayer:backgroundContainerLayer];
     }
     
-    // create the red layer
-    powerContainerLayer = [CAShapeLayer layer];
-    [powerContainerLayer setZPosition:0];
-    [powerContainerLayer setStrokeColor:NULL];
-    
-    // power level is drawn in red
-    powerContainerLayer.fillColor = _progressColor.CGColor;
-    
-    // build the path
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, NULL, radius, radius);
-    
-    CGPathAddArc(path, NULL, radius, radius, radius, -M_PI / 2, (progress * 2 * M_PI) - (M_PI / 2), 0);
-    CGPathCloseSubpath(path);
-    
-    [powerContainerLayer setPath:path];
-    CFRelease(path);
-    
-    // add the sub layer
-    [layer addSublayer:powerContainerLayer];
-}
-
-- (CGFloat) progress
-{
-    return _progress;
+    if (_progress)
+    {
+        // create the filled layer
+        powerContainerLayer = [CAShapeLayer layer];
+        [powerContainerLayer setZPosition:0];
+        [powerContainerLayer setStrokeColor:NULL];
+        
+        // power level is drawn in red
+        powerContainerLayer.fillColor = _progressColor.CGColor;
+        
+        // build the path
+        CGMutablePathRef path = CGPathCreateMutable();
+        CGPathMoveToPoint(path, NULL, radius, radius);
+        
+        CGPathAddArc(path, NULL, radius, radius, radius, -M_PI / 2, (_progress * 2 * M_PI) - (M_PI / 2), 0);
+        CGPathCloseSubpath(path);
+        
+        [powerContainerLayer setPath:path];
+        CFRelease(path);
+        
+        // add the sub layer
+        [layer addSublayer:powerContainerLayer];
+    }
 }
 
 - (void)setProgressColor:(UIColor *)progressColor
@@ -133,20 +124,16 @@
     self.progress = _progress;
 }
 
-- (UIColor*) progressColor
-{
-    return _progressColor;
-}
-
 - (void)setUnprogressColor:(UIColor *)unprogressColor
 {
     _unprogressColor = unprogressColor;
+    
+    if (backgroundContainerLayer)
+    {
+        [backgroundContainerLayer removeFromSuperlayer];
+        backgroundContainerLayer = nil;
+    }
     self.progress = _progress;
-}
-
-- (UIColor*) unprogressColor
-{
-    return _unprogressColor;
 }
 
 @end
