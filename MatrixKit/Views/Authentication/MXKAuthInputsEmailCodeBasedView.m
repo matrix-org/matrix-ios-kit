@@ -190,6 +190,7 @@
             updatedAuthSession.session = authSession.session;
             updatedAuthSession.params = authSession.params;
             updatedAuthSession.flows = @[[MXLoginFlow modelFromJSON:@{@"stages":@[kMXLoginFlowTypeEmailCode]}]];
+            return updatedAuthSession;
         }
     }
     
