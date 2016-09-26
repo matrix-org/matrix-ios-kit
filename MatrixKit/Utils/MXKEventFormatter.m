@@ -343,14 +343,9 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     NSString *displayText = nil;
     NSAttributedString *attributedDisplayText = nil;
 
-    // Prepare display name for concerned users
+    // Prepare the display name of the sender
     NSString *senderDisplayName;
     senderDisplayName = roomState ? [self senderDisplayNameForEvent:event withRoomState:roomState] : event.sender;
-    NSString *targetDisplayName = nil;
-    if (event.stateKey)
-    {
-        targetDisplayName = roomState ? [roomState memberName:event.stateKey] : event.stateKey;
-    }
     
     switch (event.eventType)
     {
@@ -487,6 +482,15 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 NSString* membership;
                 MXJSONModelSetString(membership, event.content[@"membership"]);
                 
+                // Prepare targeted member display name
+                NSString *targetDisplayName = event.stateKey;
+                
+                // Retrieve content displayname
+                NSString *contentDisplayname;
+                MXJSONModelSetString(contentDisplayname, event.content[@"displayname"]);
+                NSString *prevContentDisplayname;
+                MXJSONModelSetString(prevContentDisplayname, event.prevContent[@"displayname"]);
+                
                 // Consider here a membership change
                 if ([membership isEqualToString:@"invite"])
                 {
@@ -502,6 +506,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                         }
                         else
                         {
+                            // The targeted member display name (if any) is available in content
+                            if (contentDisplayname.length)
+                            {
+                                targetDisplayName = contentDisplayname;
+                            }
+                            
                             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
                         }
                     }
@@ -514,7 +524,13 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], senderDisplayName];
+                        // The targeted member display name (if any) is available in content
+                        if (contentDisplayname.length)
+                        {
+                            targetDisplayName = contentDisplayname;
+                        }
+
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], targetDisplayName];
                     }
                 }
                 else if ([membership isEqualToString:@"leave"])
@@ -523,6 +539,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                     if (event.prevContent)
                     {
                         MXJSONModelSetString(prevMembership, event.prevContent[@"membership"]);
+                    }
+                    
+                    // The targeted member display name (if any) is available in prevContent
+                    if (prevContentDisplayname.length)
+                    {
+                        targetDisplayName = prevContentDisplayname;
                     }
                     
                     if ([event.sender isEqualToString:event.stateKey])
@@ -535,11 +557,11 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                         {
                             if (prevMembership && [prevMembership isEqualToString:@"invite"])
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reject"], senderDisplayName];
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reject"], targetDisplayName];
                             }
                             else
                             {
-                               displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], senderDisplayName];
+                               displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], targetDisplayName];
                             }
                         }
                     }
@@ -570,6 +592,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 }
                 else if ([membership isEqualToString:@"ban"])
                 {
+                    // The targeted member display name (if any) is available in prevContent
+                    if (prevContentDisplayname.length)
+                    {
+                        targetDisplayName = prevContentDisplayname;
+                    }
+                    
                     displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
                     if (event.content[@"reason"])
                     {
