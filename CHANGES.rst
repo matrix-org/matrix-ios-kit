@@ -1,3 +1,19 @@
+Changes in MatrixKit in 0.3.18 (2016-09-27)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.6.17).
+ * MXKCallViewController: Hide camera switch on voice call.
+ 
+ Bug fixes:
+ * No ringback tones when placing voice calls in silent mode (https://github.com/vector-im/vector-ios/issues/631).
+ * Going back into a VC from back-to-app takes the call off speakerphone (https://github.com/vector-im/vector-ios/issues/581).
+ * Transparent png avatars are shown on black rather than white bg when RRs (https://github.com/vector-im/vector-ios/issues/639).
+ * iOS cannot play videos sent from web (https://github.com/vector-im/vector-ios/issues/640).
+ * MXKPieChartView: The background view is not reset on background color (unprogressColor) change.
+ * MXKEventFormatter: The invitation rejection was not displayed.
+ * The room preview does not always display the right member info (https://github.com/vector-im/vector-ios/issues/643).
+
 Changes in MatrixKit in 0.3.17 (2016-09-15)
 ===========================================
 
