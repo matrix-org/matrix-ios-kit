@@ -44,6 +44,13 @@
      The body of the message with sets of attributes, or kind of content description in case of attachment (e.g. "image attachment")
      */
     NSAttributedString *attributedTextMessage;
+    
+    /**
+     The optional text pattern to be highlighted in the body of the message.
+     */
+    NSString *highlightedPattern;
+    UIColor  *highlightedPatternColor;
+    UIFont   *highlightedPatternFont;
 }
 
 /**
