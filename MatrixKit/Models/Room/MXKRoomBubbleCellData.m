@@ -575,8 +575,8 @@
 {
     NSMutableAttributedString *customAttributedTextMsg = nil;
     
-    NSString *textMessage = self.textMessage;
-    NSRange range = [textMessage rangeOfString:highlightedPattern options:NSCaseInsensitiveSearch];
+    NSString *currentTextMessage = self.textMessage;
+    NSRange range = [currentTextMessage rangeOfString:highlightedPattern options:NSCaseInsensitiveSearch];
     
     if (range.location != NSNotFound)
     {
@@ -598,10 +598,10 @@
             
             // Look for the next pattern occurrence
             range.location += range.length;
-            if (range.location < textMessage.length)
+            if (range.location < currentTextMessage.length)
             {
-                range.length = textMessage.length - range.location;
-                range = [textMessage rangeOfString:highlightedPattern options:NSCaseInsensitiveSearch range:range];
+                range.length = currentTextMessage.length - range.location;
+                range = [currentTextMessage rangeOfString:highlightedPattern options:NSCaseInsensitiveSearch range:range];
             }
             else
             {
