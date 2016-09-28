@@ -190,6 +190,15 @@ Update the event because its mxkState changed or it is has been redacted.
  */
 - (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor;
 
+/**
+ Highlight all the occurrences of a pattern in the resulting message body 'attributedTextMessage'.
+ 
+ @param pattern the text pattern to highlight.
+ @param patternColor optional text color (the pattern text color is unchanged if nil).
+ @param patternFont optional text font (the pattern font is unchanged if nil).
+ */
+- (void)highlightPatternInTextMessage:(NSString*)pattern withForegroundColor:(UIColor*)patternColor andFont:(UIFont*)patternFont;
+
 @optional
 /**
  Attempt to add a new event to the bubble.

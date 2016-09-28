@@ -255,6 +255,16 @@
     return customAttributedTextMsg;
 }
 
+- (void)highlightPatternInTextMessage:(NSString*)pattern withForegroundColor:(UIColor*)patternColor andFont:(UIFont*)patternFont
+{
+    highlightedPattern = pattern;
+    highlightedPatternColor = patternColor;
+    highlightedPatternFont = patternFont;
+    
+    // flush the current attributed string to force refresh
+    self.attributedTextMessage = nil;
+}
+
 #pragma mark -
 
 - (void)prepareBubbleComponentsPosition
@@ -361,6 +371,11 @@
 {
     attributedTextMessage = inAttributedTextMessage;
     
+    if (attributedTextMessage.length && highlightedPattern)
+    {
+        [self highlightPattern];
+    }
+    
     // Reset content size
     _contentSize = CGSizeZero;
 }
@@ -375,6 +390,11 @@
         if (firstComponent)
         {
             attributedTextMessage = firstComponent.attributedTextMessage;
+            
+            if (attributedTextMessage.length && highlightedPattern)
+            {
+                [self highlightPattern];
+            }
         }
     }
 
@@ -547,6 +567,54 @@
     }
     
     return nil;
+}
+
+#pragma mark - Internals
+
+- (void)highlightPattern
+{
+    NSMutableAttributedString *customAttributedTextMsg = nil;
+    
+    NSString *textMessage = self.textMessage;
+    NSRange range = [textMessage rangeOfString:highlightedPattern options:NSCaseInsensitiveSearch];
+    
+    if (range.location != NSNotFound)
+    {
+        customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedTextMessage];
+        
+        while (range.location != NSNotFound)
+        {
+            if (highlightedPatternColor)
+            {
+                // Update text color
+                [customAttributedTextMsg addAttribute:NSForegroundColorAttributeName value:highlightedPatternColor range:range];
+            }
+            
+            if (highlightedPatternFont)
+            {
+                // Update text font
+                [customAttributedTextMsg addAttribute:NSFontAttributeName value:highlightedPatternFont range:range];
+            }
+            
+            // Look for the next pattern occurrence
+            range.location += range.length;
+            if (range.location < textMessage.length)
+            {
+                range.length = textMessage.length - range.location;
+                range = [textMessage rangeOfString:highlightedPattern options:NSCaseInsensitiveSearch range:range];
+            }
+            else
+            {
+                range.location = NSNotFound;
+            }
+        }
+    }
+    
+    if (customAttributedTextMsg)
+    {
+        // Update resulting message body
+        attributedTextMessage = customAttributedTextMsg;
+    }
 }
 
 @end

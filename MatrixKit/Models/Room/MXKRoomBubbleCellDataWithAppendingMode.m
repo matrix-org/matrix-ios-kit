@@ -251,7 +251,7 @@ static NSAttributedString *messageSeparator = nil;
                     [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
                 }
             }
-            attributedTextMessage = currentAttributedTextMsg;
+            self.attributedTextMessage = currentAttributedTextMsg;
         }
     }
     
