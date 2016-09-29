@@ -112,6 +112,9 @@ extern NSString *const kMXKRoomBubbleCellLongPressOnAvatarView;
  The `userInfo` dictionary contains a `NSURL` object under the `kMXKRoomBubbleCellUrl` key, representing the url the user wants to open.
 
  The shouldDoAction implementation must return NO to prevent the system (safari) from opening the link.
+ 
+ @discussion: If the link refers to a room alias/id, a user id or an event id, the non-ASCII characters (like '#' in room alias) has been
+ escaped to be able to convert it into a legal URL string.
  */
 extern NSString *const kMXKRoomBubbleCellShouldInteractWithURL;
 

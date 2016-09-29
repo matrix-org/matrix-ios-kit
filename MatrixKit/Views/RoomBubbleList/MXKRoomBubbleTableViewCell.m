@@ -1016,7 +1016,7 @@ static NSMutableDictionary *childClasses;
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
 {
     BOOL shouldInteractWithURL = YES;
-    if (delegate)
+    if (delegate && URL)
     {
         // Ask the delegate if iOS can open the link
         shouldInteractWithURL = [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:@{kMXKRoomBubbleCellUrl:URL} defaultValue:YES];
