@@ -24,6 +24,9 @@
 
 - (void)render:(MXKCellData *)cellData
 {
+    // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
+    NSParameterAssert([cellData conformsToProtocol:@protocol(MXKSearchCellDataStoring)]);
+    
     id<MXKSearchCellDataStoring> searchCellData = (id<MXKSearchCellDataStoring>)cellData;
     if (searchCellData)
     {

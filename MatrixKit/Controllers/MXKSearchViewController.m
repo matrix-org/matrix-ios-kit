@@ -265,7 +265,7 @@
         // Get each new cell height
         [insertedIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
 
-            id<MXKSearchCellDataStoring> cellData = [self.dataSource cellDataAtIndex:idx];
+            MXKCellData* cellData = [self.dataSource cellDataAtIndex:idx];
             Class<MXKCellRendering> class = [self cellViewClassForCellData:cellData];
 
             tableViewOffset.y += [class heightForCellData:cellData withMaximumWidth:_searchTableView.frame.size.width];
@@ -308,7 +308,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<MXKSearchCellDataStoring> cellData = [dataSource cellDataAtIndex:indexPath.row];
+    MXKCellData *cellData = [dataSource cellDataAtIndex:indexPath.row];
 
     Class<MXKCellRendering> class = [self cellViewClassForCellData:cellData];
     return [class heightForCellData:cellData withMaximumWidth:tableView.frame.size.width];
@@ -353,7 +353,7 @@
     if (searchBar.text.length)
     {
         shouldScrollToBottomOnRefresh = YES;
-        [dataSource searchMessageText:searchBar.text];
+        [dataSource searchMessageText:searchBar.text force:NO];
     }
 }
 
