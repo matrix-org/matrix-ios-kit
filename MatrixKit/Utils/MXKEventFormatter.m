@@ -1154,9 +1154,12 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
                 *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
             }
 
-            // And make the match clickable
-            NSString *userId = [attributedString.string substringWithRange:match.range];
-            [*mutableAttributedString addAttribute:NSLinkAttributeName value:userId range:match.range];
+            // Make the link clickable
+            // Caution: We need here to escape the non-ASCII characters (like '#' in room alias)
+            // to convert the link into a legal URL string.
+            NSString *link = [attributedString.string substringWithRange:match.range];
+            link = [link stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            [*mutableAttributedString addAttribute:NSLinkAttributeName value:link range:match.range];
         }
     }];
 }
