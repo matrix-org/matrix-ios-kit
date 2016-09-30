@@ -37,7 +37,7 @@ extern NSString *const kMXKSearchCellDataIdentifier;
      List of results retrieved from the server.
      The` MXKSearchDataSource` class stores MXKSearchCellDataStoring objects in it.
      */
-    NSMutableArray *cellDataArray;
+    NSMutableArray<MXKCellData*> *cellDataArray;
 }
 
 /**
@@ -57,7 +57,7 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 
 /**
  The events to display texts formatter.
- `MXKSearchCellDataStoring` instances can use it to format text.
+ `MXKCellData` instances can use it to format text.
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
@@ -79,9 +79,10 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 /**
  Launch a message search homeserver side.
  
- @param text the text to search.
+ @param text the text pattern to search.
+ @param force tell whether the search must be launched even if the text pattern is unchanged.
  */
-- (void)searchMessageText:(NSString*)text;
+- (void)searchMessageText:(NSString*)text force:(BOOL)force;
 
 /**
  Load more results from the past.
@@ -94,7 +95,7 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  @param index the index of the cell in the array
  @return the cell data
  */
-- (id<MXKSearchCellDataStoring>)cellDataAtIndex:(NSInteger)index;
+- (MXKCellData*)cellDataAtIndex:(NSInteger)index;
 
 /**
  Convert the results of a homeserver search requests into cells.

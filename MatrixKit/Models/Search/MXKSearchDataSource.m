@@ -74,9 +74,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     [super destroy];
 }
 
-- (void)searchMessageText:(NSString *)text
+- (void)searchMessageText:(NSString *)text force:(BOOL)force
 {
-    if (![_searchText isEqualToString:text])
+    if (force || ![_searchText isEqualToString:text])
     {
         // Reset data before making the new search
         if (searchRequest)
@@ -115,9 +115,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     [self doSearch];
 }
 
-- (id<MXKSearchCellDataStoring>)cellDataAtIndex:(NSInteger)index
+- (MXKCellData*)cellDataAtIndex:(NSInteger)index
 {
-    id<MXKSearchCellDataStoring> cellData;
+    MXKCellData *cellData;
     if (index < cellDataArray.count)
     {
         cellData = cellDataArray[index];
@@ -129,12 +129,13 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 - (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults
 {
     // Retrieve the MXKCellData class to manage the data
+    // Note: MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol
+    // see `[registerCellDataClass:forCellIdentifier:]`
     Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
-    NSAssert([class conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
 
     for (MXSearchResult *result in roomEventResults.results)
     {
-        id<MXKSearchCellDataStoring> cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
+        MXKCellData  *cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
         if (cellData)
         {
             [cellDataArray insertObject:cellData atIndex:0];
@@ -206,6 +207,17 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
 #pragma mark - Override MXKDataSource
 
+- (void)registerCellDataClass:(Class)cellDataClass forCellIdentifier:(NSString *)identifier
+{
+    if ([identifier isEqualToString:kMXKSearchCellDataIdentifier])
+    {
+        // Sanity check
+        NSAssert([cellDataClass conformsToProtocol:@protocol(MXKSearchCellDataStoring)], @"MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol");
+    }
+    
+    [super registerCellDataClass:cellDataClass forCellIdentifier:identifier];
+}
+
 - (void)cancelAllRequests
 {
     if (searchRequest)
@@ -226,7 +238,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<MXKSearchCellDataStoring> cellData = [self cellDataAtIndex:indexPath.row];
+    MXKCellData* cellData = [self cellDataAtIndex:indexPath.row];
 
     NSString *cellIdentifier = [self.delegate cellReuseIdentifierForCellData:cellData];
     if (cellIdentifier)
