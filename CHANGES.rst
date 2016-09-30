@@ -1,3 +1,10 @@
+Changes in MatrixKit in 0.3.19 (2016-09-30)
+===========================================
+ 
+ Bug fixes:
+ * App crashes when user taps on room alias with multiple # in chat history (https://github.com/vector-im/vector-ios/issues/668).
+ * Room message search: the search pattern is not highlighted in results (https://github.com/vector-im/vector-ios/issues/660).
+
 Changes in MatrixKit in 0.3.18 (2016-09-27)
 ===========================================
 
