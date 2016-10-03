@@ -74,9 +74,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     [super destroy];
 }
 
-- (void)searchMessageText:(NSString *)text force:(BOOL)force
+- (void)searchMessages:(NSString*)textPattern force:(BOOL)force
 {
-    if (force || ![_searchText isEqualToString:text])
+    if (force || ![_searchText isEqualToString:textPattern])
     {
         // Reset data before making the new search
         if (searchRequest)
@@ -85,7 +85,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
             searchRequest = nil;
         }
         
-        _searchText = text;
+        _searchText = textPattern;
         _serverCount = 0;
         _canPaginate = NO;
         nextBatch = nil;
@@ -93,9 +93,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         self.state = MXKDataSourceStatePreparing;
         [cellDataArray removeAllObjects];
         
-        if (text.length)
+        if (textPattern.length)
         {
-            NSLog(@"[MXKSearchDataSource] searchMessageText: %@", text);
+            NSLog(@"[MXKSearchDataSource] searchMessages: %@", textPattern);
             [self doSearch];
         }
         else
@@ -138,6 +138,8 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         MXKCellData  *cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
         if (cellData)
         {
+            ((id<MXKSearchCellDataStoring>)cellData).shouldShowRoomDisplayName = self.shouldShowRoomDisplayName;
+            
             [cellDataArray insertObject:cellData atIndex:0];
         }
     }
@@ -176,9 +178,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
     NSDate *startDate = [NSDate date];
 
-    searchRequest = [self.mxSession.matrixRestClient searchMessageText:_searchText inRooms:rooms beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
+    searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText inRooms:rooms beforeLimit:0 afterLimit:0 nextBatch:nextBatch containsURL:_containsURL success:^(MXSearchRoomEventResults *roomEventResults) {
 
-        NSLog(@"[MXKSearchDataSource] searchMessageText: %@. Done in %.3fms - Got %tu / %tu messages", _searchText, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
         searchRequest = nil;
         _serverCount = roomEventResults.count;

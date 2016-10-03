@@ -639,7 +639,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.small.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.small.fileSize], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.small.fileSize round:NO], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
 
@@ -656,7 +656,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.medium.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.medium.fileSize], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.medium.fileSize round:NO], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
 
@@ -673,7 +673,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.large.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.large.fileSize], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.large.fileSize round:NO], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
 
@@ -688,7 +688,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             }];
         }
         
-        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.original.fileSize], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
+        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.original.fileSize round:NO], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
 
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], resolution];
 
@@ -806,7 +806,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.small)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXKTools fileSizeToString:fileSizes.small]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXKTools fileSizeToString:fileSizes.small round:NO]];
 
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -819,7 +819,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.medium)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXKTools fileSizeToString:fileSizes.medium]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXKTools fileSizeToString:fileSizes.medium round:NO]];
 
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -832,7 +832,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.large)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXKTools fileSizeToString:fileSizes.large]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXKTools fileSizeToString:fileSizes.large round:NO]];
 
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -843,7 +843,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             }];
         }
 
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXKTools fileSizeToString:fileSizes.original]];
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXKTools fileSizeToString:fileSizes.original round:NO]];
 
         [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;

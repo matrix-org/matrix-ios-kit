@@ -144,7 +144,7 @@
     return roundedFileSize;
 }
 
-+ (NSString*)fileSizeToString:(long)fileSize
++ (NSString*)fileSizeToString:(long)fileSize round:(BOOL)round
 {
     if (fileSize < 0)
     {
@@ -156,11 +156,25 @@
     }
     else if (fileSize < (1024 * 1024))
     {
-        return [NSString stringWithFormat:@"%.2f KB", (fileSize / 1024.0)];
+        if (round)
+        {
+            return [NSString stringWithFormat:@"%.0f KB", ceil(fileSize / 1024.0)];
+        }
+        else
+        {
+            return [NSString stringWithFormat:@"%.2f KB", (fileSize / 1024.0)];
+        }
     }
     else
     {
-        return [NSString stringWithFormat:@"%.2f MB", (fileSize / 1024.0 / 1024.0)];
+        if (round)
+        {
+            return [NSString stringWithFormat:@"%.0f MB", ceil(fileSize / 1024.0 / 1024.0)];
+        }
+        else
+        {
+            return [NSString stringWithFormat:@"%.2f MB", (fileSize / 1024.0 / 1024.0)];
+        }
     }
 }
 

@@ -17,6 +17,7 @@
 #import "MXKTableViewCell.h"
 
 #import "MXKCellRendering.h"
+#import "MXKImageView.h"
 
 /**
  Each `MXKSearchTableViewCell` instance displays a search result.
@@ -26,5 +27,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *title;
 @property (weak, nonatomic) IBOutlet UILabel *message;
 @property (weak, nonatomic) IBOutlet UILabel *date;
+
+@property (weak, nonatomic) IBOutlet MXKImageView *attachmentImageView;
 
 @end

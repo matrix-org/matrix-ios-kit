@@ -46,6 +46,12 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 @property (nonatomic, readonly) NSString *searchText;
 
 /**
+ Tells whether only the messages with url (the attachments) are concerned by the search session.
+ NO by default.
+ */
+@property (nonatomic) BOOL containsURL;
+
+/**
  If any the id of the room where the search is made.
  */
 @property (nonatomic, readonly) NSString *roomId;
@@ -66,6 +72,10 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  */
 @property (nonatomic, readonly) BOOL canPaginate;
 
+/**
+ Tell whether the room display name should be displayed in each result cell. NO by default.
+ */
+@property (nonatomic) BOOL shouldShowRoomDisplayName;
 
 /**
  Initialise the data source to search messages in the passed room.
@@ -78,11 +88,13 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 
 /**
  Launch a message search homeserver side.
+
+ @discussion The result depends on the 'containsURL' propertie.
  
- @param text the text pattern to search.
+ @param textPattern the text to search in messages data.
  @param force tell whether the search must be launched even if the text pattern is unchanged.
  */
-- (void)searchMessageText:(NSString*)text force:(BOOL)force;
+- (void)searchMessages:(NSString*)textPattern force:(BOOL)force;
 
 /**
  Load more results from the past.

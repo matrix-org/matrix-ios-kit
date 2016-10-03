@@ -20,7 +20,8 @@
 
 
 @implementation MXKSearchCellData
-@synthesize searchResult, title, message, date;
+@synthesize roomId, senderDisplayName;
+@synthesize searchResult, title, message, date, shouldShowRoomDisplayName, roomDisplayName, attachment, isAttachmentWithThumbnail, attachmentIcon;
 
 - (instancetype)initWithSearchResult:(MXSearchResult *)searchResult2 andSearchDataSource:(MXKSearchDataSource *)searchDataSource
 {
