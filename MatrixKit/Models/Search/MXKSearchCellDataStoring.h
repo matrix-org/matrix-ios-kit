@@ -17,6 +17,8 @@
 #import <Foundation/Foundation.h>
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKAttachment.h"
+
 @class MXKSearchDataSource;
 
 /**
@@ -25,12 +27,48 @@
  */
 @protocol MXKSearchCellDataStoring <NSObject>
 
+/**
+ The room id
+ */
+@property (nonatomic) NSString *roomId;
+
 @property (nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) NSString *message;
 @property (nonatomic, readonly) NSString *date;
 
 // Bulk result returned by MatrixSDK
 @property (nonatomic, readonly) MXSearchResult *searchResult;
+
+/**
+ Tell whether the room display name should be displayed in the cell. NO by default.
+ */
+@property (nonatomic) BOOL shouldShowRoomDisplayName;
+
+/**
+ The room display name.
+ */
+@property (nonatomic) NSString *roomDisplayName;
+
+/**
+ The sender display name.
+ */
+@property (nonatomic) NSString *senderDisplayName;
+
+/**
+ The bubble attachment (if any).
+ */
+@property (nonatomic) MXKAttachment *attachment;
+
+/**
+ YES when the bubble correspond to an attachment displayed with a thumbnail (see image, video).
+ */
+@property (nonatomic, readonly) BOOL isAttachmentWithThumbnail;
+
+/**
+ The default icon relative to the attachment (if any).
+ */
+@property (nonatomic, readonly) UIImage* attachmentIcon;
+
 
 #pragma mark - Public methods
 /**

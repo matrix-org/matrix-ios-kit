@@ -47,8 +47,11 @@
 
 /**
  Return file size in string format.
+ 
+ @param fileSize the file size in bytes.
+ @param round tells whether the size must be rounded to hide decimal digits
  */
-+ (NSString*)fileSizeToString:(long)fileSize;
++ (NSString*)fileSizeToString:(long)fileSize round:(BOOL)round;
 
 /**
  Get folder size

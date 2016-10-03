@@ -33,12 +33,68 @@
         _title.text = searchCellData.title;
         _date.text = searchCellData.date;
         _message.text = searchCellData.message;
+        
+        if (_attachmentImageView && searchCellData.attachment)
+        {
+            self.attachmentImageView.backgroundColor = [UIColor clearColor];
+            
+            if (searchCellData.isAttachmentWithThumbnail)
+            {
+                // Set attached media folders
+                self.attachmentImageView.mediaFolder = searchCellData.roomId;
+                
+                NSString *mimetype = nil;
+                if (searchCellData.attachment.thumbnailInfo)
+                {
+                    mimetype = searchCellData.attachment.thumbnailInfo[@"mimetype"];
+                }
+                else if (searchCellData.attachment.contentInfo)
+                {
+                    mimetype = searchCellData.attachment.contentInfo[@"mimetype"];
+                }
+                
+                NSString *url = searchCellData.attachment.thumbnailURL;
+                UIImage *preview = searchCellData.attachmentIcon;
+                self.attachmentImageView.enableInMemoryCache = YES;
+                [self.attachmentImageView setImageURL:url withType:mimetype andImageOrientation:searchCellData.attachment.thumbnailOrientation previewImage:preview];
+                
+//                if (searchCellData.attachment.actualURL)
+//                {
+//                    // Add tap recognizer to open attachment
+//                    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
+//                    [tap setNumberOfTouchesRequired:1];
+//                    [tap setNumberOfTapsRequired:1];
+//                    [tap setDelegate:self];
+//                    [self.attachmentImageView addGestureRecognizer:tap];
+//                }
+            }
+            else
+            {
+                _attachmentImageView.image = searchCellData.attachmentIcon;
+            }
+        }
     }
     else
     {
+        _title.text = nil;
+        _date.text = nil;
         _message.text = @"";
+        
+        _attachmentImageView.image = nil;
     }
 }
+
+//- (void)didEndDisplay
+//{
+//    if (_attachmentImageView)
+//    {
+//        // Remove all gesture recognizer
+//        while (_attachmentImageView.gestureRecognizers.count)
+//        {
+//            [_attachmentImageView removeGestureRecognizer:_attachmentImageView.gestureRecognizers[0]];
+//        }
+//    }
+//}
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {

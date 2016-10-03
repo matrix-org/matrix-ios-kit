@@ -353,7 +353,7 @@
     if (searchBar.text.length)
     {
         shouldScrollToBottomOnRefresh = YES;
-        [dataSource searchMessageText:searchBar.text force:NO];
+        [dataSource searchMessages:searchBar.text force:NO];
     }
 }
 
