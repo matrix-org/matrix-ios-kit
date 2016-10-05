@@ -178,9 +178,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
     NSDate *startDate = [NSDate date];
 
-    searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText inRooms:rooms beforeLimit:0 afterLimit:0 nextBatch:nextBatch containsURL:_containsURL success:^(MXSearchRoomEventResults *roomEventResults) {
+    searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText inRooms:rooms beforeLimit:0 afterLimit:0 nextBatch:nextBatch mediaFilter:_mediaFilter success:^(MXSearchRoomEventResults *roomEventResults) {
 
-        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _mediaFilter, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
         searchRequest = nil;
         _serverCount = roomEventResults.count;

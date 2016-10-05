@@ -46,10 +46,10 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 @property (nonatomic, readonly) NSString *searchText;
 
 /**
- Tells whether only the messages with url (the attachments) are concerned by the search session.
- NO by default.
+ Tells whether the messages with url (the attachments) are concerned or not by the search session.
+ MXMessagesSearchMediaFilterUndefined by default.
  */
-@property (nonatomic) BOOL containsURL;
+@property (nonatomic) MXMessagesSearchMediaFilter mediaFilter;
 
 /**
  If any the id of the room where the search is made.
@@ -89,7 +89,7 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 /**
  Launch a message search homeserver side.
 
- @discussion The result depends on the 'containsURL' propertie.
+ @discussion The result depends on the 'mediaFilter' propertie.
  
  @param textPattern the text to search in messages data.
  @param force tell whether the search must be launched even if the text pattern is unchanged.
