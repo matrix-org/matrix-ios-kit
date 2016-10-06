@@ -30,7 +30,15 @@
     {
         searchResult = searchResult2;
 
-        if (nil == searchDataSource.roomId)
+        if (searchDataSource.roomEventFilter.rooms.count == 1)
+        {
+            // We are displaying a search within a room
+            // As title, display the user id
+            title = searchResult.result.sender;
+            
+            roomId = searchDataSource.roomEventFilter.rooms[0];
+        }
+        else
         {
             // We are displaying a search over all user's rooms
             // As title, display the room name of this search result
@@ -43,12 +51,6 @@
             {
                 title = searchResult.result.roomId;
             }
-        }
-        else
-        {
-            // We are displaying a search within a room
-            // As title, display the user id
-            title = searchResult.result.sender;
         }
 
         date = [searchDataSource.eventFormatter dateStringFromEvent:searchResult.result withTime:YES];
