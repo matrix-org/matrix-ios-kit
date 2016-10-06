@@ -50,18 +50,10 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:mxSession];
+        
+        _roomEventFilter = [[MXRoomEventFilter alloc] init];
 
         cellDataArray = [NSMutableArray array];
-    }
-    return self;
-}
-
-- (instancetype)initWithRoomId:(NSString *)roomId andMatrixSession:(MXSession *)mxSession
-{
-    self = [self initWithMatrixSession:mxSession];
-    if (self)
-    {
-        _roomId = roomId;
     }
     return self;
 }
@@ -70,6 +62,8 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 {
     cellDataArray = nil;
     _eventFormatter = nil;
+    
+    _roomEventFilter = nil;
     
     [super destroy];
 }
@@ -169,18 +163,11 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         return;
     }
 
-    // Search in one room?
-    NSArray *rooms;
-    if (_roomId)
-    {
-        rooms = @[_roomId];
-    }
-
     NSDate *startDate = [NSDate date];
 
-    searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText inRooms:rooms beforeLimit:0 afterLimit:0 nextBatch:nextBatch containsURL:_containsURL success:^(MXSearchRoomEventResults *roomEventResults) {
+    searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText roomEventFilter:_roomEventFilter beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
 
-        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
         searchRequest = nil;
         _serverCount = roomEventResults.count;

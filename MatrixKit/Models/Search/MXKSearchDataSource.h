@@ -46,15 +46,9 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 @property (nonatomic, readonly) NSString *searchText;
 
 /**
- Tells whether only the messages with url (the attachments) are concerned by the search session.
- NO by default.
+ The room events filter which is applied during the messages search.
  */
-@property (nonatomic) BOOL containsURL;
-
-/**
- If any the id of the room where the search is made.
- */
-@property (nonatomic, readonly) NSString *roomId;
+@property (nonatomic) MXRoomEventFilter *roomEventFilter;
 
 /**
  Total number of results available on the server.
@@ -77,19 +71,11 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  */
 @property (nonatomic) BOOL shouldShowRoomDisplayName;
 
-/**
- Initialise the data source to search messages in the passed room.
-
- @param roomId the id of the room to search for.
- @param mxSession the Matrix session to get data from.
- @return the newly created instance.
- */
-- (instancetype)initWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession;
 
 /**
  Launch a message search homeserver side.
 
- @discussion The result depends on the 'containsURL' propertie.
+ @discussion The result depends on the 'roomEventFilter' propertie.
  
  @param textPattern the text to search in messages data.
  @param force tell whether the search must be launched even if the text pattern is unchanged.
