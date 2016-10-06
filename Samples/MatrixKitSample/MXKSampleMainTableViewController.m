@@ -756,7 +756,8 @@
     else if ([segue.identifier isEqualToString:@"showMXKSearchViewControllerForRoom"])
     {
         MXKSearchViewController *searchViewController = (MXKSearchViewController*)destinationViewController;
-        MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:self.mainSession];
+        MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithMatrixSession:self.mainSession];
+        searchDataSource.roomEventFilter.rooms = @[selectedRoom.state.roomId];
 
         [searchViewController displaySearch:searchDataSource];
     }
