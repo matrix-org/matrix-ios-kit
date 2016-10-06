@@ -75,7 +75,7 @@ extern NSString *const kMXKSearchCellDataIdentifier;
 /**
  Launch a message search homeserver side.
 
- @discussion The result depends on the 'mediaFilter' propertie.
+ @discussion The result depends on the 'roomEventFilter' propertie.
  
  @param textPattern the text to search in messages data.
  @param force tell whether the search must be launched even if the text pattern is unchanged.
