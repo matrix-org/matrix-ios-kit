@@ -1003,7 +1003,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     if (paginationRequest)
     {
-        NSLog(@"[MXKRoomDataSource] paginateBackMessages: a pagination is already in progress");
+        NSLog(@"[MXKRoomDataSource] paginate: a pagination is already in progress");
         if (failure)
         {
             failure(nil);
@@ -1011,9 +1011,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    if (NO == [_timeline canPaginate: MXTimelineDirectionBackwards])
+    if (NO == [_timeline canPaginate:direction])
     {
-        NSLog(@"[MXKRoomDataSource] paginateBackMessages: No more events to paginate");
+        NSLog(@"[MXKRoomDataSource] paginate: No more events to paginate");
         if (success)
         {
             success(0);
@@ -1080,7 +1080,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
         
     }];
-};
+}
 
 - (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure
 {
