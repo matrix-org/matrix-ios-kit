@@ -811,6 +811,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }];
 }
 
+- (void)setFilterMessagesWithURL:(BOOL)filterMessagesWithURL
+{
+    _filterMessagesWithURL = filterMessagesWithURL;
+    
+    if (filterMessagesWithURL)
+    {
+        self.eventsFilterForMessages = @[kMXEventTypeStringRoomMessage];
+    }
+}
+
 - (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
 {
     if (_eventFormatter)
@@ -2240,6 +2250,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
  */
 - (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXTimelineDirection)direction
 {
+    if (self.filterMessagesWithURL)
+    {
+        // Check whether the event has a value for the 'url' key in its content.
+        if (!event.content[@"url"])
+        {
+            // Ignore the event
+            return;
+        }
+    }
+    
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
     
     // Count queued events when the server sync is in progress

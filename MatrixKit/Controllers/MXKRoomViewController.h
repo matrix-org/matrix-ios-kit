@@ -329,4 +329,11 @@ extern NSString *const kCmdChangeRoomTopic;
  */
 - (void)showEventDetails:(MXEvent *)event;
 
+/**
+ Present the attachments viewer by displaying the attachment of the provided cell.
+ 
+ @param cell the table view cell with attachment
+ */
+- (void)showAttachmentInCell:(UITableViewCell*)cell;
+
 @end

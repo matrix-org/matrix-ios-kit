@@ -227,6 +227,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 @property (nonatomic) NSUInteger paginationLimitAroundInitialEvent;
 
+/**
+ Tell whether only the events with a url key in their content must be handled. NO by default.
+ 
+ @discussion: When this option is enabled the 'eventsFilterForMessages' array is updated
+ and limited to the 'kMXEventTypeStringRoomMessage' type.
+ */
+@property (nonatomic) BOOL filterMessagesWithURL;
+
 #pragma mark - Life cycle
 /**
  Initialise the data source to serve data corresponding to the passed room.

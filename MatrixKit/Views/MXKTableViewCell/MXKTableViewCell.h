@@ -16,6 +16,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MXKCellData.h"
+
 /**
  List the display box types for the cell subviews.
  */
@@ -63,5 +65,10 @@ typedef enum : NSUInteger {
  and handle reuse identifier.
  */
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
+
+/**
+ The current cell data displayed by the table view cell
+ */
+@property (weak, nonatomic, readonly) MXKCellData *mxkCellData;
 
 @end

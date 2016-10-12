@@ -1765,12 +1765,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                        [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 
                                        // And apply an offset to display the top of the targeted component at the center of the screen
-                                       MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)[_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-                                       CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
-
-                                       CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                       contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
-                                       _bubblesTableView.contentOffset = contentOffset;
+                                       UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+                                       if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
+                                       {
+                                           MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                                           CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
+                                           
+                                           CGPoint contentOffset = _bubblesTableView.contentOffset;
+                                           contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
+                                           _bubblesTableView.contentOffset = contentOffset;
+                                       }
                                    }
                                }
                                failure:^(NSError *error) {
@@ -2112,37 +2116,40 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 CGFloat eventBottomPosition = eventTopPosition + cell.frame.size.height;
                 
                 // Compute accurate event positions in case of bubble with multiple components
-                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-                if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count > 1)
+                if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
                 {
-                    // Check and update each component position
-                    [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
-                    
-                    NSInteger index = roomBubbleTableViewCell.bubbleData.bubbleComponents.count - 1;
-                    MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
-                    
-                    if ([component.event.eventId isEqualToString:currentEventIdAtTableBottom])
+                    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                    if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count > 1)
                     {
-                        eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
-                    }
-                    else
-                    {
-                        while (index--)
+                        // Check and update each component position
+                        [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
+                        
+                        NSInteger index = roomBubbleTableViewCell.bubbleData.bubbleComponents.count - 1;
+                        MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                        
+                        if ([component.event.eventId isEqualToString:currentEventIdAtTableBottom])
                         {
-                            MXKRoomBubbleComponent *previousComponent = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
-                            if ([previousComponent.event.eventId isEqualToString:currentEventIdAtTableBottom])
+                            eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                        }
+                        else
+                        {
+                            while (index--)
                             {
-                                // Update top position if this is not the first component
-                                if (index)
+                                MXKRoomBubbleComponent *previousComponent = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                                if ([previousComponent.event.eventId isEqualToString:currentEventIdAtTableBottom])
                                 {
-                                   eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + previousComponent.position.y;
+                                    // Update top position if this is not the first component
+                                    if (index)
+                                    {
+                                        eventTopPosition += roomBubbleTableViewCell.msgTextViewTopConstraint.constant + previousComponent.position.y;
+                                    }
+                                    
+                                    eventBottomPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                                    break;
                                 }
                                 
-                                eventBottomPosition = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
-                                break;
+                                component = previousComponent;
                             }
-                            
-                            component = previousComponent;
                         }
                     }
                 }
@@ -2172,7 +2179,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     _bubblesTableView.contentOffset = contentOffset;
                 }
                 
-                if (cellTmp && [cellTmp conformsToProtocol:@protocol(MXKCellRendering)])
+                if (cellTmp && [cellTmp conformsToProtocol:@protocol(MXKCellRendering)] && [cellTmp respondsToSelector:@selector(didEndDisplay)])
                 {
                     // Release here resources, and restore reusable cells
                     [(id<MXKCellRendering>)cellTmp didEndDisplay];
@@ -2218,36 +2225,62 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         while (index--)
         {
             cell = [_bubblesTableView cellForRowAtIndexPath:indexPathsForVisibleRows[index]];
-            if (cell && (cell.frame.origin.y < contentBottomOffsetY) && (contentBottomOffsetY <= cell.frame.origin.y + cell.frame.size.height))
+            
+            if ([cell isKindOfClass:MXKTableViewCell.class])
             {
-                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-                
-                // Check which bubble component is displayed at the bottom.
-                // For that update each component position.
-                [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
-                
-                NSInteger componentIndex = roomBubbleTableViewCell.bubbleData.bubbleComponents.count;
-                MXKRoomBubbleComponent *component;
-                while (componentIndex --)
+                MXKCellData *cellData = ((MXKTableViewCell *)cell).mxkCellData;
+
+                // Only 'MXKRoomBubbleCellData' is supported here for the moment.
+                if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
                 {
-                    component = roomBubbleTableViewCell.bubbleData.bubbleComponents[componentIndex];
-                    currentEventIdAtTableBottom = component.event.eventId;
+                    MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
                     
-                    // Check the component start position.
-                    CGFloat pos = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
-                    if (pos < contentBottomOffsetY)
+                    if (cell && (cell.frame.origin.y < contentBottomOffsetY) && (contentBottomOffsetY <= cell.frame.origin.y + cell.frame.size.height))
                     {
-                        // We found the component (by default the event id of the first component is considered).
+                        // Check which bubble component is displayed at the bottom.
+                        // For that update each component position.
+                        [bubbleData prepareBubbleComponentsPosition];
+                        
+                        NSInteger componentIndex = bubbleData.bubbleComponents.count;
+                        MXKRoomBubbleComponent *component;
+                        while (componentIndex --)
+                        {
+                            component = bubbleData.bubbleComponents[componentIndex];
+                            currentEventIdAtTableBottom = component.event.eventId;
+                            
+                            if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
+                            {
+                                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                                // Check the component start position.
+                                CGFloat pos = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
+                                if (pos < contentBottomOffsetY)
+                                {
+                                    // We found the component (by default the event id of the first component is considered).
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        
+                        if (acknowledge)
+                        {
+                            // Indicate to the homeserver that the user has read up to this event.
+                            [self.roomDataSource.room acknowledgeEvent:component.event];
+                        }
+                        
                         break;
                     }
                 }
-                
-                if (acknowledge)
+                else
                 {
-                    // Indicate to the homeserver that the user has read up to this event.
-                    [self.roomDataSource.room acknowledgeEvent:component.event];
+                    break;
                 }
-                
+            }
+            else
+            {
                 break;
             }
         }
@@ -2398,11 +2431,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         roomDataSource.showBubblesDateTime = !roomDataSource.showBubblesDateTime;
         NSLog(@"    -> Turn %@ cells date", roomDataSource.showBubblesDateTime ? @"ON" : @"OFF");
     }
-    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAttachmentView])
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAttachmentView] && [cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
     {
-        [self showAttachmentInCell:cell];
+        [self showAttachmentInCell:(MXKRoomBubbleTableViewCell *)cell];
     }
-    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnProgressView])
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnProgressView] && [cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
     {
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
         
@@ -2477,7 +2510,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             }
         }
     }
-    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnEvent])
+    else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnEvent] && [cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
     {
         [self dismissKeyboard];
         
@@ -2762,30 +2795,33 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)selectAllTextMessageInCell:(id<MXKCellRendering>)cell
 {
-    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    selectedText = roomBubbleTableViewCell.bubbleData.textMessage;
-    roomBubbleTableViewCell.allTextHighlighted = YES;
-    
-    // Display Menu (dispatch is required here, else the attributed text change hides the menu)
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            // Deselect text
-            roomBubbleTableViewCell.allTextHighlighted = NO;
-            selectedText = nil;
-            
-            [UIMenuController sharedMenuController].menuItems = nil;
-            
-            [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
-            UIMenuControllerDidHideMenuNotificationObserver = nil;
-        }];
+    if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
+    {
+        MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+        selectedText = roomBubbleTableViewCell.bubbleData.textMessage;
+        roomBubbleTableViewCell.allTextHighlighted = YES;
         
-        [self becomeFirstResponder];
-        UIMenuController *menu = [UIMenuController sharedMenuController];
-        menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] action:@selector(share:)]];
-        [menu setTargetRect:roomBubbleTableViewCell.messageTextView.frame inView:roomBubbleTableViewCell];
-        [menu setMenuVisible:YES animated:YES];
-    });
+        // Display Menu (dispatch is required here, else the attributed text change hides the menu)
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // Deselect text
+                roomBubbleTableViewCell.allTextHighlighted = NO;
+                selectedText = nil;
+                
+                [UIMenuController sharedMenuController].menuItems = nil;
+                
+                [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
+                UIMenuControllerDidHideMenuNotificationObserver = nil;
+            }];
+            
+            [self becomeFirstResponder];
+            UIMenuController *menu = [UIMenuController sharedMenuController];
+            menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] action:@selector(share:)]];
+            [menu setTargetRect:roomBubbleTableViewCell.messageTextView.frame inView:roomBubbleTableViewCell];
+            [menu setMenuVisible:YES animated:YES];
+        });
+    }
 }
 
 - (void)copy:(id)sender
@@ -3200,82 +3236,97 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 # pragma mark - Attachment handling
 
-- (void)showAttachmentInCell:(id<MXKCellRendering>)cell
+- (void)showAttachmentInCell:(UITableViewCell*)cell
 {
     [self dismissKeyboard];
-    
-    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-    MXKAttachment *selectedAttachment = roomBubbleTableViewCell.bubbleData.attachment;
-    
-    if (roomBubbleTableViewCell.bubbleData.isAttachmentWithThumbnail)
-    {
-        if (selectedAttachment.event.mxkState == MXKEventStateDefault || selectedAttachment.event.mxkState == MXKEventStateBing)
-        {
-            NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
 
-            // Present an attachment viewer
-            if (attachmentsViewerClass)
-            {
-                attachmentsViewer = [attachmentsViewerClass attachmentsViewController];
-            }
-            else
-            {
-                attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
-            }
-            
-            attachmentsViewer.delegate = self;
-            attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
-            attachmentsViewer.hidesBottomBarWhenPushed = YES;
-            [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+    // Retrieve the attachment information from the associated cell data
+    if ([cell isKindOfClass:MXKTableViewCell.class])
+    {
+        MXKCellData *cellData = ((MXKTableViewCell*)cell).mxkCellData;
 
-            [self.navigationController pushViewController:attachmentsViewer animated:YES];
-        }
-        else
+        // Only 'MXKRoomBubbleCellData' is supported here for the moment.
+        if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
         {
-            // Let's the application do something
-            NSLog(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
-        }
-    }
-    else if (selectedAttachment.type == MXKAttachmentTypeAudio)
-    {
-    }
-    else if (selectedAttachment.type == MXKAttachmentTypeLocation)
-    {
-    }
-    else if (selectedAttachment.type == MXKAttachmentTypeFile)
-    {
-        // Start activity indicator as feedback on file selection.
-        [self startActivityIndicator];
-        
-        [selectedAttachment prepareShare:^(NSURL *fileURL) {
+            MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
             
-            [self stopActivityIndicator];
+            MXKAttachment *selectedAttachment = bubbleData.attachment;
             
-            documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-            [documentInteractionController setDelegate:self];
-            currentSharedAttachment = selectedAttachment;
-            
-            if (![documentInteractionController presentPreviewAnimated:YES])
+            if (bubbleData.isAttachmentWithThumbnail)
             {
-                if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                if (selectedAttachment.event.mxkState == MXKEventStateDefault || selectedAttachment.event.mxkState == MXKEventStateBing)
                 {
-                    documentInteractionController = nil;
-                    [selectedAttachment onShareEnded];
-                    currentSharedAttachment = nil;
+                    NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+                    
+                    // Present an attachment viewer
+                    if (attachmentsViewerClass)
+                    {
+                        attachmentsViewer = [attachmentsViewerClass attachmentsViewController];
+                    }
+                    else
+                    {
+                        attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+                    }
+                    
+                    attachmentsViewer.delegate = self;
+                    attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
+                    attachmentsViewer.hidesBottomBarWhenPushed = YES;
+                    [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+                    
+                    [self.navigationController pushViewController:attachmentsViewer animated:YES];
+                }
+                else
+                {
+                    // Let's the application do something
+                    NSLog(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
                 }
             }
-            
-        } failure:^(NSError *error) {
-            
-            [self stopActivityIndicator];
-            
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-            
-        }];
-        
-        // Start animation in case of download
-        [roomBubbleTableViewCell startProgressUI];
+            else if (selectedAttachment.type == MXKAttachmentTypeAudio)
+            {
+            }
+            else if (selectedAttachment.type == MXKAttachmentTypeLocation)
+            {
+            }
+            else if (selectedAttachment.type == MXKAttachmentTypeFile)
+            {
+                // Start activity indicator as feedback on file selection.
+                [self startActivityIndicator];
+                
+                [selectedAttachment prepareShare:^(NSURL *fileURL) {
+                    
+                    [self stopActivityIndicator];
+                    
+                    documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                    [documentInteractionController setDelegate:self];
+                    currentSharedAttachment = selectedAttachment;
+                    
+                    if (![documentInteractionController presentPreviewAnimated:YES])
+                    {
+                        if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                        {
+                            documentInteractionController = nil;
+                            [selectedAttachment onShareEnded];
+                            currentSharedAttachment = nil;
+                        }
+                    }
+                    
+                } failure:^(NSError *error) {
+                    
+                    [self stopActivityIndicator];
+                    
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                }];
+                
+                if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
+                {
+                    // Start animation in case of download
+                    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                    [roomBubbleTableViewCell startProgressUI];
+                }
+            }
+        }
     }
 }
 
