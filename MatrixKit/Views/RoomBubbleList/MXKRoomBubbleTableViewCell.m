@@ -44,6 +44,7 @@ static BOOL _disableLongPressGestureOnEvent;
 
 @implementation MXKRoomBubbleTableViewCell
 @synthesize delegate, bubbleData, readReceiptsAlignment;
+@synthesize mxkCellData;
 
 + (instancetype)roomBubbleTableViewCell
 {
@@ -248,6 +249,8 @@ static BOOL _disableLongPressGestureOnEvent;
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
     
     bubbleData = (MXKRoomBubbleCellData*)cellData;
+    mxkCellData = cellData;
+    
     if (bubbleData)
     {
         // Check conditions to display the message sender name

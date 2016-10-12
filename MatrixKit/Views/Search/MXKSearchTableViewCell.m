@@ -16,6 +16,8 @@
 
 #import "MXKSearchTableViewCell.h"
 
+#import "MXKMediaManager.h"
+
 #import "MXKSearchCellDataStoring.h"
 
 @implementation MXKSearchTableViewCell
@@ -34,8 +36,9 @@
         _date.text = searchCellData.date;
         _message.text = searchCellData.message;
         
-        if (_attachmentImageView && searchCellData.attachment)
+        if (_attachmentImageView)
         {
+            _attachmentImageView.image = nil;
             self.attachmentImageView.backgroundColor = [UIColor clearColor];
             
             if (searchCellData.isAttachmentWithThumbnail)
@@ -54,24 +57,26 @@
                 }
                 
                 NSString *url = searchCellData.attachment.thumbnailURL;
-                UIImage *preview = searchCellData.attachmentIcon;
-                self.attachmentImageView.enableInMemoryCache = YES;
-                [self.attachmentImageView setImageURL:url withType:mimetype andImageOrientation:searchCellData.attachment.thumbnailOrientation previewImage:preview];
                 
-//                if (searchCellData.attachment.actualURL)
-//                {
-//                    // Add tap recognizer to open attachment
-//                    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
-//                    [tap setNumberOfTouchesRequired:1];
-//                    [tap setNumberOfTapsRequired:1];
-//                    [tap setDelegate:self];
-//                    [self.attachmentImageView addGestureRecognizer:tap];
-//                }
+                UIImage *preview = nil;
+                if (searchCellData.attachment.previewURL)
+                {
+                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:searchCellData.attachment.previewURL andType:mimetype inFolder:self.attachmentImageView.mediaFolder];
+                    preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+                }
+                
+                if (url.length || preview)
+                {
+                    self.attachmentImageView.enableInMemoryCache = YES;
+                    [self.attachmentImageView setImageURL:url withType:mimetype andImageOrientation:searchCellData.attachment.thumbnailOrientation previewImage:preview];
+                    self.attachmentImageView.backgroundColor = [UIColor whiteColor];
+                }
             }
-            else
-            {
-                _attachmentImageView.image = searchCellData.attachmentIcon;
-            }
+        }
+        
+        if (_iconImage)
+        {
+            _iconImage.image = searchCellData.attachmentIcon;
         }
     }
     else
@@ -81,20 +86,9 @@
         _message.text = @"";
         
         _attachmentImageView.image = nil;
+        _iconImage.image = nil;
     }
 }
-
-//- (void)didEndDisplay
-//{
-//    if (_attachmentImageView)
-//    {
-//        // Remove all gesture recognizer
-//        while (_attachmentImageView.gestureRecognizers.count)
-//        {
-//            [_attachmentImageView removeGestureRecognizer:_attachmentImageView.gestureRecognizers[0]];
-//        }
-//    }
-//}
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {

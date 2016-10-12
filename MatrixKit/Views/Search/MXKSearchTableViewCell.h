@@ -29,5 +29,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *date;
 
 @property (weak, nonatomic) IBOutlet MXKImageView *attachmentImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *iconImage;
 
 @end
