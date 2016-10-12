@@ -2119,13 +2119,15 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
                 {
                     MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-                    if (roomBubbleTableViewCell.bubbleData.bubbleComponents.count > 1)
+                    NSArray *bubbleComponents = roomBubbleTableViewCell.bubbleData.bubbleComponents;
+                    
+                    if (bubbleComponents.count > 1)
                     {
                         // Check and update each component position
                         [roomBubbleTableViewCell.bubbleData prepareBubbleComponentsPosition];
                         
-                        NSInteger index = roomBubbleTableViewCell.bubbleData.bubbleComponents.count - 1;
-                        MXKRoomBubbleComponent *component = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                        NSInteger index = bubbleComponents.count - 1;
+                        MXKRoomBubbleComponent *component = bubbleComponents[index];
                         
                         if ([component.event.eventId isEqualToString:currentEventIdAtTableBottom])
                         {
@@ -2135,7 +2137,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                         {
                             while (index--)
                             {
-                                MXKRoomBubbleComponent *previousComponent = roomBubbleTableViewCell.bubbleData.bubbleComponents[index];
+                                MXKRoomBubbleComponent *previousComponent = bubbleComponents[index];
                                 if ([previousComponent.event.eventId isEqualToString:currentEventIdAtTableBottom])
                                 {
                                     // Update top position if this is not the first component
@@ -2241,11 +2243,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                         // For that update each component position.
                         [bubbleData prepareBubbleComponentsPosition];
                         
-                        NSInteger componentIndex = bubbleData.bubbleComponents.count;
+                        NSArray *bubbleComponents = bubbleData.bubbleComponents;
+                        
+                        NSInteger componentIndex = bubbleComponents.count;
                         MXKRoomBubbleComponent *component;
                         while (componentIndex --)
                         {
-                            component = bubbleData.bubbleComponents[componentIndex];
+                            component = bubbleComponents[componentIndex];
                             currentEventIdAtTableBottom = component.event.eventId;
                             
                             if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])

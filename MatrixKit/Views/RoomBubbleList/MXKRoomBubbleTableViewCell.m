@@ -855,18 +855,19 @@ static NSMutableDictionary *childClasses;
         else
         {
             MXEvent *tappedEvent = nil;
-            if (bubbleData.bubbleComponents.count == 1)
+            NSArray *bubbleComponents = bubbleData.bubbleComponents;
+            if (bubbleComponents.count == 1)
             {
-                MXKRoomBubbleComponent *component = [bubbleData.bubbleComponents firstObject];
+                MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
                 tappedEvent = component.event;
             }
-            else if (bubbleData.bubbleComponents.count)
+            else if (bubbleComponents.count)
             {
                 // Look for the tapped component
                 UIView* view = sender.view;
                 CGPoint tapPoint = [sender locationInView:view];
                 
-                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+                for (MXKRoomBubbleComponent *component in bubbleComponents)
                 {
                     if (tapPoint.y < component.position.y)
                     {
@@ -927,6 +928,7 @@ static NSMutableDictionary *childClasses;
     {
         // Check whether a bubble component is displayed at the level of the tapped line.
         MXKRoomBubbleComponent *tappedComponent = nil;
+        NSArray *bubbleComponents = bubbleData.bubbleComponents;
         
         CGPoint tapPoint;
         if (self.attachmentView)
@@ -937,7 +939,7 @@ static NSMutableDictionary *childClasses;
             if (tapPoint.y > 0 && tapPoint.y < self.attachmentView.frame.size.height)
             {
                 // Only one component is available in bubble with attachment.
-                tappedComponent = [bubbleData.bubbleComponents firstObject];
+                tappedComponent = [bubbleComponents firstObject];
             }
         }
         else if (self.messageTextView)
@@ -948,12 +950,12 @@ static NSMutableDictionary *childClasses;
             if (tapPoint.y > 0 && tapPoint.y < self.messageTextView.frame.size.height)
             {
                 // Consider by default the first component
-                tappedComponent = [bubbleData.bubbleComponents firstObject];
+                tappedComponent = [bubbleComponents firstObject];
                 
-                for (NSInteger index = 1; index < bubbleData.bubbleComponents.count; index++)
+                for (NSInteger index = 1; index < bubbleComponents.count; index++)
                 {
                     // Here the bubble is composed by multiple text messages
-                    MXKRoomBubbleComponent *component = bubbleData.bubbleComponents[index];
+                    MXKRoomBubbleComponent *component = bubbleComponents[index];
                     if (tapPoint.y < component.position.y)
                     {
                         break;
@@ -973,6 +975,8 @@ static NSMutableDictionary *childClasses;
     {
         UIView* view = longPressGestureRecognizer.view;
         
+        NSArray *bubbleComponents = bubbleData.bubbleComponents;
+        
         // Check the view on which long press has been detected
         if (view == self.progressView)
         {
@@ -981,18 +985,18 @@ static NSMutableDictionary *childClasses;
         else if (view == self.messageTextView || view == self.attachmentView)
         {
             MXEvent *selectedEvent = nil;
-            if (bubbleData.bubbleComponents.count == 1)
+            if (bubbleComponents.count == 1)
             {
-                MXKRoomBubbleComponent *component = [bubbleData.bubbleComponents firstObject];
+                MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
                 selectedEvent = component.event;
             }
-            else if (bubbleData.bubbleComponents.count)
+            else if (bubbleComponents.count)
             {
                 // Here the selected view is a textView (attachment has no more than one component)
                 
                 // Look for the selected component
                 CGPoint longPressPoint = [longPressGestureRecognizer locationInView:view];
-                for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
+                for (MXKRoomBubbleComponent *component in bubbleComponents)
                 {
                     if (longPressPoint.y < component.position.y)
                     {
