@@ -1137,7 +1137,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         }
     }
-    else if (minRequestMessagesCount)
+    else if (minRequestMessagesCount && [_timeline canPaginate:direction])
     {
         NSLog(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
         // Give a chance to load data from the store before doing homeserver requests
