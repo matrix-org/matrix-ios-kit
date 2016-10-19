@@ -160,6 +160,9 @@
     
     // Observe the server sync
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
+    
+    // Observe changes in the direct rooms list
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onDirectRoomsChange) name:kMXSessionDirectRoomsDidChangeNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -177,6 +180,7 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
     
     [self removeReconnectingView];
 }
@@ -346,6 +350,12 @@
         // Set up table data source
         self.recentsTableView.dataSource = dataSource;
     }
+}
+
+- (void)onDirectRoomsChange
+{
+    // For now, do a simple full reload
+    [self.recentsTableView reloadData];
 }
 
 #pragma mark - Action

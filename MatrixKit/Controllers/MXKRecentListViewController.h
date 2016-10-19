@@ -99,4 +99,10 @@ limitations under the License.
  */
 - (void)displayList:(MXKRecentsDataSource*)listDataSource;
 
+/**
+ This method is called on kMXSessionDirectRoomsDidChangeNotification notification when the view controller is visible.
+ Reload the recents table view by default.
+ */
+- (void)onDirectRoomsChange;
+
 @end
