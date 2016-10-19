@@ -494,30 +494,18 @@
                 roomName = nil;
             }
             
+            // Check whether some users must be invited
+            NSArray *invitedUsers = self.participantsList;
+            
             // Create new room
             [selectedSession createRoom:roomName
                              visibility:(_roomVisibilityControl.selectedSegmentIndex == 0) ? kMXRoomDirectoryVisibilityPublic : kMXRoomDirectoryVisibilityPrivate
                               roomAlias:self.alias
                                   topic:nil
+                                 invite:invitedUsers
+                             invite3PID:nil
+                               isDirect:((invitedUsers.count == 1) ? YES : NO)
                                 success:^(MXRoom *room) {
-                                    
-                                    // Check whether some users must be invited
-                                    NSArray *invitedUsers = self.participantsList;
-                                    for (NSString *userId in invitedUsers)
-                                    {
-                                        [room inviteUser:userId success:^{
-                                            
-                                            NSLog(@"[MXKRoomCreationTableVC] %@ has been invited (roomId: %@)", userId, room.state.roomId);
-                                            
-                                        } failure:^(NSError *error) {
-                                            
-                                            NSLog(@"[MXKRoomCreationTableVC] %@ invitation failed (roomId: %@): %@", userId, room.state.roomId, error);
-                                            
-                                            // Notify MatrixKit user
-                                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                            
-                                        }];
-                                    }
                                     
                                     // Reset text fields
                                     _roomNameTextField.text = nil;
