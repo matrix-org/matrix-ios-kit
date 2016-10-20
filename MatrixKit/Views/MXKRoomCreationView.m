@@ -260,7 +260,7 @@
         }
         else
         {
-            NSLog(@"[MXKRoomCreationTableVC] Wrong room alias has been set (%@)", _roomAliasTextField.text);
+            NSLog(@"[MXKRoomCreationView] Wrong room alias has been set (%@)", _roomAliasTextField.text);
             alias = nil;
         }
     }
@@ -496,6 +496,7 @@
             
             // Check whether some users must be invited
             NSArray *invitedUsers = self.participantsList;
+            BOOL isDirect = ((invitedUsers.count == 1) ? YES : NO);
             
             // Create new room
             [selectedSession createRoom:roomName
@@ -504,7 +505,7 @@
                                   topic:nil
                                  invite:invitedUsers
                              invite3PID:nil
-                               isDirect:((invitedUsers.count == 1) ? YES : NO)
+                               isDirect:isDirect
                                 success:^(MXRoom *room) {
                                     
                                     // Reset text fields
@@ -522,7 +523,7 @@
                                     
                                     _createRoomBtn.enabled = YES;
                                     
-                                    NSLog(@"[MXKRoomCreationTableVC] Create room (%@ %@ (%@)) failed: %@", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private", error);
+                                    NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed: %@", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private", error);
                                     
                                     // Notify MatrixKit user
                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
