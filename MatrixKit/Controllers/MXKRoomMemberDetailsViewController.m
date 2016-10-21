@@ -391,25 +391,16 @@
                                           visibility:kMXRoomDirectoryVisibilityPrivate
                                            roomAlias:nil
                                                topic:nil
+                                              invite:@[_mxRoomMember.userId]
+                                          invite3PID:nil
+                                            isDirect:YES
                                              success:^(MXRoom *room) {
                                                  
-                                                 // Add the user
-                                                 [room inviteUser:_mxRoomMember.userId success:^{
-                                                     
-                                                     // Delay the call in order to be sure that the room is ready
-                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                         [room placeCallWithVideo:isVideoCall success:nil failure:nil];
-                                                         [self removePendingActionMask];
-                                                     });
-                                                     
-                                                 } failure:^(NSError *error) {
-                                                     
-                                                     NSLog(@"[MXKRoomMemberDetailsVC] %@ invitation failed (roomId: %@): %@", _mxRoomMember.userId, room.state.roomId, error);
+                                                 // Delay the call in order to be sure that the room is ready
+                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                     [room placeCallWithVideo:isVideoCall success:nil failure:nil];
                                                      [self removePendingActionMask];
-                                                     // Notify MatrixKit user
-                                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                     
-                                                 }];
+                                                 });
                                                  
                                              } failure:^(NSError *error) {
                                                  
