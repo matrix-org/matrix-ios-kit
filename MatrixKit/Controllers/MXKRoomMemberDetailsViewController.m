@@ -180,7 +180,7 @@
                            } failure:^(NSError *error) {
                                
                                [self removePendingActionMask];
-                               NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed: %@", _mxRoomMember.userId, error);
+                               NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed", _mxRoomMember.userId);
                                // Notify MatrixKit user
                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                                
@@ -198,7 +198,7 @@
                 } failure:^(NSError *error) {
                     
                     [self removePendingActionMask];
-                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed: %@", mxRoom.state.roomId, error);
+                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.state.roomId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -222,7 +222,7 @@
                          } failure:^(NSError *error) {
                              
                              [self removePendingActionMask];
-                             NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed: %@", _mxRoomMember.userId, error);
+                             NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed", _mxRoomMember.userId);
                              // Notify MatrixKit user
                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                              
@@ -241,7 +241,7 @@
                         } failure:^(NSError *error) {
                             
                             [self removePendingActionMask];
-                            NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed: %@", _mxRoomMember.userId, error);
+                            NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed", _mxRoomMember.userId);
                             // Notify MatrixKit user
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                             
@@ -259,7 +259,7 @@
                           } failure:^(NSError *error) {
                               
                               [self removePendingActionMask];
-                              NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed: %@", _mxRoomMember.userId, error);
+                              NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed", _mxRoomMember.userId);
                               // Notify MatrixKit user
                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                               
@@ -288,7 +288,7 @@
                                          } failure:^(NSError *error) {
                                              
                                              [strongSelf removePendingActionMask];
-                                             NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed: %@", strongSelf.mxRoomMember.userId, error);
+                                             NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", strongSelf.mxRoomMember.userId);
                                              
                                              // Notify MatrixKit user
                                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
@@ -321,7 +321,7 @@
 
                                                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                                                 [strongSelf removePendingActionMask];
-                                                NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed: %@", strongSelf.mxRoomMember.userId, error);
+                                                NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed", strongSelf.mxRoomMember.userId);
 
                                                 // Notify MatrixKit user
                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
@@ -404,7 +404,7 @@
                                                  
                                              } failure:^(NSError *error) {
                                                  
-                                                 NSLog(@"[MXKRoomMemberDetailsVC] Create room failed: %@", error);
+                                                 NSLog(@"[MXKRoomMemberDetailsVC] Create room failed");
                                                  [self removePendingActionMask];
                                                  // Notify MatrixKit user
                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
@@ -878,7 +878,7 @@
 
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 [strongSelf removePendingActionMask];
-                NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed: %@", strongSelf.mxRoomMember.userId, error);
+                NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed", strongSelf.mxRoomMember.userId);
 
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];

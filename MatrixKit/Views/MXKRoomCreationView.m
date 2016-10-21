@@ -523,7 +523,7 @@
                                     
                                     _createRoomBtn.enabled = YES;
                                     
-                                    NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed: %@", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private", error);
+                                    NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private");
                                     
                                     // Notify MatrixKit user
                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];

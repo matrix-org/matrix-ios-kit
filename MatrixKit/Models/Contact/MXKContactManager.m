@@ -725,7 +725,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                              }
                                          }
                                          failure:^(NSError *error) {
-                                             NSLog(@"[MXKContactManager] lookup3pids failed %@", error);
+                                             NSLog(@"[MXKContactManager] lookup3pids failed");
                                              
                                              // try later
                                              dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -804,7 +804,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                              }
                                          }
                                          failure:^(NSError *error) {
-                                             NSLog(@"[MXKContactManager] lookup3pids failed %@", error);
+                                             NSLog(@"[MXKContactManager] lookup3pids failed");
                                              
                                              // try later
                                              dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

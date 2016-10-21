@@ -458,7 +458,7 @@
                 // Hide topic field if empty
                 strongSelf.hiddenTopic = !textField.text.length;
                 
-                NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed: %@", error);
+                NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed");
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                 

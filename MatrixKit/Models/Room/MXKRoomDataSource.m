@@ -577,7 +577,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     } failure:^(NSError *error) {
 
-                        NSLog(@"[MXKRoomDataSource] Failed to resetPaginationAroundInitialEventWithLimit: %@", error);
+                        NSLog(@"[MXKRoomDataSource] Failed to resetPaginationAroundInitialEventWithLimit");
 
                         // Notify the error
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceTimelineError
@@ -1064,7 +1064,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
     } failure:^(NSError *error) {
         
-        NSLog(@"[MXKRoomDataSource] paginateBackMessages fails. Error: %@", error);
+        NSLog(@"[MXKRoomDataSource] paginateBackMessages fails");
         
         // Something wrong happened or the request was cancelled.
         // Check whether the request is the actual one before removing listener and handling the retrieved events.

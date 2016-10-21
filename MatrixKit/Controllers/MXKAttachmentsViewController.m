@@ -652,7 +652,7 @@
                         cell.notificationObserver = nil;
                     }
                     
-                    NSLog(@"[MXKAttachmentsVC] gif download failed: %@", error);
+                    NSLog(@"[MXKAttachmentsVC] gif download failed");
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -923,7 +923,7 @@
                                 selectedCell.notificationObserver = nil;
                             }
                             
-                            NSLog(@"[MXKAttachmentsVC] video download failed: %@", error);
+                            NSLog(@"[MXKAttachmentsVC] video download failed");
 
                             // Display the navigation bar so that the user can leave this screen
                             self.navigationController.navigationBarHidden = NO;

@@ -398,7 +398,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             
         } failure:^(NSError *error) {
              
-             NSLog(@"[MXKAccountDetailsVC] Failed to set displayName: %@", error);
+             NSLog(@"[MXKAccountDetailsVC] Failed to set displayName");
              __strong __typeof(weakSelf)strongSelf = weakSelf;
              
              // Alert user
@@ -449,7 +449,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                  [self saveUserInfo];
              } failure:^(NSError *error)
              {
-                 NSLog(@"[MXKAccountDetailsVC] Failed to upload image: %@", error);
+                 NSLog(@"[MXKAccountDetailsVC] Failed to upload image");
                  [self handleErrorDuringPictureSaving:error];
              }];
             
@@ -468,7 +468,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                      
                                  }
                                  failure:^(NSError *error) {
-                                     NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url: %@", error);
+                                     NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url");
                                      __strong __typeof(weakSelf)strongSelf = weakSelf;
                                      [strongSelf handleErrorDuringPictureSaving:error];
                                  }];
@@ -688,7 +688,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
             __strong __typeof(weakSelf)strongSelf = weakSelf;
 
-            NSLog(@"[MXKAccountDetailsVC] Failed to bind email: %@", error);
+            NSLog(@"[MXKAccountDetailsVC] Failed to bind email");
 
             // Display the same popup again if the error is M_THREEPID_AUTH_FAILED
             MXError *mxError = [[MXError alloc] initWithNSError:error];
@@ -777,7 +777,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
         } failure:^(NSError *error) {
 
-            NSLog(@"[MXKAccountDetailsVC] Failed to request email token: %@", error);
+            NSLog(@"[MXKAccountDetailsVC] Failed to request email token");
 
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];

@@ -620,7 +620,7 @@
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed: %@", room.state.roomId, error);
+            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed", room.state.roomId);
             
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
