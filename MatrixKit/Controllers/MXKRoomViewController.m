@@ -925,7 +925,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
         void (^failure)(NSError *error) = ^(NSError *error) {
 
-            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomIdOrAlias);
+            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
 
             joinRoomRequest = nil;
             [self stopActivityIndicator];
