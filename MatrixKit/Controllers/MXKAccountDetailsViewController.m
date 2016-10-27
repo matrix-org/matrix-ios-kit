@@ -745,7 +745,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     else if (sender == logoutButton)
     {
-        [[MXKAccountManager sharedManager] removeAccount:_mxAccount];
+        [[MXKAccountManager sharedManager] removeAccount:_mxAccount completion:nil];
         self.mxAccount = nil;
     }
     else if (sender == emailSubmitButton)

@@ -591,11 +591,28 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     notifyOpenSessionFailure = YES;
 }
 
-- (void)logout
+- (void)logout:(void (^)())completion
 {
     [self deletePusher];
     
-    [self closeSession:YES];
+    [mxSession logout:^{
+        
+        [self closeSession:YES];
+        if (completion)
+        {
+            completion();
+        }
+        
+    } failure:^(NSError *error) {
+        
+        // Close the session even if the logout request failed
+        [self closeSession:YES];
+        if (completion)
+        {
+            completion();
+        }
+        
+    }];
 }
 
 - (void)deletePusher
@@ -1031,7 +1048,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else if (mxSession.state == MXSessionStateUnknownToken)
     {
         // Logout this account
-        [[MXKAccountManager sharedManager] removeAccount:self];
+        [[MXKAccountManager sharedManager] removeAccount:self completion:nil];
     }
 }
 

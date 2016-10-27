@@ -116,26 +116,40 @@ static MXKAccountManager *sharedAccountManager = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
-- (void)removeAccount:(MXKAccount*)account
+- (void)removeAccount:(MXKAccount*)account completion:(void (^)())completion;
 {
     NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
     
     // Close session and clear associated store.
-    [account logout];
-    
-    [mxAccounts removeObject:account];
-    [self saveAccounts];
-    
-    // Post notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account userInfo:nil];
+    [account logout:^{
+        
+        [mxAccounts removeObject:account];
+        [self saveAccounts];
+        
+        // Post notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account userInfo:nil];
+        
+        if (completion)
+        {
+            completion();
+        }
+        
+    }];
 }
 
 - (void)logout
 {
-    // Logout all existing accounts
-    while (mxAccounts.lastObject)
+    // Logout one by one the existing accounts
+    if (mxAccounts.count)
     {
-        [self removeAccount:mxAccounts.lastObject];
+        [self removeAccount:mxAccounts.lastObject completion:^{
+            
+            // loop: logout the next existing account (if any)
+            [self logout];
+            
+        }];
+        
+        return;
     }
     
     // Remove APNS device token
