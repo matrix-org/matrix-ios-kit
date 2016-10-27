@@ -234,7 +234,10 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     }
     else if (button == self.rightInputToolbarButton)
     {
-        
+        // This forces an autocorrect event to happen when "Send" is pressed, which is necessary to accept a pending correction on send
+        self.textMessage = [NSString stringWithFormat:@"%@ ", self.textMessage];
+        self.textMessage = [self.textMessage substringToIndex:[self.textMessage length]-1];
+
         NSString *message = self.textMessage;
         
         // Reset message

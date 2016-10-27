@@ -191,9 +191,11 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 - (void)closeSession:(BOOL)clearStore;
 
 /**
- Close the matrix session, and delete all store data.
+ Invalidate the access token, close the matrix session and delete all store data.
+ 
+ @param completion the block to execute at the end of the operation (independently if it succeeded or not).
  */
-- (void)logout;
+- (void)logout:(void (^)())completion;
 
 /**
  Delete the potential pusher used to receive push notifications, without changing 'enablePushNotifications' property.

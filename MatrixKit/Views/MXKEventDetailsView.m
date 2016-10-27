@@ -163,7 +163,7 @@
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKEventDetailsView] Redact event (%@) failed: %@", mxEvent.eventId, error);
+                NSLog(@"[MXKEventDetailsView] Redact event (%@) failed", mxEvent.eventId);
                 
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];

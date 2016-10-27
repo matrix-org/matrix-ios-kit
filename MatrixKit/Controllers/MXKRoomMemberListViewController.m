@@ -536,7 +536,7 @@
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Invite %@ failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Invite %@ failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     

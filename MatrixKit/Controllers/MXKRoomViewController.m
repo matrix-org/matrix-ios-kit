@@ -860,7 +860,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomDataSource.room.state.displayname, error);
+            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomDataSource.room.state.displayname);
             
             joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -925,7 +925,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
         void (^failure)(NSError *error) = ^(NSError *error) {
 
-            NSLog(@"[MXKRoomVC] Failed to join room (%@): %@", roomIdOrAlias, error);
+            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
 
             joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -1325,7 +1325,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKRoomVC] Set displayName failed: %@", error);
+                NSLog(@"[MXKRoomVC] Set displayName failed");
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                 
@@ -1358,7 +1358,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 // Do nothing by default when we succeed to join the room
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed: %@", roomAlias, error);
+                NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed", roomAlias);
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                 
@@ -1415,7 +1415,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed: %@", roomIdOrAlias, roomId, error);
+                NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed", roomIdOrAlias, roomId);
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                 
@@ -1446,7 +1446,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKRoomVC] Set topic failed: %@", error);
+                NSLog(@"[MXKRoomVC] Set topic failed");
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
 
@@ -1483,7 +1483,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                 } failure:^(NSError *error) {
 
-                    NSLog(@"[MXKRoomVC] Invite user (%@) failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Invite user (%@) failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
 
@@ -1517,7 +1517,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Kick user (%@) failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Kick user (%@) failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -1551,7 +1551,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Ban user (%@) failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Ban user (%@) failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -1572,7 +1572,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Unban user (%@) failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Unban user (%@) failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -1607,7 +1607,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Set user power (%@) failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Set user power (%@) failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
@@ -1628,7 +1628,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                 } failure:^(NSError *error) {
 
-                    NSLog(@"[MXKRoomVC] Reset user power (%@) failed: %@", userId, error);
+                    NSLog(@"[MXKRoomVC] Reset user power (%@) failed", userId);
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
 
@@ -1970,7 +1970,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [roomDataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error)
     {
         // Just log the error. The message will be displayed in red in the room history
-        NSLog(@"[MXKRoomViewController] sendTextMessage failed. Error:%@", error);
+        NSLog(@"[MXKRoomViewController] sendTextMessage failed.");
     }];
 }
 
@@ -3101,7 +3101,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [roomDataSource sendImage:image success:nil failure:^(NSError *error)
     {
         // Nothing to do. The image is marked as unsent in the room history by the datasource
-        NSLog(@"[MXKRoomViewController] sendImage failed. Error:%@", error);
+        NSLog(@"[MXKRoomViewController] sendImage failed.");
     }];
 }
 
@@ -3111,7 +3111,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [roomDataSource sendImage:imageLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
     {
         // Nothing to do. The image is marked as unsent in the room history by the datasource
-        NSLog(@"[MXKRoomViewController] sendImage with mimetype failed. Error:%@", error);
+        NSLog(@"[MXKRoomViewController] sendImage with mimetype failed.");
     }];
 }
 
@@ -3121,7 +3121,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [roomDataSource sendVideo:videoLocalURL withThumbnail:videoThumbnail success:nil failure:^(NSError *error)
     {
         // Nothing to do. The video is marked as unsent in the room history by the datasource
-        NSLog(@"[MXKRoomViewController] sendVideo failed. Error:%@", error);
+        NSLog(@"[MXKRoomViewController] sendVideo failed.");
     }];
 }
 
@@ -3131,7 +3131,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [roomDataSource sendFile:fileLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
      {
          // Nothing to do. The file is marked as unsent in the room history by the datasource
-         NSLog(@"[MXKRoomViewController] sendFile failed. Error:%@", error);
+         NSLog(@"[MXKRoomViewController] sendFile failed.");
      }];
 }
 

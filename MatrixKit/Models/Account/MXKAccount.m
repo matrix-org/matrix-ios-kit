@@ -479,7 +479,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                                   [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
                               }
                               failure:^(NSError *error) {
-                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) failed: %@", mxCredentials.userId, (unsigned long)userPresence, error);
+                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) failed", mxCredentials.userId, (unsigned long)userPresence);
                               }];
     }
     else if (hideUserPresence)
@@ -603,11 +603,28 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     notifyOpenSessionFailure = YES;
 }
 
-- (void)logout
+- (void)logout:(void (^)())completion
 {
     [self deletePusher];
     
-    [self closeSession:YES];
+    [mxSession logout:^{
+        
+        [self closeSession:YES];
+        if (completion)
+        {
+            completion();
+        }
+        
+    } failure:^(NSError *error) {
+        
+        // Close the session even if the logout request failed
+        [self closeSession:YES];
+        if (completion)
+        {
+            completion();
+        }
+        
+    }];
 }
 
 - (void)deletePusher
@@ -834,7 +851,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
             {
-                NSLog(@"[MXKAccount] APNS was already disabled for %@! (%@)", self.mxCredentials.userId, error);
+                NSLog(@"[MXKAccount] APNS was already disabled for %@!", self.mxCredentials.userId);
                 
                 // Ignore the error
                 if (success)
@@ -950,7 +967,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
     } failure:^(NSError *error) {
         
-        NSLog(@"[MXKAccount] Initial Sync failed: %@", error);
+        NSLog(@"[MXKAccount] Initial Sync failed");
         if (notifyOpenSessionFailure && error)
         {
             // Notify MatrixKit user only once
@@ -1043,7 +1060,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else if (mxSession.state == MXSessionStateUnknownToken)
     {
         // Logout this account
-        [[MXKAccountManager sharedManager] removeAccount:self];
+        [[MXKAccountManager sharedManager] removeAccount:self completion:nil];
     }
 }
 
