@@ -27,8 +27,6 @@
 
 #import "MXSession.h"
 
-#import "MXFileCryptoStore.h"
-
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 
@@ -591,10 +589,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         if (clearStore)
         {
             [mxSession.store deleteAllData];
-
-            // @TODO: it would be better to call a kind of [mxSession logout] that will
-            // erase the device hs side and from the crypto store.
-            [MXFileCryptoStore deleteStoreWithCredentials:mxSession.matrixRestClient.credentials];
         }
         
         mxSession = nil;
