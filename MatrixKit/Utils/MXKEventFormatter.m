@@ -724,8 +724,16 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
         }
         case MXEventTypeRoomEncrypted:
         {
-            // E2e encryption is not yet supported
-            displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
+            // If the message still appears as encrypted, there was propably an error for decryption
+            // Show this error
+            if (event.decryptionError)
+            {
+                displayText = [NSString stringWithFormat:@"** %@ **", event.decryptionError.localizedDescription];
+            }
+            else
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
+            }
             break;
         }
         case MXEventTypeRoomHistoryVisibility:
@@ -1379,10 +1387,10 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     MXEvent *event = [[MXEvent alloc] init];
     event.roomId = roomId;
     event.eventId = eventId;
-    event.type = kMXEventTypeStringRoomMessage;
+    event.wireType = kMXEventTypeStringRoomMessage;
     event.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
     event.sender = mxSession.myUser.userId;
-    event.content = content;
+    event.wireContent = content;
     
     return event;
 }
