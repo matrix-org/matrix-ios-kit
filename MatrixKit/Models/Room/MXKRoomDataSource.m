@@ -1297,7 +1297,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         msgContent2[@"url"] = url;
         
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
-        localEcho.content = msgContent2;
+        localEcho.wireContent = msgContent2;
         [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
         
         // Make the final request that posts the image event
@@ -1396,7 +1396,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         msgContent2[@"url"] = url;
         
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
-        localEcho.content = msgContent2;
+        localEcho.wireContent = msgContent2;
         [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
 
         // Make the final request that posts the image event
@@ -1494,7 +1494,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 
                 // Apply the nasty trick again so that the cell can monitor the upload progress
                 msgContent[@"url"] = videoUploader.uploadId;
-                localEcho.content = msgContent;
+                localEcho.wireContent = msgContent;
                 [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
                 [self updateLocalEcho:localEcho];
                 
@@ -1517,7 +1517,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     msgContent[@"info"][@"duration"] = @(durationInMs);
                     msgContent[@"info"][@"thumbnail_url"] = thumbnailUrl;
                     
-                    localEcho.content = msgContent;
+                    localEcho.wireContent = msgContent;
                     [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
                     
                     // And send the Matrix room message video event to the homeserver
@@ -1651,7 +1651,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         msgContent2[@"url"] = url;
         
         // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
-        localEcho.content = msgContent2;
+        localEcho.wireContent = msgContent2;
         [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
 
         // Make the final request that posts the event
