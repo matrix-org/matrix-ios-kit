@@ -94,8 +94,9 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  Remove the provided account and save the new account list. This method is used in case of logout.
  
  @param account a matrix account.
+ @param completion the block to execute at the end of the operation.
  */
-- (void)removeAccount:(MXKAccount*)account;
+- (void)removeAccount:(MXKAccount*)account completion:(void (^)())completion;
 
 /**
  Log out and remove all the existing accounts
