@@ -107,6 +107,8 @@
     _delegate = nil;
     _mxRoomMember = nil;
     
+    actionsArray = nil;
+    
     [super destroy];
 }
 
