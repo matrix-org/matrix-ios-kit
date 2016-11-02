@@ -396,6 +396,7 @@
                                               invite:@[_mxRoomMember.userId]
                                           invite3PID:nil
                                             isDirect:YES
+                                              preset:kMXRoomPresetTrustedPrivateChat
                                              success:^(MXRoom *room) {
                                                  
                                                  // Delay the call in order to be sure that the room is ready

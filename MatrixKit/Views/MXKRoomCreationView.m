@@ -496,16 +496,33 @@
             
             // Check whether some users must be invited
             NSArray *invitedUsers = self.participantsList;
-            BOOL isDirect = ((invitedUsers.count == 1) ? YES : NO);
+            
+            // Prepare room settings
+            MXRoomDirectoryVisibility visibility;
+            BOOL isDirect = NO;
+            
+            if (_roomVisibilityControl.selectedSegmentIndex == 0)
+            {
+                visibility = kMXRoomDirectoryVisibilityPublic;
+            }
+            else
+            {
+                visibility = kMXRoomDirectoryVisibilityPrivate;
+                isDirect = (invitedUsers.count == 1);
+            }
+            
+            // Ensure direct chat are created with equal ops on both sides (the trusted_private_chat preset)
+            MXRoomPreset preset = (isDirect ? kMXRoomPresetTrustedPrivateChat : nil);
             
             // Create new room
             [selectedSession createRoom:roomName
-                             visibility:(_roomVisibilityControl.selectedSegmentIndex == 0) ? kMXRoomDirectoryVisibilityPublic : kMXRoomDirectoryVisibilityPrivate
+                             visibility:visibility
                               roomAlias:self.alias
                                   topic:nil
                                  invite:invitedUsers
                              invite3PID:nil
                                isDirect:isDirect
+                                 preset:preset
                                 success:^(MXRoom *room) {
                                     
                                     // Reset text fields
