@@ -378,9 +378,7 @@
                 {
                     [self addPendingActionMask];
                     
-                    NSString *directRoomId = self.mainSession.directRooms[_mxRoomMember.userId].firstObject;
-                    
-                    MXRoom* directRoom = [self.mainSession roomWithRoomId:directRoomId];
+                    MXRoom* directRoom = [self.mainSession directJoinedRoomWithUserId:_mxRoomMember.userId];
                     
                     // Place the call directly if the room exists
                     if (directRoom)
@@ -682,8 +680,8 @@
         
         // offer to start a new chat only if the room is not the first direct chat with this user
         // it does not make sense : it would open the same room
-        NSString* directRoomId = self.mainSession.directRooms[_mxRoomMember.userId].firstObject;
-        if (!directRoomId || (![directRoomId isEqualToString:mxRoom.state.roomId]))
+        MXRoom* directRoom = [self.mainSession directJoinedRoomWithUserId:_mxRoomMember.userId];
+        if (!directRoom || (![directRoom.roomId isEqualToString:mxRoom.state.roomId]))
         {
             [actionsArray addObject:@(MXKRoomMemberDetailsActionStartChat)];
         }
