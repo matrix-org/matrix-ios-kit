@@ -66,7 +66,7 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
  */
 typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
     MXKContactManagerMXRoomSourceNone        = 0,   // the MXMember does not create any new contact.
-    MXKContactManagerMXRoomSourceOneToOne    = 1,   // the 1:1 room members have their own contact even if they are not defined in the device contacts book
+    MXKContactManagerMXRoomSourceOneToOne    = 1,   // the direct chat users have their own contact even if they are not defined in the device contacts book
     MXKContactManagerMXRoomSourceAll         = 2,   // all the room members have their own contact even if they are not defined in the device contacts book
 };
 
@@ -121,9 +121,9 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *localEmailContacts;
 
 /**
- The current list of the contacts for whom a 1:1 room exists.
+ The current list of the contacts for whom a direct chat exists.
  */
-@property (nonatomic, readonly) NSArray *oneToOneMatrixContacts;
+@property (nonatomic, readonly) NSArray *directMatrixContacts;
 
 /**
  List the contacts who share at least a private room with the current user of the provided matrix session.
