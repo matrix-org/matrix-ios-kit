@@ -143,7 +143,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         mxCredentials = [[MXCredentials alloc] initWithHomeServer:homeServerURL
                                                            userId:userId
                                                       accessToken:accessToken];
-        
+
+        mxCredentials.deviceId = [coder decodeObjectForKey:@"deviceId"];  
         mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
         
         [self prepareRESTClient];
@@ -184,7 +185,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeObject:mxCredentials.homeServer forKey:@"homeserverurl"];
     [coder encodeObject:mxCredentials.userId forKey:@"userid"];
     [coder encodeObject:mxCredentials.accessToken forKey:@"accesstoken"];
-    
+
+    if (mxCredentials.deviceId)
+    {
+        [coder encodeObject:mxCredentials.deviceId forKey:@"deviceId"];
+    }
+
     if (mxCredentials.allowedCertificate)
     {
         [coder encodeObject:mxCredentials.allowedCertificate forKey:@"allowedCertificate"];
