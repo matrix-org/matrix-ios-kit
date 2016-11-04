@@ -378,12 +378,12 @@
                 {
                     [self addPendingActionMask];
                     
-                    MXRoom* oneToOneRoom = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
+                    MXRoom* directRoom = [self.mainSession directJoinedRoomWithUserId:_mxRoomMember.userId];
                     
                     // Place the call directly if the room exists
-                    if (oneToOneRoom)
+                    if (directRoom)
                     {
-                        [oneToOneRoom placeCallWithVideo:isVideoCall success:nil failure:nil];
+                        [directRoom placeCallWithVideo:isVideoCall success:nil failure:nil];
                         [self removePendingActionMask];
                     }
                     else
@@ -678,10 +678,10 @@
             [actionsArray addObject:@(MXKRoomMemberDetailsActionSetCustomPowerLevel)];
         }
         
-        // offer to start a new chat only if the room is not a 1:1 room with this user
+        // offer to start a new chat only if the room is not the first direct chat with this user
         // it does not make sense : it would open the same room
-        MXRoom* room = [self.mainSession privateOneToOneRoomWithUserId:_mxRoomMember.userId];
-        if (!room || (![room.state.roomId isEqualToString:mxRoom.state.roomId]))
+        MXRoom* directRoom = [self.mainSession directJoinedRoomWithUserId:_mxRoomMember.userId];
+        if (!directRoom || (![directRoom.roomId isEqualToString:mxRoom.state.roomId]))
         {
             [actionsArray addObject:@(MXKRoomMemberDetailsActionStartChat)];
         }

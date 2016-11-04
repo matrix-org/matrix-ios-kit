@@ -108,7 +108,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         // to avoid resync the whole phonebook
         lastSyncDate = nil;
         
-        self.contactManagerMXRoomSource = MXKContactManagerMXRoomSourceOneToOne;
+        self.contactManagerMXRoomSource = MXKContactManagerMXRoomSourceDirectChats;
         
         // Observe related settings change
         [[MXKAppSettings standardAppSettings]  addObserver:self forKeyPath:@"syncLocalContacts" options:0 context:nil];
@@ -219,7 +219,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                     
                     // Consider only 1:1 chat for MXKMemberContactCreationOneToOneRoom
                     // or adding all
-                    if (((roomMembers.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceOneToOne)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
+                    if (((roomMembers.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
                     {
                         NSString* myUserId = room.mxSession.myUser.userId;
                         
@@ -366,16 +366,16 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return localEmailContacts;
 }
 
-- (NSArray*)oneToOneMatrixContacts
+- (NSArray*)directMatrixContacts
 {
-    NSMutableDictionary *oneToOneContacts = [NSMutableDictionary dictionary];
+    NSMutableDictionary *directContacts = [NSMutableDictionary dictionary];
     
     NSArray *mxSessions = self.mxSessions;
     
     for (MXSession *mxSession in mxSessions)
     {
-        // Check all existing users for whom a 1:1 room exists
-        NSArray *mxUserIds = mxSession.privateOneToOneUsers;
+        // Check all existing users for whom a direct chat exists
+        NSArray *mxUserIds = mxSession.directRooms.allKeys;
         
         for (NSString *mxUserId in mxUserIds)
         {
@@ -384,12 +384,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
             // Sanity check - the contact must be already defined here
             if (contact)
             {
-                [oneToOneContacts setValue:contact forKey:mxUserId];
+                [directContacts setValue:contact forKey:mxUserId];
             }
         }
     }
     
-    return oneToOneContacts.allValues;
+    return directContacts.allValues;
 }
 
 - (NSArray*)privateMatrixContacts:(MXSession *)mxSession
@@ -1012,7 +1012,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 // Check whether this user has already been added
                 if (![updatedMatrixContactByMatrixID objectForKey:user.userId])
                 {
-                    if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceOneToOne) && [mxSession privateOneToOneRoomWithUserId:user.userId]))
+                    if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats) && mxSession.directRooms[user.userId]))
                     {
                         // Check whether a contact is already defined for this id in previous dictionary
                         // (avoid delete and create the same ones, it could save thumbnail downloads).
@@ -1052,7 +1052,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     NSArray *mxSessions = self.mxSessions;
     for (MXSession *mxSession in mxSessions)
     {
-        if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceOneToOne) && [mxSession privateOneToOneRoomWithUserId:matrixId]))
+        if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats) && mxSession.directRooms[matrixId]))
         {
             // Retrieve the user object related to this contact
             MXUser* user = [mxSession userWithUserId:matrixId];
