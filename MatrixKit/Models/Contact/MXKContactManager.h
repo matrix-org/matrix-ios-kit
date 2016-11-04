@@ -66,7 +66,7 @@ extern NSString *const kMXKContactManagerDidInternationalizeNotification;
  */
 typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
     MXKContactManagerMXRoomSourceNone        = 0,   // the MXMember does not create any new contact.
-    MXKContactManagerMXRoomSourceOneToOne    = 1,   // the direct chat users have their own contact even if they are not defined in the device contacts book
+    MXKContactManagerMXRoomSourceDirectChats = 1,   // the direct chat users have their own contact even if they are not defined in the device contacts book
     MXKContactManagerMXRoomSourceAll         = 2,   // all the room members have their own contact even if they are not defined in the device contacts book
 };
 
@@ -95,7 +95,7 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 
 /**
  Define if the room member must have their dedicated contact even if they are not define in the device contacts book.
- The default value is MXKContactManagerMXRoomSourceOneToOne;
+ The default value is MXKContactManagerMXRoomSourceDirectChats;
  */
 @property (nonatomic) MXKContactManagerMXRoomSource contactManagerMXRoomSource;
 

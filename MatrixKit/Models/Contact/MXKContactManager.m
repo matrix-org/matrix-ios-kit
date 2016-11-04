@@ -108,7 +108,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         // to avoid resync the whole phonebook
         lastSyncDate = nil;
         
-        self.contactManagerMXRoomSource = MXKContactManagerMXRoomSourceOneToOne;
+        self.contactManagerMXRoomSource = MXKContactManagerMXRoomSourceDirectChats;
         
         // Observe related settings change
         [[MXKAppSettings standardAppSettings]  addObserver:self forKeyPath:@"syncLocalContacts" options:0 context:nil];
@@ -219,7 +219,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                     
                     // Consider only 1:1 chat for MXKMemberContactCreationOneToOneRoom
                     // or adding all
-                    if (((roomMembers.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceOneToOne)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
+                    if (((roomMembers.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
                     {
                         NSString* myUserId = room.mxSession.myUser.userId;
                         
@@ -1012,7 +1012,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 // Check whether this user has already been added
                 if (![updatedMatrixContactByMatrixID objectForKey:user.userId])
                 {
-                    if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceOneToOne) && mxSession.directRooms[user.userId]))
+                    if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats) && mxSession.directRooms[user.userId]))
                     {
                         // Check whether a contact is already defined for this id in previous dictionary
                         // (avoid delete and create the same ones, it could save thumbnail downloads).
@@ -1052,7 +1052,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     NSArray *mxSessions = self.mxSessions;
     for (MXSession *mxSession in mxSessions)
     {
-        if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceOneToOne) && mxSession.directRooms[matrixId]))
+        if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats) && mxSession.directRooms[matrixId]))
         {
             // Retrieve the user object related to this contact
             MXUser* user = [mxSession userWithUserId:matrixId];
