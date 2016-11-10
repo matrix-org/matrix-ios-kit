@@ -736,6 +736,25 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
             }
             break;
         }
+        case MXEventTypeRoomEncryption:
+        {
+            NSString *algorithm;
+            MXJSONModelSetString(algorithm, event.content[@"algorithm"]);
+            
+            if (isRedacted)
+            {
+                if (!redactedInfo)
+                {
+                    // Here the event is ignored (no display)
+                    return nil;
+                }
+                algorithm = redactedInfo;
+            }
+            
+            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled"], senderDisplayName, algorithm];
+            
+            break;
+        }
         case MXEventTypeRoomHistoryVisibility:
         {
             if (isRedacted)

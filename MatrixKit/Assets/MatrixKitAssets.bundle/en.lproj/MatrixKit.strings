@@ -101,6 +101,7 @@
 "notice_room_power_level_event_requirement" = "The minimum power levels related to events are:";
 "notice_room_aliases" = "The room aliases are: %@";
 "notice_encrypted_message" = "Encrypted message";
+"notice_encryption_enabled" = "%@ turned on end-to-end encryption (algorithm %@)";
 "notice_image_attachment" = "image attachment";
 "notice_audio_attachment" = "audio attachment";
 "notice_video_attachment" = "video attachment";
