@@ -240,8 +240,10 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
 
         NSString *message = self.textMessage;
         
-        // Reset message
+        // Reset message, disable view animation during the update to prevent placeholder distorsion.
+        [UIView setAnimationsEnabled:NO];
         self.textMessage = nil;
+        [UIView setAnimationsEnabled:YES];
         
         // Send button has been pressed
         if (message.length && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendTextMessage:)])
