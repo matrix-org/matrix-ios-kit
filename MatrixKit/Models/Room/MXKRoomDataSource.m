@@ -1380,22 +1380,37 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                  };
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
+    void(^onFailure)(NSError *) = ^(NSError *error) {
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self updateLocalEcho:localEcho];
+        
+        if (failure) {
+            failure(error);
+        }
+    };
+    
     if (self.mxSession.crypto && self.room.state.isEncrypted) {
         [MXEncryptedAttachments encryptAttachment:uploader mimeType:mimetype localUrl:imageLocalURL success:^(NSDictionary *result) {
             NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
             [msgContentToSend removeObjectForKey:@"url"];
             msgContentToSend[@"file"] = result;
-            // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
-            [self sendRawImageContent:msgContentToSend localEcho:localEcho success:success failure:failure];
-        } failure:^(NSError *error) {
-            localEcho.mxkState = MXKEventStateSendingFailed;
-            [self updateLocalEcho:localEcho];
             
-            if (failure)
-            {
-                failure(error);
+            // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
+            
+            void(^doUpload)() = ^{
+                [self sendRawImageContent:msgContentToSend localEcho:localEcho success:success failure:failure];
+            };
+            
+            UIImage *thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
+            if (thumbnail == image) {
+                doUpload();
+            } else {
+                [MXEncryptedAttachments encryptAttachment:uploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
+                    msgContentToSend[@"thumbnail_file"] = result;
+                    doUpload();
+                } failure:onFailure];
             }
-        }];
+        } failure:onFailure];
         return;
     }
     
