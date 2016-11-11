@@ -27,6 +27,8 @@
 
 #import "NSData+MatrixKit.h"
 
+#import "MXEncryptedAttachments.h"
+
 #pragma mark - Constant definitions
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
@@ -1378,13 +1380,27 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                  };
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
+    if (self.mxSession.crypto && self.room.state.isEncrypted) {
+        [MXEncryptedAttachments encryptAttachment:uploader mimeType:mimetype localUrl:imageLocalURL success:^(NSDictionary *result) {
+            NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
+            [msgContentToSend removeObjectForKey:@"url"];
+            msgContentToSend[@"file"] = result;
+            // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
+            [self sendRawImageContent:msgContentToSend localEcho:localEcho success:success failure:failure];
+        } failure:^(NSError *error) {
+            localEcho.mxkState = MXKEventStateSendingFailed;
+            [self updateLocalEcho:localEcho];
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
+        return;
+    }
+    
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
-        
-        // Update the local echo state: move from content uploading to event sending
-        localEcho.mxkState = MXKEventStateSending;
-        [self updateLocalEcho:localEcho];
-        
         // Copy the cached file to the actual cacheFile path
         NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
         NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
@@ -1400,31 +1416,40 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
 
         // Make the final request that posts the image event
-        [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
-            
-            // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
-            // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-            MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
-            [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
-            // Replace the local echo by the new one
-            [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
-            
-            if (success)
-            {
-                success(eventId);
-            }
-            
-        } failure:^(NSError *error) {
-            
-            // Update the local echo with the error state
-            localEcho.mxkState = MXKEventStateSendingFailed;
-            [self updateLocalEcho:localEcho];
-            
-            if (failure)
-            {
-                failure(error);
-            }
-        }];
+        [self sendRawImageContent:msgContent2 localEcho:localEcho success:success failure:failure];
+        
+    } failure:^(NSError *error) {
+        // Update the local echo with the error state
+        localEcho.mxkState = MXKEventStateSendingFailed;
+        [self updateLocalEcho:localEcho];
+        
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
+- (void)sendRawImageContent:(NSDictionary *)content
+                  localEcho:(MXEvent *)localEcho
+                    success:(void (^)(NSString *))success
+                    failure:(void (^)(NSError *))failure {
+    // Update the local echo state: move from content uploading to event sending
+    localEcho.mxkState = MXKEventStateSending;
+    [self updateLocalEcho:localEcho];
+    
+    [_room sendMessageOfType:kMXMessageTypeImage content:content success:^(NSString *eventId) {
+        // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
+        // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
+        MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+        [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
+        // Replace the local echo by the new one
+        [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
+        
+        if (success)
+        {
+            success(eventId);
+        }
         
     } failure:^(NSError *error) {
         // Update the local echo with the error state
