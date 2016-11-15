@@ -614,35 +614,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }
 }
 
-#pragma mark -
-
-- (void)dismissTemporarySubViews
-{
-    [self dismissKeyboard];
-    
-    if (currentAlert)
-    {
-        [currentAlert dismiss:NO];
-        currentAlert = nil;
-    }
-    
-    if (eventDetailsView)
-    {
-        [eventDetailsView removeFromSuperview];
-        eventDetailsView = nil;
-    }
-    
-    if (_leftRoomReasonLabel)
-    {
-        [_leftRoomReasonLabel removeFromSuperview];
-        _leftRoomReasonLabel = nil;
-        _bubblesTableView.tableHeaderView = nil;
-    }
-    
-    // Dispose potential keyboard view
-    self.keyboardView = nil;
-}
-
 #pragma mark - Public API
 
 - (void)displayRoom:(MXKRoomDataSource *)dataSource
@@ -1711,6 +1682,33 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             _bubblesTableView.contentOffset = CGPointMake(0, -_bubblesTableView.contentInset.top);
         }
     }
+}
+
+- (void)dismissTemporarySubViews
+{
+    [self dismissKeyboard];
+    
+    if (currentAlert)
+    {
+        [currentAlert dismiss:NO];
+        currentAlert = nil;
+    }
+    
+    if (eventDetailsView)
+    {
+        [eventDetailsView removeFromSuperview];
+        eventDetailsView = nil;
+    }
+    
+    if (_leftRoomReasonLabel)
+    {
+        [_leftRoomReasonLabel removeFromSuperview];
+        _leftRoomReasonLabel = nil;
+        _bubblesTableView.tableHeaderView = nil;
+    }
+    
+    // Dispose potential keyboard view
+    self.keyboardView = nil;
 }
 
 #pragma mark - activity indicator

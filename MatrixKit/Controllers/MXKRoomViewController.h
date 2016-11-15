@@ -323,6 +323,11 @@ extern NSString *const kCmdChangeRoomTopic;
 - (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated;
 
 /**
+ Dismiss the keyboard and all the potential subviews.
+ */
+- (void)dismissTemporarySubViews;
+
+/**
  Display a popup with the event detais.
  
  @param event the event to inspect.
