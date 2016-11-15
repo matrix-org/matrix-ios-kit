@@ -322,7 +322,7 @@
         selectedTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
         selectedTextView.attributedText = attributedText;
             
-        CGSize size = [selectedTextView sizeThatFits:measurementTextView.frame.size];
+        CGSize size = [selectedTextView sizeThatFits:selectedTextView.frame.size];
 
         // Manage the case where a string attribute has a single paragraph with a left indent
         // In this case, [UITextViex sizeThatFits] ignores the indent and return the width
