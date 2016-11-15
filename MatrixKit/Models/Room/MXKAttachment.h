@@ -87,6 +87,11 @@ typedef enum : NSUInteger {
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
 - (void)destroy;
 
+/**
+ * Gets a thumbnail URL for a given size of thumbnail, if possible,
+ * or if only one size of thumbnail is available, return the URL for that.
+ * Don't forget to multiply by the pixel density of your display
+ */
 - (NSURL *)getThumbnailUrlForSize:(CGSize)size;
 
 /**
