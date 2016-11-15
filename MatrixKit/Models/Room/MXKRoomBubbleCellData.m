@@ -56,13 +56,8 @@
             {
                 // Note: event.eventType is equal here to MXEventTypeRoomMessage
                 attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
-                if (attachment && attachment.type == MXKAttachmentTypeImage && attachment.thumbnailURL == nil)
+                if (attachment && attachment.type == MXKAttachmentTypeImage)
                 {
-                    // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                    attachment.thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:attachment.contentURL
-                                                                                                  toFitViewSize:self.contentSize
-                                                                                                     withMethod:MXThumbnailingMethodScale];
-                    
                     // Check the current thumbnail orientation. Rotate the current content size (if need)
                     if (attachment.thumbnailOrientation == UIImageOrientationLeft || attachment.thumbnailOrientation == UIImageOrientationRight)
                     {
@@ -131,15 +126,10 @@
                             // Update the current attachmnet description
                             attachment = updatedAttachment;
                             
-                            if (attachment.type == MXKAttachmentTypeImage && attachment.thumbnailURL == nil)
+                            if (attachment.type == MXKAttachmentTypeImage)
                             {
                                 // Reset content size
                                 _contentSize = CGSizeZero;
-                                
-                                // Suppose contentURL is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                                attachment.thumbnailURL = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:attachment.contentURL
-                                                                                                              toFitViewSize:self.contentSize
-                                                                                                                 withMethod:MXThumbnailingMethodScale];
                                 
                                 // Check the current thumbnail orientation. Rotate the current content size (if need)
                                 if (attachment.thumbnailOrientation == UIImageOrientationLeft || attachment.thumbnailOrientation == UIImageOrientationRight)

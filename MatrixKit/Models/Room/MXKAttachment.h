@@ -51,7 +51,10 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic, readonly) NSString *contentURL;
 @property (nonatomic, readonly) NSDictionary *contentInfo;
-@property (nonatomic) NSString *thumbnailURL;
+
+// The URL of a 'standard size' thumbnail
+@property (nonatomic, readonly) NSString *thumbnailURL;
+
 @property (nonatomic) NSDictionary *thumbnailInfo;
 
 /**
@@ -83,6 +86,8 @@ typedef enum : NSUInteger {
  */
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
 - (void)destroy;
+
+- (NSURL *)getThumbnailUrlForSize:(CGSize)size;
 
 /**
  Download the attachment data if it is not already cached.
