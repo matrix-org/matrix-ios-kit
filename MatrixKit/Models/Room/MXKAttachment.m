@@ -309,11 +309,6 @@
     
     // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
     _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-    if (nil == _actualURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _actualURL = _contentURL;
-    }
     
     NSString *mimetype = nil;
     if (event.content[@"info"])
@@ -349,11 +344,6 @@
     
     // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
     _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-    if (nil == _actualURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _actualURL = _contentURL;
-    }
     
     NSString *mimetype = nil;
     if (event.content[@"info"])
@@ -369,10 +359,6 @@
         // Get video thumbnail info
         _thumbnailURL = _contentInfo[@"thumbnail_url"];
         _thumbnailURL = [mxSession.matrixRestClient urlOfContent:_thumbnailURL];
-        if (nil == _thumbnailURL)
-        {
-            _thumbnailURL = _contentInfo[@"thumbnail_url"];
-        }
         
         _thumbnailInfo = _contentInfo[@"thumbnail_info"];
     }
@@ -386,11 +372,6 @@
     _contentURL = event.content[@"url"];
     // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
     _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-    if (nil == _actualURL)
-    {
-        // It was not a matrix content uri, we keep the provided url
-        _actualURL = _contentURL;
-    }
     
     NSString *mimetype = nil;
     if (event.content[@"info"])
