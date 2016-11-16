@@ -138,7 +138,8 @@ static const int kThumbnailHeight = 240;
     }
     
     NSString *msgtype =  self.event.content[@"msgtype"];
-    if ([msgtype isEqualToString:kMXMessageTypeVideo]) {
+    if ([msgtype isEqualToString:kMXMessageTypeVideo])
+    {
         _contentInfo = self.event.content[@"info"];
         
         if (_contentInfo)
@@ -152,7 +153,8 @@ static const int kThumbnailHeight = 240;
     }
     
     NSString *unencrypted_url = self.event.content[@"url"];
-    if (unencrypted_url) {
+    if (unencrypted_url)
+    {
         return [self.sess.matrixRestClient urlOfContentThumbnail:unencrypted_url
                                                    toFitViewSize:size
                                                       withMethod:MXThumbnailingMethodScale];
