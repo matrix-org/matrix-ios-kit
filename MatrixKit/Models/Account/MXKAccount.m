@@ -1102,6 +1102,15 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }];
 }
 
+#pragma mark - Crypto
+- (void)resetDeviceId
+{
+    mxCredentials.deviceId = nil;
+
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
 #pragma mark - backgroundSync management
 
 - (void)cancelBackgroundSync

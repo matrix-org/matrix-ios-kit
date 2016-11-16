@@ -295,4 +295,12 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  */
 - (void)updateNotificationListenerForRoomId:(NSString*)roomID ignore:(BOOL)isIgnored;
 
+#pragma mark - Crypto
+/**
+ Delete the device id.
+
+ Call this method when the current device id cannot be used anymore.
+ */
+- (void)resetDeviceId;
+
 @end
