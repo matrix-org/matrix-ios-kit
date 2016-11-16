@@ -20,8 +20,6 @@
 
 #import "MXKAppSettings.h"
 
-extern NSString *const kMXKEventFormatterLocalEventIdPrefix;
-
 /**
  Formatting result codes.
  */
@@ -200,19 +198,6 @@ typedef enum : NSUInteger {
  @return an HTML formatted string.
  */
 - (NSString*)htmlStringFromMarkdownString:(NSString*)markdownString;
-
-#pragma mark - Fake event objects creation
-
-/**
- Create a temporary event for a room.
- 
- @param roomId the room identifier
- @param eventId the event id. A globally unique string with kMXKEventFormatterLocalEventIdPrefix prefix is defined when this param is nil.
- @param content the event content.
- @return the created event.
- */
-- (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content;
-
 
 #pragma mark - Timestamp formatting
 

@@ -24,8 +24,6 @@
 #import "DTCoreText.h"
 #import "GHMarkdownParser.h"
 
-NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
-
 @interface MXKEventFormatter ()
 {
     /**
@@ -1392,26 +1390,6 @@ NSString *const kMXKEventFormatterLocalEventIdPrefix = @"MXKLocalId_";
     }
 
     return htmlString;
-}
-
-#pragma mark - Fake event objects creation
-
-- (MXEvent*)fakeRoomMessageEventForRoomId:(NSString*)roomId withEventId:(NSString*)eventId andContent:(NSDictionary*)content
-{
-    if (!eventId)
-    {
-        eventId = [NSString stringWithFormat:@"%@%@", kMXKEventFormatterLocalEventIdPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
-    }
-    
-    MXEvent *event = [[MXEvent alloc] init];
-    event.roomId = roomId;
-    event.eventId = eventId;
-    event.wireType = kMXEventTypeStringRoomMessage;
-    event.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
-    event.sender = mxSession.myUser.userId;
-    event.wireContent = content;
-    
-    return event;
 }
 
 #pragma mark - Timestamp formatting
