@@ -23,7 +23,6 @@
 
 #import "MXKRoomBubbleTableViewCell.h"
 #import "MXKImageView.h"
-#import "MXKEventDetailsView.h"
 
 #import "MXKRoomDataSourceManager.h"
 
@@ -57,11 +56,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 @interface MXKRoomViewController ()
 {
-    /**
-     Potential event details view.
-     */
-    MXKEventDetailsView *eventDetailsView;
-    
     /**
      Boolean value used to scroll to bottom the bubble history after refresh.
      */
@@ -1978,11 +1972,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 {
     [self dismissKeyboard];
     
-    // Remove potential existing view
-    if (eventDetailsView)
-    {
-        [eventDetailsView removeFromSuperview];
-    }
+    // Remove potential existing subviews
+    [self dismissTemporarySubViews];
+    
     eventDetailsView = [[MXKEventDetailsView alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
     
     // Add shadow on event details view

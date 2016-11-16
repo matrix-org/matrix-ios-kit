@@ -21,7 +21,7 @@ limitations under the License.
 #import "MXKRoomTitleView.h"
 #import "MXKRoomInputToolbarView.h"
 #import "MXKRoomActivitiesView.h"
-
+#import "MXKEventDetailsView.h"
 
 #import "MXKAttachmentsViewController.h"
 
@@ -43,6 +43,11 @@ extern NSString *const kCmdChangeRoomTopic;
 @interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate, MXKAttachmentsViewControllerDelegate>
 {
 @protected
+    /**
+     Potential event details view.
+     */
+    MXKEventDetailsView *eventDetailsView;
+    
     /**
      Current alert (if any).
      */
