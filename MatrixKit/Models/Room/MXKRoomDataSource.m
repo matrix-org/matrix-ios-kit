@@ -1347,7 +1347,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             
             // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
             // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-            MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+            MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
             [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
             // Replace the local echo by the new one
             [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
@@ -1498,9 +1498,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     [self updateLocalEcho:localEcho];
     
     [_room sendMessageOfType:kMXMessageTypeImage content:content success:^(NSString *eventId) {
+        
         // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
         // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-        MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+        MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
         [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
         // Replace the local echo by the new one
         [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
@@ -1652,7 +1653,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         // Update the local echo with its actual identifier.
                         // The echo will be removed when the corresponding event will come through the server sync.
                         // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-                        MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+                        MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
                         [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
                         // Replace the local echo by the new one
                         [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
@@ -1807,7 +1808,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             
             // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
             // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-            MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+            MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
             [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
             // Replace the local echo by the new one
             [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
@@ -1851,7 +1852,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
         // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-        MXEvent *updatedLocalEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:eventId andContent:localEcho.content];
+        MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
         [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
         // Replace the local echo by the new one
         [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
@@ -2037,7 +2038,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
         
         // Remove successfully sent messages
-        if ([outgoingMessage.eventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix] == NO)
+        if ([outgoingMessage.eventId hasPrefix:kMXRoomLocalEventIdPrefix] == NO)
         {
             [_room removeOutgoingMessage:outgoingMessage.eventId];
         }
@@ -2177,7 +2178,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent withState:(MXKEventState)eventState
 {
     // Make the data source digest this fake local echo message
-    MXEvent *localEcho = [_eventFormatter fakeRoomMessageEventForRoomId:_roomId withEventId:nil andContent:msgContent];
+    MXEvent *localEcho = [self.room fakeRoomMessageEventWithEventId:nil andContent:msgContent];
     localEcho.mxkState = eventState;
     
     [self queueEventForProcessing:localEcho withRoomState:_room.state direction:MXTimelineDirectionForwards];

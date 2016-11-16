@@ -301,7 +301,7 @@
                 
                 // The original file name is used when the attachment is a local echo.
                 // Indeed its event id may be replaced by the actual one in the new attachments array.
-                if ([firstAttachmentEventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix])
+                if ([firstAttachmentEventId hasPrefix:kMXRoomLocalEventIdPrefix])
                 {
                     firstAttachmentOriginalFileName = attachment.originalFileName;
                 }
@@ -333,7 +333,7 @@
                 
                 // The original file name is used when the attachment is a local echo.
                 // Indeed its event id may be replaced by the actual one in the new attachments array.
-                if ([currentAttachmentEventId hasPrefix:kMXKEventFormatterLocalEventIdPrefix])
+                if ([currentAttachmentEventId hasPrefix:kMXRoomLocalEventIdPrefix])
                 {
                     currentAttachmentOriginalFileName = attachment.originalFileName;
                 }
