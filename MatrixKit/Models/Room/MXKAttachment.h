@@ -57,6 +57,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSDictionary *thumbnailInfo;
 
+@property (nonatomic, readonly) NSString *thumbnailMimeType;
+
 /**
  The original file name retrieved from the event body (if any).
  */
@@ -94,7 +96,7 @@ typedef enum : NSUInteger {
  * or if only one size of thumbnail is available, return the URL for that.
  * Don't forget to multiply by the pixel density of your display
  */
-- (NSURL *)getThumbnailUrlForSize:(CGSize)size;
+- (NSString *)getThumbnailUrlForSize:(CGSize)size;
 
 /**
  Download the attachment data if it is not already cached.

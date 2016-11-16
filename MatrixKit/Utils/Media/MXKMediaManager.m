@@ -85,28 +85,35 @@ static NSMutableDictionary* uploadTableById = nil;
 
 static MXKLRUCache* imagesCacheLruCache = nil;
 
-+ (UIImage*)loadFromMemoryCacheWithFilePath:(NSString*)filePath
++ (UIImage*)loadThroughCacheWithFilePath:(NSString*)filePath
+{
+    UIImage *image = [MXKMediaManager getFromMemoryCacheWithFilePath:filePath];
+    
+    if (image) return image;
+    
+    image = [MXKMediaManager loadPictureFromFilePath:filePath];
+    
+    if (image)
+    {
+        [MXKMediaManager cacheImage:image withCachePath:filePath];
+    }
+    
+    return image;
+}
+
++ (UIImage*)getFromMemoryCacheWithFilePath:(NSString*)filePath
 {
     if (!imagesCacheLruCache)
     {
         imagesCacheLruCache = [[MXKLRUCache alloc] initWithCapacity:20];
     }
     
-    UIImage* image = (UIImage*)[imagesCacheLruCache get:filePath];
-    
-    if (image)
-    {
-        return image;
-    }
-    
-    image = [MXKMediaManager loadPictureFromFilePath:filePath];
-    
-    if (image)
-    {
-        [imagesCacheLruCache put:filePath object:image];
-    }
-    
-    return image;
+    return (UIImage*)[imagesCacheLruCache get:filePath];
+}
+
++ (void)cacheImage:(UIImage *)image withCachePath:(NSString *)filePath
+{
+    [imagesCacheLruCache put:filePath object:image];
 }
 
 
@@ -361,6 +368,8 @@ static MXKLRUCache* imagesCacheLruCache = nil;
 
 + (MXKMediaLoader*)downloadMediaFromURL:(NSString *)mediaURL
                       andSaveAtFilePath:(NSString *)filePath
+                                success:(void (^)())success
+                                failure:(void (^)(NSError *error))failure
 {
     // Check provided file path
     if (!filePath.length)
@@ -381,18 +390,25 @@ static MXKLRUCache* imagesCacheLruCache = nil;
         
         // Launch download
         [mediaLoader downloadMediaFromURL:mediaURL andSaveAtFilePath:filePath success:^(NSString *outputFilePath)
-        {
-            [downloadTable removeObjectForKey:filePath];
-        } failure:^(NSError *error)
-        {
-            [downloadTable removeObjectForKey:filePath];
-        }];
+         {
+             [downloadTable removeObjectForKey:filePath];
+             if (success) success();
+         } failure:^(NSError *error)
+         {
+             if (failure) failure(error);
+             [downloadTable removeObjectForKey:filePath];
+         }];
         return mediaLoader;
     }
     
     return nil;
 }
 
++ (MXKMediaLoader*)downloadMediaFromURL:(NSString *)mediaURL
+                      andSaveAtFilePath:(NSString *)filePath
+{
+    return [MXKMediaManager downloadMediaFromURL:mediaURL andSaveAtFilePath:filePath success:nil failure:nil];
+}
 
 + (MXKMediaLoader*)existingDownloaderWithOutputFilePath:(NSString *)filePath
 {

@@ -17,6 +17,7 @@
 #import "MXKImageView.h"
 #import "MXKMediaManager.h"
 #import "MXKPieChartView.h"
+#import "MXKAttachment.h"
 
 @interface MXKImageView ()
 {
@@ -547,7 +548,7 @@
     else
     {
         // Retrieve the image from cache
-        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadFromMemoryCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
         
         if (image)
         {
@@ -578,6 +579,22 @@
             [MXKMediaManager downloadMediaFromURL:imageURL andSaveAtFilePath:cacheFilePath];
         }
     }
+}
+
+- (void)setAttachment:(MXKAttachment *)attachment
+{
+    // Remove any pending observers
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    // Store image orientation
+    imageOrientation = attachment.thumbnailOrientation;
+    
+    mimeType = attachment.thumbnailMimeType;
+    imageURL = attachment.thumbnailURL;
+    
+    [attachment getThumbnail:^(UIImage *img) {
+        self.image = img;
+    } failure:nil];
 }
 
 - (void)onMediaDownloadEnd:(NSNotification *)notif

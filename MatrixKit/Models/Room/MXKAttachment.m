@@ -18,6 +18,7 @@
 
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
+#import "MXEncryptedAttachments.h"
 
 // The size of thumbnail we request from the server
 // Note that this is smaller than the ones we upload: when sending, one size
@@ -122,12 +123,12 @@ static const int kThumbnailHeight = 240;
     }
 }
 
-- (NSURL *)thumbnailURL
+- (NSString *)thumbnailURL
 {
-    return [[self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)] absoluteString];
+    return [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
 }
 
-- (NSURL *)getThumbnailUrlForSize:(CGSize)size
+- (NSString *)getThumbnailUrlForSize:(CGSize)size
 {
     NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
     if (thumbnail_file && thumbnail_file[@"url"]) {
@@ -163,13 +164,71 @@ static const int kThumbnailHeight = 240;
     return nil;
 }
 
-- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
+- (NSString *)thumbnailMimeType
+{
     NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
-    if (thumbnail_file && thumbnail_file[@"url"]) {
+    if (thumbnail_file && thumbnail_file[@"mimetype"])
+    {
+        return thumbnail_file[@"mimetype"];
+    }
+    return nil;
+}
+
+- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
+                                                                andType:self.thumbnailMimeType
+                                                               inFolder:kMXKMediaManagerDefaultCacheFolder];
+    
+    UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
+    if (thumb)
+    {
+        onSuccess(thumb);
+        return;
     }
     
-    UIImage *img = [MXKMediaManager loadFromMemoryCacheWithFilePath:_cacheFilePath];
+    NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
+    if (thumbnail_file && thumbnail_file[@"url"])
+    {
+        void (^decryptAndCache)() = ^{
+            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:cacheFilePath];
+            NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
+            NSError *err = [MXEncryptedAttachments decryptAttachment:thumbnail_file inputStream:instream outputStream:outstream];
+            if (err) {
+                NSLog(@"Error decrypting attachment! %@", err.userInfo);
+                return;
+            }
+            
+            UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
+            [MXKMediaManager cacheImage:img withCachePath:cacheFilePath];
+            onSuccess(img);
+        };
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+        {
+            decryptAndCache();
+        }
+        else
+        {
+            NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
+            [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:cacheFilePath success:^() {
+                decryptAndCache();
+            } failure:^(NSError *error)
+            {
+                onFailure(error);
+            }];
+        }
+    }
     
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+    {
+        onSuccess([MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]);
+    } else {
+        [MXKMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:cacheFilePath success:^{
+            onSuccess([MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]);
+        } failure:^(NSError *error) {
+            onFailure(error);
+        }];
+    }
 }
 
 - (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure
