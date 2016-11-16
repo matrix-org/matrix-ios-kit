@@ -174,6 +174,11 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (weak, nonatomic) IBOutlet UIView *bubbleInfoContainer;
 @property (weak, nonatomic) IBOutlet UIView *bubbleOverlayContainer;
 
+/**
+ The container view in which the encryption information may be displayed
+ */
+@property (weak, nonatomic) IBOutlet UIView *encryptionStatusContainerView;
+
 @property (weak, nonatomic) IBOutlet UIView *progressView;
 @property (weak, nonatomic) IBOutlet UILabel *statsLabel;
 @property (weak, nonatomic) IBOutlet MXKPieChartView *progressChartView;
