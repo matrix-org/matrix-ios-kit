@@ -162,6 +162,7 @@
 "room_error_timeline_event_not_found" = "The application was trying to load a specific point in this room's timeline but was unable to find it";
 "room_left" = "You left the room";
 "room_no_power_to_create_conference_call" = "You need permission to invite to start a conference in this room";
+"room_no_conference_call_in_encrypted_rooms" = "Conference calls are not supported in encrypted rooms";
 
 // Room members
 "room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
