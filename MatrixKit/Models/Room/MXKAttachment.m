@@ -122,11 +122,13 @@ static const int kThumbnailHeight = 240;
     }
 }
 
-- (NSURL *)thumbnailURL {
+- (NSURL *)thumbnailURL
+{
     return [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
 }
 
-- (NSURL *)getThumbnailUrlForSize:(CGSize)size {
+- (NSURL *)getThumbnailUrlForSize:(CGSize)size
+{
     NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
     if (thumbnail_file && thumbnail_file[@"url"]) {
         // there's an encrypted thumbnail: we just return the mxc url
