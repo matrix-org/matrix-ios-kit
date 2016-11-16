@@ -344,7 +344,7 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             
             self.attachmentView.enableInMemoryCache = YES;
-            [self.attachmentView setAttachment:bubbleData.attachment];
+            [self.attachmentView setAttachmentThumb:bubbleData.attachment];
             
             if (bubbleData.attachment.actualURL)
             {

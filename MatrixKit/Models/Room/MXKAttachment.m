@@ -64,7 +64,7 @@ static const int kThumbnailHeight = 240;
         NSString *msgtype =  _event.content[@"msgtype"];
         if ([msgtype isEqualToString:kMXMessageTypeImage])
         {
-            [self handleImageMessage:_event withMatrixSession:mxSession];
+            _type = MXKAttachmentTypeImage;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeAudio])
         {
@@ -74,7 +74,7 @@ static const int kThumbnailHeight = 240;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeVideo])
         {
-            [self handleVideoMessage:_event withMatrixSession:mxSession];
+            _type = MXKAttachmentTypeVideo;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeLocation])
         {
@@ -84,7 +84,7 @@ static const int kThumbnailHeight = 240;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeFile])
         {
-            [self handleFileMessage:_event withMatrixSession:mxSession];
+            _type = MXKAttachmentTypeFile;
         }
         else
         {
@@ -92,6 +92,27 @@ static const int kThumbnailHeight = 240;
         }
         
         _originalFileName = [_event.content[@"body"] isKindOfClass:[NSString class]] ? _event.content[@"body"] : nil;
+        // Retrieve content url/info
+        if (mxEvent.content[@"file"][@"url"])
+        {
+            _contentURL = mxEvent.content[@"file"][@"url"];
+        }
+        else
+        {
+            _contentURL = mxEvent.content[@"url"];
+        }
+        
+        // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
+        _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
+        
+        NSString *mimetype = nil;
+        if (mxEvent.content[@"info"])
+        {
+            mimetype = mxEvent.content[@"info"][@"mimetype"];
+        }
+        
+        _cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:mxEvent.roomId];
+        _contentInfo = mxEvent.content[@"info"];
     }
     return self;
 }
@@ -174,6 +195,19 @@ static const int kThumbnailHeight = 240;
     return nil;
 }
 
+- (UIImage *)getCachedThumbnail {
+    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
+                                                                andType:self.thumbnailMimeType
+                                                               inFolder:kMXKMediaManagerDefaultCacheFolder];
+    
+    UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
+    if (thumb) return thumb;
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath]) {
+        return [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath];
+    }
+}
+
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
     NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
@@ -214,7 +248,7 @@ static const int kThumbnailHeight = 240;
                 decryptAndCache();
             } failure:^(NSError *error)
             {
-                onFailure(error);
+                if (onFailure) onFailure(error);
             }];
         }
     }
@@ -223,12 +257,37 @@ static const int kThumbnailHeight = 240;
     {
         onSuccess([MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]);
     } else {
-        [MXKMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:cacheFilePath success:^{
+        NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
+        [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:cacheFilePath success:^{
             onSuccess([MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]);
         } failure:^(NSError *error) {
-            onFailure(error);
+            if (onFailure) onFailure(error);
         }];
     }
+}
+
+- (void)getImage:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
+{
+    [self prepare:^{
+        NSDictionary *file_info = self.event.content[@"file"];
+        if (file_info) {
+            // decrypt the encrypted file
+            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:_cacheFilePath];
+            NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
+            NSError *err = [MXEncryptedAttachments decryptAttachment:file_info inputStream:instream outputStream:outstream];
+            if (err) {
+                NSLog(@"Error decrypting attachment! %@", err.userInfo);
+                return;
+            }
+            UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
+            if (onSuccess) onSuccess(img);
+        } else {
+            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfFile:_cacheFilePath]];
+            if (onSuccess) onSuccess(img);
+        }
+    } failure:^(NSError *error) {
+        if (onFailure) onFailure(error);
+    }];
 }
 
 - (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure
@@ -418,66 +477,6 @@ static const int kThumbnailHeight = 240;
         [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
         documentCopyPath = nil;
     }
-}
-
-#pragma mark -
-
-- (void)handleImageMessage:(MXEvent*)event withMatrixSession:(MXSession*)mxSession
-{
-    _type = MXKAttachmentTypeImage;
-    
-    // Retrieve content url/info
-    _contentURL = event.content[@"url"];
-    
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:event.roomId];
-    _contentInfo = event.content[@"info"];
-}
-
-- (void)handleVideoMessage:(MXEvent*)event withMatrixSession:(MXSession*)mxSession
-{
-    _type = MXKAttachmentTypeVideo;
-    
-    // Retrieve content url/info
-    _contentURL = event.content[@"url"];
-    
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:event.roomId];
-}
-
-- (void)handleFileMessage:(MXEvent*)event withMatrixSession:(MXSession*)mxSession
-{
-    _type = MXKAttachmentTypeFile;
-    
-    // Retrieve content url/info
-    _contentURL = event.content[@"url"];
-    // Check provided url (it may be a matrix content uri, we use SDK to build absoluteURL)
-    _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-    
-    NSString *mimetype = nil;
-    if (event.content[@"info"])
-    {
-        mimetype = event.content[@"info"][@"mimetype"];
-    }
-    
-    _cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:event.roomId];
-    _contentInfo = event.content[@"info"];
 }
 
 @end

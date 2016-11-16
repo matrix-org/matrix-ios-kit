@@ -39,11 +39,18 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 - (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage;
 
 /**
- * Load an attachment into the image viewer and display its thumbnail, if it has one.
+ * Load an image attachment into the image viewer and display the full res image.
  * This method must be used to display encrypted attachments
  * @param attachment The attachment
  */
 - (void)setAttachment:(MXKAttachment *)attachment;
+
+/**
+ * Load an attachment into the image viewer and display its thumbnail, if it has one.
+ * This method must be used to display encrypted attachments
+ * @param attachment The attachment
+ */
+- (void)setAttachmentThumb:(MXKAttachment *)attachment;
 
 /**
  Toggle display to fullscreen.

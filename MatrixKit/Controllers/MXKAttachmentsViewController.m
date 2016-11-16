@@ -538,10 +538,7 @@
         NSString *mimeType = attachment.contentInfo[@"mimetype"];
         
         // Use the cached thumbnail (if any) as preview
-        NSString *previewCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:attachment.thumbnailURL
-                                                                           andType:mimeType
-                                                                          inFolder:attachment.event.roomId];
-        UIImage* preview = [MXKMediaManager loadPictureFromFilePath:previewCacheFilePath];
+        UIImage* preview = [attachment getCachedThumbnail];
         
         // Check attachment type
         if (attachment.type == MXKAttachmentTypeImage && attachmentURL.length)
@@ -665,7 +662,7 @@
                 cell.mxkImageView.stretchable = YES;
                 cell.mxkImageView.enableInMemoryCache = NO;
                 
-                [cell.mxkImageView setImageURL:attachmentURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
+                [cell.mxkImageView setAttachment:attachment];
             }
             else
             {
@@ -674,7 +671,7 @@
                 cell.mxkImageView.stretchable = YES;
                 cell.mxkImageView.enableInMemoryCache = YES;
                 
-                [cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
+                [cell.mxkImageView setAttachmentThumb:attachment];
             }
         }
         else if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
