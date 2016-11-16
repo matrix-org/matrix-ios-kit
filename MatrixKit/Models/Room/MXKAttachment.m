@@ -124,7 +124,7 @@ static const int kThumbnailHeight = 240;
 
 - (NSURL *)thumbnailURL
 {
-    return [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
+    return [[self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)] absoluteString];
 }
 
 - (NSURL *)getThumbnailUrlForSize:(CGSize)size
@@ -161,6 +161,15 @@ static const int kThumbnailHeight = 240;
     }
     
     return nil;
+}
+
+- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
+    NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
+    if (thumbnail_file && thumbnail_file[@"url"]) {
+    }
+    
+    UIImage *img = [MXKMediaManager loadFromMemoryCacheWithFilePath:_cacheFilePath];
+    
 }
 
 - (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure

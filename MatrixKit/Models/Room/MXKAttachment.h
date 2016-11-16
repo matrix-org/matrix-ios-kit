@@ -87,6 +87,8 @@ typedef enum : NSUInteger {
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
 - (void)destroy;
 
+- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
+
 /**
  * Gets a thumbnail URL for a given size of thumbnail, if possible,
  * or if only one size of thumbnail is available, return the URL for that.
