@@ -203,13 +203,15 @@ static const int kThumbnailHeight = 240;
     UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
     if (thumb) return thumb;
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+    {
         return [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath];
     }
     return nil;
 }
 
-- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
+- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
+{
     NSString *thumbCachePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
                                                                inFolder:self.event.roomId];
@@ -245,10 +247,13 @@ static const int kThumbnailHeight = 240;
         {
             NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
             [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
+                
                 decryptAndCache();
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 if (onFailure) onFailure(error);
+                
             }];
         }
     }
@@ -256,12 +261,18 @@ static const int kThumbnailHeight = 240;
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
     {
         onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
-    } else {
-        NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
+    }
+    else
+    {
+        NSString *actualUrl = self.thumbnailURL;
         [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^{
+            
             onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
+            
         } failure:^(NSError *error) {
+            
             if (onFailure) onFailure(error);
+            
         }];
     }
 }
