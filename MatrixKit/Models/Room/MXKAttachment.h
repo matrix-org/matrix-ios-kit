@@ -92,7 +92,7 @@ typedef enum : NSUInteger {
  property: it is possible for the thumbnail to be encrypted
  whether this peoperty is true or false.
  */
-@property (nonatomic) BOOL *isEncrypted;
+@property (nonatomic, readonly) BOOL *isEncrypted;
 
 /**
  */
