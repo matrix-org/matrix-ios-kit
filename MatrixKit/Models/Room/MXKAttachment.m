@@ -273,6 +273,7 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                 
             }];
         }
+        return;
     }
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
