@@ -8,7 +8,6 @@ Improvements:
  * MXKAccount: Logout properly by invalidating the access token.
  * Tag explicitly the invite as DM or not DM (https://github.com/vector-im/vector-ios/issues/714).
  * MXKRecentListViewController: Reload the table view on the direct rooms update (https://github.com/vector-im/vector-ios/issues/715).
- * List the current direct rooms in the Member/Contact details (https://github.com/vector-im/vector-ios/issues/715).
  * MXKAttachment: Generate thumbnail URL.
  * MXKRoomDataSource: Create and upload thumbnails for encrypted images.
  
