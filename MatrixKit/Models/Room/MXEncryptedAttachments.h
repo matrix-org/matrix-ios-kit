@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-static const NSString *MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErrorDomain";
+extern NSString *const MXEncryptedAttachmentsErrorDomain;
 
 @class MXKMediaLoader;
 
