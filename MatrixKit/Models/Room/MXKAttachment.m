@@ -206,6 +206,7 @@ static const int kThumbnailHeight = 240;
     if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath]) {
         return [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath];
     }
+    return nil;
 }
 
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
