@@ -210,11 +210,10 @@ static const int kThumbnailHeight = 240;
 }
 
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
+    NSString *thumbCachePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
                                                                inFolder:self.event.roomId];
-    
-    UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
+    UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:thumbCachePath];
     if (thumb)
     {
         onSuccess(thumb);
@@ -225,7 +224,7 @@ static const int kThumbnailHeight = 240;
     if (thumbnail_file && thumbnail_file[@"url"])
     {
         void (^decryptAndCache)() = ^{
-            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:cacheFilePath];
+            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:thumbCachePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
             NSError *err = [MXEncryptedAttachments decryptAttachment:thumbnail_file inputStream:instream outputStream:outstream];
             if (err) {
@@ -234,18 +233,18 @@ static const int kThumbnailHeight = 240;
             }
             
             UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
-            [MXKMediaManager cacheImage:img withCachePath:cacheFilePath];
+            [MXKMediaManager cacheImage:img withCachePath:thumbCachePath];
             onSuccess(img);
         };
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
         {
             decryptAndCache();
         }
         else
         {
             NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
-            [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:cacheFilePath success:^() {
+            [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
                 decryptAndCache();
             } failure:^(NSError *error)
             {
@@ -254,13 +253,13 @@ static const int kThumbnailHeight = 240;
         }
     }
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
     {
-        onSuccess([MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]);
+        onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
     } else {
         NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
-        [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:cacheFilePath success:^{
-            onSuccess([MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]);
+        [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^{
+            onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
         } failure:^(NSError *error) {
             if (onFailure) onFailure(error);
         }];
