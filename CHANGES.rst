@@ -1,3 +1,27 @@
+Changes in MatrixKit in 0.4.0 (2016-11-17)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.0).
+ * Support end-to-end encryption.
+ * Chat history: Display a message for `m.room.encryption` events.
+ * MXKAccount: Logout properly by invalidating the access token.
+ * Tag explicitly the invite as DM or not DM (https://github.com/vector-im/vector-ios/issues/714).
+ * MXKRecentListViewController: Reload the table view on the direct rooms update (https://github.com/vector-im/vector-ios/issues/715).
+ * List the current direct rooms in the Member/Contact details (https://github.com/vector-im/vector-ios/issues/715).
+ * MXKAttachment: Generate thumbnail URL.
+ * MXKRoomDataSource: Create and upload thumbnails for encrypted images.
+ 
+ API break:
+ * MXKEventFormatter: remove `fakeRoomMessageEventForRoomId` API (temporary events are now created by MXRoom class).
+ 
+ Bug fixes:
+ * Use `contains_url` filter during the attachments search (https://github.com/vector-im/vector-ios/issues/652).
+ * MXKRoomDataSource: infinite loop on empty bubbles array.
+ * MXKRoomInputToolbarView: Disable view animation during text reset to prevent placeholder distorsion.
+ * Fix for accepting autocorrect on message send.
+ * MXKRoomBubbleCellData: Should fix the text bubbles overlapping.
+
 Changes in MatrixKit in 0.3.19 (2016-09-30)
 ===========================================
  
