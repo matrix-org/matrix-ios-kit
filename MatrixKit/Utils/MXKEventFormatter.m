@@ -185,15 +185,31 @@
         NSString *msgtype;
         MXJSONModelSetString(msgtype, event.content[@"msgtype"]);
         
-        NSString *requiredField;
+        NSString *urlField;
+        NSDictionary *fileField;
+        MXJSONModelSetString(urlField, event.content[@"url"]);
+        MXJSONModelSetDictionary(fileField, event.content[@"file"]);
+        
+        BOOL hasUrl = urlField.length;
+        BOOL hasFile = NO;
+        
+        if (fileField)
+        {
+            NSString *fileUrlField;
+            MXJSONModelSetString(fileUrlField, fileField[@"url"]);
+            NSString *fileIvField;
+            MXJSONModelSetString(fileIvField, fileField[@"iv"]);
+            NSDictionary *fileHashesField;
+            MXJSONModelSetDictionary(fileHashesField, fileField[@"hashes"]);
+            NSDictionary *fileKeyField;
+            MXJSONModelSetDictionary(fileKeyField, fileField[@"key"]);
+            
+            hasFile = fileUrlField.length && fileIvField.length && fileHashesField && fileKeyField;
+        }
         
         if ([msgtype isEqualToString:kMXMessageTypeImage])
         {
-            MXJSONModelSetString(requiredField, event.content[@"url"]);
-            if (requiredField.length)
-            {
-                isSupportedAttachment = YES;
-            }
+            isSupportedAttachment = hasUrl || hasFile;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeAudio])
         {
@@ -201,11 +217,7 @@
         }
         else if ([msgtype isEqualToString:kMXMessageTypeVideo])
         {
-            MXJSONModelSetString(requiredField, event.content[@"url"]);
-            if (requiredField)
-            {
-                isSupportedAttachment = YES;
-            }
+            isSupportedAttachment = hasUrl || hasFile;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeLocation])
         {
@@ -213,11 +225,7 @@
         }
         else if ([msgtype isEqualToString:kMXMessageTypeFile])
         {
-            MXJSONModelSetString(requiredField, event.content[@"url"]);
-            if (requiredField)
-            {
-                isSupportedAttachment = YES;
-            }
+            isSupportedAttachment = hasUrl || hasFile;
         }
     }
     return isSupportedAttachment;

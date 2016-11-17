@@ -21,6 +21,7 @@
  The predefined folder for avatar thumbnail.
  */
 extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
+extern NSString *const kMXKMediaManagerDefaultCacheFolder;
 
 /**
  `MXKMediaManager` class provide multiple services related to media handling: cache storage, downloading, uploading.
@@ -44,14 +45,30 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
 + (BOOL)writeMediaData:(NSData *)mediaData toFilePath:(NSString*)filePath;
 
 /**
- Load an image in memory cache.
+ Load an image in memory cache. If the image is not in the cache,
+ load it from the given path, insert it into the cache and return it.
  The images are cached in a LRU cache if they are not yet loaded.
  So, it should be faster than calling loadPictureFromFilePath;
  
  @param filePath picture file path.
  @return Image (if any).
  */
-+ (UIImage*)loadFromMemoryCacheWithFilePath:(NSString*)filePath;
++ (UIImage*)loadThroughCacheWithFilePath:(NSString*)filePath;
+
+/**
+ Load an image from the in memory cache, or return nil if the image
+ is not in the cache
+ 
+ @param filePath picture file path.
+ @return Image (if any).
+ */
++ (UIImage*)getFromMemoryCacheWithFilePath:(NSString*)filePath;
+
+/**
+ * Save an image to in-memory cache, evicting other images
+ * if necessary
+ */
++ (void)cacheImage:(UIImage *)image withCachePath:(NSString *)cachePath;
 
 /**
  Load a picture from the local storage
@@ -83,6 +100,20 @@ extern NSString *const kMXKMediaManagerAvatarThumbnailFolder;
 + (void)saveMediaToPhotosLibrary:(NSURL*)fileURL isImage:(BOOL)isImage success:(void (^)(NSURL *imageURL))success failure:(void (^)(NSError *error))failure;
 
 #pragma mark - Download
+
+/**
+ Download data from the provided URL.
+ 
+ @param url remote media url.
+ @param filePath output file in which downloaded media must be saved (may be nil).
+ @param success block called on success
+ @param failure block called on failure
+ @return a media loader in order to let the user cancel this action.
+ */
++ (MXKMediaLoader*)downloadMediaFromURL:(NSString *)mediaURL
+                      andSaveAtFilePath:(NSString *)filePath
+                                success:(void (^)())success
+                                failure:(void (^)(NSError *error))failure;
 
 /**
  Download data from the provided URL.

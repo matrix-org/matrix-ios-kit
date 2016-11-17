@@ -17,6 +17,7 @@
 #import "MXKImageView.h"
 #import "MXKMediaManager.h"
 #import "MXKPieChartView.h"
+#import "MXKAttachment.h"
 
 @interface MXKImageView ()
 {
@@ -547,7 +548,7 @@
     else
     {
         // Retrieve the image from cache
-        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadFromMemoryCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
         
         if (image)
         {
@@ -578,6 +579,57 @@
             [MXKMediaManager downloadMediaFromURL:imageURL andSaveAtFilePath:cacheFilePath];
         }
     }
+}
+
+- (void)setAttachment:(MXKAttachment *)attachment
+{
+    // Remove any pending observers
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    // Store image orientation
+    imageOrientation = attachment.thumbnailOrientation;
+    
+    imageURL = attachment.actualURL;
+    mimeType = attachment.contentInfo[@"mimetype"];
+    if (!mimeType.length)
+    {
+        // Check if the extension could not be deduced from url
+        if (![imageURL pathExtension].length)
+        {
+            // Set default mime type if no information is available
+            mimeType = @"image/jpeg";
+        }
+    }
+    
+    // while we wait for the content to download
+    self.image = [attachment getCachedThumbnail];
+    
+    // Add observers
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
+    
+    [attachment getImage:^(UIImage *img) {
+        self.image = img;
+    } failure:^(NSError *error) {
+        NSLog(@"Unable to fetch image attachment! %@", error);
+    }];
+}
+
+- (void)setAttachmentThumb:(MXKAttachment *)attachment
+{
+    // Remove any pending observers
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    // Store image orientation
+    imageOrientation = attachment.thumbnailOrientation;
+    
+    mimeType = attachment.thumbnailMimeType;
+    imageURL = attachment.thumbnailURL;
+    
+    [attachment getThumbnail:^(UIImage *img) {
+        self.image = img;
+    } failure:nil];
 }
 
 - (void)onMediaDownloadEnd:(NSNotification *)notif

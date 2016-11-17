@@ -16,6 +16,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class MXKAttachment;
+
 /**
  Customize UIView in order to display image defined with remote url. Zooming inside the image (Stretching) is supported.
  */
@@ -35,6 +37,20 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
  @param previewImage image displayed until the actual image is available.
  */
 - (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage;
+
+/**
+ * Load an image attachment into the image viewer and display the full res image.
+ * This method must be used to display encrypted attachments
+ * @param attachment The attachment
+ */
+- (void)setAttachment:(MXKAttachment *)attachment;
+
+/**
+ * Load an attachment into the image viewer and display its thumbnail, if it has one.
+ * This method must be used to display encrypted attachments
+ * @param attachment The attachment
+ */
+- (void)setAttachmentThumb:(MXKAttachment *)attachment;
 
 /**
  Toggle display to fullscreen.

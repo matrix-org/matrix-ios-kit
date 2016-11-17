@@ -57,6 +57,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSDictionary *thumbnailInfo;
 
+@property (nonatomic, readonly) NSString *thumbnailMimeType;
+
 /**
  The original file name retrieved from the event body (if any).
  */
@@ -87,6 +89,21 @@ typedef enum : NSUInteger {
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
 - (void)destroy;
 
+/**
+ Gets the thumbnail for this attachment if it is in the memory or disk cache,
+ otherwise return nil
+ */
+- (UIImage *)getCachedThumbnail;
+
+/**
+ For image attachments, gets a UIImage for the full-res image
+ */
+- (void)getImage:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
+
+/**
+ Gets the thumbnails for this attachment, downloading it or loading it from disk cache
+ if necessary
+ */
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
 
 /**
@@ -94,7 +111,7 @@ typedef enum : NSUInteger {
  * or if only one size of thumbnail is available, return the URL for that.
  * Don't forget to multiply by the pixel density of your display
  */
-- (NSURL *)getThumbnailUrlForSize:(CGSize)size;
+- (NSString *)getThumbnailUrlForSize:(CGSize)size;
 
 /**
  Download the attachment data if it is not already cached.
