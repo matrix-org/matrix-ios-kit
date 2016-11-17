@@ -45,6 +45,7 @@
 		F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */; };
 		F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */; };
 		F003FD4F1B4E64B4000FC7A5 /* NSData+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F003FD4E1B4E64B4000FC7A5 /* NSData+MatrixKit.m */; };
+		F00ACC641DDE17960093F646 /* MXEncryptedAttachments.m in Sources */ = {isa = PBXBuildFile; fileRef = F00ACC631DDE17960093F646 /* MXEncryptedAttachments.m */; };
 		F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */ = {isa = PBXBuildFile; fileRef = F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */; };
 		F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00C252A1ADBC60300065077 /* MXKTableViewController.m */; };
 		F00FA8551C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FA8541C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m */; };
@@ -280,6 +281,8 @@
 		F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomInputToolbarView.xib; sourceTree = "<group>"; };
 		F003FD4D1B4E64B4000FC7A5 /* NSData+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MatrixKit.h"; sourceTree = "<group>"; };
 		F003FD4E1B4E64B4000FC7A5 /* NSData+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MatrixKit.m"; sourceTree = "<group>"; };
+		F00ACC621DDE17960093F646 /* MXEncryptedAttachments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXEncryptedAttachments.h; sourceTree = "<group>"; };
+		F00ACC631DDE17960093F646 /* MXEncryptedAttachments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXEncryptedAttachments.m; sourceTree = "<group>"; };
 		F00BB4481AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarViewWithHPGrowingText.h; sourceTree = "<group>"; };
 		F00BB4491AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomInputToolbarViewWithHPGrowingText.m; sourceTree = "<group>"; };
 		F00C25281ADBC3C100065077 /* MXKViewControllerHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKViewControllerHandling.h; sourceTree = "<group>"; };
@@ -921,6 +924,8 @@
 		F07E18031ABC2EDA00DE3766 /* Room */ = {
 			isa = PBXGroup;
 			children = (
+				F00ACC621DDE17960093F646 /* MXEncryptedAttachments.h */,
+				F00ACC631DDE17960093F646 /* MXEncryptedAttachments.m */,
 				F0AF60341BD640E7002B1DB0 /* MXKAttachment.h */,
 				F0AF60351BD640E7002B1DB0 /* MXKAttachment.m */,
 				F07E18041ABC2EDA00DE3766 /* MXKQueuedEvent.h */,
@@ -1465,6 +1470,7 @@
 				71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */,
 				F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */,
 				F094EC671ABAC380006B8CE3 /* MXKViewController.m in Sources */,
+				F00ACC641DDE17960093F646 /* MXEncryptedAttachments.m in Sources */,
 				F0CF98E31B0B7FDC00EAE373 /* MXKTableViewCellWithTextView.m in Sources */,
 				F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */,
 				F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */,
