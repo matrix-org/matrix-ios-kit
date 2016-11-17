@@ -351,19 +351,25 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (NSString *)getTempFile
 {
-    NSString *template = [NSTemporaryDirectory() stringByAppendingPathComponent:@"attatchment.XXXXXX"];
+    // create a file with an appropriate extension because iOS detects based on file extension
+    // all over the place
+    NSString *ext = [MXKTools fileExtensionFromContentType:self.contentInfo[@"mimetype"]];
+    NSString *filenameTemplate = [NSString stringWithFormat:@"attatchment.XXXXXX%@", ext];
+    NSString *template = [NSTemporaryDirectory() stringByAppendingPathComponent:filenameTemplate];
+    
     const char *templateCstr = [template fileSystemRepresentation];
     char *tempPathCstr = (char *)malloc(strlen(templateCstr) + 1);
     strcpy(tempPathCstr, templateCstr);
     
-    char *result = mktemp(tempPathCstr);
-    if (!result)
+    int fd = mkstemps(tempPathCstr, ext.length);
+    if (!fd)
     {
         return nil;
     }
+    close(fd);
     
     NSString *tempPath = [[NSFileManager defaultManager] stringWithFileSystemRepresentation:tempPathCstr
-                                                                                     length:strlen(result)];
+                                                                                     length:strlen(tempPathCstr)];
     free(tempPathCstr);
     return tempPath;
 }
@@ -449,20 +455,40 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 {
     if (_type == MXKAttachmentTypeImage || _type == MXKAttachmentTypeVideo)
     {
-        [self prepare:^{
-            
-            NSURL* url = [NSURL fileURLWithPath:_cacheFilePath];
-            
-            [MXKMediaManager saveMediaToPhotosLibrary:url
-                                              isImage:(_type == MXKAttachmentTypeImage)
-                                              success:^(NSURL *assetURL){
-                                                  if (onSuccess)
-                                                  {
-                                                      onSuccess();
+        if (self.isEncrypted) {
+            [self decryptToTempFile:^(NSString *path) {
+                
+                NSURL* url = [NSURL fileURLWithPath:path];
+                
+                [MXKMediaManager saveMediaToPhotosLibrary:url
+                                                  isImage:(_type == MXKAttachmentTypeImage)
+                                                  success:^(NSURL *assetURL){
+                                                      if (onSuccess)
+                                                      {
+                                                          onSuccess();
+                                                      }
                                                   }
-                                              }
-                                              failure:onFailure];
-        } failure:onFailure];
+                                                  failure:onFailure];
+                [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+            } failure:onFailure];
+        }
+        else
+        {
+            [self prepare:^{
+                
+                NSURL* url = [NSURL fileURLWithPath:_cacheFilePath];
+                
+                [MXKMediaManager saveMediaToPhotosLibrary:url
+                                                  isImage:(_type == MXKAttachmentTypeImage)
+                                                  success:^(NSURL *assetURL){
+                                                      if (onSuccess)
+                                                      {
+                                                          onSuccess();
+                                                      }
+                                                  }
+                                                  failure:onFailure];
+            } failure:onFailure];
+        }
     }
     else
     {
@@ -480,29 +506,35 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         
         if (_type == MXKAttachmentTypeImage)
         {
-            [[UIPasteboard generalPasteboard] setImage:[UIImage imageWithContentsOfFile:_cacheFilePath]];
-            if (onSuccess)
-            {
-                onSuccess();
-            }
+            [self getImage:^(UIImage *img) {
+                [[UIPasteboard generalPasteboard] setImage:img];
+                if (onSuccess)
+                {
+                    onSuccess();
+                }
+            } failure:^(NSError *error) {
+                if (onFailure) onFailure(error);
+            }];
         }
         else
         {
-            NSData* data = [NSData dataWithContentsOfFile:_cacheFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
-            
-            if (data)
-            {
-                NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[_cacheFilePath pathExtension] , NULL);
-                
-                if (UTI)
+            [self getAttachmentData:^(NSData *data) {
+                if (data)
                 {
-                    [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
-                    if (onSuccess)
+                    NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[_cacheFilePath pathExtension] , NULL);
+                    
+                    if (UTI)
                     {
-                        onSuccess();
+                        [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
+                        if (onSuccess)
+                        {
+                            onSuccess();
+                        }
                     }
                 }
-            }
+            } failure:^(NSError *error) {
+                if (onFailure) onFailure(error);
+            }];
         }
         
         // Unexpected error
@@ -516,9 +548,7 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)prepareShare:(void (^)(NSURL *fileURL))onReadyToShare failure:(void (^)(NSError *error))onFailure
 {
-    // First download data if it is not already done
-    [self prepare:^{
-        
+    void (^haveFile)(NSString *) = ^(NSString *path) {
         // Prepare the file URL by considering the original file name (if any)
         NSURL *fileUrl;
         
@@ -530,7 +560,7 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:_originalFileName];
             
             [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-            if ([[NSFileManager defaultManager] copyItemAtPath:_cacheFilePath toPath:documentCopyPath error:nil])
+            if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:documentCopyPath error:nil])
             {
                 fileUrl = [NSURL fileURLWithPath:documentCopyPath];
             }
@@ -539,12 +569,26 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         if (!fileUrl)
         {
             // Use the cached file by default
-            fileUrl = [NSURL fileURLWithPath:_cacheFilePath];
+            fileUrl = [NSURL fileURLWithPath:path];
         }
         
         onReadyToShare (fileUrl);
-        
-    } failure:onFailure];
+    };
+    
+    if (self.isEncrypted)
+    {
+        [self decryptToTempFile:^(NSString *path) {
+            haveFile(path);
+            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+        } failure:onFailure];
+    }
+    else
+    {
+        // First download data if it is not already done
+        [self prepare:^{
+            haveFile(_cacheFilePath);
+        } failure:onFailure];
+    }
 }
 
 - (void)onShareEnded
