@@ -722,16 +722,30 @@
         }
         case MXEventTypeRoomEncrypted:
         {
-            // If the message still appears as encrypted, there was propably an error for decryption
-            // Show this error
-            if (event.decryptionError)
+            // Is redacted?
+            if (isRedacted)
             {
-                displayText = [NSString stringWithFormat:@"** %@ **", event.decryptionError.localizedDescription];
+                if (!redactedInfo)
+                {
+                    // Here the event is ignored (no display)
+                    return nil;
+                }
+                displayText = redactedInfo;
             }
             else
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
+                // If the message still appears as encrypted, there was propably an error for decryption
+                // Show this error
+                if (event.decryptionError)
+                {
+                    displayText = [NSString stringWithFormat:@"** %@ **", event.decryptionError.localizedDescription];
+                }
+                else
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
+                }
             }
+            
             break;
         }
         case MXEventTypeRoomEncryption:
