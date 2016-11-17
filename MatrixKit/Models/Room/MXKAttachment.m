@@ -28,7 +28,7 @@
 static const int kThumbnailWidth = 320;
 static const int kThumbnailHeight = 240;
 
-const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
+NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 @interface MXKAttachment ()
 {

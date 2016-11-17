@@ -17,7 +17,7 @@
 #import <Foundation/Foundation.h>
 #import <MatrixSDK/MatrixSDK.h>
 
-extern const NSString *kMXKAttachmentErrorDomain;
+extern NSString *const kMXKAttachmentErrorDomain;
 
 /**
  List attachment types
@@ -92,7 +92,7 @@ typedef enum : NSUInteger {
  property: it is possible for the thumbnail to be encrypted
  whether this peoperty is true or false.
  */
-@property (nonatomic, readonly) BOOL *isEncrypted;
+@property (nonatomic, readonly) BOOL isEncrypted;
 
 /**
  */

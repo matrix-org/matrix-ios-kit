@@ -21,6 +21,8 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonCryptor.h>
 
+NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErrorDomain";
+
 @implementation MXEncryptedAttachments
 
 #pragma mark encrypt
