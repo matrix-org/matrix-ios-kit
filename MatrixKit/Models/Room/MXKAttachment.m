@@ -211,13 +211,15 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
     if (thumb) return thumb;
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+    {
         return [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath];
     }
     return nil;
 }
 
-- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
+- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
+{
     if (!self.thumbnailURL) {
         // there is no thumbnail: if we're an image, return the full size image. Otherwise, nothing we can do.
         if (_type == MXKAttachmentTypeImage) {
@@ -262,10 +264,13 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         {
             NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
             [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
+                
                 decryptAndCache();
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 if (onFailure) onFailure(error);
+                
             }];
         }
     }
@@ -273,11 +278,16 @@ const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
     {
         onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
-    } else {
+    }
+    else
+    {
         [MXKMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:thumbCachePath success:^{
             onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
+            
         } failure:^(NSError *error) {
+            
             if (onFailure) onFailure(error);
+            
         }];
     }
 }
