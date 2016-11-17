@@ -1450,7 +1450,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             } else {
                 MXKMediaLoader *thumbUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
                 [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
-                    msgContentToSend[@"thumbnail_file"] = result;
+                    msgContentToSend[@"info"][@"thumbnail_file"] = result;
                     doUpload();
                 } failure:onFailure];
             }
@@ -1497,7 +1497,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     localEcho.mxkState = MXKEventStateSending;
     [self updateLocalEcho:localEcho];
     
-    [_room sendMessageOfType:kMXMessageTypeImage content:content success:^(NSString *eventId) {
+    [_room sendMessageOfType:content[@"msgtype"] content:content success:^(NSString *eventId) {
         
         // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
         // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
@@ -1578,8 +1578,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         if (self.mxSession.crypto && self.room.state.isEncrypted) {
             [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:mimetype data:videoThumbnailData success:^(NSDictionary *result) {
                 NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-                msgContentToSend[@"thumbnail_file"] = result;
-                [msgContent[@"info"] removeObjectForKey:@"thumbnail_url"];
+                msgContentToSend[@"info"][@"thumbnail_file"] = result;
+                [msgContentToSend[@"info"] removeObjectForKey:@"thumbnail_url"];
                 
                 // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
                 

@@ -26,6 +26,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKTools.h"
+
 #import "NSBundle+MatrixKit.h"
 
 #import "MXKEventFormatter.h"
@@ -78,6 +80,13 @@
      A temporary file used to store decrypted attachments
      */
     NSString *tempFile;
+    
+    /**
+     Path to a file containing video data for the currently selected
+     attachment, if it's a video attachment and the data is
+     available.
+     */
+    NSString *videoFile;
 }
 
 @end
@@ -120,11 +129,15 @@
     
     // Display collection cell in full screen
     self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    tempFile = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    videoFile = nil;
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
@@ -503,6 +516,45 @@
     }
 }
 
+- (void)prepareVideoForItem:(NSInteger)item success:(void(^)())success failure:(void(^)(NSError *))failure
+{
+    MXKAttachment *attachment = attachments[item];
+    if (attachment.isEncrypted)
+    {
+        [attachment decryptToTempFile:^(NSString *file) {
+            if (tempFile)
+            {
+                [[NSFileManager defaultManager] removeItemAtPath:tempFile error:nil];
+            }
+            // apparently MPMoviePlayerController detects based on file extension...
+            NSString *newfile = [file stringByAppendingString:[MXKTools fileExtensionFromContentType:attachment.contentInfo[@"mimetype"]]];
+            [[NSFileManager defaultManager] moveItemAtPath:file toPath:newfile error:nil];
+            tempFile = newfile;
+            videoFile = newfile;
+            success();
+        } failure:^(NSError *error) {
+            if (failure) failure(error);
+        }];
+    }
+    else
+    {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:attachment.cacheFilePath])
+        {
+            videoFile = attachment.cacheFilePath;
+            success();
+        }
+        else
+        {
+            [attachment prepare:^{
+                videoFile = attachment.cacheFilePath;
+                success();
+            } failure:^(NSError *error) {
+                if (failure) failure(error);
+            }];
+        }
+    }
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -873,87 +925,68 @@
                 }
                 else
                 {
-                    // check if the file is a local one
-                    // could happen because a media upload has failed
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:attachmentURL])
-                    {
-                        selectedCell.moviePlayer.view.hidden = NO;
-                        selectedCell.centerIcon.hidden = YES;
-                        selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:attachmentURL];
-                        [selectedCell.moviePlayer play];
+                    MXKPieChartView *pieChartView = [[MXKPieChartView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+                    pieChartView.progress = 0;
+                    pieChartView.progressColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.25];
+                    pieChartView.unprogressColor = [UIColor clearColor];
+                    pieChartView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+                    pieChartView.center = selectedCell.customView.center;
+                    [selectedCell.customView addSubview:pieChartView];
+                    
+                    // Add download progress observer
+                    selectedCell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
-                        // Do not animate the navigation bar on video playback
-                        return;
-                    }
-                    else if (selectedCell.notificationObserver == nil)
-                    {
-                        MXKPieChartView *pieChartView = [[MXKPieChartView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-                        pieChartView.progress = 0;
-                        pieChartView.progressColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.25];
-                        pieChartView.unprogressColor = [UIColor clearColor];
-                        pieChartView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
-                        pieChartView.center = selectedCell.customView.center;
-                        [selectedCell.customView addSubview:pieChartView];
-                        
-                        // Add download progress observer
-                        selectedCell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                            
-                            if ([notif.object isEqualToString:attachmentURL])
+                        if ([notif.object isEqualToString:attachmentURL])
+                        {
+                            if (notif.userInfo)
                             {
-                                if (notif.userInfo)
+                                NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
+                                
+                                if (progressNumber)
                                 {
-                                    NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
-                                    
-                                    if (progressNumber)
-                                    {
-                                        pieChartView.progress = progressNumber.floatValue;
-                                    }
+                                    pieChartView.progress = progressNumber.floatValue;
                                 }
                             }
-                            
-                        }];
+                        }
                         
-                        [attachment prepare:^{
-                            
-                            if (selectedCell.notificationObserver)
-                            {
-                                [[NSNotificationCenter defaultCenter] removeObserver:selectedCell.notificationObserver];
-                                selectedCell.notificationObserver = nil;
-                            }
-                            
-                            if (selectedCell.moviePlayer.view.superview)
-                            {
-                                selectedCell.moviePlayer.view.hidden = NO;
-                                selectedCell.centerIcon.hidden = YES;
-                                selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:attachment.cacheFilePath];
-                                [selectedCell.moviePlayer play];
-                                
-                                [pieChartView removeFromSuperview];
-                                
-                                [self hideNavigationBar];
-                            }
-                            
-                        } failure:^(NSError *error) {
-                            
-                            if (selectedCell.notificationObserver)
-                            {
-                                [[NSNotificationCenter defaultCenter] removeObserver:selectedCell.notificationObserver];
-                                selectedCell.notificationObserver = nil;
-                            }
-                            
-                            NSLog(@"[MXKAttachmentsVC] video download failed");
-
-                            // Display the navigation bar so that the user can leave this screen
-                            self.navigationController.navigationBarHidden = NO;
-
-                            // Notify MatrixKit user
-                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                            
-                        }];
+                    }];
+                    
+                    [self prepareVideoForItem:item success:^{
+                        if (selectedCell.notificationObserver)
+                        {
+                            [[NSNotificationCenter defaultCenter] removeObserver:selectedCell.notificationObserver];
+                            selectedCell.notificationObserver = nil;
+                        }
                         
-                        // Do not animate the navigation bar on video playback preparing
-                        return;
-                    }
+                        if (selectedCell.moviePlayer.view.superview)
+                        {
+                            selectedCell.moviePlayer.view.hidden = NO;
+                            selectedCell.centerIcon.hidden = YES;
+                            selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:videoFile];
+                            [selectedCell.moviePlayer play];
+                            
+                            [pieChartView removeFromSuperview];
+                            
+                            [self hideNavigationBar];
+                        }
+                    } failure:^(NSError *error) {
+                        if (selectedCell.notificationObserver)
+                        {
+                            [[NSNotificationCenter defaultCenter] removeObserver:selectedCell.notificationObserver];
+                            selectedCell.notificationObserver = nil;
+                        }
+                        
+                        NSLog(@"[MXKAttachmentsVC] video download failed");
+                        
+                        // Display the navigation bar so that the user can leave this screen
+                        self.navigationController.navigationBarHidden = NO;
+                        
+                        // Notify MatrixKit user
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    }];
+                    
+                    // Do not animate the navigation bar on video playback preparing
+                    return;
                 }
             }
         }
