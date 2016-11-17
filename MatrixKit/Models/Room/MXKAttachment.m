@@ -28,6 +28,8 @@
 static const int kThumbnailWidth = 320;
 static const int kThumbnailHeight = 240;
 
+const NSString *kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
+
 @interface MXKAttachment ()
 {
     /**
@@ -144,6 +146,12 @@ static const int kThumbnailHeight = 240;
     }
 }
 
+- (BOOL)isEncrypted
+{
+    if (self.event.content[@"file"][@"url"]) return YES;
+    return NO;
+}
+
 - (NSString *)thumbnailURL
 {
     return [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
@@ -151,7 +159,7 @@ static const int kThumbnailHeight = 240;
 
 - (NSString *)getThumbnailUrlForSize:(CGSize)size
 {
-    NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
+    NSDictionary *thumbnail_file = self.event.content[@"info"][@"thumbnail_file"];
     if (thumbnail_file && thumbnail_file[@"url"]) {
         // there's an encrypted thumbnail: we just return the mxc url
         // since it will have to be decrypted before downloading anyway,
@@ -210,6 +218,14 @@ static const int kThumbnailHeight = 240;
 }
 
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
+    if (!self.thumbnailURL) {
+        // there is no thumbnail: if we're an image, return the full size image. Otherwise, nothing we can do.
+        if (_type == MXKAttachmentTypeImage) {
+            [self getImage:onSuccess failure:onFailure];
+        }
+        return;
+    }
+    
     NSString *thumbCachePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
                                                                inFolder:self.event.roomId];
@@ -220,7 +236,7 @@ static const int kThumbnailHeight = 240;
         return;
     }
     
-    NSDictionary *thumbnail_file = self.event.content[@"thumbnail_file"];
+    NSDictionary *thumbnail_file = self.event.content[@"info"][@"thumbnail_file"];
     if (thumbnail_file && thumbnail_file[@"url"])
     {
         void (^decryptAndCache)() = ^{
@@ -229,6 +245,7 @@ static const int kThumbnailHeight = 240;
             NSError *err = [MXEncryptedAttachments decryptAttachment:thumbnail_file inputStream:instream outputStream:outstream];
             if (err) {
                 NSLog(@"Error decrypting attachment! %@", err.userInfo);
+                if (onFailure) onFailure(err);
                 return;
             }
             
@@ -257,8 +274,7 @@ static const int kThumbnailHeight = 240;
     {
         onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
     } else {
-        NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
-        [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^{
+        [MXKMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:thumbCachePath success:^{
             onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
         } failure:^(NSError *error) {
             if (onFailure) onFailure(error);
@@ -267,6 +283,16 @@ static const int kThumbnailHeight = 240;
 }
 
 - (void)getImage:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
+{
+    [self getAttachmentData:^(NSData *data) {
+        UIImage *img = [UIImage imageWithData:data];
+        if (onSuccess) onSuccess(img);
+    } failure:^(NSError *error) {
+        if (onFailure) onFailure(error);
+    }];
+}
+
+- (void)getAttachmentData:(void (^)(NSData *))onSuccess failure:(void (^)(NSError *error))onFailure
 {
     [self prepare:^{
         NSDictionary *file_info = self.event.content[@"file"];
@@ -279,15 +305,56 @@ static const int kThumbnailHeight = 240;
                 NSLog(@"Error decrypting attachment! %@", err.userInfo);
                 return;
             }
-            UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
-            if (onSuccess) onSuccess(img);
+            onSuccess([outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]);
         } else {
-            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfFile:_cacheFilePath]];
-            if (onSuccess) onSuccess(img);
+            onSuccess([NSData dataWithContentsOfFile:_cacheFilePath]);
         }
     } failure:^(NSError *error) {
         if (onFailure) onFailure(error);
     }];
+}
+
+- (void)decryptToTempFile:(void (^)(NSString *))onSuccess failure:(void (^)(NSError *error))onFailure
+{
+    [self prepare:^{
+        NSString *tempPath = [self getTempFile];
+        if (!tempPath)
+        {
+            if (onFailure) onFailure([NSError errorWithDomain:kMXKAttachmentErrorDomain code:0 userInfo:@{@"err": @"error_creating_temp_file"}]);
+            return;
+        }
+        
+        NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:_cacheFilePath];
+        NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:tempPath append:NO];
+        
+        NSError *err = [MXEncryptedAttachments decryptAttachment:self.event.content[@"file"] inputStream:inStream outputStream:outStream];
+        if (err) {
+            if (onFailure) onFailure(err);
+            return;
+        }
+        onSuccess(tempPath);
+    } failure:^(NSError *error) {
+        if (onFailure) onFailure(error);
+    }];
+}
+
+- (NSString *)getTempFile
+{
+    NSString *template = [NSTemporaryDirectory() stringByAppendingPathComponent:@"attatchment.XXXXXX"];
+    const char *templateCstr = [template fileSystemRepresentation];
+    char *tempPathCstr = (char *)malloc(strlen(templateCstr) + 1);
+    strcpy(tempPathCstr, templateCstr);
+    
+    char *result = mktemp(tempPathCstr);
+    if (!result)
+    {
+        return nil;
+    }
+    
+    NSString *tempPath = [[NSFileManager defaultManager] stringWithFileSystemRepresentation:tempPathCstr
+                                                                                     length:strlen(result)];
+    free(tempPathCstr);
+    return tempPath;
 }
 
 - (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure

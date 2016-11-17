@@ -1313,7 +1313,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             } else {
                 MXKMediaLoader *thumbUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
                 [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
-                    msgContentToSend[@"thumbnail_file"] = result;
+                    msgContentToSend[@"info"][@"thumbnail_file"] = result;
                     doUpload();
                 } failure:onFailure];
             }

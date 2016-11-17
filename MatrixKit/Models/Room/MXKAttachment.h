@@ -17,6 +17,8 @@
 #import <Foundation/Foundation.h>
 #import <MatrixSDK/MatrixSDK.h>
 
+extern const NSString *kMXKAttachmentErrorDomain;
+
 /**
  List attachment types
  */
@@ -85,6 +87,14 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSString *previewURL;
 
 /**
+ True if the attachment is encrypted
+ The encryption status of the thumbnail is not covered by this
+ property: it is possible for the thumbnail to be encrypted
+ whether this peoperty is true or false.
+ */
+@property (nonatomic) BOOL *isEncrypted;
+
+/**
  */
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
 - (void)destroy;
@@ -99,6 +109,21 @@ typedef enum : NSUInteger {
  For image attachments, gets a UIImage for the full-res image
  */
 - (void)getImage:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
+
+/**
+ Decrypt the attachment data into memory and provide it as an NSData
+ */
+- (void)getAttachmentData:(void (^)(NSData *))onSuccess failure:(void (^)(NSError *error))onFailure;
+
+/**
+ Decrypts the attachment to a newly created temporary file.
+ If the isEncrypted property is YES, this method (or getImage) should be used to
+ obtain the full decrypted attachment. The behaviour of this method is undefined
+ if isEncrypted is NO.
+ It is the caller's responsibility to delete the temporary file once it is no longer
+ needed.
+ */
+- (void)decryptToTempFile:(void (^)(NSString *))onSuccess failure:(void (^)(NSError *error))onFailure;
 
 /**
  Gets the thumbnails for this attachment, downloading it or loading it from disk cache

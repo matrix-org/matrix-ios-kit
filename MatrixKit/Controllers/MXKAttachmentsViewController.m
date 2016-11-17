@@ -73,6 +73,11 @@
      Tells whether back pagination is in progress.
      */
     BOOL isBackPaginationInProgress;
+    
+    /**
+     A temporary file used to store decrypted attachments
+     */
+    NSString *tempFile;
 }
 
 @end
@@ -169,7 +174,16 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated
+
+
 {
+    if (tempFile)
+    {
+        NSError *err;
+        [[NSFileManager defaultManager] removeItemAtPath:tempFile error:&err];
+        tempFile = nil;
+    }
+    
     if (currentAlert)
     {
         [currentAlert dismiss:NO];
@@ -625,8 +639,8 @@
                     
                 }];
                 
-                [attachment prepare:^{
-                    
+                
+                void (^onDownloaded)(NSData *) = ^(NSData *data){
                     if (cell.notificationObserver)
                     {
                         [[NSNotificationCenter defaultCenter] removeObserver:cell.notificationObserver];
@@ -635,14 +649,14 @@
                     
                     if (animatedGifViewer.superview)
                     {
-                        [animatedGifViewer loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:attachment.cacheFilePath]]];
+                        [animatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:nil];
                         
                         [pieChartView removeFromSuperview];
                         [previewImage removeFromSuperview];
                     }
-                    
-                } failure:^(NSError *error) {
-                    
+                };
+                
+                void (^onFailure)(NSError *) = ^(NSError *error){
                     if (cell.notificationObserver)
                     {
                         [[NSNotificationCenter defaultCenter] removeObserver:cell.notificationObserver];
@@ -652,7 +666,13 @@
                     NSLog(@"[MXKAttachmentsVC] gif download failed");
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                    
+                };
+                
+                
+                [attachment getAttachmentData:^(NSData *data) {
+                    onDownloaded(data);
+                } failure:^(NSError *error) {
+                    onFailure(error);
                 }];
             }
             else if (indexPath.item == currentVisibleItemIndex)
@@ -680,7 +700,8 @@
             cell.mxkImageView.stretchable = NO;
             cell.mxkImageView.enableInMemoryCache = YES;
             // Display video thumbnail, the video is played only when user selects this cell
-            [cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:attachment.thumbnailOrientation previewImage:nil];
+            [cell.mxkImageView setAttachmentThumb:attachment];
+            //[cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:attachment.thumbnailOrientation previewImage:nil];
             
             cell.centerIcon.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
             cell.centerIcon.hidden = NO;
