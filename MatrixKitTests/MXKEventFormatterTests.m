@@ -36,12 +36,16 @@
     // Create a minimal event formatter
     // Note: it may not be enough for testing all MXKEventFormatter methods
     eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:nil];
-    anEvent = [eventFormatter fakeRoomMessageEventForRoomId:@"aRoomId"
-                                                withEventId:@"anEventId"
-                                                 andContent:@{
-                                                              @"msgtype": kMXMessageTypeText,
-                                                              @"body": @"deded",
-                                                              }];
+    
+    anEvent = [[MXEvent alloc] init];
+    anEvent.roomId = @"aRoomId";
+    anEvent.eventId = @"anEventId";
+    anEvent.wireType = kMXEventTypeStringRoomMessage;
+    anEvent.originServerTs = (uint64_t) ([[NSDate date] timeIntervalSince1970] * 1000);
+    anEvent.wireContent = @{
+                            @"msgtype": kMXMessageTypeText,
+                            @"body": @"deded",
+                            };
 }
 
 - (void)tearDown
