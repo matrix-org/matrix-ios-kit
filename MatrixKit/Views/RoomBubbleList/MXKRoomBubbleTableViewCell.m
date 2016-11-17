@@ -315,8 +315,6 @@ static BOOL _disableLongPressGestureOnEvent;
                 mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
             }
             
-            NSString *url = bubbleData.attachment.thumbnailURL;
-            
             if (bubbleData.attachment.type == MXKAttachmentTypeVideo)
             {
                 self.playIconView.hidden = NO;
