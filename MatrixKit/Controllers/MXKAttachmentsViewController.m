@@ -701,7 +701,7 @@
                     
                     if (animatedGifViewer.superview)
                     {
-                        [animatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:nil];
+                        [animatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
                         
                         [pieChartView removeFromSuperview];
                         [previewImage removeFromSuperview];
