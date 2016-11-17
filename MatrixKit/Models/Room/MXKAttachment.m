@@ -198,7 +198,7 @@ static const int kThumbnailHeight = 240;
 - (UIImage *)getCachedThumbnail {
     NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
-                                                               inFolder:kMXKMediaManagerDefaultCacheFolder];
+                                                               inFolder:self.event.roomId];
     
     UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
     if (thumb) return thumb;
@@ -211,7 +211,7 @@ static const int kThumbnailHeight = 240;
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure {
     NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
-                                                               inFolder:kMXKMediaManagerDefaultCacheFolder];
+                                                               inFolder:self.event.roomId];
     
     UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
     if (thumb)
