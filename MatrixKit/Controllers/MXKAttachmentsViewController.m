@@ -975,6 +975,8 @@
                         
                         NSLog(@"[MXKAttachmentsVC] video download failed");
                         
+                        [pieChartView removeFromSuperview];
+                        
                         // Display the navigation bar so that the user can leave this screen
                         self.navigationController.navigationBarHidden = NO;
                         
