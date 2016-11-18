@@ -465,11 +465,11 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                   success:^(NSURL *assetURL){
                                                       if (onSuccess)
                                                       {
+                                                          [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
                                                           onSuccess();
                                                       }
                                                   }
                                                   failure:onFailure];
-                [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
             } failure:onFailure];
         }
         else

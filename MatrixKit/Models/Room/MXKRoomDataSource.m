@@ -1277,12 +1277,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                  @"msgtype": kMXMessageTypeImage,
                                  @"body": filename,
                                  @"url": fakeMediaManagerURL,
-                                 @"info": @{
+                                 @"info": [@{
                                          @"mimetype": mimetype,
                                          @"w": @(image.size.width),
                                          @"h": @(image.size.height),
                                          @"size": @(imageData.length)
-                                         }
+                                         } mutableCopy]
                                  };
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
@@ -1414,12 +1414,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                  @"msgtype": kMXMessageTypeImage,
                                  @"body": filename,
                                  @"url": fakeMediaManagerURL,
-                                 @"info": @{
+                                 @"info": [@{
                                          @"mimetype": mimetype,
                                          @"w": @(image.size.width),
                                          @"h": @(image.size.height),
                                          @"size": @(imageData.length)
-                                         }
+                                         } mutableCopy]
                                  };
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
     
