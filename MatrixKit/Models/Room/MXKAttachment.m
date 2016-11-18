@@ -361,7 +361,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     char *tempPathCstr = (char *)malloc(strlen(templateCstr) + 1);
     strcpy(tempPathCstr, templateCstr);
     
-    int fd = mkstemps(tempPathCstr, ext.length);
+    int fd = mkstemps(tempPathCstr, (int)ext.length);
     if (!fd)
     {
         return nil;
