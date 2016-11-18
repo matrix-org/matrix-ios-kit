@@ -124,7 +124,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
             failure(err);
             return;
         }
-        CC_SHA256_Update(&sha256ctx, outbuf, outLen);
+        CC_SHA256_Update(&sha256ctx, outbuf, (CC_LONG)outLen);
         [ciphertext appendBytes:outbuf length:outLen];
     }
     
@@ -234,7 +234,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
         
         [outputStream write:ptbuf maxLength:bytesProduced];
         
-        CC_SHA256_Update(&sha256ctx, ctbuf, bytesRead);
+        CC_SHA256_Update(&sha256ctx, ctbuf, (CC_LONG)bytesRead);
     }
     free(ctbuf);
     free(ptbuf);
