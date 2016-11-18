@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.4.1 (2016-11-18)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.1).
+ 
+Bug fixes:
+ * Make share/save/copy work for e2e attachments.
+ * Fix a random crash when uploading an e2e attachment.
+ * Wrong thumbnail shown whilst uploading e2e image  (https://github.com/vector-im/vector-ios#795).
+
 Changes in MatrixKit in 0.4.0 (2016-11-17)
 ===========================================
 
