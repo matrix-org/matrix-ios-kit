@@ -654,6 +654,9 @@ static BOOL _disableLongPressGestureOnEvent;
         {
             [self.attachmentView removeGestureRecognizer:self.attachmentView.gestureRecognizers[0]];
         }
+        
+        // Prevent the cell from displaying again the image in case of reuse.
+        self.attachmentView.image = nil;
     }
     
     // Remove potential dateTime (or unsent) label(s)
