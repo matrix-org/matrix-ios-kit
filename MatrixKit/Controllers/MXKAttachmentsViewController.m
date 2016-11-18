@@ -526,11 +526,8 @@
             {
                 [[NSFileManager defaultManager] removeItemAtPath:tempFile error:nil];
             }
-            // apparently MPMoviePlayerController detects based on file extension...
-            NSString *newfile = [file stringByAppendingString:[MXKTools fileExtensionFromContentType:attachment.contentInfo[@"mimetype"]]];
-            [[NSFileManager defaultManager] moveItemAtPath:file toPath:newfile error:nil];
-            tempFile = newfile;
-            videoFile = newfile;
+            tempFile = file;
+            videoFile = file;
             success();
         } failure:^(NSError *error) {
             if (failure) failure(error);
