@@ -2111,7 +2111,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 // TODO: it should be done by the sdk (https://github.com/matrix-org/matrix-ios-sdk/issues/161)
                 if (event.eventType == MXEventTypeRoomEncrypted)
                 {
-                    if (![self.mxSession decryptEvent:event])
+                    if (![self.mxSession decryptEvent:event inTimeline:nil])
                     {
                         NSLog(@"[MXKRoomDataSource] lastMessageWithEventFormatter: Warning: Unable to decrypt event: %@\nError: %@", event.content[@"body"], event.decryptionError);
                     }
