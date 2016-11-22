@@ -106,6 +106,12 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic, readonly) NSArray<NSString *> *linkedEmails;
 
 /**
+ The account user's device.
+ [self loadDeviceInformation] must be called to update the property.
+ */
+@property (nonatomic, readonly) MXDevice *device;
+
+/**
  The account user's presence (`MXPresenceUnknown` by default, available if matrix session `mxSession` is opened).
  The notification `kMXKAccountUserInfoDidChangeNotification` is posted in case of change of this property.      
  */
@@ -268,6 +274,15 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param failure A block object called when the operation fails.
  */
 - (void)load3PIDs:(void (^)())success failure:(void (^)(NSError *error))failure;
+
+/**
+ Load the current device information for this account.
+ This method must be called to refresh self.device.
+ 
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)loadDeviceInformation:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 #pragma mark - Push notification listeners
 /**
