@@ -153,6 +153,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         {
             threePIDs = [coder decodeObjectForKey:@"threePIDs"];
         }
+        
+        if ([coder decodeObjectForKey:@"device"])
+        {
+            _device = [coder decodeObjectForKey:@"device"];
+        }
 
         userPresence = MXPresenceUnknown;
         
@@ -199,6 +204,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     if (self.threePIDs)
     {
         [coder encodeObject:threePIDs forKey:@"threePIDs"];
+    }
+    
+    if (self.device)
+    {
+        [coder encodeObject:_device forKey:@"device"];
     }
 
     if (self.identityServerURL)
@@ -456,6 +466,41 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             failure(error);
         }
     }];
+}
+
+- (void)loadDeviceInformation:(void (^)())success failure:(void (^)(NSError *error))failure
+{
+    if (mxCredentials)
+    {
+        [mxRestClient deviceByDeviceId:self.mxCredentials.deviceId success:^(MXDevice *device) {
+            
+            _device = device;
+            
+            // Archive updated field
+            [[MXKAccountManager sharedManager] saveAccounts];
+            
+            if (success)
+            {
+                success();
+            }
+            
+        } failure:^(NSError *error) {
+            
+            if (failure)
+            {
+                failure(error);
+            }
+            
+        }];
+    }
+    else
+    {
+        _device = nil;
+        if (success)
+        {
+            success();
+        }
+    }
 }
 
 - (void)setUserPresence:(MXPresence)presence andStatusMessage:(NSString *)statusMessage completion:(void (^)(void))completion
