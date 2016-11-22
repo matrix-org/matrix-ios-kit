@@ -106,7 +106,9 @@
             _textView.text = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             
             // Check whether the user can redact this event
-            if (!mxEvent.isRedactedEvent)
+            // Do not allow to redact the event that enabled encryption (m.room.encryption)
+            // because it breaks everything
+            if (!mxEvent.isRedactedEvent && mxEvent.eventType != MXEventTypeRoomEncryption)
             {
                 // Here the event has not been already redacted, check the user's power level
                 MXRoom *mxRoom = [mxSession roomWithRoomId:mxEvent.roomId];
