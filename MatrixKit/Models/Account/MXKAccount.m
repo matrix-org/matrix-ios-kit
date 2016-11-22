@@ -113,6 +113,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self prepareRESTClient];
         
         userPresence = MXPresenceUnknown;
+        
+        // Refresh device information
+        [self loadDeviceInformation:nil failure:nil];
     }
     return self;
 }
@@ -180,6 +183,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+        
+        // Refresh device information
+        [self loadDeviceInformation:nil failure:nil];
     }
     
     return self;
@@ -470,9 +476,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)loadDeviceInformation:(void (^)())success failure:(void (^)(NSError *error))failure
 {
-    if (mxCredentials)
+    if (mxCredentials.deviceId)
     {
-        [mxRestClient deviceByDeviceId:self.mxCredentials.deviceId success:^(MXDevice *device) {
+        [mxRestClient deviceByDeviceId:mxCredentials.deviceId success:^(MXDevice *device) {
             
             _device = device;
             
