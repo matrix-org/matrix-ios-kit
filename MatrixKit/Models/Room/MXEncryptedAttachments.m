@@ -137,6 +137,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
     
     [uploader uploadData:ciphertext filename:nil mimeType:@"application/octet-stream" success:^(NSString *url) {
         success(@{
+                  @"v": @"v1",
                   @"url": url,
                   @"mimetype": mimeType,
                   @"key": @{
@@ -161,27 +162,27 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
 + (NSError *)decryptAttachment:(NSDictionary *)fileInfo
               inputStream:(NSInputStream *)inputStream
              outputStream:(NSOutputStream *)outputStream {
-    if (!fileInfo[@"key"])
+    if (!fileInfo[@"key"] || ![fileInfo[@"key"] isKindOfClass:[NSDictionary class]])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_key"}];
     }
-    if (![fileInfo[@"key"][@"alg"] isEqualToString:@"A256CTR"])
+    if (![fileInfo[@"key"][@"alg"] isKindOfClass:[NSString class]] || ![fileInfo[@"key"][@"alg"] isEqualToString:@"A256CTR"])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_or_incorrect_key_alg"}];
     }
-    if (!fileInfo[@"key"][@"k"])
+    if (!fileInfo[@"key"][@"k"] || ![fileInfo[@"key"][@"k"] isKindOfClass:[NSString class]])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_key_data"}];
     }
-    if (!fileInfo[@"iv"])
+    if (!fileInfo[@"iv"] || ![fileInfo[@"iv"] isKindOfClass:[NSString class]])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_iv"}];
     }
-    if (!fileInfo[@"hashes"])
+    if (!fileInfo[@"hashes"] || ![fileInfo[@"hashes"] isKindOfClass:[NSDictionary class]])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_hashes"}];
     }
-    if (!fileInfo[@"hashes"][@"sha256"])
+    if (![fileInfo[@"hashes"][@"sha256"] isKindOfClass:[NSString class]])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_sha256_hash"}];
     }
@@ -274,7 +275,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
 + (NSString *)padBase64:(NSString *)unpadded {
     NSString *ret = unpadded;
     
-    while (ret.length % 3) {
+    while (ret.length % 4) {
         ret = [ret stringByAppendingString:@"="];
     }
     return ret;
