@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.4.2 (2016-11-22)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.2).
+ * MXKAccount: Add API to handle account device information.
+ 
+Bug fixes:
+ * Crypto: Do not allow to redact the event that enabled encryption in a room.
+
 Changes in MatrixKit in 0.4.1 (2016-11-18)
 ===========================================
 
