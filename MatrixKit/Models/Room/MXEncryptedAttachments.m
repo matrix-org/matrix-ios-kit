@@ -162,6 +162,9 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
 + (NSError *)decryptAttachment:(NSDictionary *)fileInfo
               inputStream:(NSInputStream *)inputStream
              outputStream:(NSOutputStream *)outputStream {
+    // NB. We don;t check the 'v' field here: future versions should be backwards compatible so we try to decode
+    // whatever the version is. We can only really decode v1, but the difference is the IV wraparound so we can try
+    // decoding v0 attachments and the worst that will happen is that it won't work.
     if (!fileInfo[@"key"] || ![fileInfo[@"key"] isKindOfClass:[NSDictionary class]])
     {
         return [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:@{@"err": @"missing_key"}];
