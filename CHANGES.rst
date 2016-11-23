@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.4.3 (2016-11-23)
+===========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.3).
+ 
+Bug fixes:
+ * Typing indicator should stop when the user sends his message (https://github.com/vector-im/vector-ios#809).
+ * Crypto: Made attachments work better cross platform.
+
 Changes in MatrixKit in 0.4.2 (2016-11-22)
 ===========================================
 
