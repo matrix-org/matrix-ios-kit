@@ -134,14 +134,6 @@
 
 #pragma mark - HPGrowingTextView delegate
 
-- (void)growingTextViewDidBeginEditing:(HPGrowingTextView *)growingTextView
-{
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:isTyping:)])
-    {
-        [self.delegate roomInputToolbarView:self isTyping:YES];
-    }
-}
-
 - (void)growingTextViewDidEndEditing:(HPGrowingTextView *)sender
 {
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:isTyping:)])
