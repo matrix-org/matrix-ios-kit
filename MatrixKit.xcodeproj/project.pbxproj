@@ -32,6 +32,7 @@
 		32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2271AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m */; };
 		32CEE22C1AB1EC9B00F7C74D /* MXKRecentCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2291AB1EC9B00F7C74D /* MXKRecentCellData.m */; };
 		32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */; };
+		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
 		71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */; };
 		71352D561C0ED240001D50B0 /* MXKRoomSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */; };
 		71352D691C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D671C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m */; };
@@ -257,6 +258,7 @@
 		32CEE22E1AB1EE0900F7C74D /* MXKRecentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentTableViewCell.h; sourceTree = "<group>"; };
 		32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRecentTableViewCell.m; sourceTree = "<group>"; };
 		392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
+		550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptedAttachmentsTest.m; sourceTree = "<group>"; };
 		665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		71352D521C0ED240001D50B0 /* MXKRoomSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomSettingsViewController.h; sourceTree = "<group>"; };
 		71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomSettingsViewController.m; sourceTree = "<group>"; };
@@ -551,6 +553,7 @@
 			children = (
 				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
 				3203F26C1D2E9CAE0021F170 /* Info.plist */,
+				550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */,
 			);
 			path = MatrixKitTests;
 			sourceTree = "<group>";
@@ -1399,6 +1402,7 @@
 				32952C621D5B2D190039DC0C /* MXKAlert.m in Sources */,
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
 				F07B9C2A1D3587B0000CB20E /* MXKEventFormatter.m in Sources */,
+				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
 				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
 			);
