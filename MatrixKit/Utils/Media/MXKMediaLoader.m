@@ -16,6 +16,7 @@
 
 #import "MXKMediaManager.h"
 #import "MXKTools.h"
+#import "MatrixSDK.h"
 
 NSString *const kMXKMediaDownloadProgressNotification = @"kMXKMediaDownloadProgressNotification";
 NSString *const kMXKMediaDownloadDidFinishNotification = @"kMXKMediaDownloadDidFinishNotification";

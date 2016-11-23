@@ -16,7 +16,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MatrixSDK.h"
+@class MXSession;
+@class MXHTTPOperation;
 
 /**
  Posted to provide download progress.
