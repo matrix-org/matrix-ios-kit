@@ -72,7 +72,14 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
     
     // generate IV
     NSMutableData *iv = [[NSMutableData alloc] initWithLength:kCCBlockSizeAES128];
-    retval = SecRandomCopyBytes(kSecRandomDefault, kCCBlockSizeAES128, iv.mutableBytes);
+    // Yes, we really generate half a block size worth of random data to put in the IV.
+    // This is leave the lower bits (which they are because AES is defined to work in
+    // big endian) of the IV as 0 (which it is because [NSMutableData initWithLength] gives
+    // a zeroed buffer) to avoid the counter overflowing. This is because CommonCrypto's
+    // counter wraps at 64 bits, but android's wraps at the full 128 bits, making them
+    // incompatible if the IV wraps around. We fix this by madating that the lower order
+    // bits of the IV are zero, so the counter will only wrap if the file is 2^64 bytes.
+    retval = SecRandomCopyBytes(kSecRandomDefault, kCCBlockSizeAES128 / 2, iv.mutableBytes);
     if (retval != 0) {
         err = [NSError errorWithDomain:MXEncryptedAttachmentsErrorDomain code:0 userInfo:nil];
         failure(err);
@@ -137,7 +144,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
     
     [uploader uploadData:ciphertext filename:nil mimeType:@"application/octet-stream" success:^(NSString *url) {
         success(@{
-                  @"v": @"v1",
+                  @"v": @"v2",
                   @"url": url,
                   @"mimetype": mimeType,
                   @"key": @{
