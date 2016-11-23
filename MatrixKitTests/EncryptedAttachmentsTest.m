@@ -49,21 +49,21 @@
                  },
                  @"iv": @"AAAAAAAAAAAAAAAAAAAAAA"
              }, @""],
-             @[@"nZxRAVw962fwUQ5/", @{
+             @[@"5xJZTt5cQicm+9f4", @{
                  @"v": @"v1",
                  @"hashes": @{
-                     @"sha256": @"geLWS2ptBew5aPLJRTK+QnI3Krdl3UaxN8qfahHWhfc"
+                     @"sha256": @"YzF08lARDdOCzJpzuSwsjTNlQc4pHxpdHcXiD/wpK6k"
                  }, @"key": @{
                      @"alg": @"A256CTR",
                      @"k": @"__________________________________________8",
                      @"key_ops": @[@"encrypt", @"decrypt"],
                      @"kty": @"oct"
-                 }, @"iv": @"/////////////////////w"
+                 }, @"iv": @"//////////8AAAAAAAAAAA"
              }, @"SGVsbG8sIFdvcmxk"],
-             @[@"tJVNBVJ/vl36UQt4Y5e5m84bRUrQHhcdLPvS/7EkDvlkDLZXamBB6k8THbiawiKZ5Mnq9PZMSSbgOCvmnUBOMA", @{
-                @"v": @"v1",
+             @[@"zhtFStAeFx0s+9L/sSQO+WQMtldqYEHqTxMduJrCIpnkyer09kxJJuA4K+adQE4w+7jZe/vR9kIcqj9rOhDR8Q", @{
+                @"v": @"v2",
                 @"hashes": @{
-                        @"sha256": @"LYG/orOViuFwovJpv2YMLSsmVKwLt7pY3f8SYM7KU5E"
+                        @"sha256": @"IOq7/dHHB+mfHfxlRY5XMeCWEwTPmlf4cJcgrkf6fVU"
                         },
                 @"key": @{
                         @"kty": @"oct",
@@ -71,8 +71,21 @@
                         @"k": @"__________________________________________8",
                         @"alg": @"A256CTR"
                         },
-                @"iv": @"/////////////////////w"
-                }, @"YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"]
+                @"iv": @"//////////8AAAAAAAAAAA"
+                }, @"YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"],
+             @[@"tJVNBVJ/vl36UQt4Y5e5m84bRUrQHhcdLPvS/7EkDvlkDLZXamBB6k8THbiawiKZ5Mnq9PZMSSbgOCvmnUBOMA", @{
+                   @"v": @"v1",
+                   @"hashes": @{
+                           @"sha256": @"LYG/orOViuFwovJpv2YMLSsmVKwLt7pY3f8SYM7KU5E"
+                           },
+                   @"key": @{
+                           @"kty": @"oct",
+                           @"key_ops": @[@"encrypt",@"decrypt"],
+                           @"k": @"__________________________________________8",
+                           @"alg": @"A256CTR"
+                           },
+                   @"iv": @"/////////////////////w"
+                   }, @"YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"]
      ];
     
     for (NSArray *vector in testVectors) {
