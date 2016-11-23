@@ -33,6 +33,7 @@
 		32CEE22C1AB1EC9B00F7C74D /* MXKRecentCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2291AB1EC9B00F7C74D /* MXKRecentCellData.m */; };
 		32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */; };
 		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
+		551747881DE5FBC000A4681C /* MXEncryptedAttachments.m in Sources */ = {isa = PBXBuildFile; fileRef = F00ACC631DDE17960093F646 /* MXEncryptedAttachments.m */; };
 		71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */; };
 		71352D561C0ED240001D50B0 /* MXKRoomSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */; };
 		71352D691C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D671C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m */; };
@@ -1401,6 +1402,7 @@
 			files = (
 				32952C621D5B2D190039DC0C /* MXKAlert.m in Sources */,
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
+				551747881DE5FBC000A4681C /* MXEncryptedAttachments.m in Sources */,
 				F07B9C2A1D3587B0000CB20E /* MXKEventFormatter.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
