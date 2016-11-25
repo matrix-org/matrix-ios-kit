@@ -140,6 +140,10 @@
 		F095E5121B25899F009606CE /* MXKSectionedContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = F095E50C1B25899F009606CE /* MXKSectionedContacts.m */; };
 		F095E5161B259942009606CE /* MXKContactTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F095E5151B259942009606CE /* MXKContactTableCell.m */; };
 		F095E5181B259C71009606CE /* MXKContactTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F095E5171B259C71009606CE /* MXKContactTableCell.xib */; };
+		F09617BD1DE8478C00093E9D /* MXKDeviceView.m in Sources */ = {isa = PBXBuildFile; fileRef = F09617BB1DE8478C00093E9D /* MXKDeviceView.m */; };
+		F09617BE1DE8478C00093E9D /* MXKDeviceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F09617BC1DE8478C00093E9D /* MXKDeviceView.xib */; };
+		F09617C31DE881D800093E9D /* MXKEncryptionInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F09617C11DE881D800093E9D /* MXKEncryptionInfoView.m */; };
+		F09617C41DE881D800093E9D /* MXKEncryptionInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F09617C21DE881D800093E9D /* MXKEncryptionInfoView.xib */; };
 		F096A3BF1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F096A3BD1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.m */; };
 		F09E288E1AC1FEDA00C51E44 /* MXKImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F09E288B1AC1FEDA00C51E44 /* MXKImageView.m */; };
 		F09E288F1AC1FEDA00C51E44 /* MXKPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = F09E288D1AC1FEDA00C51E44 /* MXKPieChartView.m */; };
@@ -436,6 +440,12 @@
 		F095E5141B259942009606CE /* MXKContactTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKContactTableCell.h; sourceTree = "<group>"; };
 		F095E5151B259942009606CE /* MXKContactTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKContactTableCell.m; sourceTree = "<group>"; };
 		F095E5171B259C71009606CE /* MXKContactTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKContactTableCell.xib; sourceTree = "<group>"; };
+		F09617BA1DE8478C00093E9D /* MXKDeviceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKDeviceView.h; sourceTree = "<group>"; };
+		F09617BB1DE8478C00093E9D /* MXKDeviceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKDeviceView.m; sourceTree = "<group>"; };
+		F09617BC1DE8478C00093E9D /* MXKDeviceView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKDeviceView.xib; sourceTree = "<group>"; };
+		F09617C01DE881D800093E9D /* MXKEncryptionInfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEncryptionInfoView.h; sourceTree = "<group>"; };
+		F09617C11DE881D800093E9D /* MXKEncryptionInfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionInfoView.m; sourceTree = "<group>"; };
+		F09617C21DE881D800093E9D /* MXKEncryptionInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKEncryptionInfoView.xib; sourceTree = "<group>"; };
 		F096A3BC1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAccountDetailsViewController.h; sourceTree = "<group>"; };
 		F096A3BD1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAccountDetailsViewController.m; sourceTree = "<group>"; };
 		F09E288A1AC1FEDA00C51E44 /* MXKImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKImageView.h; sourceTree = "<group>"; };
@@ -678,6 +688,8 @@
 		3219CBBD1AA6FB1C0027D7E2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F09617BF1DE881D800093E9D /* EncryptionInfoView */,
+				F09617B91DE8478C00093E9D /* DeviceView */,
 				F080B42D1BD6991A00DE095E /* MXKCollectionViewCell */,
 				F0CF98F41B0C6EA000EAE373 /* Account */,
 				F06E768A1AF0FED000980E5A /* Authentication */,
@@ -1007,6 +1019,26 @@
 			path = Contact;
 			sourceTree = "<group>";
 		};
+		F09617B91DE8478C00093E9D /* DeviceView */ = {
+			isa = PBXGroup;
+			children = (
+				F09617BA1DE8478C00093E9D /* MXKDeviceView.h */,
+				F09617BB1DE8478C00093E9D /* MXKDeviceView.m */,
+				F09617BC1DE8478C00093E9D /* MXKDeviceView.xib */,
+			);
+			path = DeviceView;
+			sourceTree = "<group>";
+		};
+		F09617BF1DE881D800093E9D /* EncryptionInfoView */ = {
+			isa = PBXGroup;
+			children = (
+				F09617C01DE881D800093E9D /* MXKEncryptionInfoView.h */,
+				F09617C11DE881D800093E9D /* MXKEncryptionInfoView.m */,
+				F09617C21DE881D800093E9D /* MXKEncryptionInfoView.xib */,
+			);
+			path = EncryptionInfoView;
+			sourceTree = "<group>";
+		};
 		F09E28921AC2007000C51E44 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -1276,12 +1308,14 @@
 				F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CE56E81AA8BB5E003BE77A /* Images.xcassets in Resources */,
 				F05FB1821AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib in Resources */,
+				F09617BE1DE8478C00093E9D /* MXKDeviceView.xib in Resources */,
 				F0CE56E61AA8BB5E003BE77A /* LaunchScreen.xib in Resources */,
 				F0CF98E51B0B842700EAE373 /* MXKTableViewCellWithLabelAndSlider.xib in Resources */,
 				71352D6A1C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib in Resources */,
 				F0B0ECDD1B16219C005EB20D /* MXKRoomInputToolbarViewWithHPGrowingText.xib in Resources */,
 				F0316E371B7DEA5300F03620 /* MXKTableViewCellWithSearchBar.xib in Resources */,
 				F0CF98ED1B0B87D200EAE373 /* MXKTableViewCellWithLabelTextFieldAndButton.xib in Resources */,
+				F09617C41DE881D800093E9D /* MXKEncryptionInfoView.xib in Resources */,
 				F0CF98F31B0B889C00EAE373 /* MXKTableViewCellWithTextView.xib in Resources */,
 				F0CF98E71B0B869800EAE373 /* MXKTableViewCellWithLabelAndSubLabel.xib in Resources */,
 				F01449AE1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.xib in Resources */,
@@ -1449,6 +1483,7 @@
 				F0BA9C6A1B3438300065B4B7 /* MXKTableViewCell.m in Sources */,
 				F049FC201B2B878A00DD9D3C /* NSBundle+MatrixKit.m in Sources */,
 				F0868E121B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.m in Sources */,
+				F09617BD1DE8478C00093E9D /* MXKDeviceView.m in Sources */,
 				32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */,
 				F00FA8771C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.m in Sources */,
 				32CEE2231AB1E37600F7C74D /* MXKRecentListViewController.m in Sources */,
@@ -1481,6 +1516,7 @@
 				F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */,
 				F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */,
 				F095E50F1B25899F009606CE /* MXKContactManager.m in Sources */,
+				F09617C31DE881D800093E9D /* MXKEncryptionInfoView.m in Sources */,
 				F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */,
 				F003FD4F1B4E64B4000FC7A5 /* NSData+MatrixKit.m in Sources */,
 				F0AD3CC71B289441002E0899 /* MXKInterleavedRecentTableViewCell.m in Sources */,
