@@ -119,3 +119,7 @@
 #import "MXKContactManager.h"
 
 #import "MXK3PID.h"
+
+#import "MXKDeviceView.h"
+#import "MXKEncryptionInfoView.h"
+
