@@ -131,9 +131,7 @@
             currentCallViewController.delegate = self;
             
             UINavigationController *navigationController = self.navigationController;
-            [navigationController.topViewController presentViewController:currentCallViewController animated:YES completion:^{
-                currentCallViewController.isPresented = YES;
-            }];
+            [navigationController.topViewController presentViewController:currentCallViewController animated:YES completion:nil];
             
             // Hide system status bar
             [UIApplication sharedApplication].statusBarHidden = YES;
@@ -840,13 +838,12 @@
     if (callViewController == currentCallViewController)
     {
         
-        if (callViewController.isPresented)
+        if (callViewController.presentingViewController)
         {
             BOOL callIsEnded = (callViewController.mxCall.state == MXCallStateEnded);
             NSLog(@"Call view controller must be dismissed (%d)", callIsEnded);
             
             [callViewController dismissViewControllerAnimated:YES completion:^{
-                callViewController.isPresented = NO;
                 
                 if (!callIsEnded)
                 {
@@ -969,9 +966,7 @@
     [self removeCallStatusBar];
     
     UINavigationController *navigationController = self.navigationController;
-    [navigationController.topViewController presentViewController:currentCallViewController animated:YES completion:^{
-        currentCallViewController.isPresented = YES;
-    }];
+    [navigationController.topViewController presentViewController:currentCallViewController animated:YES completion:nil];
 }
 
 - (void)statusBarDidChangeFrame
