@@ -144,7 +144,20 @@
                         }
                     }
                 }
-                
+                else if ([roomDataSource.eventFormatter isSupportedAttachment:event])
+                {
+                    // The event is updated to an even with attachement
+                    attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                    if (attachment && attachment.type == MXKAttachmentTypeImage)
+                    {
+                        // Check the current thumbnail orientation. Rotate the current content size (if need)
+                        if (attachment.thumbnailOrientation == UIImageOrientationLeft || attachment.thumbnailOrientation == UIImageOrientationRight)
+                        {
+                            _contentSize = CGSizeMake(_contentSize.height, _contentSize.width);
+                        }
+                    }
+                }
+
                 break;
             }
         }
@@ -178,6 +191,35 @@
     }
 
     return count;
+}
+
+- (NSUInteger)removeEventsFromEvent:(NSString*)eventId removedEvents:(NSArray<MXEvent*>**)removedEvents;
+{
+    NSMutableArray *cuttedEvents = [NSMutableArray array];
+
+    @synchronized(bubbleComponents)
+    {
+        NSInteger componentIndex = [self componentIndexOfEvent:eventId];
+
+        if (NSNotFound != componentIndex)
+        {
+            NSArray *newBubbleComponents = [bubbleComponents subarrayWithRange:NSMakeRange(0, componentIndex)];
+
+            for (NSUInteger i = componentIndex; i < bubbleComponents.count; i++)
+            {
+                MXKRoomBubbleComponent *roomBubbleComponent = bubbleComponents[i];
+                [cuttedEvents addObject:roomBubbleComponent.event];
+            }
+
+            bubbleComponents = [NSMutableArray arrayWithArray:newBubbleComponents];
+
+            // Flush the current attributed string to force refresh
+            self.attributedTextMessage = nil;
+        }
+    }
+
+    *removedEvents = cuttedEvents;
+    return bubbleComponents.count;
 }
 
 - (BOOL)hasSameSenderAsBubbleCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData
@@ -605,6 +647,23 @@
         // Update resulting message body
         attributedTextMessage = customAttributedTextMsg;
     }
+}
+
+- (NSInteger)componentIndexOfEvent:(NSString*)eventId
+{
+    NSInteger index = NSNotFound;
+
+    for (NSInteger i = 0; i < bubbleComponents.count; i++)
+    {
+        MXKRoomBubbleComponent *roomBubbleComponent = bubbleComponents[i];
+        if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
+        {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
 }
 
 @end

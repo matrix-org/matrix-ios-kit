@@ -220,6 +220,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             [self onDateTimeFormatUpdate];
             
         }];
+
+        // Listen to events decrypted
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventDidDecrypt:) name:kMXEventDidDecryptNotification object:nil];
     }
     return self;
 }
@@ -437,7 +440,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)destroy
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
-    
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidDecryptNotification object:nil];
+
     if (NSCurrentLocaleDidChangeNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
@@ -2379,6 +2384,145 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
         
         [self reload];
+    }
+}
+
+- (void)eventDidDecrypt:(NSNotification *)notif
+{
+    MXEvent *event = notif.object;
+    if ([event.roomId isEqualToString:_roomId])
+    {
+        // Retrieve the cell data hosting the event
+        id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:event.eventId];
+        if (!bubbleData)
+        {
+            return;
+        }
+
+        // We need to update the data of the cell that displays the event.
+        // The trickiest update is when the cell contains several events and the event
+        // to update turns out to be an attachment.
+        // In this case, we need to split the cell into several cells so that the attachment
+        // has its own cell.
+        if (bubbleData.events.count == 1 || ![_eventFormatter isSupportedAttachment:event])
+        {
+            // If the event is still a text, a simple update is enough
+            // If the event is an attachment, it has already its own cell. Let the bubble
+            // data handle the type change.
+            @synchronized (bubbleData)
+            {
+                [bubbleData updateEvent:event.eventId withEvent:event];
+            }
+        }
+        else
+        {
+            @synchronized (bubbleData)
+            {
+                BOOL eventIsFirstInBubble = NO;
+                NSInteger bubbleDataIndex =  [bubbles indexOfObject:bubbleData];
+
+                // We need to create a dedicated cell for the event attachment.
+                // From the current bubble, remove the updated event and all events after.
+                NSMutableArray<MXEvent*> *removedEvents;
+                NSUInteger remainingEvents = [bubbleData removeEventsFromEvent:event.eventId removedEvents:&removedEvents];
+
+                // If there is no more events in this bubble, remove it
+                if (0 == remainingEvents)
+                {
+                    eventIsFirstInBubble = YES;
+                    @synchronized (eventsToProcessSnapshot)
+                    {
+                        [bubbles removeObjectAtIndex:bubbleDataIndex];
+                        bubbleDataIndex--;
+                    }
+                }
+
+                // Create a dedicated bubble for the attachment
+                if (removedEvents.count)
+                {
+                    Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+
+                    id<MXKRoomBubbleCellDataStoring> newBubbleData = [[class alloc] initWithEvent:removedEvents[0] andRoomState:self.room.state andRoomDataSource:self];
+
+                    if (eventIsFirstInBubble)
+                    {
+                        // Apply same config as before
+                        newBubbleData.isPaginationFirstBubble = bubbleData.isPaginationFirstBubble;
+                        newBubbleData.shouldHideSenderInformation = bubbleData.shouldHideSenderInformation;
+                    }
+                    else
+                    {
+                        // This new bubble is not the first. Show nothing
+                        newBubbleData.isPaginationFirstBubble = NO;
+                        newBubbleData.shouldHideSenderInformation = YES;
+                    }
+
+                    // Update bubbles mapping
+                    @synchronized (eventIdToBubbleMap)
+                    {
+                        eventIdToBubbleMap[event.eventId] = newBubbleData;
+                    }
+
+                    @synchronized (eventsToProcessSnapshot)
+                    {
+                        [bubbles insertObject:newBubbleData atIndex:bubbleDataIndex + 1];
+                    }
+                }
+
+                // And put other cutted events in another bubble
+                if (removedEvents.count > 1)
+                {
+                    Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
+
+                    id<MXKRoomBubbleCellDataStoring> newBubbleData;
+                    for (NSUInteger i = 1; i < removedEvents.count; i++)
+                    {
+                        MXEvent *removedEvent = removedEvents[i];
+                        if (i == 1)
+                        {
+                            newBubbleData = [[class alloc] initWithEvent:removedEvent andRoomState:self.room.state andRoomDataSource:self];
+                        }
+                        else
+                        {
+                            [newBubbleData addEvent:removedEvent andRoomState:self.room.state];
+                        }
+
+                        // Update bubbles mapping
+                        @synchronized (eventIdToBubbleMap)
+                        {
+                            eventIdToBubbleMap[removedEvent.eventId] = newBubbleData;
+                        }
+                    }
+
+                    // Do not show the
+                    newBubbleData.isPaginationFirstBubble = NO;
+                    newBubbleData.shouldHideSenderInformation = YES;
+
+                    @synchronized (eventsToProcessSnapshot)
+                    {
+                        [bubbles insertObject:newBubbleData atIndex:bubbleDataIndex + 2];
+                    }
+                }
+            }
+        }
+
+        // Update lastMessage if it has been replaced
+        if ([lastMessage.eventId isEqualToString:event.eventId])
+        {
+            // The new event should have the same characteristics as localEcho: it should
+            // match [self lastMessageWithEventFormatter:] criteria and can replace it as
+            // as the last message
+            lastMessage = event;
+        }
+
+        // Update the delegate
+        if (self.delegate)
+        {
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+
+        // Notify the last message may have changed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
 }
 
