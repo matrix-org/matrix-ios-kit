@@ -77,6 +77,14 @@ static NSAttributedString *verticalWhitespace = nil;
     [_deleteButton setTitle:[NSBundle mxk_localizedStringForKey:@"delete"] forState:UIControlStateHighlighted];
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    // Scroll to the top the text view content
+    self.textView.contentOffset = CGPointZero;
+}
+
 - (void)removeFromSuperview
 {
     if (currentAlert)

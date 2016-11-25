@@ -63,6 +63,14 @@ static NSAttributedString *verticalWhitespace = nil;
     [_confirmVerifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_ok"] forState:UIControlStateHighlighted];
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    // Scroll to the top the text view content
+    self.textView.contentOffset = CGPointZero;
+}
+
 - (void)removeFromSuperview
 {
     if (mxCurrentOperation)
@@ -352,7 +360,6 @@ static NSAttributedString *verticalWhitespace = nil;
         [textViewAttributedString appendAttributedString:deviceInformationString];
         
         self.textView.attributedText = textViewAttributedString;
-        self.textView.contentOffset = CGPointZero;
     }
     else
     {
