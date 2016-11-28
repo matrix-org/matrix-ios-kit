@@ -57,6 +57,10 @@
 
 /**
  Initialize a device view to display the information of a user's device.
+ 
+ @param device a user's device.
+ @param session the matrix session.
+ @return the newly created instance.
  */
 - (instancetype)initWithDevice:(MXDevice*)device andMatrixSession:(MXSession*)session;
 
@@ -69,6 +73,11 @@
  The default text color in the text view. [UIColor blackColor] by default.
  */
 @property (nonatomic) UIColor *defaultTextColor;
+
+/**
+ Action registered on 'UIControlEventTouchUpInside' event for each UIButton instance.
+ */
+- (IBAction)onButtonPressed:(id)sender;
 
 @end
 

@@ -28,12 +28,33 @@
 @property (weak, nonatomic) IBOutlet UIButton *blockButton;
 @property (weak, nonatomic) IBOutlet UIButton *confirmVerifyButton;
 
+/**
+ Initialise an `MXKEncryptionInfoView` instance based on an encrypted event
+ 
+ @param event the encrypted event.
+ @param session the related matrix session.
+ @return the newly created instance.
+ */
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session;
+
+/**
+ Initialise an `MXKEncryptionInfoView` instance based only on a device information.
+ 
+ @param deviceInfo the device information.
+ @param session the related matrix session.
+ @return the newly created instance.
+ */
+- (instancetype)initWithDeviceInfo:(MXDeviceInfo*)deviceInfo andMatrixSession:(MXSession*)session;
 
 /**
  The default text color in the text view. [UIColor blackColor] by default.
  */
 @property (nonatomic) UIColor *defaultTextColor;
+
+/**
+ Action registered on 'UIControlEventTouchUpInside' event for each UIButton instance.
+*/
+- (IBAction)onButtonPressed:(id)sender;
 
 @end
 
