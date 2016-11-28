@@ -61,7 +61,7 @@ static NSAttributedString *verticalWhitespace = nil;
     
     _defaultTextColor = [UIColor blackColor];
     
-    // Add shadow on event details view
+    // Add shadow on added view
     _containerView.layer.cornerRadius = 5;
     _containerView.layer.shadowOffset = CGSizeMake(0, 1);
     _containerView.layer.shadowOpacity = 0.5f;

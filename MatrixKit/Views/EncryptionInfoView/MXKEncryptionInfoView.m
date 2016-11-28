@@ -37,7 +37,7 @@ static NSAttributedString *verticalWhitespace = nil;
     /**
      The event device info
      */
-    MXDeviceInfo *deviceInfo;
+    MXDeviceInfo *mxDeviceInfo;
     
     /**
      Current request in progress.
@@ -92,6 +92,27 @@ static NSAttributedString *verticalWhitespace = nil;
     {
         mxEvent = event;
         mxSession = session;
+        mxDeviceInfo = nil;
+        
+        [self setTranslatesAutoresizingMaskIntoConstraints: NO];
+        
+        [self updateTextViewText];
+    }
+    
+    return self;
+}
+
+- (instancetype)initWithDeviceInfo:(MXDeviceInfo*)deviceInfo andMatrixSession:(MXSession*)session
+{
+    NSArray *nibViews = [[NSBundle bundleForClass:[MXKEncryptionInfoView class]] loadNibNamed:NSStringFromClass([MXKEncryptionInfoView class])
+                                                                                        owner:nil
+                                                                                      options:nil];
+    self = nibViews.firstObject;
+    if (self)
+    {
+        mxEvent = nil;
+        mxDeviceInfo = deviceInfo;
+        mxSession = session;
         
         [self setTranslatesAutoresizingMaskIntoConstraints: NO];
         
@@ -105,26 +126,56 @@ static NSAttributedString *verticalWhitespace = nil;
 {
     mxEvent = nil;
     mxSession = nil;
+    mxDeviceInfo = nil;
 }
 
 #pragma mark - 
 
 - (void)updateTextViewText
 {
+    // Prepare the text view content
+    NSMutableAttributedString *textViewAttributedString = [[NSMutableAttributedString alloc]
+                                                           initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_title"]
+                                                           attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                                                        NSFontAttributeName: [UIFont boldSystemFontOfSize:17]}];
+
     if (mxEvent)
     {
         MXRoom *mxRoom = [mxSession roomWithRoomId:mxEvent.roomId];
+        NSString *senderId = mxEvent.sender;
         
         if (mxRoom)
         {
-            deviceInfo = [mxRoom eventDeviceInfo:mxEvent];
+            mxDeviceInfo = [mxRoom eventDeviceInfo:mxEvent];
+            
+            if (!mxDeviceInfo)
+            {
+#ifdef MX_CRYPTO
+                // Trigger a server request to get the device information for the event sender
+                mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] forceDownload:YES success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
+                    
+                    mxCurrentOperation = nil;
+                    
+                    // Sanity check: check whether some device information has been retrieved.
+                    if (usersDevicesInfoMap.map.count)
+                    {
+                        [self updateTextViewText];
+                    }
+                    
+                } failure:^(NSError *error) {
+                    
+                    mxCurrentOperation = nil;
+                    
+                    NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", mxEvent.sender);
+                    
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                }];
+#endif
+            }
         }
         
-        // Prepare text view content
-        NSMutableAttributedString *textViewAttributedString = [[NSMutableAttributedString alloc]
-                                                               initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_title"]
-                                                               attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                            NSFontAttributeName: [UIFont boldSystemFontOfSize:17]}];
         // Event information
         NSMutableAttributedString *eventInformationString = [[NSMutableAttributedString alloc]
                                                              initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_event"]
@@ -132,7 +183,6 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                           NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
         [eventInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
         
-        NSString *senderId = mxEvent.sender;
         NSString *senderKey = mxEvent.senderKey;
         NSString *claimedKey = mxEvent.keysClaimed[@"ed25519"];
         NSString *algorithm = mxEvent.wireContent[@"algorithm"];
@@ -224,147 +274,113 @@ static NSAttributedString *verticalWhitespace = nil;
         [eventInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
         
         [textViewAttributedString appendAttributedString:eventInformationString];
+    }
+    
+    // Device information
+    NSMutableAttributedString *deviceInformationString = [[NSMutableAttributedString alloc]
+                                                          initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device"]
+                                                          attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                                                       NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
+    [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
+    
+    if (mxDeviceInfo)
+    {
+        NSString *name = mxDeviceInfo.displayName;
+        NSString *deviceId = mxDeviceInfo.deviceId;
+        NSMutableAttributedString *verification;
+        NSString *fingerprint = mxDeviceInfo.fingerprint;
         
+        // Display here the Verify and Block buttons except if the device is the current one.
+        _verifyButton.hidden = _blockButton.hidden = [mxDeviceInfo.deviceId isEqualToString:mxSession.matrixRestClient.credentials.deviceId];
         
+        switch (mxDeviceInfo.verified)
+        {
+            case MXDeviceUnverified:
+            {
+                verification = [[NSMutableAttributedString alloc]
+                                initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_not_verified"]
+                                attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                             NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}];
+                
+                [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateNormal];
+                [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateHighlighted];
+                [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateNormal];
+                [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateHighlighted];
+                break;
+            }
+            case MXDeviceVerified:
+            {
+                verification = [[NSMutableAttributedString alloc]
+                                initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_verified"]
+                                attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                             NSFontAttributeName: [UIFont systemFontOfSize:14]}];
+                
+                [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unverify"] forState:UIControlStateNormal];
+                [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unverify"] forState:UIControlStateHighlighted];
+                [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateNormal];
+                [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateHighlighted];
+                
+                break;
+            }
+            case MXDeviceBlocked:
+            {
+                verification = [[NSMutableAttributedString alloc]
+                                initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_blocked"]
+                                attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                             NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}];
+                
+                [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateNormal];
+                [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateHighlighted];
+                [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unblock"] forState:UIControlStateNormal];
+                [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unblock"] forState:UIControlStateHighlighted];
+                
+                break;
+            }
+            default:
+                break;
+        }
         
-        // Device information
-        NSMutableAttributedString *deviceInformationString = [[NSMutableAttributedString alloc]
-                                                              initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device"]
-                                                              attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                           NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_name"]
+                                                         attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                                                      NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:(name.length ? name : @"")
+                                                         attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                                                      NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
         [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
         
-        if (deviceInfo)
-        {
-            NSString *name = deviceInfo.displayName;
-            NSString *deviceId = deviceInfo.deviceId;
-            NSMutableAttributedString *verification;
-            NSString *fingerprint = deviceInfo.fingerprint;
-            
-            // Display here the Verify and Block buttons except if the device is the current one.
-            _verifyButton.hidden = _blockButton.hidden = [deviceInfo.deviceId isEqualToString:mxSession.matrixRestClient.credentials.deviceId];
-            
-            switch (deviceInfo.verified)
-            {
-                case MXDeviceUnverified:
-                {
-                    verification = [[NSMutableAttributedString alloc]
-                                    initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_not_verified"]
-                                    attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                 NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}];
-                    
-                    [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateNormal];
-                    [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateHighlighted];
-                    [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateNormal];
-                    [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateHighlighted];
-                    break;
-                }
-                case MXDeviceVerified:
-                {
-                    verification = [[NSMutableAttributedString alloc]
-                                    initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_verified"]
-                                    attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                 NSFontAttributeName: [UIFont systemFontOfSize:14]}];
-                    
-                    [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unverify"] forState:UIControlStateNormal];
-                    [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unverify"] forState:UIControlStateHighlighted];
-                    [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateNormal];
-                    [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_block"] forState:UIControlStateHighlighted];
-                    
-                    break;
-                }
-                case MXDeviceBlocked:
-                {
-                    verification = [[NSMutableAttributedString alloc]
-                                    initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_blocked"]
-                                    attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                 NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}];
-                    
-                    [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateNormal];
-                    [_verifyButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_verify"] forState:UIControlStateHighlighted];
-                    [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unblock"] forState:UIControlStateNormal];
-                    [_blockButton setTitle:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_unblock"] forState:UIControlStateHighlighted];
-                    
-                    break;
-                }
-                default:
-                    break;
-            }
-            
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_name"]
-                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:(name.length ? name : @"")
-                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
-            
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_id"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:deviceId
-                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
-            
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_verification"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:verification];
-            [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
-            
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_fingerprint"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:fingerprint
-                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
-            [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
-        }
-        else
-        {
-            // Unknown device
-            [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                             initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_unknown"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
-                                                                          NSFontAttributeName: [UIFont italicSystemFontOfSize:14]}]];
-
-#ifdef MX_CRYPTO
-            // Trigger a server request to get the device information for the event sender
-            mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] forceDownload:YES success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
-                
-                mxCurrentOperation = nil;
-                
-                // Sanity check: check whether some device information has been retrieved.
-                if (usersDevicesInfoMap.map.count)
-                {
-                    [self updateTextViewText];
-                }
-                
-            } failure:^(NSError *error) {
-                
-                mxCurrentOperation = nil;
-                
-                NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", mxEvent.sender);
-                
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                
-            }];
-#endif
-        }
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_id"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor, NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:deviceId
+                                                         attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                                                      NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
+        [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
         
-        [textViewAttributedString appendAttributedString:deviceInformationString];
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_verification"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor, NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
+        [deviceInformationString appendAttributedString:verification];
+        [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
         
-        self.textView.attributedText = textViewAttributedString;
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_fingerprint"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor, NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:fingerprint
+                                                         attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
+                                                                      NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
+        [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
     }
     else
     {
-        _textView.text = nil;
+        // Unknown device
+        [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
+                                                         initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_info_device_unknown"]                                                             attributes:@{NSForegroundColorAttributeName: _defaultTextColor, NSFontAttributeName: [UIFont italicSystemFontOfSize:14]}]];
     }
+    
+    [textViewAttributedString appendAttributedString:deviceInformationString];
+    
+    self.textView.attributedText = textViewAttributedString;
 }
 
 + (NSAttributedString *)verticalWhitespace
@@ -385,22 +401,22 @@ static NSAttributedString *verticalWhitespace = nil;
         [self removeFromSuperview];
     }
 #ifdef MX_CRYPTO // Note: Verify and Block buttons are hidden when the deviceInfo is not available
-    else if (sender == _confirmVerifyButton && deviceInfo)
+    else if (sender == _confirmVerifyButton && mxDeviceInfo)
     {
-        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:deviceInfo.deviceId ofUser:deviceInfo.userId];
+        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId];
         [self removeFromSuperview];
     }
-    else if (deviceInfo)
+    else if (mxDeviceInfo)
     {
         MXDeviceVerification verificationStatus;
         
         if (sender == _verifyButton)
         {
-            verificationStatus = ((deviceInfo.verified == MXDeviceVerified) ? MXDeviceUnverified : MXDeviceVerified);
+            verificationStatus = ((mxDeviceInfo.verified == MXDeviceVerified) ? MXDeviceUnverified : MXDeviceVerified);
         }
         else if (sender == _blockButton)
         {
-            verificationStatus = ((deviceInfo.verified == MXDeviceBlocked) ? MXDeviceUnverified : MXDeviceBlocked);
+            verificationStatus = ((mxDeviceInfo.verified == MXDeviceBlocked) ? MXDeviceUnverified : MXDeviceBlocked);
         }
         else
         {
@@ -416,7 +432,7 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                    initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_title"]                                                                   attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
                                                                                 NSFontAttributeName: [UIFont boldSystemFontOfSize:17]}];
             
-            NSString *message = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_message"], deviceInfo.displayName, deviceInfo.deviceId, deviceInfo.fingerprint];
+            NSString *message = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_message"], mxDeviceInfo.displayName, mxDeviceInfo.deviceId, mxDeviceInfo.fingerprint];
             
             [textViewAttributedString appendAttributedString:[[NSMutableAttributedString alloc]
                                                              initWithString:message
@@ -432,7 +448,7 @@ static NSAttributedString *verticalWhitespace = nil;
         }
         else
         {
-            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:deviceInfo.deviceId ofUser:deviceInfo.userId];
+            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId];
             [self removeFromSuperview];
         }
     }
