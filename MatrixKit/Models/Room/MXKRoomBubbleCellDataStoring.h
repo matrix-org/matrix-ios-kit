@@ -174,6 +174,15 @@ Update the event because its mxkState changed or it is has been redacted.
 - (NSUInteger)removeEvent:(NSString*)eventId;
 
 /**
+ Remove the passed event and all events after it.
+
+ @param eventId the id of the event where to start removing.
+ @param removedEvents removedEvents will contain the list of removed events.
+ @return the number of events still hosting by the object after the removal.
+ */
+- (NSUInteger)removeEventsFromEvent:(NSString*)eventId removedEvents:(NSArray<MXEvent*>**)removedEvents;
+
+/**
  Check if the receiver has the same sender as another bubble.
  
  @param bubbleCellData an object conforms to `MXKRoomBubbleCellDataStoring` protocol.
