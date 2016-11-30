@@ -435,16 +435,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  While sending, a fake event will be echoed in the messages list.
  Once complete, this local echo will be replaced by the event saved by the homeserver.
 
- @param msgType the type of the message. @see MXMessageType.
  @param content the message content that will be sent to the server as a JSON object.
  @param success A block object called when the operation succeeds. It returns
                 the event id of the event generated on the home server
  @param failure A block object called when the operation fails.
  */
-- (void)sendMessageOfType:(MXMessageType)msgType
-                  content:(NSDictionary*)content
-                  success:(void (^)(NSString *eventId))success
-                  failure:(void (^)(NSError *error))failure;
+- (void)sendMessageWithContent:(NSDictionary*)content
+                       success:(void (^)(NSString *eventId))success
+                       failure:(void (^)(NSError *error))failure;
 
 /**
  Resend a room message event.
