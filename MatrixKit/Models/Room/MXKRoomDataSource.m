@@ -1243,7 +1243,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                        };
     }
 
-    [self sendMessageOfType:msgType content:msgContent success:success failure:failure];
+    [self sendMessageWithContent:msgContent success:success failure:failure];
 }
 
 - (void)sendImage:(UIImage *)image success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
@@ -1348,7 +1348,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
         
         // Make the final request that posts the image event
-        [_room sendMessageOfType:kMXMessageTypeImage content:msgContent2 success:^(NSString *eventId) {
+        [_room sendMessageWithContent:msgContent2 success:^(NSString *eventId) {
             
             // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
             // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
@@ -1502,7 +1502,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     localEcho.mxkState = MXKEventStateSending;
     [self updateLocalEcho:localEcho];
     
-    [_room sendMessageOfType:content[@"msgtype"] content:content success:^(NSString *eventId) {
+    [_room sendMessageWithContent:content success:^(NSString *eventId) {
         
         // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
         // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
@@ -1653,7 +1653,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
                     
                     // And send the Matrix room message video event to the homeserver
-                    [_room sendMessageOfType:kMXMessageTypeVideo content:msgContent success:^(NSString *eventId) {
+                    [_room sendMessageWithContent:msgContent success:^(NSString *eventId) {
                         
                         // Update the local echo with its actual identifier.
                         // The echo will be removed when the corresponding event will come through the server sync.
@@ -1809,7 +1809,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
 
         // Make the final request that posts the event
-        [_room sendMessageOfType:kMXMessageTypeFile content:msgContent2 success:^(NSString *eventId) {
+        [_room sendMessageWithContent:msgContent2 success:^(NSString *eventId) {
             
             // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
             // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
@@ -1847,13 +1847,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }];
 }
 
-- (void)sendMessageOfType:(MXMessageType)msgType content:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)sendMessageWithContent:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     // Build the local echo
     MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent];
     
     // Make the request to the homeserver
-    [_room sendMessageOfType:msgType content:msgContent success:^(NSString *eventId) {
+    [_room sendMessageWithContent:msgContent success:^(NSString *eventId) {
         
         // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
         // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
@@ -1895,7 +1895,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             [self removeEventWithEventId:eventId];
 
             // And resend
-            [self sendMessageOfType:msgType content:event.content success:success failure:failure];
+            [self sendMessageWithContent:event.content success:success failure:failure];
         }
         else if ([msgType isEqualToString:kMXMessageTypeImage])
         {
@@ -1936,7 +1936,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 // The sending failed while sending the corresponding Matrix event.
                 // Resend the Matrix event
-                [self sendMessageOfType:msgType content:event.content success:success failure:failure];
+                [self sendMessageWithContent:event.content success:success failure:failure];
             }
         }
         else
