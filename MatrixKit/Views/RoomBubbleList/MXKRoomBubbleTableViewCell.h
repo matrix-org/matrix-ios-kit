@@ -19,7 +19,7 @@
 #import "MXKCellRendering.h"
 
 #import "MXKRoomBubbleCellData.h"
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 
 #import "MXKImageView.h"
 #import "MXKPieChartView.h"

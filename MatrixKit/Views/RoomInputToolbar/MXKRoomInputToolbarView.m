@@ -25,7 +25,7 @@
 
 #import "MXKImageView.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 #import "MXKTools.h"
 
 #import "NSBundle+MatrixKit.h"
@@ -356,13 +356,13 @@ typedef struct
     {
         compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE) canExpand:NO];
 
-        compressionSizes.small.fileSize = (NSUInteger)[MXKTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
+        compressionSizes.small.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
 
         if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
         {
             compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE) canExpand:NO];
 
-            compressionSizes.medium.fileSize = (NSUInteger)[MXKTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
+            compressionSizes.medium.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
 
             if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
             {
@@ -380,7 +380,7 @@ typedef struct
 
                 compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
 
-                compressionSizes.large.fileSize = (NSUInteger)[MXKTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
+                compressionSizes.large.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
             }
             else
             {
@@ -538,7 +538,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     else if (_enableAutoSaving)
     {
         // Save the original image in user's photos library
-        [MXKMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
+        [MXMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
     }
 
     // Send data without compression if the image type is not jpeg
@@ -644,7 +644,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.small.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.small.fileSize round:NO], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.small.fileSize round:NO], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
 
@@ -661,7 +661,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.medium.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.medium.fileSize round:NO], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.medium.fileSize round:NO], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
 
@@ -678,7 +678,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.large.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.large.fileSize round:NO], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
+            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.large.fileSize round:NO], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
 
@@ -693,7 +693,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             }];
         }
         
-        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXKTools fileSizeToString:compressionSizes.original.fileSize round:NO], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
+        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.original.fileSize round:NO], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
 
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], resolution];
 
@@ -762,7 +762,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     // Check condition before saving this media in user's library
     if (_enableAutoSaving && !isPhotoLibraryAsset)
     {
-        [MXKMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
+        [MXMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
     }
     
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
@@ -811,7 +811,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.small)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXKTools fileSizeToString:fileSizes.small round:NO]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXTools fileSizeToString:fileSizes.small round:NO]];
 
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -824,7 +824,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.medium)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXKTools fileSizeToString:fileSizes.medium round:NO]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXTools fileSizeToString:fileSizes.medium round:NO]];
 
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -837,7 +837,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.large)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXKTools fileSizeToString:fileSizes.large round:NO]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXTools fileSizeToString:fileSizes.large round:NO]];
 
             [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -848,7 +848,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             }];
         }
 
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXKTools fileSizeToString:fileSizes.original round:NO]];
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXTools fileSizeToString:fileSizes.original round:NO]];
 
         [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -1083,9 +1083,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 {
                     NSData *pasteboardVideoData = [dict objectForKey:key];
                     NSString *fakePasteboardURL = [NSString stringWithFormat:@"%@%@", kPasteboardItemPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
-                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
+                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
                     
-                    if ([MXKMediaManager writeMediaData:pasteboardVideoData toFilePath:cacheFilePath])
+                    if ([MXMediaManager writeMediaData:pasteboardVideoData toFilePath:cacheFilePath])
                     {
                         NSURL *videoLocalURL = [NSURL fileURLWithPath:cacheFilePath isDirectory:NO];
                         
@@ -1141,9 +1141,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 {
                     NSData *pasteboardDocumentData = [dict objectForKey:key];
                     NSString *fakePasteboardURL = [NSString stringWithFormat:@"%@%@", kPasteboardItemPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
-                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
+                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
                     
-                    if ([MXKMediaManager writeMediaData:pasteboardDocumentData toFilePath:cacheFilePath])
+                    if ([MXMediaManager writeMediaData:pasteboardDocumentData toFilePath:cacheFilePath])
                     {
                         NSURL *localURL = [NSURL fileURLWithPath:cacheFilePath isDirectory:NO];
                         
@@ -1185,7 +1185,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                             // Crop
                             dataHash = [dataHash substringToIndex:7];
                         }
-                        NSString *extension = [MXKTools fileExtensionFromContentType:MIMEType];
+                        NSString *extension = [MXTools fileExtensionFromContentType:MIMEType];
                         NSString *filename = [NSString stringWithFormat:@"file_%@%@", dataHash, extension];
                         
                         // Display this file name

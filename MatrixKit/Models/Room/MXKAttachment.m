@@ -16,7 +16,7 @@
 
 #import "MXKAttachment.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 #import "MXKTools.h"
 #import "MXEncryptedAttachments.h"
 
@@ -113,7 +113,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             mimetype = mxEvent.content[@"info"][@"mimetype"];
         }
         
-        _cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:mxEvent.roomId];
+        _cacheFilePath = [MXMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:mxEvent.roomId];
         _contentInfo = mxEvent.content[@"info"];
     }
     return self;
@@ -204,16 +204,16 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 }
 
 - (UIImage *)getCachedThumbnail {
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
+    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
                                                                inFolder:self.event.roomId];
     
-    UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
+    UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
     if (thumb) return thumb;
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
     {
-        return [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath];
+        return [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath];
     }
     return nil;
 }
@@ -228,10 +228,10 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         return;
     }
     
-    NSString *thumbCachePath = [MXKMediaManager cachePathForMediaWithURL:self.thumbnailURL
+    NSString *thumbCachePath = [MXMediaManager cachePathForMediaWithURL:self.thumbnailURL
                                                                 andType:self.thumbnailMimeType
                                                                inFolder:self.event.roomId];
-    UIImage *thumb = [MXKMediaManager getFromMemoryCacheWithFilePath:thumbCachePath];
+    UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:thumbCachePath];
     if (thumb)
     {
         onSuccess(thumb);
@@ -252,7 +252,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             }
             
             UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
-            [MXKMediaManager cacheImage:img withCachePath:thumbCachePath];
+            [MXMediaManager cacheImage:img withCachePath:thumbCachePath];
             onSuccess(img);
         };
         
@@ -263,7 +263,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         else
         {
             NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnail_file[@"url"]];
-            [MXKMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
+            [MXMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
                 
                 decryptAndCache();
                 
@@ -278,12 +278,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
     {
-        onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
+        onSuccess([MXMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
     }
     else
     {
-        [MXKMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:thumbCachePath success:^{
-            onSuccess([MXKMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
+        [MXMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:thumbCachePath success:^{
+            onSuccess([MXMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
             
         } failure:^(NSError *error) {
             
@@ -353,7 +353,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 {
     // create a file with an appropriate extension because iOS detects based on file extension
     // all over the place
-    NSString *ext = [MXKTools fileExtensionFromContentType:self.contentInfo[@"mimetype"]];
+    NSString *ext = [MXTools fileExtensionFromContentType:self.contentInfo[@"mimetype"]];
     NSString *filenameTemplate = [NSString stringWithFormat:@"attatchment.XXXXXX%@", ext];
     NSString *template = [NSTemporaryDirectory() stringByAppendingPathComponent:filenameTemplate];
     
@@ -387,22 +387,22 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     else
     {
         // Trigger download if it is not already in progress
-        MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:_cacheFilePath];
+        MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:_cacheFilePath];
         if (!loader)
         {
-            loader = [MXKMediaManager downloadMediaFromURL:_actualURL andSaveAtFilePath:_cacheFilePath];
+            loader = [MXMediaManager downloadMediaFromURL:_actualURL andSaveAtFilePath:_cacheFilePath];
         }
         
         if (loader)
         {
             // Add observers
-            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
                 // Sanity check
                 if ([notif.object isKindOfClass:[NSString class]])
                 {
                     NSString* url = notif.object;
-                    NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
+                    NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
                     
                     if ([url isEqualToString:_actualURL] && cacheFilePath.length)
                     {
@@ -420,13 +420,13 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                 }
             }];
             
-            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
                 // Sanity check
                 if ([notif.object isKindOfClass:[NSString class]])
                 {
                     NSString* url = notif.object;
-                    NSError* error = notif.userInfo[kMXKMediaLoaderErrorKey];
+                    NSError* error = notif.userInfo[kMXMediaLoaderErrorKey];
                     
                     if ([url isEqualToString:_actualURL])
                     {
@@ -460,7 +460,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                 
                 NSURL* url = [NSURL fileURLWithPath:path];
                 
-                [MXKMediaManager saveMediaToPhotosLibrary:url
+                [MXMediaManager saveMediaToPhotosLibrary:url
                                                   isImage:(_type == MXKAttachmentTypeImage)
                                                   success:^(NSURL *assetURL){
                                                       if (onSuccess)
@@ -478,7 +478,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                 
                 NSURL* url = [NSURL fileURLWithPath:_cacheFilePath];
                 
-                [MXKMediaManager saveMediaToPhotosLibrary:url
+                [MXMediaManager saveMediaToPhotosLibrary:url
                                                   isImage:(_type == MXKAttachmentTypeImage)
                                                   success:^(NSURL *assetURL){
                                                       if (onSuccess)
@@ -557,7 +557,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         {
             // Copy the cached file to restore its original name
             // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-            documentCopyPath = [[MXKMediaManager getCachePath] stringByAppendingPathComponent:_originalFileName];
+            documentCopyPath = [[MXMediaManager getCachePath] stringByAppendingPathComponent:_originalFileName];
             
             [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
             if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:documentCopyPath error:nil])

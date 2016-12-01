@@ -222,7 +222,7 @@
     button.enabled = NO;
     
     // Send message to the room
-    [roomDataSource.room sendMessageOfType:kMXMessageTypeText content:@{@"body":text} success:^(NSString *eventId)
+    [roomDataSource.room sendTextMessage:text success:^(NSString *eventId)
     {
         NSLog(@"Succeed to send text message");
         [self finishSendingMessage];

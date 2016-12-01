@@ -20,7 +20,7 @@
 
 #import "MXKMediaCollectionViewCell.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 
 #import "MXKPieChartView.h"
 
@@ -493,10 +493,10 @@
                     if (!preview)
                     {
                         // Check whether the thumbnail has just been downloaded and cached
-                        NSString *previewCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:attachment.thumbnailURL
+                        NSString *previewCacheFilePath = [MXMediaManager cachePathForMediaWithURL:attachment.thumbnailURL
                                                                                            andType:mimeType
                                                                                           inFolder:attachment.event.roomId];
-                        preview = [MXKMediaManager loadPictureFromFilePath:previewCacheFilePath];
+                        preview = [MXMediaManager loadPictureFromFilePath:previewCacheFilePath];
                     }
                     
                     [mediaCollectionViewCell.mxkImageView setImageURL:attachmentURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
@@ -671,13 +671,13 @@
                 [cell.customView addSubview:pieChartView];
                 
                 // Add download progress observer
-                cell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                cell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                     
                     if ([notif.object isEqualToString:attachmentURL])
                     {
                         if (notif.userInfo)
                         {
-                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
+                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXMediaLoaderProgressValueKey];
                             
                             if (progressNumber)
                             {
@@ -931,13 +931,13 @@
                     [selectedCell.customView addSubview:pieChartView];
                     
                     // Add download progress observer
-                    selectedCell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    selectedCell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
                         if ([notif.object isEqualToString:attachmentURL])
                         {
                             if (notif.userInfo)
                             {
-                                NSNumber* progressNumber = [notif.userInfo valueForKey:kMXKMediaLoaderProgressValueKey];
+                                NSNumber* progressNumber = [notif.userInfo valueForKey:kMXMediaLoaderProgressValueKey];
                                 
                                 if (progressNumber)
                                 {
@@ -1247,7 +1247,7 @@
             
         }];
         
-        if ([MXKMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath])
+        if ([MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath])
         {
             [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                 
@@ -1255,7 +1255,7 @@
                 strongSelf->currentAlert = nil;
                 
                 // Get again the loader
-                MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath];
+                MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath];
                 if (loader)
                 {
                     [loader cancel];

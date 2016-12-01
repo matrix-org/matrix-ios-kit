@@ -21,7 +21,7 @@
 #import "MXKRoomBubbleCellData.h"
 
 #import "MXKTools.h"
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;

@@ -16,7 +16,7 @@
 
 #import "MXKSearchTableViewCell.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 
 #import "MXKSearchCellDataStoring.h"
 
@@ -61,8 +61,8 @@
                 UIImage *preview = nil;
                 if (searchCellData.attachment.previewURL)
                 {
-                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:searchCellData.attachment.previewURL andType:mimetype inFolder:self.attachmentImageView.mediaFolder];
-                    preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:searchCellData.attachment.previewURL andType:mimetype inFolder:self.attachmentImageView.mediaFolder];
+                    preview = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
                 }
                 
                 if (url.length || preview)

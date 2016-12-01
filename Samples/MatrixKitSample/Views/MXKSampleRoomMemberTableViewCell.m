@@ -76,7 +76,7 @@
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
         }
-        self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         [self.pictureView setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
         
         // Shade invited users

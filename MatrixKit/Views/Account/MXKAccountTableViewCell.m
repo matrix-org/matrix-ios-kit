@@ -16,7 +16,7 @@
 
 #import "MXKAccountTableViewCell.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -44,7 +44,7 @@
             // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
             thumbnailURL = [mxAccount.mxSession.matrixRestClient urlOfContentThumbnail:mxAccount.userAvatarUrl toFitViewSize:_accountPicture.frame.size withMethod:MXThumbnailingMethodCrop];
         }
-        _accountPicture.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        _accountPicture.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         _accountPicture.enableInMemoryCache = YES;
         [_accountPicture setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
         

@@ -15,7 +15,6 @@
  */
 
 #import "NSBundle+MatrixKit.h"
-#import "MXKLRUCache.h"
 
 @implementation NSBundle (MatrixKit)
 
@@ -30,14 +29,14 @@ static NSString *customLocalizedStringTableName = nil;
 
 // use a cache to avoid loading images from file system.
 // It often triggers an UI lag.
-static MXKLRUCache *imagesResourceCache = nil;
+static MXLRUCache *imagesResourceCache = nil;
 
 + (UIImage *)mxk_imageFromMXKAssetsBundleWithName:(NSString *)name
 {
     // use a cache to avoid loading the image at each call
     if (!imagesResourceCache)
     {
-        imagesResourceCache = [[MXKLRUCache alloc] initWithCapacity:20];
+        imagesResourceCache = [[MXLRUCache alloc] initWithCapacity:20];
     }
     
     NSString *imagePath = [[NSBundle mxk_assetsBundle] pathForResource:name ofType:@"png" inDirectory:@"Images"];
