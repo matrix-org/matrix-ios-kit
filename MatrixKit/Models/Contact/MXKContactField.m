@@ -16,7 +16,7 @@
 
 #import "MXKContactField.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 #import "MXKContactManager.h"
 
 @interface MXKContactField()
@@ -127,9 +127,9 @@
     
     if (avatarURL.length > 0)
     {
-        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:avatarURL andType:nil inFolder:kMXKMediaManagerAvatarThumbnailFolder];
+        NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:avatarURL andType:nil inFolder:kMXMediaManagerAvatarThumbnailFolder];
         
-        _avatarImage = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        _avatarImage = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
         
         // the image is already in the cache
         if (_avatarImage)
@@ -141,14 +141,14 @@
         else
         {
             
-            MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+            MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
             
             if (!loader)
             {
-                [MXKMediaManager downloadMediaFromURL:avatarURL andSaveAtFilePath:cacheFilePath];
+                [MXMediaManager downloadMediaFromURL:avatarURL andSaveAtFilePath:cacheFilePath];
             }
             
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
         }
     }
 }
@@ -159,14 +159,14 @@
     if ([notif.object isKindOfClass:[NSString class]])
     {
         NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
+        NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
         
         if ([url isEqualToString:avatarURL] && cacheFilePath.length)
         {
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaDownloadDidFinishNotification object:nil];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:nil];
             
             // update the image
-            UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+            UIImage* image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
             if (image)
             {
                 _avatarImage = image;

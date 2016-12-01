@@ -15,7 +15,7 @@
  */
 
 #import "MXKImageView.h"
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 #import "MXKPieChartView.h"
 #import "MXKAttachment.h"
 
@@ -491,8 +491,8 @@
     }
     else
     {
-        NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
-        if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
+        NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
+        if ([MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
         {
             // Loading is in progress, start activity indicator
             [self startActivityIndicator];
@@ -529,8 +529,8 @@
     }
     
     // Check whether the image download is in progress
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
-    MXKMediaLoader* loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
+    MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
     if (loader)
     {
         // Set preview until the image is loaded
@@ -543,14 +543,14 @@
         [self updateProgressUI:loader.statisticsDict];
         
         // Add observers
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
     }
     else
     {
         // Retrieve the image from cache
-        UIImage* image = _enableInMemoryCache ? [MXKMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+        UIImage* image = _enableInMemoryCache ? [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXMediaManager loadPictureFromFilePath:cacheFilePath];
         
         if (image)
         {
@@ -575,10 +575,10 @@
                 [self startActivityIndicator];
             }
             // Add observers
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-            [MXKMediaManager downloadMediaFromURL:imageURL andSaveAtFilePath:cacheFilePath];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
+            [MXMediaManager downloadMediaFromURL:imageURL andSaveAtFilePath:cacheFilePath];
         }
     }
 }
@@ -607,9 +607,9 @@
     self.image = [attachment getCachedThumbnail];
     
     // Add observers
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
     
     [attachment getImage:^(UIImage *img) {
         self.image = img;
@@ -643,7 +643,7 @@
     if ([notif.object isKindOfClass:[NSString class]])
     {
         NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXKMediaLoaderFilePathKey];
+        NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
 
         if ([url isEqualToString:imageURL])
         {
@@ -652,7 +652,7 @@
             if (cacheFilePath.length)
             {
                 // update the image
-                UIImage* image = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+                UIImage* image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
                 if (image)
                 {
                     if (imageOrientation != UIImageOrientationUp)
@@ -681,7 +681,7 @@
         return;
     }
     
-    NSNumber* progressNumber = [downloadStatsDict valueForKey:kMXKMediaLoaderProgressValueKey];
+    NSNumber* progressNumber = [downloadStatsDict valueForKey:kMXMediaLoaderProgressValueKey];
     
     if (progressNumber)
     {
@@ -691,10 +691,10 @@
     
     if (progressInfoLabel)
     {
-        NSNumber* downloadRate = [downloadStatsDict valueForKey:kMXKMediaLoaderCurrentDataRateKey];
+        NSNumber* downloadRate = [downloadStatsDict valueForKey:kMXMediaLoaderCurrentDataRateKey];
         
-        NSNumber* completedBytesCount = [downloadStatsDict valueForKey:kMXKMediaLoaderCompletedBytesCountKey];
-        NSNumber* totalBytesCount = [downloadStatsDict valueForKey:kMXKMediaLoaderTotalBytesCountKey];
+        NSNumber* completedBytesCount = [downloadStatsDict valueForKey:kMXMediaLoaderCompletedBytesCountKey];
+        NSNumber* totalBytesCount = [downloadStatsDict valueForKey:kMXMediaLoaderTotalBytesCountKey];
         
         NSMutableString* text = [[NSMutableString alloc] init];
 

@@ -16,7 +16,7 @@
 
 #import "MXKCallViewController.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 #import "MXKAlert.h"
 
 #import "NSBundle+MatrixKit.h"
@@ -374,7 +374,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
         NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peerAvatarURL toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
-        callerImageView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        callerImageView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         callerImageView.enableInMemoryCache = YES;
         [callerImageView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
     }

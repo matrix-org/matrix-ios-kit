@@ -18,7 +18,7 @@
 
 #import "MXKTableViewCellWithButtons.h"
 
-#import "MXKMediaManager.h"
+#import "MXMediaManager.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -567,7 +567,7 @@
         thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnail.frame.size withMethod:MXThumbnailingMethodCrop];
     }
     
-    self.memberThumbnail.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+    self.memberThumbnail.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
     self.memberThumbnail.enableInMemoryCache = YES;
     [self.memberThumbnail setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
     

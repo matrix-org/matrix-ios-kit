@@ -75,12 +75,12 @@
 
 -(void)startUploadAnimating
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaUploadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUploadProgress:) name:kMXKMediaUploadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaUploadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUploadProgress:) name:kMXMediaUploadProgressNotification object:nil];
     
     [self.activityIndicator startAnimating];
     
-    MXKMediaLoader *uploader = [MXKMediaManager existingUploaderWithId:bubbleData.uploadId];
+    MXMediaLoader *uploader = [MXMediaManager existingUploaderWithId:bubbleData.uploadId];
     if (uploader && uploader.statisticsDict)
     {
         [self.activityIndicator stopAnimating];
@@ -101,7 +101,7 @@
 
 -(void)stopAnimating
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKMediaUploadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaUploadProgressNotification object:nil];
     [self.activityIndicator stopAnimating];
 }
 

@@ -2435,7 +2435,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         
         // Check if there is a download in progress, then offer to cancel it
         NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
-        if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
+        if ([MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
         {
             if (currentAlert)
             {
@@ -2454,7 +2454,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 strongSelf->currentAlert = nil;
                 
                 // Get again the loader
-                MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+                MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
                 if (loader)
                 {
                     [loader cancel];
@@ -2471,7 +2471,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             // Check if there is an upload in progress, then offer to cancel it
             // Upload id is stored in attachment url (nasty trick)
             NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
-            if ([MXKMediaManager existingUploaderWithId:uploadId])
+            if ([MXMediaManager existingUploaderWithId:uploadId])
             {
                 if (currentAlert)
                 {
@@ -2490,7 +2490,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     strongSelf->currentAlert = nil;
                     
                     // Get again the loader
-                    MXKMediaLoader *loader = [MXKMediaManager existingUploaderWithId:uploadId];
+                    MXMediaLoader *loader = [MXMediaManager existingUploaderWithId:uploadId];
                     if (loader)
                     {
                         [loader cancel];
@@ -2697,14 +2697,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             {
                 // Upload id is stored in attachment url (nasty trick)
                 NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
-                if ([MXKMediaManager existingUploaderWithId:uploadId])
+                if ([MXMediaManager existingUploaderWithId:uploadId])
                 {
                     [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                         __strong __typeof(weakSelf)strongSelf = weakSelf;
                         strongSelf->currentAlert = nil;
                         
                         // Get again the loader
-                        MXKMediaLoader *loader = [MXKMediaManager existingUploaderWithId:uploadId];
+                        MXMediaLoader *loader = [MXMediaManager existingUploaderWithId:uploadId];
                         if (loader)
                         {
                             [loader cancel];
@@ -2720,14 +2720,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 if (selectedEvent.isMediaAttachment)
                 {
                     NSString *cacheFilePath = roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath;
-                    if ([MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
+                    if ([MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
                     {
                         [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                             __strong __typeof(weakSelf)strongSelf = weakSelf;
                             strongSelf->currentAlert = nil;
                             
                             // Get again the loader
-                            MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+                            MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
                             if (loader)
                             {
                                 [loader cancel];

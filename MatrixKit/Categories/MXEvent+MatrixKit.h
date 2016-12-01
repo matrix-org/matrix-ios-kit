@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import "MatrixSDK.h"
+#import <MatrixSDK/MatrixSDK.h>
 
 /**
  Internal event states used for example to handle event display.

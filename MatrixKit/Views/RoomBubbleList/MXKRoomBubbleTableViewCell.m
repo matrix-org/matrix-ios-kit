@@ -99,7 +99,7 @@ static BOOL _disableLongPressGestureOnEvent;
     if (self.pictureView)
     {
         self.pictureView.backgroundColor = [UIColor blackColor];
-        self.pictureView.mediaFolder = kMXKMediaManagerAvatarThumbnailFolder;
+        self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         
         // Listen to avatar tap
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatarTap:)];
@@ -337,8 +337,8 @@ static BOOL _disableLongPressGestureOnEvent;
             UIImage *preview = nil;
             if (bubbleData.attachment.previewURL)
             {
-                NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:bubbleData.attachment.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
-                preview = [MXKMediaManager loadPictureFromFilePath:cacheFilePath];
+                NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:bubbleData.attachment.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
+                preview = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
             }
             
             self.attachmentView.enableInMemoryCache = YES;
@@ -704,10 +704,10 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     self.progressView.hidden = !statisticsDict;
     
-    NSNumber* downloadRate = [statisticsDict valueForKey:kMXKMediaLoaderCurrentDataRateKey];
+    NSNumber* downloadRate = [statisticsDict valueForKey:kMXMediaLoaderCurrentDataRateKey];
     
-    NSNumber* completedBytesCount = [statisticsDict valueForKey:kMXKMediaLoaderCompletedBytesCountKey];
-    NSNumber* totalBytesCount = [statisticsDict valueForKey:kMXKMediaLoaderTotalBytesCountKey];
+    NSNumber* completedBytesCount = [statisticsDict valueForKey:kMXMediaLoaderCompletedBytesCountKey];
+    NSNumber* totalBytesCount = [statisticsDict valueForKey:kMXMediaLoaderTotalBytesCountKey];
     
     NSMutableString* text = [[NSMutableString alloc] init];
     
@@ -731,7 +731,7 @@ static BOOL _disableLongPressGestureOnEvent;
     
     self.statsLabel.text = text;
     
-    NSNumber* progressNumber = [statisticsDict valueForKey:kMXKMediaLoaderProgressValueKey];
+    NSNumber* progressNumber = [statisticsDict valueForKey:kMXMediaLoaderProgressValueKey];
     
     if (progressNumber)
     {
@@ -765,7 +765,7 @@ static BOOL _disableLongPressGestureOnEvent;
             [self stopProgressUI];
             
             // the job is really over
-            if ([notif.name isEqualToString:kMXKMediaDownloadDidFinishNotification])
+            if ([notif.name isEqualToString:kMXMediaDownloadDidFinishNotification])
             {
                 // remove any pending observers
                 [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -785,7 +785,7 @@ static BOOL _disableLongPressGestureOnEvent;
     if (bubbleData.attachment.actualURL)
     {
         // check if there is a download in progress
-        MXKMediaLoader *loader = [MXKMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
+        MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
         if (loader)
         {
             NSDictionary *dict = loader.statisticsDict;
@@ -798,9 +798,9 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             
             // anyway listen to the progress event
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXKMediaDownloadDidFailNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXKMediaDownloadProgressNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
         }
     }
     

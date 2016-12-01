@@ -15,7 +15,7 @@
  */
 
 #import "MXEncryptedAttachments.h"
-#import "MXKMediaLoader.h"
+#import "MXMediaLoader.h"
 
 #import <Security/Security.h>
 #import <CommonCrypto/CommonDigest.h>
@@ -27,7 +27,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
 
 #pragma mark encrypt
 
-+ (void)encryptAttachment:(MXKMediaLoader *)uploader
++ (void)encryptAttachment:(MXMediaLoader *)uploader
                  mimeType:(NSString *)mimeType
                  localUrl:(NSURL *)url
                   success:(void(^)(NSDictionary *result))success
@@ -46,7 +46,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
     [fileHandle closeFile];
 }
 
-+ (void)encryptAttachment:(MXKMediaLoader *)uploader
++ (void)encryptAttachment:(MXMediaLoader *)uploader
                  mimeType:(NSString *)mimeType
                      data:(NSData *)data
                   success:(void(^)(NSDictionary *result))success
@@ -59,7 +59,7 @@ NSString *const MXEncryptedAttachmentsErrorDomain = @"MXKEncryptedAttachmentsErr
     } success:success failure:failure];
 }
 
-+ (void)encryptAttachment:(MXKMediaLoader *)uploader
++ (void)encryptAttachment:(MXMediaLoader *)uploader
                  mimeType:(NSString *)mimeType
              dataCallback:(NSData *(^)())dataCallback
                   success:(void(^)(NSDictionary *result))success

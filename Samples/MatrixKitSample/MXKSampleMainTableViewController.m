@@ -240,7 +240,7 @@
 - (void)logout
 {
     // Clear cache
-    [MXKMediaManager clearCache];
+    [MXMediaManager clearCache];
     
     // Logout all matrix account
     [[MXKAccountManager sharedManager] logout];

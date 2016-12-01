@@ -1262,11 +1262,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // The URL does not need to be valid as the MediaManager will get the data
     // directly from its cache
     // Pass this id in the URL is a nasty trick to retrieve it later
-    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:endRange];
+    MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:endRange];
     NSString *fakeMediaManagerURL = uploader.uploadId;
     
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
-    [MXKMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
+    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
     
     // Create a fake image name based on imageData to keep the same name for the same image.
     NSString *dataHash = [imageData MD5];
@@ -1316,7 +1316,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             if (thumbnail == image) {
                 doUpload();
             } else {
-                MXKMediaLoader *thumbUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
+                MXMediaLoader *thumbUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
                 [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
                     msgContentToSend[@"info"][@"thumbnail_file"] = result;
                     doUpload();
@@ -1335,7 +1335,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         // Copy the cached image to the actual cacheFile path
         NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
-        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSString *actualCacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
         NSError *error;
         [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
         
@@ -1398,11 +1398,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // The URL does not need to be valid as the MediaManager will get the data
     // directly from its cache
     // Pass this id in the URL is a nasty trick to retrieve it later
-    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.9];
+    MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.9];
     NSString *fakeMediaManagerURL = uploader.uploadId;
     
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
-    [MXKMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
+    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
     
     // Create a fake name based on fileData to keep the same name for the same file.
     NSString *dataHash = [imageData MD5];
@@ -1411,7 +1411,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Crop
         dataHash = [dataHash substringToIndex:7];
     }
-    NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+    NSString *extension = [MXTools fileExtensionFromContentType:mimetype];
     NSString *filename = [NSString stringWithFormat:@"ima_%@%@", dataHash, extension];
     
     // Prepare the message content for building an echo message
@@ -1453,7 +1453,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             if (thumbnail == image) {
                 doUpload();
             } else {
-                MXKMediaLoader *thumbUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
+                MXMediaLoader *thumbUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
                 [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
                     msgContentToSend[@"info"][@"thumbnail_file"] = result;
                     doUpload();
@@ -1467,7 +1467,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
         // Copy the cached file to the actual cacheFile path
         NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
-        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSString *actualCacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
         NSError *error;
         [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
         
@@ -1536,11 +1536,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // The URL does not need to be valid as the MediaManager will get the data
     // directly from its cache
     // Pass this id in the URL is a nasty trick to retrieve it later
-    MXKMediaLoader *thumbUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.1];
+    MXMediaLoader *thumbUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.1];
     NSString *fakeMediaManagerThumbnailURL = thumbUploader.uploadId;
     
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerThumbnailURL andType:@"image/jpeg" inFolder:self.roomId];
-    [MXKMediaManager writeMediaData:videoThumbnailData toFilePath:cacheFilePath];
+    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerThumbnailURL andType:@"image/jpeg" inFolder:self.roomId];
+    [MXMediaManager writeMediaData:videoThumbnailData toFilePath:cacheFilePath];
     
     // Prepare the message content for building an echo message
     NSMutableDictionary *msgContent = [@{
@@ -1588,7 +1588,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 
                 // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
                 
-                MXKMediaLoader *videoUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:1];
+                MXMediaLoader *videoUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:1];
                 
                 // Self-proclaimed, "nasty trick" cargoculted from below...
                 // Apply the nasty trick again so that the cell can monitor the upload progress
@@ -1615,7 +1615,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             NSData* videoData = [NSData dataWithContentsOfFile:convertedLocalURL.path];
             if (videoData)
             {  
-                MXKMediaLoader *videoUploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
+                MXMediaLoader *videoUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
                 
                 // Create a fake image name based on imageData to keep the same name for the same image.
                 NSString *dataHash = [videoData MD5];
@@ -1624,7 +1624,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Crop
                     dataHash = [dataHash substringToIndex:7];
                 }
-                NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+                NSString *extension = [MXTools fileExtensionFromContentType:mimetype];
                 NSString *filename = [NSString stringWithFormat:@"video_%@%@", dataHash, extension];
                 msgContent[@"body"] = filename;
                 
@@ -1642,8 +1642,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     
                     // Write the video to the actual cacheFile path
                     NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:videoUrl];
-                    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
-                    [MXKMediaManager writeMediaData:videoData toFilePath:cacheFilePath];
+                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+                    [MXMediaManager writeMediaData:videoData toFilePath:cacheFilePath];
                     
                     // Update URLs with the actual mxc: URLs
                     msgContent[@"url"] = videoUrl;
@@ -1738,11 +1738,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // The URL does not need to be valid as the MediaManager will get the data
     // directly from its cache
     // Pass this id in the URL is a nasty trick to retrieve it later
-    MXKMediaLoader *uploader = [MXKMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
+    MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
     NSString *fakeMediaManagerURL = uploader.uploadId;
     
-    NSString *cacheFilePath = [MXKMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
-    [MXKMediaManager writeMediaData:fileData toFilePath:cacheFilePath];
+    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
+    [MXMediaManager writeMediaData:fileData toFilePath:cacheFilePath];
     
     // Create a fake name based on fileData to keep the same name for the same file.
     NSString *dataHash = [fileData MD5];
@@ -1751,7 +1751,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Crop
         dataHash = [dataHash substringToIndex:7];
     }
-    NSString *extension = [MXKTools fileExtensionFromContentType:mimetype];
+    NSString *extension = [MXTools fileExtensionFromContentType:mimetype];
     NSString *filename = [NSString stringWithFormat:@"file_%@%@", dataHash, extension];
     
     // Prepare the message content for building an echo message
@@ -1796,7 +1796,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         // Copy the cached file to the actual cacheFile path
         NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
-        NSString *actualCacheFilePath = [MXKMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
+        NSString *actualCacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
         NSError *error;
         [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
         
@@ -1911,10 +1911,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             // Check whether the sending failed while uploading the data.
             // If the content url corresponds to a upload id, the upload was not complete.
             NSString *contentURL = event.content[@"url"];
-            if ([contentURL hasPrefix:kMXKMediaUploadIdPrefix])
+            if ([contentURL hasPrefix:kMXMediaUploadIdPrefix])
             {
-                NSString *localImagePath = [MXKMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
-                UIImage* image = [MXKMediaManager loadPictureFromFilePath:localImagePath];
+                NSString *localImagePath = [MXMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
+                UIImage* image = [MXMediaManager loadPictureFromFilePath:localImagePath];
                 if (image)
                 {
                     // Restart sending the image from the beginning

@@ -18,17 +18,17 @@
 
 extern NSString *const MXEncryptedAttachmentsErrorDomain;
 
-@class MXKMediaLoader;
+@class MXMediaLoader;
 
 @interface MXEncryptedAttachments : NSObject
 
-+ (void)encryptAttachment:(MXKMediaLoader *)uploader
++ (void)encryptAttachment:(MXMediaLoader *)uploader
                  mimeType:(NSString *)mimeType
                  localUrl:(NSURL *)url
                   success:(void(^)(NSDictionary *result))success
                   failure:(void(^)(NSError *error))failure;
 
-+ (void)encryptAttachment:(MXKMediaLoader *)uploader
++ (void)encryptAttachment:(MXMediaLoader *)uploader
                  mimeType:(NSString *)mimeType
                      data:(NSData *)data
                   success:(void(^)(NSDictionary *result))success
@@ -69,7 +69,7 @@ extern NSString *const MXEncryptedAttachmentsErrorDomain;
  @param success a block called when the operation succeeds.
  @param failure a block called when the operation fails.
  */
-+ (void)encryptAttachment:(MXKMediaLoader *)uploader
++ (void)encryptAttachment:(MXMediaLoader *)uploader
                  mimeType:(NSString *)mimeType
              dataCallback:(NSData *(^)())dataCallback
                   success:(void(^)(NSDictionary *result))success
