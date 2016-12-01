@@ -22,10 +22,10 @@
 /**
  Posted to provide download progress.
  The notification object is the media url. The `userInfo` dictionary contains the following keys:
- - kMXKMediaLoaderProgressValueKey: progress value nested in a NSNumber (range 0->1)
- - kMXKMediaLoaderProgressStringKey: progress string XXX KB / XXX MB" (optional)
- - kMXKMediaLoaderProgressRemaingTimeKey: remaining time string "XX s left" (optional)
- - kMXKMediaLoaderProgressRateKey: string like XX MB/s (optional).
+ - kMXKMediaLoaderProgressValueKey: progress value in [0, 1] range (NSNumber object).
+ - kMXKMediaLoaderCompletedBytesCountKey: the number of bytes that have already been completed by the current job (NSNumber object).
+ - kMXKMediaLoaderTotalBytesCountKey: the total number of bytes tracked for the current job (NSNumber object).
+ - kMXKMediaLoaderCurrentDataRateKey: The observed data rate in Bytes/s (NSNumber object).
  */
 extern NSString *const kMXKMediaDownloadProgressNotification;
 
@@ -44,10 +44,10 @@ extern NSString *const kMXKMediaDownloadDidFailNotification;
 /**
  Posted to provide upload progress.
  The notification object is the `uploadId`. The `userInfo` dictionary contains the following keys:
- - kMXKMediaLoaderProgressValueKey: progress value nested in a NSNumber (range 0->1)
- - kMXKMediaLoaderProgressStringKey: progress string XXX KB / XXX MB" (optional)
- - kMXKMediaLoaderProgressRemaingTimeKey: remaining time string "XX s left" (optional)
- - kMXKMediaLoaderProgressRateKey: string like XX MB/s (optional).
+ - kMXKMediaLoaderProgressValueKey: progress value in [0, 1] range (NSNumber object) [The properties `uploadInitialRange` and `uploadRange` are taken into account here].
+ - kMXKMediaLoaderCompletedBytesCountKey: the number of bytes that have already been completed by the current job (NSNumber object).
+ - kMXKMediaLoaderTotalBytesCountKey: the total number of bytes tracked for the current job (NSNumber object).
+ - kMXKMediaLoaderCurrentDataRateKey: The observed data rate in Bytes/s (NSNumber object).
  */
 extern NSString *const kMXKMediaUploadProgressNotification;
 
@@ -67,11 +67,12 @@ extern NSString *const kMXKMediaUploadDidFailNotification;
  Notifications `userInfo` keys
  */
 extern NSString *const kMXKMediaLoaderProgressValueKey;
-extern NSString *const kMXKMediaLoaderProgressStringKey;
-extern NSString *const kMXKMediaLoaderProgressRemaingTimeKey;
-extern NSString *const kMXKMediaLoaderProgressRateKey;
+extern NSString *const kMXKMediaLoaderCompletedBytesCountKey;
+extern NSString *const kMXKMediaLoaderTotalBytesCountKey;
+extern NSString *const kMXKMediaLoaderCurrentDataRateKey;
 extern NSString *const kMXKMediaLoaderFilePathKey;
 extern NSString *const kMXKMediaLoaderErrorKey;
+
 /**
  The callback blocks
  */
@@ -100,8 +101,6 @@ extern NSString *const kMXKMediaUploadIdPrefix;
     
     // Media upload
     MXSession* mxSession;
-    CGFloat initialRange;
-    CGFloat range;
     MXHTTPOperation* operation;
     
     // Statistic info (bitrate, remaining time...)
@@ -122,6 +121,9 @@ extern NSString *const kMXKMediaUploadIdPrefix;
  Default is nil.
  */
 @property (strong, readonly) NSString *uploadId;
+
+@property (readonly) CGFloat uploadInitialRange;
+@property (readonly) CGFloat uploadRange;
 
 /**
  Cancel the operation.

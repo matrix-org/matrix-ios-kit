@@ -18,7 +18,7 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#import "MXRoom.h"
+#import "MXKTools.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
@@ -704,25 +704,29 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     self.progressView.hidden = !statisticsDict;
     
-    NSString* downloadRate = [statisticsDict valueForKey:kMXKMediaLoaderProgressRateKey];
-    NSString* remaingTime = [statisticsDict valueForKey:kMXKMediaLoaderProgressRemaingTimeKey];
-    NSString* progressString = [statisticsDict valueForKey:kMXKMediaLoaderProgressStringKey];
+    NSNumber* downloadRate = [statisticsDict valueForKey:kMXKMediaLoaderCurrentDataRateKey];
+    
+    NSNumber* completedBytesCount = [statisticsDict valueForKey:kMXKMediaLoaderCompletedBytesCountKey];
+    NSNumber* totalBytesCount = [statisticsDict valueForKey:kMXKMediaLoaderTotalBytesCountKey];
     
     NSMutableString* text = [[NSMutableString alloc] init];
     
-    if (progressString)
+    if (completedBytesCount && totalBytesCount)
     {
+        NSString* progressString = [NSString stringWithFormat:@"%@ / %@", [NSByteCountFormatter stringFromByteCount:completedBytesCount.longLongValue countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:totalBytesCount.longLongValue countStyle:NSByteCountFormatterCountStyleFile]];
+        
         [text appendString:progressString];
     }
     
     if (downloadRate)
     {
-        [text appendFormat:@"\n%@", downloadRate];
-    }
-    
-    if (remaingTime)
-    {
-        [text appendFormat:@"\n%@", remaingTime];
+        [text appendFormat:@"\n%@/s", [NSByteCountFormatter stringFromByteCount:downloadRate.longLongValue countStyle:NSByteCountFormatterCountStyleFile]];
+        
+        if (completedBytesCount && totalBytesCount)
+        {
+            CGFloat remainimgTime = ((totalBytesCount.floatValue - completedBytesCount.floatValue)) / downloadRate.floatValue;
+            [text appendFormat:@"\n%@", [MXKTools formatSecondsInterval:remainimgTime]];
+        }
     }
     
     self.statsLabel.text = text;
