@@ -19,6 +19,8 @@
 #import "MXKPieChartView.h"
 #import "MXKAttachment.h"
 
+#import "MXKTools.h"
+
 @interface MXKImageView ()
 {
     NSString *imageURL;
@@ -689,22 +691,29 @@
     
     if (progressInfoLabel)
     {
-        NSString* downloadRate = [downloadStatsDict valueForKey:kMXKMediaLoaderProgressRateKey];
-        NSString* remaingTime = [downloadStatsDict valueForKey:kMXKMediaLoaderProgressRemaingTimeKey];
-        NSString* progressString = [downloadStatsDict valueForKey:kMXKMediaLoaderProgressStringKey];
+        NSNumber* downloadRate = [downloadStatsDict valueForKey:kMXKMediaLoaderCurrentDataRateKey];
+        
+        NSNumber* completedBytesCount = [downloadStatsDict valueForKey:kMXKMediaLoaderCompletedBytesCountKey];
+        NSNumber* totalBytesCount = [downloadStatsDict valueForKey:kMXKMediaLoaderTotalBytesCountKey];
         
         NSMutableString* text = [[NSMutableString alloc] init];
-        
-        [text appendString:progressString];
-        
-        if (remaingTime)
+
+        if (completedBytesCount && totalBytesCount)
         {
-            [text appendFormat:@" (%@)", remaingTime];
+            NSString* progressString = [NSString stringWithFormat:@"%@ / %@", [NSByteCountFormatter stringFromByteCount:completedBytesCount.longLongValue countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:totalBytesCount.longLongValue countStyle:NSByteCountFormatterCountStyleFile]];
+            
+            [text appendString:progressString];
         }
         
         if (downloadRate)
         {
-            [text appendFormat:@"\n %@", downloadRate];
+            if (completedBytesCount && totalBytesCount)
+            {
+                CGFloat remainimgTime = ((totalBytesCount.floatValue - completedBytesCount.floatValue)) / downloadRate.floatValue;
+                [text appendFormat:@" (%@)", [MXKTools formatSecondsInterval:remainimgTime]];
+            }
+            
+            [text appendFormat:@"\n %@/s", [NSByteCountFormatter stringFromByteCount:downloadRate.longLongValue countStyle:NSByteCountFormatterCountStyleFile]];
         }
         
         progressInfoLabel.text = text;

@@ -27,9 +27,10 @@ NSString *const kMXKMediaUploadDidFinishNotification = @"kMXKMediaUploadDidFinis
 NSString *const kMXKMediaUploadDidFailNotification = @"kMXKMediaUploadDidFailNotification";
 
 NSString *const kMXKMediaLoaderProgressValueKey = @"kMXKMediaLoaderProgressValueKey";
-NSString *const kMXKMediaLoaderProgressStringKey = @"kMXKMediaLoaderProgressStringKey";
-NSString *const kMXKMediaLoaderProgressRemaingTimeKey = @"kMXKMediaLoaderProgressRemaingTimeKey";
-NSString *const kMXKMediaLoaderProgressRateKey = @"kMXKMediaLoaderProgressRateKey";
+NSString *const kMXKMediaLoaderCompletedBytesCountKey = @"kMXKMediaLoaderCompletedBytesCountKey";
+NSString *const kMXKMediaLoaderTotalBytesCountKey = @"kMXKMediaLoaderTotalBytesCountKey";
+NSString *const kMXKMediaLoaderCurrentDataRateKey = @"kMXKMediaLoaderCurrentDataRateKey";
+
 NSString *const kMXKMediaLoaderFilePathKey = @"kMXKMediaLoaderFilePathKey";
 NSString *const kMXKMediaLoaderErrorKey = @"kMXKMediaLoaderErrorKey";
 
@@ -135,7 +136,7 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
     
     if (expectedSize > 0)
     {
-        float progressValue = ((float)downloadData.length) /  ((float)expectedSize);
+        float progressValue = ((float)downloadData.length) / ((float)expectedSize);
         if (progressValue > 1)
         {
             // Should never happen
@@ -143,27 +144,14 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
         }
         
         CFAbsoluteTime currentTime = CFAbsoluteTimeGetCurrent();
-        CGFloat meanRate = downloadData.length / (currentTime - downloadStartTime)/ 1024.0;
-        CGFloat dataRemainingTime = 0;
-        
-        if (0 != meanRate)
-        {
-            dataRemainingTime = ((expectedSize - downloadData.length) / 1024.0) / meanRate;
-        }
-        
-        statsStartTime = currentTime;
+        CGFloat meanRate = downloadData.length / (currentTime - downloadStartTime);
         
         // build the user info dictionary
         NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
         [dict setValue:[NSNumber numberWithFloat:progressValue] forKey:kMXKMediaLoaderProgressValueKey];
-        
-        NSString* progressString = [NSString stringWithFormat:@"%@ / %@", [NSByteCountFormatter stringFromByteCount:downloadData.length countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:expectedSize countStyle:NSByteCountFormatterCountStyleFile]];
-        [dict setValue:progressString forKey:kMXKMediaLoaderProgressStringKey];
-        
-        [dict setValue:[MXKTools formatSecondsInterval:dataRemainingTime] forKey:kMXKMediaLoaderProgressRemaingTimeKey];
-        
-        NSString* downloadRateStr = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:meanRate * 1024 countStyle:NSByteCountFormatterCountStyleFile]];
-        [dict setValue:downloadRateStr forKey:kMXKMediaLoaderProgressRateKey];
+        [dict setValue:[NSNumber numberWithUnsignedInteger:downloadData.length] forKey:kMXKMediaLoaderCompletedBytesCountKey];
+        [dict setValue:[NSNumber numberWithLongLong:expectedSize] forKey:kMXKMediaLoaderTotalBytesCountKey];
+        [dict setValue:[NSNumber numberWithFloat:meanRate] forKey:kMXKMediaLoaderCurrentDataRateKey];
         
         statisticsDict = dict;
         
@@ -236,7 +224,7 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
 
 #pragma mark - Upload
 
-- (id)initForUploadWithMatrixSession:(MXSession*)matrixSession initialRange:(CGFloat)anInitialRange andRange:(CGFloat)aRange
+- (id)initForUploadWithMatrixSession:(MXSession*)matrixSession initialRange:(CGFloat)initialRange andRange:(CGFloat)range
 {
     if (self = [super init])
     {
@@ -244,8 +232,8 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
         _uploadId = [NSString stringWithFormat:@"%@%@", kMXKMediaUploadIdPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
         
         mxSession = matrixSession;
-        initialRange = anInitialRange;
-        range = aRange;
+        _uploadInitialRange = initialRange;
+        _uploadRange = range;
     }
     return self;
 }
@@ -295,33 +283,23 @@ NSString *const kMXKMediaUploadIdPrefix = @"upload-";
         statisticsDict = [[NSMutableDictionary alloc] init];
     }
     
-    CGFloat progressValue = initialRange + (((float)totalBytesWritten) /  ((float)totalBytesExpectedToWrite) * range);
+    CGFloat progressValue = self.uploadInitialRange + (((float)totalBytesWritten) /  ((float)totalBytesExpectedToWrite) * self.uploadRange);
     [statisticsDict setValue:[NSNumber numberWithFloat:progressValue] forKey:kMXKMediaLoaderProgressValueKey];
     
     CGFloat dataRate = 0;
     if (currentTime != statsStartTime)
     {
-        dataRate = bytesWritten / 1024.0 / (currentTime - statsStartTime);
+        dataRate = bytesWritten / (currentTime - statsStartTime);
     }
     else
     {
-        dataRate = bytesWritten / 1024.0 / 0.001;
+        dataRate = bytesWritten / 0.001;
     }
     statsStartTime = currentTime;
     
-    CGFloat dataRemainingTime = 0;
-    if (0 != dataRate)
-    {
-        dataRemainingTime = (totalBytesExpectedToWrite - totalBytesWritten)/ 1024.0 / dataRate;
-    }
-    
-    NSString* progressString = [NSString stringWithFormat:@"%@ / %@", [NSByteCountFormatter stringFromByteCount:totalBytesWritten countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:totalBytesExpectedToWrite countStyle:NSByteCountFormatterCountStyleFile]];
-    
-    [statisticsDict setValue:progressString forKey:kMXKMediaLoaderProgressStringKey];
-    [statisticsDict setValue:[MXKTools formatSecondsInterval:dataRemainingTime] forKey:kMXKMediaLoaderProgressRemaingTimeKey];
-    
-    NSString* uploadRateStr = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:dataRate * 1024 countStyle:NSByteCountFormatterCountStyleFile]];
-    [statisticsDict setValue:uploadRateStr forKey:kMXKMediaLoaderProgressRateKey];
+    [statisticsDict setValue:[NSNumber numberWithLongLong:totalBytesWritten] forKey:kMXKMediaLoaderCompletedBytesCountKey];
+    [statisticsDict setValue:[NSNumber numberWithLongLong:totalBytesExpectedToWrite] forKey:kMXKMediaLoaderTotalBytesCountKey];
+    [statisticsDict setValue:[NSNumber numberWithFloat:dataRate] forKey:kMXKMediaLoaderCurrentDataRateKey];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKMediaUploadProgressNotification object:_uploadId userInfo:statisticsDict];
 }
