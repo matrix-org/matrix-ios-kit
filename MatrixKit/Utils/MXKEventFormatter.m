@@ -746,7 +746,20 @@
                 // Show this error
                 if (event.decryptionError)
                 {
-                    displayText = [NSString stringWithFormat:@"** %@ **", event.decryptionError.localizedDescription];
+                    NSString *errorDescription;
+
+                    if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
+                        && event.decryptionError.code == MXDecryptingErrorUnkwnownInboundSessionIdCode)
+                    {
+                        // Make the unkwown inbound session id error description more user friendly
+                        errorDescription = [NSBundle mxk_localizedStringForKey:@"notice_crypto_error_unkwown_inbound_session_id"];
+                    }
+                    else
+                    {
+                        errorDescription = event.decryptionError.localizedDescription;
+                    }
+
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_crypto_unable_to_decrypt"], errorDescription];
                 }
                 else
                 {
