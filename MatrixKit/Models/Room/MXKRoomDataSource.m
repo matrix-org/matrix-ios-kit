@@ -309,26 +309,18 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (bubbleCount > maxBubbleNb)
     {
         // Do nothing if some local echoes are in progress.
-        // Unfortunately, the outgoing events in the store do not keep their mxkState.
-        // So, we need to check the mxkState of the events currently displayed (the events in 'bubbles')
-        if (_room.outgoingMessages.count)
+        NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
+        
+        for (NSInteger index = 0; index < outgoingMessages.count; index++)
         {
-            @synchronized(bubbles)
+            MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+            
+            if (outgoingMessage.sentState == MXEventSentStateSending ||
+                outgoingMessage.sentState == MXEventSentStateEncrypting ||
+                outgoingMessage.sentState == MXEventSentStateUploading)
             {
-                // Do the search from the end to improve it
-                for (NSInteger i = bubbles.count - 1; i >= 0; i--)
-                {
-                    id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
-                    for (NSInteger j = bubbleData.events.count - 1; j >= 0; j--)
-                    {
-                        MXEvent *event = bubbleData.events[j];
-                        if (event.mxkState == MXKEventStateSending)
-                        {
-                            NSLog(@"[MXKRoomDataSource] cancel limitMemoryUsage because some messages are being sent");
-                            return;
-                        }
-                    }
-                }
+                NSLog(@"[MXKRoomDataSource] cancel limitMemoryUsage because some messages are being sent");
+                return;
             }
         }
 
@@ -1289,10 +1281,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                          @"size": @(imageData.length)
                                          } mutableCopy]
                                  };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
     
     void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure) {
@@ -1330,7 +1322,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
         
         // Update the local echo state: move from content uploading to event sending
-        localEcho.mxkState = MXKEventStateSending;
+        localEcho.sentState = MXEventSentStateSending;
         [self updateLocalEcho:localEcho];
         
         // Copy the cached image to the actual cacheFile path
@@ -1365,7 +1357,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         } failure:^(NSError *error) {
             
             // Update the local echo with the error state
-            localEcho.mxkState = MXKEventStateSendingFailed;
+            localEcho.sentState = MXEventSentStateFailed;
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1376,7 +1368,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
     } failure:^(NSError *error) {
         // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1426,10 +1418,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                          @"size": @(imageData.length)
                                          } mutableCopy]
                                  };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
     
     void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure) {
@@ -1484,7 +1476,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
     } failure:^(NSError *error) {
         // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1499,7 +1491,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     success:(void (^)(NSString *))success
                     failure:(void (^)(NSError *))failure {
     // Update the local echo state: move from content uploading to event sending
-    localEcho.mxkState = MXKEventStateSending;
+    localEcho.sentState = MXEventSentStateSending;
     [self updateLocalEcho:localEcho];
     
     [_room sendMessageWithContent:content success:^(NSString *eventId) {
@@ -1518,7 +1510,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
     } failure:^(NSError *error) {
         // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1557,10 +1549,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                                              }
                                                      } mutableCopy]
                                          } mutableCopy];
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
     
     void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure) {
@@ -1637,7 +1629,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 [videoUploader uploadData:videoData filename:filename mimeType:mimetype success:^(NSString *videoUrl) {
                     
                     // Update the local echo state: move from content uploading to event sending
-                    localEcho.mxkState = MXKEventStateSending;
+                    localEcho.sentState = MXEventSentStateSending;
                     [self updateLocalEcho:localEcho];
                     
                     // Write the video to the actual cacheFile path
@@ -1671,7 +1663,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     } failure:^(NSError *error) {
                         
                         // Update the local echo with the error state
-                        localEcho.mxkState = MXKEventStateSendingFailed;
+                        localEcho.sentState = MXEventSentStateFailed;
                         [self updateLocalEcho:localEcho];
                         
                         if (failure)
@@ -1684,7 +1676,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 } failure:^(NSError *error) {
                     
                     // Update the local echo with the error state
-                    localEcho.mxkState = MXKEventStateSendingFailed;
+                    localEcho.sentState = MXEventSentStateFailed;
                     [self updateLocalEcho:localEcho];
                     
                     if (failure)
@@ -1697,7 +1689,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             else
             {
                 // Update the local echo with the error state
-                localEcho.mxkState = MXKEventStateSendingFailed;
+                localEcho.sentState = MXEventSentStateFailed;
                 [self updateLocalEcho:localEcho];
                 
                 if (failure)
@@ -1708,7 +1700,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         } failure:^(NSError *error) {
             
             // Update the local echo with the error state
-            localEcho.mxkState = MXKEventStateSendingFailed;
+            localEcho.sentState = MXEventSentStateFailed;
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1720,7 +1712,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     } failure:^() {
         
         // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1764,10 +1756,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                          @"size": @(fileData.length)
                                          }
                                  };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateUploading];
+    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
     
     void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure) {
@@ -1791,7 +1783,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // Launch the upload to the Matrix Content repository
     [uploader uploadData:fileData filename:filename mimeType:mimetype success:^(NSString *url) {
         // Update the local echo state: move from content uploading to event sending
-        localEcho.mxkState = MXKEventStateSending;
+        localEcho.sentState = MXEventSentStateSending;
         [self updateLocalEcho:localEcho];
         
         // Copy the cached file to the actual cacheFile path
@@ -1826,7 +1818,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         } failure:^(NSError *error) {
             
             // Update the local echo with the error state
-            localEcho.mxkState = MXKEventStateSendingFailed;
+            localEcho.sentState = MXEventSentStateFailed;
             [self updateLocalEcho:localEcho];
             
             if (failure)
@@ -1837,7 +1829,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
     } failure:^(NSError *error) {
         // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -1869,7 +1861,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
     } failure:^(NSError *error) {
         // Update the local echo with the error state
-        localEcho.mxkState = MXKEventStateSendingFailed;
+        localEcho.sentState = MXEventSentStateFailed;
         [self updateLocalEcho:localEcho];
         
         if (failure)
@@ -2050,7 +2042,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         else
         {
             // Here the message sending has failed
-            outgoingMessage.mxkState = MXKEventStateSendingFailed;
+            outgoingMessage.sentState = MXEventSentStateFailed;
             
             // Erase the timestamp
             outgoingMessage.originServerTs = kMXUndefinedTimestamp;
@@ -2177,14 +2169,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 #pragma mark - Private methods
 - (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent
 {
-    return [self addLocalEchoForMessageContent:msgContent withState:MXKEventStateSending];
+    return [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateSending];
 }
 
-- (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent withState:(MXKEventState)eventState
+- (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent withState:(MXEventSentState)eventState
 {
     // Make the data source digest this fake local echo message
     MXEvent *localEcho = [self.room fakeRoomMessageEventWithEventId:nil andContent:msgContent];
-    localEcho.mxkState = eventState;
+    localEcho.sentState = eventState;
     
     [self queueEventForProcessing:localEcho withRoomState:_room.state direction:MXTimelineDirectionForwards];
     [self processQueuedEvents:nil];
@@ -2586,6 +2578,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (BOOL)checkBing:(MXEvent*)event
 {
+    BOOL isHighlighted = NO;
+    
     // read receipts have no rule
     if (![event.type isEqualToString:kMXEventTypeStringReceipt]) {
         // Check if we should bing this event
@@ -2603,8 +2597,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         // If not present, highlight. Else check its value before highlighting
                         if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
                         {
-                            event.mxkState = MXKEventStateBing;
-                            return YES;
+                            isHighlighted = YES;
+                            break;
                         }
                     }
                 }
@@ -2612,7 +2606,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
     }
     
-    return NO;
+    event.mxkIsHighlighted = isHighlighted;
+    return isHighlighted;
 }
 
 /**

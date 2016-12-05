@@ -1334,41 +1334,51 @@
 {
     // Select the text color
     UIColor *textColor;
-    switch (event.mxkState)
+    
+    // Check whether an error occurred during event formatting.
+    if (event.mxkEventFormatterError != MXKEventFormatterErrorNone)
     {
-        case MXKEventStateDefault:
-            if (_isForSubtitle)
-            {
-                textColor = _subTitleTextColor;
-            }
-            else
-            {
-                textColor = _defaultTextColor;
-            }
-            break;
-        case MXKEventStateBing:
-            textColor = _bingTextColor;
-            break;
-        case MXKEventStateSending:
-            textColor = _sendingTextColor;
-            break;
-        case MXKEventStateSendingFailed:
-        case MXKEventStateUnsupported:
-        case MXKEventStateUnexpected:
-        case MXKEventStateUnknownType:
-            textColor = _errorTextColor;
-            break;
-        default:
-            if (_isForSubtitle)
-            {
-                textColor = _subTitleTextColor;
-            }
-            else
-            {
-                textColor = _defaultTextColor;
-            }
-            break;
+        textColor = _errorTextColor;
     }
+    // Check whether the message is highlighted.
+    else if (event.mxkIsHighlighted)
+    {
+        textColor = _bingTextColor;
+    }
+    else
+    {
+        // Consider here the sending state of the event, and the property `isForSubtitle`.
+        switch (event.sentState)
+        {
+            case MXEventSentStateSent:
+                if (_isForSubtitle)
+                {
+                    textColor = _subTitleTextColor;
+                }
+                else
+                {
+                    textColor = _defaultTextColor;
+                }
+                break;
+            case MXEventSentStateSending:
+                textColor = _sendingTextColor;
+                break;
+            case MXEventSentStateFailed:
+                textColor = _errorTextColor;
+                break;
+            default:
+                if (_isForSubtitle)
+                {
+                    textColor = _subTitleTextColor;
+                }
+                else
+                {
+                    textColor = _defaultTextColor;
+                }
+                break;
+        }
+    }
+    
     return textColor;
 }
 
@@ -1390,7 +1400,7 @@
     {
         font = _callNoticesTextFont;
     }
-    else if (event.mxkState == MXKEventStateBing)
+    else if (event.mxkIsHighlighted)
     {
         font = _bingTextFont;
     }

@@ -429,7 +429,7 @@ static BOOL _disableLongPressGestureOnEvent;
                 
                 for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
                 {
-                    if (component.event.mxkState != MXKEventStateSendingFailed)
+                    if (component.event.sentState != MXEventSentStateFailed)
                     {
                         CGFloat timeLabelOffset = 0;
                         

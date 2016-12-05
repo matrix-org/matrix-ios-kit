@@ -16,67 +16,21 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-/**
- Internal event states used for example to handle event display.
- */
-typedef enum : NSUInteger
-{
-    /**
-     Default state of incoming events.
-     The outgoing events switch into this state when their sending succeeds.
-     */
-    MXKEventStateDefault,
-    /**
-     The event is an incoming event matches with at least one notification rule.
-     */
-    MXKEventStateBing,
-    /**
-     The data for the outgoing event is uploading. Once complete, the state will move to `MXKEventStateSending`.
-     */
-    MXKEventStateUploading,
-    /**
-     The event is an outgoing event in progress (used for local echo).
-     */
-    MXKEventStateSending,
-    /**
-     The event is an outgoing event which failed to be sent.
-     */
-    MXKEventStateSendingFailed,
-    /**
-     The event formatter knows the event type but it encountered data that it does not support.
-     */
-    MXKEventStateUnsupported,
-    /**
-     The event formatter encountered unexpected data in the event.
-     */
-    MXKEventStateUnexpected,
-    /**
-     The event formatter does not support the type of the event.
-     */
-    MXKEventStateUnknownType
-    
-} MXKEventState;
+#import "MXKEventFormatter.h"
 
 /**
  Define a `MXEvent` category at matrixKit level to store data related to UI handling.
- 
- CAUTION: Do not add properties here because `MXEvent` inherits from `MXJSONModel`. This will impact `MXJSONModel` processes based on object properties.
  */
 @interface MXEvent (MatrixKit)
 
 /**
- Return internal event state (MXKEventStateDefault by default).
+ The potential error observed when the event formatter tried to stringify the event (MXKEventFormatterErrorNone by default).
  */
-- (MXKEventState) mxkState;
+@property (nonatomic) MXKEventFormatterError mxkEventFormatterError;
 
 /**
- Set internal event state.
+ Tell whether the event is highlighted or not (NO by default).
  */
-- (void)setMxkState:(MXKEventState)mxkState;
-
-/**
- Return YES if the event contains a media: image, audio, video or file.
- */
-- (BOOL)isMediaAttachment;
+@property (nonatomic) BOOL mxkIsHighlighted;
 
 @end

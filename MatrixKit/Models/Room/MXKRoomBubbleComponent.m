@@ -31,25 +31,8 @@
         NSAttributedString *eventString = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
         if (eventString.length)
         {
-            // Manage error
-            if (error != MXKEventFormatterErrorNone)
-            {
-                switch (error)
-                {
-                    case MXKEventFormatterErrorUnsupported:
-                        event.mxkState = MXKEventStateUnsupported;
-                        break;
-                    case MXKEventFormatterErrorUnexpected:
-                        event.mxkState = MXKEventStateUnexpected;
-                        break;
-                    case MXKEventFormatterErrorUnknownEventType:
-                        event.mxkState = MXKEventStateUnknownType;
-                        break;
-
-                    default:
-                        break;
-                }
-            }
+            // Store the potential error
+            event.mxkEventFormatterError = error;
 
             _textMessage = nil;
             _attributedTextMessage = eventString;

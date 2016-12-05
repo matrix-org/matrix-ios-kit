@@ -33,7 +33,7 @@
         {
             for (MXKRoomBubbleComponent *component in bubbleData.bubbleComponents)
             {
-                if (component.event.mxkState == MXKEventStateSendingFailed)
+                if (component.event.sentState == MXEventSentStateFailed)
                 {
                     UIButton *unsentButton = [[UIButton alloc] initWithFrame:CGRectMake(0, component.position.y, 58 , 20)];
                     

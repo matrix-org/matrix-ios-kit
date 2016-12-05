@@ -61,26 +61,9 @@
             // Compute the text message
             MXKEventFormatterError error;
             lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
-
-            // Manage error
-            if (error != MXKEventFormatterErrorNone)
-            {
-                switch (error)
-                {
-                    case MXKEventFormatterErrorUnsupported:
-                        lastEvent.mxkState = MXKEventStateUnsupported;
-                        break;
-                    case MXKEventFormatterErrorUnexpected:
-                        lastEvent.mxkState = MXKEventStateUnexpected;
-                        break;
-                    case MXKEventFormatterErrorUnknownEventType:
-                        lastEvent.mxkState = MXKEventStateUnknownType;
-                        break;
-
-                    default:
-                        break;
-                }
-            }
+            
+            // Store the potential error
+            lastEvent.mxkEventFormatterError = error;
         }
 
         if (0 == lastEventTextMessage.length)

@@ -157,7 +157,7 @@
 - (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState andRoomDataSource:(MXKRoomDataSource*)roomDataSource;
 
 /**
-Update the event because its mxkState changed or it is has been redacted.
+Update the event because its sent state changed or it is has been redacted.
  
  @param eventId the id of the event to change.
  @param the new event data
