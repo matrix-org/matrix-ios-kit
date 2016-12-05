@@ -37,7 +37,7 @@
         
         // Check if the image is uploading
         MXKRoomBubbleComponent *component = bubbleData.bubbleComponents.firstObject;
-        if (component.event.mxkState == MXKEventStateUploading)
+        if (component.event.sentState == MXEventSentStateEncrypting || component.event.sentState == MXEventSentStateUploading)
         {
             // Retrieve the uploadId embedded in the fake url
             bubbleData.uploadId = component.event.content[@"url"];
@@ -47,12 +47,12 @@
             // Start showing upload progress
             [self startUploadAnimating];
         }
-        else if (component.event.mxkState == MXKEventStateSending)
+        else if (component.event.sentState == MXEventSentStateSending)
         {
             self.attachmentView.alpha = 0.5;
             [self.activityIndicator startAnimating];
         }
-        else if (component.event.mxkState == MXKEventStateSendingFailed)
+        else if (component.event.sentState == MXEventSentStateFailed)
         {
             self.attachmentView.alpha = 0.5;
             [self.activityIndicator stopAnimating];

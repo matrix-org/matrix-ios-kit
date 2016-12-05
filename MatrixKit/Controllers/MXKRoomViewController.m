@@ -2530,7 +2530,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
             
             // Add actions for a failed event
-            if (selectedEvent.mxkState == MXKEventStateSendingFailed)
+            if (selectedEvent.sentState == MXEventSentStateFailed)
             {
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"resend"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
                     __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -2690,31 +2690,35 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     // Start animation in case of download during attachment preparing
                     [roomBubbleTableViewCell startProgressUI];
                 }];
+                
+                // Check status of the selected event
+                if (selectedEvent.sentState == MXEventSentStateEncrypting || selectedEvent.sentState == MXEventSentStateUploading)
+                {
+                    // Upload id is stored in attachment url (nasty trick)
+                    NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
+                    if ([MXMediaManager existingUploaderWithId:uploadId])
+                    {
+                        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
+                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            strongSelf->currentAlert = nil;
+                            
+                            // TODO cancel the attachment encryption if it is in progress.
+                            
+                            // Get again the loader
+                            MXMediaLoader *loader = [MXMediaManager existingUploaderWithId:uploadId];
+                            if (loader)
+                            {
+                                [loader cancel];
+                            }
+                            // Hide the progress animation
+                            roomBubbleTableViewCell.progressView.hidden = YES;
+                        }];
+                    }
+                }
             }
             
             // Check status of the selected event
-            if (selectedEvent.mxkState == MXKEventStateUploading)
-            {
-                // Upload id is stored in attachment url (nasty trick)
-                NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
-                if ([MXMediaManager existingUploaderWithId:uploadId])
-                {
-                    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                        strongSelf->currentAlert = nil;
-                        
-                        // Get again the loader
-                        MXMediaLoader *loader = [MXMediaManager existingUploaderWithId:uploadId];
-                        if (loader)
-                        {
-                            [loader cancel];
-                        }
-                        // Hide the progress animation
-                        roomBubbleTableViewCell.progressView.hidden = YES;
-                    }];
-                }
-            }
-            else if (selectedEvent.mxkState != MXKEventStateSending && selectedEvent.mxkState != MXKEventStateSendingFailed)
+            if (selectedEvent.sentState != MXEventSentStateSending && selectedEvent.sentState != MXEventSentStateFailed)
             {
                 // Check whether download is in progress
                 if (selectedEvent.isMediaAttachment)
@@ -3248,7 +3252,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
             if (bubbleData.isAttachmentWithThumbnail)
             {
-                if (selectedAttachment.event.mxkState == MXKEventStateDefault || selectedAttachment.event.mxkState == MXKEventStateBing)
+                if (selectedAttachment.event.sentState == MXEventSentStateSent)
                 {
                     NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
                     

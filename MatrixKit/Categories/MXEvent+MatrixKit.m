@@ -19,40 +19,43 @@
 
 @implementation MXEvent (MatrixKit)
 
-- (MXKEventState)mxkState
+- (MXKEventFormatterError)mxkEventFormatterError
 {
-    NSNumber *associatedState = objc_getAssociatedObject(self, @selector(state));
-    if (associatedState)
+    NSNumber *associatedError = objc_getAssociatedObject(self, @selector(formatterError));
+    if (associatedError)
     {
-        return [associatedState unsignedIntegerValue];
+        return [associatedError unsignedIntegerValue];
     }
-    return MXKEventStateDefault;
+    return MXKEventFormatterErrorNone;
 }
 
-- (void)setMxkState:(MXKEventState)state
+- (void)setMxkEventFormatterError:(MXKEventFormatterError)mxkEventFormatterError
 {
-    objc_setAssociatedObject(self, @selector(state), [NSNumber numberWithUnsignedInteger:state], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(formatterError), [NSNumber numberWithUnsignedInteger:mxkEventFormatterError], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)isMediaAttachment
+- (BOOL)mxkIsHighlighted
 {
-    if (self.eventType == MXEventTypeRoomMessage)
+    NSNumber *associatedIsHighlighted = objc_getAssociatedObject(self, @selector(isHighlighted));
+    if (associatedIsHighlighted)
     {
-        NSString *msgtype = self.content[@"msgtype"];
-        if ([msgtype isEqualToString:kMXMessageTypeImage] || [msgtype isEqualToString:kMXMessageTypeVideo] || [msgtype isEqualToString:kMXMessageTypeAudio] || [msgtype isEqualToString:kMXMessageTypeFile])
-        {
-            return YES;
-        }
+        return [associatedIsHighlighted boolValue];
     }
     return NO;
+}
+
+- (void)setMxkIsHighlighted:(BOOL)mxkIsHighlighted
+{
+    objc_setAssociatedObject(self, @selector(isHighlighted), [NSNumber numberWithBool:mxkIsHighlighted], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark - NSCopying
 - (id)copyWithZone:(NSZone *)zone
 {
-    // Make mxkState survive after a copy
+    // Make mxkIsHighlighted and mxkEventFormatterError survive after a copy
     MXEvent *eventCopy = [super copyWithZone:zone];
-    [eventCopy setMxkState:self.mxkState];
+    [eventCopy setMxkIsHighlighted:self.mxkIsHighlighted];
+    [eventCopy setMxkEventFormatterError:self.mxkEventFormatterError];
     
     return eventCopy;
 }
