@@ -24,6 +24,8 @@
 #import "DTCoreText.h"
 #import "GHMarkdownParser.h"
 
+#import "MXDecryptionResult.h"
+
 @interface MXKEventFormatter ()
 {
     /**
