@@ -49,15 +49,4 @@
     objc_setAssociatedObject(self, @selector(isHighlighted), [NSNumber numberWithBool:mxkIsHighlighted], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-#pragma mark - NSCopying
-- (id)copyWithZone:(NSZone *)zone
-{
-    // Make mxkIsHighlighted and mxkEventFormatterError survive after a copy
-    MXEvent *eventCopy = [super copyWithZone:zone];
-    [eventCopy setMxkIsHighlighted:self.mxkIsHighlighted];
-    [eventCopy setMxkEventFormatterError:self.mxkEventFormatterError];
-    
-    return eventCopy;
-}
-
 @end
