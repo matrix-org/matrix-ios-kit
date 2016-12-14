@@ -21,7 +21,7 @@
 
 - (MXKEventFormatterError)mxkEventFormatterError
 {
-    NSNumber *associatedError = objc_getAssociatedObject(self, @selector(formatterError));
+    NSNumber *associatedError = objc_getAssociatedObject(self, @selector(mxkEventFormatterError));
     if (associatedError)
     {
         return [associatedError unsignedIntegerValue];
@@ -31,12 +31,12 @@
 
 - (void)setMxkEventFormatterError:(MXKEventFormatterError)mxkEventFormatterError
 {
-    objc_setAssociatedObject(self, @selector(formatterError), [NSNumber numberWithUnsignedInteger:mxkEventFormatterError], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(mxkEventFormatterError), [NSNumber numberWithUnsignedInteger:mxkEventFormatterError], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (BOOL)mxkIsHighlighted
 {
-    NSNumber *associatedIsHighlighted = objc_getAssociatedObject(self, @selector(isHighlighted));
+    NSNumber *associatedIsHighlighted = objc_getAssociatedObject(self, @selector(mxkIsHighlighted));
     if (associatedIsHighlighted)
     {
         return [associatedIsHighlighted boolValue];
@@ -46,7 +46,7 @@
 
 - (void)setMxkIsHighlighted:(BOOL)mxkIsHighlighted
 {
-    objc_setAssociatedObject(self, @selector(isHighlighted), [NSNumber numberWithBool:mxkIsHighlighted], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(mxkIsHighlighted), [NSNumber numberWithBool:mxkIsHighlighted], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
