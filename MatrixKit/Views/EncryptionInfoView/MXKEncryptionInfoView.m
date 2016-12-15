@@ -141,23 +141,23 @@ static NSAttributedString *verticalWhitespace = nil;
 
     if (mxEvent)
     {
-        MXRoom *mxRoom = [mxSession roomWithRoomId:mxEvent.roomId];
         NSString *senderId = mxEvent.sender;
         
-        if (mxRoom)
+        if (mxSession && mxSession.crypto && !mxDeviceInfo)
         {
-            mxDeviceInfo = [mxRoom eventDeviceInfo:mxEvent];
+            mxDeviceInfo = [mxSession.crypto eventDeviceInfo:mxEvent];
             
             if (!mxDeviceInfo)
             {
 #ifdef MX_CRYPTO
                 // Trigger a server request to get the device information for the event sender
-                mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] forceDownload:YES success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
+                mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
                     
                     mxCurrentOperation = nil;
                     
                     // Sanity check: check whether some device information has been retrieved.
-                    if (usersDevicesInfoMap.map.count)
+                    mxDeviceInfo = [mxSession.crypto eventDeviceInfo:mxEvent];
+                    if (mxDeviceInfo)
                     {
                         [self updateTextViewText];
                     }
@@ -403,7 +403,7 @@ static NSAttributedString *verticalWhitespace = nil;
 #ifdef MX_CRYPTO // Note: Verify and Block buttons are hidden when the deviceInfo is not available
     else if (sender == _confirmVerifyButton && mxDeviceInfo)
     {
-        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId];
+        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
         [self removeFromSuperview];
     }
     else if (mxDeviceInfo)
@@ -448,7 +448,7 @@ static NSAttributedString *verticalWhitespace = nil;
         }
         else
         {
-            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId];
+            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
             [self removeFromSuperview];
         }
     }
