@@ -58,12 +58,7 @@
                 
                 NSString *url = searchCellData.attachment.thumbnailURL;
                 
-                UIImage *preview = nil;
-                if (searchCellData.attachment.previewURL)
-                {
-                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:searchCellData.attachment.previewURL andType:mimetype inFolder:self.attachmentImageView.mediaFolder];
-                    preview = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-                }
+                UIImage *preview = searchCellData.attachment.previewImage;
                 
                 if (url.length || preview)
                 {

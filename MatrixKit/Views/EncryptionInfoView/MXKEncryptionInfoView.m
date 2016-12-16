@@ -149,7 +149,6 @@ static NSAttributedString *verticalWhitespace = nil;
             
             if (!mxDeviceInfo)
             {
-#ifdef MX_CRYPTO
                 // Trigger a server request to get the device information for the event sender
                 mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
                     
@@ -172,7 +171,6 @@ static NSAttributedString *verticalWhitespace = nil;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     
                 }];
-#endif
             }
         }
         
@@ -400,7 +398,7 @@ static NSAttributedString *verticalWhitespace = nil;
     {
         [self removeFromSuperview];
     }
-#ifdef MX_CRYPTO // Note: Verify and Block buttons are hidden when the deviceInfo is not available
+    // Note: Verify and Block buttons are hidden when the deviceInfo is not available
     else if (sender == _confirmVerifyButton && mxDeviceInfo)
     {
         [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
@@ -452,7 +450,6 @@ static NSAttributedString *verticalWhitespace = nil;
             [self removeFromSuperview];
         }
     }
-#endif
 }
 
 @end

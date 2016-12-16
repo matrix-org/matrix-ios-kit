@@ -25,8 +25,6 @@
 
 #import "MXKAppSettings.h"
 
-#import "NSData+MatrixKit.h"
-
 #import "MXEncryptedAttachments.h"
 
 #pragma mark - Constant definitions
@@ -221,6 +219,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             
         }];
 
+        // Listen to the event sent state changes
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventDidChangeSentState:) name:kMXEventDidChangeSentStateNotification object:nil];
         // Listen to events decrypted
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventDidDecrypt:) name:kMXEventDidDecryptNotification object:nil];
     }
@@ -433,6 +433,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
 
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeSentStateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidDecryptNotification object:nil];
 
     if (NSCurrentLocaleDidChangeNotificationObserver)
@@ -692,19 +693,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 MXEvent *localEcho;
                 if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
                 {
-                    localEcho = [self pendingLocalEchoRelatedToEvent:event];
+                    localEcho = [self.room pendingLocalEchoRelatedToEvent:event];
                     if (localEcho)
                     {
                         // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
                         if (localEcho.originServerTs != kMXUndefinedTimestamp)
                         {
                             // Replace the local echo by the true event sent by the homeserver
-                            [self replaceLocalEcho:localEcho withEvent:event];
+                            [self replaceLocalEcho:localEcho.eventId withEvent:event];
                         }
                         else
                         {
                             // Remove the local echo, and process independently the true event.
-                            [self replaceLocalEcho:localEcho withEvent:nil];
+                            [self replaceLocalEcho:localEcho.eventId withEvent:nil];
                             localEcho = nil;
                         }
                     }
@@ -1200,42 +1201,60 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 #pragma mark - Sending
 - (void)sendTextMessage:(NSString *)text success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    MXMessageType msgType = kMXMessageTypeText;
-    
     // Check whether the message is an emote
+    BOOL isEmote = NO;
     if ([text hasPrefix:@"/me "])
     {
-        msgType = kMXMessageTypeEmote;
+        isEmote = YES;
         
         // Remove "/me " string
         text = [text substringFromIndex:4];
     }
-
-    // Prepare the message content
-    NSDictionary *msgContent;
-
+    
     // Did user use Markdown text?
     NSString *html = [_eventFormatter htmlStringFromMarkdownString:text];
     if ([html isEqualToString:text])
     {
-        // This is a simple text message
-        msgContent = @{
-                       @"msgtype": msgType,
-                       @"body": text
-                       };
+        // No formatted string
+        html = nil;
+    }
+    
+    __block MXEvent *localEchoEvent = nil;
+    __block NSString *localEchoEventId = nil;
+    
+    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
+        
+        if (localEchoEventId)
+        {
+            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
+        }
+        
+        if (success)
+        {
+            success(eventId);
+        }
+        
+    };
+    
+    // Make the request to the homeserver
+    if (isEmote)
+    {
+        [_room sendEmote:text formattedText:html localEcho:&localEchoEvent success:onSuccess failure:failure];
     }
     else
     {
-        // Send the Markdown string as an HTML formatted string
-        msgContent = @{
-                       @"msgtype": msgType,
-                       @"body": text,
-                       @"formatted_body": html,
-                       @"format": kMXRoomMessageFormatHTML
-                       };
+        [_room sendTextMessage:text formattedText:html localEcho:&localEchoEvent success:onSuccess failure:failure];
     }
-
-    [self sendMessageWithContent:msgContent success:success failure:failure];
+    
+    if (localEchoEvent)
+    {
+        // From here the local echo will be handled thanks to its local event id (temporary id).
+        localEchoEventId = localEchoEvent.eventId;
+        
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
 }
 
 - (void)sendImage:(UIImage *)image success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
@@ -1247,669 +1266,236 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSString *mimetype = @"image/jpeg";
     NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
     
-    double endRange = 1.0;
-    if (self.mxSession.crypto && self.room.state.isEncrypted) endRange = 0.9;
-    
-    // Use the uploader id as fake URL for this image data
-    // The URL does not need to be valid as the MediaManager will get the data
-    // directly from its cache
-    // Pass this id in the URL is a nasty trick to retrieve it later
-    MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:endRange];
-    NSString *fakeMediaManagerURL = uploader.uploadId;
-    
-    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
-    [MXMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
-    
-    // Create a fake image name based on imageData to keep the same name for the same image.
-    NSString *dataHash = [imageData MD5];
-    if (dataHash.length > 7)
+    // Shall we need to consider a thumbnail?
+    UIImage *thumbnail = nil;
+    if (_room.state.isEncrypted)
     {
-        // Crop
-        dataHash = [dataHash substringToIndex:7];
-    }
-    NSString *filename = [NSString stringWithFormat:@"ima_%@.jpeg", dataHash];
-
-    // Prepare the message content for building an echo message
-    NSDictionary *msgContent = @{
-                                 @"msgtype": kMXMessageTypeImage,
-                                 @"body": filename,
-                                 @"url": fakeMediaManagerURL,
-                                 @"info": [@{
-                                         @"mimetype": mimetype,
-                                         @"w": @(image.size.width),
-                                         @"h": @(image.size.height),
-                                         @"size": @(imageData.length)
-                                         } mutableCopy]
-                                 };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
-    
-    void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure) {
-            failure(error);
-        }
-    };
-    
-    if (self.mxSession.crypto && self.room.state.isEncrypted) {
-        [MXEncryptedAttachments encryptAttachment:uploader mimeType:mimetype data:imageData success:^(NSDictionary *result) {
-            NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-            [msgContentToSend removeObjectForKey:@"url"];
-            msgContentToSend[@"file"] = result;
-            
-            // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
-            
-            void(^doUpload)() = ^{
-                [self sendContentMessage:msgContentToSend localEcho:localEcho success:success failure:failure];
-            };
-            
-            UIImage *thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
-            if (thumbnail == image) {
-                doUpload();
-            } else {
-                MXMediaLoader *thumbUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
-                [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
-                    msgContentToSend[@"info"][@"thumbnail_file"] = result;
-                    doUpload();
-                } failure:onFailure];
-            }
-        } failure:onFailure];
-        return;
-    }
-    
-    // Launch the upload to the Matrix Content repository
-    [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
-        
-        // Update the local echo state: move from content uploading to event sending
-        localEcho.sentState = MXEventSentStateSending;
-        [self updateLocalEcho:localEcho];
-        
-        // Copy the cached image to the actual cacheFile path
-        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
-        NSString *actualCacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
-        NSError *error;
-        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
-        
-        // Update the message content with the mxc:// of the media on the homeserver
-        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-        msgContent2[@"url"] = url;
-        
-        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
-        localEcho.wireContent = msgContent2;
-        [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-        
-        // Make the final request that posts the image event
-        [_room sendMessageWithContent:msgContent2 success:^(NSString *eventId) {
-            
-            // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
-            // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-            MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
-            [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
-            // Replace the local echo by the new one
-            [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
-            
-            if (success)
-            {
-                success(eventId);
-            }
-            
-        } failure:^(NSError *error) {
-            
-            // Update the local echo with the error state
-            localEcho.sentState = MXEventSentStateFailed;
-            [self updateLocalEcho:localEcho];
-            
-            if (failure)
-            {
-                failure(error);
-            }
-        }];
-        
-    } failure:^(NSError *error) {
-        // Update the local echo with the error state
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure)
+        // Thumbnail is useful only in case of encrypted room
+        thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
+        if (thumbnail == image)
         {
-            failure(error);
+            thumbnail = nil;
         }
-    }];
+    }
+    
+    [self sendImageData:imageData withImageSize:image.size mimeType:mimetype andThumbnail:thumbnail success:success failure:failure];
 }
 
-- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString *)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     NSData *imageData = [NSData dataWithContentsOfFile:imageLocalURL.path];
     UIImage *image = [UIImage imageWithData:imageData];
     
-    double endRange = 1.0;
-    if (self.mxSession.crypto && self.room.state.isEncrypted) endRange = 0.9;
-    
-    // Use the uploader id as fake URL for this image data
-    // The URL does not need to be valid as the MediaManager will get the data
-    // directly from its cache
-    // Pass this id in the URL is a nasty trick to retrieve it later
-    MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.9];
-    NSString *fakeMediaManagerURL = uploader.uploadId;
-    
-    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
-    [MXMediaManager writeMediaData:imageData toFilePath:cacheFilePath];
-    
-    // Create a fake name based on fileData to keep the same name for the same file.
-    NSString *dataHash = [imageData MD5];
-    if (dataHash.length > 7)
+    // Shall we need to consider a thumbnail?
+    UIImage *thumbnail = nil;
+    if (_room.state.isEncrypted)
     {
-        // Crop
-        dataHash = [dataHash substringToIndex:7];
-    }
-    NSString *extension = [MXTools fileExtensionFromContentType:mimetype];
-    NSString *filename = [NSString stringWithFormat:@"ima_%@%@", dataHash, extension];
-    
-    // Prepare the message content for building an echo message
-    NSDictionary *msgContent = @{
-                                 @"msgtype": kMXMessageTypeImage,
-                                 @"body": filename,
-                                 @"url": fakeMediaManagerURL,
-                                 @"info": [@{
-                                         @"mimetype": mimetype,
-                                         @"w": @(image.size.width),
-                                         @"h": @(image.size.height),
-                                         @"size": @(imageData.length)
-                                         } mutableCopy]
-                                 };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
-    
-    void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure) {
-            failure(error);
-        }
-    };
-    
-    if (self.mxSession.crypto && self.room.state.isEncrypted) {
-        [MXEncryptedAttachments encryptAttachment:uploader mimeType:mimetype localUrl:imageLocalURL success:^(NSDictionary *result) {
-            NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-            [msgContentToSend removeObjectForKey:@"url"];
-            msgContentToSend[@"file"] = result;
-            
-            // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
-            
-            void(^doUpload)() = ^{
-                [self sendContentMessage:msgContentToSend localEcho:localEcho success:success failure:failure];
-            };
-            
-            UIImage *thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
-            if (thumbnail == image) {
-                doUpload();
-            } else {
-                MXMediaLoader *thumbUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.9 andRange:1];
-                [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:@"image/png" data:UIImagePNGRepresentation(thumbnail) success:^(NSDictionary *result) {
-                    msgContentToSend[@"info"][@"thumbnail_file"] = result;
-                    doUpload();
-                } failure:onFailure];
-            }
-        } failure:onFailure];
-        return;
-    }
-    
-    // Launch the upload to the Matrix Content repository
-    [uploader uploadData:imageData filename:filename mimeType:mimetype success:^(NSString *url) {
-        // Copy the cached file to the actual cacheFile path
-        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
-        NSString *actualCacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
-        NSError *error;
-        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
-        
-        // Update the message content with the mxc:// of the media on the homeserver
-        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-        msgContent2[@"url"] = url;
-        
-        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
-        localEcho.wireContent = msgContent2;
-        [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-
-        // Make the final request that posts the image event
-        [self sendContentMessage:msgContent2 localEcho:localEcho success:success failure:failure];
-        
-    } failure:^(NSError *error) {
-        // Update the local echo with the error state
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure)
+        // Thumbnail is useful only in case of encrypted room
+        thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
+        if (thumbnail == image)
         {
-            failure(error);
+            thumbnail = nil;
         }
-    }];
+    }
+    
+    [self sendImageData:imageData withImageSize:image.size mimeType:mimetype andThumbnail:thumbnail success:success failure:failure];
 }
 
-- (void)sendContentMessage:(NSDictionary *)content
-                  localEcho:(MXEvent *)localEcho
-                    success:(void (^)(NSString *))success
-                    failure:(void (^)(NSError *))failure {
-    // Update the local echo state: move from content uploading to event sending
-    localEcho.sentState = MXEventSentStateSending;
-    [self updateLocalEcho:localEcho];
+- (void)sendImageData:(NSData*)imageData withImageSize:(CGSize)imageSize mimeType:(NSString*)mimetype andThumbnail:(UIImage*)thumbnail success:(void (^)(NSString *eventId))success failure:(void (^)(NSError *error))failure
+{
+    __block MXEvent *localEchoEvent = nil;
+    __block NSString *localEchoEventId = nil;
     
-    [_room sendMessageWithContent:content success:^(NSString *eventId) {
+    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
         
-        // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
-        // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-        MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
-        [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
-        // Replace the local echo by the new one
-        [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
+        if (localEchoEventId)
+        {
+            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
+        }
         
         if (success)
         {
             success(eventId);
         }
         
-    } failure:^(NSError *error) {
-        // Update the local echo with the error state
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
+    };
+    
+    [_room sendImage:imageData withImageSize:imageSize mimeType:mimetype andThumbnail:thumbnail localEcho:&localEchoEvent success:onSuccess failure:failure];
+    
+    if (localEchoEvent)
+    {
+        // From here the local echo will be handled thanks to its local event id (temporary id).
+        localEchoEventId = localEchoEvent.eventId;
         
-        if (failure)
-        {
-            failure(error);
-        }
-    }];
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
 }
 
 - (void)sendVideo:(NSURL *)videoLocalURL withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    NSData *videoThumbnailData = UIImageJPEGRepresentation(videoThumbnail, 0.8);
+    __block MXEvent *localEchoEvent = nil;
+    __block NSString *localEchoEventId = nil;
     
-    // Use the uploader id as fake URL for this image data
-    // The URL does not need to be valid as the MediaManager will get the data
-    // directly from its cache
-    // Pass this id in the URL is a nasty trick to retrieve it later
-    MXMediaLoader *thumbUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:0.1];
-    NSString *fakeMediaManagerThumbnailURL = thumbUploader.uploadId;
-    
-    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerThumbnailURL andType:@"image/jpeg" inFolder:self.roomId];
-    [MXMediaManager writeMediaData:videoThumbnailData toFilePath:cacheFilePath];
-    
-    // Prepare the message content for building an echo message
-    NSMutableDictionary *msgContent = [@{
-                                         @"msgtype": kMXMessageTypeVideo,
-                                         @"body": @"Video",
-                                         @"url": fakeMediaManagerThumbnailURL,
-                                         @"info": [@{
-                                                     @"thumbnail_url": fakeMediaManagerThumbnailURL,
-                                                     @"thumbnail_info": @{
-                                                             @"mimetype": @"image/jpeg",
-                                                             @"w": @(videoThumbnail.size.width),
-                                                             @"h": @(videoThumbnail.size.height),
-                                                             @"size": @(videoThumbnailData.length)
-                                                             }
-                                                     } mutableCopy]
-                                         } mutableCopy];
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
-    
-    void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
+    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
         
-        if (failure) {
-            failure(error);
-        }
-    };
-    
-    // Before sending data to the server, convert the video to MP4
-    [MXKTools convertVideoToMP4:videoLocalURL success:^(NSURL *convertedLocalURL, NSString *mimetype, CGSize size, double durationInMs) {
-        if (![[NSFileManager defaultManager] fileExistsAtPath:convertedLocalURL.path]) {
-            failure(nil);
-            return;
-        }
-        // update metadata with result of converter output
-        msgContent[@"info"][@"mimetype"] = mimetype;
-        msgContent[@"info"][@"w"] = @(size.width);
-        msgContent[@"info"][@"h"] = @(size.height);
-        msgContent[@"info"][@"duration"] = @(durationInMs);
-        
-        if (self.mxSession.crypto && self.room.state.isEncrypted) {
-            [MXEncryptedAttachments encryptAttachment:thumbUploader mimeType:mimetype data:videoThumbnailData success:^(NSDictionary *result) {
-                NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-                msgContentToSend[@"info"][@"thumbnail_file"] = result;
-                [msgContentToSend[@"info"] removeObjectForKey:@"thumbnail_url"];
-                
-                // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
-                
-                MXMediaLoader *videoUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:1];
-                
-                // Self-proclaimed, "nasty trick" cargoculted from below...
-                // Apply the nasty trick again so that the cell can monitor the upload progress
-                msgContent[@"url"] = videoUploader.uploadId;
-                localEcho.wireContent = msgContent;
-                [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-                [self updateLocalEcho:localEcho];
-                
-                [MXEncryptedAttachments encryptAttachment:videoUploader mimeType:mimetype localUrl:convertedLocalURL success:^(NSDictionary *result) {
-                    [msgContentToSend removeObjectForKey:@"url"];
-                    msgContentToSend[@"file"] = result;
-                    
-                    [self sendContentMessage:msgContentToSend localEcho:localEcho success:success failure:failure];
-                } failure:onFailure];
-            } failure:onFailure];
-            return;
-        }
-        
-        
-        // Upload thumbnail
-        [thumbUploader uploadData:videoThumbnailData filename:nil mimeType:@"image/jpeg" success:^(NSString *thumbnailUrl) {
-            
-            // Upload video
-            NSData* videoData = [NSData dataWithContentsOfFile:convertedLocalURL.path];
-            if (videoData)
-            {  
-                MXMediaLoader *videoUploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0.1 andRange:0.9];
-                
-                // Create a fake image name based on imageData to keep the same name for the same image.
-                NSString *dataHash = [videoData MD5];
-                if (dataHash.length > 7)
-                {
-                    // Crop
-                    dataHash = [dataHash substringToIndex:7];
-                }
-                NSString *extension = [MXTools fileExtensionFromContentType:mimetype];
-                NSString *filename = [NSString stringWithFormat:@"video_%@%@", dataHash, extension];
-                msgContent[@"body"] = filename;
-                
-                // Apply the nasty trick again so that the cell can monitor the upload progress
-                msgContent[@"url"] = videoUploader.uploadId;
-                localEcho.wireContent = msgContent;
-                [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-                [self updateLocalEcho:localEcho];
-                
-                [videoUploader uploadData:videoData filename:filename mimeType:mimetype success:^(NSString *videoUrl) {
-                    
-                    // Update the local echo state: move from content uploading to event sending
-                    localEcho.sentState = MXEventSentStateSending;
-                    [self updateLocalEcho:localEcho];
-                    
-                    // Write the video to the actual cacheFile path
-                    NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:videoUrl];
-                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
-                    [MXMediaManager writeMediaData:videoData toFilePath:cacheFilePath];
-                    
-                    // Update URLs with the actual mxc: URLs
-                    msgContent[@"url"] = videoUrl;
-                    msgContent[@"info"][@"thumbnail_url"] = thumbnailUrl;
-                    
-                    localEcho.wireContent = msgContent;
-                    [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-                    
-                    // And send the Matrix room message video event to the homeserver
-                    [_room sendMessageWithContent:msgContent success:^(NSString *eventId) {
-                        
-                        // Update the local echo with its actual identifier.
-                        // The echo will be removed when the corresponding event will come through the server sync.
-                        // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-                        MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
-                        [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
-                        // Replace the local echo by the new one
-                        [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
-                        
-                        if (success)
-                        {
-                            success(eventId);
-                        }
-                        
-                    } failure:^(NSError *error) {
-                        
-                        // Update the local echo with the error state
-                        localEcho.sentState = MXEventSentStateFailed;
-                        [self updateLocalEcho:localEcho];
-                        
-                        if (failure)
-                        {
-                            failure(error);
-                        }
-                        
-                    }];
-                    
-                } failure:^(NSError *error) {
-                    
-                    // Update the local echo with the error state
-                    localEcho.sentState = MXEventSentStateFailed;
-                    [self updateLocalEcho:localEcho];
-                    
-                    if (failure)
-                    {
-                        failure(error);
-                    }
-                    
-                }];
-            }
-            else
-            {
-                // Update the local echo with the error state
-                localEcho.sentState = MXEventSentStateFailed;
-                [self updateLocalEcho:localEcho];
-                
-                if (failure)
-                {
-                    failure(nil);
-                }
-            }
-        } failure:^(NSError *error) {
-            
-            // Update the local echo with the error state
-            localEcho.sentState = MXEventSentStateFailed;
-            [self updateLocalEcho:localEcho];
-            
-            if (failure)
-            {
-                failure(error);
-            }
-        }];
-        
-    } failure:^() {
-        
-        // Update the local echo with the error state
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure)
+        if (localEchoEventId)
         {
-            failure(nil);
+            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
         }
-    }];
-}
-
-- (void)sendFile:(NSURL *)fileLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
-{
-    NSData *fileData = [NSData dataWithContentsOfFile:fileLocalURL.path];
-    
-    // Use the uploader id as fake URL for this file data
-    // The URL does not need to be valid as the MediaManager will get the data
-    // directly from its cache
-    // Pass this id in the URL is a nasty trick to retrieve it later
-    MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mxSession initialRange:0 andRange:1];
-    NSString *fakeMediaManagerURL = uploader.uploadId;
-    
-    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakeMediaManagerURL andType:mimetype inFolder:self.roomId];
-    [MXMediaManager writeMediaData:fileData toFilePath:cacheFilePath];
-    
-    // Create a fake name based on fileData to keep the same name for the same file.
-    NSString *dataHash = [fileData MD5];
-    if (dataHash.length > 7)
-    {
-        // Crop
-        dataHash = [dataHash substringToIndex:7];
-    }
-    NSString *extension = [MXTools fileExtensionFromContentType:mimetype];
-    NSString *filename = [NSString stringWithFormat:@"file_%@%@", dataHash, extension];
-    
-    // Prepare the message content for building an echo message
-    NSDictionary *msgContent = @{
-                                 @"msgtype": kMXMessageTypeFile,
-                                 @"body": filename,
-                                 @"url": fakeMediaManagerURL,
-                                 @"info": @{
-                                         @"mimetype": mimetype,
-                                         @"size": @(fileData.length)
-                                         }
-                                 };
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateUploading];
-    
-    void(^onFailure)(NSError *) = ^(NSError *error) {
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure) {
-            failure(error);
-        }
-    };
-    
-    if (self.mxSession.crypto && self.room.state.isEncrypted) {
-        [MXEncryptedAttachments encryptAttachment:uploader mimeType:mimetype localUrl:fileLocalURL success:^(NSDictionary *result) {
-            NSMutableDictionary *msgContentToSend = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-            [msgContentToSend removeObjectForKey:@"url"];
-            msgContentToSend[@"file"] = result;
-            
-            // TODO: We should update the local echo event with the actual event once we can decrypt attachments too.
-            
-            [self sendContentMessage:msgContentToSend localEcho:localEcho success:success failure:failure];
-        } failure:onFailure];
-        return;
-    }
-    
-    // Launch the upload to the Matrix Content repository
-    [uploader uploadData:fileData filename:filename mimeType:mimetype success:^(NSString *url) {
-        // Update the local echo state: move from content uploading to event sending
-        localEcho.sentState = MXEventSentStateSending;
-        [self updateLocalEcho:localEcho];
-        
-        // Copy the cached file to the actual cacheFile path
-        NSString *absoluteURL = [self.mxSession.matrixRestClient urlOfContent:url];
-        NSString *actualCacheFilePath = [MXMediaManager cachePathForMediaWithURL:absoluteURL andType:mimetype inFolder:self.roomId];
-        NSError *error;
-        [[NSFileManager defaultManager] copyItemAtPath:cacheFilePath toPath:actualCacheFilePath error:&error];
-        
-        // Update the message content with the mxc:// of the media on the homeserver
-        NSMutableDictionary *msgContent2 = [NSMutableDictionary dictionaryWithDictionary:msgContent];
-        msgContent2[@"url"] = url;
-        
-        // Update the local echo event too. It will be used to suppress this echo in [self pendingLocalEchoRelatedToEvent];
-        localEcho.wireContent = msgContent2;
-        [_room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:localEcho];
-
-        // Make the final request that posts the event
-        [_room sendMessageWithContent:msgContent2 success:^(NSString *eventId) {
-            
-            // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
-            // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-            MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
-            [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
-            // Replace the local echo by the new one
-            [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
-            
-            if (success)
-            {
-                success(eventId);
-            }
-            
-        } failure:^(NSError *error) {
-            
-            // Update the local echo with the error state
-            localEcho.sentState = MXEventSentStateFailed;
-            [self updateLocalEcho:localEcho];
-            
-            if (failure)
-            {
-                failure(error);
-            }
-        }];
-        
-    } failure:^(NSError *error) {
-        // Update the local echo with the error state
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
-        
-        if (failure)
-        {
-            failure(error);
-        }
-    }];
-}
-
-- (void)sendMessageWithContent:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
-{
-    // Build the local echo
-    MXEvent *localEcho = [self addLocalEchoForMessageContent:msgContent];
-    
-    // Make the request to the homeserver
-    [_room sendMessageWithContent:msgContent success:^(NSString *eventId) {
-        
-        // Update the local echo with its actual identifier. The echo will be removed when the corresponding event will come through the server sync.
-        // We keep this event here as local echo to handle correctly outgoing messages from multiple devices.
-        MXEvent *updatedLocalEcho = [self.room fakeRoomMessageEventWithEventId:eventId andContent:localEcho.content];
-        [self.room updateOutgoingMessage:localEcho.eventId withOutgoingMessage:updatedLocalEcho];
-        // Replace the local echo by the new one
-        [self replaceLocalEcho:localEcho withEvent:updatedLocalEcho];
         
         if (success)
         {
             success(eventId);
         }
         
-    } failure:^(NSError *error) {
-        // Update the local echo with the error state
-        localEcho.sentState = MXEventSentStateFailed;
-        [self updateLocalEcho:localEcho];
+    };
+    
+    [_room sendVideo:videoLocalURL withThumbnail:videoThumbnail localEcho:&localEchoEvent success:onSuccess failure:failure];
+    
+    if (localEchoEvent)
+    {
+        // From here the local echo will be handled thanks to its local event id (temporary id).
+        localEchoEventId = localEchoEvent.eventId;
         
-        if (failure)
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
+}
+
+- (void)sendFile:(NSURL *)fileLocalURL mimeType:(NSString*)mimeType success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    __block MXEvent *localEchoEvent = nil;
+    __block NSString *localEchoEventId = nil;
+    
+    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
+        
+        if (localEchoEventId)
         {
-            failure(error);
+            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
         }
-    }];
+        
+        if (success)
+        {
+            success(eventId);
+        }
+        
+    };
+    
+    [_room sendFile:fileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:onSuccess failure:failure];
+    
+    if (localEchoEvent)
+    {
+        // From here the local echo will be handled thanks to its local event id (temporary id).
+        localEchoEventId = localEchoEvent.eventId;
+        
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
+}
+
+- (void)sendMessageWithContent:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    __block MXEvent *localEchoEvent = nil;
+    __block NSString *localEchoEventId = nil;
+    
+    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
+        
+        if (localEchoEventId)
+        {
+            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
+        }
+        
+        if (success)
+        {
+            success(eventId);
+        }
+        
+    };
+    
+    // Make the request to the homeserver
+    [_room sendMessageWithContent:msgContent localEcho:&localEchoEvent success:onSuccess failure:failure];
+    
+    if (localEchoEvent)
+    {
+        // From here the local echo will be handled thanks to its local event id (temporary id)
+        localEchoEventId = localEchoEvent.eventId;
+        
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
 }
 
 - (void)resendEventWithEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     MXEvent *event = [self eventWithEventId:eventId];
     
+    // Sanity check
+    if (!event)
+    {
+        return;
+    }
+    
     NSLog(@"[MXKRoomDataSource] resendEventWithEventId. Event: %@", event);
     
-    if (event && event.eventType == MXEventTypeRoomMessage)
+    NSString *localEchoEventId = event.eventId;
+    
+    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
+        
+        if (localEchoEventId)
+        {
+            [self replaceLocalEcho:localEchoEventId withEvent:event];
+        }
+        
+        if (success)
+        {
+            success(eventId);
+        }
+        
+    };
+    
+    // Check first whether the event is encrypted
+    if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
     {
-        // And retry the send the message accoding to its type
+        // We try here to resent an encrypted event
+        // Note: we keep the existing local echo.
+        [_room sendEventOfType:kMXEventTypeStringRoomEncrypted content:event.wireContent localEcho:&event success:onSuccess failure:failure];
+    }
+    else if ([event.type isEqualToString:kMXEventTypeStringRoomMessage])
+    {
+        // And retry the send the message according to its type
         NSString *msgType = event.content[@"msgtype"];
         if ([msgType isEqualToString:kMXMessageTypeText] || [msgType isEqualToString:kMXMessageTypeEmote])
         {
-            // Remove the local echo
-            [self removeEventWithEventId:eventId];
-
-            // And resend
-            [self sendMessageWithContent:event.content success:success failure:failure];
+            // Resend the Matrix event by reusing the existing echo
+            [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
         }
         else if ([msgType isEqualToString:kMXMessageTypeImage])
         {
-            // Remove the local echo
-            [self removeEventWithEventId:eventId];
-            
-            NSString *mimetype = nil;
-            if (event.content[@"info"])
-            {
-                mimetype = event.content[@"info"][@"mimetype"];
-            }
-            
             // Check whether the sending failed while uploading the data.
             // If the content url corresponds to a upload id, the upload was not complete.
             NSString *contentURL = event.content[@"url"];
-            if ([contentURL hasPrefix:kMXMediaUploadIdPrefix])
+            if (contentURL && [contentURL hasPrefix:kMXMediaUploadIdPrefix])
             {
+                NSString *mimetype = nil;
+                if (event.content[@"info"])
+                {
+                    mimetype = event.content[@"info"][@"mimetype"];
+                }
+                
                 NSString *localImagePath = [MXMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
                 UIImage* image = [MXMediaManager loadPictureFromFilePath:localImagePath];
                 if (image)
                 {
-                    // Restart sending the image from the beginning
+                    // Restart sending the image from the beginning.
+                    
+                    // Remove the local echo.
+                    [self removeEventWithEventId:eventId];
+                    
                     if (mimetype)
                     {
                         [self sendImage:[NSURL fileURLWithPath:localImagePath isDirectory:NO] mimeType:mimetype success:success failure:failure];
@@ -1926,9 +1512,59 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
             else
             {
-                // The sending failed while sending the corresponding Matrix event.
-                // Resend the Matrix event
-                [self sendMessageWithContent:event.content success:success failure:failure];
+                // Resend the Matrix event by reusing the existing echo
+                [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
+            }
+        }
+        else if ([msgType isEqualToString:kMXMessageTypeVideo])
+        {
+            // Check whether the sending failed while uploading the data.
+            // If the content url corresponds to a upload id, the upload was not complete.
+            NSString *contentURL = event.content[@"url"];
+            if (contentURL && [contentURL hasPrefix:kMXMediaUploadIdPrefix])
+            {
+                // TODO: Support resend on attached video when upload has been failed.
+                NSLog(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend attached video (upload was not complete)");
+            }
+            else
+            {
+                // Resend the Matrix event by reusing the existing echo
+                [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
+            }
+        }
+        else if ([msgType isEqualToString:kMXMessageTypeFile])
+        {
+            // Check whether the sending failed while uploading the data.
+            // If the content url corresponds to a upload id, the upload was not complete.
+            NSString *contentURL = event.content[@"url"];
+            if (contentURL && [contentURL hasPrefix:kMXMediaUploadIdPrefix])
+            {
+                NSString *mimetype = nil;
+                if (event.content[@"info"])
+                {
+                    mimetype = event.content[@"info"][@"mimetype"];
+                }
+                
+                if (mimetype)
+                {
+                    // Restart sending the image from the beginning.
+                    
+                    // Remove the local echo
+                    [self removeEventWithEventId:eventId];
+                    
+                    NSString *localFilePath = [MXMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
+                    
+                    [self sendFile:[NSURL fileURLWithPath:localFilePath isDirectory:NO] mimeType:mimetype success:success failure:failure];
+                }
+                else
+                {
+                    NSLog(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                }
+            }
+            else
+            {
+                // Resend the Matrix event by reusing the existing echo
+                [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
             }
         }
         else
@@ -2167,57 +1803,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 }
 
 #pragma mark - Private methods
-- (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent
-{
-    return [self addLocalEchoForMessageContent:msgContent withState:MXEventSentStateSending];
-}
 
-- (MXEvent*)addLocalEchoForMessageContent:(NSDictionary*)msgContent withState:(MXEventSentState)eventState
+- (void)replaceLocalEcho:(NSString*)localEchoEventId withEvent:(MXEvent*)event
 {
-    // Make the data source digest this fake local echo message
-    MXEvent *localEcho = [self.room fakeRoomMessageEventWithEventId:nil andContent:msgContent];
-    localEcho.sentState = eventState;
-    
-    [self queueEventForProcessing:localEcho withRoomState:_room.state direction:MXTimelineDirectionForwards];
-    [self processQueuedEvents:nil];
-    
-    // Register the echo as pending for its future deletion
-    [self addPendingLocalEcho:localEcho];
-    
-    return localEcho;
-}
-
-- (void)updateLocalEcho:(MXEvent*)localEcho
-{
-    // Retrieve the cell data hosting the local echo
-    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
-    if (!bubbleData)
-    {
-        return;
-    }
-    
-    @synchronized (bubbleData)
-    {
-        [bubbleData updateEvent:localEcho.eventId withEvent:localEcho];
-    }
-    
-    // Inform the delegate
-    if (self.delegate)
-    {
-        [self.delegate dataSource:self didCellChange:nil];
-    }
-    
-    // Notify the last message may have changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-}
-
-- (void)replaceLocalEcho:(MXEvent*)localEcho withEvent:(MXEvent*)event
-{
-    // Remove the event from the pending local echo list
-    [self removePendingLocalEcho:localEcho];
+    // Remove the event from the pending local echo list if any.
+    [self.room removePendingLocalEcho:localEchoEventId];
     
     // Retrieve the cell data hosting the local echo
-    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEcho.eventId];
+    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEchoEventId];
     if (!bubbleData)
     {
         return;
@@ -2229,11 +1822,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Check whether the local echo is replaced or removed
         if (event)
         {
-            remainingEvents = [bubbleData updateEvent:localEcho.eventId withEvent:event];
+            remainingEvents = [bubbleData updateEvent:localEchoEventId withEvent:event];
         }
         else
         {
-            remainingEvents = [bubbleData removeEvent:localEcho.eventId];
+            remainingEvents = [bubbleData removeEvent:localEchoEventId];
         }
     }
     
@@ -2241,7 +1834,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     @synchronized (eventIdToBubbleMap)
     {
         // Remove the broken link from the map
-        [eventIdToBubbleMap removeObjectForKey:localEcho.eventId];
+        [eventIdToBubbleMap removeObjectForKey:localEchoEventId];
         
         if (event && remainingEvents)
         {
@@ -2254,9 +1847,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [self removeCellData:bubbleData];
     }
-
+    
     // Update lastMessage if it has been replaced
-    if ([lastMessage.eventId isEqualToString:localEcho.eventId])
+    if ([lastMessage.eventId isEqualToString:localEchoEventId])
     {
         // The new event should have the same characteristics as localEcho: it should
         // match [self lastMessageWithEventFormatter:] criteria and can replace it as
@@ -2376,6 +1969,34 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
         
         [self reload];
+    }
+}
+
+- (void)eventDidChangeSentState:(NSNotification *)notif
+{
+    MXEvent *event = notif.object;
+    if ([event.roomId isEqualToString:_roomId])
+    {
+        // Retrieve the cell data hosting the local echo
+        id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:event.eventId];
+        if (!bubbleData)
+        {
+            return;
+        }
+        
+        @synchronized (bubbleData)
+        {
+            [bubbleData updateEvent:event.eventId withEvent:event];
+        }
+        
+        // Inform the delegate
+        if (self.delegate)
+        {
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+        
+        // Notify the last message may have changed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
 }
 
@@ -2958,98 +2579,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     return cell;
-}
-
-
-#pragma mark - Local echo handling
-
-/**
- Add a local echo event waiting for the true event coming down from the event stream.
- 
- @param localEcho the local echo.
- */
-- (void)addPendingLocalEcho:(MXEvent*)localEcho
-{
-    [_room storeOutgoingMessage:localEcho];
-}
-
-/**
- Remove the local echo from the pending queue.
- 
- @discussion
- It can be removed from the list because we received the true event from the event stream
- or the corresponding request has failed.
- */
-- (void)removePendingLocalEcho:(MXEvent*)localEcho
-{
-    [_room removeOutgoingMessage:localEcho.eventId];
-}
-
-/**
- Try to determine if an event coming down from the server sync has a local echo.
- 
- @param event the event from the events stream
- @return a local echo event corresponding to the event. Nil if there is no match.
- */
-- (MXEvent*)pendingLocalEchoRelatedToEvent:(MXEvent*)event
-{
-    // Note: event is supposed here to be an outgoing event received from the server sync.
-    
-    NSString *msgtype = event.content[@"msgtype"];
-    
-    // We look first for a pending event with the same event id (This happens when server response is received before server sync).
-    MXEvent *localEcho = nil;
-    NSArray<MXEvent*>* pendingLocalEchoes = _room.outgoingMessages;
-    for (NSInteger index = 0; index < pendingLocalEchoes.count; index++)
-    {
-        localEcho = [pendingLocalEchoes objectAtIndex:index];
-        if ([localEcho.eventId isEqualToString:event.eventId])
-        {
-            break;
-        }
-        localEcho = nil;
-    }
-    
-    // If none, we return the pending event (if any) whose content matches with received event content.
-    if (!localEcho)
-    {
-        for (NSInteger index = 0; index < pendingLocalEchoes.count; index++)
-        {
-            localEcho = [pendingLocalEchoes objectAtIndex:index];
-            NSString *pendingEventType = localEcho.content[@"msgtype"];
-            
-            if ([msgtype isEqualToString:pendingEventType])
-            {
-                if ([msgtype isEqualToString:kMXMessageTypeText] || [msgtype isEqualToString:kMXMessageTypeEmote])
-                {
-                    // Compare content body
-                    if ([event.content[@"body"] isEqualToString:localEcho.content[@"body"]])
-                    {
-                        break;
-                    }
-                }
-                else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-                {
-                    // Compare geo uri
-                    if ([event.content[@"geo_uri"] isEqualToString:localEcho.content[@"geo_uri"]])
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    // Here the type is kMXMessageTypeImage, kMXMessageTypeAudio, kMXMessageTypeVideo or kMXMessageTypeFile
-                    if ([event.content[@"url"] isEqualToString:localEcho.content[@"url"]])
-                    {
-                        break;
-                    }
-                }
-            }
-            localEcho = nil;
-        }
-    }
-    
-    return localEcho;
 }
 
 @end

@@ -113,15 +113,36 @@
                 if (attachment)
                 {
                     // Check the current content url, to update it with the actual one
-                    if (![attachment.event.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:event.content[@"url"]])
+                    // Retrieve content url/info
+                    NSString *eventContentURL = event.content[@"url"];
+                    if (event.content[@"file"][@"url"])
+                    {
+                        eventContentURL = event.content[@"file"][@"url"];
+                    }
+                    
+                    if (![attachment.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:eventContentURL])
                     {
                         MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
                         
                         // Sanity check on attachment type
                         if (updatedAttachment && attachment.type == updatedAttachment.type)
                         {
-                            // Store the echo image as preview to prevent the cell from flashing
-                            updatedAttachment.previewURL = attachment.actualURL;
+                            // Re-use the current image as preview to prevent the cell from flashing
+                            updatedAttachment.previewImage = [attachment getCachedThumbnail];
+                            if (!updatedAttachment.previewImage && attachment.type == MXKAttachmentTypeImage)
+                            {
+                                updatedAttachment.previewImage = [MXMediaManager loadPictureFromFilePath:attachment.cacheFilePath];
+                            }
+                            
+                            // Clean the cache by removing the useless data
+                            if (![updatedAttachment.cacheFilePath isEqualToString:attachment.cacheFilePath])
+                            {
+                                [[NSFileManager defaultManager] removeItemAtPath:attachment.cacheFilePath error:nil];
+                            }
+                            if (![updatedAttachment.cacheThumbnailPath isEqualToString:attachment.cacheThumbnailPath])
+                            {
+                                [[NSFileManager defaultManager] removeItemAtPath:attachment.cacheThumbnailPath error:nil];
+                            }
                             
                             // Update the current attachmnet description
                             attachment = updatedAttachment;

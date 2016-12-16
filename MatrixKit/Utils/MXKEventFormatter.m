@@ -1362,6 +1362,8 @@
                     textColor = _defaultTextColor;
                 }
                 break;
+            case MXEventSentStateEncrypting:
+            case MXEventSentStateUploading:
             case MXEventSentStateSending:
                 textColor = _sendingTextColor;
                 break;

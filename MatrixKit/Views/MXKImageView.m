@@ -629,8 +629,8 @@
     mimeType = attachment.thumbnailMimeType;
     imageURL = attachment.thumbnailURL;
     
-    // Remove the potential existing image.
-    self.image = nil;
+    // Remove the existing image (if any) by using the potential preview.
+    self.image = attachment.previewImage;
     
     [attachment getThumbnail:^(UIImage *img) {
         self.image = img;

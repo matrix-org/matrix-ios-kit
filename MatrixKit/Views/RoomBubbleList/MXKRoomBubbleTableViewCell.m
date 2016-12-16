@@ -334,13 +334,6 @@ static BOOL _disableLongPressGestureOnEvent;
                 }
             }
             
-            UIImage *preview = nil;
-            if (bubbleData.attachment.previewURL)
-            {
-                NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:bubbleData.attachment.previewURL andType:mimetype inFolder:self.attachmentView.mediaFolder];
-                preview = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-            }
-            
             self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setAttachmentThumb:bubbleData.attachment];
             

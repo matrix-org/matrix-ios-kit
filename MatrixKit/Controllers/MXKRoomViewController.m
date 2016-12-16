@@ -1908,7 +1908,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             if (attachmentsWithThumbnail.count)
             {
                 MXKAttachment *attachment = attachmentsWithThumbnail.firstObject;
-                isDone = ![attachment.event.eventId isEqualToString:eventId];
+                isDone = ![attachment.eventId isEqualToString:eventId];
             }
             
             // Check whether pagination is still available
@@ -2466,9 +2466,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
             [currentAlert showInViewController:self];
         }
-        else
+        else if (roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateEncrypting || roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateUploading)
         {
-            // Check if there is an upload in progress, then offer to cancel it
+            // Offer to cancel the upload in progress
             // Upload id is stored in attachment url (nasty trick)
             NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;
             if ([MXMediaManager existingUploaderWithId:uploadId])
@@ -2486,8 +2486,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     strongSelf->currentAlert = nil;
                 }];
                 [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->currentAlert = nil;
+                    
+                    // TODO cancel the attachment encryption if it is in progress.
                     
                     // Get again the loader
                     MXMediaLoader *loader = [MXMediaManager existingUploaderWithId:uploadId];
@@ -2498,6 +2498,17 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     // Hide the progress animation
                     roomBubbleTableViewCell.progressView.hidden = YES;
+                    
+                    if (weakSelf)
+                    {
+                        __strong __typeof(weakSelf)strongSelf = weakSelf;
+                        strongSelf->currentAlert = nil;
+                        
+                        // Remove the outgoing message and its related cached file.
+                        [[NSFileManager defaultManager] removeItemAtPath:roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath error:nil];
+                        [[NSFileManager defaultManager] removeItemAtPath:roomBubbleTableViewCell.bubbleData.attachment.cacheThumbnailPath error:nil];
+                        [strongSelf.roomDataSource removeEventWithEventId:roomBubbleTableViewCell.bubbleData.attachment.eventId];
+                    }
                 }];
                 
                 [currentAlert showInViewController:self];
@@ -2699,26 +2710,36 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     if ([MXMediaManager existingUploaderWithId:uploadId])
                     {
                         [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                            __strong __typeof(weakSelf)strongSelf = weakSelf;
-                            strongSelf->currentAlert = nil;
                             
                             // TODO cancel the attachment encryption if it is in progress.
                             
-                            // Get again the loader
+                            // Cancel the loader
                             MXMediaLoader *loader = [MXMediaManager existingUploaderWithId:uploadId];
                             if (loader)
                             {
                                 [loader cancel];
                             }
+                            
                             // Hide the progress animation
                             roomBubbleTableViewCell.progressView.hidden = YES;
+                            
+                            if (weakSelf)
+                            {
+                                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                strongSelf->currentAlert = nil;
+                                
+                                // Remove the outgoing message and its related cached file.
+                                [[NSFileManager defaultManager] removeItemAtPath:roomBubbleTableViewCell.bubbleData.attachment.cacheFilePath error:nil];
+                                [[NSFileManager defaultManager] removeItemAtPath:roomBubbleTableViewCell.bubbleData.attachment.cacheThumbnailPath error:nil];
+                                [strongSelf.roomDataSource removeEventWithEventId:selectedEvent.eventId];
+                            }
                         }];
                     }
                 }
             }
             
             // Check status of the selected event
-            if (selectedEvent.sentState != MXEventSentStateSending && selectedEvent.sentState != MXEventSentStateFailed)
+            if (selectedEvent.sentState == MXEventSentStateSent)
             {
                 // Check whether download is in progress
                 if (selectedEvent.isMediaAttachment)
@@ -3252,7 +3273,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
             if (bubbleData.isAttachmentWithThumbnail)
             {
-                if (selectedAttachment.event.sentState == MXEventSentStateSent)
+                if (selectedAttachment.eventSentState == MXEventSentStateSent)
                 {
                     NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
                     
@@ -3269,7 +3290,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     attachmentsViewer.delegate = self;
                     attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
                     attachmentsViewer.hidesBottomBarWhenPushed = YES;
-                    [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.event.eventId];
+                    [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.eventId];
                     
                     [self.navigationController pushViewController:attachmentsViewer animated:YES];
                 }

@@ -323,7 +323,7 @@
             {
                 // Retrieve the event id of the first item in the current attachments array
                 MXKAttachment *attachment = attachments[0];
-                NSString *firstAttachmentEventId = attachment.event.eventId;
+                NSString *firstAttachmentEventId = attachment.eventId;
                 NSString *firstAttachmentOriginalFileName = nil;
                 
                 // The original file name is used when the attachment is a local echo.
@@ -340,11 +340,11 @@
                     {
                         break;
                     }
-                    else if ([attachment.event.eventId isEqualToString:firstAttachmentEventId])
+                    else if ([attachment.eventId isEqualToString:firstAttachmentEventId])
                     {
                         break;
                     }
-                    currentAttachmentEventId = attachment.event.eventId;
+                    currentAttachmentEventId = attachment.eventId;
                 }
             }
         }
@@ -356,7 +356,7 @@
             if (currentAttachmentIndex < attachments.count)
             {
                 MXKAttachment *attachment = attachments[currentAttachmentIndex];
-                currentAttachmentEventId = attachment.event.eventId;
+                currentAttachmentEventId = attachment.eventId;
                 
                 // The original file name is used when the attachment is a local echo.
                 // Indeed its event id may be replaced by the actual one in the new attachments array.
@@ -390,7 +390,7 @@
                 break;
             }
             // Check the event id then
-            else if ([attachment.event.eventId isEqualToString:currentAttachmentEventId])
+            else if ([attachment.eventId isEqualToString:currentAttachmentEventId])
             {
                 currentVisibleItemIndex = index;
                 break;
@@ -495,7 +495,7 @@
                         // Check whether the thumbnail has just been downloaded and cached
                         NSString *previewCacheFilePath = [MXMediaManager cachePathForMediaWithURL:attachment.thumbnailURL
                                                                                            andType:mimeType
-                                                                                          inFolder:attachment.event.roomId];
+                                                                                          inFolder:attachment.eventRoomId];
                         preview = [MXMediaManager loadPictureFromFilePath:previewCacheFilePath];
                     }
                     
@@ -727,7 +727,7 @@
             else if (indexPath.item == currentVisibleItemIndex)
             {
                 // Load high res image
-                cell.mxkImageView.mediaFolder = attachment.event.roomId;
+                cell.mxkImageView.mediaFolder = attachment.eventRoomId;
                 cell.mxkImageView.stretchable = YES;
                 cell.mxkImageView.enableInMemoryCache = NO;
                 
@@ -736,7 +736,7 @@
             else
             {
                 // Use the thumbnail here - Full res images should only be downloaded explicitly when requested (see [self refreshCurrentVisibleItemIndex])
-                cell.mxkImageView.mediaFolder = attachment.event.roomId;
+                cell.mxkImageView.mediaFolder = attachment.eventRoomId;
                 cell.mxkImageView.stretchable = YES;
                 cell.mxkImageView.enableInMemoryCache = YES;
                 
@@ -745,7 +745,7 @@
         }
         else if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
         {
-            cell.mxkImageView.mediaFolder = attachment.event.roomId;
+            cell.mxkImageView.mediaFolder = attachment.eventRoomId;
             cell.mxkImageView.stretchable = NO;
             cell.mxkImageView.enableInMemoryCache = YES;
             // Display video thumbnail, the video is played only when user selects this cell
@@ -1078,7 +1078,7 @@
         if (isBackPaginationInProgress)
         {
             MXKAttachment *attachment = self.attachments.firstObject;
-            self.complete = ![self.delegate attachmentsViewController:self paginateAttachmentBefore:attachment.event.eventId];
+            self.complete = ![self.delegate attachmentsViewController:self paginateAttachmentBefore:attachment.eventId];
         }
         else
         {
