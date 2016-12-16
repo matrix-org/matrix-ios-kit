@@ -1,3 +1,19 @@
+Changes in MatrixKit in 0.4.4 (2016-12-19)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.4).
+ * Crypto: add MXKDeviceView and MXKEncryptionInfoView to display device or encryption information.
+ * Crypto: Improve decryption error messages (specially for unknown inbound session id).
+ 
+Bug fixes:
+ * Voip : decline call when room opened freeze riot (https://github.com/vector-im/vector-ios#764).
+
+API breaks:
+ * MXKCallViewController: remove `isPresented` property.
+ * Move MXKMediaManager and MXKMediaLoader at SDK level.
+ * Move MXEncryptedAttachments to SDK level
+
 Changes in MatrixKit in 0.4.3 (2016-11-23)
 ===========================================
 
