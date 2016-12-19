@@ -93,6 +93,7 @@
         _subTitleTextColor = [UIColor blackColor];
         _prefixTextColor = [UIColor blackColor];
         _bingTextColor = [UIColor blueColor];
+        _encryptingTextColor = [UIColor lightGrayColor];
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
         
@@ -1363,6 +1364,8 @@
                 }
                 break;
             case MXEventSentStateEncrypting:
+                textColor = _encryptingTextColor;
+                break;
             case MXEventSentStateUploading:
             case MXEventSentStateSending:
                 textColor = _sendingTextColor;

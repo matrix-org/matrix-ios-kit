@@ -276,6 +276,12 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIColor *bingTextColor;
 
 /**
+ Color used to display text content of an event being encrypted.
+ Default is [UIColor lightGrayColor].
+ */
+@property (nonatomic) UIColor *encryptingTextColor;
+
+/**
  Color used to display text content of an event being sent.
  Default is [UIColor lightGrayColor].
  */
