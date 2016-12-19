@@ -29,7 +29,6 @@
 #import "MXKTools.h"
 
 #import "NSBundle+MatrixKit.h"
-#import "NSData+MatrixKit.h"
 
 #define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
 #define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
@@ -1179,7 +1178,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         [docValidationView showFullScreen];
                         
                         // Create a fake name based on fileData to keep the same name for the same file.
-                        NSString *dataHash = [pasteboardDocumentData MD5];
+                        NSString *dataHash = [pasteboardDocumentData mx_MD5];
                         if (dataHash.length > 7)
                         {
                             // Crop

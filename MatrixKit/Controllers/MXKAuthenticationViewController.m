@@ -24,7 +24,6 @@
 #import "MXKAccountManager.h"
 
 #import "NSBundle+MatrixKit.h"
-#import "NSData+MatrixKit.h"
 
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
@@ -1200,7 +1199,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 NSString *title = [NSBundle mxk_localizedStringForKey:@"ssl_could_not_verify"];
                 NSString *homeserverURLStr = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"ssl_homeserver_url"], homeserverURL];
                 NSString *fingerprint = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"ssl_fingerprint_hash"], @"SHA256"];
-                NSString *certFingerprint = [certificate SHA256AsHexString];
+                NSString *certFingerprint = [certificate mx_SHA256AsHexString];
                 
                 NSString *msg = [NSString stringWithFormat:@"%@\n\n%@\n\n%@\n\n%@\n\n%@\n\n%@", [NSBundle mxk_localizedStringForKey:@"ssl_cert_not_trust"], [NSBundle mxk_localizedStringForKey:@"ssl_cert_new_account_expl"], homeserverURLStr, fingerprint, certFingerprint, [NSBundle mxk_localizedStringForKey:@"ssl_only_accept"]];
                 

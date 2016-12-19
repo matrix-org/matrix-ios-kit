@@ -142,23 +142,6 @@
  */
 + (UIImageOrientation)imageOrientationForRotationAngleInDegree:(NSInteger)angle;
 
-#pragma mark - Video processing
-
-/**
- Convert from a video to a MP4 video container.
-
- @discussion
- If the device does not support MP4 file format, the function will use the QuickTime format.
-
- @param the local path of the video to convert.
- @param success A block object called when the operation succeeded. It returns
-                the path of the output video with some metadata.
- @param failure A block object called when the operation failed.
- */
-+ (void)convertVideoToMP4:(NSURL*)videoLocalURL
-                  success:(void(^)(NSURL *videoLocalURL, NSString *mimetype, CGSize size, double durationInMs))success
-                  failure:(void(^)())failure;
-
 /**
  Draw the image resource in a view and transforms it to a pattern color.
  The view size is defined by patternSize and will have a "backgroundColor" backgroundColor.

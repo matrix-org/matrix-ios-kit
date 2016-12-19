@@ -38,28 +38,25 @@ typedef enum : NSUInteger {
 @interface MXKAttachment : NSObject
 
 /**
- The related matrix event.
- */
-@property (nonatomic, readonly) MXEvent *event;
-
-/**
  The attachment type.
  */
 @property (nonatomic, readonly) MXKAttachmentType type;
 
 /**
- The attachment information retrieved from event content.
- In case of image, the thumbnail information are not defined anymore, 'thumbnailURL' and 'thumbnailInfo' are then nil.
+ The attachment information retrieved from the event content during the initialisation.
  */
+@property (nonatomic, readonly) NSString *eventId;
+@property (nonatomic, readonly) NSString *eventRoomId;
+@property (nonatomic, readonly) MXEventSentState eventSentState;
 @property (nonatomic, readonly) NSString *contentURL;
 @property (nonatomic, readonly) NSDictionary *contentInfo;
 
 // The URL of a 'standard size' thumbnail
 @property (nonatomic, readonly) NSString *thumbnailURL;
-
-@property (nonatomic) NSDictionary *thumbnailInfo;
-
 @property (nonatomic, readonly) NSString *thumbnailMimeType;
+
+// The attached video thumbnail information
+@property (nonatomic, readonly) NSDictionary *thumbnailInfo;
 
 /**
  The original file name retrieved from the event body (if any).
@@ -82,9 +79,14 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString *cacheFilePath;
 
 /**
- Local url used to store a preview of the attachment.
+ The cache file path of the attachment thumbnail.
  */
-@property (nonatomic) NSString *previewURL;
+@property (nonatomic, readonly) NSString *cacheThumbnailPath;
+
+/**
+ The preview of the attachment (nil by default).
+ */
+@property (nonatomic) UIImage *previewImage;
 
 /**
  True if the attachment is encrypted
@@ -95,6 +97,13 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) BOOL isEncrypted;
 
 /**
+ Create a `MXKAttachment` instance for the passed event.
+ The created instance copies the current data of the event (content, event id, sent state...).
+ It will ignore any future changes of these data.
+ 
+ @param mxEvent the matrix event.
+ @param mxSession the matrix session.
+ @return `MXKAttachment` instance.
  */
 - (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
 - (void)destroy;
@@ -130,13 +139,6 @@ typedef enum : NSUInteger {
  if necessary
  */
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
-
-/**
- * Gets a thumbnail URL for a given size of thumbnail, if possible,
- * or if only one size of thumbnail is available, return the URL for that.
- * Don't forget to multiply by the pixel density of your display
- */
-- (NSString *)getThumbnailUrlForSize:(CGSize)size;
 
 /**
  Download the attachment data if it is not already cached.
