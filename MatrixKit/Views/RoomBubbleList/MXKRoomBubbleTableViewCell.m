@@ -711,7 +711,7 @@ static BOOL _disableLongPressGestureOnEvent;
         [text appendString:progressString];
     }
     
-    if (downloadRate)
+    if (downloadRate && downloadRate.longLongValue)
     {
         [text appendFormat:@"\n%@/s", [NSByteCountFormatter stringFromByteCount:downloadRate.longLongValue countStyle:NSByteCountFormatterCountStyleFile]];
         
