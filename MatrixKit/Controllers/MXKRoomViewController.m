@@ -2466,7 +2466,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
             [currentAlert showInViewController:self];
         }
-        else if (roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateEncrypting || roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateUploading)
+        else if (roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStatePreparing ||
+                 roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateEncrypting ||
+                 roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateUploading)
         {
             // Offer to cancel the upload in progress
             // Upload id is stored in attachment url (nasty trick)
@@ -2703,7 +2705,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 }];
                 
                 // Check status of the selected event
-                if (selectedEvent.sentState == MXEventSentStateEncrypting || selectedEvent.sentState == MXEventSentStateUploading)
+                if (selectedEvent.sentState == MXEventSentStatePreparing ||
+                    selectedEvent.sentState == MXEventSentStateEncrypting ||
+                    selectedEvent.sentState == MXEventSentStateUploading)
                 {
                     // Upload id is stored in attachment url (nasty trick)
                     NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.actualURL;

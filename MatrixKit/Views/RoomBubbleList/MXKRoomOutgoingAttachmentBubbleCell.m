@@ -35,9 +35,9 @@
         // Some download may append to retrieve the actual thumbnail after posting an image.
         self.attachmentView.hideActivityIndicator = YES;
         
-        // Check if the image is uploading
+        // Check if the attachment is uploading
         MXKRoomBubbleComponent *component = bubbleData.bubbleComponents.firstObject;
-        if (component.event.sentState == MXEventSentStateEncrypting || component.event.sentState == MXEventSentStateUploading)
+        if (component.event.sentState == MXEventSentStatePreparing || component.event.sentState == MXEventSentStateEncrypting || component.event.sentState == MXEventSentStateUploading)
         {
             // Retrieve the uploadId embedded in the fake url
             bubbleData.uploadId = component.event.content[@"url"];

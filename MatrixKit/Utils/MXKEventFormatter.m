@@ -1366,6 +1366,7 @@
             case MXEventSentStateEncrypting:
                 textColor = _encryptingTextColor;
                 break;
+            case MXEventSentStatePreparing:
             case MXEventSentStateUploading:
             case MXEventSentStateSending:
                 textColor = _sendingTextColor;
