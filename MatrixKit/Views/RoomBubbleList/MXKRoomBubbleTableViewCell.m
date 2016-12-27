@@ -160,6 +160,18 @@ static BOOL _disableLongPressGestureOnEvent;
     self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    if (self.pictureView)
+    {
+        // Round image view
+        [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
+        self.pictureView.clipsToBounds = YES;
+    }
+}
+
 - (void)dealloc
 {
     // remove any pending observers
@@ -281,9 +293,7 @@ static BOOL _disableLongPressGestureOnEvent;
                 avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
             }
             self.pictureView.enableInMemoryCache = YES;
-            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];        
-            [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
-            self.pictureView.clipsToBounds = YES;
+            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];
             
             // Clear the default background color of a MXKImageView instance
             self.pictureView.backgroundColor = [UIColor clearColor];
