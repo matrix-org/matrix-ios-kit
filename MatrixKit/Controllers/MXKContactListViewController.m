@@ -69,6 +69,14 @@
                                           bundle:[NSBundle bundleForClass:[MXKContactListViewController class]]];
 }
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+    
+    // get the system collation titles
+    collationTitles = [[UILocalizedIndexedCollation currentCollation] sectionTitles];
+}
+
 - (void)dealloc
 {
     searchButton = nil;
@@ -91,9 +99,6 @@
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
-    
-    // get the system collation titles
-    collationTitles = [[UILocalizedIndexedCollation currentCollation]sectionTitles];
     
     // global init
     displayMatrixUsers = (0 == self.contactsControls.selectedSegmentIndex);

@@ -65,6 +65,7 @@
     // Set default properties values
     defaultBarTintColor = nil;
     enableBarTintColorStatusChange = YES;
+    rageShakeManager = nil;
     
     mxSessionArray = [NSMutableArray array];
     childViewControllers = [NSMutableArray array];

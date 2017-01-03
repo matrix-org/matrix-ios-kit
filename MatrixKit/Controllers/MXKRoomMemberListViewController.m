@@ -80,6 +80,15 @@
 
 #pragma mark -
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+    
+    // Enable both bar button by default.
+    _enableMemberInvitation = YES;
+    _enableMemberSearch = YES;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -136,9 +145,7 @@
     searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
     addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(inviteNewMember:)];
     
-    // Enable both bar button by default.
-    _enableMemberInvitation = YES;
-    _enableMemberSearch = YES;
+    // Refresh bar button display.
     [self refreshUIBarButtons];
     
     // Add an accessory view to the search bar in order to retrieve keyboard view.
@@ -302,7 +309,6 @@
 {
     _enableMemberInvitation = enableMemberInvitation;
     [self refreshUIBarButtons];
-    
 }
 
 - (void)refreshUIBarButtons
