@@ -56,7 +56,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     NSDate *lastSyncDate;
     // Local contacts by contact Id
     NSMutableDictionary* localContactByContactID;
-    NSMutableArray* localEmailContacts;
+    NSMutableArray* localContactsWithMethods;
     // Matrix id linked to 3PID.
     NSMutableDictionary* matrixIDBy3PID;
     // Keep history of 3PID lookup requests
@@ -123,7 +123,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     matrixIDBy3PID = nil;
 
     localContactByContactID = nil;
-    localEmailContacts = nil;
+    localContactsWithMethods = nil;
     
     matrixContactByContactID = nil;
     matrixContactByMatrixID = nil;
@@ -320,7 +320,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return [localContactByContactID allValues];
 }
 
-- (NSArray*)localEmailContacts
+- (NSArray*)localContactsWithMethods
 {
     // Return nil if the loading step is in progress.
     if (isLocalContactListLoading)
@@ -329,41 +329,23 @@ static MXKContactManager* sharedMXKContactManager = nil;
     }
     
     // Check whether the array must be prepared
-    if (!localEmailContacts)
+    if (!localContactsWithMethods)
     {
-        // List all the known emails from the local contacts
+        // List all the local contacts with emails
+        // TODO: Add the contacts with msisdn when msisdn 3PIDs will be supported
         NSArray *localContacts = self.localContacts;
-        NSMutableArray *emailAddresses = [NSMutableArray arrayWithCapacity:localContacts.count];
+        localContactsWithMethods = [NSMutableArray arrayWithCapacity:localContacts.count];
         
         for (MXKContact* contact in localContacts)
         {
-            NSArray *emails = contact.emailAddresses;
-            for (MXKEmail *email in emails)
+            if (contact.emailAddresses)
             {
-                if (email.emailAddress.length)
-                {
-                    if ([emailAddresses indexOfObject:email.emailAddress] == NSNotFound)
-                    {
-                        [emailAddresses addObject:email.emailAddress];
-                    }
-                }
-            }
-        }
-        
-        if (emailAddresses.count)
-        {
-            // Create here the local email contacts array
-            localEmailContacts = [NSMutableArray arrayWithCapacity:localContacts.count];
-            
-            for (NSString *emailAddress in emailAddresses)
-            {
-                MXKContact *contact = [[MXKContact alloc] initMatrixContactWithDisplayName:emailAddress andMatrixID:nil];
-                [localEmailContacts addObject:contact];
+                [localContactsWithMethods addObject:contact];
             }
         }
     }
     
-    return localEmailContacts;
+    return localContactsWithMethods;
 }
 
 - (NSArray*)directMatrixContacts
@@ -506,7 +488,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
             
             // Local contacts list is empty if the access is denied.
             localContactByContactID = nil;
-            localEmailContacts = nil;
+            localContactsWithMethods = nil;
             [self cacheLocalContacts];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
@@ -619,7 +601,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 if (contactBookUpdate)
                 {
                     // Remove the local email contacts (This array will be prepared only if need)
-                    localEmailContacts = nil;
+                    localContactsWithMethods = nil;
                     
                     [strongSelf cacheLocalContacts];
                 }
@@ -680,7 +662,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                              {
                                                  // Update status table
                                                  [checked3PIDs addObjectsFromArray:pids];
-                                                 for(NSString* pid in pids)
+                                                 for (NSString* pid in pids)
                                                  {
                                                      [pending3PIDs removeObject:pid];
                                                  }
@@ -714,14 +696,14 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                  if (isUpdated)
                                                  {
                                                      [self cacheMatrixIDsDict];
+                                                     
+                                                     // Update only this contact
+                                                     [self updateLocalContactMatrixIDs:contact];
+                                                     
+                                                     dispatch_async(dispatch_get_main_queue(), ^{
+                                                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:contact.contactID userInfo:nil];
+                                                     });
                                                  }
-                                                 
-                                                 // Update only this contact
-                                                 [self updateLocalContactMatrixIDs:contact];
-                                                 
-                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:contact.contactID userInfo:nil];
-                                                 });
                                              }
                                          }
                                          failure:^(NSError *error) {
@@ -827,7 +809,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     
     isLocalContactListLoading = NO;
     localContactByContactID = nil;
-    localEmailContacts = nil;
+    localContactsWithMethods = nil;
     [self cacheLocalContacts];
     
     matrixContactByContactID = nil;
