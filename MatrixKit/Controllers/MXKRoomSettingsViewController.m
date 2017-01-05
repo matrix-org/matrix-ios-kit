@@ -58,6 +58,11 @@
 
 #pragma mark - Override MXKTableViewController
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+}
+
 - (void)destroy
 {
     if (roomListener)

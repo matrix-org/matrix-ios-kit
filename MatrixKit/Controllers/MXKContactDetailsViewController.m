@@ -41,6 +41,11 @@
                                           bundle:[NSBundle bundleForClass:[MXKContactDetailsViewController class]]];
 }
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

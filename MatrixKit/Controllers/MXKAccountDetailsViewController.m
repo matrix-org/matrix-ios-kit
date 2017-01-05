@@ -86,6 +86,16 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
 #pragma mark -
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+    
+    alertsArray = [NSMutableArray array];
+    
+    isAvatarUpdated = NO;
+    isSavingInProgress = NO;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -100,11 +110,6 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     self.userPictureButton.backgroundColor = [UIColor clearColor];
     [self updateUserPictureButton:self.picturePlaceholder];
     
-    alertsArray = [NSMutableArray array];
-    
-    isAvatarUpdated = NO;
-    isSavingInProgress = NO;
-    
     [userPictureButton.layer setCornerRadius:userPictureButton.frame.size.width / 2];
     userPictureButton.clipsToBounds = YES;
     
@@ -114,7 +119,6 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     // Force refresh
     self.mxAccount = _mxAccount;
 }
-
 
 - (void)didReceiveMemoryWarning
 {

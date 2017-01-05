@@ -208,6 +208,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 #pragma mark -
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+    
+    // Scroll to bottom the bubble history at first display
+    shouldScrollToBottomOnTableRefresh = YES;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -259,9 +267,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     // set the default extra
     [self setRoomActivitiesViewClass:MXKRoomActivitiesView.class];
-    
-    // Scroll to bottom the bubble history at first display
-    shouldScrollToBottomOnTableRefresh = YES;
     
     // Finalize table view configuration
     [self configureBubblesTableView];

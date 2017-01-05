@@ -40,6 +40,11 @@
     return self;
 }
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

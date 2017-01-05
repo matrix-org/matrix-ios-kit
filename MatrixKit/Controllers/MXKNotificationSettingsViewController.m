@@ -70,6 +70,11 @@
 
 @implementation MXKNotificationSettingsViewController
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+}
+
 - (void)dealloc
 {
     ruleMasterButton = nil;
