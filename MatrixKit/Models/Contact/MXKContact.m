@@ -190,13 +190,11 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
         // thumbnail/picture
         // check whether the contact has a picture
         if (ABPersonHasImageData(record))
-            
         {
             CFDataRef dataRef;
             
             dataRef = ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
             if (dataRef)
-                
             {
                 contactBookThumbnail = [UIImage imageWithData:(__bridge NSData*)dataRef];
                 CFRelease(dataRef);
@@ -502,6 +500,12 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     _phoneNumbers = [coder decodeObjectForKey:@"phoneNumbers"];
     _emailAddresses = [coder decodeObjectForKey:@"emailAddresses"];
     
+    NSData *data = [coder decodeObjectForKey:@"contactBookThumbnail"];
+    if (data)
+    {
+        contactBookThumbnail = [UIImage imageWithData:data];
+    }
+    
     return self;
 }
 
@@ -524,6 +528,12 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     if (_emailAddresses.count)
     {
         [coder encodeObject:_emailAddresses forKey:@"emailAddresses"];
+    }
+    
+    if (contactBookThumbnail)
+    {
+        NSData *data = UIImageJPEGRepresentation(contactBookThumbnail, 0.8);
+        [coder encodeObject:data forKey:@"contactBookThumbnail"];
     }
 }
 
