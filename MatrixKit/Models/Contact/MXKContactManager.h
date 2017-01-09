@@ -115,10 +115,9 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *localContacts;
 
 /**
- The current list of contacts used to handle the email addresses retrieved from the local address book.
- Each item of this array is a MXKContact instance with an email address as display name.
+ The current list of the local contacts who have methods which can be used to invite them or to discover matrix users.
  */
-@property (nonatomic, readonly) NSArray *localEmailContacts;
+@property (nonatomic, readonly) NSArray *localContactsWithMethods;
 
 /**
  The current list of the contacts for whom a direct chat exists.
