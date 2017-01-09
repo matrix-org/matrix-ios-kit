@@ -124,7 +124,7 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
  This list is alphabetically sorted.
  Each contact has one and only one contact method.
  */
-@property (nonatomic, readonly) NSArray *localContactsSplittedbyContactMethod;
+@property (nonatomic, readonly) NSArray *localContactsSplitByContactMethod;
 
 /**
  The current list of the contacts for whom a direct chat exists.

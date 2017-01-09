@@ -57,7 +57,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     // Local contacts by contact Id
     NSMutableDictionary* localContactByContactID;
     NSMutableArray* localContactsWithMethods;
-    NSMutableArray* splittedLocalContacts;
+    NSMutableArray* splitLocalContacts;
     // Matrix id linked to 3PID.
     NSMutableDictionary* matrixIDBy3PID;
     // Keep history of 3PID lookup requests
@@ -125,7 +125,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
     localContactByContactID = nil;
     localContactsWithMethods = nil;
-    splittedLocalContacts = nil;
+    splitLocalContacts = nil;
     
     matrixContactByContactID = nil;
     matrixContactByMatrixID = nil;
@@ -350,15 +350,15 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return localContactsWithMethods;
 }
 
-- (NSArray*)localContactsSplittedbyContactMethod
+- (NSArray*)localContactsSplitByContactMethod
 {
     // Check whether the array must be prepared
-    if (!splittedLocalContacts)
+    if (!splitLocalContacts)
     {
         // List all the local contacts with contact methods
         NSArray *contactsArray = self.localContactsWithMethods;
         
-        splittedLocalContacts = [NSMutableArray arrayWithCapacity:contactsArray.count];
+        splitLocalContacts = [NSMutableArray arrayWithCapacity:contactsArray.count];
         
         for (MXKContact* contact in contactsArray)
         {
@@ -370,27 +370,27 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 for (MXKEmail *email in emails)
                 {
                     MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:@[email] andPhoneNumbers:nil];
-                    [splittedLocalContacts addObject:splitContact];
+                    [splitLocalContacts addObject:splitContact];
                 }
                 
                 // TODO: Add contacts with msisdn when msisdn 3PIDs will be supported
 //                for (MXKPhoneNumber *phone in phones)
 //                {
 //                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:nil andPhoneNumbers:@[phone]];
-//                    [splittedLocalContacts addObject:splitContact];
+//                    [splitLocalContacts addObject:splitContact];
 //                }
             }
             else if (emails.count + phones.count)
             {
-                [splittedLocalContacts addObject:contact];
+                [splitLocalContacts addObject:contact];
             }
         }
         
         // Sort alphabetically the resulting list
-        [self sortAlphabeticallyContacts:splittedLocalContacts];
+        [self sortAlphabeticallyContacts:splitLocalContacts];
     }
     
-    return splittedLocalContacts;
+    return splitLocalContacts;
 }
 
 - (NSArray*)directMatrixContacts
@@ -534,7 +534,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
             // Local contacts list is empty if the access is denied.
             localContactByContactID = nil;
             localContactsWithMethods = nil;
-            splittedLocalContacts = nil;
+            splitLocalContacts = nil;
             [self cacheLocalContacts];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
@@ -647,7 +647,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 if (contactBookUpdate)
                 {
                     // Remove the local email contacts (This array will be prepared only if need)
-                    localContactsWithMethods = splittedLocalContacts = nil;
+                    localContactsWithMethods = splitLocalContacts = nil;
                     
                     [strongSelf cacheLocalContacts];
                 }
@@ -856,7 +856,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     isLocalContactListLoading = NO;
     localContactByContactID = nil;
     localContactsWithMethods = nil;
-    splittedLocalContacts = nil;
+    splitLocalContacts = nil;
     [self cacheLocalContacts];
     
     matrixContactByContactID = nil;
