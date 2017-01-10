@@ -115,9 +115,16 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *localContacts;
 
 /**
- The current list of the local contacts who have methods which can be used to invite them or to discover matrix users.
+ The current list of the local contacts who have contact methods which can be used to invite them or to discover matrix users.
  */
 @property (nonatomic, readonly) NSArray *localContactsWithMethods;
+
+/**
+ The contacts list obtained by splitting each local contact by contact method.
+ This list is alphabetically sorted.
+ Each contact has one and only one contact method.
+ */
+@property (nonatomic, readonly) NSArray *localContactsSplitByContactMethod;
 
 /**
  The current list of the contacts for whom a direct chat exists.
@@ -179,6 +186,21 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
  Sort a contacts array in sectioned arrays to be displayable in a UITableview
  */
 - (MXKSectionedContacts*)getSectionedContacts:(NSArray*)contactList;
+
+/**
+ Sort alphabetically an array of contacts.
+ 
+ @param contactsArray the array of contacts to sort.
+ */
+- (void)sortAlphabeticallyContacts:(NSMutableArray<MXKContact*> *)contactsArray;
+
+/**
+ Sort an array of contacts by last active, with "active now" first.
+ ...and then alphabetically.
+ 
+ @param contactsArray the array of contacts to sort.
+ */
+- (void)sortContactsByLastActiveInformation:(NSMutableArray<MXKContact*> *)contactsArray;
 
 /**
  Refresh the international phonenumber of the local contacts (See kMXKContactManagerDidInternationalizeNotification).
