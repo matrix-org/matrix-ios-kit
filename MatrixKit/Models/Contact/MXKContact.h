@@ -31,6 +31,7 @@ extern NSString *const kMXKContactThumbnailUpdateNotification;
 
 extern NSString *const kMXKContactLocalContactPrefixId;
 extern NSString *const kMXKContactMatrixContactPrefixId;
+extern NSString *const kMXKContactDefaultContactPrefixId;
 
 @interface MXKContact : MXKCellData <NSCoding>
 
@@ -61,7 +62,7 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
 @property (nonatomic) BOOL isMatrixContact;
 
 /**
- YES if the contact is coming from MXRoomThirdPartyInvite event.
+ YES if the contact is coming from MXRoomThirdPartyInvite event (NO by default).
  */
 @property (nonatomic) BOOL isThirdPartyInvite;
 
@@ -101,6 +102,16 @@ extern NSString *const kMXKContactMatrixContactPrefixId;
  @return MXKContact instance
  */
 - (id)initMatrixContactWithDisplayName:(NSString*)displayName andMatrixID:(NSString*)matrixID;
+
+/**
+ Create a contact with the dedicated info
+ 
+ @param displayName
+ @param emails an array of emails
+ @param phones an array of phone numbers
+ @return MXKContact instance
+ */
+- (id)initContactWithDisplayName:(NSString*)displayName emails:(NSArray<MXKEmail*> *)emails andPhoneNumbers:(NSArray<MXKPhoneNumber*> *)phones;
 
 /**
  The contact thumbnail with a prefered size.

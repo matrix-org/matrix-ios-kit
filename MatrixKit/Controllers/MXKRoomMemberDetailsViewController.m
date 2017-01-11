@@ -57,6 +57,13 @@
                                           bundle:[NSBundle bundleForClass:[MXKRoomMemberDetailsViewController class]]];
 }
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+    
+    actionsArray = [[NSMutableArray alloc] init];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -67,8 +74,6 @@
         // Instantiate view controller objects
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
-    
-    actionsArray = [[NSMutableArray alloc] init];
     
     // ignore useless update
     if (_mxRoomMember)

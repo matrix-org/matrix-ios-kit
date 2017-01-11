@@ -110,6 +110,13 @@
 
 #pragma mark -
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+    
+    tempFile = nil;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -129,8 +136,6 @@
     
     // Display collection cell in full screen
     self.automaticallyAdjustsScrollViewInsets = NO;
-    
-    tempFile = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated

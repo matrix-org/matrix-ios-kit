@@ -105,6 +105,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark -
 
+- (void)finalizeInit
+{
+    [super finalizeInit];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

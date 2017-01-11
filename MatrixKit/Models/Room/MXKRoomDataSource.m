@@ -316,6 +316,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
             
             if (outgoingMessage.sentState == MXEventSentStateSending ||
+                outgoingMessage.sentState == MXEventSentStatePreparing ||
                 outgoingMessage.sentState == MXEventSentStateEncrypting ||
                 outgoingMessage.sentState == MXEventSentStateUploading)
             {

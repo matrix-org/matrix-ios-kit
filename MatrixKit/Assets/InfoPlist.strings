@@ -1,5 +1,5 @@
 /*
- Copyright 2015 OpenMarket Ltd
+ Copyright 2016 OpenMarket Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+// Permissions usage explanations
+// The usage of the camera is explicit. No need of explanation.
+"NSCameraUsageDescription" = "";
+"NSPhotoLibraryUsageDescription" = "";
+"NSMicrophoneUsageDescription" = "";
 
-NSString *const MatrixKitVersion = @"0.4.4";
+// We show a popup before accessing Contacts explaining why. No need of more explanation.
+"NSContactsUsageDescription" = "";
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";

@@ -23,6 +23,7 @@ NSString *const kMXKContactThumbnailUpdateNotification = @"kMXKContactThumbnailU
 
 NSString *const kMXKContactLocalContactPrefixId = @"Local_";
 NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
+NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
 
 @interface MXKContact()
 {
@@ -35,17 +36,30 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
 @end
 
 @implementation MXKContact
-@synthesize isMatrixContact;
+@synthesize isMatrixContact, isThirdPartyInvite;
 
 + (NSString*)contactID:(ABRecordRef)record
 {
     return [NSString stringWithFormat:@"%@%d", kMXKContactLocalContactPrefixId, ABRecordGetRecordID(record)];
 }
 
-- (id)initLocalContactWithABRecord:(ABRecordRef)record
+- (id)init
 {
     self = [super init];
+    if (self)
+    {
+        matrixIdField = nil;
+        isMatrixContact = NO;
+        
+        isThirdPartyInvite = NO;
+    }
     
+    return self;
+}
+
+- (id)initLocalContactWithABRecord:(ABRecordRef)record
+{
+    self = [self init];
     if (self)
     {
         // compute a contact ID
@@ -60,9 +74,6 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
         {
             _displayName = @"";
         }
-        
-        matrixIdField = nil;
-        isMatrixContact = NO;
         
         // extract the phone numbers and their related label
         ABMultiValueRef multi = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -190,13 +201,11 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
         // thumbnail/picture
         // check whether the contact has a picture
         if (ABPersonHasImageData(record))
-            
         {
             CFDataRef dataRef;
             
             dataRef = ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
             if (dataRef)
-                
             {
                 contactBookThumbnail = [UIImage imageWithData:(__bridge NSData*)dataRef];
                 CFRelease(dataRef);
@@ -206,10 +215,9 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     return self;
 }
 
-- (id)initMatrixContactWithDisplayName:(NSString*)aDisplayName andMatrixID:(NSString*)matrixID
+- (id)initMatrixContactWithDisplayName:(NSString*)displayName andMatrixID:(NSString*)matrixID
 {
-    self = [super init];
-    
+    self = [self init];
     if (self)
     {
         _contactID = [NSString stringWithFormat:@"%@%@", kMXKContactMatrixContactPrefixId, [[NSUUID UUID] UUIDString]];
@@ -224,14 +232,39 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
         
         // _displayName must not be nil
         // it is used to sort the contacts
-        if (aDisplayName)
+        if (displayName)
         {
-            _displayName = aDisplayName;
+            _displayName = displayName;
         }
         else
         {
             _displayName = @"";
         }
+    }
+    
+    return self;
+}
+
+- (id)initContactWithDisplayName:(NSString*)displayName emails:(NSArray<MXKEmail*> *)emails andPhoneNumbers:(NSArray<MXKPhoneNumber*> *)phones
+{
+    self = [self init];
+    if (self)
+    {
+        _contactID = [NSString stringWithFormat:@"%@%@", kMXKContactDefaultContactPrefixId, [[NSUUID UUID] UUIDString]];
+        
+        // _displayName must not be nil
+        // it is used to sort the contacts
+        if (displayName)
+        {
+            _displayName = displayName;
+        }
+        else
+        {
+            _displayName = @"";
+        }
+        
+        _emailAddresses = emails;
+        _phoneNumbers = phones;
     }
     
     return self;
@@ -502,6 +535,12 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     _phoneNumbers = [coder decodeObjectForKey:@"phoneNumbers"];
     _emailAddresses = [coder decodeObjectForKey:@"emailAddresses"];
     
+    NSData *data = [coder decodeObjectForKey:@"contactBookThumbnail"];
+    if (data)
+    {
+        contactBookThumbnail = [UIImage imageWithData:data];
+    }
+    
     return self;
 }
 
@@ -524,6 +563,12 @@ NSString *const kMXKContactMatrixContactPrefixId = @"Matrix_";
     if (_emailAddresses.count)
     {
         [coder encodeObject:_emailAddresses forKey:@"emailAddresses"];
+    }
+    
+    if (contactBookThumbnail)
+    {
+        NSData *data = UIImageJPEGRepresentation(contactBookThumbnail, 0.8);
+        [coder encodeObject:data forKey:@"contactBookThumbnail"];
     }
 }
 
