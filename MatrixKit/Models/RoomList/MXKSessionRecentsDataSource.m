@@ -227,7 +227,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         {
             for (NSString* pattern in patternsList)
             {
-                if ([[cellData.roomDataSource.room.state displayname] rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
+                if ([cellData.roomSummary.displayname rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
                 {
                     [filteredCellDataArray addObject:cellData];
                     break;
@@ -292,14 +292,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
     NSDate *startDate = [NSDate date];
     
-    for (MXRoom *room in self.mxSession.rooms)
+    for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
-        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
-
-        // Filter out private rooms with conference users 
-        if (!room.state.isConferenceUserRoom)
+        // Filter out private rooms with conference users
+        if (!roomSummary.room.state.isConferenceUserRoom)  // @TODO
         {
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];
@@ -319,22 +317,22 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
     
-    // Listen to MXRoomDataSource
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    // Listen to MXRoomSummary
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomSummaryChanged:) name:kMXRoomSummaryDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
 
-- (void)didRoomInformationChanged:(NSNotification *)notif
+- (void)didRoomSummaryChanged:(NSNotification *)notif
 {
-    MXKRoomDataSource *roomDataSource = notif.object;
-    if (roomDataSource.mxSession == self.mxSession)
+    MXRoomSummary *roomSummary = notif.object;
+    if (roomSummary.mxSession == self.mxSession)
     {
         // Find the index of the related cell data
         NSInteger index;
         for (index = 0; index < internalCellDataArray.count; index++)
         {
             id<MXKRecentCellDataStoring> theRoomData = [internalCellDataArray objectAtIndex:index];
-            if (theRoomData.roomDataSource == roomDataSource)
+            if (theRoomData.roomSummary == roomSummary)
             {
                 break;
             }
@@ -344,7 +342,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         {
             // Create a new instance to not modify the content of 'cellDataArray' (the copy is not a deep copy).
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
                 [internalCellDataArray replaceObjectAtIndex:index withObject:cellData];
@@ -378,9 +376,10 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             
             // Retrieve the MXKCellData class to manage the data
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-            
-            MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:roomId create:YES];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+
+            // @TODO: To test
+            MXRoomSummary *roomSummary = [mxSession roomSummaryWithRoomId:roomId];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];
@@ -476,7 +475,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     id<MXKRecentCellDataStoring> theRoomData;
     for (id<MXKRecentCellDataStoring> roomData in cellDataArray)
     {
-        if ([roomData.roomDataSource.roomId isEqualToString:roomId])
+        if ([roomData.roomSummary.roomId isEqualToString:roomId])
         {
             theRoomData = roomData;
             break;

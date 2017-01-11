@@ -357,7 +357,7 @@
                 for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
                 {
                     id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                    if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                    if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
                     {
                         // Got it
                         indexPath = [NSIndexPath indexPathForRow:index inSection:section];
@@ -592,7 +592,7 @@
     
     if (recentCellData)
     {
-        return recentCellData.roomDataSource.room;
+        return recentCellData.roomSummary.room;
     }
     
     return nil;

@@ -16,8 +16,8 @@
 
 #import "MXKRecentCellData.h"
 
-#import "MXKRoomDataSource.h"
 #import "MXKSessionRecentsDataSource.h"
+#import "MXEvent+MatrixKit.h"
 
 @interface MXKRecentCellData ()
 {
@@ -30,16 +30,18 @@
 @end
 
 @implementation MXKRecentCellData
-@synthesize recentsDataSource, roomDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
+@synthesize roomSummary, recentsDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
-- (instancetype)initWithRoomDataSource:(MXKRoomDataSource *)roomDataSource2 andRecentListDataSource:(MXKSessionRecentsDataSource *)recentsDataSource2
+- (instancetype)initWithRoomSummary:(MXRoomSummary*)theRoomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
 {
     self = [self init];
     if (self)
     {
-        roomDataSource = roomDataSource2;
-        recentsDataSource = recentsDataSource2;
-        
+        roomSummary = theRoomSummary;
+        recentsDataSource = recentListDataSource;
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(update) name:kMXRoomSummaryDidChangeNotification object:roomSummary];
+
         [self update];
     }
     return self;
@@ -47,54 +49,57 @@
 
 - (void)update
 {
-    // Let the room data source return the last displayable message
-    [roomDataSource lastMessageWithEventFormatter:recentsDataSource.eventFormatter onComplete:^(MXEvent *lastMessage) {
+    // @TODO: refactor the all thing to take benefit of MXKRoomSummary
 
-        // Keep ref on displayed last event
-        lastEvent = lastMessage;
-        roomDisplayname = roomDataSource.room.state.displayname;
+    // Keep ref on displayed last event
+    lastEvent = roomSummary.lastEvent;
+    roomDisplayname = roomSummary.displayname;
 
-        if (lastEvent)
+    if (lastEvent)
+    {
+        lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
+
+        // Compute the text message
+        // @TODO: refactor
+        MXKEventFormatterError error;
+        lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomSummary.room.state error:&error];
+
+        // Store the potential error
+        lastEvent.mxkEventFormatterError = error;
+    }
+
+    if (0 == lastEventTextMessage.length)
+    {
+        lastEventTextMessage = @"";
+        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:@""];
+    }
+    else
+    {
+        // Check whether the sender name has to be added
+        NSString *prefix = nil;
+
+        if (lastEvent.eventType == MXEventTypeRoomMessage)
         {
-            lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
-
-            // Compute the text message
-            MXKEventFormatterError error;
-            lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomDataSource.room.state error:&error];
-            
-            // Store the potential error
-            lastEvent.mxkEventFormatterError = error;
-        }
-
-        if (0 == lastEventTextMessage.length)
-        {
-            lastEventTextMessage = @"";
-            lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:@""];
-        }
-        else
-        {
-            // Check whether the sender name has to be added
-            NSString *prefix = nil;
-
-            if (lastEvent.eventType == MXEventTypeRoomMessage)
+            NSString *msgtype = lastEvent.content[@"msgtype"];
+            if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
             {
-                NSString *msgtype = lastEvent.content[@"msgtype"];
-                if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
-                {
-                    NSString *senderDisplayName = roomDataSource.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomDataSource.room.state] : lastEvent.sender;
-                    
-                    prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
-                }
+                // @TODO: refactor
+                NSString *senderDisplayName = roomSummary.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomSummary.room.state] : lastEvent.sender;
+
+                prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
             }
-            
-            // Compute the attribute text message
-            lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage withPrefix:prefix forEvent:lastEvent];
         }
-    }];
+
+        // Compute the attribute text message
+        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage withPrefix:prefix forEvent:lastEvent];
+    }
 }
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:roomSummary];
+    roomSummary = nil;
+
     lastEvent = nil;
     lastEventTextMessage = nil;
     lastEventAttributedTextMessage = nil;
@@ -102,22 +107,29 @@
 
 - (BOOL)hasUnread
 {
-    return roomDataSource.hasUnread;
+    // @TODO
+    //return roomDataSource.hasUnread;
+    return NO;
 }
 
 - (NSUInteger)notificationCount
 {
-    return roomDataSource.notificationCount;
+    // @TODO
+    //return roomDataSource.notificationCount;
+    return 0;
 }
 
 - (NSUInteger)highlightCount
 {
-    return roomDataSource.highlightCount;
+    // @TODO
+    //return roomDataSource.highlightCount;
+    return 0;
 }
 
 - (void)markAllAsRead
 {
-    [roomDataSource markAllAsRead];
+    // @TODO
+    //[roomDataSource markAllAsRead];
 }
 
 @end
