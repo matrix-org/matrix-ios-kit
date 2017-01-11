@@ -330,7 +330,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     if (roomDataSource.mxSession == self.mxSession)
     {
         // Find the index of the related cell data
-        NSInteger index;
+        NSInteger index = NSNotFound;
         for (index = 0; index < internalCellDataArray.count; index++)
         {
             id<MXKRecentCellDataStoring> theRoomData = [internalCellDataArray objectAtIndex:index];
@@ -358,7 +358,16 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
         else
         {
-            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room data source");
+            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room data source for %@ (%@)", roomDataSource.roomId, roomDataSource);
+
+            NSLog(@"internalCellDataArray: %tu recents: ", internalCellDataArray.count);
+            for (id<MXKRecentCellDataStoring> theRoomData in internalCellDataArray)
+            {
+                NSLog(@"    - %@ (%@)", theRoomData.roomDataSource.roomId, theRoomData.roomDataSource);
+            }
+
+            // TODO: To remove
+            NSAssert(NO, @"NO");
         }
     }
 }
