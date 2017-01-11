@@ -358,16 +358,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
         else
         {
-            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room data source for %@ (%@)", roomDataSource.roomId, roomDataSource);
-
-            NSLog(@"internalCellDataArray: %tu recents: ", internalCellDataArray.count);
-            for (id<MXKRecentCellDataStoring> theRoomData in internalCellDataArray)
-            {
-                NSLog(@"    - %@ (%@)", theRoomData.roomDataSource.roomId, theRoomData.roomDataSource);
-            }
-
-            // TODO: To remove
-            NSAssert(NO, @"NO");
+            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room data source for %@ (%@). It is probably not managed by this recents data source", roomDataSource.roomId, roomDataSource);
         }
     }
 }
