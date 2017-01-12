@@ -2136,7 +2136,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
 
         // Notify the last message may have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+        // Workaround to fix the case explained in this issue https://github.com/vector-im/riot-ios/issues/889#issuecomment-272168555
+        // To avoid launching an update of the recents while they are updating, dispatch_async the notification.
+        // TODO: remove this after the refactoring of recents with the coming MXRoomSummary.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+        });
     }
 }
 
