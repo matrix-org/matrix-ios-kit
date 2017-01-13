@@ -299,10 +299,16 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     // Check first display name
     if (_displayName.length)
     {
-        NSArray *components = [_displayName componentsSeparatedByString:@" "];
+        NSString *lowercaseString = [_displayName lowercaseString];
+        if ([lowercaseString hasPrefix:prefix])
+        {
+            return YES;
+        }
+        
+        NSArray *components = [lowercaseString componentsSeparatedByString:@" "];
         for (NSString *component in components)
         {
-            NSString *theComponent = [[component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+            NSString *theComponent = [component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             if ([theComponent hasPrefix:prefix])
             {
                 return YES;
