@@ -36,6 +36,13 @@
 @property (nonatomic) BOOL showAllEventsInRoomHistory;
 
 /**
+ The type of events to display allowed to be displayed in room history.
+ 
+ Its value depends on `showAllEventsInRoomHistory`.
+ */
+@property (nonatomic, readonly) NSArray *eventsFilterForMessages;
+
+/**
  Display redacted events in room history.
  
  This boolean value is defined in shared settings object with the key: `showRedactionsInRoomHistory`.

@@ -164,46 +164,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         _paginationLimitAroundInitialEvent = MXKROOMDATASOURCE_PAGINATION_LIMIT_AROUND_INITIAL_EVENT;
         
         // Check here whether the app user wants to display all the events
-        if ([[MXKAppSettings standardAppSettings] showAllEventsInRoomHistory])
-        {
-            // Use a filter to retrieve all the events (except kMXEventTypeStringPresence which are not related to a specific room)
-            self.eventsFilterForMessages = @[
-                                             kMXEventTypeStringRoomName,
-                                             kMXEventTypeStringRoomTopic,
-                                             kMXEventTypeStringRoomMember,
-                                             kMXEventTypeStringRoomCreate,
-                                             kMXEventTypeStringRoomEncrypted,
-                                             kMXEventTypeStringRoomEncryption,
-                                             kMXEventTypeStringRoomJoinRules,
-                                             kMXEventTypeStringRoomPowerLevels,
-                                             kMXEventTypeStringRoomAliases,
-                                             kMXEventTypeStringRoomHistoryVisibility,
-                                             kMXEventTypeStringRoomMessage,
-                                             kMXEventTypeStringRoomMessageFeedback,
-                                             kMXEventTypeStringRoomRedaction,
-                                             kMXEventTypeStringRoomThirdPartyInvite,
-                                             kMXEventTypeStringCallInvite,
-                                             kMXEventTypeStringCallAnswer,
-                                             kMXEventTypeStringCallHangup
-                                             ];
-        }
-        else
-        {
-            // Display only a subset of events
-            self.eventsFilterForMessages = @[
-                                             kMXEventTypeStringRoomName,
-                                             kMXEventTypeStringRoomTopic,
-                                             kMXEventTypeStringRoomMember,
-                                             kMXEventTypeStringRoomEncrypted,
-                                             kMXEventTypeStringRoomEncryption,
-                                             kMXEventTypeStringRoomHistoryVisibility,
-                                             kMXEventTypeStringRoomMessage,
-                                             kMXEventTypeStringRoomThirdPartyInvite,
-                                             kMXEventTypeStringCallInvite,
-                                             kMXEventTypeStringCallAnswer,
-                                             kMXEventTypeStringCallHangup
-                                             ];
-        }
+        self.eventsFilterForMessages = [MXKAppSettings standardAppSettings].eventsFilterForMessages;
 
         // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
         // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
@@ -1695,6 +1656,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+// @TODO: to remove
 - (void)lastMessageWithEventFormatter:(MXKEventFormatter*)eventFormatter onComplete:(void(^)(MXEvent *))onComplete
 {
     // The last message can

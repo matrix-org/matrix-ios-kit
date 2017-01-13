@@ -143,6 +143,50 @@ static MXKAppSettings *standardAppSettings = nil;
     }
 }
 
+- (NSArray *)eventsFilterForMessages
+{
+    if (showAllEventsInRoomHistory)
+    {
+        // Use a filter to retrieve all the events (except kMXEventTypeStringPresence which are not related to a specific room)
+        return @[
+                 kMXEventTypeStringRoomName,
+                 kMXEventTypeStringRoomTopic,
+                 kMXEventTypeStringRoomMember,
+                 kMXEventTypeStringRoomCreate,
+                 kMXEventTypeStringRoomEncrypted,
+                 kMXEventTypeStringRoomEncryption,
+                 kMXEventTypeStringRoomJoinRules,
+                 kMXEventTypeStringRoomPowerLevels,
+                 kMXEventTypeStringRoomAliases,
+                 kMXEventTypeStringRoomHistoryVisibility,
+                 kMXEventTypeStringRoomMessage,
+                 kMXEventTypeStringRoomMessageFeedback,
+                 kMXEventTypeStringRoomRedaction,
+                 kMXEventTypeStringRoomThirdPartyInvite,
+                 kMXEventTypeStringCallInvite,
+                 kMXEventTypeStringCallAnswer,
+                 kMXEventTypeStringCallHangup
+                 ];
+    }
+    else
+    {
+        // Display only a subset of events
+        return @[
+                 kMXEventTypeStringRoomName,
+                 kMXEventTypeStringRoomTopic,
+                 kMXEventTypeStringRoomMember,
+                 kMXEventTypeStringRoomEncrypted,
+                 kMXEventTypeStringRoomEncryption,
+                 kMXEventTypeStringRoomHistoryVisibility,
+                 kMXEventTypeStringRoomMessage,
+                 kMXEventTypeStringRoomThirdPartyInvite,
+                 kMXEventTypeStringCallInvite,
+                 kMXEventTypeStringCallAnswer,
+                 kMXEventTypeStringCallHangup
+                 ];
+    }
+}
+
 - (BOOL)showRedactionsInRoomHistory
 {
     if (self == [MXKAppSettings standardAppSettings])

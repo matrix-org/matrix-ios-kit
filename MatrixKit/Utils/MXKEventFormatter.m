@@ -38,7 +38,7 @@
     /**
      The default room summary updater from the MXSession.
      */
-    id<MXRoomSummaryUpdating> defaultRoomSummaryUpdater;
+    MXRoomSummaryUpdater *defaultRoomSummaryUpdater;
 
     /**
      The Markdown to HTML parser.
@@ -70,6 +70,8 @@
         mxSession = matrixSession;
 
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
+        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
+        defaultRoomSummaryUpdater.eventsFilterForMessages = [MXKAppSettings standardAppSettings].eventsFilterForMessages;
         
         [self initDateTimeFormatters];
 
@@ -1342,14 +1344,17 @@
 
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event oldState:(MXRoomState *)oldState
 {
-    // Check if the event type is accepted
-    // TODO
+    // Do not show redacted event if not configured
+    if (event.isRedactedEvent && !_settings.showRedactionsInRoomHistory)
+    {
+        return NO;
+    }
 
+    // Use the default updater as first pass
     BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event oldState:oldState];
-
     if (updated)
     {
-        summary.others[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+        // Then customise
 
         // Compute the text message
         MXKEventFormatterError error;
@@ -1364,11 +1369,13 @@
 
         if (0 == summary.lastEventString.length)
         {
-            summary.lastEventString = @"";
-            summary.lastEventAttribytedString = [[NSAttributedString alloc] initWithString:@""];
+            // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
+            updated = NO;
         }
         else
         {
+            summary.others[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+
             // Check whether the sender name has to be added
             NSString *prefix = nil;
 
@@ -1386,7 +1393,6 @@
             // Compute the attribute text message
             summary.lastEventAttribytedString = [self renderString:summary.lastEventString withPrefix:prefix forEvent:event];
         }
-
     }
     
     return updated;

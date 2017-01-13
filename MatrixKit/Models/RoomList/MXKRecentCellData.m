@@ -19,16 +19,6 @@
 #import "MXKSessionRecentsDataSource.h"
 #import "MXEvent+MatrixKit.h"
 
-@interface MXKRecentCellData ()
-{
-    MXKSessionRecentsDataSource *recentsDataSource;
-    
-    // Keep reference on last event (used in case of redaction)
-    MXEvent *lastEvent;
-}
-
-@end
-
 @implementation MXKRecentCellData
 @synthesize roomSummary, recentsDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
@@ -49,8 +39,6 @@
 
 - (void)update
 {
-    // @TODO: refactor the all thing to take benefit of MXKRoomSummary
-
     // Keep ref on displayed last event
     lastEvent = roomSummary.lastEvent;
     roomDisplayname = roomSummary.displayname;
@@ -75,29 +63,25 @@
 
 - (BOOL)hasUnread
 {
-    // @TODO
-    //return roomDataSource.hasUnread;
-    return NO;
+    // @TODO: Cache it in MXRoomSummary ?
+    return (roomSummary.room.localUnreadEventCount != 0);
 }
 
 - (NSUInteger)notificationCount
 {
-    // @TODO
-    //return roomDataSource.notificationCount;
-    return 0;
+    // @TODO: Cache it in MXRoomSummary ?
+    return roomSummary.room.notificationCount;
 }
 
 - (NSUInteger)highlightCount
 {
-    // @TODO
-    //return roomDataSource.highlightCount;
-    return 0;
+    // @TODO: Cache it in MXRoomSummary ?
+    return roomSummary.room.highlightCount;
 }
 
 - (void)markAllAsRead
 {
-    // @TODO
-    //[roomDataSource markAllAsRead];
+    [roomSummary.room acknowledgeLatestEvent:YES];
 }
 
 @end
