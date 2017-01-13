@@ -51,7 +51,7 @@ typedef enum : NSUInteger {
  `MXKEventFormatter` is an utility class for formating Matrix events into strings which
  will be displayed to the end user.
  */
-@interface MXKEventFormatter : NSObject
+@interface MXKEventFormatter : NSObject <MXRoomSummaryUpdating>
 {
 @protected
     /**

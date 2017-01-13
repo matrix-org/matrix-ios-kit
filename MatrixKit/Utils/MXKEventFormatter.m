@@ -19,6 +19,8 @@
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
 
+#import "MXRoomSummaryUpdater.h"
+
 #import "MXKTools.h"
 
 #import "DTCoreText.h"
@@ -32,6 +34,11 @@
      The matrix session. Used to get contextual data.
      */
     MXSession *mxSession;
+
+    /**
+     The default room summary updater from the MXSession.
+     */
+    id<MXRoomSummaryUpdating> defaultRoomSummaryUpdater;
 
     /**
      The Markdown to HTML parser.
@@ -61,6 +68,8 @@
     if (self)
     {
         mxSession = matrixSession;
+
+        defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         
         [self initDateTimeFormatters];
 
@@ -1324,6 +1333,65 @@
     _defaultCSS = defaultCSS;
     dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }
+
+#pragma mark - MXRoomSummaryUpdating
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvent:(MXEvent *)event
+{
+    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvent:event];
+}
+
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event oldState:(MXRoomState *)oldState
+{
+    // Check if the event type is accepted
+    // TODO
+
+    BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event oldState:oldState];
+
+    if (updated)
+    {
+        summary.others[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+
+        // Compute the text message
+        MXKEventFormatterError error;
+        summary.lastEventString = [self stringFromEvent:event withRoomState:oldState error:&error];
+
+        // Store the potential error
+        // @TODO: useful?
+        if (error)
+        {
+            //summary.others[@"mxkEventFormatterError"] = error;
+        }
+
+        if (0 == summary.lastEventString.length)
+        {
+            summary.lastEventString = @"";
+            summary.lastEventAttribytedString = [[NSAttributedString alloc] initWithString:@""];
+        }
+        else
+        {
+            // Check whether the sender name has to be added
+            NSString *prefix = nil;
+
+            if (event.eventType == MXEventTypeRoomMessage)
+            {
+                NSString *msgtype = event.content[@"msgtype"];
+                if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
+                {
+                    NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:oldState];
+
+                    prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
+                }
+            }
+
+            // Compute the attribute text message
+            summary.lastEventAttribytedString = [self renderString:summary.lastEventString withPrefix:prefix forEvent:event];
+        }
+
+    }
+    
+    return updated;
+}
+
 
 #pragma mark - Conversion private methods
 

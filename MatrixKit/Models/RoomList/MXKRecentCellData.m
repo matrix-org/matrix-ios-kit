@@ -55,44 +55,12 @@
     lastEvent = roomSummary.lastEvent;
     roomDisplayname = roomSummary.displayname;
 
-    if (lastEvent)
-    {
-        lastEventDate = [recentsDataSource.eventFormatter dateStringFromEvent:lastEvent withTime:YES];
+    lastEventTextMessage = roomSummary.lastEventString;
+    lastEventAttributedTextMessage = roomSummary.lastEventAttribytedString;
+    lastEventDate = roomSummary.others[@"lastEventDate"];
 
-        // Compute the text message
-        // @TODO: refactor
-        MXKEventFormatterError error;
-        lastEventTextMessage = [recentsDataSource.eventFormatter stringFromEvent:lastEvent withRoomState:roomSummary.room.state error:&error];
-
-        // Store the potential error
-        lastEvent.mxkEventFormatterError = error;
-    }
-
-    if (0 == lastEventTextMessage.length)
-    {
-        lastEventTextMessage = @"";
-        lastEventAttributedTextMessage = [[NSAttributedString alloc] initWithString:@""];
-    }
-    else
-    {
-        // Check whether the sender name has to be added
-        NSString *prefix = nil;
-
-        if (lastEvent.eventType == MXEventTypeRoomMessage)
-        {
-            NSString *msgtype = lastEvent.content[@"msgtype"];
-            if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
-            {
-                // @TODO: refactor
-                NSString *senderDisplayName = roomSummary.room.state ? [recentsDataSource.eventFormatter senderDisplayNameForEvent:lastEvent withRoomState:roomSummary.room.state] : lastEvent.sender;
-
-                prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
-            }
-        }
-
-        // Compute the attribute text message
-        lastEventAttributedTextMessage = [recentsDataSource.eventFormatter renderString:lastEventTextMessage withPrefix:prefix forEvent:lastEvent];
-    }
+    // @TODO
+    // lastEvent.mxkEventFormatterError
 }
 
 - (void)dealloc

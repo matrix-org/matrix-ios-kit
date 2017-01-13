@@ -57,7 +57,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 {
     self = [super initWithMatrixSession:matrixSession];
     if (self)
-    {  
+    {
         roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
         
         internalCellDataArray = [NSMutableArray array];
@@ -69,6 +69,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         // Set default MXEvent -> NSString formatter
         _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
         _eventFormatter.isForSubtitle = YES;
+
+        matrixSession.roomSummaryUpdateDelegate = _eventFormatter;
 
         // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
         // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
@@ -356,7 +358,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
         else
         {
-            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room data source for %@ (%@). It is probably not managed by this recents data source", roomDataSource.roomId, roomDataSource);
+            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room summary for %@ (%@). It is probably not managed by this recents data source", roomSummary.roomId, roomSummary);
         }
     }
 }
