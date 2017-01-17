@@ -109,9 +109,13 @@ extern NSString *const kMXKContactDefaultContactPrefixId;
  @param displayName
  @param emails an array of emails
  @param phones an array of phone numbers
+ @param thumbnail 
  @return MXKContact instance
  */
-- (id)initContactWithDisplayName:(NSString*)displayName emails:(NSArray<MXKEmail*> *)emails andPhoneNumbers:(NSArray<MXKPhoneNumber*> *)phones;
+- (id)initContactWithDisplayName:(NSString*)displayName
+                          emails:(NSArray<MXKEmail*> *)emails
+                    phoneNumbers:(NSArray<MXKPhoneNumber*> *)phones
+                    andThumbnail:(UIImage *)thumbnail;
 
 /**
  The contact thumbnail with a prefered size.
