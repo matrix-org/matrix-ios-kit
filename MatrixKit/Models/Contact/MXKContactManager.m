@@ -369,14 +369,14 @@ static MXKContactManager* sharedMXKContactManager = nil;
             {
                 for (MXKEmail *email in emails)
                 {
-                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:@[email] andPhoneNumbers:nil];
+                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:@[email] phoneNumbers:nil andThumbnail:contact.thumbnail];
                     [splitLocalContacts addObject:splitContact];
                 }
                 
                 // TODO: Add contacts with msisdn when msisdn 3PIDs will be supported
 //                for (MXKPhoneNumber *phone in phones)
 //                {
-//                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:nil andPhoneNumbers:@[phone]];
+//                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:nil phoneNumbers:@[phone] andThumbnail:contact.thumbnail];
 //                    [splitLocalContacts addObject:splitContact];
 //                }
             }
