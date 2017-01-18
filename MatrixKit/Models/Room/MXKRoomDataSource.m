@@ -153,8 +153,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // display the read receips by default
         self.showBubbleReceipts = YES;
         
-        // display keyboard icon in cells.
-        _showTypingNotifications = YES;
+        // Disable typing notification in cells by default.
+        self.showTypingNotifications = NO;
         
         self.useCustomDateTimeLabel = NO;
         self.useCustomReceipts = NO;
@@ -1807,9 +1807,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)replaceLocalEcho:(NSString*)localEchoEventId withEvent:(MXEvent*)event
 {
-    // Remove the event from the pending local echo list if any.
-    [self.room removePendingLocalEcho:localEchoEventId];
-    
     // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEchoEventId];
     if (!bubbleData)

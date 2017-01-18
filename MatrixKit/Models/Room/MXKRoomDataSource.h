@@ -206,7 +206,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic) BOOL useCustomUnsentButton;
 
 /**
- Show the typing notifications of other room members in the chat history (YES by default).
+ Show the typing notifications of other room members in the chat history (NO by default).
  */
 @property (nonatomic) BOOL showTypingNotifications;
 
