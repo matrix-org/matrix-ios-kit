@@ -69,10 +69,6 @@
     {
         mxSession = matrixSession;
 
-        defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
-        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
-        defaultRoomSummaryUpdater.eventsFilterForMessages = [MXKAppSettings standardAppSettings].eventsFilterForMessages;
-        
         [self initDateTimeFormatters];
 
         markdownParser = [[GHMarkdownParser alloc] init];
@@ -117,6 +113,11 @@
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
+
+        defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
+        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
+        defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
+        defaultRoomSummaryUpdater.eventsFilterForMessages = _settings.eventsFilterForMessages;
     }
     return self;
 }
@@ -1345,10 +1346,10 @@
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event oldState:(MXRoomState *)oldState
 {
     // Do not show redacted event if not configured
-    if (event.isRedactedEvent && !_settings.showRedactionsInRoomHistory)
-    {
-        return NO;
-    }
+//    if (event.isRedactedEvent && !_settings.showRedactionsInRoomHistory)
+//    {
+//        return NO;
+//    }
 
     // Use the default updater as first pass
     BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event oldState:oldState];
