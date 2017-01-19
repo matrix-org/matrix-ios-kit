@@ -1,3 +1,23 @@
+Changes in MatrixKit in 0.4.5 (2017-01-19)
+==========================================
+
+Improvements:
+ * View controller: Remove properties initialization from `viewDidLoad` (#94)
+ * MXKContact: Add [initContactWithDisplayName:emails:phoneNumbers:andThumbnail:] method.
+ * MXKContactManager: Add API to sort a contacts array.
+ * MXKContactManager: Add `localContactsSplittedbyContactMethod` property, the contacts list obtained by splitting each local contact by contact method.
+ 
+Bug fixes:
+ * Cloned rooms in rooms list (vector-im/riot-ios#889).
+ * Riot looks to me like I'm sending the same message twice (vector-im/riot-ios#894).
+ * matrix.to links containing room ids are not hyperlinked (vector-im/riot-ios#886).
+ * Integer negative wraparound in upload progress meter (vector-im/riot-ios#892).
+ * MXKRoomBubbleTableViewCell: a square avatar has been observed.
+ * MXKContact: Encode the thumbnail of the local contacts.
+
+API breaks:
+ * MXKContactManager: Replace `localEmailContacts:` with `localContactsWithMethods:` to list the local contacts who have contact methods which may be used to invite them or to discover matrix users.
+
 Changes in MatrixKit in 0.4.4 (2016-12-23)
 ==========================================
 
