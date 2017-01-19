@@ -2,6 +2,7 @@ Changes in MatrixKit in 0.4.5 (2017-01-19)
 ==========================================
 
 Improvements:
+ * Upgrade MatrixSDK version (v0.7.5).
  * View controller: Remove properties initialization from `viewDidLoad` (#94)
  * MXKContact: Add [initContactWithDisplayName:emails:phoneNumbers:andThumbnail:] method.
  * MXKContactManager: Add API to sort a contacts array.
