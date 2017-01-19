@@ -86,7 +86,7 @@
 
 - (NSString*)description
 {
-    return [NSString stringWithFormat:@"%@ %@: %@ - %@", super.description, self.roomDataSource.roomId, self.roomDisplayname, self.lastEventTextMessage];
+    return [NSString stringWithFormat:@"%@ %@: %@ - %@", super.description, self.roomSummary.roomId, self.roomDisplayname, self.lastEventTextMessage];
 }
 
 @end
