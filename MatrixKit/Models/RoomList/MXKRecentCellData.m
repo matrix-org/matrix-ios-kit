@@ -84,4 +84,9 @@
     [roomSummary.room acknowledgeLatestEvent:YES];
 }
 
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"%@ %@: %@ - %@", super.description, self.roomDataSource.roomId, self.roomDisplayname, self.lastEventTextMessage];
+}
+
 @end

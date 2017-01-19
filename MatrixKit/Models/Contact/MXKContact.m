@@ -27,7 +27,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
 
 @interface MXKContact()
 {
-    UIImage* contactBookThumbnail;
+    UIImage* contactThumbnail;
     UIImage* matrixThumbnail;
     
     // The matrix id of the contact (used when the contact is not defined in the contacts book)
@@ -207,7 +207,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
             dataRef = ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
             if (dataRef)
             {
-                contactBookThumbnail = [UIImage imageWithData:(__bridge NSData*)dataRef];
+                contactThumbnail = [UIImage imageWithData:(__bridge NSData*)dataRef];
                 CFRelease(dataRef);
             }
         }
@@ -245,7 +245,10 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     return self;
 }
 
-- (id)initContactWithDisplayName:(NSString*)displayName emails:(NSArray<MXKEmail*> *)emails andPhoneNumbers:(NSArray<MXKPhoneNumber*> *)phones
+- (id)initContactWithDisplayName:(NSString*)displayName
+                          emails:(NSArray<MXKEmail*> *)emails
+                    phoneNumbers:(NSArray<MXKPhoneNumber*> *)phones
+                    andThumbnail:(UIImage *)thumbnail
 {
     self = [self init];
     if (self)
@@ -265,6 +268,8 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         
         _emailAddresses = emails;
         _phoneNumbers = phones;
+        
+        contactThumbnail = thumbnail;
     }
     
     return self;
@@ -299,10 +304,16 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     // Check first display name
     if (_displayName.length)
     {
-        NSArray *components = [_displayName componentsSeparatedByString:@" "];
+        NSString *lowercaseString = [_displayName lowercaseString];
+        if ([lowercaseString hasPrefix:prefix])
+        {
+            return YES;
+        }
+        
+        NSArray *components = [lowercaseString componentsSeparatedByString:@" "];
         for (NSString *component in components)
         {
-            NSString *theComponent = [[component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+            NSString *theComponent = [component stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             if ([theComponent hasPrefix:prefix])
             {
                 return YES;
@@ -514,7 +525,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
             [firstField loadAvatarWithSize:size];
         }
         
-        return contactBookThumbnail;
+        return contactThumbnail;
     }
 }
 
@@ -535,10 +546,16 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     _phoneNumbers = [coder decodeObjectForKey:@"phoneNumbers"];
     _emailAddresses = [coder decodeObjectForKey:@"emailAddresses"];
     
-    NSData *data = [coder decodeObjectForKey:@"contactBookThumbnail"];
+    NSData *data = [coder decodeObjectForKey:@"contactThumbnail"];
+    if (!data)
+    {
+        // Check the legacy storage.
+        data = [coder decodeObjectForKey:@"contactBookThumbnail"];
+    }
+    
     if (data)
     {
-        contactBookThumbnail = [UIImage imageWithData:data];
+        contactThumbnail = [UIImage imageWithData:data];
     }
     
     return self;
@@ -565,10 +582,10 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         [coder encodeObject:_emailAddresses forKey:@"emailAddresses"];
     }
     
-    if (contactBookThumbnail)
+    if (contactThumbnail)
     {
-        NSData *data = UIImageJPEGRepresentation(contactBookThumbnail, 0.8);
-        [coder encodeObject:data forKey:@"contactBookThumbnail"];
+        NSData *data = UIImageJPEGRepresentation(contactThumbnail, 0.8);
+        [coder encodeObject:data forKey:@"contactThumbnail"];
     }
 }
 

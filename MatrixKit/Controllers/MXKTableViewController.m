@@ -437,22 +437,25 @@
 
 - (void)startActivityIndicator
 {
-    // Keep centering the loading wheel
-    CGPoint center = self.view.center;
-    center.y +=  self.tableView.contentOffset.y - self.tableView.contentInset.top;
-    activityIndicator.center = center;
-    [self.view bringSubviewToFront:activityIndicator];
-    
-    [activityIndicator startAnimating];
-
-    // Show the loading wheel after a delay so that if the caller calls stopActivityIndicator
-    // in a short future, the loading wheel will not be displayed to the end user.
-    activityIndicator.alpha = 0;
-    [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-        activityIndicator.alpha = 1;
-    } completion:^(BOOL finished)
-     {
-     }];
+    if (activityIndicator)
+    {
+        // Keep centering the loading wheel
+        CGPoint center = self.view.center;
+        center.y +=  self.tableView.contentOffset.y - self.tableView.contentInset.top;
+        activityIndicator.center = center;
+        [self.view bringSubviewToFront:activityIndicator];
+        
+        [activityIndicator startAnimating];
+        
+        // Show the loading wheel after a delay so that if the caller calls stopActivityIndicator
+        // in a short future, the loading wheel will not be displayed to the end user.
+        activityIndicator.alpha = 0;
+        [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+            activityIndicator.alpha = 1;
+        } completion:^(BOOL finished)
+         {
+         }];
+    }
 }
 
 - (void)stopActivityIndicator

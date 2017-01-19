@@ -83,6 +83,7 @@ static MXKAppSettings *standardAppSettings = nil;
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"sortRoomMembersUsingLastSeenTime"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showLeftMembersInRoomMemberList"];
         
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncLocalContactsPermissionRequested"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncLocalContacts"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phonebookCountryCode"];
         
@@ -104,6 +105,7 @@ static MXKAppSettings *standardAppSettings = nil;
         sortRoomMembersUsingLastSeenTime = YES;
         showLeftMembersInRoomMemberList = NO;
         
+        syncLocalContactsPermissionRequested = NO;
         syncLocalContacts = NO;
         phonebookCountryCode = nil;
         

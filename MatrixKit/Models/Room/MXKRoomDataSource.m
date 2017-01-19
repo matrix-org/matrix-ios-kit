@@ -153,8 +153,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // display the read receips by default
         self.showBubbleReceipts = YES;
         
-        // display keyboard icon in cells.
-        _showTypingNotifications = YES;
+        // Disable typing notification in cells by default.
+        self.showTypingNotifications = NO;
         
         self.useCustomDateTimeLabel = NO;
         self.useCustomReceipts = NO;
@@ -1769,9 +1769,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)replaceLocalEcho:(NSString*)localEchoEventId withEvent:(MXEvent*)event
 {
-    // Remove the event from the pending local echo list if any.
-    [self.room removePendingLocalEcho:localEchoEventId];
-    
     // Retrieve the cell data hosting the local echo
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEchoEventId];
     if (!bubbleData)
@@ -2098,7 +2095,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
 
         // Notify the last message may have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+        // Workaround to fix the case explained in this issue https://github.com/vector-im/riot-ios/issues/889#issuecomment-272168555
+        // To avoid launching an update of the recents while they are updating, dispatch_async the notification.
+        // TODO: remove this after the refactoring of recents with the coming MXRoomSummary.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+        });
     }
 }
 
