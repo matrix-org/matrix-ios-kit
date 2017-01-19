@@ -752,10 +752,10 @@
                     NSString *errorDescription;
 
                     if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
-                        && event.decryptionError.code == MXDecryptingErrorUnkwnownInboundSessionIdCode)
+                        && event.decryptionError.code == MXDecryptingErrorUnknownInboundSessionIdCode)
                     {
-                        // Make the unkwown inbound session id error description more user friendly
-                        errorDescription = [NSBundle mxk_localizedStringForKey:@"notice_crypto_error_unkwown_inbound_session_id"];
+                        // Make the unknown inbound session id error description more user friendly
+                        errorDescription = [NSBundle mxk_localizedStringForKey:@"notice_crypto_error_unknown_inbound_session_id"];
                     }
                     else
                     {
