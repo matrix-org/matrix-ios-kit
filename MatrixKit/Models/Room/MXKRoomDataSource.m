@@ -1672,7 +1672,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
         
         // Remove successfully sent messages
-        if ([outgoingMessage.eventId hasPrefix:kMXRoomLocalEventIdPrefix] == NO)
+        if (outgoingMessage.isLocalEvent == NO)
         {
             [_room removeOutgoingMessage:outgoingMessage.eventId];
         }
