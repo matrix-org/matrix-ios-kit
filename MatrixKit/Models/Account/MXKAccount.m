@@ -652,7 +652,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     [self deletePusher];
     
-    [mxSession logout:^{
+    MXHTTPOperation *operation = [mxSession logout:^{
         
         [self closeSession:YES];
         if (completion)
@@ -670,6 +670,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         }
         
     }];
+    
+    // Do not retry on failure.
+    operation.maxNumberOfTries = 1;
 }
 
 - (void)deletePusher
