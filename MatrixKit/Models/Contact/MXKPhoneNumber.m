@@ -18,10 +18,6 @@
 
 #import "NBPhoneNumberUtil.h"
 
-@interface MXKPhoneNumber ()
-@property (nonatomic, readonly) NSString *cleanedPhonenumber;
-@end
-
 @implementation MXKPhoneNumber
 
 - (id)initWithTextNumber:(NSString*)aTextNumber type:(NSString*)aType contactID:(NSString*)aContactID matrixID:(NSString*)matrixID
@@ -105,7 +101,6 @@
             NSString* e164Number = [phoneUtil format:nbPhoneNumber numberFormat:NBEPhoneNumberFormatE164 error:&error];
             
             if (!error && (e164Number.length > 0))
-                
             {
                 // need to plug to libphonenumber
                 _internationalPhoneNumber = e164Number;
@@ -114,12 +109,13 @@
     }
 }
 
-- (BOOL)isValidPhonenumber
+- (BOOL)isValidPhoneNumber
 {
     if (_countryCode)
     {
         return (nil != _internationalPhoneNumber);
-    } else
+    }
+    else
     {
         NSError* error = nil;
         NBPhoneNumberUtil *phoneUtil = [NBPhoneNumberUtil sharedInstance];
