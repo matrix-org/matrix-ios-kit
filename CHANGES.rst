@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.4.6 (2017-01-24)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.5).
+ * MXKContactManager: Support bulk lookup to discover the matrix users in local contacts.
+ * MXKContactTableCell: Let contacts table refresh matrix ids of the local contacts.
+ 
+Bug fixes:
+ * Bug Fix: App is stuck on logout when device is offline (https://github.com/vector-im/riot-ios#963).
+
 Changes in MatrixKit in 0.4.5 (2017-01-19)
 ==========================================
 
