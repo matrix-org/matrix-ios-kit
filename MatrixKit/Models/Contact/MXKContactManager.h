@@ -139,21 +139,15 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 - (NSArray *)privateMatrixContacts:(MXSession*)mxSession;
 
 /**
- No by default. Set YES to update matrix ids for all the local contacts in only one request
- when device contacts are loaded and an identity server is available.
- */
-@property (nonatomic) BOOL enableFullMatrixIdSyncOnLocalContactsDidLoad;
-
-/**
  Add/remove matrix session. The matrix contact list is automatically updated (see kMXKContactManagerDidUpdateMatrixContactsNotification event).
  */
 - (void)addMatrixSession:(MXSession*)mxSession;
 - (void)removeMatrixSession:(MXSession*)mxSession;
 
 /**
- Load and refresh the local contacts. Observe kMXKContactManagerDidUpdateLocalContactsNotification to know when local contacts are available.
+ Load and/or refresh the local contacts. Observe kMXKContactManagerDidUpdateLocalContactsNotification to know when local contacts are available.
  */
-- (void)loadLocalContacts;
+- (void)refreshLocalContacts;
 
 /**
  Delete contacts info

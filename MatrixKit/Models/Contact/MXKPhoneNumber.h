@@ -24,10 +24,11 @@
 @property (nonatomic, readonly) NSString *type;
 @property (nonatomic, readonly) NSString *textNumber;
 @property (nonatomic, readonly) NSString *internationalPhoneNumber;
+@property (nonatomic, readonly) NSString *cleanedPhonenumber;
 
 // defines a country code will internationalize it
 @property (nonatomic, readwrite) NSString *countryCode;
-@property (nonatomic, readonly) BOOL isValid;
+@property (nonatomic, readonly) BOOL isValidPhoneNumber;
 
 - (id)initWithTextNumber:(NSString*)textNumber type:(NSString*)aType contactID:(NSString*)aContactID matrixID:(NSString*)matrixID;
 
