@@ -54,7 +54,7 @@
     
     // Trigger local contacts loading
     [MXKAppSettings standardAppSettings].syncLocalContacts = YES;
-    [[MXKContactManager sharedManager] loadLocalContacts];
+    [[MXKContactManager sharedManager] refreshLocalContacts];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
