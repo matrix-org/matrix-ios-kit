@@ -1663,7 +1663,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)handleUnsentMessages
 {
-    // Clean outgoing messages, and add unsent ones at the end of the conversation
+    // Add the unsent messages at the end of the conversation
     NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
     BOOL shouldProcessQueuedEvents = NO;
     
@@ -1671,19 +1671,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
         
-        // Remove successfully sent messages
-        if (outgoingMessage.isLocalEvent == NO)
+        if (outgoingMessage.sentState == MXEventSentStateFailed)
         {
-            [_room removeOutgoingMessage:outgoingMessage.eventId];
-        }
-        else
-        {
-            // Here the message sending has failed
-            outgoingMessage.sentState = MXEventSentStateFailed;
-            
-            // Erase the timestamp
-            outgoingMessage.originServerTs = kMXUndefinedTimestamp;
-            
             [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
             shouldProcessQueuedEvents = YES;
         }
