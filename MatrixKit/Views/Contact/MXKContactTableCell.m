@@ -155,9 +155,6 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
         {
             // Be warned when the linked matrix IDs are updated
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixIdUpdate:)  name:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:nil];
-            
-            // Refresh matrix info of the contact
-            [[MXKContactManager sharedManager] updateMatrixIDsForLocalContact:contact];
         }
         
         NSArray* matrixIDs = contact.matrixIdentifiers;
