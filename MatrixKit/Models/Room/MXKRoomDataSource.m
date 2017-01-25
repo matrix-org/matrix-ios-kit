@@ -1671,7 +1671,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
         
-        if (outgoingMessage.sentState == MXEventSentStateSending || outgoingMessage.sentState == MXEventSentStateFailed)
+        if (outgoingMessage.sentState != MXEventSentStateSent)
         {
             [self queueEventForProcessing:outgoingMessage withRoomState:_room.state direction:MXTimelineDirectionForwards];
             shouldProcessQueuedEvents = YES;
