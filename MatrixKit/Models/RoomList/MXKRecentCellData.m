@@ -45,7 +45,7 @@
 
     lastEventTextMessage = roomSummary.lastEventString;
     lastEventAttributedTextMessage = roomSummary.lastEventAttribytedString;
-    lastEventDate = roomSummary.others[@"lastEventDate"];
+    lastEventDate = roomSummary.lastEventOthers[@"lastEventDate"];
 
     // @TODO
     // lastEvent.mxkEventFormatterError

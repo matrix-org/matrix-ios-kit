@@ -1400,7 +1400,7 @@
         }
         else
         {
-            summary.others[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+            summary.lastEventOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
 
             // Check whether the sender name has to be added
             NSString *prefix = nil;

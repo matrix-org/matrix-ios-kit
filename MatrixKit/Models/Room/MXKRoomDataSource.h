@@ -132,11 +132,6 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic, readonly) BOOL isPeeking;
 
 /**
- The last event in the room that matches the `eventsFilterForMessages` property.
- */
-@property (nonatomic, readonly) MXEvent *lastMessage;
-
-/**
  The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
  */
 @property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
@@ -492,20 +487,5 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  By default, they are added to the end of the timeline.
  */
 - (void)handleUnsentMessages;
-
-/**
- The last event in the room.
- 
- This event must match several criteria:
-     - its type must be in `eventsFilterForMessages`
-     - it must follow the mxSession.ignoreProfileChangesDuringLastMessageProcessing
-       setting
-     - it must be displayable, ie the passed eventFormatter must return a non empty
-       string for it
-
- @param eventFormatter the event formatter in order to check the displayability of events.
- @param onComplete a block call when the operation completes. The provided lastMessage can be nil.
- */
-- (void)lastMessageWithEventFormatter:(MXKEventFormatter*)eventFormatter onComplete:(void(^)(MXEvent *lastMessage))onComplete;
 
 @end
