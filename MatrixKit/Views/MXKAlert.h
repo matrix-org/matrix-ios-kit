@@ -41,6 +41,7 @@ typedef void (^blockMXKAlert_onClick)(MXKAlert *alert);
 typedef void (^blockMXKAlert_textFieldHandler)(UITextField *textField);
 
 @property(nonatomic) NSInteger cancelButtonIndex; // required to dismiss cusmtomAlert on iOS < 8 (default is -1).
+@property(nonatomic) NSString *mxkAccessibilityIdentifier; // Supported only on iOS >= 8.0.
 @property(nonatomic, weak) UIView *sourceView;
 
 - (id)initWithTitle:(NSString *)title message:(NSString *)message style:(MXKAlertStyle)style;
