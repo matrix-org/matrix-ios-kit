@@ -40,12 +40,12 @@
 - (void)update
 {
     // Keep ref on displayed last event
-    lastEvent = roomSummary.lastEvent;
+    lastEvent = roomSummary.lastMessageEvent;
     roomDisplayname = roomSummary.displayname;
 
-    lastEventTextMessage = roomSummary.lastEventString;
-    lastEventAttributedTextMessage = roomSummary.lastEventAttribytedString;
-    lastEventDate = roomSummary.lastEventOthers[@"lastEventDate"];
+    lastEventTextMessage = roomSummary.lastMessageString;
+    lastEventAttributedTextMessage = roomSummary.lastMessageAttributedString;
+    lastEventDate = roomSummary.lastMessageOthers[@"lastEventDate"];
 
     // @TODO
     // lastEvent.mxkEventFormatterError

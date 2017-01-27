@@ -1384,7 +1384,7 @@
 
         // Compute the text message
         MXKEventFormatterError error;
-        summary.lastEventString = [self stringFromEvent:event withRoomState:oldState error:&error];
+        summary.lastMessageString = [self stringFromEvent:event withRoomState:oldState error:&error];
 
         // Store the potential error
         // @TODO: useful?
@@ -1393,14 +1393,14 @@
             //summary.others[@"mxkEventFormatterError"] = error;
         }
 
-        if (0 == summary.lastEventString.length)
+        if (0 == summary.lastMessageString.length)
         {
             // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
             updated = NO;
         }
         else
         {
-            summary.lastEventOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+            summary.lastMessageOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
 
             // Check whether the sender name has to be added
             NSString *prefix = nil;
@@ -1417,7 +1417,7 @@
             }
 
             // Compute the attribute text message
-            summary.lastEventAttribytedString = [self renderString:summary.lastEventString withPrefix:prefix forEvent:event];
+            summary.lastMessageAttributedString = [self renderString:summary.lastMessageString withPrefix:prefix forEvent:event];
         }
     }
     

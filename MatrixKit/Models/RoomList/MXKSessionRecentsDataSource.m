@@ -310,7 +310,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     NSLog(@"[MXKSessionRecentsDataSource] Loaded %tu recents in %.3fms", self.mxSession.rooms.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
 
     // Make sure all rooms have a last message
-    [self.mxSession fixRoomsSummariesLastEvent];
+    [self.mxSession fixRoomsSummariesLastMessage];
 
     // Report loaded array except if sync is in progress
     if (!roomDataSourceManager.isServerSyncInProgress)
