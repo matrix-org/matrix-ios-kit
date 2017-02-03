@@ -74,13 +74,11 @@
              UITextField *textField = [self textFieldAtIndex:0];
              NSString *password = textField.text;
 
-              __weak typeof(self) weakSelf2 = self;
-
              // Start the import process
              [mxkViewController startActivityIndicator];
              [self->mxSession.crypto importRoomKeys:[NSData dataWithContentsOfURL:fileURL] withPassword:password success:^{
 
-                 if (weakSelf2)
+                 if (weakSelf)
                  {
                      [mxkViewController stopActivityIndicator];
                      onComplete();
@@ -88,7 +86,7 @@
 
              } failure:^(NSError *error) {
 
-                 if (weakSelf2)
+                 if (weakSelf)
                  {
                      [mxkViewController stopActivityIndicator];
 

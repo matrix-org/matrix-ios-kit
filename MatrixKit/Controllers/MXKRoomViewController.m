@@ -3377,15 +3377,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                  typeof(self) self = weakSelf;
                                  self->currentAlert = nil;
 
-                                 __weak typeof(self) weakSelf2 = self;
-
                                  // Show the keys import dialog
                                  MXKEncryptionKeysImportView *importView = [[MXKEncryptionKeysImportView alloc] initWithMatrixSession:self->roomDataSource.mxSession];
                                  currentAlert = importView;
                                  [importView showInViewController:self toImportKeys:fileURL onComplete:^{
 
-                                     typeof(self) self = weakSelf2;
-                                     self->currentAlert = nil;
+                                     if (weakSelf)
+                                     {
+                                         typeof(self) self = weakSelf;
+                                         self->currentAlert = nil;
+                                     }
                                      
                                  }];
                              }
