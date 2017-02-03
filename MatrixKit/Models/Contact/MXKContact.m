@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -50,6 +51,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     {
         matrixIdField = nil;
         isMatrixContact = NO;
+        _matrixAvatarURL = nil;
         
         isThirdPartyInvite = NO;
     }
@@ -479,54 +481,74 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     }
 }
 
+- (void)resetMatrixThumbnail
+{
+    matrixThumbnail = _matrixAvatarURL = nil;
+    
+    // Reset the avatar in the contact fields too.
+    [matrixIdField resetMatrixAvatar];
+    
+    for (MXKEmail* email in _emailAddresses)
+    {
+        [email resetMatrixAvatar];
+    }
+}
+
 - (UIImage*)thumbnailWithPreferedSize:(CGSize)size
 {
-    // already found a matrix thumbnail
+    // Consider first the local thumbnail if any.
+    if (contactThumbnail)
+    {
+        return contactThumbnail;
+    }
+    
+    // Check whether a matrix thumbnail is already found.
     if (matrixThumbnail)
     {
         return matrixThumbnail;
     }
-    else
+    
+    // Look for a thumbnail from the matrix identifiers
+    MXKContactField* firstField = matrixIdField;
+    if (firstField)
     {
-        MXKContactField* firstField = matrixIdField;
-        if (firstField)
+        if (firstField.avatarImage)
         {
-            if (firstField.avatarImage)
+            matrixThumbnail = firstField.avatarImage;
+            _matrixAvatarURL = firstField.matrixAvatarURL;
+            return matrixThumbnail;
+        }
+    }
+    
+    // try to replace the thumbnail by the matrix one
+    if (_emailAddresses.count > 0)
+    {
+        // list the linked email
+        // search if one email field has a dedicated thumbnail
+        for (MXKEmail* email in _emailAddresses)
+        {
+            if (email.avatarImage)
             {
-                matrixThumbnail = firstField.avatarImage;
+                matrixThumbnail = email.avatarImage;
+                _matrixAvatarURL = email.matrixAvatarURL;
                 return matrixThumbnail;
             }
-        }
-        
-        // try to replace the thumbnail by the matrix one
-        if (_emailAddresses.count > 0)
-        {
-            // list the linked email
-            // search if one email field has a dedicated thumbnail
-            for(MXKEmail* email in _emailAddresses)
+            else if (!firstField && email.matrixID)
             {
-                if (email.avatarImage)
-                {
-                    matrixThumbnail = email.avatarImage;
-                    return matrixThumbnail;
-                }
-                else if (!firstField && email.matrixID)
-                {
-                    firstField = email;
-                }
+                firstField = email;
             }
         }
-        
-        // if no thumbnail has been found
-        // try to load the first field one
-        if (firstField)
-        {
-            // should be retrieved by the cell info
-            [firstField loadAvatarWithSize:size];
-        }
-        
-        return contactThumbnail;
     }
+    
+    // if no thumbnail has been found
+    // try to load the first field one
+    if (firstField)
+    {
+        // should be retrieved by the cell info
+        [firstField loadAvatarWithSize:size];
+    }
+    
+    return nil;
 }
 
 - (UIImage*)thumbnail

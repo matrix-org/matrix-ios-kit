@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -80,6 +81,17 @@ extern NSString *const kMXKContactDefaultContactPrefixId;
  The array of matrix identifiers
  */
 @property (nonatomic, readonly) NSArray* matrixIdentifiers;
+
+/**
+ The matrix avatar url used (if any) to build the current thumbnail, nil by default.
+ */
+@property (nonatomic, readonly) NSString* matrixAvatarURL;
+
+/**
+ Reset the current thumbnail if it is retrieved from a matrix url. May be used in case of the matrix avatar url change.
+ A new thumbnail will be automatically restored from the contact data.
+ */
+- (void)resetMatrixThumbnail;
 
 /**
  The contact ID from native phonebook record
