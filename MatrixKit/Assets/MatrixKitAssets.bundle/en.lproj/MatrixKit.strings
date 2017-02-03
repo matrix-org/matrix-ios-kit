@@ -218,6 +218,8 @@
 "attachment_cancel_upload" = "Cancel the upload?";
 "attachment_multiselection_size_prompt" = "Do you want to send images as:";
 "attachment_multiselection_original" = "Actual Size";
+"attachment_e2e_keys_file_prompt" = "This file contains encryption keys exported from a Matrix client.\nDo you want to view the file content or import the keys it contains?";
+"attachment_e2e_keys_import" = "Import...";
 
 // Contacts
 "contact_mx_users" = "Matrix Users";
@@ -231,6 +233,12 @@
 "format_time_m" = "m";
 "format_time_h" = "h";
 "format_time_d" = "d";
+
+// E2E import/export
+"e2e_import_room_keys" = "Import room keys";
+"e2e_import_prompt" = "This process allows you to import encryption keys that you had previously exported from another Matrix client. You will then be able to decrypt any messages that the other client could decrypt.\nThe export file is protected with a passphrase. You should enter the passphrase here, to decrypt the file.";
+"e2e_import" = "Import";
+"e2e_passphrase_enter" = "Enter passphrase";
 
 // Others
 "user_id_title" = "User ID:";
@@ -319,6 +327,7 @@
 "share" = "Share";
 "set_power_level" = "Power level";
 "delete" = "Delete";
+"view" = "View";
 
 // actions 
 "action_logout" = "Logout";

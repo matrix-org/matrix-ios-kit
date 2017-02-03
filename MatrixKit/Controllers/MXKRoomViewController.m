@@ -40,6 +40,8 @@
 #import "MXKRoomOutgoingAttachmentBubbleCell.h"
 #import "MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.h"
 
+#import "MXKEncryptionKeysImportView.h"
+
 #import "NSBundle+MatrixKit.h"
 
 NSString *const kCmdChangeDisplayName = @"/nick";
@@ -3323,21 +3325,79 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 [selectedAttachment prepareShare:^(NSURL *fileURL) {
                     
                     [self stopActivityIndicator];
-                    
-                    documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                    [documentInteractionController setDelegate:self];
-                    currentSharedAttachment = selectedAttachment;
-                    
-                    if (![documentInteractionController presentPreviewAnimated:YES])
-                    {
-                        if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+
+                    void(^viewAttachment)() = ^() {
+
+                        documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                        [documentInteractionController setDelegate:self];
+                        currentSharedAttachment = selectedAttachment;
+
+                        if (![documentInteractionController presentPreviewAnimated:YES])
                         {
-                            documentInteractionController = nil;
-                            [selectedAttachment onShareEnded];
-                            currentSharedAttachment = nil;
+                            if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                            {
+                                documentInteractionController = nil;
+                                [selectedAttachment onShareEnded];
+                                currentSharedAttachment = nil;
+                            }
                         }
+                    };
+
+                    if (roomDataSource.mxSession.crypto
+                        && [selectedAttachment.contentInfo[@"mimetype"] isEqualToString:@"text/plain"]
+                        && [MXMegolmExportEncryption isMegolmKeyFile:fileURL])
+                    {
+                        // The file is a megolm key file
+                        // Ask the user if they wants to view the file as a classic file attachment
+                        // or open an import process
+                        [currentAlert dismiss:NO];
+
+                        __weak typeof(self) weakSelf = self;
+                        currentAlert = [[MXKAlert alloc] initWithTitle:@""
+                                                               message:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_file_prompt"]
+                                                                 style:MXKAlertStyleAlert];
+
+                        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"view"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                         {
+                             // View file content
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 self->currentAlert = nil;
+
+                                 viewAttachment();
+                             }
+                         }];
+
+                        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_import"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+                         {
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 self->currentAlert = nil;
+
+                                 __weak typeof(self) weakSelf2 = self;
+
+                                 // Show the keys import dialog
+                                 MXKEncryptionKeysImportView *importView = [[MXKEncryptionKeysImportView alloc] initWithMatrixSession:self->roomDataSource.mxSession];
+                                 currentAlert = importView;
+                                 [importView showInViewController:self toImportKeys:fileURL onComplete:^{
+
+                                     typeof(self) self = weakSelf2;
+                                     self->currentAlert = nil;
+                                     
+                                 }];
+                             }
+
+                         }];
+
+                        [currentAlert showInViewController:self];
                     }
-                    
+                    else
+                    {
+                        viewAttachment();
+                    }
+
                 } failure:^(NSError *error) {
                     
                     [self stopActivityIndicator];
