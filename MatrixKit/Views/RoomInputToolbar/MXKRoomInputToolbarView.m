@@ -792,7 +792,30 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
     [self contentEditingInputsForAssets:assets withResult:contentEditingInputs onComplete:^{
 
-        [self availableCompressionSizesForAssets:assets contentEditingInputs:contentEditingInputs onComplete:^(MXKFileSizes fileSizes) {
+        // Sanity check: check whether a content editing input has been retrieved for each asset.
+        // Remove the assets without content editing input.
+        NSMutableArray<PHAsset*> *updatedAssets;
+        for (NSUInteger index = 0; index < contentEditingInputs.count;)
+        {
+            PHContentEditingInput *contentEditingInput = contentEditingInputs[index];
+            
+            if ([contentEditingInput isEqual:[NSNull null]])
+            {
+                if (!updatedAssets)
+                {
+                    updatedAssets = [NSMutableArray arrayWithArray:assets];
+                }
+                
+                [updatedAssets removeObjectAtIndex:index];
+                [contentEditingInputs removeObjectAtIndex:index];
+            }
+            else
+            {
+                index++;
+            }
+        }
+        
+        [self availableCompressionSizesForAssets:(updatedAssets ? updatedAssets : assets) contentEditingInputs:contentEditingInputs onComplete:^(MXKFileSizes fileSizes) {
 
             [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:compressionMode];
         }];
@@ -902,10 +925,19 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
 
     [assets[contentEditingInputs.count] requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+        
+        // Sanity check
+        if (contentEditingInput)
+        {
+            [contentEditingInputs addObject:contentEditingInput];
+        }
+        else
+        {
+            [contentEditingInputs addObject:[NSNull null]];
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^{
-
-            [contentEditingInputs addObject:contentEditingInput];
+            
             if (contentEditingInputs.count == assets.count)
             {
                 // We get all results
@@ -916,6 +948,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 // Continue recursively
                 [self contentEditingInputsForAssets:assets withResult:contentEditingInputs onComplete:onComplete];
             }
+            
         });
     }];
 }
