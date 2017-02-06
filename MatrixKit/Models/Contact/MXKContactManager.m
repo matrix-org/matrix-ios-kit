@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -1144,6 +1145,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
                         if (contact)
                         {
                             contact.displayName = (user.displayname.length > 0) ? user.displayname : user.userId;
+                            
+                            // Check the avatar change
+                            if ((user.avatarUrl || contact.matrixAvatarURL) && ([user.avatarUrl isEqualToString:contact.matrixAvatarURL] == NO))
+                            {
+                                [contact resetMatrixThumbnail];
+                            }
                         }
                         else
                         {
@@ -1186,17 +1193,26 @@ static MXKContactManager* sharedMXKContactManager = nil;
             {
                 // Update or create a contact for this user
                 MXKContact* contact = [matrixContactByMatrixID objectForKey:matrixId];
+                BOOL isUpdated = NO;
                 
                 // already defined
                 if (contact)
                 {
+                    // Check the display name change
                     NSString *userDisplayName = (user.displayname.length > 0) ? user.displayname : user.userId;
                     if (![contact.displayName isEqualToString:userDisplayName])
                     {
                         contact.displayName = userDisplayName;
                         
                         [self cacheMatrixContacts];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
+                        isUpdated = YES;
+                    }
+                    
+                    // Check the avatar change
+                    if ((user.avatarUrl || contact.matrixAvatarURL) && ([user.avatarUrl isEqualToString:contact.matrixAvatarURL] == NO))
+                    {
+                        [contact resetMatrixThumbnail];
+                        isUpdated = YES;
                     }
                 }
                 else
@@ -1208,6 +1224,11 @@ static MXKContactManager* sharedMXKContactManager = nil;
                     [matrixContactByContactID setValue:contact forKey:contact.contactID];
                     
                     [self cacheMatrixContacts];
+                    isUpdated = YES;
+                }
+                
+                if (isUpdated)
+                {
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:contact.contactID userInfo:nil];
                 }
                 
