@@ -1,8 +1,21 @@
+Changes in MatrixKit in 0.4.7 (2017-02-08)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.7).
+ * Add E2E keys export & import. This is managed by new MXKEncryptionKeysImportView and MXKEncryptionKeysExportView views.
+ * Show riot enabled local contacts in known contacts too (https://github.com/vector-im/riot-ios#1001).
+ 
+Bug fixes:
+ * Duplicated msg when going into room details (https://github.com/vector-im/riot-ios#970).
+ * Local echoes for typed messages stay (far) longer in grey (https://github.com/vector-im/riot-ios#1007).
+ * Should fix crash in 0.3.8: [MXKRoomInputToolbarView contentEditingInputsForAssets:withResult:onComplete:] (https://github.com/vector-im/riot-ios#1015).
+ 
 Changes in MatrixKit in 0.4.6 (2017-01-24)
 ==========================================
 
 Improvements:
- * Upgrade MatrixSDK version (v0.7.5).
+ * Upgrade MatrixSDK version (v0.7.6).
  * MXKContactManager: Support bulk lookup to discover the matrix users in local contacts.
  * MXKContactTableCell: Let contacts table refresh matrix ids of the local contacts.
  
