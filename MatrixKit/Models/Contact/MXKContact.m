@@ -483,7 +483,8 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
 
 - (void)resetMatrixThumbnail
 {
-    matrixThumbnail = _matrixAvatarURL = nil;
+    matrixThumbnail = nil;
+    _matrixAvatarURL = nil;
     
     // Reset the avatar in the contact fields too.
     [matrixIdField resetMatrixAvatar];

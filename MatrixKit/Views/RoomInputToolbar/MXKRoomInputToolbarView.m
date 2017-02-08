@@ -799,8 +799,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         {
             PHContentEditingInput *contentEditingInput = contentEditingInputs[index];
             
-            if ([contentEditingInput isEqual:[NSNull null]])
+            if (contentEditingInput.mediaType == PHAssetMediaTypeUnknown)
             {
+                // Filter out unsupported and fake content
                 if (!updatedAssets)
                 {
                     updatedAssets = [NSMutableArray arrayWithArray:assets];
@@ -933,7 +934,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         }
         else
         {
-            [contentEditingInputs addObject:[NSNull null]];
+            // Create a fake content. It will be filter out after
+            PHContentEditingInput *fake = [[PHContentEditingInput alloc] init];
+            [contentEditingInputs addObject:fake];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
