@@ -40,7 +40,7 @@ extern NSString *const kCmdChangeRoomTopic;
 /**
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
  */
-@interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate, MXKAttachmentsViewControllerDelegate>
+@interface MXKRoomViewController : MXKViewController <MXKDataSourceDelegate, MXKRoomTitleViewDelegate, MXKRoomInputToolbarViewDelegate, UITableViewDelegate, UIDocumentInteractionControllerDelegate, MXKAttachmentsViewControllerDelegate, MXKRoomActivitiesViewDelegate>
 {
 @protected
     /**

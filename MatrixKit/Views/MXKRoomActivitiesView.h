@@ -16,12 +16,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol MXKRoomActivitiesViewDelegate;
+
 /**
  Customize UIView to display some extra info above the RoomInputToolBar
  */
 @interface MXKRoomActivitiesView : UIView
 
 @property (nonatomic) CGFloat height;
+
+@property (nonatomic) id<MXKRoomActivitiesViewDelegate> delegate;
 
 /**
  Returns the `UINib` object initialized for a `MXKRoomActivitiesView`.
@@ -50,3 +54,15 @@
 
 @end
 
+@protocol MXKRoomActivitiesViewDelegate <NSObject>
+
+/**
+ Called when the activities view height changes.
+
+ @param roomActivitiesView the MXKRoomActivitiesView instance.
+ @param oldHeight its previous height.
+ @param newHeight its new height.
+ */
+- (void)didChangeHeight:(MXKRoomActivitiesView*)roomActivitiesView oldHeight:(CGFloat)oldHeight newHeight:(CGFloat)newHeight;
+
+@end

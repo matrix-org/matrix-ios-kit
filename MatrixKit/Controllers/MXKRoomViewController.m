@@ -1231,6 +1231,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // let the provide view to define a height.
         // it could have no constrainst if there is no defined xib
         _roomActivitiesContainerHeightConstraint.constant = activitiesView.height;
+
+        // Listen to activities view change
+        activitiesView.delegate = self;
     }
     else
     {
@@ -3427,6 +3430,26 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [self triggerAttachmentBackPagination:eventId];
     
     return [self.roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards];
+}
+
+#pragma mark - MXKRoomActivitiesViewDelegate
+
+- (void)didChangeHeight:(MXKRoomActivitiesView *)roomActivitiesView oldHeight:(CGFloat)oldHeight newHeight:(CGFloat)newHeight
+{
+    // We will scroll to bottom if the bottom of the table is currently visible
+    BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
+
+    // Apply height change to constraints 
+    _roomActivitiesContainerHeightConstraint.constant = newHeight;
+    _bubblesTableViewBottomConstraint.constant += newHeight - oldHeight;
+
+    // Force to render the view
+    [self.view layoutIfNeeded];
+
+    if (shouldScrollToBottom)
+    {
+        [self scrollBubblesTableViewToBottomAnimated:YES];
+    }
 }
 
 #pragma mark - UIDocumentInteractionControllerDelegate
