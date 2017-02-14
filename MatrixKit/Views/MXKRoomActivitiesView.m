@@ -46,7 +46,8 @@
 }
 
 - (void)destroy
-{    
+{
+    _delegate = nil;
 }
 
 - (CGFloat)height
