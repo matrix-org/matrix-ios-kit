@@ -20,7 +20,7 @@ pod 'MatrixSDK', '0.7.7'
 # Note that MatrixSDK must be cloned into a folder called matrix-ios-sdk next to the MatrixKit folder
 #pod 'MatrixSDK', :path => '../matrix-ios-sdk/MatrixSDK.podspec'
 
-pod 'libPhoneNumber-iOS', '~> 0.8.14'
+pod 'libPhoneNumber-iOS', '~> 0.9.2'
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.2.0'
 pod 'DTCoreText', '~> 1.6.17'
