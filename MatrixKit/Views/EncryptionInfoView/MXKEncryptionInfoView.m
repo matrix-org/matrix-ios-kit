@@ -293,6 +293,7 @@ static NSAttributedString *verticalWhitespace = nil;
         
         switch (mxDeviceInfo.verified)
         {
+            case MXDeviceUnknown:
             case MXDeviceUnverified:
             {
                 verification = [[NSMutableAttributedString alloc]
