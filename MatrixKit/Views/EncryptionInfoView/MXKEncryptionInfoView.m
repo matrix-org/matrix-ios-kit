@@ -403,8 +403,18 @@ static NSAttributedString *verticalWhitespace = nil;
     // Note: Verify and Block buttons are hidden when the deviceInfo is not available
     else if (sender == _confirmVerifyButton && mxDeviceInfo)
     {
-        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
-        [self removeFromSuperview];
+        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
+
+            mxDeviceInfo.verified = MXDeviceVerified;
+            if (_delegate)
+            {
+                [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+            }
+            [self removeFromSuperview];
+
+        } failure:^(NSError *error) {
+            [self removeFromSuperview];
+        }];
     }
     else if (mxDeviceInfo)
     {
@@ -448,8 +458,19 @@ static NSAttributedString *verticalWhitespace = nil;
         }
         else
         {
-            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
-            [self removeFromSuperview];
+            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
+
+                mxDeviceInfo.verified = verificationStatus;
+                if (_delegate)
+                {
+                    [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+                }
+
+                [self removeFromSuperview];
+
+            } failure:^(NSError *error) {
+                [self removeFromSuperview];
+            }];
         }
     }
 }
