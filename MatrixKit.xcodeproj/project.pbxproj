@@ -196,6 +196,8 @@
 		F0F148A51AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A21AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m */; };
 		F0F148A61AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A41AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m */; };
 		F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148C51AB31240005F5D4A /* MXKTools.m */; };
+		F0FDF2671E53586A00D23C47 /* MXKCountryPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */; };
+		F0FDF2681E53586A00D23C47 /* MXKCountryPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -529,6 +531,9 @@
 		F0F148C41AB31240005F5D4A /* MXKTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKTools.h; sourceTree = "<group>"; };
 		F0F148C51AB31240005F5D4A /* MXKTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTools.m; sourceTree = "<group>"; };
 		F0F535BC1ACD748E00B603F8 /* MXKResponderRageShaking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKResponderRageShaking.h; sourceTree = "<group>"; };
+		F0FDF2641E53586A00D23C47 /* MXKCountryPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCountryPickerViewController.h; sourceTree = "<group>"; };
+		F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKCountryPickerViewController.m; sourceTree = "<group>"; };
+		F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKCountryPickerViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -607,6 +612,9 @@
 		3219CBBB1AA6FB1C0027D7E2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F0FDF2641E53586A00D23C47 /* MXKCountryPickerViewController.h */,
+				F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */,
+				F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */,
 				F043562D1B2EF6FD0096FA02 /* MXKContactDetailsViewController.h */,
 				F043562E1B2EF6FD0096FA02 /* MXKContactDetailsViewController.m */,
 				F043563D1B2F124F0096FA02 /* MXKContactDetailsViewController.xib */,
@@ -1296,6 +1304,7 @@
 				F080B4321BD6991A00DE095E /* MXKMediaCollectionViewCell.xib in Resources */,
 				F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */,
 				F0868E0E1B18FC01004CBE80 /* MXKRoomCreationView.xib in Resources */,
+				F0FDF2681E53586A00D23C47 /* MXKCountryPickerViewController.xib in Resources */,
 				F04356401B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib in Resources */,
 				F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CE56E81AA8BB5E003BE77A /* Images.xcassets in Resources */,
@@ -1465,6 +1474,7 @@
 				F04356321B2EF6FD0096FA02 /* MXKRoomMemberDetailsViewController.m in Sources */,
 				F095E5101B25899F009606CE /* MXKEmail.m in Sources */,
 				321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */,
+				F0FDF2671E53586A00D23C47 /* MXKCountryPickerViewController.m in Sources */,
 				F00FA85C1C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m in Sources */,
 				F04356311B2EF6FD0096FA02 /* MXKContactDetailsViewController.m in Sources */,
 				F00FA8751C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m in Sources */,
