@@ -271,6 +271,9 @@
 "local_contacts_access_discovery_warning_title" = "Users discovery";
 "local_contacts_access_discovery_warning" = "%@ wants to upload emails from your Contacts in order to discover users";
 
+// Country picker
+"country_picker_title" = "Select a country";
+
 
 /* -*- 
    Automatic localization for en
