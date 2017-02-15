@@ -1,6 +1,7 @@
 /*
  Copyright 2016 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -16,6 +17,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+@protocol MXKEncryptionInfoViewDelegate;
+
 /**
  MXKEncryptionInfoView class may be used to display the available information on a encrypted event.
  The event sender device may be verified, unverified, blocked or unblocked from this view.
@@ -27,6 +30,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *verifyButton;
 @property (weak, nonatomic) IBOutlet UIButton *blockButton;
 @property (weak, nonatomic) IBOutlet UIButton *confirmVerifyButton;
+
+@property (nonatomic) id<MXKEncryptionInfoViewDelegate> delegate;
 
 /**
  Initialise an `MXKEncryptionInfoView` instance based on an encrypted event
@@ -58,3 +63,15 @@
 
 @end
 
+
+@protocol MXKEncryptionInfoViewDelegate <NSObject>
+
+/**
+ Called when the user changes the verified state of a device.
+ 
+ @param encryptionInfoView the view.
+ @param deviceInfo the device that has changed.
+ */
+- (void)encryptionInfoView:(MXKEncryptionInfoView*)encryptionInfoView didDeviceInfoVerifiedChange:(MXDeviceInfo*)deviceInfo;
+
+@end
