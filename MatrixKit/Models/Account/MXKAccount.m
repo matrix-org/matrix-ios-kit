@@ -1121,18 +1121,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
         
-        // Check whether the provided certificate is the one trusted by the user during login/registration step.
-        if (mxCredentials.allowedCertificate && [mxCredentials.allowedCertificate isEqualToData:certificate])
-        {
-            return YES;
-        }
-        
-        // Check whether the user has already ignored this certificate change.
-        if (mxCredentials.ignoredCertificate && [mxCredentials.ignoredCertificate isEqualToData:certificate])
-        {
-            return NO;
-        }
-        
         if (_onCertificateChangeBlock)
         {
             if (_onCertificateChangeBlock (self, certificate))
