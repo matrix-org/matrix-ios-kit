@@ -528,6 +528,20 @@ static MXKContactManager* sharedMXKContactManager = nil;
             
             BOOL isColdStart = NO;
             
+            // Check whether the local contacts sync has been disabled.
+            if (matrixIDBy3PID && ![MXKAppSettings standardAppSettings].syncLocalContacts)
+            {
+                // The user changed his mind and disabled the local contact sync, remove the cached data.
+                matrixIDBy3PID = nil;
+                [self cacheMatrixIDsDict];
+                
+                // Reload the local contacts from the system
+                localContactByContactID = nil;
+                localContactsWithMethods = nil;
+                splitLocalContacts = nil;
+                [self cacheLocalContacts];
+            }
+            
             // Check whether this is a cold start.
             if (!matrixIDBy3PID)
             {
@@ -1267,7 +1281,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
      }
      }*/
     
-    for(MXKEmail* email in contact.emailAddresses)
+    for (MXKEmail* email in contact.emailAddresses)
     {
         if (email.emailAddress.length > 0)
         {
@@ -1327,14 +1341,18 @@ static MXKContactManager* sharedMXKContactManager = nil;
     if ([@"syncLocalContacts" isEqualToString:keyPath])
     {
         dispatch_async(dispatch_get_main_queue(), ^{
+            
             [self refreshLocalContacts];
+            
         });
     }
     else if ([@"phonebookCountryCode" isEqualToString:keyPath])
     {
         dispatch_async(dispatch_get_main_queue(), ^{
+            
             [self internationalizePhoneNumbers:[[MXKAppSettings standardAppSettings] phonebookCountryCode]];
             [self refreshLocalContacts];
+            
         });
     }
 }
@@ -1441,7 +1459,7 @@ static NSString *contactsBookInfoFile = @"contacts";
 {
     NSString *dataFilePath = [self dataFilePathForComponent:matrixIDsDictFile];
     
-    if (matrixIDBy3PID)
+    if (matrixIDBy3PID.count)
     {
         NSMutableData *theData = [NSMutableData data];
         NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
