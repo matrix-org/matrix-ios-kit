@@ -312,6 +312,21 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     return linkedEmails;
 }
 
+- (NSArray<NSString *> *)linkedPhoneNumbers
+{
+    NSMutableArray<NSString *> *linkedPhoneNumbers = [NSMutableArray array];
+    
+    for (MXThirdPartyIdentifier *threePID in threePIDs)
+    {
+        if ([threePID.medium isEqualToString:kMX3PIDMediumMSISDN])
+        {
+            [linkedPhoneNumbers addObject:threePID.address];
+        }
+    }
+    
+    return linkedPhoneNumbers;
+}
+
 - (UIColor*)userTintColor
 {
     if (!userTintColor)

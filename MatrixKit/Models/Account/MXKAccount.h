@@ -106,6 +106,12 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic, readonly) NSArray<NSString *> *linkedEmails;
 
 /**
+ The phone numbers linked to this account.
+ This is a subset of self.threePIDs.
+ */
+@property (nonatomic, readonly) NSArray<NSString *> *linkedPhoneNumbers;
+
+/**
  The account user's device.
  [self loadDeviceInformation] must be called to update the property.
  */
