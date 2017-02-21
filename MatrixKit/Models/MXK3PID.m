@@ -16,6 +16,8 @@
 
 #import "MXK3PID.h"
 
+#import "NBPhoneNumberUtil.h"
+
 @interface MXK3PID ()
 {
     MXRestClient *mxRestClient;
@@ -62,7 +64,6 @@
     // Sanity Check
     if (_validationState != MXK3PIDAuthStateTokenRequested && restClient)
     {
-        
         // Reset if the current state is different than "Unknown"
         if (_validationState != MXK3PIDAuthStateUnknown)
         {
@@ -74,8 +75,8 @@
             _validationState = MXK3PIDAuthStateTokenRequested;
             mxRestClient = restClient;
             
-            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid)
-            {
+            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid) {
+                
                 _validationState = MXK3PIDAuthStateTokenReceived;
                 currentRequest = nil;
                 self.sid = sid;
@@ -84,8 +85,9 @@
                 {
                     success();
                 }
-            } failure:^(NSError *error)
-            {
+                
+            } failure:^(NSError *error) {
+                
                 // Return in unknown state
                 _validationState = MXK3PIDAuthStateUnknown;
                 currentRequest = nil;
@@ -96,14 +98,41 @@
                 {
                     failure (error);
                 }
+                
             }];
-            
-            return;
         }
         else if ([self.medium isEqualToString:kMX3PIDMediumMSISDN])
         {
-            // FIXME: support msisdn as soon as identity server supports it
-            NSLog(@"[MXK3PID] requestValidationToken: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
+            _validationState = MXK3PIDAuthStateTokenRequested;
+            mxRestClient = restClient;
+            
+            NSString *phoneNumber = [NSString stringWithFormat:@"+%@", self.address];
+            
+            currentRequest = [mxRestClient requestPhoneNumberValidation:phoneNumber countryCode:nil clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid, NSString *msisdn) {
+                
+                _validationState = MXK3PIDAuthStateTokenReceived;
+                currentRequest = nil;
+                self.sid = sid;
+                
+                if (success)
+                {
+                    success();
+                }
+                
+            } failure:^(NSError *error) {
+                
+                // Return in unknown state
+                _validationState = MXK3PIDAuthStateUnknown;
+                currentRequest = nil;
+                // Increment attempt counter
+                self.sendAttempt++;
+                
+                if (failure)
+                {
+                    failure (error);
+                }
+                
+            }];
         }
         else
         {
@@ -116,11 +145,49 @@
     }
 }
 
+- (void)submitValidationToken:(NSString *)token
+                      success:(void (^)())success
+                      failure:(void (^)(NSError *error))failure
+{
+    // Sanity Check
+    if (_validationState == MXK3PIDAuthStateTokenReceived)
+    {
+        _validationState = MXK3PIDAuthStateTokenSubmitted;
+        
+        currentRequest = [mxRestClient submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+            
+            _validationState = MXK3PIDAuthStateAuthenticated;
+            currentRequest = nil;
+            
+            if (success)
+            {
+                success();
+            }
+            
+        } failure:^(NSError *error) {
+            
+            // Return in previous state
+            _validationState = MXK3PIDAuthStateTokenReceived;
+            currentRequest = nil;
+            
+            if (failure)
+            {
+                failure (error);
+            }
+            
+        }];
+    }
+    else
+    {
+        NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
+    }
+}
+
 - (void)add3PIDToUser:(BOOL)bind
               success:(void (^)())success
               failure:(void (^)(NSError *error))failure
 {
-    if ([self.medium isEqualToString:kMX3PIDMediumEmail])
+    if ([self.medium isEqualToString:kMX3PIDMediumEmail] || [self.medium isEqualToString:kMX3PIDMediumMSISDN])
     {
         __weak typeof(self) weakSelf = self;
         currentRequest = [mxRestClient add3PID:self.sid clientSecret:self.clientSecret bind:bind success:^{
@@ -135,21 +202,19 @@
             {
                 success();
             }
+            
         } failure:^(NSError *error) {
+            
             currentRequest = nil;
 
             if (failure)
             {
                 failure (error);
             }
+            
         }];
 
         return;
-    }
-    else if ([self.medium isEqualToString:kMX3PIDMediumMSISDN])
-    {
-        // FIXME: support msisdn as soon as identity server supports it
-        NSLog(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
     }
     else
     {

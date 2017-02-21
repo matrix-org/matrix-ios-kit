@@ -28,22 +28,22 @@ typedef enum : NSUInteger {
 @interface MXK3PID : NSObject
 
 /**
- The 3rd party system where the user is defined.
+ The type of the third party media.
  */
 @property (nonatomic, readonly) MX3PIDMedium medium;
 
 /**
- The id of the user in the 3rd party system.
+ The third party media (email address, msisdn,...).
  */
 @property (nonatomic, readonly) NSString *address;
 
 /**
- The current client secret key used during email validation.
+ The current client secret key used during third party validation.
  */
 @property (nonatomic, readonly) NSString *clientSecret;
 
 /**
- The current session identifier during email validation.
+ The current session identifier during third party validation.
  */
 @property (nonatomic, readonly) NSString *sid;
 
@@ -71,10 +71,13 @@ typedef enum : NSUInteger {
 
 /**
  Start the validation process 
- The identity server will send a validation token to the user's address.
+ The identity server will send a validation token by email or sms.
  
  In case of email, the end user must click on the link in the received email
  to validate their email address in order to be able to call add3PIDToUser successfully.
+ 
+ In case of phone number, the end user must send back the sms token
+ in order to be able to call add3PIDToUser successfully.
  
  @param restClient used to make matrix API requests during validation process.
  @param nextLink the link the validation page will automatically open. Can be nil.
@@ -85,6 +88,18 @@ typedef enum : NSUInteger {
                                           nextLink:(NSString*)nextLink
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure;
+
+/**
+ Submit the received validation token.
+ 
+ @param token the validation token.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)submitValidationToken:(NSString *)token
+                      success:(void (^)())success
+                      failure:(void (^)(NSError *error))failure;
+
 /**
  Link a 3rd party id to the user.
  
