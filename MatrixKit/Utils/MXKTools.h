@@ -38,6 +38,21 @@
  */
 + (NSString*)formatSecondsIntervalFloored:(CGFloat)secondsInterval;
 
+#pragma mark - Phone number
+
+/**
+ Return the number used to identify a mobile phone number internationally.
+ 
+ The provided country code is ignored when the phone number is already internationalized, or when it
+ is a valid msisdn.
+ 
+ @param phoneNumber the phone number.
+ @param countryCode the ISO 3166-1 country code representation (required when the phone number is in national format).
+ 
+ @return a valid msisdn or nil if the provided phone number is invalid.
+ */
++ (NSString*)msisdnWithPhoneNumber:(NSString *)phoneNumber andCountryCode:(NSString *)countryCode;
+
 #pragma mark - Hex color to UIColor conversion
 
 /**
