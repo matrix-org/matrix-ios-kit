@@ -377,7 +377,16 @@ static NSMutableDictionary* backgroundByImageNameDict;
         
         UIImageView* resourceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(offsetX, offsetY, resourceSize.width, resourceSize.height)];
         resourceImageView.backgroundColor = [UIColor clearColor];
-        resourceImageView.image = [MXKTools resizeImage:[UIImage imageNamed:resourceName] toSize:resourceSize];
+        UIImage *resImage = [UIImage imageNamed:resourceName];
+        if (CGSizeEqualToSize(resImage.size, resourceSize))
+        {
+            resourceImageView.image = resImage;
+        }
+        else
+        {
+            resourceImageView.image = [MXKTools resizeImage:resImage toSize:resourceSize];
+        }
+        
         
         [backgroundView addSubview:resourceImageView];
         
