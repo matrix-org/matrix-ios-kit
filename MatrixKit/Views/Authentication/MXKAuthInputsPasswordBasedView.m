@@ -16,6 +16,10 @@
 
 #import "MXKAuthInputsPasswordBasedView.h"
 
+#import "MXKTools.h"
+
+#import "MXKAppSettings.h"
+
 #import "NSBundle+MatrixKit.h"
 
 @implementation MXKAuthInputsPasswordBasedView
@@ -102,7 +106,7 @@
             return;
         }
         
-        // Retrieve the user login and check whether it is an email or a username.
+        // Retrieve the user login and check whether it is an email, a phone number or a username.
         NSString *user = self.userLoginTextField.text;
         user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         BOOL isEmailAddress = [MXTools isEmailAddress:user];
@@ -113,18 +117,37 @@
         {
             parameters = @{
                            @"type": kMXLoginFlowTypePassword,
-                           @"medium": @"email",
+                           @"medium": kMX3PIDMediumEmail,
                            @"address": user,
                            @"password": self.passWordTextField.text
                            };
         }
         else
         {
-            parameters = @{
-                           @"type": kMXLoginFlowTypePassword,
-                           @"user": user,
-                           @"password": self.passWordTextField.text
-                           };
+            // Retrieve the MCC (from the SIM card information)
+            // Note: the phone book country code is not defined yet
+            NSString *MCC = [MXKAppSettings standardAppSettings].phonebookCountryCode;
+            
+            // Check whether the user login is a valid phone number.
+            NSString *msisdn = [MXKTools msisdnWithPhoneNumber:user andCountryCode:MCC];
+            
+            if (msisdn)
+            {
+                parameters = @{
+                               @"type": kMXLoginFlowTypePassword,
+                               @"medium": kMX3PIDMediumMSISDN,
+                               @"address": msisdn,
+                               @"password": self.passWordTextField.text
+                               };
+            }
+            else
+            {
+                parameters = @{
+                               @"type": kMXLoginFlowTypePassword,
+                               @"user": user,
+                               @"password": self.passWordTextField.text
+                               };
+            }
         }
         
         callback(parameters);
