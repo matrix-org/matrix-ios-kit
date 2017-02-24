@@ -483,41 +483,40 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setHomeServerTextFieldText:(NSString *)homeServerUrl
 {
-    if (homeServerUrl.length)
-    {
-        _homeServerTextField.text = homeServerUrl;
-    }
-    else
+    if (!homeServerUrl.length)
     {
         // Force refresh with default value
-        _homeServerTextField.text = _defaultHomeServerUrl;
+        homeServerUrl = _defaultHomeServerUrl;
     }
     
-    [self updateRESTClient];
+    _homeServerTextField.text = homeServerUrl;
     
-    if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
+    if (!mxRestClient || ![mxRestClient.homeserver isEqualToString:homeServerUrl])
     {
-        // Refresh UI
-        [self refreshAuthenticationSession];
+        [self updateRESTClient];
+        
+        if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
+        {
+            // Refresh UI
+            [self refreshAuthenticationSession];
+        }
     }
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
 {
-    if (identityServerUrl.length)
-    {
-        _identityServerTextField.text = identityServerUrl;
-    }
-    else
+    if (!identityServerUrl.length)
     {
         // Force refresh with default value
-        _identityServerTextField.text = _defaultIdentityServerUrl;
+        identityServerUrl = _defaultIdentityServerUrl;
     }
     
+    _identityServerTextField.text = identityServerUrl;
+    
     // Update REST client
-    if (mxRestClient)
+    if (![mxRestClient.identityServer isEqualToString:identityServerUrl])
     {
-        [mxRestClient setIdentityServer:_identityServerTextField.text];
+        [mxRestClient setIdentityServer:identityServerUrl];
     }
 }
 
