@@ -27,6 +27,6 @@ Pod::Spec.new do |s|
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.8.14'
   s.dependency 'DTCoreText', '~> 1.6.17'
-  s.dependency 'GHMarkdownParser', '~> 0.1.2'
+  s.dependency 'cmark', '~> 0.24.1'
 
 end
