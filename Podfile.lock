@@ -14,6 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
+  - cmark (0.24.1)
   - DTCoreText (1.6.19):
     - DTCoreText/Core (= 1.6.19)
     - DTFoundation/Core (~> 1.7.5)
@@ -31,7 +32,6 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.11):
     - DTFoundation/Core
-  - GHMarkdownParser (0.1.2)
   - HPGrowingTextView (1.1)
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
@@ -41,8 +41,8 @@ PODS:
     - AFNetworking (~> 3.1.0)
 
 DEPENDENCIES:
+  - cmark (~> 0.24.1)
   - DTCoreText (~> 1.6.17)
-  - GHMarkdownParser (~> 0.1.2)
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.2)
@@ -50,15 +50,15 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  cmark: ec0275215b504780287b6fca360224e384368af8
   DTCoreText: 184cc2f460c2177108e8700dfb0eb1b1cb72c99d
   DTFoundation: 0ef29c70a9814e15518694862bd739347abe2a50
-  GHMarkdownParser: 14cbf59d0ab9450017d843dffd4a3ef691e5bd77
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: a8bffdec18c37728360f6771fe021302f1e0b497
   MatrixSDK: a638135ef6058d42bae9539649c2b45184155fdb
 
-PODFILE CHECKSUM: 1bc87109be03c1cb6ba9567d95c5d0f52f99a8b8
+PODFILE CHECKSUM: c25b8bd197c8750ecc7011feeec004b93348c1fc
 
 COCOAPODS: 1.2.0
