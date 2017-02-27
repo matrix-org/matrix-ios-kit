@@ -24,7 +24,7 @@ pod 'libPhoneNumber-iOS', '~> 0.9.2'
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.2.0'
 pod 'DTCoreText', '~> 1.6.17'
-pod 'GHMarkdownParser', '~> 0.1.2'
+pod 'cmark', '~> 0.24.1'
 
 end
 

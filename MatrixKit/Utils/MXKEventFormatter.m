@@ -22,7 +22,7 @@
 #import "MXKTools.h"
 
 #import "DTCoreText.h"
-#import "GHMarkdownParser.h"
+#import "cmark.h"
 
 #import "MXDecryptionResult.h"
 
@@ -32,11 +32,6 @@
      The matrix session. Used to get contextual data.
      */
     MXSession *mxSession;
-
-    /**
-     The Markdown to HTML parser.
-     */
-    GHMarkdownParser *markdownParser;
 
     /**
      The default CSS converted in DTCoreText object.
@@ -63,10 +58,6 @@
         mxSession = matrixSession;
         
         [self initDateTimeFormatters];
-
-        markdownParser = [[GHMarkdownParser alloc] init];
-        markdownParser.options = kGHMarkdownAutoLink | kGHMarkdownNoSmartQuotes;
-        markdownParser.githubFlavored = YES;        // This is the Markdown flavor we use in Matrix apps
 
         // Use the same list as matrix-react-sdk ( https://github.com/matrix-org/matrix-react-sdk/blob/24223ae2b69debb33fa22fcda5aeba6fa93c93eb/src/HtmlUtils.js#L25 )
         _allowedHTMLTags = @[
@@ -1448,15 +1439,16 @@
 
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
-    // In GitHub Flavored Mardown, the '#' sign creates an HTML header only if it is
-    // followed by the space char.
-    // But GHMarkdownParser creates an HTML header everytime it finds a '#' sign which
-    // kills room aliases (like #matrix:matrix.org).
-    // So, escape them if they are not followed by a space
-    NSString *str = [markdownString stringByReplacingOccurrencesOfString:@"(#+)[^( |#)]" withString:@"\\\\$0" options:NSRegularExpressionSearch range:NSMakeRange(0, markdownString.length)];
+    const char *cstr = [markdownString cStringUsingEncoding: NSUTF8StringEncoding];
+    const char *htmlCString = cmark_markdown_to_html(cstr, strlen(cstr), CMARK_OPT_HARDBREAKS);
+    NSString *htmlString = [[NSString alloc] initWithCString:htmlCString encoding:NSUTF8StringEncoding];
 
-    NSString *htmlString = [markdownParser HTMLStringFromMarkdownString:str];
-
+    // Strip off the trailing newline, if it exists.
+    if ([htmlString hasSuffix:@"\n"])
+    {
+        htmlString = [htmlString substringToIndex:htmlString.length - 1];
+    }
+    
     // Strip start and end <p> tags else you get 'orrible spacing
     if ([htmlString hasPrefix:@"<p>"])
     {
