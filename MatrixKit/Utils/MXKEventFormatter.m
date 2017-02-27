@@ -1440,9 +1440,15 @@
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
     const char *cstr = [markdownString cStringUsingEncoding: NSUTF8StringEncoding];
-    const char *htmlCString = cmark_markdown_to_html(cstr, strlen(cstr), 0);
+    const char *htmlCString = cmark_markdown_to_html(cstr, strlen(cstr), CMARK_OPT_HARDBREAKS);
     NSString *htmlString = [[NSString alloc] initWithCString:htmlCString encoding:NSUTF8StringEncoding];
 
+    // Strip off the trailing newline, if it exists.
+    if ([htmlString hasSuffix:@"\n"])
+    {
+        htmlString = [htmlString substringToIndex:htmlString.length - 1];
+    }
+    
     // Strip start and end <p> tags else you get 'orrible spacing
     if ([htmlString hasPrefix:@"<p>"])
     {

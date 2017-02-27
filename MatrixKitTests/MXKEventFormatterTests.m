@@ -71,6 +71,19 @@
     }];
 
 }
+    
+- (void)testMarkdownFormatting
+{
+    NSString *html = [eventFormatter htmlStringFromMarkdownString:@"Line One.\nLine Two."];
+    
+    BOOL hardBreakExists =      [html rangeOfString:@"<br />"].location != NSNotFound;
+    BOOL openParagraphExists =  [html rangeOfString:@"<p>"].location != NSNotFound;
+    BOOL closeParagraphExists = [html rangeOfString:@"</p>"].location != NSNotFound;
+    
+    // Check for some known error cases
+    XCTAssert(hardBreakExists, "The soft break (\\n) must be converted to a hard break (<br />).");
+    XCTAssert(!openParagraphExists && !closeParagraphExists, "The html must not contain any opening or closing paragraph tags.");
+}
 
 
 @end
