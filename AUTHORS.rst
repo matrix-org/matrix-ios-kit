@@ -16,3 +16,7 @@ Dave Baker <dave at matrix.org>
 
 Jeremy O'Brien <neutral at fastmail.com>
  * PR #181 Fix for accepting autocorrect on message send
+ 
+Avery Pierce <aapierce0 at gmail.com>
+ * PR #248 Replace GHMarkdownParser with CommonMark
+ 
