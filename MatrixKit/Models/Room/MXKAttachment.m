@@ -20,6 +20,8 @@
 #import "MXKTools.h"
 #import "MXEncryptedAttachments.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
+
 // The size of thumbnail we request from the server
 // Note that this is smaller than the ones we upload: when sending, one size
 // must fit all, including the web which will want relatively high res thumbnails.

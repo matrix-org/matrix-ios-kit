@@ -27,6 +27,8 @@
 
 #import "MXSession.h"
 
+#import <AFNetworking/AFNetworking.h>
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 

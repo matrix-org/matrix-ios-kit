@@ -25,6 +25,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import <AFNetworking/AFNetworking.h>
+
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 @interface MXKAuthenticationViewController ()
