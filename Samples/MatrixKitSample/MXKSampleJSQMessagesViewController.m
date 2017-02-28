@@ -20,6 +20,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
+
 @interface MXKSampleJSQMessagesViewController ()
 {
     /**
