@@ -499,8 +499,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
         
         if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
         {
-            // Refresh UI
-            [self refreshAuthenticationSession];
+            // Restore default UI
+            self.authType = _authType;
         }
     }
 }
@@ -766,6 +766,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     onUnrecognizedCertificateCustomBlock = onUnrecognizedCertificateBlock;
 }
 
+- (void)isUserNameInUse:(void (^)(BOOL isUserNameInUse))callback
+{
+    mxCurrentOperation = [mxRestClient isUserNameInUse:self.authInputsView.userId callback:^(BOOL isUserNameInUse) {
+        
+        mxCurrentOperation = nil;
+        
+        if (callback)
+        {
+            callback (isUserNameInUse);
+        }
+        
+    }];
+}
+
 - (IBAction)onButtonPressed:(id)sender
 {
     [self dismissKeyboard];
@@ -885,10 +899,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     }
                     else
                     {
-                        mxCurrentOperation = [mxRestClient isUserNameInUse:self.authInputsView.userId callback:^(BOOL isUserNameInUse) {
-                            
-                            mxCurrentOperation = nil;
-                            [_authenticationActivityIndicator stopAnimating];
+                        [self isUserNameInUse:^(BOOL isUserNameInUse) {
                             
                             if (isUserNameInUse)
                             {
@@ -897,6 +908,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                             }
                             else
                             {
+                                [_authenticationActivityIndicator stopAnimating];
+                               
                                 // Launch registration by preparing parameters dict
                                 [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
                                     

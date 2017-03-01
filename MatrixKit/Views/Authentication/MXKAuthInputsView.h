@@ -63,6 +63,16 @@ typedef enum {
  The matrix REST Client used to validate potential email address.
  */
 - (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView;
+
+/**
+ Tells the delegate to present a view controller modally.
+ 
+ Note: This method is used to display the countries list during the phone number handling.
+ 
+ @param authInputsView the authentication inputs view.
+ @param viewControllerToPresent.
+ */
+- (void)authInputsView:(MXKAuthInputsView *)authInputsView presentViewController:(UIViewController*)viewControllerToPresent;
 @end
 
 /**
@@ -184,11 +194,6 @@ typedef enum {
  Tell whether all required fields are set
  */
 - (BOOL)areAllRequiredFieldsSet;
-
-/**
- Tell whether the email field is empty while the email binding is supported.
- */
-- (BOOL)shouldPromptUserForEmailAddress;
 
 /**
  Force dismiss keyboard

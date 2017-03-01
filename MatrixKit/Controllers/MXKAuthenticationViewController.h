@@ -184,6 +184,13 @@ extern NSString *const MXKAuthErrorDomain;
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock;
 
 /**
+ Check whether the current username is already in use.
+ 
+ @param callback A block object called when the operation is completed.
+ */
+- (void)isUserNameInUse:(void (^)(BOOL isUserNameInUse))callback;
+
+/**
  Action registered on the following events:
  - 'UIControlEventTouchUpInside' for each UIButton instance.
  - 'UIControlEventValueChanged' for each UISwitch instance.

@@ -107,11 +107,6 @@
     return YES;
 }
 
-- (BOOL)shouldPromptUserForEmailAddress
-{
-    return NO;
-}
-
 - (void)dismissKeyboard
 {
     
