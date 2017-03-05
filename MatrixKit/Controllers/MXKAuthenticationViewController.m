@@ -1650,7 +1650,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView
+- (MXRestClient *)authInputsViewThirdPartyIdValidationRestClient:(MXKAuthInputsView *)authInputsView
 {
     return mxRestClient;
 }

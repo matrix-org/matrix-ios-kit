@@ -61,9 +61,9 @@ typedef enum {
 @optional
 
 /**
- The matrix REST Client used to validate potential email address.
+ The matrix REST Client used to validate third-party identifiers.
  */
-- (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView;
+- (MXRestClient *)authInputsViewThirdPartyIdValidationRestClient:(MXKAuthInputsView *)authInputsView;
 
 /**
  Tell the delegate to present a view controller modally.
