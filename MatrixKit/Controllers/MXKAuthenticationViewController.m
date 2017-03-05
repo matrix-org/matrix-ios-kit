@@ -1141,6 +1141,39 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
 
+- (void)onSuccessfulLogin:(MXCredentials*)credentials
+{
+    mxCurrentOperation = nil;
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+    
+    // Sanity check: check whether the user is not already logged in with this id
+    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
+    {
+        //Alert user
+        __weak typeof(self) weakSelf = self;
+        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
+        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+            // We remove the authentication view controller.
+            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
+        }];
+        [alert showInViewController:self];
+    }
+    else
+    {
+        // Report the new account in account manager
+        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+        account.identityServerURL = _identityServerTextField.text;
+        
+        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
+        
+        if (_delegate)
+        {
+            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+        }
+    }
+}
+
 #pragma mark - Privates
 
 - (void)refreshForgotPasswordSession
@@ -1540,39 +1573,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     else if (status == AFNetworkReachabilityStatusNotReachable)
     {
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
-    }
-}
-
-- (void)onSuccessfulLogin:(MXCredentials*)credentials
-{
-    mxCurrentOperation = nil;
-    [_authenticationActivityIndicator stopAnimating];
-    self.userInteractionEnabled = YES;
-    
-    // Sanity check: check whether the user is not already logged in with this id
-    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
-    {
-        //Alert user
-        __weak typeof(self) weakSelf = self;
-        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
-        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
-            // We remove the authentication view controller.
-            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
-        }];
-        [alert showInViewController:self];
-    }
-    else
-    {
-        // Report the new account in account manager
-        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-        account.identityServerURL = _identityServerTextField.text;
-        
-        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-        
-        if (_delegate)
-        {
-            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-        }
     }
 }
 

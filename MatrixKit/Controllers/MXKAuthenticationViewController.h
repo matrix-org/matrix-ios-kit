@@ -231,5 +231,12 @@ extern NSString *const MXKAuthErrorDomain;
  */
 - (void)onFailureDuringAuthRequest:(NSError *)error;
 
+/**
+ Handle the successful authentication request.
+ 
+ @param credentials the user's credentials.
+ */
+- (void)onSuccessfulLogin:(MXCredentials*)credentials;
+
 @end
 

@@ -66,7 +66,7 @@ typedef enum {
 - (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView;
 
 /**
- Tells the delegate to present a view controller modally.
+ Tell the delegate to present a view controller modally.
  
  Note: This method is used to display the countries list during the phone number handling.
  
@@ -74,6 +74,11 @@ typedef enum {
  @param viewControllerToPresent.
  */
 - (void)authInputsView:(MXKAuthInputsView *)authInputsView presentViewController:(UIViewController*)viewControllerToPresent;
+
+/**
+ Tell the delegate to cancel the current operation.
+ */
+- (void)authInputsViewDidCancelOperation:(MXKAuthInputsView *)authInputsView;
 @end
 
 /**
