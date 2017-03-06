@@ -153,8 +153,8 @@ extern NSString *const kMXKContactDefaultContactPrefixId;
 - (BOOL)matchedWithPatterns:(NSArray*)patterns;
 
 /**
- Internationalize the contact phonenumbers
+ The default ISO 3166-1 country code used to internationalize the contact phone numbers.
  */
-- (void)internationalizePhonenumbers:(NSString*)countryCode;
+@property (nonatomic) NSString *defaultCountryCode;
 
 @end

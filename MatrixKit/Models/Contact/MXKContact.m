@@ -348,6 +348,15 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         }
     }
     
+    // Check phones
+    for (MXKPhoneNumber* phone in _phoneNumbers)
+    {
+        if ([phone hasPrefix:prefix])
+        {
+            return YES;
+        }
+    }
+    
     return NO;
 }
 
@@ -429,12 +438,14 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     return matched;
 }
 
-- (void)internationalizePhonenumbers:(NSString*)countryCode
+- (void)setDefaultCountryCode:(NSString *)defaultCountryCode
 {
-    for(MXKPhoneNumber* phonenumber in _phoneNumbers)
+    for (MXKPhoneNumber* phonenumber in _phoneNumbers)
     {
-        phonenumber.countryCode = countryCode;
+        phonenumber.defaultCountryCode = defaultCountryCode;
     }
+    
+    _defaultCountryCode = defaultCountryCode;
 }
 
 #pragma mark - getter/setter
@@ -448,7 +459,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         [identifiers addObject:matrixIdField.matrixID];
     }
     
-    for(MXKEmail* email in _emailAddresses)
+    for (MXKEmail* email in _emailAddresses)
     {
         if (email.matrixID && ([identifiers indexOfObject:email.matrixID] == NSNotFound))
         {
@@ -456,7 +467,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         }
     }
     
-    for(MXKPhoneNumber* pn in _phoneNumbers)
+    for (MXKPhoneNumber* pn in _phoneNumbers)
     {
         if (pn.matrixID && ([identifiers indexOfObject:pn.matrixID] == NSNotFound))
         {
@@ -537,6 +548,25 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
             else if (!firstField && email.matrixID)
             {
                 firstField = email;
+            }
+        }
+    }
+    
+    if (_phoneNumbers.count > 0)
+    {
+        // list the linked phones
+        // search if one phone field has a dedicated thumbnail
+        for (MXKPhoneNumber* phoneNb in _phoneNumbers)
+        {
+            if (phoneNb.avatarImage)
+            {
+                matrixThumbnail = phoneNb.avatarImage;
+                _matrixAvatarURL = phoneNb.matrixAvatarURL;
+                return matrixThumbnail;
+            }
+            else if (!firstField && phoneNb.matrixID)
+            {
+                firstField = phoneNb;
             }
         }
     }
