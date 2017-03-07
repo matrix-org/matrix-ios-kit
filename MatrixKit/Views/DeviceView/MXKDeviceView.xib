@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -20,7 +20,7 @@
                     <color key="backgroundColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c3W-Ma-n01">
-                    <rect key="frame" x="10" y="10" width="580" height="250"/>
+                    <rect key="frame" x="10" y="74" width="580" height="250"/>
                     <subviews>
                         <textView autoresizesSubviews="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Vk-Jx-L6Y">
                             <rect key="frame" x="10" y="10" width="560" height="190"/>
@@ -30,7 +30,7 @@
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                         </textView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ump-1C-SzI">
-                            <rect key="frame" x="58" y="210" width="30" height="30"/>
+                            <rect key="frame" x="57.5" y="210" width="30" height="30"/>
                             <state key="normal" title="OK">
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
@@ -83,7 +83,7 @@
                 <constraint firstItem="D7c-Zw-n8I" firstAttribute="leading" secondItem="8VI-1E-fge" secondAttribute="leading" id="Gzh-sa-sB4"/>
                 <constraint firstItem="c3W-Ma-n01" firstAttribute="height" relation="lessThanOrEqual" secondItem="8VI-1E-fge" secondAttribute="height" constant="-20" id="OE8-Ll-IX0"/>
                 <constraint firstItem="4za-i5-u2D" firstAttribute="centerX" secondItem="8VI-1E-fge" secondAttribute="centerX" id="SGT-wg-tcC"/>
-                <constraint firstItem="c3W-Ma-n01" firstAttribute="top" secondItem="8VI-1E-fge" secondAttribute="top" constant="10" id="a6K-LL-lzT"/>
+                <constraint firstItem="c3W-Ma-n01" firstAttribute="top" secondItem="8VI-1E-fge" secondAttribute="top" constant="74" id="a6K-LL-lzT"/>
                 <constraint firstItem="4za-i5-u2D" firstAttribute="centerY" secondItem="8VI-1E-fge" secondAttribute="centerY" id="gjb-ga-edx"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="c3W-Ma-n01" secondAttribute="bottom" constant="10" id="oD7-T4-DuW"/>
                 <constraint firstAttribute="bottom" secondItem="D7c-Zw-n8I" secondAttribute="bottom" id="qda-fo-h6c"/>
