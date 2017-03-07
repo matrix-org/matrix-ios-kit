@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -840,7 +841,7 @@
                                                                                     multiplier:1.0f
                                                                                       constant:0.0f];
 
-                    NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
+                    NSLayoutConstraint *leadingConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
                                                                                           attribute:NSLayoutAttributeLeading
                                                                                           relatedBy:0
                                                                                              toItem:selectedCell.customView
@@ -856,7 +857,7 @@
                                                                                        multiplier:1
                                                                                          constant:0];
 
-                    NSLayoutConstraint *tailingConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
+                    NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:selectedCell.moviePlayer.view
                                                                                          attribute:NSLayoutAttributeTrailing
                                                                                          relatedBy:0
                                                                                             toItem:selectedCell.customView
@@ -868,15 +869,15 @@
 
                     if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
                     {
-                        [NSLayoutConstraint activateConstraints:@[topConstraint, trailingConstraint, bottomConstraint, tailingConstraint]];
+                        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, bottomConstraint, trailingConstraint]];
                     }
                     else
                     {
                         // iOS < 8 support
                         [self.view addConstraint:topConstraint];
-                        [self.view addConstraint:trailingConstraint];
+                        [self.view addConstraint:leadingConstraint];
                         [self.view addConstraint:bottomConstraint];
-                        [self.view addConstraint:tailingConstraint];
+                        [self.view addConstraint:trailingConstraint];
                     }
 
                     [[NSNotificationCenter defaultCenter] addObserver:self
