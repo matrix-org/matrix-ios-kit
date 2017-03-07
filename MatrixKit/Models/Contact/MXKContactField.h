@@ -19,9 +19,10 @@
 
 @interface MXKContactField : NSObject<NSCoding>
 
-// contact ID where the email has been found
+/**
+ The identifier of the contact to whom the data belongs to.
+ */
 @property (nonatomic, readonly) NSString *contactID;
-
 /**
  The linked matrix identifier if any
  */

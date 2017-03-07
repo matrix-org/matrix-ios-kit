@@ -18,7 +18,6 @@
 #import "MXKContactManager.h"
 
 #import "MXKContact.h"
-#import "MXKEmail.h"
 
 #import "MXKAppSettings.h"
 #import "MXKTools.h"
@@ -59,8 +58,9 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     NSMutableDictionary* localContactByContactID;
     NSMutableArray* localContactsWithMethods;
     NSMutableArray* splitLocalContacts;
+    
     // Matrix id linked to 3PID.
-    NSMutableDictionary* matrixIDBy3PID;
+    NSMutableDictionary<NSString*, NSString*> *matrixIDBy3PID;
     
     /**
      Matrix contacts handling
@@ -319,14 +319,17 @@ static MXKContactManager* sharedMXKContactManager = nil;
     // Check whether the array must be prepared
     if (!localContactsWithMethods)
     {
-        // List all the local contacts with emails
-        // TODO: Add the contacts with msisdn when msisdn 3PIDs will be supported
+        // List all the local contacts with emails and/or phones
         NSArray *localContacts = self.localContacts;
         localContactsWithMethods = [NSMutableArray arrayWithCapacity:localContacts.count];
         
         for (MXKContact* contact in localContacts)
         {
             if (contact.emailAddresses)
+            {
+                [localContactsWithMethods addObject:contact];
+            }
+            else if (contact.phoneNumbers)
             {
                 [localContactsWithMethods addObject:contact];
             }
@@ -359,12 +362,11 @@ static MXKContactManager* sharedMXKContactManager = nil;
                     [splitLocalContacts addObject:splitContact];
                 }
                 
-                // TODO: Add contacts with msisdn when msisdn 3PIDs will be supported
-//                for (MXKPhoneNumber *phone in phones)
-//                {
-//                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:nil phoneNumbers:@[phone] andThumbnail:contact.thumbnail];
-//                    [splitLocalContacts addObject:splitContact];
-//                }
+                for (MXKPhoneNumber *phone in phones)
+                {
+                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:nil phoneNumbers:@[phone] andThumbnail:contact.thumbnail];
+                    [splitLocalContacts addObject:splitContact];
+                }
             }
             else if (emails.count + phones.count)
             {
@@ -612,7 +614,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
                             if (countryCode)
                             {
-                                [contact internationalizePhonenumbers:countryCode];
+                                contact.defaultCountryCode = countryCode;
                             }
 
                             // update the local contacts list
@@ -690,16 +692,10 @@ static MXKContactManager* sharedMXKContactManager = nil;
         
         for (MXKPhoneNumber* phone in contact.phoneNumbers)
         {
-            if (phone.isValidPhoneNumber)
+            if (phone.msisdn)
             {
-                NSString *phoneNumber = phone.internationalPhoneNumber ? phone.internationalPhoneNumber : phone.cleanedPhonenumber;
-                if ([phoneNumber hasPrefix:@"+"])
-                {
-                    phoneNumber = [phoneNumber substringFromIndex:1];
-                }
-                
-                [lookup3pidsArray addObject:@[kMX3PIDMediumMSISDN, phoneNumber]];
-                [threepids addObject:phoneNumber];
+                [lookup3pidsArray addObject:@[kMX3PIDMediumMSISDN, phone.msisdn]];
+                [threepids addObject:phone.msisdn];
             }
         }
         
@@ -800,19 +796,13 @@ static MXKContactManager* sharedMXKContactManager = nil;
             
             for (MXKPhoneNumber* phone in contact.phoneNumbers)
             {
-                if (phone.isValidPhoneNumber)
+                if (phone.msisdn)
                 {
-                    NSString *phoneNumber = phone.internationalPhoneNumber ? phone.internationalPhoneNumber : phone.cleanedPhonenumber;
-                    if ([phoneNumber hasPrefix:@"+"])
-                    {
-                        phoneNumber = [phoneNumber substringFromIndex:1];
-                    }
-                    
                     // Not yet added
-                    if ([threepids indexOfObject:phoneNumber] == NSNotFound)
+                    if ([threepids indexOfObject:phone.msisdn] == NSNotFound)
                     {
-                        [lookup3pidsArray addObject:@[kMX3PIDMediumMSISDN, phoneNumber]];
-                        [threepids addObject:phoneNumber];
+                        [lookup3pidsArray addObject:@[kMX3PIDMediumMSISDN, phone.msisdn]];
+                        [threepids addObject:phone.msisdn];
                     }
                 }
             }
@@ -833,8 +823,14 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                  // Sanity check
                                                  if (discoveredUser.count == 3)
                                                  {
-                                                     [threepids addObject:discoveredUser[1]];
-                                                     [userIds addObject:discoveredUser[2]];
+                                                     id threepid = discoveredUser[1];
+                                                     id userId = discoveredUser[2];
+                                                 
+                                                     if ([threepid isKindOfClass:[NSString class]] && [userId isKindOfClass:[NSString class]])
+                                                     {
+                                                         [threepids addObject:threepid];
+                                                         [userIds addObject:userId];
+                                                     }
                                                  }
                                              }
                                              
@@ -922,9 +918,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
     dispatch_async(processingQueue, ^{
         NSArray* contactsSnapshot = [localContactByContactID allValues];
         
-        for(MXKContact* contact in contactsSnapshot)
+        for (MXKContact* contact in contactsSnapshot)
         {
-            [contact internationalizePhonenumbers:countryCode];
+            contact.defaultCountryCode = countryCode;
         }
         
         [self cacheLocalContacts];
@@ -1266,33 +1262,31 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)updateLocalContactMatrixIDs:(MXKContact*) contact
 {
-    // the phonenumbers wil be managed later
-    /*for(MXKPhoneNumber* pn in contact.phoneNumbers)
-     {
-     if (pn.textNumber.length > 0)
-     {
-     
-     // not yet added
-     if ([pids indexOfObject:pn.textNumber] == NSNotFound)
-     {
-     [pids addObject:pn.textNumber];
-     [medias addObject:@"msisdn"];
-     }
-     }
-     }*/
+    for (MXKPhoneNumber* phoneNumber in contact.phoneNumbers)
+    {
+        if (phoneNumber.msisdn)
+        {
+            NSString* matrixID = [matrixIDBy3PID objectForKey:phoneNumber.msisdn];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [phoneNumber setMatrixID:matrixID];
+                
+            });
+        }
+    }
     
     for (MXKEmail* email in contact.emailAddresses)
     {
         if (email.emailAddress.length > 0)
         {
-            id matrixID = [matrixIDBy3PID objectForKey:email.emailAddress];
+            NSString *matrixID = [matrixIDBy3PID objectForKey:email.emailAddress];
             
-            if ([matrixID isKindOfClass:[NSString class]])
-            {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [email setMatrixID:matrixID];
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [email setMatrixID:matrixID];
+                
+            });
         }
     }
 }
@@ -1308,7 +1302,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
     NSArray* localContacts = [localContactByContactID allValues];
     
     // update the contacts info
-    for(MXKContact* contact in localContacts)
+    for (MXKContact* contact in localContacts)
     {
         [self updateLocalContactMatrixIDs:contact];
     }
