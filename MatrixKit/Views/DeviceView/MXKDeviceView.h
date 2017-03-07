@@ -1,5 +1,6 @@
 /*
  Copyright 2016 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -37,11 +38,12 @@
 @optional
 
 /**
- Tells the delegate that the device was updated (renamed, removed...).
+ Tells the delegate to dismiss the device view.
  
  @param deviceView the device view.
+ @param isUpdated tell whether the device was updated (renamed, removed...).
  */
-- (void)deviceViewDidUpdate:(MXKDeviceView*)deviceView;
+- (void)dismissDeviceView:(MXKDeviceView*)deviceView didUpdate:(BOOL)isUpdated;
 
 @end
 
