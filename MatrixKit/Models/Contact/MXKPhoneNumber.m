@@ -58,7 +58,7 @@
     
     if (!invertedPhoneCharSet)
     {
-        invertedPhoneCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789+*#,"] invertedSet];
+        invertedPhoneCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789+*#,()"] invertedSet];
     }
     
     return [[phoneNumber componentsSeparatedByCharactersInSet:invertedPhoneCharSet] componentsJoinedByString:@""];
@@ -75,30 +75,36 @@
     
     if (patterns.count > 0)
     {
-        NSString *msisdnPattern;
-        
         for (NSString *pattern in patterns)
         {
-            if ([pattern hasPrefix:@"+"])
+            if ([_textNumber rangeOfString:pattern].location == NSNotFound)
             {
-                msisdnPattern = [pattern substringFromIndex:1];
-            }
-            else if ([pattern hasPrefix:@"00"])
-            {
-                msisdnPattern = [pattern substringFromIndex:2];
-            }
-            else
-            {
-                msisdnPattern = pattern;
-            }
-            
-            if (([_textNumber rangeOfString:pattern].location == NSNotFound) && ([_cleanedPhonenumber rangeOfString:pattern].location == NSNotFound))
-            {
-                // Check the msisdn
-                if (!self.msisdn || !msisdnPattern.length || [self.msisdn rangeOfString:msisdnPattern].location == NSNotFound)
+                NSString *cleanPattern = [[pattern componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
+                
+                if ([_cleanedPhonenumber rangeOfString:cleanPattern].location == NSNotFound)
                 {
-                    return NO;
+                    NSString *msisdnPattern;
+                    
+                    if ([cleanPattern hasPrefix:@"+"])
+                    {
+                        msisdnPattern = [cleanPattern substringFromIndex:1];
+                    }
+                    else if ([cleanPattern hasPrefix:@"00"])
+                    {
+                        msisdnPattern = [cleanPattern substringFromIndex:2];
+                    }
+                    else
+                    {
+                        msisdnPattern = cleanPattern;
+                    }
+                    
+                    // Check the msisdn
+                    if (!self.msisdn || !msisdnPattern.length || [self.msisdn rangeOfString:msisdnPattern].location == NSNotFound)
+                    {
+                        return NO;
+                    }
                 }
+                
             }
         }
     }
@@ -114,11 +120,20 @@
         return NO;
     }
     
-    if ([_cleanedPhonenumber hasPrefix:prefix] || [_textNumber hasPrefix:prefix])
+    if ([_textNumber hasPrefix:prefix])
     {
         return YES;
     }
-    else if (self.msisdn)
+    
+    // Remove whitespace before checking the cleaned phone number
+    prefix = [[prefix componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
+    
+    if ([_cleanedPhonenumber hasPrefix:prefix])
+    {
+        return YES;
+    }
+    
+    if (self.msisdn)
     {
         if ([prefix hasPrefix:@"+"])
         {
