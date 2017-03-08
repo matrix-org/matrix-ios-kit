@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -160,6 +161,11 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  The presence event must not be sent if the application is launched by a push notification.
  */
 @property (nonatomic) BOOL hideUserPresence;
+
+/**
+ Flag indicating if the end user has been warned about encryption and its limitations.
+ */
+@property (nonatomic,getter=isWarnedAboutEncryption) BOOL warnedAboutEncryption;
 
 /**
  Register the MXKAccountOnCertificateChange block that will be used to handle certificate change during account use.

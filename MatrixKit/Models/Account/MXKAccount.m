@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -185,6 +186,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+
+        _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
@@ -233,6 +236,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
     [coder encodeBool:_disabled forKey:@"disabled"];
+
+    [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
 }
 
 #pragma mark - Properties
@@ -404,6 +409,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Archive updated field
         [[MXKAccountManager sharedManager] saveAccounts];
     }
+}
+
+- (void)setWarnedAboutEncryption:(BOOL)warnedAboutEncryption
+{
+    _warnedAboutEncryption = warnedAboutEncryption;
+
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
 }
 
 #pragma mark - Matrix user's profile
