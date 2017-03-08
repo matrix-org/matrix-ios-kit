@@ -185,6 +185,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+
+        _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
@@ -233,6 +235,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
     [coder encodeBool:_disabled forKey:@"disabled"];
+
+    [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
 }
 
 #pragma mark - Properties
@@ -404,6 +408,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Archive updated field
         [[MXKAccountManager sharedManager] saveAccounts];
     }
+}
+
+- (void)setWarnedAboutEncryption:(BOOL)warnedAboutEncryption
+{
+    _warnedAboutEncryption = warnedAboutEncryption;
+
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
 }
 
 #pragma mark - Matrix user's profile
