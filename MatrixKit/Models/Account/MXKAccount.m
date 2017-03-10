@@ -663,7 +663,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         // Reset room data stored in memory
         [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:mxSession];
-        
+
+        if (clearStore)
+        {
+            // Force a reload of device keys at the next session start.
+            // This will fix potential UISIs other peoples receive for our messages.
+            [mxSession.crypto resetDeviceKeys];
+        }
+
         // Close session
         [mxSession close];
         
