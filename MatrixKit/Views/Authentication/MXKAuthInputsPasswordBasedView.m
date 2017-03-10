@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -106,7 +107,8 @@
             return;
         }
         
-        // Retrieve the user login and check whether it is an email, a phone number or a username.
+        // Retrieve the user login and check whether it is an email or a username.
+        // TODO: Update the UI view to support the login based on a mobile phone number.
         NSString *user = self.userLoginTextField.text;
         user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         BOOL isEmailAddress = [MXTools isEmailAddress:user];
@@ -117,37 +119,24 @@
         {
             parameters = @{
                            @"type": kMXLoginFlowTypePassword,
-                           @"medium": kMX3PIDMediumEmail,
-                           @"address": user,
+                           @"identifier": @{
+                                   @"type": kMXLoginIdentifierTypeThirdParty,
+                                   @"medium": kMX3PIDMediumEmail,
+                                   @"address": user
+                                   },
                            @"password": self.passWordTextField.text
                            };
         }
         else
         {
-            // Retrieve the MCC (from the SIM card information)
-            // Note: the phone book country code is not defined yet
-            NSString *MCC = [MXKAppSettings standardAppSettings].phonebookCountryCode;
-            
-            // Check whether the user login is a valid phone number.
-            NSString *msisdn = [MXKTools msisdnWithPhoneNumber:user andCountryCode:MCC];
-            
-            if (msisdn)
-            {
-                parameters = @{
-                               @"type": kMXLoginFlowTypePassword,
-                               @"medium": kMX3PIDMediumMSISDN,
-                               @"address": msisdn,
-                               @"password": self.passWordTextField.text
-                               };
-            }
-            else
-            {
-                parameters = @{
-                               @"type": kMXLoginFlowTypePassword,
-                               @"user": user,
-                               @"password": self.passWordTextField.text
-                               };
-            }
+            parameters = @{
+                           @"type": kMXLoginFlowTypePassword,
+                           @"identifier": @{
+                                   @"type": kMXLoginIdentifierTypeUser,
+                                   @"user": user
+                                   },
+                           @"password": self.passWordTextField.text
+                           };
         }
         
         callback(parameters);
