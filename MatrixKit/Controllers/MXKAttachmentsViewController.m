@@ -193,8 +193,6 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated
-
-
 {
     if (tempFile)
     {
@@ -207,6 +205,12 @@
     {
         [currentAlert dismiss:NO];
         currentAlert = nil;
+    }
+    
+    // Stop playing any video
+    for (MXKMediaCollectionViewCell *cell in self.attachmentsCollection.visibleCells)
+    {
+        [cell.moviePlayer stop];
     }
     
     // Restore audio category

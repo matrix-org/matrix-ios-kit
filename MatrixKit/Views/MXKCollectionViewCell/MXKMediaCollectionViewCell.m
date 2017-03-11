@@ -34,5 +34,17 @@
     return self;
 }
 
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    [self.moviePlayer stop];
+    self.moviePlayer = nil;
+}
+
+- (void)dealloc
+{
+    [self.moviePlayer stop];
+}
+
 @end
 
