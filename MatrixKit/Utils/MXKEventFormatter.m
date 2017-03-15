@@ -1363,19 +1363,13 @@
 }
 
 #pragma mark - MXRoomSummaryUpdating
-- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvent:(MXEvent *)event
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents
 {
-    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvent:event];
+    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents];
 }
 
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event oldState:(MXRoomState *)oldState
 {
-    // Do not show redacted event if not configured
-//    if (event.isRedactedEvent && !_settings.showRedactionsInRoomHistory)
-//    {
-//        return NO;
-//    }
-
     // Use the default updater as first pass
     BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event oldState:oldState];
     if (updated)
