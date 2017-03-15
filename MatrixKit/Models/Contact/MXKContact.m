@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -50,6 +51,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     {
         matrixIdField = nil;
         isMatrixContact = NO;
+        _matrixAvatarURL = nil;
         
         isThirdPartyInvite = NO;
     }
@@ -346,6 +348,15 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         }
     }
     
+    // Check phones
+    for (MXKPhoneNumber* phone in _phoneNumbers)
+    {
+        if ([phone hasPrefix:prefix])
+        {
+            return YES;
+        }
+    }
+    
     return NO;
 }
 
@@ -427,12 +438,14 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     return matched;
 }
 
-- (void)internationalizePhonenumbers:(NSString*)countryCode
+- (void)setDefaultCountryCode:(NSString *)defaultCountryCode
 {
-    for(MXKPhoneNumber* phonenumber in _phoneNumbers)
+    for (MXKPhoneNumber* phonenumber in _phoneNumbers)
     {
-        phonenumber.countryCode = countryCode;
+        phonenumber.defaultCountryCode = defaultCountryCode;
     }
+    
+    _defaultCountryCode = defaultCountryCode;
 }
 
 #pragma mark - getter/setter
@@ -446,7 +459,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         [identifiers addObject:matrixIdField.matrixID];
     }
     
-    for(MXKEmail* email in _emailAddresses)
+    for (MXKEmail* email in _emailAddresses)
     {
         if (email.matrixID && ([identifiers indexOfObject:email.matrixID] == NSNotFound))
         {
@@ -454,7 +467,7 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
         }
     }
     
-    for(MXKPhoneNumber* pn in _phoneNumbers)
+    for (MXKPhoneNumber* pn in _phoneNumbers)
     {
         if (pn.matrixID && ([identifiers indexOfObject:pn.matrixID] == NSNotFound))
         {
@@ -479,54 +492,94 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     }
 }
 
+- (void)resetMatrixThumbnail
+{
+    matrixThumbnail = nil;
+    _matrixAvatarURL = nil;
+    
+    // Reset the avatar in the contact fields too.
+    [matrixIdField resetMatrixAvatar];
+    
+    for (MXKEmail* email in _emailAddresses)
+    {
+        [email resetMatrixAvatar];
+    }
+}
+
 - (UIImage*)thumbnailWithPreferedSize:(CGSize)size
 {
-    // already found a matrix thumbnail
+    // Consider first the local thumbnail if any.
+    if (contactThumbnail)
+    {
+        return contactThumbnail;
+    }
+    
+    // Check whether a matrix thumbnail is already found.
     if (matrixThumbnail)
     {
         return matrixThumbnail;
     }
-    else
+    
+    // Look for a thumbnail from the matrix identifiers
+    MXKContactField* firstField = matrixIdField;
+    if (firstField)
     {
-        MXKContactField* firstField = matrixIdField;
-        if (firstField)
+        if (firstField.avatarImage)
         {
-            if (firstField.avatarImage)
+            matrixThumbnail = firstField.avatarImage;
+            _matrixAvatarURL = firstField.matrixAvatarURL;
+            return matrixThumbnail;
+        }
+    }
+    
+    // try to replace the thumbnail by the matrix one
+    if (_emailAddresses.count > 0)
+    {
+        // list the linked email
+        // search if one email field has a dedicated thumbnail
+        for (MXKEmail* email in _emailAddresses)
+        {
+            if (email.avatarImage)
             {
-                matrixThumbnail = firstField.avatarImage;
+                matrixThumbnail = email.avatarImage;
+                _matrixAvatarURL = email.matrixAvatarURL;
                 return matrixThumbnail;
             }
-        }
-        
-        // try to replace the thumbnail by the matrix one
-        if (_emailAddresses.count > 0)
-        {
-            // list the linked email
-            // search if one email field has a dedicated thumbnail
-            for(MXKEmail* email in _emailAddresses)
+            else if (!firstField && email.matrixID)
             {
-                if (email.avatarImage)
-                {
-                    matrixThumbnail = email.avatarImage;
-                    return matrixThumbnail;
-                }
-                else if (!firstField && email.matrixID)
-                {
-                    firstField = email;
-                }
+                firstField = email;
             }
         }
-        
-        // if no thumbnail has been found
-        // try to load the first field one
-        if (firstField)
-        {
-            // should be retrieved by the cell info
-            [firstField loadAvatarWithSize:size];
-        }
-        
-        return contactThumbnail;
     }
+    
+    if (_phoneNumbers.count > 0)
+    {
+        // list the linked phones
+        // search if one phone field has a dedicated thumbnail
+        for (MXKPhoneNumber* phoneNb in _phoneNumbers)
+        {
+            if (phoneNb.avatarImage)
+            {
+                matrixThumbnail = phoneNb.avatarImage;
+                _matrixAvatarURL = phoneNb.matrixAvatarURL;
+                return matrixThumbnail;
+            }
+            else if (!firstField && phoneNb.matrixID)
+            {
+                firstField = phoneNb;
+            }
+        }
+    }
+    
+    // if no thumbnail has been found
+    // try to load the first field one
+    if (firstField)
+    {
+        // should be retrieved by the cell info
+        [firstField loadAvatarWithSize:size];
+    }
+    
+    return nil;
 }
 
 - (UIImage*)thumbnail

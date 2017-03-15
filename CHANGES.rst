@@ -1,8 +1,47 @@
+Changes in MatrixKit in 0.4.8 (2017-03-10)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.8).
+ * MXKRoomActivitiesView: Manage room activities view height changes.
+ * Crypto - Warn unknown devices: treat MXDeviceUnknown as MXDeviceUnverified.
+ * Crypto: Add MXKEncryptionInfoViewDelegate to be notified when the device has been verified.
+ * Crypto: Reset devices keys when clearing app cache in order to fix UISIs received by other people.
+ * Add MXKCountryPickerViewController.
+ * MXKContactManager: Reload the local contacts from the system when the user changes his mind and disables the contact sync.
+ * MXKAccount: List the phone numbers linked to the account.
+ * MXKAccount: add warnedAboutEncryption property.
+ * MXK3PID: Support phone number validation.
+ * CommonMark: Replace GHMarkdownParser with cmark.
+ * MXKAuthInputsPasswordBasedView: Suport the new Login API with different types of identifiers.
+ * MXKContactManager: Discover matrix users by using the local phonebook entries (email and phone number) (https://github.com/vector-im/riot-ios#904).
+ 
+Bug fixes:
+ * Self-signed homeserver: Moved the code that trusts already trusted certificate into MXRestClient (Related to https://github.com/matrix-org/matrix-ios-sdk/pull/248).
+ * MXKAuthenticationViewController: Fix notification loop on server error.
+ 
+API breaks:
+  * MXKAuthInputsViewDelegate: [authInputsViewEmailValidationRestClient:] has been renamed to [authInputsViewThirdPartyIdValidationRestClient:].
+  * MXKDeviceView: [deviceViewDidUpdate:] has been renamed to [dismissDeviceView: didUpdate:].
+
+Changes in MatrixKit in 0.4.7 (2017-02-08)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.7).
+ * Add E2E keys export & import. This is managed by new MXKEncryptionKeysImportView and MXKEncryptionKeysExportView views.
+ * Show riot enabled local contacts in known contacts too (https://github.com/vector-im/riot-ios#1001).
+ 
+Bug fixes:
+ * Duplicated msg when going into room details (https://github.com/vector-im/riot-ios#970).
+ * Local echoes for typed messages stay (far) longer in grey (https://github.com/vector-im/riot-ios#1007).
+ * Should fix crash in 0.3.8: [MXKRoomInputToolbarView contentEditingInputsForAssets:withResult:onComplete:] (https://github.com/vector-im/riot-ios#1015).
+ 
 Changes in MatrixKit in 0.4.6 (2017-01-24)
 ==========================================
 
 Improvements:
- * Upgrade MatrixSDK version (v0.7.5).
+ * Upgrade MatrixSDK version (v0.7.6).
  * MXKContactManager: Support bulk lookup to discover the matrix users in local contacts.
  * MXKContactTableCell: Let contacts table refresh matrix ids of the local contacts.
  

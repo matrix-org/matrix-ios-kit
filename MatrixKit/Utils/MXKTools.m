@@ -20,6 +20,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "NBPhoneNumberUtil.h"
+
 #import "MXKAlert.h"
 #import "MXCall.h"
 
@@ -85,6 +87,47 @@
     }
 
     return formattedString;
+}
+
+#pragma mark - Phone number
+
++ (NSString*)msisdnWithPhoneNumber:(NSString *)phoneNumber andCountryCode:(NSString *)countryCode
+{
+    NSString *msisdn = nil;
+    NBPhoneNumber *phoneNb;
+    
+    if ([phoneNumber hasPrefix:@"+"] || [phoneNumber hasPrefix:@"00"])
+    {
+        phoneNb = [[NBPhoneNumberUtil sharedInstance] parse:phoneNumber defaultRegion:nil error:nil];
+    }
+    else
+    {
+        // Check whether the provided phone number is a valid msisdn.
+        NSString *e164 = [NSString stringWithFormat:@"+%@", phoneNumber];
+        phoneNb = [[NBPhoneNumberUtil sharedInstance] parse:e164 defaultRegion:nil error:nil];
+        
+        if (![[NBPhoneNumberUtil sharedInstance] isValidNumber:phoneNb])
+        {
+            // Consider the phone number as a national one, and use the country code.
+            phoneNb = [[NBPhoneNumberUtil sharedInstance] parse:phoneNumber defaultRegion:countryCode error:nil];
+        }
+    }
+    
+    if ([[NBPhoneNumberUtil sharedInstance] isValidNumber:phoneNb])
+    {
+        NSString *e164 = [[NBPhoneNumberUtil sharedInstance] format:phoneNb numberFormat:NBEPhoneNumberFormatE164 error:nil];
+        
+        if ([e164 hasPrefix:@"+"])
+        {
+            msisdn = [e164 substringFromIndex:1];
+        }
+        else if ([e164 hasPrefix:@"00"])
+        {
+            msisdn = [e164 substringFromIndex:2];
+        }
+    }
+    
+    return msisdn;
 }
 
 #pragma mark - Hex color to UIColor conversion
@@ -308,9 +351,9 @@
 
 static NSMutableDictionary* backgroundByImageNameDict;
 
-+ (UIColor*)convertImageToPatternColor:(NSString*)reourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize
++ (UIColor*)convertImageToPatternColor:(NSString*)resourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize
 {
-    if (!reourceName)
+    if (!resourceName)
     {
         return backgroundColor;
     }
@@ -320,7 +363,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
         backgroundByImageNameDict = [[NSMutableDictionary alloc] init];
     }
     
-    NSString* key = [NSString stringWithFormat:@"%@ %f %f", reourceName, patternSize.width, resourceSize.width];
+    NSString* key = [NSString stringWithFormat:@"%@ %f %f", resourceName, patternSize.width, resourceSize.width];
     
     UIColor* bgColor = [backgroundByImageNameDict objectForKey:key];
     
@@ -334,7 +377,16 @@ static NSMutableDictionary* backgroundByImageNameDict;
         
         UIImageView* resourceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(offsetX, offsetY, resourceSize.width, resourceSize.height)];
         resourceImageView.backgroundColor = [UIColor clearColor];
-        resourceImageView.image = [MXKTools resizeImage:[UIImage imageNamed:reourceName] toSize:resourceSize];
+        UIImage *resImage = [UIImage imageNamed:resourceName];
+        if (CGSizeEqualToSize(resImage.size, resourceSize))
+        {
+            resourceImageView.image = resImage;
+        }
+        else
+        {
+            resourceImageView.image = [MXKTools resizeImage:resImage toSize:resourceSize];
+        }
+        
         
         [backgroundView addSubview:resourceImageView];
         

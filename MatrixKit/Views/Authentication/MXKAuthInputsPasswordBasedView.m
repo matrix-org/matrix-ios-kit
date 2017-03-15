@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,6 +16,10 @@
  */
 
 #import "MXKAuthInputsPasswordBasedView.h"
+
+#import "MXKTools.h"
+
+#import "MXKAppSettings.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -103,6 +108,7 @@
         }
         
         // Retrieve the user login and check whether it is an email or a username.
+        // TODO: Update the UI view to support the login based on a mobile phone number.
         NSString *user = self.userLoginTextField.text;
         user = [user stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         BOOL isEmailAddress = [MXTools isEmailAddress:user];
@@ -113,8 +119,11 @@
         {
             parameters = @{
                            @"type": kMXLoginFlowTypePassword,
-                           @"medium": @"email",
-                           @"address": user,
+                           @"identifier": @{
+                                   @"type": kMXLoginIdentifierTypeThirdParty,
+                                   @"medium": kMX3PIDMediumEmail,
+                                   @"address": user
+                                   },
                            @"password": self.passWordTextField.text
                            };
         }
@@ -122,7 +131,10 @@
         {
             parameters = @{
                            @"type": kMXLoginFlowTypePassword,
-                           @"user": user,
+                           @"identifier": @{
+                                   @"type": kMXLoginIdentifierTypeUser,
+                                   @"user": user
+                                   },
                            @"password": self.passWordTextField.text
                            };
         }

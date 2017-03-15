@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,21 +17,23 @@
 
 #import "MXKPhoneNumber.h"
 
-#import "NBPhoneNumberUtil.h"
-
 @implementation MXKPhoneNumber
 
-- (id)initWithTextNumber:(NSString*)aTextNumber type:(NSString*)aType contactID:(NSString*)aContactID matrixID:(NSString*)matrixID
+@synthesize msisdn;
+
+- (id)initWithTextNumber:(NSString*)textNumber type:(NSString*)type contactID:(NSString*)contactID matrixID:(NSString*)matrixID
 {
-    self = [super initWithContactID:aContactID matrixID:matrixID];
+    self = [super initWithContactID:contactID matrixID:matrixID];
     
     if (self)
     {
-        _type = aType ? aType : @"";
-        _textNumber = aTextNumber ? aTextNumber : @"" ;
+        _type = type ? type : @"";
+        _textNumber = textNumber ? textNumber : @"" ;
         _cleanedPhonenumber = [MXKPhoneNumber cleanPhonenumber:_textNumber];
-        _internationalPhoneNumber = nil;
-        _countryCode = nil;
+        _defaultCountryCode = nil;
+        msisdn = nil;
+        
+        _nbPhoneNumber = [[NBPhoneNumberUtil sharedInstance] parse:_cleanedPhonenumber defaultRegion:nil error:nil];
     }
     
     return self;
@@ -55,7 +58,7 @@
     
     if (!invertedPhoneCharSet)
     {
-        invertedPhoneCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789+*#,"] invertedSet];
+        invertedPhoneCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789+*#,()"] invertedSet];
     }
     
     return [[phoneNumber componentsSeparatedByCharactersInSet:invertedPhoneCharSet] componentsJoinedByString:@""];
@@ -72,11 +75,36 @@
     
     if (patterns.count > 0)
     {
-        for(NSString *pattern in patterns)
+        for (NSString *pattern in patterns)
         {
-            if (([_textNumber rangeOfString:pattern].location == NSNotFound) && ([_cleanedPhonenumber rangeOfString:pattern].location == NSNotFound))
+            if ([_textNumber rangeOfString:pattern].location == NSNotFound)
             {
-                return NO;
+                NSString *cleanPattern = [[pattern componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
+                
+                if ([_cleanedPhonenumber rangeOfString:cleanPattern].location == NSNotFound)
+                {
+                    NSString *msisdnPattern;
+                    
+                    if ([cleanPattern hasPrefix:@"+"])
+                    {
+                        msisdnPattern = [cleanPattern substringFromIndex:1];
+                    }
+                    else if ([cleanPattern hasPrefix:@"00"])
+                    {
+                        msisdnPattern = [cleanPattern substringFromIndex:2];
+                    }
+                    else
+                    {
+                        msisdnPattern = cleanPattern;
+                    }
+                    
+                    // Check the msisdn
+                    if (!self.msisdn || !msisdnPattern.length || [self.msisdn rangeOfString:msisdnPattern].location == NSNotFound)
+                    {
+                        return NO;
+                    }
+                }
+                
             }
         }
     }
@@ -84,45 +112,70 @@
     return YES;
 }
 
-- (void)setCountryCode:(NSString *)aCountryCode
+- (BOOL)hasPrefix:(NSString*)prefix
 {
-    if (![aCountryCode isEqualToString:_countryCode])
+    // no number -> cannot match
+    if (_textNumber.length == 0)
     {
-        _internationalPhoneNumber = nil;
-        _countryCode = aCountryCode;
-        
-        NSError* error = nil;
-        NBPhoneNumberUtil *phoneUtil = [NBPhoneNumberUtil sharedInstance];
-        NBPhoneNumber* nbPhoneNumber = [phoneUtil parse:_cleanedPhonenumber defaultRegion:aCountryCode error:&error];
-        
-        if (!error && [phoneUtil isValidNumber:nbPhoneNumber])
-            
+        return NO;
+    }
+    
+    if ([_textNumber hasPrefix:prefix])
+    {
+        return YES;
+    }
+    
+    // Remove whitespace before checking the cleaned phone number
+    prefix = [[prefix componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
+    
+    if ([_cleanedPhonenumber hasPrefix:prefix])
+    {
+        return YES;
+    }
+    
+    if (self.msisdn)
+    {
+        if ([prefix hasPrefix:@"+"])
         {
-            NSString* e164Number = [phoneUtil format:nbPhoneNumber numberFormat:NBEPhoneNumberFormatE164 error:&error];
-            
-            if (!error && (e164Number.length > 0))
-            {
-                // need to plug to libphonenumber
-                _internationalPhoneNumber = e164Number;
-            }
+            prefix = [prefix substringFromIndex:1];
         }
+        else if ([prefix hasPrefix:@"00"])
+        {
+            prefix = [prefix substringFromIndex:2];
+        }
+        
+        return [self.msisdn hasPrefix:prefix];
+    }
+    
+    return NO;
+}
+
+- (void)setDefaultCountryCode:(NSString *)defaultCountryCode
+{
+    if (![defaultCountryCode isEqualToString:_defaultCountryCode])
+    {
+        _nbPhoneNumber = [[NBPhoneNumberUtil sharedInstance] parse:_cleanedPhonenumber defaultRegion:defaultCountryCode error:nil];
+        
+        _defaultCountryCode = defaultCountryCode;
+        msisdn = nil;
     }
 }
 
-- (BOOL)isValidPhoneNumber
+- (NSString*)msisdn
 {
-    if (_countryCode)
+    if (!msisdn && _nbPhoneNumber)
     {
-        return (nil != _internationalPhoneNumber);
+        NSString *e164 = [[NBPhoneNumberUtil sharedInstance] format:_nbPhoneNumber numberFormat:NBEPhoneNumberFormatE164 error:nil];
+        if ([e164 hasPrefix:@"+"])
+        {
+            msisdn = [e164 substringFromIndex:1];
+        }
+        else if ([e164 hasPrefix:@"00"])
+        {
+            msisdn = [e164 substringFromIndex:2];
+        }
     }
-    else
-    {
-        NSError* error = nil;
-        NBPhoneNumberUtil *phoneUtil = [NBPhoneNumberUtil sharedInstance];
-        NBPhoneNumber* nbPhoneNumber = [phoneUtil parse:_cleanedPhonenumber defaultRegion:nil error:&error];
-        
-        return (!error && [phoneUtil isValidNumber:nbPhoneNumber]);
-    }
+    return msisdn;
 }
 
 #pragma mark NSCoding
@@ -136,8 +189,10 @@
         _type = [coder decodeObjectForKey:@"type"];
         _textNumber = [coder decodeObjectForKey:@"textNumber"];
         _cleanedPhonenumber = [coder decodeObjectForKey:@"cleanedPhonenumber"];
-        _internationalPhoneNumber = [coder decodeObjectForKey:@"internationalPhoneNumber"];
-        _countryCode = [coder decodeObjectForKey:@"countryCode"];
+        _defaultCountryCode = [coder decodeObjectForKey:@"countryCode"];
+        
+        _nbPhoneNumber = [[NBPhoneNumberUtil sharedInstance] parse:_cleanedPhonenumber defaultRegion:_defaultCountryCode error:nil];
+        msisdn = nil;
     }
     
     return self;
@@ -150,8 +205,7 @@
     [coder encodeObject:_type forKey:@"type"];
     [coder encodeObject:_textNumber forKey:@"textNumber"];
     [coder encodeObject:_cleanedPhonenumber forKey:@"cleanedPhonenumber"];
-    [coder encodeObject:_internationalPhoneNumber forKey:@"internationalPhoneNumber"];
-    [coder encodeObject:_countryCode forKey:@"countryCode"];
+    [coder encodeObject:_defaultCountryCode forKey:@"countryCode"];
 }
 
 @end

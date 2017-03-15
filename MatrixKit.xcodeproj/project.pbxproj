@@ -33,6 +33,8 @@
 		32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2271AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m */; };
 		32CEE22C1AB1EC9B00F7C74D /* MXKRecentCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2291AB1EC9B00F7C74D /* MXKRecentCellData.m */; };
 		32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */; };
+		32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */; };
+		32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */; };
 		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
 		71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */; };
 		71352D561C0ED240001D50B0 /* MXKRoomSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */; };
@@ -194,6 +196,8 @@
 		F0F148A51AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A21AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m */; };
 		F0F148A61AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A41AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m */; };
 		F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148C51AB31240005F5D4A /* MXKTools.m */; };
+		F0FDF2671E53586A00D23C47 /* MXKCountryPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */; };
+		F0FDF2681E53586A00D23C47 /* MXKCountryPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -258,6 +262,10 @@
 		32CEE22A1AB1EC9B00F7C74D /* MXKRecentCellDataStoring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentCellDataStoring.h; sourceTree = "<group>"; };
 		32CEE22E1AB1EE0900F7C74D /* MXKRecentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentTableViewCell.h; sourceTree = "<group>"; };
 		32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRecentTableViewCell.m; sourceTree = "<group>"; };
+		32FBDAF61E4484C40033C519 /* MXKEncryptionKeysImportView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEncryptionKeysImportView.h; sourceTree = "<group>"; };
+		32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionKeysImportView.m; sourceTree = "<group>"; };
+		32FBDAF91E44B0FC0033C519 /* MXKEncryptionKeysExportView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEncryptionKeysExportView.h; sourceTree = "<group>"; };
+		32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionKeysExportView.m; sourceTree = "<group>"; };
 		392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptedAttachmentsTest.m; sourceTree = "<group>"; };
 		665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -523,6 +531,9 @@
 		F0F148C41AB31240005F5D4A /* MXKTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKTools.h; sourceTree = "<group>"; };
 		F0F148C51AB31240005F5D4A /* MXKTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKTools.m; sourceTree = "<group>"; };
 		F0F535BC1ACD748E00B603F8 /* MXKResponderRageShaking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKResponderRageShaking.h; sourceTree = "<group>"; };
+		F0FDF2641E53586A00D23C47 /* MXKCountryPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCountryPickerViewController.h; sourceTree = "<group>"; };
+		F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKCountryPickerViewController.m; sourceTree = "<group>"; };
+		F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKCountryPickerViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -601,6 +612,9 @@
 		3219CBBB1AA6FB1C0027D7E2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F0FDF2641E53586A00D23C47 /* MXKCountryPickerViewController.h */,
+				F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */,
+				F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */,
 				F043562D1B2EF6FD0096FA02 /* MXKContactDetailsViewController.h */,
 				F043562E1B2EF6FD0096FA02 /* MXKContactDetailsViewController.m */,
 				F043563D1B2F124F0096FA02 /* MXKContactDetailsViewController.xib */,
@@ -674,6 +688,7 @@
 		3219CBBD1AA6FB1C0027D7E2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				32FBDAF51E4484C40033C519 /* EncryptionKeys */,
 				F09617BF1DE881D800093E9D /* EncryptionInfoView */,
 				F09617B91DE8478C00093E9D /* DeviceView */,
 				F080B42D1BD6991A00DE095E /* MXKCollectionViewCell */,
@@ -817,6 +832,17 @@
 				327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */,
 			);
 			path = RoomList;
+			sourceTree = "<group>";
+		};
+		32FBDAF51E4484C40033C519 /* EncryptionKeys */ = {
+			isa = PBXGroup;
+			children = (
+				32FBDAF61E4484C40033C519 /* MXKEncryptionKeysImportView.h */,
+				32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */,
+				32FBDAF91E44B0FC0033C519 /* MXKEncryptionKeysExportView.h */,
+				32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */,
+			);
+			path = EncryptionKeys;
 			sourceTree = "<group>";
 		};
 		69833E0CA8F7B8F25C6CC7C7 /* Pods */ = {
@@ -1278,6 +1304,7 @@
 				F080B4321BD6991A00DE095E /* MXKMediaCollectionViewCell.xib in Resources */,
 				F0B0ECC91B14B6BB005EB20D /* MXKRoomTitleView.xib in Resources */,
 				F0868E0E1B18FC01004CBE80 /* MXKRoomCreationView.xib in Resources */,
+				F0FDF2681E53586A00D23C47 /* MXKCountryPickerViewController.xib in Resources */,
 				F04356401B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib in Resources */,
 				F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CE56E81AA8BB5E003BE77A /* Images.xcassets in Resources */,
@@ -1447,6 +1474,7 @@
 				F04356321B2EF6FD0096FA02 /* MXKRoomMemberDetailsViewController.m in Sources */,
 				F095E5101B25899F009606CE /* MXKEmail.m in Sources */,
 				321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */,
+				F0FDF2671E53586A00D23C47 /* MXKCountryPickerViewController.m in Sources */,
 				F00FA85C1C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m in Sources */,
 				F04356311B2EF6FD0096FA02 /* MXKContactDetailsViewController.m in Sources */,
 				F00FA8751C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.m in Sources */,
@@ -1466,12 +1494,14 @@
 				F06E769A1AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m in Sources */,
 				F0CF99021B0D1D4B00EAE373 /* MXKRecentsDataSource.m in Sources */,
 				F00FA85E1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
+				32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */,
 				F0CF98E21B0B7FDC00EAE373 /* MXKTableViewCellWithTextFieldAndButton.m in Sources */,
 				F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */,
 				F0316E361B7DEA5300F03620 /* MXKTableViewCellWithSearchBar.m in Sources */,
 				F00FA8551C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m in Sources */,
 				F093BCAD1C21BDD80010D05F /* MXKReceiptSendersContainer.m in Sources */,
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
+				32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */,
 				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				3235CD771C32DC8A0084EA40 /* MXKSearchDataSource.m in Sources */,

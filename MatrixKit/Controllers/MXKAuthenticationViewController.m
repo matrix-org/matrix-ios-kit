@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,6 +25,8 @@
 #import "MXKAccountManager.h"
 
 #import "NSBundle+MatrixKit.h"
+
+#import <AFNetworking/AFNetworking.h>
 
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
@@ -483,41 +486,40 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 - (void)setHomeServerTextFieldText:(NSString *)homeServerUrl
 {
-    if (homeServerUrl.length)
-    {
-        _homeServerTextField.text = homeServerUrl;
-    }
-    else
+    if (!homeServerUrl.length)
     {
         // Force refresh with default value
-        _homeServerTextField.text = _defaultHomeServerUrl;
+        homeServerUrl = _defaultHomeServerUrl;
     }
     
-    [self updateRESTClient];
+    _homeServerTextField.text = homeServerUrl;
     
-    if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
+    if (!mxRestClient || ![mxRestClient.homeserver isEqualToString:homeServerUrl])
     {
-        // Refresh UI
-        [self refreshAuthenticationSession];
+        [self updateRESTClient];
+        
+        if (_authType == MXKAuthenticationTypeLogin || _authType == MXKAuthenticationTypeRegister)
+        {
+            // Restore default UI
+            self.authType = _authType;
+        }
     }
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
 {
-    if (identityServerUrl.length)
-    {
-        _identityServerTextField.text = identityServerUrl;
-    }
-    else
+    if (!identityServerUrl.length)
     {
         // Force refresh with default value
-        _identityServerTextField.text = _defaultIdentityServerUrl;
+        identityServerUrl = _defaultIdentityServerUrl;
     }
     
+    _identityServerTextField.text = identityServerUrl;
+    
     // Update REST client
-    if (mxRestClient)
+    if (![mxRestClient.identityServer isEqualToString:identityServerUrl])
     {
-        [mxRestClient setIdentityServer:_identityServerTextField.text];
+        [mxRestClient setIdentityServer:identityServerUrl];
     }
 }
 
@@ -765,6 +767,20 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     onUnrecognizedCertificateCustomBlock = onUnrecognizedCertificateBlock;
 }
 
+- (void)isUserNameInUse:(void (^)(BOOL isUserNameInUse))callback
+{
+    mxCurrentOperation = [mxRestClient isUserNameInUse:self.authInputsView.userId callback:^(BOOL isUserNameInUse) {
+        
+        mxCurrentOperation = nil;
+        
+        if (callback)
+        {
+            callback (isUserNameInUse);
+        }
+        
+    }];
+}
+
 - (IBAction)onButtonPressed:(id)sender
 {
     [self dismissKeyboard];
@@ -884,10 +900,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     }
                     else
                     {
-                        mxCurrentOperation = [mxRestClient isUserNameInUse:self.authInputsView.userId callback:^(BOOL isUserNameInUse) {
-                            
-                            mxCurrentOperation = nil;
-                            [_authenticationActivityIndicator stopAnimating];
+                        [self isUserNameInUse:^(BOOL isUserNameInUse) {
                             
                             if (isUserNameInUse)
                             {
@@ -896,6 +909,8 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                             }
                             else
                             {
+                                [_authenticationActivityIndicator stopAnimating];
+                               
                                 // Launch registration by preparing parameters dict
                                 [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
                                     
@@ -1124,6 +1139,39 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     
     // Update authentication inputs view to return in initial step
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+}
+
+- (void)onSuccessfulLogin:(MXCredentials*)credentials
+{
+    mxCurrentOperation = nil;
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+    
+    // Sanity check: check whether the user is not already logged in with this id
+    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
+    {
+        //Alert user
+        __weak typeof(self) weakSelf = self;
+        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
+        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
+            // We remove the authentication view controller.
+            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
+        }];
+        [alert showInViewController:self];
+    }
+    else
+    {
+        // Report the new account in account manager
+        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+        account.identityServerURL = _identityServerTextField.text;
+        
+        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
+        
+        if (_delegate)
+        {
+            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+        }
+    }
 }
 
 #pragma mark - Privates
@@ -1528,39 +1576,6 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (void)onSuccessfulLogin:(MXCredentials*)credentials
-{
-    mxCurrentOperation = nil;
-    [_authenticationActivityIndicator stopAnimating];
-    self.userInteractionEnabled = YES;
-    
-    // Sanity check: check whether the user is not already logged in with this id
-    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
-    {
-        //Alert user
-        __weak typeof(self) weakSelf = self;
-        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
-        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
-            // We remove the authentication view controller.
-            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
-        }];
-        [alert showInViewController:self];
-    }
-    else
-    {
-        // Report the new account in account manager
-        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-        account.identityServerURL = _identityServerTextField.text;
-        
-        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-        
-        if (_delegate)
-        {
-            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-        }
-    }
-}
-
 #pragma mark - Keyboard handling
 
 - (void)dismissKeyboard
@@ -1635,7 +1650,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
 }
 
-- (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView
+- (MXRestClient *)authInputsViewThirdPartyIdValidationRestClient:(MXKAuthInputsView *)authInputsView
 {
     return mxRestClient;
 }

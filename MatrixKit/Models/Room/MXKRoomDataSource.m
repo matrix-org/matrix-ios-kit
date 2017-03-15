@@ -391,6 +391,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeSentStateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidDecryptNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeIdentifierNotification object:nil];
 
     if (NSCurrentLocaleDidChangeNotificationObserver)
     {
@@ -619,12 +620,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         if (localEcho.originServerTs != kMXUndefinedTimestamp)
                         {
                             // Replace the local echo by the true event sent by the homeserver
-                            [self replaceLocalEcho:localEcho.eventId withEvent:event];
+                            [self replaceEvent:localEcho withEvent:event];
                         }
                         else
                         {
                             // Remove the local echo, and process independently the true event.
-                            [self replaceLocalEcho:localEcho.eventId withEvent:nil];
+                            [self replaceEvent:localEcho withEvent:nil];
                             localEcho = nil;
                         }
                     }
@@ -1133,37 +1134,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     __block MXEvent *localEchoEvent = nil;
-    __block NSString *localEchoEventId = nil;
-    
-    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
-        
-        if (localEchoEventId)
-        {
-            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
-        }
-        
-        if (success)
-        {
-            success(eventId);
-        }
-        
-    };
     
     // Make the request to the homeserver
     if (isEmote)
     {
-        [_room sendEmote:text formattedText:html localEcho:&localEchoEvent success:onSuccess failure:failure];
+        [_room sendEmote:text formattedText:html localEcho:&localEchoEvent success:success failure:failure];
     }
     else
     {
-        [_room sendTextMessage:text formattedText:html localEcho:&localEchoEvent success:onSuccess failure:failure];
+        [_room sendTextMessage:text formattedText:html localEcho:&localEchoEvent success:success failure:failure];
     }
     
     if (localEchoEvent)
     {
-        // From here the local echo will be handled thanks to its local event id (temporary id).
-        localEchoEventId = localEchoEvent.eventId;
-        
         // Make the data source digest this fake local echo message
         [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
         [self processQueuedEvents:nil];
@@ -1217,29 +1200,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)sendImageData:(NSData*)imageData withImageSize:(CGSize)imageSize mimeType:(NSString*)mimetype andThumbnail:(UIImage*)thumbnail success:(void (^)(NSString *eventId))success failure:(void (^)(NSError *error))failure
 {
     __block MXEvent *localEchoEvent = nil;
-    __block NSString *localEchoEventId = nil;
     
-    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
-        
-        if (localEchoEventId)
-        {
-            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
-        }
-        
-        if (success)
-        {
-            success(eventId);
-        }
-        
-    };
-    
-    [_room sendImage:imageData withImageSize:imageSize mimeType:mimetype andThumbnail:thumbnail localEcho:&localEchoEvent success:onSuccess failure:failure];
+    [_room sendImage:imageData withImageSize:imageSize mimeType:mimetype andThumbnail:thumbnail localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
-        // From here the local echo will be handled thanks to its local event id (temporary id).
-        localEchoEventId = localEchoEvent.eventId;
-        
         // Make the data source digest this fake local echo message
         [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
         [self processQueuedEvents:nil];
@@ -1249,29 +1214,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)sendVideo:(NSURL *)videoLocalURL withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
-    __block NSString *localEchoEventId = nil;
     
-    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
-        
-        if (localEchoEventId)
-        {
-            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
-        }
-        
-        if (success)
-        {
-            success(eventId);
-        }
-        
-    };
-    
-    [_room sendVideo:videoLocalURL withThumbnail:videoThumbnail localEcho:&localEchoEvent success:onSuccess failure:failure];
+    [_room sendVideo:videoLocalURL withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
-        // From here the local echo will be handled thanks to its local event id (temporary id).
-        localEchoEventId = localEchoEvent.eventId;
-        
         // Make the data source digest this fake local echo message
         [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
         [self processQueuedEvents:nil];
@@ -1281,29 +1228,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)sendFile:(NSURL *)fileLocalURL mimeType:(NSString*)mimeType success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
-    __block NSString *localEchoEventId = nil;
     
-    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
-        
-        if (localEchoEventId)
-        {
-            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
-        }
-        
-        if (success)
-        {
-            success(eventId);
-        }
-        
-    };
-    
-    [_room sendFile:fileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:onSuccess failure:failure];
+    [_room sendFile:fileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
-        // From here the local echo will be handled thanks to its local event id (temporary id).
-        localEchoEventId = localEchoEvent.eventId;
-        
         // Make the data source digest this fake local echo message
         [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
         [self processQueuedEvents:nil];
@@ -1313,30 +1242,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)sendMessageWithContent:(NSDictionary *)msgContent success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
-    __block NSString *localEchoEventId = nil;
-    
-    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
-        
-        if (localEchoEventId)
-        {
-            [self replaceLocalEcho:localEchoEventId withEvent:localEchoEvent];
-        }
-        
-        if (success)
-        {
-            success(eventId);
-        }
-        
-    };
     
     // Make the request to the homeserver
-    [_room sendMessageWithContent:msgContent localEcho:&localEchoEvent success:onSuccess failure:failure];
+    [_room sendMessageWithContent:msgContent localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
-        // From here the local echo will be handled thanks to its local event id (temporary id)
-        localEchoEventId = localEchoEvent.eventId;
-        
         // Make the data source digest this fake local echo message
         [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
         [self processQueuedEvents:nil];
@@ -1355,28 +1266,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     NSLog(@"[MXKRoomDataSource] resendEventWithEventId. Event: %@", event);
     
-    NSString *localEchoEventId = event.eventId;
-    
-    void(^onSuccess)(NSString *) = ^(NSString *eventId) {
-        
-        if (localEchoEventId)
-        {
-            [self replaceLocalEcho:localEchoEventId withEvent:event];
-        }
-        
-        if (success)
-        {
-            success(eventId);
-        }
-        
-    };
-    
     // Check first whether the event is encrypted
     if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
     {
         // We try here to resent an encrypted event
         // Note: we keep the existing local echo.
-        [_room sendEventOfType:kMXEventTypeStringRoomEncrypted content:event.wireContent localEcho:&event success:onSuccess failure:failure];
+        [_room sendEventOfType:kMXEventTypeStringRoomEncrypted content:event.wireContent localEcho:&event success:success failure:failure];
     }
     else if ([event.type isEqualToString:kMXEventTypeStringRoomMessage])
     {
@@ -1385,7 +1280,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         if ([msgType isEqualToString:kMXMessageTypeText] || [msgType isEqualToString:kMXMessageTypeEmote])
         {
             // Resend the Matrix event by reusing the existing echo
-            [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
+            [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
         }
         else if ([msgType isEqualToString:kMXMessageTypeImage])
         {
@@ -1426,7 +1321,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             else
             {
                 // Resend the Matrix event by reusing the existing echo
-                [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
+                [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
             }
         }
         else if ([msgType isEqualToString:kMXMessageTypeVideo])
@@ -1442,7 +1337,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             else
             {
                 // Resend the Matrix event by reusing the existing echo
-                [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
+                [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
             }
         }
         else if ([msgType isEqualToString:kMXMessageTypeFile])
@@ -1477,7 +1372,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             else
             {
                 // Resend the Matrix event by reusing the existing echo
-                [_room sendMessageWithContent:event.content localEcho:&event success:onSuccess failure:failure];
+                [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
             }
         }
         else
@@ -1592,10 +1487,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 #pragma mark - Private methods
 
-- (void)replaceLocalEcho:(NSString*)localEchoEventId withEvent:(MXEvent*)event
+- (void)replaceEvent:(MXEvent*)eventToReplace withEvent:(MXEvent*)event
 {
-    // Retrieve the cell data hosting the local echo
-    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:localEchoEventId];
+    if (eventToReplace.isLocalEvent)
+    {
+        // Stop listening to the identifier change for the replaced event.
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeIdentifierNotification object:eventToReplace];
+    }
+    
+    // Retrieve the cell data hosting the replaced event
+    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventToReplace.eventId];
     if (!bubbleData)
     {
         return;
@@ -1607,11 +1508,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Check whether the local echo is replaced or removed
         if (event)
         {
-            remainingEvents = [bubbleData updateEvent:localEchoEventId withEvent:event];
+            remainingEvents = [bubbleData updateEvent:eventToReplace.eventId withEvent:event];
         }
         else
         {
-            remainingEvents = [bubbleData removeEvent:localEchoEventId];
+            remainingEvents = [bubbleData removeEvent:eventToReplace.eventId];
         }
     }
     
@@ -1619,11 +1520,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     @synchronized (eventIdToBubbleMap)
     {
         // Remove the broken link from the map
-        [eventIdToBubbleMap removeObjectForKey:localEchoEventId];
+        [eventIdToBubbleMap removeObjectForKey:eventToReplace.eventId];
         
         if (event && remainingEvents)
         {
             eventIdToBubbleMap[event.eventId] = bubbleData;
+            
+            if (event.isLocalEvent)
+            {
+                // Listen to the identifier change for the local events.
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(localEventDidChangeIdentifier:) name:kMXEventDidChangeIdentifierNotification object:event];
+            }
         }
     }
     
@@ -1653,6 +1560,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         for (MXEvent *event in cellData.events)
         {
             [eventIdToBubbleMap removeObjectForKey:event.eventId];
+            
+            if (event.isLocalEvent)
+            {
+                // Stop listening to the identifier change for this event.
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeIdentifierNotification object:event];
+            }
         }
     }
     
@@ -1773,6 +1686,32 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         // Notify the last message may have changed
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+    }
+}
+
+- (void)localEventDidChangeIdentifier:(NSNotification *)notif
+{
+    MXEvent *event = notif.object;
+    NSString *previousId = notif.userInfo[kMXEventIdentifierKey];
+    
+    if (event && previousId)
+    {
+        // Update bubbles mapping
+        @synchronized (eventIdToBubbleMap)
+        {
+            id<MXKRoomBubbleCellDataStoring> bubbleData = eventIdToBubbleMap[previousId];
+            if (bubbleData && event.eventId)
+            {
+                eventIdToBubbleMap[event.eventId] = bubbleData;
+                [eventIdToBubbleMap removeObjectForKey:previousId];
+            }
+        }
+        
+        if (!event.isLocalEvent)
+        {
+            // Stop listening to the identifier change when the event becomes an actual event.
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeIdentifierNotification object:event];
+        }
     }
 }
 
@@ -2212,6 +2151,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         @synchronized (eventIdToBubbleMap)
                         {
                             eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
+                        }
+                        
+                        if (queuedEvent.event.isLocalEvent)
+                        {
+                            // Listen to the identifier change for the local events.
+                            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(localEventDidChangeIdentifier:) name:kMXEventDidChangeIdentifierNotification object:queuedEvent.event];
                         }
                     }
                 }

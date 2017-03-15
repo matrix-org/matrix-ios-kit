@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,15 +19,31 @@
 
 @interface MXKContactField : NSObject<NSCoding>
 
-// contact ID where the email has been found
+/**
+ The identifier of the contact to whom the data belongs to.
+ */
 @property (nonatomic, readonly) NSString *contactID;
-
-// linked matrix account
+/**
+ The linked matrix identifier if any
+ */
 @property (nonatomic, readwrite) NSString *matrixID;
+/**
+ The matrix avatar url, nil by default.
+ */
+@property (nonatomic, readonly) NSString* matrixAvatarURL;
+/**
+ The current avatar downloaded by using the avatar url if any
+ */
 @property (nonatomic, readonly) UIImage  *avatarImage;
 
 - (id)initWithContactID:(NSString*)contactID matrixID:(NSString*)matrixID;
 
 - (void)loadAvatarWithSize:(CGSize)avatarSize;
+
+/**
+ Reset the current avatar. May be used in case of the matrix avatar url change.
+ A new avatar will be automatically restored from the matrix data.
+ */
+- (void)resetMatrixAvatar;
 
 @end

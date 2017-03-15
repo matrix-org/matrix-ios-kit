@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -26,6 +27,8 @@
 #import "NSBundle+MatrixKit.h"
 
 #import "MXSession.h"
+
+#import <AFNetworking/AFNetworking.h>
 
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
@@ -183,6 +186,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+
+        _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
@@ -231,6 +236,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
     [coder encodeBool:_disabled forKey:@"disabled"];
+
+    [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
 }
 
 #pragma mark - Properties
@@ -312,6 +319,21 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     return linkedEmails;
 }
 
+- (NSArray<NSString *> *)linkedPhoneNumbers
+{
+    NSMutableArray<NSString *> *linkedPhoneNumbers = [NSMutableArray array];
+    
+    for (MXThirdPartyIdentifier *threePID in threePIDs)
+    {
+        if ([threePID.medium isEqualToString:kMX3PIDMediumMSISDN])
+        {
+            [linkedPhoneNumbers addObject:threePID.address];
+        }
+    }
+    
+    return linkedPhoneNumbers;
+}
+
 - (UIColor*)userTintColor
 {
     if (!userTintColor)
@@ -387,6 +409,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Archive updated field
         [[MXKAccountManager sharedManager] saveAccounts];
     }
+}
+
+- (void)setWarnedAboutEncryption:(BOOL)warnedAboutEncryption
+{
+    _warnedAboutEncryption = warnedAboutEncryption;
+
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
 }
 
 #pragma mark - Matrix user's profile
@@ -633,7 +663,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         // Reset room data stored in memory
         [MXKRoomDataSourceManager removeSharedManagerForMatrixSession:mxSession];
-        
+
+        if (clearStore)
+        {
+            // Force a reload of device keys at the next session start.
+            // This will fix potential UISIs other peoples receive for our messages.
+            [mxSession.crypto resetDeviceKeys];
+        }
+
         // Close session
         [mxSession close];
         
@@ -1120,18 +1157,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     
     mxRestClient = [[MXRestClient alloc] initWithCredentials:mxCredentials andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
-        
-        // Check whether the provided certificate is the one trusted by the user during login/registration step.
-        if (mxCredentials.allowedCertificate && [mxCredentials.allowedCertificate isEqualToData:certificate])
-        {
-            return YES;
-        }
-        
-        // Check whether the user has already ignored this certificate change.
-        if (mxCredentials.ignoredCertificate && [mxCredentials.ignoredCertificate isEqualToData:certificate])
-        {
-            return NO;
-        }
         
         if (_onCertificateChangeBlock)
         {

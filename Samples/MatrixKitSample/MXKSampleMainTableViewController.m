@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -76,6 +77,7 @@
     NSInteger authenticationSectionIndex;
     NSInteger contactSectionIndex;
     NSInteger webViewSectionIndex;
+    NSInteger countrySectionIndex;
 }
 
 @end
@@ -294,7 +296,7 @@
 {
     NSInteger count = 0;
     
-    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = searchSectionIndex =authenticationSectionIndex = contactSectionIndex = webViewSectionIndex = -1;
+    accountSectionIndex = recentsSectionIndex = roomSectionIndex = roomMembersSectionIndex = searchSectionIndex =authenticationSectionIndex = contactSectionIndex = webViewSectionIndex = countrySectionIndex = -1;
     
     accountSectionIndex = count++;
     
@@ -317,6 +319,7 @@
     authenticationSectionIndex = count++;
     contactSectionIndex = count++;
     webViewSectionIndex = count++;
+    countrySectionIndex = count++;
     
     return count;
 }
@@ -363,6 +366,10 @@
     {
         return 1;
     }
+    else if (section == countrySectionIndex)
+    {
+        return 1;
+    }
     
     return 0;
 }
@@ -400,6 +407,10 @@
     else if (section == webViewSectionIndex)
     {
         return @"Webview:";
+    }
+    else if (section == countrySectionIndex)
+    {
+        return @"Country:";
     }
     
     return nil;
@@ -544,6 +555,16 @@
                 break;
         }
     }
+    else if (indexPath.section == countrySectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+                cell = [tableView dequeueReusableCellWithIdentifier:@"mainTableViewCellSampleVC" forIndexPath:indexPath];
+                cell.textLabel.text = @"MXKCountryPickerViewController";
+                break;
+        }
+    }
     
     return cell;
 }
@@ -650,6 +671,20 @@
             {
                 MXKWebViewViewController *webViewViewController = [[MXKWebViewViewController alloc] initWithURL:@"https://www.matrix.org"];
                 [self.navigationController pushViewController:webViewViewController animated:YES];
+                break;
+            }
+        }
+    }
+    else if (indexPath.section == countrySectionIndex)
+    {
+        switch (indexPath.row)
+        {
+            case 0:
+            {
+                MXKCountryPickerViewController *countryPicker = [MXKCountryPickerViewController countryPickerViewController];
+                countryPicker.delegate = self;
+                countryPicker.showCountryCallingCode = YES;
+                [self.navigationController pushViewController:countryPicker animated:YES];
                 break;
             }
         }
@@ -907,6 +942,14 @@
 - (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString *)matrixId completion:(void (^)(void))completion
 {
     NSLog(@"    -> Start chat with %@ is requested", matrixId);
+}
+
+#pragma mark - MXKCountryPickerViewControllerDelegate
+
+- (void)countryPickerViewController:(MXKCountryPickerViewController*)countryPickerViewController didSelectCountry:(NSString*)isoCountryCode
+{
+    NSLog(@"    -> Select %@ country", isoCountryCode);
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - Call status handling

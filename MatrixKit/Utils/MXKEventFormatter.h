@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -183,6 +184,10 @@ typedef enum : NSUInteger {
 
 /**
  Sanitise an HTML string to keep permitted HTML tags defined by 'allowedHTMLTags'.
+
+ !!!!!! WARNING !!!!!!
+ IT IS NOT REMOTELY A COMPREHENSIVE SANITIZER AND SHOULD NOT BE TRUSTED FOR SECURITY PURPOSES.
+ WE ARE EFFECTIVELY RELYING ON THE LIMITED CAPABILITIES OF THE HTML RENDERER UI TO AVOID SECURITY ISSUES LEAKING UP.
 
  @param htmlString the HTML code to sanitise.
  @return a sanitised HTML string.

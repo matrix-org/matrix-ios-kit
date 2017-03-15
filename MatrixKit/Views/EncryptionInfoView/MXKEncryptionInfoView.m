@@ -1,6 +1,7 @@
 /*
  Copyright 2016 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -293,6 +294,7 @@ static NSAttributedString *verticalWhitespace = nil;
         
         switch (mxDeviceInfo.verified)
         {
+            case MXDeviceUnknown:
             case MXDeviceUnverified:
             {
                 verification = [[NSMutableAttributedString alloc]
@@ -401,8 +403,18 @@ static NSAttributedString *verticalWhitespace = nil;
     // Note: Verify and Block buttons are hidden when the deviceInfo is not available
     else if (sender == _confirmVerifyButton && mxDeviceInfo)
     {
-        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
-        [self removeFromSuperview];
+        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
+
+            mxDeviceInfo.verified = MXDeviceVerified;
+            if (_delegate)
+            {
+                [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+            }
+            [self removeFromSuperview];
+
+        } failure:^(NSError *error) {
+            [self removeFromSuperview];
+        }];
     }
     else if (mxDeviceInfo)
     {
@@ -446,8 +458,19 @@ static NSAttributedString *verticalWhitespace = nil;
         }
         else
         {
-            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:nil failure:nil];
-            [self removeFromSuperview];
+            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
+
+                mxDeviceInfo.verified = verificationStatus;
+                if (_delegate)
+                {
+                    [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+                }
+
+                [self removeFromSuperview];
+
+            } failure:^(NSError *error) {
+                [self removeFromSuperview];
+            }];
         }
     }
 }

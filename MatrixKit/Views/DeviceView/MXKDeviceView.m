@@ -1,5 +1,6 @@
 /*
  Copyright 2016 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -85,7 +86,7 @@ static NSAttributedString *verticalWhitespace = nil;
     self.textView.contentOffset = CGPointZero;
 }
 
-- (void)removeFromSuperview
+- (void)removeFromSuperviewDidUpdate:(BOOL)isUpdated
 {
     if (currentAlert)
     {
@@ -99,7 +100,14 @@ static NSAttributedString *verticalWhitespace = nil;
         mxCurrentOperation = nil;
     }
     
-    [super removeFromSuperview];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dismissDeviceView:didUpdate:)])
+    {
+        [self.delegate dismissDeviceView:self didUpdate:isUpdated];
+    }
+    else
+    {
+        [self removeFromSuperview];
+    }
 }
 
 - (instancetype)initWithDevice:(MXDevice*)device andMatrixSession:(MXSession*)session
@@ -197,14 +205,14 @@ static NSAttributedString *verticalWhitespace = nil;
 
 - (IBAction)onBgViewTap:(UITapGestureRecognizer*)sender
 {
-    [self removeFromSuperview];
+    [self removeFromSuperviewDidUpdate:NO];
 }
 
 - (IBAction)onButtonPressed:(id)sender
 {
     if (sender == _cancelButton)
     {
-        [self removeFromSuperview];
+        [self removeFromSuperviewDidUpdate:NO];
     }
     else if (sender == _renameButton)
     {
@@ -241,8 +249,8 @@ static NSAttributedString *verticalWhitespace = nil;
         textField.keyboardType = UIKeyboardTypeDefault;
         if (weakSelf)
         {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            textField.text = strongSelf->mxDevice.displayName;
+            typeof(self) self = weakSelf;
+            textField.text = self->mxDevice.displayName;
         }
     }];
     
@@ -250,8 +258,8 @@ static NSAttributedString *verticalWhitespace = nil;
         
         if (weakSelf)
         {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
+            typeof(self) self = weakSelf;
+            self->currentAlert = nil;
         }
         
     }];
@@ -262,26 +270,21 @@ static NSAttributedString *verticalWhitespace = nil;
         {
             UITextField *textField = [alert textFieldAtIndex:0];
             
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
+            typeof(self) self = weakSelf;
+            self->currentAlert = nil;
             
-            [strongSelf.activityIndicator startAnimating];
+            [self.activityIndicator startAnimating];
             
-            strongSelf->mxCurrentOperation = [strongSelf->mxSession.matrixRestClient setDeviceName:textField.text forDeviceId:strongSelf->mxDevice.deviceId success:^{
+            self->mxCurrentOperation = [self->mxSession.matrixRestClient setDeviceName:textField.text forDeviceId:self->mxDevice.deviceId success:^{
                 
                 if (weakSelf)
                 {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    typeof(self) self = weakSelf;
                     
-                    strongSelf->mxCurrentOperation = nil;
-                    [strongSelf.activityIndicator stopAnimating];
+                    self->mxCurrentOperation = nil;
+                    [self.activityIndicator stopAnimating];
                     
-                    if (strongSelf.delegate && [strongSelf.delegate respondsToSelector:@selector(deviceViewDidUpdate:)])
-                    {
-                        [strongSelf.delegate deviceViewDidUpdate:strongSelf];
-                    }
-                    
-                    [strongSelf removeFromSuperview];
+                    [self removeFromSuperviewDidUpdate:YES];
                 }
                 
             } failure:^(NSError *error) {
@@ -291,14 +294,15 @@ static NSAttributedString *verticalWhitespace = nil;
                 
                 if (weakSelf)
                 {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+                    typeof(self) self = weakSelf;
                     
-                    strongSelf->mxCurrentOperation = nil;
+                    self->mxCurrentOperation = nil;
                     
-                    NSLog(@"[MXKDeviceView] Rename device (%@) failed", strongSelf->mxDevice.deviceId);
+                    NSLog(@"[MXKDeviceView] Rename device (%@) failed", self->mxDevice.deviceId);
                     
-                    [strongSelf.activityIndicator stopAnimating];
-                    [strongSelf removeFromSuperview];
+                    [self.activityIndicator stopAnimating];
+                    
+                    [self removeFromSuperviewDidUpdate:NO];
                 }
                 
             }];
@@ -356,10 +360,10 @@ static NSAttributedString *verticalWhitespace = nil;
                 
                 if (weakSelf)
                 {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->currentAlert = nil;
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
                     
-                    [strongSelf.activityIndicator stopAnimating];
+                    [self.activityIndicator stopAnimating];
                 }
                 
             }];
@@ -370,10 +374,10 @@ static NSAttributedString *verticalWhitespace = nil;
                 {
                     UITextField *textField = [alert textFieldAtIndex:0];
                     
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->currentAlert = nil;
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
                     
-                    NSString *userId = strongSelf->mxSession.myUser.userId;
+                    NSString *userId = self->mxSession.myUser.userId;
                     NSDictionary *authParams;
                     
                     // Sanity check
@@ -386,21 +390,16 @@ static NSAttributedString *verticalWhitespace = nil;
 
                     }
                     
-                    strongSelf->mxCurrentOperation = [strongSelf->mxSession.matrixRestClient deleteDeviceByDeviceId:strongSelf->mxDevice.deviceId authParams:authParams success:^{
+                    self->mxCurrentOperation = [self->mxSession.matrixRestClient deleteDeviceByDeviceId:self->mxDevice.deviceId authParams:authParams success:^{
                         
                         if (weakSelf)
                         {
-                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            typeof(self) self = weakSelf;
                             
-                            strongSelf->mxCurrentOperation = nil;
-                            [strongSelf.activityIndicator stopAnimating];
+                            self->mxCurrentOperation = nil;
+                            [self.activityIndicator stopAnimating];
                             
-                            if (strongSelf.delegate && [strongSelf.delegate respondsToSelector:@selector(deviceViewDidUpdate:)])
-                            {
-                                [strongSelf.delegate deviceViewDidUpdate:strongSelf];
-                            }
-                            
-                            [strongSelf removeFromSuperview];
+                            [self removeFromSuperviewDidUpdate:YES];
                         }
                         
                     } failure:^(NSError *error) {
@@ -410,14 +409,15 @@ static NSAttributedString *verticalWhitespace = nil;
                         
                         if (weakSelf)
                         {
-                            __strong __typeof(weakSelf)strongSelf = weakSelf;
+                            typeof(self) self = weakSelf;
                             
-                            strongSelf->mxCurrentOperation = nil;
+                            self->mxCurrentOperation = nil;
                             
-                            NSLog(@"[MXKDeviceView] Delete device (%@) failed", strongSelf->mxDevice.deviceId);
+                            NSLog(@"[MXKDeviceView] Delete device (%@) failed", self->mxDevice.deviceId);
                             
-                            [strongSelf.activityIndicator stopAnimating];
-                            [strongSelf removeFromSuperview];
+                            [self.activityIndicator stopAnimating];
+                            
+                            [self removeFromSuperviewDidUpdate:NO];
                         }
                         
                     }];

@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -184,6 +185,13 @@ extern NSString *const MXKAuthErrorDomain;
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock;
 
 /**
+ Check whether the current username is already in use.
+ 
+ @param callback A block object called when the operation is completed.
+ */
+- (void)isUserNameInUse:(void (^)(BOOL isUserNameInUse))callback;
+
+/**
  Action registered on the following events:
  - 'UIControlEventTouchUpInside' for each UIButton instance.
  - 'UIControlEventValueChanged' for each UISwitch instance.
@@ -222,6 +230,13 @@ extern NSString *const MXKAuthErrorDomain;
  @param error the received error.
  */
 - (void)onFailureDuringAuthRequest:(NSError *)error;
+
+/**
+ Handle the successful authentication request.
+ 
+ @param credentials the user's credentials.
+ */
+- (void)onSuccessfulLogin:(MXCredentials*)credentials;
 
 @end
 

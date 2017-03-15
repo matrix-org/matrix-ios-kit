@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -60,9 +61,24 @@ typedef enum {
 @optional
 
 /**
- The matrix REST Client used to validate potential email address.
+ The matrix REST Client used to validate third-party identifiers.
  */
-- (MXRestClient *)authInputsViewEmailValidationRestClient:(MXKAuthInputsView *)authInputsView;
+- (MXRestClient *)authInputsViewThirdPartyIdValidationRestClient:(MXKAuthInputsView *)authInputsView;
+
+/**
+ Tell the delegate to present a view controller modally.
+ 
+ Note: This method is used to display the countries list during the phone number handling.
+ 
+ @param authInputsView the authentication inputs view.
+ @param viewControllerToPresent.
+ */
+- (void)authInputsView:(MXKAuthInputsView *)authInputsView presentViewController:(UIViewController*)viewControllerToPresent;
+
+/**
+ Tell the delegate to cancel the current operation.
+ */
+- (void)authInputsViewDidCancelOperation:(MXKAuthInputsView *)authInputsView;
 @end
 
 /**
@@ -184,11 +200,6 @@ typedef enum {
  Tell whether all required fields are set
  */
 - (BOOL)areAllRequiredFieldsSet;
-
-/**
- Tell whether the email field is empty while the email binding is supported.
- */
-- (BOOL)shouldPromptUserForEmailAddress;
 
 /**
  Force dismiss keyboard

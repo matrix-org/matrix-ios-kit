@@ -77,15 +77,22 @@
     if ([_alert isKindOfClass:[UIAlertController class]])
     {
         index = [(UIAlertController *)_alert actions].count;
+        
         UIAlertAction* action = [UIAlertAction actionWithTitle:title
                                                          style:(UIAlertActionStyle)style
-                                                       handler:^(UIAlertAction * action)
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           if (handler)
+                                                           {
+                                                               handler(self);
+                                                           }
+                                                           
+                                                       }];
+        
+        if (_mxkAccessibilityIdentifier)
         {
-            if (handler)
-            {
-                handler(self);
-            }
-        }];
+            action.accessibilityLabel = [NSString stringWithFormat:@"%@Action%@", _mxkAccessibilityIdentifier, title];
+        }
         
         [(UIAlertController *)_alert addAction:action];
     }
@@ -124,11 +131,49 @@
     return index;
 }
 
+- (void)setMxkAccessibilityIdentifier:(NSString *)mxkAccessibilityIdentifier
+{
+    _mxkAccessibilityIdentifier = mxkAccessibilityIdentifier;
+    
+    // Consider only iOS >= 8.0
+    if ([_alert isKindOfClass:[UIAlertController class]])
+    {
+        UIAlertController *alertController = (UIAlertController *)_alert;
+        
+        alertController.view.accessibilityIdentifier = mxkAccessibilityIdentifier;
+        
+        for (UIAlertAction *action in alertController.actions)
+        {
+            action.accessibilityLabel = [NSString stringWithFormat:@"%@Action%@", mxkAccessibilityIdentifier, action.title];
+        }
+        
+        NSArray *textFieldArray = alertController.textFields;
+        for (NSUInteger index = 0; index < textFieldArray.count; index++)
+        {
+            UITextField *textField = textFieldArray[index];
+            textField.accessibilityIdentifier = [NSString stringWithFormat:@"%@TextField%tu", mxkAccessibilityIdentifier, index];
+        }
+    }
+}
+
 - (void)addTextFieldWithConfigurationHandler:(blockMXKAlert_textFieldHandler)configurationHandler
 {
     if ([_alert isKindOfClass:[UIAlertController class]])
     {
-        [(UIAlertController *)_alert addTextFieldWithConfigurationHandler:configurationHandler];
+        UIAlertController *alertController = (UIAlertController *)_alert;
+
+        [alertController addTextFieldWithConfigurationHandler:configurationHandler];
+        
+        if (_mxkAccessibilityIdentifier)
+        {
+            // Define an accessibility id for each field.
+            NSArray *textFieldArray = alertController.textFields;
+            for (NSUInteger index = 0; index < textFieldArray.count; index++)
+            {
+                UITextField *textField = textFieldArray[index];
+                textField.accessibilityIdentifier = [NSString stringWithFormat:@"%@TextField%tu", _mxkAccessibilityIdentifier, index];
+            }
+        }
     }
     else if ([_alert isKindOfClass:[UIAlertView class]])
     {

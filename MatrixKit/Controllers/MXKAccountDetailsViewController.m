@@ -908,7 +908,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     {
         if (indexPath.row < _mxAccount.linkedEmails.count)
         {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsLinkedEmailCellId];
+            cell = [tableView dequeueReusableCellWithIdentifier:kMXKAccountDetailsLinkedEmailCellId];
             if (!cell)
             {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMXKAccountDetailsLinkedEmailCellId];

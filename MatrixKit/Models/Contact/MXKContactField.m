@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -32,7 +33,8 @@
     // init members
     _contactID = nil;
     _matrixID = nil;
-    avatarURL = @"";
+    
+    [self resetMatrixAvatar];
 }
 
 - (id)initWithContactID:(NSString*)contactID matrixID:(NSString*)matrixID
@@ -52,6 +54,13 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)resetMatrixAvatar
+{
+    _avatarImage = nil;
+    _matrixAvatarURL = nil;
+    avatarURL = @"";
 }
 
 - (void)loadAvatarWithSize:(CGSize)avatarSize
@@ -91,7 +100,10 @@
                     user = [mxSession userWithUserId:_matrixID];
                     if (user)
                     {
-                        avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:user.avatarUrl toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+                        _matrixAvatarURL = user.avatarUrl;
+                        
+                        avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:_matrixAvatarURL toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+                        
                         [self downloadAvatarImage];
                         break;
                     }
@@ -102,15 +114,15 @@
                 {
                     MXSession *mxSession = mxSessions.firstObject;
                     [mxSession.matrixRestClient avatarUrlForUser:_matrixID
-                                                         success:^(NSString *avatarUrl)
-                    {
-                        avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:avatarUrl toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+                                                         success:^(NSString *mxAvatarUrl) {
+                                                             
+                        _matrixAvatarURL = mxAvatarUrl;
+                        
+                        avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:_matrixAvatarURL toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+                                                             
                         [self downloadAvatarImage];
-                    }
-                                                         failure:^(NSError *error)
-                    {
-                        //
-                    }];
+                                                             
+                    } failure:nil];
                 }
             }
         }
