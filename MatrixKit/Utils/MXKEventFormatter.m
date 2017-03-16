@@ -1372,11 +1372,7 @@
         summary.lastMessageString = [self stringFromEvent:event withRoomState:state error:&error];
 
         // Store the potential error
-        // @TODO: useful?
-        if (error)
-        {
-            //summary.others[@"mxkEventFormatterError"] = error;
-        }
+        summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
 
         if (0 == summary.lastMessageString.length)
         {

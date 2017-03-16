@@ -29,7 +29,7 @@ typedef enum : NSUInteger {
     /**
      The formatting was successful.
      */
-    MXKEventFormatterErrorNone,
+    MXKEventFormatterErrorNone = 0,
 
     /**
      The formatter knows the event type but it encountered data that it does not support.
