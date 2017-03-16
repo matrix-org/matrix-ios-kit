@@ -1036,6 +1036,9 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     [_authenticationActivityIndicator stopAnimating];
     self.userInteractionEnabled = YES;
     
+    // Reset potential completed stages
+    self.authInputsView.authSession.completed = nil;
+    
     // Update authentication inputs view to return in initial step
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
