@@ -3,6 +3,9 @@ Changes in MatrixKit in 0.4.9 (2017-03-16)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.7.9).
+ 
+Bug fixes:
+ * Riot user created without msisdn in his settings (https://github.com/vector-im/riot-ios#1103).
 
 Changes in MatrixKit in 0.4.8 (2017-03-10)
 ==========================================
