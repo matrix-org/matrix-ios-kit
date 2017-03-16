@@ -382,7 +382,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             // Retrieve the MXKCellData class to manage the data
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
 
-            // @TODO: To test
             MXRoomSummary *roomSummary = [mxSession roomSummaryWithRoomId:roomId];
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
