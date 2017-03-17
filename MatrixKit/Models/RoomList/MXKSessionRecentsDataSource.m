@@ -120,7 +120,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         UIApplicationSignificantTimeChangeNotificationObserver = nil;
     }
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
@@ -280,7 +280,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 #pragma mark - Events processing
 - (void)loadData
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
@@ -330,7 +330,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 - (void)didRoomSummaryChanged:(NSNotification *)notif
 {
     MXRoomSummary *roomSummary = notif.object;
-    if (roomSummary.mxSession == self.mxSession)
+    if (roomSummary.mxSession == self.mxSession && internalCellDataArray.count)
     {
         // Find the index of the related cell data
         NSInteger index = NSNotFound;
