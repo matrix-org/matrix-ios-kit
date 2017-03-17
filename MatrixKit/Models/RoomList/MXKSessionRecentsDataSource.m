@@ -34,16 +34,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     NSMutableArray *internalCellDataArray;
 
     /**
-     Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
-     */
-    id UIApplicationSignificantTimeChangeNotificationObserver;
-    
-    /**
-     Observe NSCurrentLocaleDidChangeNotification to trigger cell change on time formatting change.
-     */
-    id NSCurrentLocaleDidChangeNotificationObserver;
-    
-    /**
      Store the current search patterns list.
      */
     NSArray* searchPatternsList;
@@ -65,61 +55,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
-        
-        // Set default MXEvent -> NSString formatter
-        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
-        _eventFormatter.isForSubtitle = YES;
-
-        matrixSession.roomSummaryUpdateDelegate = _eventFormatter;
-
-        // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
-        // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
-        UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            [self onDateTimeFormatUpdate];
-        }];
-        
-        
-        // Observe NSCurrentLocaleDidChangeNotification to refresh bubbles if date/time are shown.
-        // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
-        NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            [self onDateTimeFormatUpdate];
-        }];
     }
     return self;
 }
 
-- (void)onDateTimeFormatUpdate
-{
-    // update the date and time formatters
-    [_eventFormatter initDateTimeFormatters];
-    
-    // Force update on each recents
-    for (id<MXKRecentCellDataStoring> cellData in cellDataArray)
-    {
-        [cellData update];
-    }
-    
-    if (self.delegate)
-    {
-        // Reload all the table
-        [self.delegate dataSource:self didCellChange:nil];
-    }
-}
-
 - (void)destroy
 {
-    if (NSCurrentLocaleDidChangeNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
-        NSCurrentLocaleDidChangeNotificationObserver = nil;
-    }
-    
-    if (UIApplicationSignificantTimeChangeNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
-        UIApplicationSignificantTimeChangeNotificationObserver = nil;
-    }
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
@@ -128,8 +69,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     cellDataArray = nil;
     internalCellDataArray = nil;
     filteredCellDataArray = nil;
-    
-    _eventFormatter = nil;
     
     searchPatternsList = nil;
     
@@ -177,27 +116,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
     }
     return NO;
-}
-
-- (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
-{
-    if (eventFormatter)
-    {
-        // Replace the current formatter
-        _eventFormatter = eventFormatter;
-    }
-    else
-    {
-        // Set default MXEvent -> NSString formatter
-        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
-        _eventFormatter.isForSubtitle = YES;
-    }
-    
-    // Reload data if some data have been already load
-    if (internalCellDataArray.count)
-    {
-        [self loadData];
-    }
 }
 
 - (void)markAllAsRead
