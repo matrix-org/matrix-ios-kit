@@ -119,18 +119,24 @@
                                           bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
 }
 
-+ (instancetype)animatedAttachmentsViewControllerWithOriginViewController:(UIViewController *)vc referenceImageView:(UIImageView *)referenceImageView convertedFrame:(CGRect)convertedFrame
++ (instancetype)animatedAttachmentsViewControllerWithOriginViewController:(UIViewController *)originViewController referenceImageView:(UIImageView *)referenceImageView convertedFrame:(CGRect)convertedFrame
 {
     MXKAttachmentsViewController *attachmentsController = [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
                                                                                          bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
     
-    
+    //create an interactionController for it to handle the gestue recognizer and control the interactions
     attachmentsController.interactionController = [[MXKAttachmentInteractionController alloc] initWithViewController:attachmentsController originalImageView:referenceImageView convertedFrame:convertedFrame];
+    
+    //we use the animationsEnabled property to enable/disable animations. Instances created not using this method should use the default animations
     attachmentsController.animationsEnabled = YES;
+    
+    //this properties will be needed by animationControllers in order to perform the animations
     attachmentsController.originalImageView = referenceImageView;
     attachmentsController.convertedFrame = convertedFrame;
+    
+    //setting transitioningDelegate and navigationController.delegate so that the animations will work for present/dismiss as well as push/pop
     attachmentsController.transitioningDelegate = attachmentsController;
-    vc.navigationController.delegate = attachmentsController;
+    originViewController.navigationController.delegate = attachmentsController;
     
     
     return attachmentsController;
@@ -1383,6 +1389,7 @@
 
 - (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator
 {
+    //if there is no interaction, just finish the animation using the animationController
     if (self.interactionController.interactionInProgress)
     {
         return self.interactionController;
