@@ -33,7 +33,9 @@
 
 #import "MXKEventFormatter.h"
 
-@interface MXKAttachmentsViewController ()
+#import "MXKAttachmentInteractionController.h"
+
+@interface MXKAttachmentsViewController () <UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 {
     /**
      Current alert (if any).
@@ -90,6 +92,14 @@
     NSString *videoFile;
 }
 
+//animations
+@property MXKAttachmentInteractionController *interactionController;
+
+@property UIImageView *originalImageView;
+@property CGRect convertedFrame;
+
+@property BOOL animationsEnabled;
+
 @end
 
 @implementation MXKAttachmentsViewController
@@ -107,6 +117,23 @@
 {
     return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
                                           bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
+}
+
++ (instancetype)animatedAttachmentsViewControllerWithOriginViewController:(UIViewController *)vc referenceImageView:(UIImageView *)referenceImageView convertedFrame:(CGRect)convertedFrame
+{
+    MXKAttachmentsViewController *attachmentsController = [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
+                                                                                         bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
+    
+    
+    attachmentsController.interactionController = [[MXKAttachmentInteractionController alloc] initWithViewController:attachmentsController originalImageView:referenceImageView convertedFrame:convertedFrame];
+    attachmentsController.animationsEnabled = YES;
+    attachmentsController.originalImageView = referenceImageView;
+    attachmentsController.convertedFrame = convertedFrame;
+    attachmentsController.transitioningDelegate = attachmentsController;
+    vc.navigationController.delegate = attachmentsController;
+    
+    
+    return attachmentsController;
 }
 
 #pragma mark -
@@ -1326,6 +1353,72 @@
         [currentSharedAttachment onShareEnded];
         currentSharedAttachment = nil;
     }
+}
+
+- (UIImageView *)imageViewForAnimations
+{
+    MXKMediaCollectionViewCell *cell = (MXKMediaCollectionViewCell *)[self.attachmentsCollection.visibleCells firstObject];
+    return cell.mxkImageView.imageView;
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
+{
+    if (self.animationsEnabled)
+    {
+        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+    }
+    return nil;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
+{
+    if (self.animationsEnabled)
+    {
+        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+    }
+    return nil;
+}
+
+- (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator
+{
+    if (self.interactionController.interactionInProgress)
+    {
+        return self.interactionController;
+    }
+    return nil;
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (id <UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id <UIViewControllerAnimatedTransitioning>) animationController {
+    if (self.animationsEnabled && self.interactionController.interactionInProgress)
+    {
+        return self.interactionController;
+    }
+    return nil;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation
+                                                fromViewController:(UIViewController *)fromVC
+                                                  toViewController:(UIViewController *)toVC
+{
+    
+    if (self.animationsEnabled)
+    {
+        if (operation == UINavigationControllerOperationPush)
+        {
+            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+        }
+        if (operation == UINavigationControllerOperationPop)
+        {
+            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+        }
+        return nil;
+    }
+    
+    return nil;
 }
 
 @end
