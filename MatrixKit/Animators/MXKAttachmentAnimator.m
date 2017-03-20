@@ -19,8 +19,7 @@
 @interface MXKAttachmentAnimator ()
 
 @property PhotoBrowserAnimationType animationType;
-@property UIImageView *originalImageView;
-@property CGRect convertedFrame;
+@property (weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
 @end
 
@@ -28,13 +27,12 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithAnimationType:(PhotoBrowserAnimationType)animationType originalImageView:(UIImageView *)originalImageView convertedFrame:(CGRect)frame
+- (instancetype)initWithAnimationType:(PhotoBrowserAnimationType)animationType sourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)viewController
 {
     self = [self init];
     if (self) {
         self.animationType = animationType;
-        self.originalImageView = originalImageView;
-        self.convertedFrame = frame;
+        self.sourceViewController = viewController;
     }
     return self;
 }
@@ -63,28 +61,26 @@
 
 - (void)animateZoomInAnimation:(id<UIViewControllerContextTransitioning>)transitionContext
 {
-    self.originalImageView.hidden = YES;
+    //originalImageView
+    UIImageView *originalImageView = [self.sourceViewController originalImageView];
+    originalImageView.hidden = YES;
+    CGRect convertedFrame = [self.sourceViewController convertedFrameForOriginalImageView];
     
     //toViewController
-    UIViewController<MXKAttachmentAnimatorDelegate> *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    UIViewController<MXKDestinationAttachmentAnimatorDelegate> *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     toViewController.view.frame = [transitionContext finalFrameForViewController:toViewController];
     [[transitionContext containerView] addSubview:toViewController.view];
     toViewController.view.alpha = 0.0;
     
-    if ([toViewController conformsToProtocol:@protocol(MXKAttachmentAnimatorDelegate)]) {
-        NSLog(@"conforms");
-    } else {
-        NSLog(@"doesnt conform");
-    }
-    
-    UIImageView *destinationImageView = [toViewController imageViewForAnimations];
+    //destinationImageView
+    UIImageView *destinationImageView = [toViewController finalImageView];
     destinationImageView.hidden = YES;
     
     //transitioningImageView
-    UIImageView *transitioningImageView = [[UIImageView alloc] initWithImage:self.originalImageView.image];
-    transitioningImageView.frame = self.convertedFrame;
+    UIImageView *transitioningImageView = [[UIImageView alloc] initWithImage:originalImageView.image];
+    transitioningImageView.frame = convertedFrame;
     [[transitionContext containerView] addSubview:transitioningImageView];
-    CGRect finalFrameForTransitioningView = [[self class] aspectFitImage:self.originalImageView.image inFrame:toViewController.view.frame];
+    CGRect finalFrameForTransitioningView = [[self class] aspectFitImage:originalImageView.image inFrame:toViewController.view.frame];
     
     
     //animation
@@ -94,7 +90,7 @@
     } completion:^(BOOL finished) {
         [transitioningImageView removeFromSuperview];
         destinationImageView.hidden = NO;
-        self.originalImageView.hidden = NO;
+        originalImageView.hidden = NO;
         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
     }];
 }
@@ -102,15 +98,17 @@
 - (void)animateZoomOutAnimation:(id<UIViewControllerContextTransitioning>)transitionContext
 {
     //fromViewController
-    UIViewController<MXKAttachmentAnimatorDelegate> *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    UIImageView *destinationImageView = [fromViewController imageViewForAnimations];
+    UIViewController<MXKDestinationAttachmentAnimatorDelegate> *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIImageView *destinationImageView = [fromViewController finalImageView];
     destinationImageView.hidden = YES;
     
     //toViewController
     UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     toViewController.view.frame = [transitionContext finalFrameForViewController:toViewController];
     [[transitionContext containerView] insertSubview:toViewController.view belowSubview:fromViewController.view];
-    self.originalImageView.hidden = YES;
+    UIImageView *originalImageView = [self.sourceViewController originalImageView];
+    originalImageView.hidden = YES;
+    CGRect convertedFrame = [self.sourceViewController convertedFrameForOriginalImageView];
     
     //transitioningImageView
     UIImageView *transitioningImageView = [[UIImageView alloc] initWithImage:destinationImageView.image];
@@ -124,11 +122,11 @@
     //animation
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         fromViewController.view.alpha = 0.0;
-        transitioningImageView.frame = self.convertedFrame;
+        transitioningImageView.frame = convertedFrame;
     } completion:^(BOOL finished) {
         [transitioningImageView removeFromSuperview];
         destinationImageView.hidden = NO;
-        self.originalImageView.hidden = NO;
+        originalImageView.hidden = NO;
         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
     }];
 }

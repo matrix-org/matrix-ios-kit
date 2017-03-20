@@ -15,11 +15,12 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "MXKAttachmentAnimator.h"
 
 @interface MXKAttachmentInteractionController : UIPercentDrivenInteractiveTransition
 
 @property BOOL interactionInProgress;
 
-- (instancetype)initWithViewController:(UIViewController *)viewController originalImageView:(UIImageView *)imageView convertedFrame:(CGRect)frame;
+- (instancetype)initWithDestinationViewController:(UIViewController <MXKDestinationAttachmentAnimatorDelegate> *)viewController sourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController;
 
 @end

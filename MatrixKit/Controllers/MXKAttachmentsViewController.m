@@ -95,10 +95,12 @@
 //animations
 @property MXKAttachmentInteractionController *interactionController;
 
+@property UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+
 @property UIImageView *originalImageView;
 @property CGRect convertedFrame;
 
-@property BOOL animationsEnabled;
+@property BOOL customAnimationsEnabled;
 
 @end
 
@@ -119,24 +121,23 @@
                                           bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
 }
 
-+ (instancetype)animatedAttachmentsViewControllerWithOriginViewController:(UIViewController *)originViewController referenceImageView:(UIImageView *)referenceImageView convertedFrame:(CGRect)convertedFrame
++ (instancetype)animatedAttachmentsViewControllerWithSourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController
 {
     MXKAttachmentsViewController *attachmentsController = [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
                                                                                          bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
     
     //create an interactionController for it to handle the gestue recognizer and control the interactions
-    attachmentsController.interactionController = [[MXKAttachmentInteractionController alloc] initWithViewController:attachmentsController originalImageView:referenceImageView convertedFrame:convertedFrame];
+    attachmentsController.interactionController = [[MXKAttachmentInteractionController alloc] initWithDestinationViewController:attachmentsController sourceViewController:sourceViewController];
     
     //we use the animationsEnabled property to enable/disable animations. Instances created not using this method should use the default animations
-    attachmentsController.animationsEnabled = YES;
+    attachmentsController.customAnimationsEnabled = YES;
     
     //this properties will be needed by animationControllers in order to perform the animations
-    attachmentsController.originalImageView = referenceImageView;
-    attachmentsController.convertedFrame = convertedFrame;
+    attachmentsController.sourceViewController = sourceViewController;
     
     //setting transitioningDelegate and navigationController.delegate so that the animations will work for present/dismiss as well as push/pop
     attachmentsController.transitioningDelegate = attachmentsController;
-    originViewController.navigationController.delegate = attachmentsController;
+    sourceViewController.navigationController.delegate = attachmentsController;
     
     
     return attachmentsController;
@@ -1361,7 +1362,7 @@
     }
 }
 
-- (UIImageView *)imageViewForAnimations
+- (UIImageView *)finalImageView
 {
     MXKMediaCollectionViewCell *cell = (MXKMediaCollectionViewCell *)[self.attachmentsCollection.visibleCells firstObject];
     return cell.mxkImageView.imageView;
@@ -1371,18 +1372,18 @@
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
 {
-    if (self.animationsEnabled)
+    if (self.customAnimationsEnabled)
     {
-        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation sourceViewController:self.sourceViewController];
     }
     return nil;
 }
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
 {
-    if (self.animationsEnabled)
+    if (self.customAnimationsEnabled)
     {
-        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation sourceViewController:self.sourceViewController];
     }
     return nil;
 }
@@ -1400,7 +1401,7 @@
 #pragma mark - UINavigationControllerDelegate
 
 - (id <UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id <UIViewControllerAnimatedTransitioning>) animationController {
-    if (self.animationsEnabled && self.interactionController.interactionInProgress)
+    if (self.customAnimationsEnabled && self.interactionController.interactionInProgress)
     {
         return self.interactionController;
     }
@@ -1412,15 +1413,15 @@
                                                   toViewController:(UIViewController *)toVC
 {
     
-    if (self.animationsEnabled)
+    if (self.customAnimationsEnabled)
     {
         if (operation == UINavigationControllerOperationPush)
         {
-            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation sourceViewController:self.sourceViewController];
         }
         if (operation == UINavigationControllerOperationPop)
         {
-            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation originalImageView:self.originalImageView convertedFrame:self.convertedFrame];
+            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation sourceViewController:self.sourceViewController];
         }
         return nil;
     }

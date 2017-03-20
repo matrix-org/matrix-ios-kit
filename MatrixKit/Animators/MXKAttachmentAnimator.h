@@ -22,16 +22,27 @@ typedef NS_ENUM(NSInteger, PhotoBrowserAnimationType) {
     PhotoBrowserZoomOutAnimation
 };
 
-@protocol MXKAttachmentAnimatorDelegate <NSObject>
+@protocol MXKSourceAttachmentAnimatorDelegate <NSObject>
 
 @required
-- (UIImageView *)imageViewForAnimations;
+
+- (UIImageView *)originalImageView;
+
+- (CGRect)convertedFrameForOriginalImageView;
+
+@end
+
+@protocol MXKDestinationAttachmentAnimatorDelegate <NSObject>
+
+@required
+
+- (UIImageView *)finalImageView;
 
 @end
 
 @interface MXKAttachmentAnimator : NSObject <UIViewControllerAnimatedTransitioning>
 
-- (instancetype)initWithAnimationType:(PhotoBrowserAnimationType)animationType originalImageView:(UIImageView *)originalImageView convertedFrame:(CGRect)frame;
+- (instancetype)initWithAnimationType:(PhotoBrowserAnimationType)animationType sourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)viewController;
 
 + (CGRect)aspectFitImage:(UIImage *)image inFrame:(CGRect)targetFrame;
 

@@ -26,7 +26,7 @@ limitations under the License.
  This view controller is used to display attachments of a room.
  Only one attachment is displayed at once, the user is able to swipe one by one the attachment.
  */
-@interface MXKAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate, MXKAttachmentAnimatorDelegate>
+@interface MXKAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate, MXKDestinationAttachmentAnimatorDelegate>
 
 @property (nonatomic) IBOutlet UICollectionView *attachmentsCollection;
 
@@ -70,7 +70,7 @@ limitations under the License.
 /**
  Creates and returns a new `MXKAttachmentsViewController` object, also sets sets up environment for animated interactive transitions.
  */
-+ (instancetype)animatedAttachmentsViewControllerWithOriginViewController:(UIViewController *)vc referenceImageView:(UIImageView *)referenceImageView convertedFrame:(CGRect)convertedFrame;
++ (instancetype)animatedAttachmentsViewControllerWithSourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController;
 
 /**
  Display attachments of a room.

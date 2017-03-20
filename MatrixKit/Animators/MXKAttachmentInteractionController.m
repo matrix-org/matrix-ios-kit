@@ -15,13 +15,11 @@
  */
 
 #import "MXKAttachmentInteractionController.h"
-#import "MXKAttachmentAnimator.h"
 
 @interface MXKAttachmentInteractionController ()
 
-@property (weak, atomic) UIViewController<MXKAttachmentAnimatorDelegate> *viewController;
-@property (weak) UIImageView *originalImageViewReference;
-@property CGRect originalImageViewConvertedFrame;
+@property (weak) UIViewController <MXKDestinationAttachmentAnimatorDelegate> *destinationViewController;
+@property (weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
 @property UIImageView *transitioningImageView;
 @property id <UIViewControllerContextTransitioning> transitionContext;
@@ -35,13 +33,12 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithViewController:(UIViewController<MXKAttachmentAnimatorDelegate> *)viewController originalImageView:(UIImageView *)imageView convertedFrame:(CGRect)frame
+- (instancetype)initWithDestinationViewController:(UIViewController <MXKDestinationAttachmentAnimatorDelegate> *)viewController sourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController
 {
     self = [super init];
     if (self) {
-        self.viewController = viewController;
-        self.originalImageViewReference = imageView;
-        self.originalImageViewConvertedFrame = frame;
+        self.destinationViewController = viewController;
+        self.sourceViewController = sourceViewController;
         self.interactionInProgress = NO;
         
         [self preparePanGestureRecognizerInView:viewController.view];
@@ -61,7 +58,7 @@
 
 - (void)handleGesture:(UIPanGestureRecognizer *)recognizer
 {
-    CGPoint translation = [recognizer translationInView:self.viewController.view];
+    CGPoint translation = [recognizer translationInView:self.destinationViewController.view];
     self.delta = CGPointMake(translation.x - self.translation.x, translation.y - self.translation.y);
     self.translation = translation;
     
@@ -70,17 +67,17 @@
             
             self.interactionInProgress = YES;
             
-            if (self.viewController.navigationController) {
-                [self.viewController.navigationController popViewControllerAnimated:YES];
+            if (self.destinationViewController.navigationController) {
+                [self.destinationViewController.navigationController popViewControllerAnimated:YES];
             } else {
-                [self.viewController dismissViewControllerAnimated:YES completion:nil];
+                [self.destinationViewController dismissViewControllerAnimated:YES completion:nil];
             }
             
             break;
             
         case UIGestureRecognizerStateChanged:
             
-            [self updateInteractiveTransition:(ABS(translation.y) / (CGRectGetHeight(self.viewController.view.frame) / 2))];
+            [self updateInteractiveTransition:(ABS(translation.y) / (CGRectGetHeight(self.destinationViewController.view.frame) / 2))];
             
             break;
             
@@ -94,7 +91,7 @@
         case UIGestureRecognizerStateEnded:
             
             self.interactionInProgress = NO;
-            if (ABS(self.translation.y) < CGRectGetHeight(self.viewController.view.frame)/6) {
+            if (ABS(self.translation.y) < CGRectGetHeight(self.destinationViewController.view.frame)/6) {
                 [self cancelInteractiveTransition];
             } else {
                 [self finishInteractiveTransition];
@@ -115,25 +112,26 @@
     self.transitionContext = transitionContext;
     
     UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    UIImageView *destinationImageView = [self.viewController imageViewForAnimations];
+    UIImageView *destinationImageView = [self.destinationViewController finalImageView];
     destinationImageView.hidden = YES;
 
     UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     toViewController.view.frame = [transitionContext finalFrameForViewController:toViewController];
     [[transitionContext containerView] insertSubview:toViewController.view belowSubview:fromViewController.view];
-    self.originalImageViewReference.hidden = YES;
+    UIImageView *originalImageView = [self.sourceViewController originalImageView];
+    originalImageView.hidden = YES;
     
-    if (self.viewController.navigationController) {
-        [self.viewController.navigationController setNavigationBarHidden:YES animated:NO];
+    if (self.destinationViewController.navigationController) {
+        [self.destinationViewController.navigationController setNavigationBarHidden:YES animated:NO];
     }
-
+    
     self.transitioningImageView = [[UIImageView alloc] initWithImage:destinationImageView.image];
     self.transitioningImageView.frame = [MXKAttachmentAnimator aspectFitImage:destinationImageView.image inFrame:destinationImageView.frame];
     [[transitionContext containerView] addSubview:self.transitioningImageView];
 }
 
 - (void)updateInteractiveTransition:(CGFloat)percentComplete {
-    self.viewController.view.alpha = MAX(0, (1 - percentComplete));
+    self.destinationViewController.view.alpha = MAX(0, (1 - percentComplete));
     
     CGRect newFrame = CGRectMake(self.transitioningImageView.frame.origin.x, self.transitioningImageView.frame.origin.y + self.delta.y, CGRectGetWidth(self.transitioningImageView.frame), CGRectGetHeight(self.transitioningImageView.frame));
     self.transitioningImageView.frame = newFrame;
@@ -141,14 +139,15 @@
 
 - (void)cancelInteractiveTransition {
     UIViewController *fromViewController = [self.transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    UIImageView *destinationImageView = [self.viewController imageViewForAnimations];
+    UIImageView *destinationImageView = [self.destinationViewController finalImageView];
+    UIImageView *originalImageView = [self.sourceViewController originalImageView];
     
     [UIView animateWithDuration:([self transitionDuration:self.transitionContext]/2) animations:^{
         fromViewController.view.alpha = 1;
         self.transitioningImageView.frame = [MXKAttachmentAnimator aspectFitImage:destinationImageView.image inFrame:destinationImageView.frame];
     } completion:^(BOOL finished) {
         destinationImageView.hidden = NO;
-        self.originalImageViewReference.hidden = NO;
+        originalImageView.hidden = NO;
         [self.transitioningImageView removeFromSuperview];
         
         [self.transitionContext cancelInteractiveTransition];
@@ -159,18 +158,20 @@
 - (void)finishInteractiveTransition
 {
     UIViewController *fromViewController = [self.transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    UIImageView *destinationImageView = [self.viewController imageViewForAnimations];
+    UIImageView *destinationImageView = [self.destinationViewController finalImageView];
     
     UIViewController *toViewController = [self.transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     
+    UIImageView *originalImageView = [self.sourceViewController originalImageView];
+    CGRect originalImageViewFrame = [self.sourceViewController convertedFrameForOriginalImageView];
     
     [UIView animateWithDuration:[self transitionDuration:self.transitionContext] animations:^{
         fromViewController.view.alpha = 0.0;
-        self.transitioningImageView.frame = self.originalImageViewConvertedFrame;
+        self.transitioningImageView.frame = originalImageViewFrame;
     } completion:^(BOOL finished) {
         [self.transitioningImageView removeFromSuperview];
         destinationImageView.hidden = NO;
-        self.originalImageViewReference.hidden = NO;
+        originalImageView.hidden = NO;
         if (toViewController.navigationController) {
             [toViewController.navigationController setNavigationBarHidden:NO animated:YES];
         }
