@@ -242,12 +242,27 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     
     // Listen to MXRoomSummary
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomSummaryChanged:) name:kMXRoomSummaryDidChangeNotification object:nil];
+
+    // Listen to kMXRoomDidUpdateUnreadNotification for notif counters
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomUnreadChanged:) name:kMXRoomDidUpdateUnreadNotification object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
 
 - (void)didRoomSummaryChanged:(NSNotification *)notif
 {
     MXRoomSummary *roomSummary = notif.object;
+    [self didChanged:roomSummary];
+}
+
+- (void)didRoomUnreadChanged:(NSNotification *)notif
+{
+    MXRoom *room = notif.object;
+    [self didChanged:room.summary];
+}
+
+- (void)didChanged:(MXRoomSummary *)roomSummary
+{
     if (roomSummary.mxSession == self.mxSession && internalCellDataArray.count)
     {
         // Find the index of the related cell data
