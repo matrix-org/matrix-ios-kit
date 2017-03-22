@@ -880,7 +880,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                                @"url": self.pushGatewayURL,
                                };
     
-    NSString *deviceLang = [NSLocale preferredLanguages][0];
+    NSString *deviceLang = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];;
     
     NSString * profileTag = [[NSUserDefaults standardUserDefaults] valueForKey:@"pusherProfileTag"];
     if (!profileTag)
