@@ -235,9 +235,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     else
     {
-        _hasUnread = (_room.localUnreadEventCount != 0);
-        _notificationCount = _room.notificationCount;
-        _highlightCount = _room.highlightCount;
+        _hasUnread = (_room.summary.localUnreadEventCount != 0);
+        _notificationCount = _room.summary.notificationCount;
+        _highlightCount = _room.summary.highlightCount;
     }
 }
 
@@ -465,14 +465,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         
                     }];
                     
-                    // Observe unread notifications change
-                    roomDidUpdateUnreadNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidUpdateUnreadNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                        
-                        MXRoom *room = notif.object;
-                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
-                        {
-                            [self refreshUnreadCounters];
-                        }
+                    // Observe room summary updates for unread notifications changes
+                    roomDidUpdateUnreadNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSummaryDidChangeNotification object:_room.summary queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+
+                        [self refreshUnreadCounters];
                         
                     }];
 

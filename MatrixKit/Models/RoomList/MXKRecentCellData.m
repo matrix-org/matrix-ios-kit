@@ -62,20 +62,17 @@
 
 - (BOOL)hasUnread
 {
-    // @TODO: Cache it in MXRoomSummary ?
-    return (roomSummary.room.localUnreadEventCount != 0);
+    return (roomSummary.localUnreadEventCount != 0);
 }
 
 - (NSUInteger)notificationCount
 {
-    // @TODO: Cache it in MXRoomSummary ?
-    return roomSummary.room.notificationCount;
+    return roomSummary.notificationCount;
 }
 
 - (NSUInteger)highlightCount
 {
-    // @TODO: Cache it in MXRoomSummary ?
-    return roomSummary.room.highlightCount;
+    return roomSummary.highlightCount;
 }
 
 - (void)markAllAsRead
