@@ -358,8 +358,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
             {
                 for (MXKEmail *email in emails)
                 {
-                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:@[email] phoneNumbers:nil andThumbnail:contact.thumbnail];
-                    [splitLocalContacts addObject:splitContact];
+                    // Trick: Ignore @facebook.com email addresses from the results - facebook have discontinued that service...
+                    if (![email.emailAddress hasSuffix:@"@facebook.com"])
+                    {
+                        MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:@[email] phoneNumbers:nil andThumbnail:contact.thumbnail];
+                        [splitLocalContacts addObject:splitContact];
+                    }
                 }
                 
                 for (MXKPhoneNumber *phone in phones)
