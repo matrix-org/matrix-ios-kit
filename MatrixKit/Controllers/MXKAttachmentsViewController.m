@@ -1019,22 +1019,29 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Stop potential attached player
+    // Here the cell is not displayed anymore, but it may be displayed again if the user swipes on it.
     if ([cell isKindOfClass:[MXKMediaCollectionViewCell class]])
     {
         MXKMediaCollectionViewCell *mediaCollectionViewCell = (MXKMediaCollectionViewCell*)cell;
         
+        // Check whether a video was playing in this cell.
         if (mediaCollectionViewCell.moviePlayer)
         {
+            // This cell concerns an attached video.
+            // We stop the player, and restore the default display based on the video thumbnail
             [mediaCollectionViewCell.moviePlayer stop];
             mediaCollectionViewCell.moviePlayer = nil;
-        }
-        
-        // Remove potential media download observer
-        if (mediaCollectionViewCell.notificationObserver)
-        {
-            [[NSNotificationCenter defaultCenter] removeObserver:mediaCollectionViewCell.notificationObserver];
-            mediaCollectionViewCell.notificationObserver = nil;
+            
+            mediaCollectionViewCell.mxkImageView.hidden = NO;
+            mediaCollectionViewCell.centerIcon.hidden = NO;
+            mediaCollectionViewCell.customView.hidden = YES;
+            
+            // Remove potential media download observer
+            if (mediaCollectionViewCell.notificationObserver)
+            {
+                [[NSNotificationCenter defaultCenter] removeObserver:mediaCollectionViewCell.notificationObserver];
+                mediaCollectionViewCell.notificationObserver = nil;
+            }
         }
     }
 }
