@@ -39,6 +39,37 @@
     [super prepareForReuse];
     [self.moviePlayer stop];
     self.moviePlayer = nil;
+    
+    // Restore the cell in reusable state
+    self.mxkImageView.hidden = NO;
+    self.mxkImageView.stretchable = NO;
+    // Cancel potential image download
+    self.mxkImageView.enableInMemoryCache = NO;
+    [self.mxkImageView setImageURL:nil withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
+    
+    self.customView.hidden = YES;
+    self.centerIcon.hidden = YES;
+    
+    // Remove added view in custon view
+    NSArray *subViews = self.customView.subviews;
+    for (UIView *view in subViews)
+    {
+        [view removeFromSuperview];
+    }
+    
+    // Remove potential media download observer
+    if (self.notificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:self.notificationObserver];
+        self.notificationObserver = nil;
+    }
+    
+    // Remove all gesture recognizers
+    while (self.gestureRecognizers.count)
+    {
+        [self removeGestureRecognizer:self.gestureRecognizers[0]];
+    }
+    self.tag = -1;
 }
 
 - (void)dealloc
