@@ -1094,6 +1094,12 @@
         }
     }
     
+    //tell the delegate that a new Attachment has been shown and pass eventId
+    NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
+    if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
+        [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
+    }
+    
     // Remove all gesture recognizers
     while (cell.gestureRecognizers.count)
     {

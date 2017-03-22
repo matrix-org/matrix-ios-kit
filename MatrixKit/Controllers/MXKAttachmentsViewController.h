@@ -103,4 +103,10 @@ limitations under the License.
  @return a boolean which tells whether some new attachments may be added or not.
  */
 - (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId;
+
+@optional
+
+- (void)displayedNewAttachmentWithEventId:(NSString *)eventId;
+
+
 @end

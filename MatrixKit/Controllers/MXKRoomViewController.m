@@ -147,6 +147,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     BOOL restartConnection;
 }
 
+@property NSString *openedAttachmentEventId;
+@property NSString *closedAttachmentEventId;
+
+@property UIImageView *openedAttachmentImageView;
+
 @end
 
 @implementation MXKRoomViewController
@@ -3295,17 +3300,20 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     // Present an attachment viewer
                     if (attachmentsViewerClass)
                     {
-                        attachmentsViewer = [attachmentsViewerClass attachmentsViewController];
+                        attachmentsViewer = [attachmentsViewerClass animatedAttachmentsViewControllerWithSourceViewController:self];
                     }
                     else
                     {
-                        attachmentsViewer = [MXKAttachmentsViewController attachmentsViewController];
+                        attachmentsViewer = [MXKAttachmentsViewController animatedAttachmentsViewControllerWithSourceViewController:self];
                     }
                     
                     attachmentsViewer.delegate = self;
                     attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
                     attachmentsViewer.hidesBottomBarWhenPushed = YES;
                     [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.eventId];
+                    
+                    self.openedAttachmentEventId = selectedAttachment.eventId;
+                    self.openedAttachmentImageView = ((MXKRoomBubbleTableViewCell *)cell).attachmentView.imageView;
                     
                     [self.navigationController pushViewController:attachmentsViewer animated:YES];
                 }
@@ -3430,6 +3438,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [self triggerAttachmentBackPagination:eventId];
     
     return [self.roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards];
+}
+
+- (void)displayedNewAttachmentWithEventId:(NSString *)eventId {
+    self.closedAttachmentEventId = eventId;
 }
 
 #pragma mark - MXKRoomActivitiesViewDelegate
@@ -3583,5 +3595,22 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }
 }
 
+#pragma mark - MXKSourceAttachmentAnimatorDelegate
+
+- (UIImageView *)originalImageView {
+    if ([self.openedAttachmentEventId isEqualToString:self.closedAttachmentEventId]) {
+        return self.openedAttachmentImageView;
+    }
+    return nil;
+}
+
+
+- (CGRect)convertedFrameForOriginalImageView {
+    if ([self.openedAttachmentEventId isEqualToString:self.closedAttachmentEventId]) {
+        return [self.openedAttachmentImageView convertRect:self.openedAttachmentImageView.frame toView:nil];
+    }
+    //default frame which will be used if the user scrolls to other attachments in MXKAttachmentsViewController
+    return CGRectMake(CGRectGetWidth(self.view.frame)/2, 0.0, 0.0, 0.0);
+}
 
 @end
