@@ -1078,12 +1078,6 @@
             }
         }
     }
-  
-    //tell the delegate that a new Attachment has been shown and pass eventId
-    NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
-    if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
-        [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
-    }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
@@ -1113,6 +1107,14 @@
             [self refreshCurrentVisibleCell];
         }
     }
+    
+    //tell the delegate that a new Attachment has been shown and pass eventId
+    MXKMediaCollectionViewCell* cell = [[self.attachmentsCollection visibleCells] firstObject];
+    NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
+    if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
+        [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
+    }
+    
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -1374,7 +1376,7 @@
 
 - (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator
 {
-    //if there is no interaction, just finish the animation using the animationController
+    //if there is an interaction, use the custom interaction controller to handle it
     if (self.interactionController.interactionInProgress)
     {
         return self.interactionController;

@@ -1,5 +1,5 @@
 /*
- Copyright 2016 OpenMarket Ltd
+ Copyright 2017 Aram Sargsyan
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@
     CGFloat factor = MIN(targetWidth/imageWidth, targetHeight/imageHeight);
     
     CGSize finalSize = CGSizeMake(imageWidth * factor, imageHeight * factor);
-    CGRect finalFrame = CGRectMake((targetWidth - finalSize.width)/2 + 0, (targetHeight - finalSize.height)/2 + targetFrame.origin.y, finalSize.width, finalSize.height);
+    CGRect finalFrame = CGRectMake((targetWidth - finalSize.width)/2 + targetFrame.origin.x, (targetHeight - finalSize.height)/2 + targetFrame.origin.y, finalSize.width, finalSize.height);
     
     return finalFrame;
 }

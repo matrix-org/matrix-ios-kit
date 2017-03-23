@@ -106,6 +106,10 @@ limitations under the License.
 
 @optional
 
+/**
+ Informs the delegate that a new attachment has been shown
+ the parameter eventId is used by the delegate to identify the attachment
+ */
 - (void)displayedNewAttachmentWithEventId:(NSString *)eventId;
 
 
