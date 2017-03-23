@@ -19,8 +19,6 @@
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
 
-static MXKAccountManager *sharedAccountManager = nil;
-
 @interface MXKAccountManager()
 {
     /**
@@ -35,13 +33,12 @@ static MXKAccountManager *sharedAccountManager = nil;
 
 + (MXKAccountManager *)sharedManager
 {
-    @synchronized(self)
-    {
-        if (sharedAccountManager == nil)
-        {
-            sharedAccountManager = [[super allocWithZone:NULL] init];
-        }
-    }
+    static MXKAccountManager *sharedAccountManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedAccountManager = [[super allocWithZone:NULL] init];
+    });
+    
     return sharedAccountManager;
 }
 
