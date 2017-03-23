@@ -1,3 +1,28 @@
+Changes in MatrixKit in 0.4.11 (2017-03-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.11).
+ 
+Bug fixes:
+ * Chat screen: image thumbnails management is broken (https://github.com/vector-im/riot-ios#1121).
+ * Image viewer repeatedly loses overlay menu (https://github.com/vector-im/riot-ios#1109).
+
+Changes in MatrixKit in 0.4.10 (2017-03-21)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.10).
+
+Changes in MatrixKit in 0.4.9 (2017-03-16)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.7.9).
+ 
+Bug fixes:
+ * Riot user created without msisdn in his settings (https://github.com/vector-im/riot-ios#1103).
+
 Changes in MatrixKit in 0.4.8 (2017-03-10)
 ==========================================
 

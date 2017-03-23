@@ -118,9 +118,6 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         
         thumbnailFile = _contentInfo[@"thumbnail_file"];
         
-        _thumbnailURL = [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
-        _thumbnailMimeType = [self getThumbnailMimeType];
-        
         contentFile = eventContent[@"file"];
         
         // Retrieve the content url by taking into account the potential encryption.
@@ -155,6 +152,10 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
         
         _cacheFilePath = [MXMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:_eventRoomId];
+        
+        // Deduce the thumbnail information from the retrieved data.
+        _thumbnailURL = [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
+        _thumbnailMimeType = [self getThumbnailMimeType];
     }
     return self;
 }
