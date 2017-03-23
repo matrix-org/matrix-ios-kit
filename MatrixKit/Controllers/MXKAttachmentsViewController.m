@@ -1019,53 +1019,31 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Restore the cell in reusable state
+    // Here the cell is not displayed anymore, but it may be displayed again if the user swipes on it.
     if ([cell isKindOfClass:[MXKMediaCollectionViewCell class]])
     {
         MXKMediaCollectionViewCell *mediaCollectionViewCell = (MXKMediaCollectionViewCell*)cell;
         
-        mediaCollectionViewCell.mxkImageView.hidden = NO;
-        mediaCollectionViewCell.customView.hidden = YES;
-        
-        // Cancel potential image download
-        mediaCollectionViewCell.mxkImageView.enableInMemoryCache = NO;
-        [mediaCollectionViewCell.mxkImageView setImageURL:nil withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
-        // TODO; we should here reset mxkImageView.stretchable flag
-        // But we observed wrong behavior in case of reused cell: The stretching mechanism was disabled for unknown reason.
-        // To reproduce: stretch the current image I1 with the max zoom scale, then scroll to the previous one I0, scroll back to I1: the stretching is disabled: NOK
-        // Investigation is required before uncommenting the following line
-//        mediaCollectionViewCell.mxkImageView.stretchable = NO;
-        
-        // Hide video play icon
-        mediaCollectionViewCell.centerIcon.hidden = YES;
-        
-        // Remove potential media download observer
-        if (mediaCollectionViewCell.notificationObserver)
-        {
-            [[NSNotificationCenter defaultCenter] removeObserver:mediaCollectionViewCell.notificationObserver];
-            mediaCollectionViewCell.notificationObserver = nil;
-        }
-        
-        // Stop potential attached player
+        // Check whether a video was playing in this cell.
         if (mediaCollectionViewCell.moviePlayer)
         {
+            // This cell concerns an attached video.
+            // We stop the player, and restore the default display based on the video thumbnail
             [mediaCollectionViewCell.moviePlayer stop];
             mediaCollectionViewCell.moviePlayer = nil;
-        }
-        // Remove added view in custon view
-        NSArray *subViews = mediaCollectionViewCell.customView.subviews;
-        for (UIView *view in subViews)
-        {
-            [view removeFromSuperview];
+            
+            mediaCollectionViewCell.mxkImageView.hidden = NO;
+            mediaCollectionViewCell.centerIcon.hidden = NO;
+            mediaCollectionViewCell.customView.hidden = YES;
+            
+            // Remove potential media download observer
+            if (mediaCollectionViewCell.notificationObserver)
+            {
+                [[NSNotificationCenter defaultCenter] removeObserver:mediaCollectionViewCell.notificationObserver];
+                mediaCollectionViewCell.notificationObserver = nil;
+            }
         }
     }
-    
-    // Remove all gesture recognizers
-    while (cell.gestureRecognizers.count)
-    {
-        [cell removeGestureRecognizer:cell.gestureRecognizers[0]];
-    }
-    cell.tag = -1;
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
