@@ -499,6 +499,17 @@
     
     [self refreshCurrentVisibleItemIndex];
     
+    // Tell the delegate that a new Attachment has been shown and pass eventId
+    MXKMediaCollectionViewCell* cell = [[self.attachmentsCollection visibleCells] firstObject];
+    NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
+    if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
+        if ((isBackPaginationInProgress == YES) && (currentVisibleItemIndex == 0)) {
+            [self.delegate displayedNewAttachmentWithEventId:nil];
+        } else {
+            [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
+        }
+    }
+    
     if (currentVisibleItemIndex != NSNotFound)
     {
         NSInteger item = currentVisibleItemIndex;
@@ -1107,14 +1118,6 @@
             [self refreshCurrentVisibleCell];
         }
     }
-    
-    //tell the delegate that a new Attachment has been shown and pass eventId
-    MXKMediaCollectionViewCell* cell = [[self.attachmentsCollection visibleCells] firstObject];
-    NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
-    if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
-        [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
-    }
-    
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout

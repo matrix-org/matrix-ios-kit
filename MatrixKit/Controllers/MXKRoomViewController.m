@@ -3319,8 +3319,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     attachmentsViewer.hidesBottomBarWhenPushed = YES;
                     [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.eventId];
                     
-                    self.openedAttachmentEventId = selectedAttachment.eventId;
                     self.openedAttachmentImageView = ((MXKRoomBubbleTableViewCell *)cell).attachmentView.imageView;
+                    self.openedAttachmentEventId = selectedAttachment.eventId;
+                    
+                    // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
+                    self.closedAttachmentEventId = self.openedAttachmentEventId;
                     
                     [self.navigationController pushViewController:attachmentsViewer animated:YES];
                 }
