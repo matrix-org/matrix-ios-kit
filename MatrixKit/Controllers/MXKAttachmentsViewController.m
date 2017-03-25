@@ -503,7 +503,7 @@
     MXKMediaCollectionViewCell* cell = [[self.attachmentsCollection visibleCells] firstObject];
     NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
     if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
-        if ((isBackPaginationInProgress == YES) && (currentVisibleItemIndex == 0)) {
+        if (((isBackPaginationInProgress == YES) && (currentVisibleItemIndex == 0)) || currentVisibleItemIndex == NSNotFound) {
             [self.delegate displayedNewAttachmentWithEventId:nil];
         } else {
             [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
