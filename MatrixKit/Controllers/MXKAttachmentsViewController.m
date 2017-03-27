@@ -499,24 +499,26 @@
     
     [self refreshCurrentVisibleItemIndex];
     
-    // Tell the delegate that a new Attachment has been shown and pass eventId
-    MXKMediaCollectionViewCell* cell = [[self.attachmentsCollection visibleCells] firstObject];
-    NSString *attachmentEventId = ((MXKAttachment *)attachments[cell.tag]).eventId;
-    if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)]) {
-        if (((isBackPaginationInProgress == YES) && (currentVisibleItemIndex == 0)) || currentVisibleItemIndex == NSNotFound) {
+    if (currentVisibleItemIndex == NSNotFound) {
+        // Tell the delegate that no attachment is displayed for the moment
+        if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)])
+        {
             [self.delegate displayedNewAttachmentWithEventId:nil];
-        } else {
-            [self.delegate displayedNewAttachmentWithEventId:attachmentEventId];
         }
     }
-    
-    if (currentVisibleItemIndex != NSNotFound)
+    else
     {
         NSInteger item = currentVisibleItemIndex;
         if (isBackPaginationInProgress)
         {
             if (item == 0)
             {
+                // Tell the delegate that no attachment is displayed for the moment
+                if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)])
+                {
+                    [self.delegate displayedNewAttachmentWithEventId:nil];
+                }
+                
                 return;
             }
             
@@ -528,6 +530,12 @@
             MXKAttachment *attachment = attachments[item];
             NSString *attachmentURL = attachment.actualURL;
             NSString *mimeType = attachment.contentInfo[@"mimetype"];
+            
+            // Tell the delegate which attachment has been shown using its eventId
+            if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)])
+            {
+                [self.delegate displayedNewAttachmentWithEventId:attachment.eventId];
+            }
             
             // Check attachment type
             if (attachment.type == MXKAttachmentTypeImage && attachmentURL.length && ![mimeType isEqualToString:@"image/gif"])
