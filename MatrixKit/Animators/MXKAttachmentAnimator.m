@@ -124,10 +124,6 @@
     transitioningImageView.frame = [[self class] aspectFitImage:destinationImageView.image inFrame:destinationImageView.frame];
     [[transitionContext containerView] addSubview:transitioningImageView];
     
-    if (fromViewController.navigationController) {
-        [fromViewController.navigationController setNavigationBarHidden:YES animated:YES];
-    }
-    
     //animation
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         fromViewController.view.alpha = 0.0;
