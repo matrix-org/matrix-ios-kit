@@ -20,3 +20,8 @@ Jeremy O'Brien <neutral at fastmail.com>
 Avery Pierce <aapierce0 at gmail.com>
  * PR #248 Replace GHMarkdownParser with CommonMark
  
+Denis Morozov <dmorozkn at gmail.com>
+ * PR #256 Attachments viewcontroller: stop correctly the video player
+
+Aram Sargsyan <aram.sargsyan.1997 at gmail.com>
+ * PR #259 Attachments viewcontroller: interactive animations
