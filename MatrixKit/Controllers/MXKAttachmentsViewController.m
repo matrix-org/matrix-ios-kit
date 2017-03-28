@@ -262,9 +262,6 @@
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
-    // Store index of the current displayed attachment, to restore it after refreshing
-    [self refreshCurrentVisibleItemIndex];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         // Cell width will be updated, force collection layout refresh to take into account the changes
