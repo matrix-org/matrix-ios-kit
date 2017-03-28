@@ -672,6 +672,9 @@
             if ([mimeType isEqualToString:@"image/gif"])
             {
                 cell.mxkImageView.hidden = YES;
+                // Set the preview as the default image even if the image view is hidden. It will be used during zoom out animation.
+                cell.mxkImageView.image = preview;
+                
                 cell.customView.hidden = NO;
                 
                 // Animated gif is displayed in webview

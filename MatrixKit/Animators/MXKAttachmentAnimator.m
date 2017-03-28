@@ -41,9 +41,18 @@
 
 + (CGRect)aspectFitImage:(UIImage *)image inFrame:(CGRect)targetFrame
 {
-    if (CGSizeEqualToSize(image.size, targetFrame.size)) {
+    // Sanity check
+    if (!image)
+    {
+        NSLog(@"[MXKAttachmentAnimator] aspectFitImage failed: image is nil");
+        return CGRectZero;
+    }
+    
+    if (CGSizeEqualToSize(image.size, targetFrame.size))
+    {
         return targetFrame;
     }
+    
     CGFloat targetWidth = CGRectGetWidth(targetFrame);
     CGFloat targetHeight = CGRectGetHeight(targetFrame);
     CGFloat imageWidth = image.size.width;
