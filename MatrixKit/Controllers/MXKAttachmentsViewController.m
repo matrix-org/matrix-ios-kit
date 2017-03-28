@@ -33,7 +33,9 @@
 
 #import "MXKEventFormatter.h"
 
-@interface MXKAttachmentsViewController ()
+#import "MXKAttachmentInteractionController.h"
+
+@interface MXKAttachmentsViewController () <UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 {
     /**
      Current alert (if any).
@@ -90,6 +92,16 @@
     NSString *videoFile;
 }
 
+//animations
+@property MXKAttachmentInteractionController *interactionController;
+
+@property UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+
+@property UIImageView *originalImageView;
+@property CGRect convertedFrame;
+
+@property BOOL customAnimationsEnabled;
+
 @end
 
 @implementation MXKAttachmentsViewController
@@ -107,6 +119,28 @@
 {
     return [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
                                           bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
+}
+
++ (instancetype)animatedAttachmentsViewControllerWithSourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController
+{
+    MXKAttachmentsViewController *attachmentsController = [[[self class] alloc] initWithNibName:NSStringFromClass([MXKAttachmentsViewController class])
+                                                                                         bundle:[NSBundle bundleForClass:[MXKAttachmentsViewController class]]];
+    
+    //create an interactionController for it to handle the gestue recognizer and control the interactions
+    attachmentsController.interactionController = [[MXKAttachmentInteractionController alloc] initWithDestinationViewController:attachmentsController sourceViewController:sourceViewController];
+    
+    //we use the animationsEnabled property to enable/disable animations. Instances created not using this method should use the default animations
+    attachmentsController.customAnimationsEnabled = YES;
+    
+    //this properties will be needed by animationControllers in order to perform the animations
+    attachmentsController.sourceViewController = sourceViewController;
+    
+    //setting transitioningDelegate and navigationController.delegate so that the animations will work for present/dismiss as well as push/pop
+    attachmentsController.transitioningDelegate = attachmentsController;
+    sourceViewController.navigationController.delegate = attachmentsController;
+    
+    
+    return attachmentsController;
 }
 
 #pragma mark -
@@ -465,13 +499,26 @@
     
     [self refreshCurrentVisibleItemIndex];
     
-    if (currentVisibleItemIndex != NSNotFound)
+    if (currentVisibleItemIndex == NSNotFound) {
+        // Tell the delegate that no attachment is displayed for the moment
+        if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)])
+        {
+            [self.delegate displayedNewAttachmentWithEventId:nil];
+        }
+    }
+    else
     {
         NSInteger item = currentVisibleItemIndex;
         if (isBackPaginationInProgress)
         {
             if (item == 0)
             {
+                // Tell the delegate that no attachment is displayed for the moment
+                if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)])
+                {
+                    [self.delegate displayedNewAttachmentWithEventId:nil];
+                }
+                
                 return;
             }
             
@@ -483,6 +530,12 @@
             MXKAttachment *attachment = attachments[item];
             NSString *attachmentURL = attachment.actualURL;
             NSString *mimeType = attachment.contentInfo[@"mimetype"];
+            
+            // Tell the delegate which attachment has been shown using its eventId
+            if ([self.delegate respondsToSelector:@selector(displayedNewAttachmentWithEventId:)])
+            {
+                [self.delegate displayedNewAttachmentWithEventId:attachment.eventId];
+            }
             
             // Check attachment type
             if (attachment.type == MXKAttachmentTypeImage && attachmentURL.length && ![mimeType isEqualToString:@"image/gif"])
@@ -1304,6 +1357,73 @@
         [currentSharedAttachment onShareEnded];
         currentSharedAttachment = nil;
     }
+}
+
+- (UIImageView *)finalImageView
+{
+    MXKMediaCollectionViewCell *cell = (MXKMediaCollectionViewCell *)[self.attachmentsCollection.visibleCells firstObject];
+    return cell.mxkImageView.imageView;
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
+{
+    if (self.customAnimationsEnabled)
+    {
+        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation sourceViewController:self.sourceViewController];
+    }
+    return nil;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
+{
+    if (self.customAnimationsEnabled)
+    {
+        return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation sourceViewController:self.sourceViewController];
+    }
+    return nil;
+}
+
+- (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator
+{
+    //if there is an interaction, use the custom interaction controller to handle it
+    if (self.interactionController.interactionInProgress)
+    {
+        return self.interactionController;
+    }
+    return nil;
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (id <UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id <UIViewControllerAnimatedTransitioning>) animationController {
+    if (self.customAnimationsEnabled && self.interactionController.interactionInProgress)
+    {
+        return self.interactionController;
+    }
+    return nil;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation
+                                                fromViewController:(UIViewController *)fromVC
+                                                  toViewController:(UIViewController *)toVC
+{
+    
+    if (self.customAnimationsEnabled)
+    {
+        if (operation == UINavigationControllerOperationPush)
+        {
+            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomInAnimation sourceViewController:self.sourceViewController];
+        }
+        if (operation == UINavigationControllerOperationPop)
+        {
+            return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation sourceViewController:self.sourceViewController];
+        }
+        return nil;
+    }
+    
+    return nil;
 }
 
 @end

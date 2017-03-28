@@ -44,6 +44,8 @@
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
 		79FA5AB121247287B85FA151 /* libPods-MatrixKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */; };
 		ACD9DAA6B4DCFC7E33E12A97 /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */; };
+		CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */; };
+		CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */; };
 		F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */; };
 		F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0036EED1AB98DC40008E432 /* MXKRoomInputToolbarView.m */; };
 		F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0036EEE1AB98DC40008E432 /* MXKRoomInputToolbarView.xib */; };
@@ -283,6 +285,10 @@
 		9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
+		CE14CA621E80122600E329A3 /* MXKAttachmentAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentAnimator.h; sourceTree = "<group>"; };
+		CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAttachmentAnimator.m; sourceTree = "<group>"; };
+		CE14CA641E80122600E329A3 /* MXKAttachmentInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentInteractionController.h; sourceTree = "<group>"; };
+		CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAttachmentInteractionController.m; sourceTree = "<group>"; };
 		F0026B641C91EED1001D2C04 /* MXKWebViewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKWebViewViewController.h; sourceTree = "<group>"; };
 		F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKWebViewViewController.m; sourceTree = "<group>"; };
 		F0036EEC1AB98DC40008E432 /* MXKRoomInputToolbarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarView.h; sourceTree = "<group>"; };
@@ -590,6 +596,7 @@
 		3219CB6A1AA6F2780027D7E2 /* MatrixKit */ = {
 			isa = PBXGroup;
 			children = (
+				CE14CA611E8011EC00E329A3 /* Animators */,
 				F09E28921AC2007000C51E44 /* Assets */,
 				F07E18111ABC563900DE3766 /* Categories */,
 				3219CBBB1AA6FB1C0027D7E2 /* Controllers */,
@@ -863,6 +870,17 @@
 				9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CE14CA611E8011EC00E329A3 /* Animators */ = {
+			isa = PBXGroup;
+			children = (
+				CE14CA621E80122600E329A3 /* MXKAttachmentAnimator.h */,
+				CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */,
+				CE14CA641E80122600E329A3 /* MXKAttachmentInteractionController.h */,
+				CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */,
+			);
+			path = Animators;
 			sourceTree = "<group>";
 		};
 		F00BB4471AB840B300AE388E /* RoomInputToolbar */ = {
@@ -1455,6 +1473,7 @@
 				F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */,
 				3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */,
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
+				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */,
@@ -1496,6 +1515,7 @@
 				F00FA85E1C0867F900E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */,
 				F0CF98E21B0B7FDC00EAE373 /* MXKTableViewCellWithTextFieldAndButton.m in Sources */,
+				CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */,
 				F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */,
 				F0316E361B7DEA5300F03620 /* MXKTableViewCellWithSearchBar.m in Sources */,
 				F00FA8551C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m in Sources */,
