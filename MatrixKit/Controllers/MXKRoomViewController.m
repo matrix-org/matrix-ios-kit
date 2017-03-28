@@ -3325,7 +3325,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
                     self.closedAttachmentEventId = self.openedAttachmentEventId;
                     
-                    [self.navigationController pushViewController:attachmentsViewer animated:YES];
+                    [self presentViewController:attachmentsViewer animated:YES completion:nil];
                 }
                 else
                 {

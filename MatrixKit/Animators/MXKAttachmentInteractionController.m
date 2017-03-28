@@ -121,10 +121,6 @@
     UIImageView *originalImageView = [self.sourceViewController originalImageView];
     originalImageView.hidden = YES;
     
-    if (self.destinationViewController.navigationController) {
-        [self.destinationViewController.navigationController setNavigationBarHidden:YES animated:NO];
-    }
-    
     self.transitioningImageView = [[UIImageView alloc] initWithImage:destinationImageView.image];
     self.transitioningImageView.frame = [MXKAttachmentAnimator aspectFitImage:destinationImageView.image inFrame:destinationImageView.frame];
     [[transitionContext containerView] addSubview:self.transitioningImageView];
@@ -172,9 +168,6 @@
         [self.transitioningImageView removeFromSuperview];
         destinationImageView.hidden = NO;
         originalImageView.hidden = NO;
-        if (toViewController.navigationController) {
-            [toViewController.navigationController setNavigationBarHidden:NO animated:YES];
-        }
         
         [self.transitionContext finishInteractiveTransition];
         [self.transitionContext completeTransition:YES];

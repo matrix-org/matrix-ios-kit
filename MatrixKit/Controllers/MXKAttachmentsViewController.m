@@ -41,11 +41,6 @@
      Current alert (if any).
      */
     MXKAlert *currentAlert;
-
-    /**
-     Navigation bar handling
-     */
-    NSTimer *navigationBarDisplayTimer;
     
     /**
      SplitViewController handling
@@ -181,14 +176,6 @@
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
-    // Hide navigation bar by default.
-    // For unknown reason, we have to wait for 'viewDidAppear' in iOS < 9.0, the bar is then visible a few seconds.
-    // We decided to hide it here on iOS 9 and later. Patch: we check a method available on iOS 9 and later.
-    if ([self respondsToSelector:@selector(loadViewIfNeeded)])
-    {
-        [self hideNavigationBar];
-    }
-    
     // Hide status bar
     [UIApplication sharedApplication].statusBarHidden = YES;
     
@@ -215,11 +202,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    if (self.navigationController.navigationBarHidden == NO)
-    {
-        [self hideNavigationBar];
-    }
     
     // Adjust content offset and make visible the attachmnet collections
     [self refreshAttachmentCollectionContentOffset];
@@ -254,10 +236,6 @@
         savedAVAudioSessionCategory = nil;
     }
     
-    [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = nil;
-    self.navigationController.navigationBarHidden = NO;
-    
     // Restore status bar
     [UIApplication sharedApplication].statusBarHidden = NO;
     
@@ -287,12 +265,8 @@
     // Store index of the current displayed attachment, to restore it after refreshing
     [self refreshCurrentVisibleItemIndex];
     
-    // Show temporarily the navigation bar (required in case of splitviewcontroller use)
-    self.navigationController.navigationBarHidden = NO;
-    [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
         // Cell width will be updated, force collection layout refresh to take into account the changes
         [_attachmentsCollection.collectionViewLayout invalidateLayout];
         
@@ -309,11 +283,6 @@
     
     // Store index of the current displayed attachment, to restore it after refreshing
     [self refreshCurrentVisibleItemIndex];
-    
-    // Show temporarily the navigation bar (required in case of splitviewcontroller use)
-    self.navigationController.navigationBarHidden = NO;
-    [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -460,14 +429,6 @@
 }
 
 #pragma mark - Privates
-
-- (IBAction)hideNavigationBar
-{
-    self.navigationController.navigationBarHidden = YES;
-    
-    [navigationBarDisplayTimer invalidate];
-    navigationBarDisplayTimer = nil;
-}
 
 - (void)refreshCurrentVisibleItemIndex
 {
@@ -843,8 +804,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger item = indexPath.item;
-
-    BOOL navigationBarDisplayHandled = NO;
     
     if (isBackPaginationInProgress)
     {
@@ -973,18 +932,6 @@
                             }
                         }
                     }
-
-                    // Apply the same display to the navigation bar
-                    self.navigationController.navigationBarHidden = !controlsVisible;
-
-                    navigationBarDisplayHandled = YES;
-                    if (!self.navigationController.navigationBarHidden)
-                    {
-                        // Automaticaly hide the nav bar after 5s. This is the same timer value that
-                        // MPMoviePlayerController uses for its controls bar
-                        [navigationBarDisplayTimer invalidate];
-                        navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
-                    }
                 }
                 else
                 {
@@ -1029,8 +976,6 @@
                             [selectedCell.moviePlayer play];
                             
                             [pieChartView removeFromSuperview];
-                            
-                            [self hideNavigationBar];
                         }
                     } failure:^(NSError *error) {
                         if (selectedCell.notificationObserver)
@@ -1043,9 +988,6 @@
                         
                         [pieChartView removeFromSuperview];
                         
-                        // Display the navigation bar so that the user can leave this screen
-                        self.navigationController.navigationBarHidden = NO;
-                        
                         // Notify MatrixKit user
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                     }];
@@ -1054,21 +996,6 @@
                     return;
                 }
             }
-        }
-    }
-    
-    // Animate navigation bar if it is has not been handled
-    if (!navigationBarDisplayHandled)
-    {
-        if (self.navigationController.navigationBarHidden)
-        {
-            self.navigationController.navigationBarHidden = NO;
-            [navigationBarDisplayTimer invalidate];
-            navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
-        }
-        else
-        {
-            [self hideNavigationBar];
         }
     }
 }
@@ -1153,9 +1080,6 @@
         if (mediaPlayerError)
         {
             NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
-
-            // Display the navigation bar so that the user can leave this screen
-            self.navigationController.navigationBarHidden = NO;
 
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
