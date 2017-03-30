@@ -1356,20 +1356,44 @@
 #pragma mark - MXRoomSummaryUpdating
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents
 {
+    // We build strings containing the sender displayname (ex: "Bob: Hello!")
+    // If a sender changes his displayname, we need to update the lastMessage.
+    MXEvent *lastMessageEvent;
+    for (MXEvent *event in stateEvents)
+    {
+        if (event.isUserProfileChange)
+        {
+            if (!lastMessageEvent)
+            {
+                // Load lastMessageEvent on demand to save I/O
+                lastMessageEvent = summary.lastMessageEvent;
+            }
+
+            if ([event.sender isEqualToString:lastMessageEvent.sender])
+            {
+                // The last message must be recomputed
+                [summary resetLastMessage:nil failure:nil];
+                break;
+            }
+        }
+    }
+
     return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents];
 }
 
-- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event state:(MXRoomState *)state
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState
 {
     // Use the default updater as first pass
-    BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event state:state];
+    BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event eventState:eventState roomState:roomState];
     if (updated)
     {
         // Then customise
 
         // Compute the text message
+        // Note that we use the current room state (roomState) because when we display
+        // users displaynames, we want current displaynames
         MXKEventFormatterError error;
-        summary.lastMessageString = [self stringFromEvent:event withRoomState:state error:&error];
+        summary.lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
 
         // Store the potential error
         summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
@@ -1391,7 +1415,7 @@
                 NSString *msgtype = event.content[@"msgtype"];
                 if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
                 {
-                    NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:state];
+                    NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:roomState];
 
                     prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
                 }
