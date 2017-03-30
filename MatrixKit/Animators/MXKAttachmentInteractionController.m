@@ -156,8 +156,6 @@
     UIViewController *fromViewController = [self.transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIImageView *destinationImageView = [self.destinationViewController finalImageView];
     
-    UIViewController *toViewController = [self.transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    
     UIImageView *originalImageView = [self.sourceViewController originalImageView];
     CGRect originalImageViewFrame = [self.sourceViewController convertedFrameForOriginalImageView];
     
