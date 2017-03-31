@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -34,6 +35,13 @@
  Return NO if no value is defined.
  */
 @property (nonatomic) BOOL showAllEventsInRoomHistory;
+
+/**
+ The type of events to display allowed to be displayed in room history.
+ 
+ Its value depends on `showAllEventsInRoomHistory`.
+ */
+@property (nonatomic, readonly) NSArray *eventsFilterForMessages;
 
 /**
  Display redacted events in room history.

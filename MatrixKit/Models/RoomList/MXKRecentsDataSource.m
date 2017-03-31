@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -357,7 +358,7 @@
                 for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
                 {
                     id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                    if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                    if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
                     {
                         // Got it
                         indexPath = [NSIndexPath indexPathForRow:index inSection:section];
@@ -592,7 +593,7 @@
     
     if (recentCellData)
     {
-        return recentCellData.roomDataSource.room;
+        return recentCellData.roomSummary.room;
     }
     
     return nil;

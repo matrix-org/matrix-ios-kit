@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -48,7 +49,7 @@
     // Highlight the room owner by using his tint color.
     if (roomCellData)
     {
-        MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:roomCellData.roomDataSource.mxSession.myUser.userId];
+        MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:roomCellData.roomSummary.room.mxSession.myUser.userId];
         if (account)
         {
             _userFlag.backgroundColor = account.userTintColor;

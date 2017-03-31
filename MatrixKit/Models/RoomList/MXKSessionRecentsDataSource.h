@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@
 
 #import "MXKDataSource.h"
 #import "MXKRecentCellData.h"
-#import "MXKEventFormatter.h"
 
 /**
  Identifier to use for cells that display a room in the recents list.
@@ -53,15 +53,6 @@ extern NSString *const kMXKRecentCellIdentifier;
  Tell whether there are some unread messages.
  */
 @property (nonatomic, readonly) BOOL hasUnread;
-
-
-#pragma mark - Configuration
-
-/**
- The events to display texts formatter.
- `MXKRecentCellDataStoring` instances can use it to format text.
- */
-@property (nonatomic) MXKEventFormatter *eventFormatter;
 
 
 #pragma mark - Life cycle

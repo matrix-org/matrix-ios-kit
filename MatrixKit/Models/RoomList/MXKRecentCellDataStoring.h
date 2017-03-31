@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,8 +20,6 @@
 
 #import "MXKCellData.h"
 
-#import "MXKRoomDataSource.h"
-
 @class MXKSessionRecentsDataSource;
 
 /**
@@ -37,9 +36,9 @@
 @property (nonatomic, readonly) MXKSessionRecentsDataSource *recentsDataSource;
 
 /**
- The `MXKRoomDataSource` instance of the room for the recent displayed by the cell.
+ The `MXRoomSummary` instance of the room for the recent displayed by the cell.
  */
-@property (nonatomic, readonly) MXKRoomDataSource *roomDataSource;
+@property (nonatomic, readonly) MXRoomSummary *roomSummary;
 
 /**
  The last event to display.
@@ -58,11 +57,11 @@
 /**
  Create a new `MXKCellData` object for a new recent cell.
 
- @param roomDataSource the `MXKRoomDataSource` object that has data about the room.
+ @param roomSummary the `MXRoomSummary` object that has data about the room.
  @param recentListDataSource the `MXKSessionRecentsDataSource` object that will use this instance.
  @return the newly created instance.
  */
-- (instancetype)initWithRoomDataSource:(MXKRoomDataSource*)roomDataSource andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
+- (instancetype)initWithRoomSummary:(MXRoomSummary*)roomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
 
 /**
  The `MXKSessionRecentsDataSource` object calls this method when it detects a change in the room.

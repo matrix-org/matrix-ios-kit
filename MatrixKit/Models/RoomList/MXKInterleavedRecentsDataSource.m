@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -237,7 +238,7 @@
                 for (NSInteger index = 0; index < indexPath.row; index++)
                 {
                     id<MXKRecentCellDataStoring> cellData = interleavedCellDataArray[index];
-                    if (cellData.roomDataSource == recentCellData.roomDataSource)
+                    if (cellData.roomSummary == recentCellData.roomSummary)
                     {
                         rank++;
                     }
@@ -265,7 +266,7 @@
             for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
             {
                 id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
                 {
                     // Got it
                     indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -288,7 +289,7 @@
                     for (NSInteger index = 0; index < interleavedCellDataArray.count; index ++)
                     {
                         id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[index];
-                        if ([roomId isEqualToString:recentCellData.roomDataSource.roomId])
+                        if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
                         {
                             // Got it
                             indexPath = [NSIndexPath indexPathForRow:index inSection:0];

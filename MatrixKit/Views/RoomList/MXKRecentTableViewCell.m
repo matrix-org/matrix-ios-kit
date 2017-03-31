@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -44,7 +45,7 @@
         }
         
         // Set in bold public room name
-        if (roomCellData.roomDataSource.room.state.isJoinRulePublic)
+        if (roomCellData.roomSummary.room.state.isJoinRulePublic)
         {
             _roomTitle.font = [UIFont boldSystemFontOfSize:20];
         }

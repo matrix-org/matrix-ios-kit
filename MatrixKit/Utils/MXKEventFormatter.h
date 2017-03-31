@@ -29,7 +29,7 @@ typedef enum : NSUInteger {
     /**
      The formatting was successful.
      */
-    MXKEventFormatterErrorNone,
+    MXKEventFormatterErrorNone = 0,
 
     /**
      The formatter knows the event type but it encountered data that it does not support.
@@ -52,7 +52,7 @@ typedef enum : NSUInteger {
  `MXKEventFormatter` is an utility class for formating Matrix events into strings which
  will be displayed to the end user.
  */
-@interface MXKEventFormatter : NSObject
+@interface MXKEventFormatter : NSObject <MXRoomSummaryUpdating>
 {
 @protected
     /**

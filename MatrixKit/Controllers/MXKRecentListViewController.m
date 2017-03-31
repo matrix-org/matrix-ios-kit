@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -462,7 +463,7 @@
     {
         id<MXKRecentCellDataStoring> cellData = [dataSource cellDataAtIndexPath:indexPath];
         
-        [_delegate recentListViewController:self didSelectRoom:cellData.roomDataSource.roomId inMatrixSession:cellData.roomDataSource.mxSession];
+        [_delegate recentListViewController:self didSelectRoom:cellData.roomSummary.roomId inMatrixSession:cellData.roomSummary.room.mxSession];
     }
     
     // Hide the keyboard when user select a room

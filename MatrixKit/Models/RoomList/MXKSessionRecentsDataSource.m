@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -34,16 +35,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     NSMutableArray *internalCellDataArray;
 
     /**
-     Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
-     */
-    id UIApplicationSignificantTimeChangeNotificationObserver;
-    
-    /**
-     Observe NSCurrentLocaleDidChangeNotification to trigger cell change on time formatting change.
-     */
-    id NSCurrentLocaleDidChangeNotificationObserver;
-    
-    /**
      Store the current search patterns list.
      */
     NSArray* searchPatternsList;
@@ -57,7 +48,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 {
     self = [super initWithMatrixSession:matrixSession];
     if (self)
-    {  
+    {
         roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mxSession];
         
         internalCellDataArray = [NSMutableArray array];
@@ -65,60 +56,13 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
-        
-        // Set default MXEvent -> NSString formatter
-        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
-        _eventFormatter.isForSubtitle = YES;
-
-        // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
-        // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
-        UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            [self onDateTimeFormatUpdate];
-        }];
-        
-        
-        // Observe NSCurrentLocaleDidChangeNotification to refresh bubbles if date/time are shown.
-        // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
-        NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            [self onDateTimeFormatUpdate];
-        }];
     }
     return self;
 }
 
-- (void)onDateTimeFormatUpdate
-{
-    // update the date and time formatters
-    [_eventFormatter initDateTimeFormatters];
-    
-    // Force update on each recents
-    for (id<MXKRecentCellDataStoring> cellData in cellDataArray)
-    {
-        [cellData update];
-    }
-    
-    if (self.delegate)
-    {
-        // Reload all the table
-        [self.delegate dataSource:self didCellChange:nil];
-    }
-}
-
 - (void)destroy
 {
-    if (NSCurrentLocaleDidChangeNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
-        NSCurrentLocaleDidChangeNotificationObserver = nil;
-    }
-    
-    if (UIApplicationSignificantTimeChangeNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
-        UIApplicationSignificantTimeChangeNotificationObserver = nil;
-    }
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
@@ -126,8 +70,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     cellDataArray = nil;
     internalCellDataArray = nil;
     filteredCellDataArray = nil;
-    
-    _eventFormatter = nil;
     
     searchPatternsList = nil;
     
@@ -177,27 +119,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     return NO;
 }
 
-- (void)setEventFormatter:(MXKEventFormatter *)eventFormatter
-{
-    if (eventFormatter)
-    {
-        // Replace the current formatter
-        _eventFormatter = eventFormatter;
-    }
-    else
-    {
-        // Set default MXEvent -> NSString formatter
-        _eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
-        _eventFormatter.isForSubtitle = YES;
-    }
-    
-    // Reload data if some data have been already load
-    if (internalCellDataArray.count)
-    {
-        [self loadData];
-    }
-}
-
 - (void)markAllAsRead
 {
     // Clear unread count on all recent cells
@@ -227,7 +148,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         {
             for (NSString* pattern in patternsList)
             {
-                if ([[cellData.roomDataSource.room.state displayname] rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
+                if ([cellData.roomSummary.displayname rangeOfString:pattern options:NSCaseInsensitiveSearch].location != NSNotFound)
                 {
                     [filteredCellDataArray addObject:cellData];
                     break;
@@ -278,7 +199,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 #pragma mark - Events processing
 - (void)loadData
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
@@ -292,14 +213,12 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 
     NSDate *startDate = [NSDate date];
     
-    for (MXRoom *room in self.mxSession.rooms)
+    for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
-        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.state.roomId create:YES];
-
-        // Filter out private rooms with conference users 
-        if (!room.state.isConferenceUserRoom)
+        // Filter out private rooms with conference users
+        if (!roomSummary.room.state.isConferenceUserRoom)  // @TODO
         {
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];
@@ -308,6 +227,9 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     }
 
     NSLog(@"[MXKSessionRecentsDataSource] Loaded %tu recents in %.3fms", self.mxSession.rooms.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+
+    // Make sure all rooms have a last message
+    [self.mxSession fixRoomsSummariesLastMessage];
 
     // Report loaded array except if sync is in progress
     if (!roomDataSourceManager.isServerSyncInProgress)
@@ -319,22 +241,24 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
     
-    // Listen to MXRoomDataSource
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomInformationChanged:) name:kMXKRoomDataSourceMetaDataChanged object:nil];
+    // Listen to MXRoomSummary
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomSummaryChanged:) name:kMXRoomSummaryDidChangeNotification object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 }
 
-- (void)didRoomInformationChanged:(NSNotification *)notif
+- (void)didRoomSummaryChanged:(NSNotification *)notif
 {
-    MXKRoomDataSource *roomDataSource = notif.object;
-    if (roomDataSource.mxSession == self.mxSession)
+    MXRoomSummary *roomSummary = notif.object;
+
+    if (roomSummary.mxSession == self.mxSession && internalCellDataArray.count)
     {
         // Find the index of the related cell data
         NSInteger index = NSNotFound;
         for (index = 0; index < internalCellDataArray.count; index++)
         {
             id<MXKRecentCellDataStoring> theRoomData = [internalCellDataArray objectAtIndex:index];
-            if (theRoomData.roomDataSource == roomDataSource)
+            if (theRoomData.roomSummary == roomSummary)
             {
                 break;
             }
@@ -344,7 +268,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         {
             // Create a new instance to not modify the content of 'cellDataArray' (the copy is not a deep copy).
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
                 [internalCellDataArray replaceObjectAtIndex:index withObject:cellData];
@@ -358,7 +282,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         }
         else
         {
-            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room data source for %@ (%@). It is probably not managed by this recents data source", roomDataSource.roomId, roomDataSource);
+            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room summary for %@ (%@). It is probably not managed by this recents data source", roomSummary.roomId, roomSummary);
         }
     }
 }
@@ -378,9 +302,9 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             
             // Retrieve the MXKCellData class to manage the data
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-            
-            MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:roomId create:YES];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomDataSource:roomDataSource andRecentListDataSource:self];
+
+            MXRoomSummary *roomSummary = [mxSession roomSummaryWithRoomId:roomId];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];
@@ -476,7 +400,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     id<MXKRecentCellDataStoring> theRoomData;
     for (id<MXKRecentCellDataStoring> roomData in cellDataArray)
     {
-        if ([roomData.roomDataSource.roomId isEqualToString:roomId])
+        if ([roomData.roomSummary.roomId isEqualToString:roomId])
         {
             theRoomData = roomData;
             break;

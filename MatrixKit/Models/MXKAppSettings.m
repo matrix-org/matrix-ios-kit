@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -142,6 +143,50 @@ static MXKAppSettings *standardAppSettings = nil;
     else
     {
         showAllEventsInRoomHistory = boolValue;
+    }
+}
+
+- (NSArray *)eventsFilterForMessages
+{
+    if (showAllEventsInRoomHistory)
+    {
+        // Use a filter to retrieve all the events (except kMXEventTypeStringPresence which are not related to a specific room)
+        return @[
+                 kMXEventTypeStringRoomName,
+                 kMXEventTypeStringRoomTopic,
+                 kMXEventTypeStringRoomMember,
+                 kMXEventTypeStringRoomCreate,
+                 kMXEventTypeStringRoomEncrypted,
+                 kMXEventTypeStringRoomEncryption,
+                 kMXEventTypeStringRoomJoinRules,
+                 kMXEventTypeStringRoomPowerLevels,
+                 kMXEventTypeStringRoomAliases,
+                 kMXEventTypeStringRoomHistoryVisibility,
+                 kMXEventTypeStringRoomMessage,
+                 kMXEventTypeStringRoomMessageFeedback,
+                 kMXEventTypeStringRoomRedaction,
+                 kMXEventTypeStringRoomThirdPartyInvite,
+                 kMXEventTypeStringCallInvite,
+                 kMXEventTypeStringCallAnswer,
+                 kMXEventTypeStringCallHangup
+                 ];
+    }
+    else
+    {
+        // Display only a subset of events
+        return @[
+                 kMXEventTypeStringRoomName,
+                 kMXEventTypeStringRoomTopic,
+                 kMXEventTypeStringRoomMember,
+                 kMXEventTypeStringRoomEncrypted,
+                 kMXEventTypeStringRoomEncryption,
+                 kMXEventTypeStringRoomHistoryVisibility,
+                 kMXEventTypeStringRoomMessage,
+                 kMXEventTypeStringRoomThirdPartyInvite,
+                 kMXEventTypeStringCallInvite,
+                 kMXEventTypeStringCallAnswer,
+                 kMXEventTypeStringCallHangup
+                 ];
     }
 }
 

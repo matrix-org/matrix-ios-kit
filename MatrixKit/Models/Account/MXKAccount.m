@@ -19,6 +19,7 @@
 
 #import "MXKAccountManager.h"
 #import "MXKRoomDataSourceManager.h"
+#import "MXKEventFormatter.h"
 
 #import "MXKTools.h"
 
@@ -71,6 +72,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     MXOnBackgroundSyncFail backgroundSyncfails;
     UIBackgroundTaskIdentifier backgroundSyncBgTask;
     NSTimer* backgroundSyncTimer;
+
+    // Observe UIApplicationSignificantTimeChangeNotification to refresh MXRoomSummaries on time formatting change.
+    id UIApplicationSignificantTimeChangeNotificationObserver;
+
+    // Observe NSCurrentLocaleDidChangeNotification to refresh MXRoomSummaries on time formatting change.
+    id NSCurrentLocaleDidChangeNotificationObserver;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -595,6 +602,25 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     // Instantiate new session
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
 
+    // Set default MXEvent -> NSString formatter
+    MXKEventFormatter *eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
+    eventFormatter.isForSubtitle = YES;
+
+    mxSession.roomSummaryUpdateDelegate = eventFormatter;
+
+    // Observe UIApplicationSignificantTimeChangeNotification to refresh to MXRoomSummaries if date/time are shown.
+    // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
+    UIApplicationSignificantTimeChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationSignificantTimeChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        [self onDateTimeFormatUpdate];
+    }];
+
+
+    // Observe NSCurrentLocaleDidChangeNotification to refresh MXRoomSummaries if date/time are shown.
+    // NSCurrentLocaleDidChangeNotification is triggered when the time swicthes to AM/PM to 24h time format
+    NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+        [self onDateTimeFormatUpdate];
+    }];
+
     // Register session state observer
     sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
@@ -636,6 +662,18 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
  */
 - (void)closeSession:(BOOL)clearStore
 {
+    if (NSCurrentLocaleDidChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:NSCurrentLocaleDidChangeNotificationObserver];
+        NSCurrentLocaleDidChangeNotificationObserver = nil;
+    }
+
+    if (UIApplicationSignificantTimeChangeNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationSignificantTimeChangeNotificationObserver];
+        UIApplicationSignificantTimeChangeNotificationObserver = nil;
+    }
+    
     [self removeNotificationListener];
     
     if (reachabilityObserver)
@@ -1179,6 +1217,18 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         return NO;
     
     }];
+}
+
+- (void)onDateTimeFormatUpdate
+{
+    if ([mxSession.roomSummaryUpdateDelegate isKindOfClass:MXKEventFormatter.class])
+    {
+        // Update the date and time formatters
+        [((MXKEventFormatter*)mxSession.roomSummaryUpdateDelegate) initDateTimeFormatters];
+    }
+
+    // Force a refresh of all last messages
+    [mxSession resetRoomsSummariesLastMessage];
 }
 
 #pragma mark - Crypto

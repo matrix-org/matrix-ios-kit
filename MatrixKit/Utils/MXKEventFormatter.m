@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -19,6 +20,8 @@
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
 
+#import "MXRoomSummaryUpdater.h"
+
 #import "MXKTools.h"
 
 #import "DTCoreText.h"
@@ -32,6 +35,11 @@
      The matrix session. Used to get contextual data.
      */
     MXSession *mxSession;
+
+    /**
+     The default room summary updater from the MXSession.
+     */
+    MXRoomSummaryUpdater *defaultRoomSummaryUpdater;
 
     /**
      The default CSS converted in DTCoreText object.
@@ -56,7 +64,7 @@
     if (self)
     {
         mxSession = matrixSession;
-        
+
         [self initDateTimeFormatters];
 
         // Use the same list as matrix-react-sdk ( https://github.com/matrix-org/matrix-react-sdk/blob/24223ae2b69debb33fa22fcda5aeba6fa93c93eb/src/HtmlUtils.js#L25 )
@@ -97,6 +105,11 @@
         
         // Consider the shared app settings by default
         _settings = [MXKAppSettings standardAppSettings];
+
+        defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
+        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
+        defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
+        defaultRoomSummaryUpdater.eventsFilterForMessages = _settings.eventsFilterForMessages;
     }
     return self;
 }
@@ -1340,6 +1353,83 @@
     _defaultCSS = defaultCSS;
     dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }
+
+#pragma mark - MXRoomSummaryUpdating
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents
+{
+    // We build strings containing the sender displayname (ex: "Bob: Hello!")
+    // If a sender changes his displayname, we need to update the lastMessage.
+    MXEvent *lastMessageEvent;
+    for (MXEvent *event in stateEvents)
+    {
+        if (event.isUserProfileChange)
+        {
+            if (!lastMessageEvent)
+            {
+                // Load lastMessageEvent on demand to save I/O
+                lastMessageEvent = summary.lastMessageEvent;
+            }
+
+            if ([event.sender isEqualToString:lastMessageEvent.sender])
+            {
+                // The last message must be recomputed
+                [summary resetLastMessage:nil failure:nil];
+                break;
+            }
+        }
+    }
+
+    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents];
+}
+
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState
+{
+    // Use the default updater as first pass
+    BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event eventState:eventState roomState:roomState];
+    if (updated)
+    {
+        // Then customise
+
+        // Compute the text message
+        // Note that we use the current room state (roomState) because when we display
+        // users displaynames, we want current displaynames
+        MXKEventFormatterError error;
+        summary.lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
+
+        // Store the potential error
+        summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
+
+        if (0 == summary.lastMessageString.length)
+        {
+            // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
+            updated = NO;
+        }
+        else
+        {
+            summary.lastMessageOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+
+            // Check whether the sender name has to be added
+            NSString *prefix = nil;
+
+            if (event.eventType == MXEventTypeRoomMessage)
+            {
+                NSString *msgtype = event.content[@"msgtype"];
+                if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
+                {
+                    NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:roomState];
+
+                    prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
+                }
+            }
+
+            // Compute the attribute text message
+            summary.lastMessageAttributedString = [self renderString:summary.lastMessageString withPrefix:prefix forEvent:event];
+        }
+    }
+    
+    return updated;
+}
+
 
 #pragma mark - Conversion private methods
 
