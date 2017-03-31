@@ -313,6 +313,12 @@
         currentSharedAttachment = nil;
     }
     
+    if (self.sourceViewController)
+    {
+        self.sourceViewController.navigationController.delegate = nil;
+        self.sourceViewController = nil;
+    }
+    
     [super destroy];
 }
 
