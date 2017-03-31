@@ -18,6 +18,7 @@ limitations under the License.
 
 #import "MXKViewController.h"
 #import "MXKAttachment.h"
+#import "MXKAttachmentAnimator.h"
 
 @protocol MXKAttachmentsViewControllerDelegate;
 
@@ -25,7 +26,7 @@ limitations under the License.
  This view controller is used to display attachments of a room.
  Only one attachment is displayed at once, the user is able to swipe one by one the attachment.
  */
-@interface MXKAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate>
+@interface MXKAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate, MXKDestinationAttachmentAnimatorDelegate>
 
 @property (nonatomic) IBOutlet UICollectionView *attachmentsCollection;
 
@@ -67,6 +68,11 @@ limitations under the License.
 + (instancetype)attachmentsViewController;
 
 /**
+ Creates and returns a new `MXKAttachmentsViewController` object, also sets sets up environment for animated interactive transitions.
+ */
++ (instancetype)animatedAttachmentsViewControllerWithSourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController;
+
+/**
  Display attachments of a room.
  
  The provided event id is used to select the attachment to display first. Use nil to unchange the current displayed attachment.
@@ -97,4 +103,14 @@ limitations under the License.
  @return a boolean which tells whether some new attachments may be added or not.
  */
 - (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId;
+
+@optional
+
+/**
+ Informs the delegate that a new attachment has been shown
+ the parameter eventId is used by the delegate to identify the attachment
+ */
+- (void)displayedNewAttachmentWithEventId:(NSString *)eventId;
+
+
 @end
