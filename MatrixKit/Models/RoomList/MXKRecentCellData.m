@@ -46,7 +46,7 @@
 
     lastEventTextMessage = roomSummary.lastMessageString;
     lastEventAttributedTextMessage = roomSummary.lastMessageAttributedString;
-    lastEventDate = roomSummary.lastMessageOthers[@"lastEventDate"];
+    lastEventDate = (NSString*)roomSummary.lastMessageOthers[@"lastEventDate"];
 
     lastEvent.mxkEventFormatterError = [((NSNumber*)roomSummary.lastMessageOthers[@"mxkEventFormatterError"]) intValue];
 }
