@@ -23,6 +23,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "MXKRoomBubbleTableViewCell.h"
+#import "MXKSearchTableViewCell.h"
 #import "MXKImageView.h"
 
 #import "MXKRoomDataSourceManager.h"
@@ -3319,7 +3320,17 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     attachmentsViewer.hidesBottomBarWhenPushed = YES;
                     [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.eventId];
                     
-                    self.openedAttachmentImageView = ((MXKRoomBubbleTableViewCell *)cell).attachmentView.imageView;
+                    // Keep here the image view used to display the attachment in the selected cell.
+                    // Note: Only `MXKRoomBubbleTableViewCell` and `MXKSearchTableViewCell` are supported for the moment.
+                    if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
+                    {
+                        self.openedAttachmentImageView = ((MXKRoomBubbleTableViewCell *)cell).attachmentView.imageView;
+                    }
+                    else if ([cell isKindOfClass:MXKSearchTableViewCell.class])
+                    {
+                        self.openedAttachmentImageView = ((MXKSearchTableViewCell *)cell).attachmentImageView.imageView;
+                    }
+                    
                     self.openedAttachmentEventId = selectedAttachment.eventId;
                     
                     // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
