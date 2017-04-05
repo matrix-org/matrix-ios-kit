@@ -169,6 +169,9 @@
     
     // Observe changes in the direct rooms list
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onDirectRoomsChange) name:kMXSessionDirectRoomsDidChangeNotification object:nil];
+    
+    // Do a full reload
+    [self.recentsTableView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
