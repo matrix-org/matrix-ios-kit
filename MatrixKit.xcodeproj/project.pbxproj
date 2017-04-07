@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3205ED791E96905A003D65FA /* MXKDirectoryServerCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED751E96905A003D65FA /* MXKDirectoryServerCellData.m */; };
+		3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */; };
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
 		321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */; };
 		3219CBC01AA6FB470027D7E2 /* MXKRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */; };
@@ -215,6 +217,11 @@
 /* Begin PBXFileReference section */
 		3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3203F26C1D2E9CAE0021F170 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3205ED741E96905A003D65FA /* MXKDirectoryServerCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKDirectoryServerCellData.h; sourceTree = "<group>"; };
+		3205ED751E96905A003D65FA /* MXKDirectoryServerCellData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKDirectoryServerCellData.m; sourceTree = "<group>"; };
+		3205ED761E96905A003D65FA /* MXKDirectoryServerCellDataStoring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKDirectoryServerCellDataStoring.h; sourceTree = "<group>"; };
+		3205ED771E96905A003D65FA /* MXKDirectoryServersDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKDirectoryServersDataSource.h; sourceTree = "<group>"; };
+		3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKDirectoryServersDataSource.m; sourceTree = "<group>"; };
 		321313C61AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIOSOutgoingBubbleTableViewCell.h; sourceTree = "<group>"; };
 		321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSOutgoingBubbleTableViewCell.m; sourceTree = "<group>"; };
 		321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIOSOutgoingBubbleTableViewCell.xib; sourceTree = "<group>"; };
@@ -572,6 +579,26 @@
 			path = MatrixKitTests;
 			sourceTree = "<group>";
 		};
+		3205ED721E96905A003D65FA /* PublicRoomList */ = {
+			isa = PBXGroup;
+			children = (
+				3205ED731E96905A003D65FA /* DirectoryServerList */,
+			);
+			path = PublicRoomList;
+			sourceTree = "<group>";
+		};
+		3205ED731E96905A003D65FA /* DirectoryServerList */ = {
+			isa = PBXGroup;
+			children = (
+				3205ED741E96905A003D65FA /* MXKDirectoryServerCellData.h */,
+				3205ED751E96905A003D65FA /* MXKDirectoryServerCellData.m */,
+				3205ED761E96905A003D65FA /* MXKDirectoryServerCellDataStoring.h */,
+				3205ED771E96905A003D65FA /* MXKDirectoryServersDataSource.h */,
+				3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */,
+			);
+			path = DirectoryServerList;
+			sourceTree = "<group>";
+		};
 		3219CB5F1AA6F2780027D7E2 = {
 			isa = PBXGroup;
 			children = (
@@ -680,6 +707,7 @@
 				32CEE2251AB1EC9B00F7C74D /* RoomList */,
 				F05FB1721AD5129500DC0647 /* RoomMemberList */,
 				3235CD701C32DC750084EA40 /* Search */,
+				3205ED721E96905A003D65FA /* PublicRoomList */,
 				F01267481AF8A9440067D962 /* MXK3PID.h */,
 				F01267491AF8A9440067D962 /* MXK3PID.m */,
 				F0EA4CB21ADD6E98007197D2 /* MXKAppSettings.h */,
@@ -1477,6 +1505,7 @@
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */,
+				3205ED791E96905A003D65FA /* MXKDirectoryServerCellData.m in Sources */,
 				F04356361B2EF9D80096FA02 /* MXKTableViewCellWithLabelAndButton.m in Sources */,
 				F0CF98F81B0C6EA000EAE373 /* MXKAccountTableViewCell.m in Sources */,
 				3235CD761C32DC8A0084EA40 /* MXKSearchCellData.m in Sources */,
@@ -1518,6 +1547,7 @@
 				CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */,
 				F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */,
 				F0316E361B7DEA5300F03620 /* MXKTableViewCellWithSearchBar.m in Sources */,
+				3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */,
 				F00FA8551C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.m in Sources */,
 				F093BCAD1C21BDD80010D05F /* MXKReceiptSendersContainer.m in Sources */,
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
