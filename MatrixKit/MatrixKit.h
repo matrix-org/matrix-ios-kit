@@ -73,6 +73,10 @@
 
 #import "MXKPublicRoomTableViewCell.h"
 
+#import "MXKDirectoryServersDataSource.h"
+#import "MXKDirectoryServerCellDataStoring.h"
+#import "MXKDirectoryServerCellData.h"
+
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
 
