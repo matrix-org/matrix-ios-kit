@@ -24,10 +24,4 @@
  */
 @interface MXKDirectoryServerCellData : MXKCellData <MXKDirectoryServerCellDataStoring>
 
-/**
- The matrix session
- */
-//@property (nonatomic, readonly) MXSession *mxSession;
-
-
 @end
