@@ -17,7 +17,7 @@
 #import "MXKDirectoryServerCellData.h"
 
 @implementation MXKDirectoryServerCellData
-@synthesize desc, iconUrl;
+@synthesize desc, iconUrl, thirdPartyProtocolInstance, thirdPartyProtocol;
 
 - (id)initWithProtocolInstance:(MXThirdPartyProtocolInstance *)instance protocol:(MXThirdPartyProtocol *)protocol
 {
@@ -26,6 +26,9 @@
     {
         desc = instance.desc;
         iconUrl = instance.icon;
+
+        thirdPartyProtocolInstance = instance;
+        thirdPartyProtocol = protocol;
     }
     return self;
 }

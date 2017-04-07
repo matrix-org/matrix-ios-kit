@@ -38,6 +38,12 @@
 @property (nonatomic) NSString *iconUrl;
 
 /**
+ In case the cell data represents a third-party protocol instance, its description.
+ */
+@property (nonatomic, readonly) MXThirdPartyProtocolInstance *thirdPartyProtocolInstance;
+@property (nonatomic, readonly) MXThirdPartyProtocol *thirdPartyProtocol;
+
+/**
  Define a MXKDirectoryServerCellData that will store a third-party protocol instance.
  
  @param instance the instance of the protocol.

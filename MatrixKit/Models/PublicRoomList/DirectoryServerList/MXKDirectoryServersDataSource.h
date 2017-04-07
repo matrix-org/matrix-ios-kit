@@ -53,6 +53,11 @@ FOUNDATION_EXPORT NSString *const kMXKDirectorServerCellIdentifier;
 }
 
 /**
+ Fetch the data source data.
+ */
+- (void)loadData;
+
+/**
  Filter the current recents list according to the provided patterns.
  When patterns are not empty, the search result is stored in `filteredCellDataArray`,
  this array provides then data for the cells served by `MXKDirectoryServersDataSource`.
@@ -62,9 +67,11 @@ FOUNDATION_EXPORT NSString *const kMXKDirectorServerCellIdentifier;
 - (void)searchWithPatterns:(NSArray<NSString*> *)patternsList;
 
 /**
- Fetch the data source data.
- */
-- (void)loadData;
+ Get the data for the cell at the given index path.
 
+ @param indexPath the index of the cell.
+ @return the cell data.
+ */
+- (id<MXKDirectoryServerCellDataStoring>)cellDataAtIndexPath:(NSIndexPath*)indexPath;
 
 @end

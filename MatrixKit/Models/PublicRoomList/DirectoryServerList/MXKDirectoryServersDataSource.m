@@ -68,10 +68,10 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
         [request cancel];
     }
 
-    [self setState:MXKDataSourceStatePreparing];
-
     // Reset all vars
     [cellDataArray removeAllObjects];
+
+    [self setState:MXKDataSourceStatePreparing];
 
     __weak typeof(self) weakSelf = self;
     request = [self.mxSession.matrixRestClient thirdpartyProtocols:^(MXThirdpartyProtocolsResponse *thirdpartyProtocolsResponse) {
@@ -154,6 +154,22 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
     }
 }
 
+/**
+ Get the data for the cell at the given index path.
+
+ @param indexPath the index of the cell.
+ @return the cell data.
+ */
+- (id<MXKDirectoryServerCellDataStoring>)cellDataAtIndexPath:(NSIndexPath*)indexPath;
+{
+    if (filteredCellDataArray)
+    {
+        return filteredCellDataArray[indexPath.row];
+    }
+    return cellDataArray[indexPath.row];
+}
+
+
 #pragma mark - Private methods
 
 // Update the MXKDataSource state and the delegate
@@ -164,15 +180,6 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
     {
         [self.delegate dataSource:self didStateChange:state];
     }
-}
-
-- (id<MXKDirectoryServerCellDataStoring>)cellDataAtIndex:(NSInteger)index
-{
-    if (filteredCellDataArray)
-    {
-        return filteredCellDataArray[index];
-    }
-    return cellDataArray[index];
 }
 
 #pragma mark - UITableViewDataSource
@@ -188,7 +195,7 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<MXKDirectoryServerCellDataStoring> cellData = [self cellDataAtIndex:indexPath.row];
+    id<MXKDirectoryServerCellDataStoring> cellData = [self cellDataAtIndexPath:indexPath];
 
     if (cellData && self.delegate)
     {
