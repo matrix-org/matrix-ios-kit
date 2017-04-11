@@ -88,41 +88,64 @@
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
-    // Adjust Top and Bottom constraints to take into account potential navBar and tabBar.
-    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+    // Adjust search bar Top constraint to take into account potential navBar.
+    if (_recentsSearchBarTopConstraint)
     {
-        [NSLayoutConstraint deactivateConstraints:@[_recentsSearchBarTopConstraint, _recentsTableViewBottomConstraint]];
-    }
-    else
-    {
-        [self.view removeConstraint:_recentsSearchBarTopConstraint];
-        [self.view removeConstraint:_recentsTableViewBottomConstraint];
+        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+        {
+            [NSLayoutConstraint deactivateConstraints:@[_recentsSearchBarTopConstraint]];
+        }
+        else
+        {
+            [self.view removeConstraint:_recentsSearchBarTopConstraint];
+        }
+        
+        _recentsSearchBarTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLayoutGuide
+                                                                      attribute:NSLayoutAttributeBottom
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.recentsSearchBar
+                                                                      attribute:NSLayoutAttributeTop
+                                                                     multiplier:1.0f
+                                                                       constant:0.0f];
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+        {
+            [NSLayoutConstraint activateConstraints:@[_recentsSearchBarTopConstraint]];
+        }
+        else
+        {
+            [self.view addConstraint:_recentsSearchBarTopConstraint];
+        }
     }
     
-    _recentsSearchBarTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLayoutGuide
-                                                                  attribute:NSLayoutAttributeBottom
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self.recentsSearchBar
-                                                                  attribute:NSLayoutAttributeTop
-                                                                 multiplier:1.0f
-                                                                   constant:0.0f];
-    
-    _recentsTableViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.recentsTableView
-                                                                     attribute:NSLayoutAttributeBottom
-                                                                    multiplier:1.0f
-                                                                      constant:0.0f];
-    
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+    // Adjust table view Bottom constraint to take into account tabBar.
+    if (_recentsTableViewBottomConstraint)
     {
-        [NSLayoutConstraint activateConstraints:@[_recentsSearchBarTopConstraint, _recentsTableViewBottomConstraint]];
-    }
-    else
-    {
-        [self.view addConstraint:_recentsSearchBarTopConstraint];
-        [self.view addConstraint:_recentsTableViewBottomConstraint];
+        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
+        {
+            [NSLayoutConstraint deactivateConstraints:@[_recentsTableViewBottomConstraint]];
+        }
+        else
+        {
+            [self.view removeConstraint:_recentsTableViewBottomConstraint];
+        }
+        
+        _recentsTableViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.recentsTableView
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0f
+                                                                          constant:0.0f];
+        
+        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
+        {
+            [NSLayoutConstraint activateConstraints:@[_recentsTableViewBottomConstraint]];
+        }
+        else
+        {
+            [self.view addConstraint:_recentsTableViewBottomConstraint];
+        }
     }
     
     // Patch: Auto-layout issue.
@@ -492,10 +515,6 @@
         {
             self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         }
-        else
-        {
-            self.recentsTableView.backgroundColor = [UIColor clearColor];
-        }
     }
 }
 
@@ -510,10 +529,6 @@
         {
             self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         }
-        else
-        {
-            self.recentsTableView.backgroundColor = [UIColor clearColor];
-        }
     }
 }
 
@@ -522,6 +537,9 @@
     if (scrollView == _recentsTableView)
     {
         [self managePullToKick:scrollView];
+        
+        // Restore default background
+        self.recentsTableView.backgroundColor = [UIColor whiteColor];
     }
 }
 
@@ -535,7 +553,6 @@
         }
     }
 }
-
 
 #pragma mark - UISearchBarDelegate
 

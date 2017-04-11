@@ -260,6 +260,20 @@
     }
 }
 
+- (NSString *)titleForHeaderInSection:(NSInteger)section
+{
+    NSString* sectionTitle = nil;
+    
+    if (displayedRecentsDataSourceArray.count > 1 && section < displayedRecentsDataSourceArray.count)
+    {
+        MXKSessionRecentsDataSource *recentsDataSource = [displayedRecentsDataSourceArray objectAtIndex:section];
+        
+        sectionTitle = recentsDataSource.mxSession.myUser.userId;
+    }
+    
+    return sectionTitle;
+}
+
 - (UIView *)viewForHeaderInSection:(NSInteger)section withFrame:(CGRect)frame
 {
     UIView *sectionHeader = nil;
