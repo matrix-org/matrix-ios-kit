@@ -275,7 +275,6 @@
         
         // Add shrink button
         UIButton *shrinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        CGRect frame = sectionHeader.frame;
         frame.origin.x = frame.origin.y = 0;
         shrinkButton.frame = frame;
         shrinkButton.backgroundColor = [UIColor clearColor];

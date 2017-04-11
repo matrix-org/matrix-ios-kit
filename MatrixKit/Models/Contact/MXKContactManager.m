@@ -341,6 +341,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (NSArray*)localContactsSplitByContactMethod
 {
+    // Return nil if the loading step is in progress.
+    if (isLocalContactListRefreshing)
+    {
+        return nil;
+    }
+    
     // Check whether the array must be prepared
     if (!splitLocalContacts)
     {
