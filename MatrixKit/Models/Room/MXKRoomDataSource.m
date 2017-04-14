@@ -471,6 +471,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                         [self refreshUnreadCounters];
                         
+                        // the unread counter has been updated...
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
+                        
                     }];
 
                     [self refreshUnreadCounters];
@@ -1449,7 +1452,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [self refreshUnreadCounters];
         
-        // the unread counter has been updated so refresh the recents
+        // the unread counter has been updated...
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
     
