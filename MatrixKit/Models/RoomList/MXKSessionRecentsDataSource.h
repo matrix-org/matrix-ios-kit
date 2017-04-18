@@ -58,7 +58,7 @@ extern NSString *const kMXKRecentCellIdentifier;
 #pragma mark - Life cycle
 
 /**
- Mark all messages as read
+ Mark all messages as read for all the recent cells
  */
 - (void)markAllAsRead;
 

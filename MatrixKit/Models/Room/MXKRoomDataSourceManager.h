@@ -64,26 +64,6 @@ typedef enum : NSUInteger {
 + (void)removeSharedManagerForMatrixSession:(MXSession*)mxSession;
 
 /**
- The current number of missed notifications.
- */
-+ (NSUInteger)missedNotificationsCount;
-
-/**
- The current number of rooms with missed notifications.
- */
-+ (NSUInteger)missedDiscussionsCount;
-
-/**
- The current number of rooms with unread highlighted messages.
- */
-+ (NSUInteger)missedHighlightDiscussionsCount;
-
-/**
- Mark all messages as read.
- */
-+ (void)markAllMessagesAsRead;
-
-/**
  Register the MXKRoomDataSource-inherited class that will be used to instantiate all room data source.
  By default MXKRoomDataSource class is considered.
  

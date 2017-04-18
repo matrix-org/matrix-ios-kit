@@ -58,12 +58,6 @@ extern NSString *const kMXKRoomBubbleCellDataIdentifier;
 
 
 #pragma mark - Notifications
-/**
- Posted when an information about the room has changed.
- Tracked informations are: lastMessage, hasUnread, notificationCount, highlightCount.
- The notification object is the `MXKRoomDataSource` instance.
- */
-extern NSString *const kMXKRoomDataSourceMetaDataChanged;
 
 /**
  Posted when a server sync starts or ends (depend on 'serverSyncEventCount').
@@ -136,21 +130,6 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
  */
 @property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
-
-/**
- Tell whether the room has unread messages.
- */
-@property (nonatomic, readonly) BOOL hasUnread;
-
-/**
- The number of unread messages that match the push notification rules.
- */
-@property (nonatomic, readonly) NSUInteger notificationCount;
-
-/**
- The number of highlighted unread messages (subset of notifications).
- */
-@property (nonatomic, readonly) NSUInteger highlightCount;
 
 /**
  The events are processed asynchronously. This property counts the number of queued events
@@ -265,7 +244,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 - (instancetype)initWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId;
 
 /**
- Mark all messages as read
+ Mark all messages as read in the room.
  */
 - (void)markAllAsRead;
 
@@ -473,7 +452,10 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 - (void)removeEventWithEventId:(NSString *)eventId;
 
 /**
- This method is called to handle each read receipt event which is received in forward mode.
+ This method is called for each read receipt event received in forward mode.
+ 
+ By default, it tells the delegate that some cell data/views have been changed.
+ You may override this method to handle the receipt event according to the application needs.
  
  You should not call this method directly.
  You may override it in inherited 'MXKRoomDataSource' class.

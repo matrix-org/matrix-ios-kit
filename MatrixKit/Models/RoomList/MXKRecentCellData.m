@@ -78,7 +78,7 @@
 
 - (void)markAllAsRead
 {
-    [roomSummary.room acknowledgeLatestEvent:YES];
+    [roomSummary markAllAsRead];
 }
 
 - (NSString*)description
