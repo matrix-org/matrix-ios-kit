@@ -66,6 +66,7 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXKRoomDataSourceSyncStatusChanged object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
     
     cellDataArray = nil;
     internalCellDataArray = nil;
@@ -241,10 +242,19 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionHaveNewRoom:) name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionDidLeaveRoom:) name:kMXSessionDidLeaveRoomNotification object:nil];
     
+    // Listen to the direct rooms list
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDirectRoomsChange:) name:kMXSessionDirectRoomsDidChangeNotification object:nil];
+    
     // Listen to MXRoomSummary
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRoomSummaryChanged:) name:kMXRoomSummaryDidChangeNotification object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionStateChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
+}
+
+- (void)didDirectRoomsChange:(NSNotification *)notif
+{
+    // Inform the delegate about the update
+    [self.delegate dataSource:self didCellChange:nil];
 }
 
 - (void)didRoomSummaryChanged:(NSNotification *)notif
