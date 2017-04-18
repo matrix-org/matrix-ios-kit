@@ -70,7 +70,7 @@
 - (void)removeMatrixSession:(MXSession*)mxSession;
 
 /**
- Mark all messages as read
+ Mark all messages as read in all the displayed recents.
  */
 - (void)markAllAsRead;
 

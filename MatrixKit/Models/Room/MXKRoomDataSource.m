@@ -32,7 +32,6 @@
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
 
-NSString *const kMXKRoomDataSourceMetaDataChanged = @"kMXKRoomDataSourceMetaDataChanged";
 NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncStatusChanged";
 NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSourceFailToLoadTimelinePosition";
 NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
@@ -223,36 +222,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
-- (void)refreshUnreadCounters
-{
-    // Consider as unread the pending invitation message.
-    // If the room is joined from another device,
-    // this state will be updated so the standard read receipts management will be applied.
-    if (MXMembershipInvite == _room.state.membership)
-    {
-        _hasUnread = YES;
-        _notificationCount = 1; // Set 1 here to be able to refresh correctly the Application Icon Badge Number when app is backgrounded.
-        _highlightCount = 0;
-    }
-    else
-    {
-        _hasUnread = (_room.summary.localUnreadEventCount != 0);
-        _notificationCount = _room.summary.notificationCount;
-        _highlightCount = _room.summary.highlightCount;
-    }
-}
-
 - (void)markAllAsRead
 {
-    if ([_room acknowledgeLatestEvent:YES])
-    {
-        _hasUnread = NO;
-        _notificationCount = 0;
-        _highlightCount = 0;
-        
-        // Notify the unread information has changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-    }
+    [_room.summary markAllAsRead];
 }
 
 - (void)limitMemoryUsage:(NSInteger)maxBubbleNb
@@ -350,9 +322,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     _serverSyncEventCount = 0;
-    _hasUnread = NO;
-    _notificationCount = 0;
-    _highlightCount = 0;
 
     // Notify the delegate to reload its tableview
     if (self.delegate)
@@ -375,15 +344,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     // Reload
     [self didMXSessionStateChange];
-    
-    // Handle here the case where reload has failed (should not happen except if session has been closed).
-    if (state != MXKDataSourceStateReady)
-    {
-        NSLog(@"[MXKRoomDataSource] Reload Failed (%p - room id: %@)", self, _roomId);
-        
-        // Notify the last message, hasUnread, notificationCount and/or highlightCount have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-    }
 }
 
 - (void)destroy
@@ -465,18 +425,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         }
                         
                     }];
-                    
-                    // Observe room summary updates for unread notifications changes
-                    roomDidUpdateUnreadNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSummaryDidChangeNotification object:_room.summary queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-
-                        [self refreshUnreadCounters];
-                        
-                        // the unread counter has been updated...
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-                        
-                    }];
-
-                    [self refreshUnreadCounters];
 
                     // Force to set the filter at the MXRoom level
                     self.eventsFilterForMessages = _eventsFilterForMessages;
@@ -505,9 +453,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
                         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
                     }
-
-                    // Notify the last message may have changed
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
                 }
                 else
                 {
@@ -714,9 +659,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             {
                                 [self.delegate dataSource:self didCellChange:nil];
                             }
-                            
-                            // Notify the last message may have changed
-                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
                             
                         });
                     }
@@ -1438,24 +1380,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         {
             [self.delegate dataSource:self didCellChange:nil];
         }
-        
-        // Notify the last message may have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
 }
 
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState
 {
-    // The account may be shared between several devices.
-    // so, if some messages have been read on one device, the other devices must update the unread counters
-    if ([receiptEvent.readReceiptSenders indexOfObject:self.mxSession.myUser.userId] != NSNotFound)
-    {
-        [self refreshUnreadCounters];
-        
-        // the unread counter has been updated...
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-    }
+    // `MXKRoomDataSource-inherited` instance should override this method to handle the receipt event.
     
+    // Update the delegate
     if (self.delegate)
     {
         [self.delegate dataSource:self didCellChange:nil];
@@ -1545,9 +1477,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [self.delegate dataSource:self didCellChange:nil];
     }
-    
-    // Notify the last message may have changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
 }
 
 - (NSArray<NSIndexPath *> *)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
@@ -1683,9 +1612,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         {
             [self.delegate dataSource:self didCellChange:nil];
         }
-        
-        // Notify the last message may have changed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
     }
 }
 
@@ -1839,14 +1765,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         {
             [self.delegate dataSource:self didCellChange:nil];
         }
-
-        // Notify the last message may have changed
-        // Workaround to fix the case explained in this issue https://github.com/vector-im/riot-ios/issues/889#issuecomment-272168555
-        // To avoid launching an update of the recents while they are updating, dispatch_async the notification.
-        // TODO: remove this after the refactoring of recents with the coming MXRoomSummary.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
-        });
     }
 }
 
@@ -2196,9 +2114,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         // Check the memory usage of the data source. Reload it if the cache is too huge.
                         [self limitMemoryUsage:_maxBackgroundCachedBubblesCount];
                     }
-                    
-                    // Notify the last message, hasUnread, notificationCount and/or highlightCount have changed
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceMetaDataChanged object:self userInfo:nil];
                 }
                 
                 // Inform about the end if requested
