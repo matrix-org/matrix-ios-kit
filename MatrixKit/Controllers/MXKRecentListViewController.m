@@ -41,6 +41,11 @@
     UIView* reconnectingView;
     
     /**
+     The current table view header if any.
+     */
+    UIView* tableViewHeaderView;
+    
+    /**
      The latest server sync date
      */
     NSDate* latestServerSync;
@@ -507,7 +512,7 @@
 {
     if (scrollView == _recentsTableView && scrollView.contentSize.height)
     {
-        if (scrollView.contentOffset.y <= 0)
+        if (scrollView.contentOffset.y + scrollView.contentInset.top <= 0)
         {
             self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         }
@@ -521,7 +526,7 @@
     {
         [self detectPullToKick:scrollView];
         
-        if (targetContentOffset->y <= 0 && scrollView.contentSize.height)
+        if (targetContentOffset->y + scrollView.contentInset.top <= 0 && scrollView.contentSize.height)
         {
             self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         }
@@ -543,7 +548,7 @@
 {
     if (scrollView == _recentsTableView)
     {
-        if (scrollView.contentOffset.y == 0)
+        if (scrollView.contentOffset.y + scrollView.contentInset.top == 0)
         {
             [self managePullToKick:scrollView];
         }
@@ -617,6 +622,7 @@
         [spinner startAnimating];
         
         // no need to manage constraints here, IOS defines them.
+        tableViewHeaderView = _recentsTableView.tableHeaderView;
         _recentsTableView.tableHeaderView = reconnectingView = spinner;
     }
 }
@@ -625,7 +631,8 @@
 {
     if (reconnectingView && !restartConnection)
     {
-        _recentsTableView.tableHeaderView = reconnectingView = nil;
+        _recentsTableView.tableHeaderView = tableViewHeaderView;
+        reconnectingView = nil;
     }
 }
 
@@ -638,7 +645,7 @@
     if (!reconnectingView)
     {
         // detect if the user scrolls over the tableview top
-        restartConnection = (scrollView.contentOffset.y < -128);
+        restartConnection = (scrollView.contentOffset.y + scrollView.contentInset.top < -128);
         
         if (restartConnection)
         {
