@@ -33,15 +33,30 @@
 @property (nonatomic) NSString *desc;
 
 /**
- The icon URL for the server.
+ The icon of the server.
  */
-@property (nonatomic) NSString *iconUrl;
+@property (nonatomic) UIImage *icon;
+
+/**
+ In case the cell data represents a homeserver, its description.
+ */
+@property (nonatomic, readonly) NSString *homeserver;
+@property (nonatomic, readonly) BOOL includeAllNetworks;
 
 /**
  In case the cell data represents a third-party protocol instance, its description.
  */
 @property (nonatomic, readonly) MXThirdPartyProtocolInstance *thirdPartyProtocolInstance;
 @property (nonatomic, readonly) MXThirdPartyProtocol *thirdPartyProtocol;
+
+/**
+ Define a MXKDirectoryServerCellData that will store a homeserver.
+
+ @param homeserver the homeserver name (ex: "matrix.org).
+ @param includeAllNetworks YES to list all public rooms on the homeserver whatever their protocol.
+                           NO to list only matrix rooms.
+ */
+- (id)initWithHomeserver:(NSString*)homeserver includeAllNetworks:(BOOL)includeAllNetworks;
 
 /**
  Define a MXKDirectoryServerCellData that will store a third-party protocol instance.

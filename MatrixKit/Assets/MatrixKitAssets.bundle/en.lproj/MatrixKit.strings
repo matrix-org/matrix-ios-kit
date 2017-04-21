@@ -19,6 +19,8 @@
 /*      iOS specific       */
 /* *********************** */
 
+"matrix" = "Matrix";
+
 // Login Screen
 "login_create_account" = "Create account:";
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
