@@ -153,14 +153,6 @@
         }
     }
     
-    // Patch: Auto-layout issue.
-    // Issue observed when 'MXKRecentListViewController' instance is used by the master view controller of a split view controller.
-    // Back to recents after screen rotation (landscape to portrait) make the recents disappear (table frame size = (0, 0)).
-    [self.recentsSearchBar addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:0 context:nil];
-    [self.recentsSearchBar addObserver:self forKeyPath:NSStringFromSelector(@selector(center)) options:0 context:nil];
-    [self.recentsTableView addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:0 context:nil];
-    [self.recentsTableView addObserver:self forKeyPath:NSStringFromSelector(@selector(center)) options:0 context:nil];
-    
     // Hide search bar by default
     [self hideSearchBar:YES];
     
@@ -230,42 +222,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - KVO
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    // Patch: Auto-layout issue.
-    // Issue observed when 'MXKRecentListViewController' instance is used by the master view controller of a split view controller.
-    // Back to recents after screen rotation (landscape to portrait) make the recents disappear (table frame size = (0, 0)).
-    
-    if (self.view.frame.size.width)
-    {
-        CGRect searchBarFrame = self.recentsSearchBar.frame;
-        CGRect tableViewFrame = self.recentsTableView.frame;
-        BOOL isSearchFrameUpdated = NO;
-        
-        if (searchBarFrame.size.width == 0)
-        {
-            searchBarFrame.size.width = self.view.frame.size.width;
-            searchBarFrame.size.height = self.recentsSearchBar.isHidden ? 0 : 44;
-            self.recentsSearchBar.frame = searchBarFrame;
-            isSearchFrameUpdated = YES;
-            
-            NSLog(@"[MXKRecentListVC] restore recentsSearchBar frame: %f %f", searchBarFrame.size.width, searchBarFrame.size.height);
-        }
-        
-        if (isSearchFrameUpdated || tableViewFrame.size.width == 0)
-        {
-            tableViewFrame.origin.y = searchBarFrame.origin.y + searchBarFrame.size.height;
-            tableViewFrame.size.width = self.view.frame.size.width;
-            tableViewFrame.size.height = self.view.frame.size.height - tableViewFrame.origin.y - _recentsTableViewBottomConstraint.constant - self.bottomLayoutGuide.length;
-            self.recentsTableView.frame = tableViewFrame;
-            
-            NSLog(@"[MXKRecentListVC] restore recentsTableView frame: %f %f", tableViewFrame.size.width, tableViewFrame.size.height);
-        }
-    }
-}
-
 #pragma mark - Override MXKViewController
 
 - (void)onMatrixSessionChange
@@ -310,12 +266,6 @@
 
 - (void)destroy
 {
-    // Remove view observers
-    [self.recentsSearchBar removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
-    [self.recentsSearchBar removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
-    [self.recentsTableView removeObserver:self forKeyPath:NSStringFromSelector(@selector(frame))];
-    [self.recentsTableView removeObserver:self forKeyPath:NSStringFromSelector(@selector(center))];
-    
     self.recentsTableView.dataSource = nil;
     self.recentsTableView.delegate = nil;
     self.recentsTableView = nil;
