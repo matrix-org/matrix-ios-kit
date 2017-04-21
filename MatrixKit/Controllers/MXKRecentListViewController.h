@@ -104,4 +104,9 @@ limitations under the License.
  */
 - (void)refreshRecentsTable;
 
+/**
+ Hide/show the search bar at the top of the recents table view.
+ */
+- (void)hideSearchBar:(BOOL)hidden;
+
 @end

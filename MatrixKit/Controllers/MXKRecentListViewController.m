@@ -162,9 +162,7 @@
     [self.recentsTableView addObserver:self forKeyPath:NSStringFromSelector(@selector(center)) options:0 context:nil];
     
     // Hide search bar by default
-    self.recentsSearchBar.hidden = YES;
-    self.recentsSearchBarHeightConstraint.constant = 0;
-    [self.view setNeedsUpdateConstraints];
+    [self hideSearchBar:YES];
     
     // Add search option in navigation bar
     self.enableSearch = YES;
@@ -391,6 +389,13 @@
     [self.recentsTableView reloadData];
 }
 
+- (void)hideSearchBar:(BOOL)hidden
+{
+    self.recentsSearchBar.hidden = hidden;
+    self.recentsSearchBarHeightConstraint.constant = hidden ? 0 : 44;
+    [self.view setNeedsUpdateConstraints];
+}
+
 #pragma mark - Action
 
 - (IBAction)search:(id)sender
@@ -406,9 +411,7 @@
         // Check whether there are data in which search
         if ([self.dataSource numberOfSectionsInTableView:self.recentsTableView])
         {
-            self.recentsSearchBar.hidden = NO;
-            self.recentsSearchBarHeightConstraint.constant = 44;
-            [self.view setNeedsUpdateConstraints];
+            [self hideSearchBar:NO];
             
             // Create search bar
             [self.recentsSearchBar becomeFirstResponder];
@@ -521,7 +524,7 @@
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-    // Detect vertical bounce at the top of the tableview to trigger pagination
+    // Detect vertical bounce at the top of the tableview to trigger reconnection.
     if (scrollView == _recentsTableView)
     {
         [self detectPullToKick:scrollView];
@@ -581,9 +584,7 @@
     // Leave search
     [searchBar resignFirstResponder];
     
-    self.recentsSearchBar.hidden = YES;
-    self.recentsSearchBarHeightConstraint.constant = 0;
-    [self.view setNeedsUpdateConstraints];
+    [self hideSearchBar:YES];
     
     self.recentsSearchBar.text = nil;
     
@@ -654,7 +655,6 @@
         }
     }
 }
-
 
 /**
  Restarts the current connection if it is required.
