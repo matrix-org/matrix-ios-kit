@@ -76,12 +76,23 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
     Class class = [self cellDataClassForCellIdentifier:kMXKDirectorServerCellIdentifier];
 
     // Add user's HS
-    id<MXKDirectoryServerCellDataStoring> cellData = [[class alloc] initWithHomeserver:self.mxSession.matrixRestClient.credentials.homeServerName includeAllNetworks:YES];
+    NSString *userHomeserver = self.mxSession.matrixRestClient.credentials.homeServerName;
+    id<MXKDirectoryServerCellDataStoring> cellData = [[class alloc] initWithHomeserver:userHomeserver includeAllNetworks:YES];
     [cellDataArray addObject:cellData];
 
     // Add user's HS but for Matrix public rooms only
-    cellData = [[class alloc] initWithHomeserver:self.mxSession.matrixRestClient.credentials.homeServerName includeAllNetworks:NO];
+    cellData = [[class alloc] initWithHomeserver:userHomeserver includeAllNetworks:NO];
     [cellDataArray addObject:cellData];
+
+    // Add custom directory servers
+    for (NSString *homeserver in _roomDirectoryServers)
+    {
+        if (![homeserver isEqualToString:userHomeserver])
+        {
+            cellData = [[class alloc] initWithHomeserver:homeserver includeAllNetworks:YES];
+            [cellDataArray addObject:cellData];
+        }
+    }
 
     __weak typeof(self) weakSelf = self;
     request = [self.mxSession.matrixRestClient thirdpartyProtocols:^(MXThirdpartyProtocolsResponse *thirdpartyProtocolsResponse) {
