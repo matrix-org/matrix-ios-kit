@@ -16,19 +16,45 @@
 
 #import "MXKDirectoryServerCellData.h"
 
-@implementation MXKDirectoryServerCellData
-@synthesize desc, iconUrl, thirdPartyProtocolInstance, thirdPartyProtocol;
+#import "NSBundle+MatrixKit.h"
+
+@implementation MXKDirectoryServerCellData;
+@synthesize desc, icon;
+@synthesize homeserver, includeAllNetworks;
+@synthesize thirdPartyProtocolInstance, thirdPartyProtocol;
+
+- (id)initWithHomeserver:(NSString *)theHomeserver includeAllNetworks:(BOOL)theIncludeAllNetworks
+{
+    self = [super init];
+    if (self)
+    {
+        homeserver = theHomeserver;
+        includeAllNetworks = theIncludeAllNetworks;
+
+        if (theIncludeAllNetworks)
+        {
+            desc = homeserver;
+            icon = nil;
+        }
+        else
+        {
+            // Use the Matrix name and logo when looking for Matrix rooms only
+            desc = [NSBundle mxk_localizedStringForKey:@"matrix"];
+            icon = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"network_matrix"];
+        }
+    }
+    return self;
+}
 
 - (id)initWithProtocolInstance:(MXThirdPartyProtocolInstance *)instance protocol:(MXThirdPartyProtocol *)protocol
 {
     self = [super init];
     if (self)
     {
-        desc = instance.desc;
-        iconUrl = instance.icon;
-
         thirdPartyProtocolInstance = instance;
         thirdPartyProtocol = protocol;
+        desc = thirdPartyProtocolInstance.desc;
+        icon = nil;
     }
     return self;
 }

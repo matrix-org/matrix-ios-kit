@@ -53,6 +53,11 @@ FOUNDATION_EXPORT NSString *const kMXKDirectorServerCellIdentifier;
 }
 
 /**
+ Additional room directory servers the datasource will list.
+ */
+@property (nonatomic) NSArray<NSString*> *roomDirectoryServers;
+
+/**
  Fetch the data source data.
  */
 - (void)loadData;
