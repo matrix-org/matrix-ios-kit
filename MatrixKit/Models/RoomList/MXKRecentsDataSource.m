@@ -34,11 +34,6 @@
      Array of `MXKSessionRecentsDataSource` instances (one by matrix session).
      */
     NSMutableArray *recentsDataSourceArray;
-    
-    /**
-     The current search pattern list
-     */
-    NSArray* searchPatternsList;
 }
 
 @end

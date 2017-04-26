@@ -35,6 +35,11 @@
      Array of shrinked sources. Sub-list of displayedRecentsDataSourceArray.
      */
     NSMutableArray *shrinkedRecentsDataSourceArray;
+    
+    /**
+     The current search pattern list
+     */
+    NSArray* searchPatternsList;
 }
 
 /**
