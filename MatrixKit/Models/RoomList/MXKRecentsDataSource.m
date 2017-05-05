@@ -200,7 +200,7 @@
     shrinkedRecentsDataSourceArray = nil;
     mxSessionArray = nil;
     
-    searchPatternsList = nil;
+    _searchPatternsList = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionInvitedRoomsDidChangeNotification object:nil];
     
@@ -242,7 +242,7 @@
 
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
-    searchPatternsList = patternsList;
+    _searchPatternsList = patternsList;
     
     // CAUTION: Apply here the search pattern to all ready data sources (not only displayed ones).
     // Some data sources may have been removed from 'displayedRecentsDataSourceArray' during a previous search if no recent was matching.
@@ -538,9 +538,9 @@
             }
             
             // Check whether a search session is in progress
-            if (searchPatternsList)
+            if (_searchPatternsList)
             {
-                [recentsDataSource searchWithPatterns:searchPatternsList];
+                [recentsDataSource searchWithPatterns:_searchPatternsList];
             }
             else
             {
