@@ -35,11 +35,6 @@
      Array of shrinked sources. Sub-list of displayedRecentsDataSourceArray.
      */
     NSMutableArray *shrinkedRecentsDataSourceArray;
-    
-    /**
-     The current search pattern list
-     */
-    NSArray* searchPatternsList;
 }
 
 /**
@@ -56,6 +51,11 @@
  Tell whether there are some unread messages.
  */
 @property (nonatomic, readonly) BOOL hasUnread;
+
+/**
+ The current search patterns list.
+ */
+@property (nonatomic, readonly) NSArray* searchPatternsList;
 
 #pragma mark - Configuration
 
