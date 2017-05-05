@@ -19,22 +19,6 @@
 
 @implementation MXKMediaCollectionViewCell
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    // Check whether a xib is defined
-    if ([[self class] nib])
-    {
-        self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
-        self.frame = frame;
-    }
-    else
-    {
-        self = [super initWithFrame:frame];
-    }
-    
-    return self;
-}
-
 - (void)prepareForReuse
 {
     [super prepareForReuse];
