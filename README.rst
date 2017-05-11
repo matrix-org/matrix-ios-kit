@@ -122,11 +122,11 @@ The approach is similar to the previous use case. You need to create a data
 source and pass it to the view controller::
 
         // Create a data source for managing data
-        MXKRecentListDataSource *recentListDataSource = [[MXKRecentListDataSource alloc] initWithMatrixSession:mxSession];
+        MXKRecentsDataSource *recentsDataSource = [[MXKRecentsDataSource alloc] initWithMatrixSession:mxSession];
 
         // Create the view controller that will display it
         MXKRecentListViewController *recentListViewController = [[MXKRecentListViewController alloc] init];
-        [recentListViewController displayList:recentListDataSource];
+        [recentListViewController displayList:recentsDataSource];
 
 
 Customisation
