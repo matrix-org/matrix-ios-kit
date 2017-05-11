@@ -65,10 +65,10 @@
 @property (nonatomic) id<MXKContactListViewControllerDelegate> delegate;
 
 /**
- Enable the search in contacts list according to the room display name (YES by default).
+ Enable the search option by adding a navigation item in the navigation bar (YES by default).
  Set NO this property to disable this option and hide the related bar button.
  */
-@property (nonatomic) BOOL enableSearch;
+@property (nonatomic) BOOL enableBarButtonSearch;
 
 /**
  Tell whether an action is already in progress.

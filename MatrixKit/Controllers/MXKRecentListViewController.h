@@ -60,10 +60,10 @@ limitations under the License.
 @property (nonatomic) id<MXKRecentListViewControllerDelegate> delegate;
 
 /**
- Enable the search in recents list according to the room display name (YES by default).
+ Enable the search option by adding a navigation item in the navigation bar (YES by default).
  Set NO this property to disable this option and hide the related bar button.
  */
-@property (nonatomic) BOOL enableSearch;
+@property (nonatomic) BOOL enableBarButtonSearch;
 
 #pragma mark - Class methods
 

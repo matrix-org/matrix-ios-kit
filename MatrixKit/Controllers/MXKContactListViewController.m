@@ -73,6 +73,8 @@
 {
     [super finalizeInit];
     
+    _enableBarButtonSearch = YES;
+    
     // get the system collation titles
     collationTitles = [[UILocalizedIndexedCollation currentCollation] sectionTitles];
 }
@@ -118,8 +120,8 @@
     [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_mx_users"] forSegmentAtIndex:0];
     [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_local_contacts"] forSegmentAtIndex:1];
     
-    // Add search option in navigation bar
-    self.enableSearch = YES;
+    // Apply search option in navigation bar
+    self.enableBarButtonSearch = _enableBarButtonSearch;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -164,9 +166,11 @@
     [self.tableView registerClass:contactTableViewCellClass forCellReuseIdentifier:[contactTableViewCellClass defaultReuseIdentifier]];
 }
 
-- (void)setEnableSearch:(BOOL)enableSearch
+- (void)setEnableBarButtonSearch:(BOOL)enableBarButtonSearch
 {
-    if (enableSearch)
+    _enableBarButtonSearch = enableBarButtonSearch;
+    
+    if (enableBarButtonSearch)
     {
         if (!searchButton)
         {
