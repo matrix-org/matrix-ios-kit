@@ -80,6 +80,8 @@
 - (void)finalizeInit
 {
     [super finalizeInit];
+    
+    _enableBarButtonSearch = YES;
 }
 
 - (void)viewDidLoad
@@ -156,8 +158,8 @@
     // Hide search bar by default
     [self hideSearchBar:YES];
     
-    // Add search option in navigation bar
-    self.enableSearch = YES;
+    // Apply search option in navigation bar
+    self.enableBarButtonSearch = _enableBarButtonSearch;
     
     // Add an accessory view to the search bar in order to retrieve keyboard view.
     self.recentsSearchBar.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -280,9 +282,11 @@
 
 #pragma mark -
 
-- (void)setEnableSearch:(BOOL)enableSearch
+- (void)setEnableBarButtonSearch:(BOOL)enableBarButtonSearch
 {
-    if (enableSearch)
+    _enableBarButtonSearch = enableBarButtonSearch;
+    
+    if (enableBarButtonSearch)
     {
         if (!searchButton)
         {

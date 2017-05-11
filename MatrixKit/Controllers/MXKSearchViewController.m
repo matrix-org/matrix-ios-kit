@@ -56,6 +56,8 @@
 - (void)finalizeInit
 {
     [super finalizeInit];
+    
+    _enableBarButtonSearch = YES;
 }
 
 - (void)viewDidLoad
@@ -116,8 +118,8 @@
 
     searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchBar:)];
 
-    // Add search option in navigation bar
-    self.enableSearchButton = YES;
+    // Apply search option in navigation bar
+    self.enableBarButtonSearch = _enableBarButtonSearch;
 
     // Finalize table view configuration
     _searchTableView.delegate = self;
@@ -213,15 +215,15 @@
 
 #pragma mark - UIBarButton handling
 
-- (void)setEnableSearchButton:(BOOL)enableSearchButton
+- (void)setEnableBarButtonSearch:(BOOL)enableBarButtonSearch
 {
-    _enableSearchButton = enableSearchButton;
+    _enableBarButtonSearch = enableBarButtonSearch;
     [self refreshUIBarButtons];
 }
 
 - (void)refreshUIBarButtons
 {
-    if (_enableSearchButton)
+    if (_enableBarButtonSearch)
     {
         self.navigationItem.rightBarButtonItems = @[searchBarButton];
     }

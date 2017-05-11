@@ -40,10 +40,10 @@ limitations under the License.
 @property (nonatomic, readonly) MXKSearchDataSource *dataSource;
 
 /**
- Enable the search (YES by default).
+ Enable the search option by adding a navigation item in the navigation bar (YES by default).
  Set NO this property to disable this option and hide the related bar button.
  */
-@property (nonatomic) BOOL enableSearchButton;
+@property (nonatomic) BOOL enableBarButtonSearch;
 
 /**
  If YES, the table view will scroll at the bottom on the next data source refresh.
