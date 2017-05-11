@@ -76,6 +76,11 @@
     return roomSummary.highlightCount;
 }
 
+- (NSString*)notificationCountStringValue
+{
+    return [NSString stringWithFormat:@"%tu", self.notificationCount];
+}
+
 - (void)markAllAsRead
 {
     [roomSummary markAllAsRead];

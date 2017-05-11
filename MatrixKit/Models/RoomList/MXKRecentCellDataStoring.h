@@ -52,6 +52,7 @@
 @property (nonatomic, readonly) BOOL hasUnread;
 @property (nonatomic, readonly) NSUInteger notificationCount;
 @property (nonatomic, readonly) NSUInteger highlightCount;
+@property (nonatomic, readonly) NSString *notificationCountStringValue;
 
 #pragma mark - Public methods
 /**
