@@ -15,6 +15,7 @@
  */
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKViewController.h"
 
 @implementation NSBundle (MatrixKit)
 
@@ -22,9 +23,16 @@ static NSString *customLocalizedStringTableName = nil;
 
 + (NSBundle*)mxk_assetsBundle
 {
-    NSString *bundleResourcePath = [NSBundle mainBundle].resourcePath;
-    NSString *assetPath = [bundleResourcePath stringByAppendingPathComponent:@"MatrixKitAssets.bundle"];
-    return [NSBundle bundleWithPath:assetPath];
+    NSBundle *bundle = [NSBundle bundleForClass:[MXKViewController class]];
+    NSURL *assetsBundleURL = [bundle URLForResource:@"MatrixKit" withExtension:@"bundle"];
+
+    // Check whether MatrixKit is not integrated as a Pod
+    if (!assetsBundleURL)
+    {
+        assetsBundleURL = [bundle URLForResource:@"MatrixKitAssets" withExtension:@"bundle"];
+    }
+
+    return [NSBundle bundleWithURL:assetsBundleURL];
 }
 
 // use a cache to avoid loading images from file system.
