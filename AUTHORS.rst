@@ -28,3 +28,6 @@ Aram Sargsyan <aram.sargsyan.1997 at gmail.com>
  
 Javier Quevedo Fernández <jquevedo at gmail.com>
  * PR #278 Update a snippet of code in Readme
+ 
+Samuel Gallet <samuel.gallet at applidium.com>
+ * PR #279 Use CocoaPods resource_bundles attributes to store assets
