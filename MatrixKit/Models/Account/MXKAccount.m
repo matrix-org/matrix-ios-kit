@@ -620,6 +620,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     NSCurrentLocaleDidChangeNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         [self onDateTimeFormatUpdate];
     }];
+    
+    // Force a date refresh for all the last messages.
+    [self onDateTimeFormatUpdate];
 
     // Register session state observer
     sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
@@ -1223,12 +1226,26 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     if ([mxSession.roomSummaryUpdateDelegate isKindOfClass:MXKEventFormatter.class])
     {
+        MXKEventFormatter *eventFormatter = (MXKEventFormatter*)mxSession.roomSummaryUpdateDelegate;
+        
         // Update the date and time formatters
-        [((MXKEventFormatter*)mxSession.roomSummaryUpdateDelegate) initDateTimeFormatters];
+        [eventFormatter initDateTimeFormatters];
+        
+        for (MXRoomSummary *summary in mxSession.roomsSummaries)
+        {
+            summary.lastMessageOthers[@"lastEventDate"] = [eventFormatter dateStringFromEvent:summary.lastMessageEvent withTime:YES];
+            [mxSession.store storeSummaryForRoom:summary.roomId summary:summary];
+        }
+        
+        // Commit store changes done
+        if ([mxSession.store respondsToSelector:@selector(commit)])
+        {
+            [mxSession.store commit];
+        }
+        
+        // Broadcast the change which concerns all the room summaries.
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXRoomSummaryDidChangeNotification object:nil userInfo:nil];
     }
-
-    // Force a refresh of all last messages
-    [mxSession resetRoomsSummariesLastMessage];
 }
 
 #pragma mark - Crypto

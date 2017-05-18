@@ -295,6 +295,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
             NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room summary for %@ (%@). It is probably not managed by this recents data source", roomSummary.roomId, roomSummary);
         }
     }
+    else
+    {
+        // Inform the delegate that all the room summaries have been updated.
+        [self.delegate dataSource:self didCellChange:nil];
+    }
 }
 
 - (void)didMXSessionHaveNewRoom:(NSNotification *)notif

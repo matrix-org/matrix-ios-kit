@@ -46,8 +46,7 @@
 
     lastEventTextMessage = roomSummary.lastMessageString;
     lastEventAttributedTextMessage = roomSummary.lastMessageAttributedString;
-    lastEventDate = (NSString*)roomSummary.lastMessageOthers[@"lastEventDate"];
-
+    
     lastEvent.mxkEventFormatterError = [((NSNumber*)roomSummary.lastMessageOthers[@"mxkEventFormatterError"]) intValue];
 }
 
@@ -59,6 +58,11 @@
     lastEvent = nil;
     lastEventTextMessage = nil;
     lastEventAttributedTextMessage = nil;
+}
+
+- (NSString*)lastEventDate
+{
+    return (NSString*)roomSummary.lastMessageOthers[@"lastEventDate"];
 }
 
 - (BOOL)hasUnread
