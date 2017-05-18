@@ -25,3 +25,6 @@ Denis Morozov <dmorozkn at gmail.com>
 
 Aram Sargsyan <aram.sargsyan.1997 at gmail.com>
  * PR #259 Attachments viewcontroller: interactive animations
+ 
+Javier Quevedo Fernández <jquevedo at gmail.com>
+ * PR #278 Update a snippet of code in Readme
