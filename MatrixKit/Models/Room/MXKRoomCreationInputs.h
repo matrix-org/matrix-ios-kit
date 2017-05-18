@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "MXSession.h"
+#import <MatrixSDK/MXSession.h>
 
 /**
  `MXKRoomCreationInputs` objects lists all the fields considered for a new room creation.

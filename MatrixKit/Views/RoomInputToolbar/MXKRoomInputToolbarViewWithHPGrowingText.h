@@ -16,7 +16,8 @@
 
 #import "MXKRoomInputToolbarView.h"
 
-#import "HPGrowingTextView.h"
+@class HPGrowingTextView;
+@protocol HPGrowingTextViewDelegate;
 
 /**
  `MXKRoomInputToolbarViewWithHPGrowingText` is a MXKRoomInputToolbarView-inherited class in which message

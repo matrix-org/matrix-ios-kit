@@ -19,7 +19,7 @@
 
 #import "MXKContactField.h"
 
-#import "NBPhoneNumberUtil.h"
+@class NBPhoneNumber;
 
 @interface MXKPhoneNumber : MXKContactField
 
