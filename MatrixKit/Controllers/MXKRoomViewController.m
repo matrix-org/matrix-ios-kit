@@ -1282,12 +1282,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     NSString *cmd = [components objectAtIndex:0];
     NSUInteger index = 1;
     
-    // We save here the current placeholder of the text input to be able
-    // to replace it temporarily with a cmd usage string.
-    if (!savedInputToolbarPlaceholder)
-    {
-        savedInputToolbarPlaceholder = inputToolbarView.placeholder.length ? inputToolbarView.placeholder : @"";
-    }
+    // TODO: display an alert with the cmd usage in case of error or unrecognized cmd.
+    NSString *cmdUsage;
     
     if ([cmd isEqualToString:kCmdEmote])
     {
@@ -1323,7 +1319,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         else
         {
             // Display cmd usage in text input as placeholder
-            inputToolbarView.placeholder = @"Usage: /nick <display_name>";
+            cmdUsage = @"Usage: /nick <display_name>";
         }
     }
     else if ([string hasPrefix:kCmdJoinRoom])
@@ -1356,7 +1352,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         else
         {
             // Display cmd usage in text input as placeholder
-            inputToolbarView.placeholder = @"Usage: /join <room_alias>";
+            cmdUsage = @"Usage: /join <room_alias>";
         }
     }
     else if ([string hasPrefix:kCmdPartRoom])
@@ -1413,7 +1409,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         else
         {
             // Display cmd usage in text input as placeholder
-            inputToolbarView.placeholder = @"Usage: /part [<room_alias>]";
+            cmdUsage = @"Usage: /part [<room_alias>]";
         }
     }
     else if ([string hasPrefix:kCmdChangeRoomTopic])
@@ -1444,7 +1440,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         else
         {
             // Display cmd usage in text input as placeholder
-            inputToolbarView.placeholder = @"Usage: /topic <topic>";
+            cmdUsage = @"Usage: /topic <topic>";
         }
     }
     else
@@ -1481,7 +1477,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             else
             {
                 // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /invite <userId>";
+                cmdUsage = @"Usage: /invite <userId>";
             }
         }
         else if ([cmd isEqualToString:kCmdKickUser])
@@ -1515,7 +1511,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             else
             {
                 // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /kick <userId> [<reason>]";
+                cmdUsage = @"Usage: /kick <userId> [<reason>]";
             }
         }
         else if ([cmd isEqualToString:kCmdBanUser])
@@ -1549,7 +1545,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             else
             {
                 // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /ban <userId> [<reason>]";
+                cmdUsage = @"Usage: /ban <userId> [<reason>]";
             }
         }
         else if ([cmd isEqualToString:kCmdUnbanUser])
@@ -1570,7 +1566,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             else
             {
                 // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /unban <userId>";
+                cmdUsage = @"Usage: /unban <userId>";
             }
         }
         else if ([cmd isEqualToString:kCmdSetUserPowerLevel])
@@ -1605,7 +1601,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             else
             {
                 // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /op <userId> <power level>";
+                cmdUsage = @"Usage: /op <userId> <power level>";
             }
         }
         else if ([cmd isEqualToString:kCmdResetUserPowerLevel])
@@ -1626,13 +1622,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             else
             {
                 // Display cmd usage in text input as placeholder
-                inputToolbarView.placeholder = @"Usage: /deop <userId>";
+                cmdUsage = @"Usage: /deop <userId>";
             }
         }
         else
         {
             NSLog(@"[MXKRoomVC] Unrecognised IRC-style command: %@", string);
-//            inputToolbarView.placeholder = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
+//            cmdUsage = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
             return NO;
         }
     }
@@ -3079,13 +3075,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {
-    if (typing && savedInputToolbarPlaceholder && inputToolbarView.textMessage.length)
-    {
-        // Reset temporary placeholder (used in case of wrong command usage)
-        inputToolbarView.placeholder = savedInputToolbarPlaceholder.length ? savedInputToolbarPlaceholder : nil;
-        savedInputToolbarPlaceholder = nil;
-    }
-
     if (_saveProgressTextInput && roomDataSource)
     {
         // Store the potential message partially typed in text input
