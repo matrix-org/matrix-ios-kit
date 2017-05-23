@@ -172,6 +172,13 @@
     [self.recentsTableView registerNib:MXKRecentTableViewCell.nib forCellReuseIdentifier:MXKRecentTableViewCell.defaultReuseIdentifier];
     // Consider here the specific case where interleaved recents are supported
     [self.recentsTableView registerNib:MXKInterleavedRecentTableViewCell.nib forCellReuseIdentifier:MXKInterleavedRecentTableViewCell.defaultReuseIdentifier];
+    
+    // Add a top view which will be displayed in case of vertical bounce.
+    CGFloat height = self.recentsTableView.frame.size.height;
+    UIView *topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.recentsTableView.frame.size.width,height)];
+    topview.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    [self.recentsTableView addSubview:topview];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -465,28 +472,12 @@
     }
 }
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    if (scrollView == _recentsTableView && scrollView.contentSize.height)
-    {
-        if (scrollView.contentOffset.y + scrollView.contentInset.top <= 0)
-        {
-            self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-        }
-    }
-}
-
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
     // Detect vertical bounce at the top of the tableview to trigger reconnection.
     if (scrollView == _recentsTableView)
     {
         [self detectPullToKick:scrollView];
-        
-        if (targetContentOffset->y + scrollView.contentInset.top <= 0 && scrollView.contentSize.height)
-        {
-            self.recentsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-        }
     }
 }
 
@@ -495,9 +486,6 @@
     if (scrollView == _recentsTableView)
     {
         [self managePullToKick:scrollView];
-        
-        // Restore default background
-        self.recentsTableView.backgroundColor = [UIColor whiteColor];
     }
 }
 
@@ -570,10 +558,9 @@
         CGRect frame = spinner.frame;
         frame.size.height = 80; // 80 * 0.75 = 60
         spinner.bounds = frame;
-        
         spinner.color = [UIColor darkGrayColor];
         spinner.hidesWhenStopped = NO;
-        spinner.backgroundColor = [UIColor clearColor];
+        spinner.backgroundColor = [UIColor groupTableViewBackgroundColor];
         [spinner startAnimating];
         
         // no need to manage constraints here, IOS defines them.
