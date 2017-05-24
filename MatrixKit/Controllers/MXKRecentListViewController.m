@@ -176,6 +176,7 @@
     // Add a top view which will be displayed in case of vertical bounce.
     CGFloat height = self.recentsTableView.frame.size.height;
     UIView *topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.recentsTableView.frame.size.width,height)];
+    topview.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     topview.backgroundColor = [UIColor groupTableViewBackgroundColor];
     [self.recentsTableView addSubview:topview];
 
