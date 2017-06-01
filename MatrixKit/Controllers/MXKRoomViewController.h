@@ -88,6 +88,12 @@ extern NSString *const kCmdChangeRoomTopic;
 @property (nonatomic) BOOL hasRoomDataSourceOwnership;
 
 /**
+ Tell whether the room read marker must be updated when an event is acknowledged with a read receipt.
+ Default is NO.
+ */
+@property (nonatomic) BOOL updateRoomReadMarker;
+
+/**
  The current title view defined into the view controller.
  */
 @property (nonatomic, readonly) MXKRoomTitleView* titleView;

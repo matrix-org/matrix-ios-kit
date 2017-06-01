@@ -209,8 +209,19 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubbleInfoContainerTopConstraint;
 
-- (void)startProgressUI;
+/**
+ The read marker view and its layout constraints (nil by default).
+ */
+@property (nonatomic) UIView *readMarkerView;
+@property (nonatomic) NSLayoutConstraint *readMarkerViewTopConstraint;
+@property (nonatomic) NSLayoutConstraint *readMarkerViewLeadingConstraint;
+@property (nonatomic) NSLayoutConstraint *readMarkerViewTrailingConstraint;
+@property (nonatomic) NSLayoutConstraint *readMarkerViewHeightConstraint;
 
+/**
+ Handle progressView display.
+ */
+- (void)startProgressUI;
 - (void)updateProgressUI:(NSDictionary*)statisticsDict;
 
 #pragma mark - Original Xib values
