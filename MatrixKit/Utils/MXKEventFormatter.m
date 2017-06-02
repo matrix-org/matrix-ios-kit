@@ -1373,7 +1373,7 @@
             if ([event.sender isEqualToString:lastMessageEvent.sender])
             {
                 // The last message must be recomputed
-                [summary resetLastMessage:nil failure:nil];
+                [summary resetLastMessage:nil failure:nil commit:YES];
                 break;
             }
         }
