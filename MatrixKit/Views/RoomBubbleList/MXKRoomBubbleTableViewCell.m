@@ -649,9 +649,26 @@ static BOOL _disableLongPressGestureOnEvent;
     return rowHeight;
 }
 
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    
+    [self didEndDisplay];
+}
+
 - (void)didEndDisplay
 {
     bubbleData = nil;
+    
+    if (_readMarkerView)
+    {
+        [_readMarkerView removeFromSuperview];
+        _readMarkerView = nil;
+        _readMarkerViewTopConstraint = nil;
+        _readMarkerViewLeadingConstraint = nil;
+        _readMarkerViewTrailingConstraint = nil;
+        _readMarkerViewHeightConstraint = nil;
+    }
     
     if (self.attachmentView)
     {

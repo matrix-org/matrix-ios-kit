@@ -148,6 +148,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // display the read receips by default
         self.showBubbleReceipts = YES;
         
+        // show the read marker by default
+        self.showReadMarker = YES;
+        
         // Disable typing notification in cells by default.
         self.showTypingNotifications = NO;
         

@@ -166,6 +166,11 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic) BOOL useCustomDateTimeLabel;
 
 /**
+ Show the read marker (if any) in the rendered room bubble cells. YES by default.
+ */
+@property (nonatomic) BOOL showReadMarker;
+
+/**
  Show the receipts in rendered bubble cell. YES by default.
  */
 @property (nonatomic) BOOL showBubbleReceipts;
@@ -425,7 +430,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  The echo message corresponding to the event will be removed and a new echo message
  will be added at the end of the room history.
 
- @param the id of the event to resend.
+ @param eventId of the event to resend.
  @param success A block object called when the operation succeeds. It returns
                 the event id of the event generated on the home server
  @param failure A block object called when the operation fails.
@@ -439,7 +444,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 /**
  Get an event loaded in this room datasource.
 
- @param the id of the event to retrieve.
+ @param eventId of the event to retrieve.
  @return the MXEvent object or nil if not found.
  */
 - (MXEvent *)eventWithEventId:(NSString *)eventId;
@@ -447,7 +452,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 /**
  Remove an event from the events loaded by room datasource.
 
- @param the id of the event to remove.
+ @param eventId of the event to remove.
  */
 - (void)removeEventWithEventId:(NSString *)eventId;
 

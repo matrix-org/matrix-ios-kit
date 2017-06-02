@@ -218,6 +218,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Do not take ownership of room data source by default
     _hasRoomDataSourceOwnership = NO;
     
+    // Do not update the read marker by default.
+    _updateRoomReadMarker = NO;
+    
     // Scroll to the bottom when a keyboard is presented
     _scrollHistoryToTheBottomOnKeyboardPresentation = YES;
 }
@@ -661,12 +664,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             // Remove the input toolbar in case of peeking.
             // We do not let the user type message in this case.
             [self setRoomInputToolbarViewClass:nil];
-        }
-        else
-        {
-            // The view controller is going to display all unread messages
-            // Automatically reset the counters
-            [dataSource markAllAsRead];
         }
         
         roomDataSource = dataSource;
@@ -1690,6 +1687,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 isScrollingToBottom = YES;
                 [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
             }
+            else
+            {
+                // upateCurrentEventIdAtTableBottom must be called here (it is usually called by the scrollview delegate at the end of scrolling).
+                [self updateCurrentEventIdAtTableBottom:YES];
+            }
         }
         else
         {
@@ -2281,8 +2283,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                         
                         if (acknowledge)
                         {
-                            // Indicate to the homeserver that the user has read up to this event.
-                            [self.roomDataSource.room acknowledgeEvent:component.event];
+                            // Indicate to the homeserver that the user has read this event.
+                            [self.roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:_updateRoomReadMarker];
                         }
                         
                         break;
