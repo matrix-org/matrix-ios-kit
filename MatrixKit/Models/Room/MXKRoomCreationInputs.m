@@ -15,6 +15,7 @@
  */
 
 #import "MXKRoomCreationInputs.h"
+#import "MXSession.h"
 
 @interface MXKRoomCreationInputs ()
 {

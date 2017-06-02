@@ -20,8 +20,7 @@
 #import "MXKPieChartView.h"
 
 #import "MXKCellRendering.h"
-
-#import "MXUser.h"
+@class MXUser, MXSession;
 
 /**
  `MXKRoomMemberTableViewCell` instances display a user in the context of the room member list.

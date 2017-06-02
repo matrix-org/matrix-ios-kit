@@ -15,6 +15,7 @@
  */
 
 #import "MXKRoomInputToolbarViewWithHPGrowingText.h"
+#import <HPGrowingTextView/HPGrowingTextView.h>
 
 @interface MXKRoomInputToolbarViewWithHPGrowingText()
 {

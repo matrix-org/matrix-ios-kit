@@ -26,6 +26,7 @@
 #import "NSBundle+MatrixKit.h"
 
 #import "MXKTools.h"
+#import <MatrixSDK/MXUser.h>
 
 @interface MXKRoomMemberTableViewCell ()
 {
