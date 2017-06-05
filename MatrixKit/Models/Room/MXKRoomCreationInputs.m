@@ -15,7 +15,8 @@
  */
 
 #import "MXKRoomCreationInputs.h"
-#import "MXSession.h"
+
+#import <MatrixSDK/MXSession.h>
 
 @interface MXKRoomCreationInputs ()
 {

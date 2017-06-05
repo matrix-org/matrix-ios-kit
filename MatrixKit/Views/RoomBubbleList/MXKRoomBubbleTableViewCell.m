@@ -16,9 +16,12 @@
 
 #import "MXKRoomBubbleTableViewCell.h"
 
-#import "NSBundle+MatrixKit.h"
-
+#import "MXKImageView.h"
+#import "MXKPieChartView.h"
+#import "MXKRoomBubbleCellData.h"
 #import "MXKTools.h"
+
+#import "NSBundle+MatrixKit.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";

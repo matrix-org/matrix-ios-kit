@@ -15,14 +15,12 @@
  */
 
 #import "MXKTableViewCell.h"
-
 #import "MXKCellRendering.h"
-
-#import "MXKRoomBubbleCellData.h"
-
-#import "MXKImageView.h"
-#import "MXKPieChartView.h"
 #import "MXKReceiptSendersContainer.h"
+
+@class MXKImageView;
+@class MXKPieChartView;
+@class MXKRoomBubbleCellData;
 
 #pragma mark - MXKCellRenderingDelegate cell tap locations
 

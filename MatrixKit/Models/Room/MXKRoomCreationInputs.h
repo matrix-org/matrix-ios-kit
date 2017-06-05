@@ -15,8 +15,11 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIImage.h>
 
-#import <MatrixSDK/MXSession.h>
+#import <MatrixSDK/MXEnumConstants.h>
+
+@class MXSession;
 
 /**
  `MXKRoomCreationInputs` objects lists all the fields considered for a new room creation.

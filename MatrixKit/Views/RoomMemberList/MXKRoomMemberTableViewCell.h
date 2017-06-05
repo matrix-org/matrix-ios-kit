@@ -15,12 +15,11 @@
  */
 
 #import "MXKTableViewCell.h"
-
-#import "MXKImageView.h"
-#import "MXKPieChartView.h"
-
 #import "MXKCellRendering.h"
-@class MXUser, MXSession;
+
+@class MXKImageView;
+@class MXKPieChartView;
+@class MXSession;
 
 /**
  `MXKRoomMemberTableViewCell` instances display a user in the context of the room member list.

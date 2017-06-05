@@ -16,17 +16,17 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 
-#import "MXKRoomMemberCellDataStoring.h"
-
-#import "MXKRoomMemberListDataSource.h"
-
-#import "MXMediaManager.h"
 #import "MXKAccount.h"
+#import "MXKImageView.h"
+#import "MXMediaManager.h"
+#import "MXKPieChartView.h"
+#import "MXKRoomMemberCellDataStoring.h"
+#import "MXKRoomMemberListDataSource.h"
+#import "MXKTools.h"
 
 #import "NSBundle+MatrixKit.h"
 
-#import "MXKTools.h"
-#import <MatrixSDK/MXUser.h>
+#import <MatrixSDK/MXSession.h>
 
 @interface MXKRoomMemberTableViewCell ()
 {
