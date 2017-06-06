@@ -45,6 +45,11 @@ extern NSString *const kCmdChangeRoomTopic;
 {
 @protected
     /**
+     Boolean value used to scroll to bottom the bubble history after refresh.
+     */
+    BOOL shouldScrollToBottomOnTableRefresh;
+    
+    /**
      Potential event details view.
      */
     MXKEventDetailsView *eventDetailsView;
@@ -183,7 +188,7 @@ extern NSString *const kCmdChangeRoomTopic;
 /**
  Display a room.
  
- @param roomDataSource the data source .
+ @param dataSource the data source .
  */
 - (void)displayRoom:(MXKRoomDataSource*)dataSource;
 
@@ -222,7 +227,7 @@ extern NSString *const kCmdChangeRoomTopic;
 
  Override it to customize the view controller behavior.
 
- @param the notification data sent with kMXKRoomDataSourceTimelineError notif.
+ @param notif the notification data sent with kMXKRoomDataSourceTimelineError notif.
  */
 - (void)onTimelineError:(NSNotification *)notif;
 
