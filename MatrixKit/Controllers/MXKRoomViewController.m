@@ -61,11 +61,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 @interface MXKRoomViewController ()
 {
     /**
-     Boolean value used to scroll to bottom the bubble history after refresh.
-     */
-    BOOL shouldScrollToBottomOnTableRefresh;
-    
-    /**
      YES if scrolling to bottom is in progress
      */
     BOOL isScrollingToBottom;
@@ -626,7 +621,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     if (!self.keyboardView)
     {
         // Compute the visible area (tableview + toolbar)
-        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - self.keyboardView.frame.size.height;
+        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top;
         // Deduce max height of the message text input by considering the minimum height of the table view.
         inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     }
@@ -652,16 +647,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     if (dataSource)
     {
-        if (!dataSource.isLive)
+        if (!dataSource.isLive || dataSource.isPeeking)
         {
-            // Remove the input toolbar and the room activities view if the displayed timeline is not a live one.
-            // We do not let the user type message in this case.
-            [self setRoomInputToolbarViewClass:nil];
-            [self setRoomActivitiesViewClass:nil];
-        }
-        else if (dataSource.isPeeking)
-        {
-            // Remove the input toolbar in case of peeking.
+            // Remove the input toolbar if the displayed timeline is not a live one or in case of peeking.
             // We do not let the user type message in this case.
             [self setRoomInputToolbarViewClass:nil];
         }
@@ -1173,12 +1161,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         [activitiesView removeFromSuperview];
         [activitiesView destroy];
         activitiesView = nil;
-    }
-    
-    if (roomDataSource && !roomDataSource.isLive)
-    {
-        // Do not show room activities if the displayed timeline is not a live one
-        roomActivitiesViewClass = nil;
     }
     
     if (roomActivitiesViewClass)
@@ -1789,6 +1771,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                            contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
                                            _bubblesTableView.contentOffset = contentOffset;
                                        }
+                                       
+                                       // Update the read receipt and potentially the read marker.
+                                       [self updateCurrentEventIdAtTableBottom:YES];
                                    }
                                }
                                failure:^(NSError *error) {
@@ -2226,8 +2211,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         {
             contentBottomOffsetY = _bubblesTableView.contentSize.height;
         }
-        // Adjust slightly this offset to be above the actual bottom line.
-        contentBottomOffsetY -= 5;
+        // Be a bit less retrictive, consider visible an event at the bottom even if is partially hidden.
+        contentBottomOffsetY += 8;
         
         // Reset the current event id
         currentEventIdAtTableBottom = nil;
@@ -2240,40 +2225,47 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         {
             cell = [_bubblesTableView cellForRowAtIndexPath:indexPathsForVisibleRows[index]];
             
-            if ([cell isKindOfClass:MXKTableViewCell.class])
+            // Check whether the cell is actually visible
+            if (cell && (cell.frame.origin.y < contentBottomOffsetY))
             {
-                MXKCellData *cellData = ((MXKTableViewCell *)cell).mxkCellData;
-
-                // Only 'MXKRoomBubbleCellData' is supported here for the moment.
-                if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
+                if ([cell isKindOfClass:MXKTableViewCell.class])
                 {
-                    MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
+                    MXKCellData *cellData = ((MXKTableViewCell *)cell).mxkCellData;
                     
-                    if (cell && (cell.frame.origin.y < contentBottomOffsetY) && (contentBottomOffsetY <= cell.frame.origin.y + cell.frame.size.height))
+                    // Only 'MXKRoomBubbleCellData' is supported here for the moment.
+                    if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
                     {
+                        MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
+                        
                         // Check which bubble component is displayed at the bottom.
                         // For that update each component position.
                         [bubbleData prepareBubbleComponentsPosition];
                         
                         NSArray *bubbleComponents = bubbleData.bubbleComponents;
-                        
                         NSInteger componentIndex = bubbleComponents.count;
+                        
+                        CGFloat bottomPositionY = cell.frame.size.height;
+                        
                         MXKRoomBubbleComponent *component;
+                        
                         while (componentIndex --)
                         {
                             component = bubbleComponents[componentIndex];
-                            currentEventIdAtTableBottom = component.event.eventId;
-                            
                             if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
                             {
                                 MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-                                // Check the component start position.
-                                CGFloat pos = cell.frame.origin.y + roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
-                                if (pos < contentBottomOffsetY)
+                                
+                                // Check whether the bottom part of the component is visible.
+                                CGFloat pos = cell.frame.origin.y + bottomPositionY;
+                                if (pos <= contentBottomOffsetY)
                                 {
-                                    // We found the component (by default the event id of the first component is considered).
+                                    // We found the component
+                                    currentEventIdAtTableBottom = component.event.eventId;
                                     break;
                                 }
+                                
+                                // Prepare the bottom position for the next component
+                                bottomPositionY = roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
                             }
                             else
                             {
@@ -2281,12 +2273,19 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                             }
                         }
                         
-                        if (acknowledge)
+                        if (currentEventIdAtTableBottom)
                         {
-                            // Indicate to the homeserver that the user has read this event.
-                            [self.roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:_updateRoomReadMarker];
+                            if (acknowledge)
+                            {
+                                // Indicate to the homeserver that the user has read this event.
+                                [self.roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:_updateRoomReadMarker];
+                            }
+                            break;
                         }
-                        
+                        // else we consider the previous cell.
+                    }
+                    else
+                    {
                         break;
                     }
                 }
@@ -2294,10 +2293,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 {
                     break;
                 }
-            }
-            else
-            {
-                break;
             }
         }
     }
