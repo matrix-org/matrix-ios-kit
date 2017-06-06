@@ -16,10 +16,14 @@
 
 #import "MXKRoomIOSOutgoingBubbleTableViewCell.h"
 
+#import "MXKRoomBubbleCellData.h"
+
 #import "MXEvent+MatrixKit.h"
 #import "MXKTools.h"
 
 #import "NSBundle+MatrixKit.h"
+
+#import "MXKImageView.h"
 
 #define OUTGOING_BUBBLE_COLOR 0x00e34d
 

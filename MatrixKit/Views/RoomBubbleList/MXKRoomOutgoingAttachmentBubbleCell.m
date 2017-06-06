@@ -18,6 +18,10 @@
 
 #import "MXEvent+MatrixKit.h"
 
+#import "MXKRoomBubbleCellData.h"
+#import "MXKImageView.h"
+#import "MXKPieChartView.h"
+
 @implementation MXKRoomOutgoingAttachmentBubbleCell
 
 - (void)dealloc

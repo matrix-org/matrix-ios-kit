@@ -20,6 +20,8 @@
 
 #import "NSBundle+Matrixkit.h"
 
+#import "MXKRoomBubbleCellData.h"
+
 @implementation MXKRoomOutgoingBubbleTableViewCell
 
 - (void)render:(MXKCellData *)cellData

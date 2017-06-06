@@ -16,6 +16,8 @@
 
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 
+#import "MXKRoomBubbleCellData.h"
+
 #import "NSBundle+MatrixKit.h"
 
 @implementation MXKRoomIncomingBubbleTableViewCell

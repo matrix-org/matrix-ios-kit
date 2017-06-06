@@ -32,6 +32,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKRoomBubbleCellData.h"
+
 #import "MXKRoomIncomingTextMsgBubbleCell.h"
 #import "MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h"
 #import "MXKRoomIncomingAttachmentBubbleCell.h"
