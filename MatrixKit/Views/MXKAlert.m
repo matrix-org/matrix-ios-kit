@@ -78,13 +78,14 @@
     {
         index = [(UIAlertController *)_alert actions].count;
         
+        __weak typeof(self) weakSelf = self;
         UIAlertAction* action = [UIAlertAction actionWithTitle:title
                                                          style:(UIAlertActionStyle)style
                                                        handler:^(UIAlertAction * action) {
                                                            
                                                            if (handler)
                                                            {
-                                                               handler(self);
+                                                               handler(weakSelf);
                                                            }
                                                            
                                                        }];
