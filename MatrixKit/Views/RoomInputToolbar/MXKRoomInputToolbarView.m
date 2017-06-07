@@ -815,11 +815,16 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 index++;
             }
         }
-        
-        [self availableCompressionSizesForAssets:(updatedAssets ? updatedAssets : assets) contentEditingInputs:contentEditingInputs onComplete:^(MXKFileSizes fileSizes) {
 
-            [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:compressionMode];
-        }];
+        NSArray<PHAsset*> *assetsToSend = updatedAssets ? updatedAssets : assets;
+        if (assetsToSend.count)
+        {
+            [self availableCompressionSizesForAssets:assetsToSend contentEditingInputs:contentEditingInputs onComplete:^(MXKFileSizes fileSizes) {
+
+                [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:compressionMode];
+            }];
+        }
+
     }];
 }
 
