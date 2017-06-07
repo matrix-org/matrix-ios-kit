@@ -647,6 +647,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         [self removeMatrixSession:self.mainSession];
     }
     
+    // Reset the current event id
+    currentEventIdAtTableBottom = nil;
+    
     if (dataSource)
     {
         if (!dataSource.isLive || dataSource.isPeeking)
@@ -1646,15 +1649,20 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (BOOL)isBubblesTableScrollViewAtTheBottom
 {
-    // Check whether the most recent message is visible.
-    // Compute the max vertical position visible according to contentOffset
-    CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
-    // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
-    maxPositionY += 30;
-    BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
+    if (_bubblesTableView.contentSize.height)
+    {
+        // Check whether the most recent message is visible.
+        // Compute the max vertical position visible according to contentOffset
+        CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+        // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
+        maxPositionY += 30;
+        BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
+        
+        // Consider the table view at the bottom if a scrolling to bottom is in progress too
+        return (isScrolledToBottom || isScrollingToBottom);
+    }
     
-    // Consider the table view at the bottom if a scrolling to bottom is in progress too
-    return (isScrolledToBottom || isScrollingToBottom);
+    return NO;
 }
 
 - (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated
@@ -1679,7 +1687,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         }
         else
         {
-            _bubblesTableView.contentOffset = CGPointMake(0, -_bubblesTableView.contentInset.top);
+            [_bubblesTableView setContentOffset:CGPointMake(0, -_bubblesTableView.contentInset.top) animated:animated];
         }
     }
 }
@@ -1769,9 +1777,18 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                            MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
                                            CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
                                            
+                                           CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom;
+                                           
                                            CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                           contentOffset.y += topPositionOfEvent - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom) / 2;
-                                           _bubblesTableView.contentOffset = contentOffset;
+                                           contentOffset.y += topPositionOfEvent - lastVisibleContentRowOffset / 2;
+                                           
+                                           // Sanity check
+                                           if (contentOffset.y + lastVisibleContentRowOffset > _bubblesTableView.contentSize.height)
+                                           {
+                                               contentOffset.y = _bubblesTableView.contentSize.height - lastVisibleContentRowOffset;
+                                           }
+                                           
+                                           [_bubblesTableView setContentOffset:contentOffset animated:NO];
                                        }
                                        
                                        // Update the read receipt and potentially the read marker.
@@ -2177,7 +2194,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     CGPoint contentOffset = _bubblesTableView.contentOffset;
                     contentOffset.y = contentOffsetY;
-                    _bubblesTableView.contentOffset = contentOffset;
+                    [_bubblesTableView setContentOffset:contentOffset animated:NO];
                 }
                 
                 if (cellTmp && [cellTmp conformsToProtocol:@protocol(MXKCellRendering)] && [cellTmp respondsToSelector:@selector(didEndDisplay)])
@@ -2406,7 +2423,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Resetting the contentOffset after the reload fixes the issue.
     if (hasScrolledToTheBottom == NO)
     {
-        self.bubblesTableView.contentOffset = contentOffset;
+        [_bubblesTableView setContentOffset:contentOffset animated:NO];
     }
 }
 
