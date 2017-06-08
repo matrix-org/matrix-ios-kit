@@ -272,4 +272,14 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  */
 - (CGFloat)topPositionOfEvent:(NSString*)eventId;
 
+/**
+ The bottom position of an event in the cell.
+ 
+ A cell can display several events. The method returns the vertical position of the bottom part
+ of a given event in the cell.
+ 
+ @return the y position (in pixel) of the bottom part of the event in the cell.
+ */
+- (CGFloat)bottomPositionOfEvent:(NSString*)eventId;
+
 @end

@@ -249,6 +249,30 @@ static BOOL _disableLongPressGestureOnEvent;
     return topPositionOfEvent;
 }
 
+- (CGFloat)bottomPositionOfEvent:(NSString*)eventId
+{
+    CGFloat bottomPositionOfEvent = self.frame.size.height - self.msgTextViewBottomConstraint.constant;
+    
+    // Parse each component by the end of the array in order to compute the bottom position.
+    NSArray *bubbleComponents = bubbleData.bubbleComponents;
+    NSInteger index = bubbleComponents.count;
+    
+    while (index --)
+    {
+        MXKRoomBubbleComponent *component = bubbleComponents[index];
+        if ([component.event.eventId isEqualToString:eventId])
+        {
+            break;
+        }
+        else
+        {
+            // Update the bottom position
+            bottomPositionOfEvent = component.position.y + self.msgTextViewTopConstraint.constant;
+        }
+    }
+    return bottomPositionOfEvent;
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
