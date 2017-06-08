@@ -1719,6 +1719,29 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     self.keyboardView = nil;
 }
 
+#pragma mark - properties
+
+- (void)setUpdateRoomReadMarker:(BOOL)updateRoomReadMarker
+{
+    if (_updateRoomReadMarker != updateRoomReadMarker)
+    {
+        _updateRoomReadMarker = updateRoomReadMarker;
+        
+        if (updateRoomReadMarker == YES)
+        {
+            if (currentEventIdAtTableBottom)
+            {
+                [self.roomDataSource.room moveReadMarkerToEventId:currentEventIdAtTableBottom];
+            }
+            else
+            {
+                // Look for the last displayed event.
+                [self updateCurrentEventIdAtTableBottom:YES];
+            }
+        }
+    }
+}
+
 #pragma mark - activity indicator
 
 - (void)stopActivityIndicator
