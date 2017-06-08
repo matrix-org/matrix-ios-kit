@@ -99,6 +99,15 @@ extern NSString *const kCmdChangeRoomTopic;
 @property (nonatomic) BOOL updateRoomReadMarker;
 
 /**
+ When the room view controller displays a room data source based on a timeline with an initial event.
+ The bubble table view content is scrolled by default to display the top of this event at the center of the screen
+ the first time it appears.
+ Use this property to force the table view to center its content on the bottom part of the event.
+ Default is NO.
+ */
+@property (nonatomic) BOOL centerBubblesTableViewContentOnTheInitialEventBottom;
+
+/**
  The current title view defined into the view controller.
  */
 @property (nonatomic, readonly) MXKRoomTitleView* titleView;

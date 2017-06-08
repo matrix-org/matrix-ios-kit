@@ -230,6 +230,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     // Scroll to bottom the bubble history at first display
     shouldScrollToBottomOnTableRefresh = YES;
+    
+    // Center the table content on the initial event top by default.
+    _centerBubblesTableViewContentOnTheInitialEventBottom = NO;
 }
 
 - (void)viewDidLoad
@@ -1793,27 +1796,39 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                        // Let iOS put the cell at the top of the table view
                                        [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
                                        
-                                       // Apply an offset to display the top of the targeted component at the center of the screen.
+                                       // Apply an offset to move the targeted component at the center of the screen.
                                        UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+                                       
+                                       CGPoint contentOffset = _bubblesTableView.contentOffset;
+                                       CGFloat firstVisibleContentRowOffset = _bubblesTableView.contentOffset.y + _bubblesTableView.contentInset.top;
+                                       CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom;
+                                       
+                                       CGFloat localPositionOfEvent = 0.0;
+                                       
                                        if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
                                        {
                                            MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-                                           CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
                                            
-                                           CGFloat firstVisibleContentRowOffset = _bubblesTableView.contentOffset.y + _bubblesTableView.contentInset.top;
-                                           CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom;
-                                           
-                                           CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                           contentOffset.y += topPositionOfEvent - (lastVisibleContentRowOffset / 2 - (cell.frame.origin.y - firstVisibleContentRowOffset));
-                                           
-                                           // Sanity check
-                                           if (contentOffset.y + lastVisibleContentRowOffset > _bubblesTableView.contentSize.height)
+                                           if (_centerBubblesTableViewContentOnTheInitialEventBottom)
                                            {
-                                               contentOffset.y = _bubblesTableView.contentSize.height - lastVisibleContentRowOffset;
+                                               localPositionOfEvent = [roomBubbleTableViewCell bottomPositionOfEvent:roomDataSource.timeline.initialEventId];
                                            }
-                                           
-                                           [_bubblesTableView setContentOffset:contentOffset animated:NO];
+                                           else
+                                           {
+                                               localPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
+                                           }
                                        }
+                                       
+                                       contentOffset.y += localPositionOfEvent - (lastVisibleContentRowOffset / 2 - (cell.frame.origin.y - firstVisibleContentRowOffset));
+                                       
+                                       // Sanity check
+                                       if (contentOffset.y + lastVisibleContentRowOffset > _bubblesTableView.contentSize.height)
+                                       {
+                                           contentOffset.y = _bubblesTableView.contentSize.height - lastVisibleContentRowOffset;
+                                       }
+                                       
+                                       [_bubblesTableView setContentOffset:contentOffset animated:NO];
+                                       
                                        
                                        // Update the read receipt and potentially the read marker.
                                        [self updateCurrentEventIdAtTableBottom:YES];
