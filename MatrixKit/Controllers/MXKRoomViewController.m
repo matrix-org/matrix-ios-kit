@@ -1769,18 +1769,19 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                                        // Let iOS put the cell at the top of the table view
                                        [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-
-                                       // And apply an offset to display the top of the targeted component at the center of the screen
+                                       
+                                       // Apply an offset to display the top of the targeted component at the center of the screen.
                                        UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
                                        if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
                                        {
                                            MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
                                            CGFloat topPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
                                            
+                                           CGFloat firstVisibleContentRowOffset = _bubblesTableView.contentOffset.y + _bubblesTableView.contentInset.top;
                                            CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom;
                                            
                                            CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                           contentOffset.y += topPositionOfEvent - lastVisibleContentRowOffset / 2;
+                                           contentOffset.y += topPositionOfEvent - (lastVisibleContentRowOffset / 2 - (cell.frame.origin.y - firstVisibleContentRowOffset));
                                            
                                            // Sanity check
                                            if (contentOffset.y + lastVisibleContentRowOffset > _bubblesTableView.contentSize.height)
