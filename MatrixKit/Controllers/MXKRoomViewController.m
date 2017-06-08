@@ -1856,7 +1856,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 - (void)triggerPagination:(NSUInteger)limit direction:(MXTimelineDirection)direction
 {
     // Paginate only if possible
-    if (isPaginationInProgress || NO == [roomDataSource.timeline canPaginate:direction])
+    if (isPaginationInProgress || roomDataSource.state != MXKDataSourceStateReady || NO == [roomDataSource.timeline canPaginate:direction])
     {
         return;
     }
