@@ -359,8 +359,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
         inputToolbarView.textMessage = roomDataSource.partialTextMessage;
     }
-    
-    shouldScrollToBottomOnTableRefresh = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -1665,6 +1663,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         return (isScrolledToBottom || isScrollingToBottom);
     }
     
+    // Here the table view is not ready
     return NO;
 }
 
@@ -1692,6 +1691,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         {
             [_bubblesTableView setContentOffset:CGPointMake(0, -_bubblesTableView.contentInset.top) animated:animated];
         }
+        
+        shouldScrollToBottomOnTableRefresh = NO;
     }
 }
 
