@@ -93,6 +93,11 @@ extern NSString *const kCmdChangeRoomTopic;
 @property (nonatomic) BOOL hasRoomDataSourceOwnership;
 
 /**
+ Tell whether the bubbles table view display is in transition. Its display is not warranty during the transition.
+ */
+@property (nonatomic, getter=isBubbleTableViewDisplayInTransition) BOOL bubbleTableViewDisplayInTransition;
+
+/**
  Tell whether the automatic events acknowledgement (based on read receipt) is enabled.
  Default is YES.
  */

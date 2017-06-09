@@ -272,7 +272,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
         {
             // Reload the full table
+            self.bubbleTableViewDisplayInTransition = YES;
             [self reloadBubblesTable:YES];
+            self.bubbleTableViewDisplayInTransition = NO;
         }
     }];
 }
@@ -298,6 +300,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // so give a breath to scroll to the bottom if required
     if (shouldScrollToBottomOnTableRefresh)
     {
+        self.bubbleTableViewDisplayInTransition = YES;
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self scrollBubblesTableViewToBottomAnimated:NO];
@@ -307,6 +311,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 
                 _bubblesTableView.hidden = NO;
+                self.bubbleTableViewDisplayInTransition = NO;
                 
             });
             
@@ -374,7 +379,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         }
         
         // Force full table refresh to take into account cell width change.
+        self.bubbleTableViewDisplayInTransition = YES;
         [self reloadBubblesTable:YES];
+        self.bubbleTableViewDisplayInTransition = NO;
         
         shouldScrollToBottomOnTableRefresh = NO;
         isSizeTransitionInProgress = NO;
@@ -400,7 +407,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // Force full table refresh to take into account cell width change.
+        self.bubbleTableViewDisplayInTransition = YES;
         [self reloadBubblesTable:YES];
+        self.bubbleTableViewDisplayInTransition = NO;
         
         shouldScrollToBottomOnTableRefresh = NO;
         isSizeTransitionInProgress = NO;
@@ -460,9 +469,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Check conditions before scrolling the tableview content when a new keyboard is presented.
     if ((_scrollHistoryToTheBottomOnKeyboardPresentation || [self isBubblesTableScrollViewAtTheBottom]) && !super.keyboardHeight && keyboardHeight && !currentAlert)
     {
+        self.bubbleTableViewDisplayInTransition = YES;
+        
         // Force here the layout update to scroll correctly the table content.
         [self.view layoutIfNeeded];
         [self scrollBubblesTableViewToBottomAnimated:NO];
+        
+        self.bubbleTableViewDisplayInTransition = NO;
     }
     else
     {
@@ -1655,7 +1668,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             if (wantedOffsetY != currentOffsetY)
             {
                 isScrollingToBottom = YES;
+                BOOL savedBubbleTableViewDisplayInTransition = self.isBubbleTableViewDisplayInTransition;
+                self.bubbleTableViewDisplayInTransition = YES;
                 [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
+                self.bubbleTableViewDisplayInTransition = savedBubbleTableViewDisplayInTransition;
             }
             else
             {
@@ -1700,6 +1716,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 }
 
 #pragma mark - properties
+
+- (void)setBubbleTableViewDisplayInTransition:(BOOL)bubbleTableViewDisplayInTransition
+{
+    if (_bubbleTableViewDisplayInTransition != bubbleTableViewDisplayInTransition)
+    {
+        _bubbleTableViewDisplayInTransition = bubbleTableViewDisplayInTransition;
+        
+        [self updateCurrentEventIdAtTableBottom:YES];
+    }
+}
 
 - (void)setUpdateRoomReadMarker:(BOOL)updateRoomReadMarker
 {
@@ -1761,6 +1787,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                    // Stop spinner
                                    isPaginationInProgress = NO;
                                    [self stopActivityIndicator];
+                                   
+                                   self.bubbleTableViewDisplayInTransition = YES;
 
                                    // Reload table
                                    [self reloadBubblesTable:YES];
@@ -1810,15 +1838,21 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                        // Update the read receipt and potentially the read marker.
                                        [self updateCurrentEventIdAtTableBottom:YES];
                                    }
+                                   
+                                   self.bubbleTableViewDisplayInTransition = NO;
                                }
                                failure:^(NSError *error) {
 
                                    // Stop spinner
                                    isPaginationInProgress = NO;
                                    [self stopActivityIndicator];
+                                   
+                                   self.bubbleTableViewDisplayInTransition = YES;
 
                                    // Reload table
                                    [self reloadBubblesTable:YES];
+                                   
+                                   self.bubbleTableViewDisplayInTransition = NO;
 
                                }];
 }
@@ -1879,6 +1913,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
         // Trigger a full table reload. We could not only insert new cells related to pagination,
         // because some other changes may have been ignored during pagination (see[dataSource:didCellChange:]).
+        self.bubbleTableViewDisplayInTransition = YES;
 
         // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
         [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
@@ -1908,6 +1943,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
         [self.bubblesTableView setScrollEnabled:YES];
 
+        self.bubbleTableViewDisplayInTransition = NO;
         isPaginationInProgress = NO;
 
         // Force the update of the current visual position
@@ -1919,11 +1955,15 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
     } failure:^(NSError *error) {
         
+        self.bubbleTableViewDisplayInTransition = YES;
+        
         // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
         isPaginationInProgress = NO;
         _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
         
         [self reloadBubblesTable:NO];
+        
+        self.bubbleTableViewDisplayInTransition = NO;
         
     }];
 }
@@ -1963,8 +2003,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
                 // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+                self.bubbleTableViewDisplayInTransition = YES;
                 isPaginationInProgress = NO;
                 [self reloadBubblesTable:YES];
+                self.bubbleTableViewDisplayInTransition = NO;
                 
                 // Done
                 return;
@@ -1977,15 +2019,19 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         {
             // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
             // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+            self.bubbleTableViewDisplayInTransition = YES;
             isPaginationInProgress = NO;
             [self reloadBubblesTable:YES];
+            self.bubbleTableViewDisplayInTransition = NO;
         }
         
     } failure:^(NSError *error) {
         
         // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
+        self.bubbleTableViewDisplayInTransition = YES;
         isPaginationInProgress = NO;
         [self reloadBubblesTable:YES];
+        self.bubbleTableViewDisplayInTransition = NO;
         
         if (attachmentsViewer)
         {
@@ -2238,7 +2284,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 - (void)updateCurrentEventIdAtTableBottom:(BOOL)acknowledge
 {
     // Update the identifier of the event displayed at the bottom of the table, except if a rotation or other size transition is in progress.
-    if (! isSizeTransitionInProgress)
+    if (!isSizeTransitionInProgress && !self.isBubbleTableViewDisplayInTransition)
     {
         // Compute the content offset corresponding to the line displayed at the table bottom (just above the toolbar).
         CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
@@ -2429,6 +2475,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
         [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
     }
+    
+    self.bubbleTableViewDisplayInTransition = YES;
 
     CGPoint contentOffset = self.bubblesTableView.contentOffset;
 
@@ -2441,6 +2489,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         [_bubblesTableView setContentOffset:contentOffset animated:NO];
     }
+    
+    self.bubbleTableViewDisplayInTransition = NO;
 }
 
 - (void)dataSource:(MXKDataSource *)dataSource didStateChange:(MXKDataSourceState)state
