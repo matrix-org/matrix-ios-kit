@@ -93,6 +93,12 @@ extern NSString *const kCmdChangeRoomTopic;
 @property (nonatomic) BOOL hasRoomDataSourceOwnership;
 
 /**
+ Tell whether the automatic events acknowledgement (based on read receipt) is enabled.
+ Default is YES.
+ */
+@property (nonatomic, getter=isEventsAcknowledgementEnabled) BOOL eventsAcknowledgementEnabled;
+
+/**
  Tell whether the room read marker must be updated when an event is acknowledged with a read receipt.
  Default is NO.
  */

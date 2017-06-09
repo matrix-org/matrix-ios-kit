@@ -178,30 +178,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 #pragma mark -
 
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+- (void)finalizeInit
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self)
-    {
-        [self applyDefaultConfig];
-    }
+    [super finalizeInit];
     
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self)
-    {
-        [self applyDefaultConfig];
-    }
+    // Scroll to bottom the bubble history at first display
+    shouldScrollToBottomOnTableRefresh = YES;
     
-    return self;
-}
-
-- (void)applyDefaultConfig
-{
     // Default pagination settings
     _paginationThreshold = 300;
     _paginationLimit = 30;
@@ -211,28 +194,21 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     // Enable auto join option by default
     _autoJoinInvitedRoom = YES;
-
+    
     // Do not take ownership of room data source by default
     _hasRoomDataSourceOwnership = NO;
+    
+    // Turn on the automatic events acknowledgement.
+    _eventsAcknowledgementEnabled = YES;
     
     // Do not update the read marker by default.
     _updateRoomReadMarker = NO;
     
-    // Scroll to the bottom when a keyboard is presented
-    _scrollHistoryToTheBottomOnKeyboardPresentation = YES;
-}
-
-#pragma mark -
-
-- (void)finalizeInit
-{
-    [super finalizeInit];
-    
-    // Scroll to bottom the bubble history at first display
-    shouldScrollToBottomOnTableRefresh = YES;
-    
     // Center the table content on the initial event top by default.
     _centerBubblesTableViewContentOnTheInitialEventBottom = NO;
+    
+    // Scroll to the bottom when a keyboard is presented
+    _scrollHistoryToTheBottomOnKeyboardPresentation = YES;
 }
 
 - (void)viewDidLoad
@@ -2334,7 +2310,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                         
                         if (currentEventIdAtTableBottom)
                         {
-                            if (acknowledge)
+                            if (acknowledge && self.isEventsAcknowledgementEnabled)
                             {
                                 // Indicate to the homeserver that the user has read this event.
                                 [self.roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:_updateRoomReadMarker];
