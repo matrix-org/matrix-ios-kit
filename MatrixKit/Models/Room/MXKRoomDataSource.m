@@ -827,7 +827,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (NSInteger)indexOfCellDataWithEventId:(NSString *)eventId
 {
-    NSInteger index;
+    NSInteger index = NSNotFound;
     
     id<MXKRoomBubbleCellDataStoring> bubbleData;
     @synchronized(eventIdToBubbleMap)
@@ -835,9 +835,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         bubbleData = eventIdToBubbleMap[eventId];
     }
     
-    @synchronized(bubbles)
+    if (bubbleData)
     {
-        index = [bubbles indexOfObject:bubbleData];
+        @synchronized(bubbles)
+        {
+            index = [bubbles indexOfObject:bubbleData];
+        }
     }
     
     return index;
