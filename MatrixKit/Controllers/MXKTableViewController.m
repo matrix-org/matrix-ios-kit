@@ -135,7 +135,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
+    NSLog(@"[MXKTableViewController] %@ viewDidAppear", self.class);
+
     // Release properly pushed and/or presented view controller
     if (childViewControllers.count)
     {
@@ -160,6 +162,13 @@
         
         [childViewControllers removeAllObjects];
     }
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+
+    NSLog(@"[MXKTableViewController] %@ viewDidDisappear", self.class);
 }
 
 - (void)setEnableBarTintColorStatusChange:(BOOL)enable
