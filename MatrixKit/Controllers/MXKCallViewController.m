@@ -790,7 +790,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (mxCall.isEstablished)
         return @"callend";
     
-    if (!mxCall.isEstablished && !mxCall.isIncoming && (mxCall.endReason == MXCallEndReasonHangupRemote || mxCall.endReason == MXCallEndReasonTimeout))
+    if (mxCall.endReason == MXCallEndReasonBusy || (!mxCall.isIncoming && mxCall.endReason == MXCallEndReasonMissed))
         return @"busy";
     
     return nil;
