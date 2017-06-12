@@ -628,22 +628,25 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 [audioPlayer stop];
             }
             
-            NSError* error = nil;
-            NSURL *audioUrl;
-            audioUrl = [self audioURLWithName:@"callend"];
-            audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
-            if (error)
+            NSString *soundName = [self soundNameForCallEnding];
+            if (soundName)
             {
-                NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
+                NSError *error = nil;
+                NSURL *audioUrl = [self audioURLWithName:soundName];
+                audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
+                if (error)
+                {
+                    NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
+                }
+                
+                // Listen (audioPlayerDidFinishPlaying) for the end of the playback of "callend"
+                // to release the audio session
+                audioPlayer.delegate = self;
+                
+                audioPlayer.numberOfLoops = 0;
+                [audioPlayer play];
             }
-
-            // Listen (audioPlayerDidFinishPlaying) for the end of the playback of "callend"
-            // to release the audio session
-            audioPlayer.delegate = self;
-
-            audioPlayer.numberOfLoops = 0;
-            [audioPlayer play];
-
+            
             // Except in case of call error, quit the screen right now
             if (!errorAlert)
             {
@@ -777,6 +780,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     
     return isBuiltInReceiverUsed;
+}
+
+- (NSString *)soundNameForCallEnding
+{
+    if (mxCall.endReason == MXCallEndReasonUnknown)
+        return nil;
+    
+    if (mxCall.isEstablished)
+        return @"callend";
+    
+    if (mxCall.endReason == MXCallEndReasonBusy || (!mxCall.isIncoming && mxCall.endReason == MXCallEndReasonMissed))
+        return @"busy";
+    
+    return nil;
 }
 
 #pragma mark - UI methods
