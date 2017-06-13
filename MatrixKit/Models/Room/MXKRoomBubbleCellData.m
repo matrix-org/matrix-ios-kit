@@ -284,6 +284,27 @@
     return first;
 }
 
+- (MXKRoomBubbleComponent*) getFirstBubbleComponentWithDisplay
+{
+    // Look for the first component which is actually displayed (some event are ignored in room history display).
+    MXKRoomBubbleComponent* first = nil;
+    
+    @synchronized(bubbleComponents)
+    {
+        for (NSInteger index = 0; index < bubbleComponents.count; index++)
+        {
+            MXKRoomBubbleComponent *component = bubbleComponents[index];
+            if (component.attributedTextMessage)
+            {
+                first = component;
+                break;
+            }
+        }
+    }
+    
+    return first;
+}
+
 - (NSAttributedString*)attributedTextMessageWithHighlightedEvent:(NSString*)eventId tintColor:(UIColor*)tintColor
 {
     NSAttributedString *customAttributedTextMsg;
@@ -296,7 +317,7 @@
         customAttributedTextMsg = firstComponent.attributedTextMessage;
         
         // Sanity check
-        if ([firstComponent.event.eventId isEqualToString:eventId])
+        if (customAttributedTextMsg && [firstComponent.event.eventId isEqualToString:eventId])
         {
             NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:customAttributedTextMsg];
             UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
@@ -457,13 +478,12 @@
 - (BOOL)shouldHideSenderName
 {
     BOOL res = NO;
-
-    // Consider the first component
-    MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
     
-    if (firstComponent)
+    MXKRoomBubbleComponent *firstDisplayedComponent = [self getFirstBubbleComponentWithDisplay];
+    
+    if (firstDisplayedComponent)
     {
-        res = (firstComponent.event.isEmote || (firstComponent.event.isState && [firstComponent.textMessage hasPrefix:senderDisplayName]));
+        res = (firstDisplayedComponent.event.isEmote || (firstDisplayedComponent.event.isState && [firstDisplayedComponent.textMessage hasPrefix:senderDisplayName]));
     }
     
     return res;
@@ -489,11 +509,11 @@
 
 - (NSDate*)date
 {
-    MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
+    MXKRoomBubbleComponent *firstDisplayedComponent = [self getFirstBubbleComponentWithDisplay];
     
-    if (firstComponent)
+    if (firstDisplayedComponent)
     {
-        return firstComponent.date;
+        return firstDisplayedComponent.date;
     }
     
     return nil;

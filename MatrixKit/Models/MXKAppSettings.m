@@ -150,26 +150,8 @@ static MXKAppSettings *standardAppSettings = nil;
 {
     if (showAllEventsInRoomHistory)
     {
-        // Use a filter to retrieve all the events (except kMXEventTypeStringPresence which are not related to a specific room)
-        return @[
-                 kMXEventTypeStringRoomName,
-                 kMXEventTypeStringRoomTopic,
-                 kMXEventTypeStringRoomMember,
-                 kMXEventTypeStringRoomCreate,
-                 kMXEventTypeStringRoomEncrypted,
-                 kMXEventTypeStringRoomEncryption,
-                 kMXEventTypeStringRoomJoinRules,
-                 kMXEventTypeStringRoomPowerLevels,
-                 kMXEventTypeStringRoomAliases,
-                 kMXEventTypeStringRoomHistoryVisibility,
-                 kMXEventTypeStringRoomMessage,
-                 kMXEventTypeStringRoomMessageFeedback,
-                 kMXEventTypeStringRoomRedaction,
-                 kMXEventTypeStringRoomThirdPartyInvite,
-                 kMXEventTypeStringCallInvite,
-                 kMXEventTypeStringCallAnswer,
-                 kMXEventTypeStringCallHangup
-                 ];
+        // Consider all the event types
+        return self.allEventTypesForMessages;
     }
     else
     {
@@ -188,6 +170,30 @@ static MXKAppSettings *standardAppSettings = nil;
                  kMXEventTypeStringCallHangup
                  ];
     }
+}
+
+- (NSArray *)allEventTypesForMessages
+{
+    // List all the event types, except kMXEventTypeStringPresence which are not related to a specific room.
+    return @[
+             kMXEventTypeStringRoomName,
+             kMXEventTypeStringRoomTopic,
+             kMXEventTypeStringRoomMember,
+             kMXEventTypeStringRoomCreate,
+             kMXEventTypeStringRoomEncrypted,
+             kMXEventTypeStringRoomEncryption,
+             kMXEventTypeStringRoomJoinRules,
+             kMXEventTypeStringRoomPowerLevels,
+             kMXEventTypeStringRoomAliases,
+             kMXEventTypeStringRoomHistoryVisibility,
+             kMXEventTypeStringRoomMessage,
+             kMXEventTypeStringRoomMessageFeedback,
+             kMXEventTypeStringRoomRedaction,
+             kMXEventTypeStringRoomThirdPartyInvite,
+             kMXEventTypeStringCallInvite,
+             kMXEventTypeStringCallAnswer,
+             kMXEventTypeStringCallHangup
+             ];
 }
 
 - (BOOL)showRedactionsInRoomHistory

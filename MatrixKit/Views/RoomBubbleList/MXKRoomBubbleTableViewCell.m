@@ -639,7 +639,7 @@ static BOOL _disableLongPressGestureOnEvent;
     
     MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
     MXKRoomBubbleTableViewCell* cell = [self cellWithOriginalXib];
-    CGFloat rowHeight = 0;
+    CGFloat rowHeight = cell.frame.size.height;
     
     if (cell.attachmentView && bubbleData.isAttachmentWithThumbnail)
     {

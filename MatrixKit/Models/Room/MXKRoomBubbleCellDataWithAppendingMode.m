@@ -126,23 +126,26 @@ static NSAttributedString *messageSeparator = nil;
         {
             componentString = component.attributedTextMessage;
             
-            if ([component.event.eventId isEqualToString:eventId])
+            if (componentString)
             {
-                NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
-                UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
-                [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
-                componentString = customComponentString;
-            }
-            
-            if (!customAttributedTextMsg)
-            {
-                customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
-            }
-            else
-            {
-                // Append attributed text
-                [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-                [customAttributedTextMsg appendAttributedString:componentString];
+                if ([component.event.eventId isEqualToString:eventId])
+                {
+                    NSMutableAttributedString *customComponentString = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+                    UIColor *color = tintColor ? tintColor : [UIColor lightGrayColor];
+                    [customComponentString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, customComponentString.length)];
+                    componentString = customComponentString;
+                }
+                
+                if (!customAttributedTextMsg)
+                {
+                    customAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:componentString];
+                }
+                else
+                {
+                    // Append attributed text
+                    [customAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                    [customAttributedTextMsg appendAttributedString:componentString];
+                }
             }
         }
     }
@@ -162,26 +165,50 @@ static NSAttributedString *messageSeparator = nil;
         // Check whether the position of other components need to be refreshed
         if (!self.attachment && shouldUpdateComponentsPosition && bubbleComponents.count > 1)
         {
-            // Init attributed string with the first text component
-            MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
-            [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+            // Init attributed string with the first text component not nil.
+            MXKRoomBubbleComponent *component = bubbleComponents.firstObject;
+            CGFloat positionY = component.position.y;
+            NSMutableAttributedString *attributedString;
+            NSUInteger index = 0;
             
-            for (NSUInteger index = 1; index < bubbleComponents.count; index++)
+            for (; index < bubbleComponents.count; index++)
             {
-                // Append the next text component
                 component = [bubbleComponents objectAtIndex:index];
-                [attributedString appendAttributedString:component.attributedTextMessage];
-                
-                // Compute the height of the resulting string
-                CGFloat cumulatedHeight = [self rawTextHeight:attributedString];
-                
-                // Deduce the position of the beginning of this component
-                CGFloat positionY = MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET + (cumulatedHeight - [self rawTextHeight:component.attributedTextMessage]);
                 
                 component.position = CGPointMake(0, positionY);
                 
-                [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                if (component.attributedTextMessage)
+                {
+                    attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+                    [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                    break;
+                }
+            }
+            
+            for (; index < bubbleComponents.count; index++)
+            {
+                // Append the next text component
+                component = [bubbleComponents objectAtIndex:index];
+                
+                if (component.attributedTextMessage)
+                {
+                    [attributedString appendAttributedString:component.attributedTextMessage];
+                    
+                    // Compute the height of the resulting string
+                    CGFloat cumulatedHeight = [self rawTextHeight:attributedString];
+                    
+                    // Deduce the position of the beginning of this component
+                    CGFloat positionY = MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET + (cumulatedHeight - [self rawTextHeight:component.attributedTextMessage]);
+                    
+                    component.position = CGPointMake(0, positionY);
+                    
+                    [attributedString appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                }
+                else
+                {
+                    // Apply the current vertical position on this empty component.
+                    component.position = CGPointMake(0, positionY);
+                }
             }
         }
     }
@@ -240,15 +267,18 @@ static NSAttributedString *messageSeparator = nil;
             
             for (MXKRoomBubbleComponent* component in bubbleComponents)
             {
-                if (!currentAttributedTextMsg)
+                if (component.attributedTextMessage)
                 {
-                    currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
-                }
-                else
-                {
-                    // Append attributed text
-                    [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
-                    [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
+                    if (!currentAttributedTextMsg)
+                    {
+                        currentAttributedTextMsg = [[NSMutableAttributedString alloc] initWithAttributedString:component.attributedTextMessage];
+                    }
+                    else
+                    {
+                        // Append attributed text
+                        [currentAttributedTextMsg appendAttributedString:[MXKRoomBubbleCellDataWithAppendingMode messageSeparator]];
+                        [currentAttributedTextMsg appendAttributedString:component.attributedTextMessage];
+                    }
                 }
             }
             self.attributedTextMessage = currentAttributedTextMsg;

@@ -37,11 +37,15 @@
 @property (nonatomic) BOOL showAllEventsInRoomHistory;
 
 /**
- The type of events to display allowed to be displayed in room history.
- 
+ The types of events allowed to be displayed in room history.
  Its value depends on `showAllEventsInRoomHistory`.
  */
 @property (nonatomic, readonly) NSArray *eventsFilterForMessages;
+
+/**
+ All the event types which may be displayed in the room history.
+ */
+@property (nonatomic, readonly) NSArray *allEventTypesForMessages;
 
 /**
  Display redacted events in room history.

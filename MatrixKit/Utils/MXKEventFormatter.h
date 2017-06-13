@@ -105,9 +105,17 @@ typedef enum : NSUInteger {
 - (void)initDateTimeFormatters;
 
 /**
+ The types of events allowed to be displayed in the room history.
+ No string will be returned by the formatter for the events whose the type doesn't belong to this array.
+ 
+ Default is nil. All messages types are displayed.
+ */
+@property (nonatomic) NSArray<NSString*> *eventTypesFilterForMessages;
+
+/**
  Checks whether the event is related to an attachment and if it is supported.
 
- @param event
+ @param event an event.
  @return YES if the provided event is related to a supported attachment type.
  */
 - (BOOL)isSupportedAttachment:(MXEvent*)event;

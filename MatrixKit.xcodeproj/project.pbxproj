@@ -99,6 +99,8 @@
 		F05FB1811AD6643900DC0647 /* MXKRoomMemberTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB17F1AD6643900DC0647 /* MXKRoomMemberTableViewCell.m */; };
 		F05FB1821AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F05FB1801AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib */; };
 		F066F5231B2B130A00835880 /* MatrixKitAssets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F066F5221B2B130A00835880 /* MatrixKitAssets.bundle */; };
+		F06CDD5F1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F06CDD5D1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m */; };
+		F06CDD601EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F06CDD5E1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib */; };
 		F06E76811AF0FEB100980E5A /* MXKAuthenticationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E767F1AF0FEB100980E5A /* MXKAuthenticationViewController.m */; };
 		F06E76821AF0FEB100980E5A /* MXKAuthenticationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F06E76801AF0FEB100980E5A /* MXKAuthenticationViewController.xib */; };
 		F06E76881AF0FEBC00980E5A /* MXKAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76851AF0FEBC00980E5A /* MXKAccount.m */; };
@@ -380,6 +382,9 @@
 		F05FB17F1AD6643900DC0647 /* MXKRoomMemberTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomMemberTableViewCell.m; sourceTree = "<group>"; };
 		F05FB1801AD6643900DC0647 /* MXKRoomMemberTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomMemberTableViewCell.xib; sourceTree = "<group>"; };
 		F066F5221B2B130A00835880 /* MatrixKitAssets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MatrixKitAssets.bundle; sourceTree = "<group>"; };
+		F06CDD5C1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomEmptyBubbleTableViewCell.h; sourceTree = "<group>"; };
+		F06CDD5D1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomEmptyBubbleTableViewCell.m; sourceTree = "<group>"; };
+		F06CDD5E1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomEmptyBubbleTableViewCell.xib; sourceTree = "<group>"; };
 		F06E767E1AF0FEB100980E5A /* MXKAuthenticationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAuthenticationViewController.h; sourceTree = "<group>"; };
 		F06E767F1AF0FEB100980E5A /* MXKAuthenticationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAuthenticationViewController.m; sourceTree = "<group>"; };
 		F06E76801AF0FEB100980E5A /* MXKAuthenticationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKAuthenticationViewController.xib; sourceTree = "<group>"; };
@@ -786,6 +791,9 @@
 			children = (
 				328AC4841AA75E000044A6FB /* MXKRoomBubbleTableViewCell.h */,
 				328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */,
+				F06CDD5C1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.h */,
+				F06CDD5D1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m */,
+				F06CDD5E1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib */,
 				328AC4871AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.h */,
 				328AC4881AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m */,
 				F00FA8531C0864FA00E25826 /* MXKRoomIncomingTextMsgBubbleCell.h */,
@@ -1324,6 +1332,7 @@
 				F0CF98CA1B0B63B900EAE373 /* MXKAccountDetailsViewController.xib in Resources */,
 				3235CD7C1C32DEBF0084EA40 /* MXKSearchViewController.xib in Resources */,
 				F06E76961AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.xib in Resources */,
+				F06CDD601EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */,
 				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
@@ -1396,7 +1405,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		31DF541766F395AA9A742AC8 /* [CP] Copy Pods Resources */ = {
@@ -1456,7 +1465,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		FC08C2D46757964161ED45BA /* [CP] Embed Pods Frameworks */ = {
@@ -1553,6 +1562,7 @@
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
 				32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */,
 				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
+				F06CDD5F1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				3235CD771C32DC8A0084EA40 /* MXKSearchDataSource.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,

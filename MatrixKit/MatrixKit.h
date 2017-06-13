@@ -103,6 +103,8 @@
 #import "MXKRoomTitleView.h"
 #import "MXKRoomTitleViewWithTopic.h"
 
+#import "MXKRoomEmptyBubbleTableViewCell.h"
+
 #import "MXKRoomIncomingBubbleTableViewCell.h"
 #import "MXKRoomIncomingTextMsgBubbleCell.h"
 #import "MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.h"
