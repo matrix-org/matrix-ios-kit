@@ -559,7 +559,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         case MXCallStateFledgling:
             self.isRinging = NO;
-            callStatusLabel.text = nil;
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_waiting"];;
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
