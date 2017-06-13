@@ -145,12 +145,9 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
 #pragma mark - Configuration
 /**
- The type of events to display as messages.
- */
-@property (nonatomic) NSArray *eventsFilterForMessages;
-
-/**
- The events to display texts formatter.
+ The text formatter applied on the events.
+ By default, the events are filtered according to the value stored in the shared application settings (see [MXKAppSettings standardAppSettings].eventsFilterForMessages).
+ The events whose the type doesn't belong to the this list are not displayed.
  `MXKRoomBubbleCellDataStoring` instances can use it to format text.
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
@@ -209,9 +206,6 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
 /**
  Tell whether only the events with a url key in their content must be handled. NO by default.
- 
- @discussion: When this option is enabled the 'eventsFilterForMessages' array is updated
- and limited to the 'kMXEventTypeStringRoomMessage' type.
  */
 @property (nonatomic) BOOL filterMessagesWithURL;
 

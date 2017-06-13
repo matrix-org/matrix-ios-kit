@@ -103,13 +103,11 @@
         _callNoticesTextFont = [UIFont italicSystemFontOfSize:14];
         _encryptedMessagesTextFont = [UIFont italicSystemFontOfSize:14];
         
-        // Consider the shared app settings by default
-        _settings = [MXKAppSettings standardAppSettings];
-
+        _eventTypesFilterForMessages = nil;
+        
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
-        defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
-        defaultRoomSummaryUpdater.eventsFilterForMessages = _settings.eventsFilterForMessages;
+        defaultRoomSummaryUpdater.ignoreRedactedEvent = ![MXKAppSettings standardAppSettings].showRedactionsInRoomHistory;
     }
     return self;
 }
@@ -127,6 +125,13 @@
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterNoStyle];
     [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
+}
+
+- (void)setEventTypesFilterForMessages:(NSArray<NSString *> *)eventTypesFilterForMessages
+{
+    _eventTypesFilterForMessages = eventTypesFilterForMessages;
+    
+    defaultRoomSummaryUpdater.eventsFilterForMessages = eventTypesFilterForMessages;
 }
 
 #pragma mark - Event formatter settings
@@ -313,6 +318,13 @@
     NSParameterAssert(error);
     
     *error = MXKEventFormatterErrorNone;
+    
+    // Filter the events according to their type.
+    if (_eventTypesFilterForMessages && ([_eventTypesFilterForMessages indexOfObject:event.type] == NSNotFound))
+    {
+        // Ignore this event
+        return nil;
+    }
     
     // Check first whether the event has been redacted
     NSString *redactedInfo = nil;

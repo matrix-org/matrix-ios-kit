@@ -29,32 +29,25 @@
         MXKEventFormatterError error;
 
         NSAttributedString *eventString = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
-        if (eventString.length)
+        
+        // Store the potential error
+        event.mxkEventFormatterError = error;
+        
+        _textMessage = nil;
+        _attributedTextMessage = eventString;
+        
+        // Set date time
+        if (event.originServerTs != kMXUndefinedTimestamp)
         {
-            // Store the potential error
-            event.mxkEventFormatterError = error;
-
-            _textMessage = nil;
-            _attributedTextMessage = eventString;
-
-            // Set date time
-            if (event.originServerTs != kMXUndefinedTimestamp)
-            {
-                _date = [NSDate dateWithTimeIntervalSince1970:(double)event.originServerTs/1000];
-            }
-            else
-            {
-                _date = nil;
-            }
-            
-            // Keep ref on event (used in case of redaction)
-            _event = event;
+            _date = [NSDate dateWithTimeIntervalSince1970:(double)event.originServerTs/1000];
         }
         else
         {
-            // Ignore this event
-            self = nil;
+            _date = nil;
         }
+        
+        // Keep ref on event (used to handle the read marker, or a potential event redaction).
+        _event = event;
     }
     return self;
 }

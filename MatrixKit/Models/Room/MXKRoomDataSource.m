@@ -144,6 +144,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         // Set default MXEvent -> NSString formatter
         self.eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
+        // Apply here the event types filter to display only the wanted event types.
+        self.eventFormatter.eventTypesFilterForMessages = [MXKAppSettings standardAppSettings].eventsFilterForMessages;
         
         // display the read receips by default
         self.showBubbleReceipts = YES;
@@ -160,9 +162,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         _maxBackgroundCachedBubblesCount = MXKROOMDATASOURCE_CACHED_BUBBLES_COUNT_THRESHOLD;
         _paginationLimitAroundInitialEvent = MXKROOMDATASOURCE_PAGINATION_LIMIT_AROUND_INITIAL_EVENT;
-        
-        // Check here whether the app user wants to display all the events
-        self.eventsFilterForMessages = [MXKAppSettings standardAppSettings].eventsFilterForMessages;
 
         // Observe UIApplicationSignificantTimeChangeNotification to refresh bubbles if date/time are shown.
         // UIApplicationSignificantTimeChangeNotification is posted if DST is updated, carrier time is updated
@@ -429,8 +428,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         
                     }];
 
-                    // Force to set the filter at the MXRoom level
-                    self.eventsFilterForMessages = _eventsFilterForMessages;
+                    // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter).
+                    [self refreshEventListeners:[MXKAppSettings standardAppSettings].allEventTypesForMessages];
 
                     // display typing notifications is optional
                     // the inherited class can manage them by its own.
@@ -463,8 +462,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Less things need to configured
                     _timeline = [_room timelineOnEvent:initialEventId];
 
-                    // Force to set the filter at the MXRoom level
-                    self.eventsFilterForMessages = _eventsFilterForMessages;
+                    // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter).
+                    [self refreshEventListeners:[MXKAppSettings standardAppSettings].allEventTypesForMessages];
 
                     // Preload the state and some messages around the initial event
                     [_timeline resetPaginationAroundInitialEventWithLimit:_paginationLimitAroundInitialEvent success:^{
@@ -538,9 +537,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     _room.partialTextMessage = partialTextMessage;
 }
 
-- (void)setEventsFilterForMessages:(NSArray *)eventsFilterForMessages
+- (void)refreshEventListeners:(NSArray *)liveEventTypesFilterForMessages
 {
-    // Remove the previous live listener
+    // Remove the existing listeners
     if (liveEventsListener)
     {
         [_timeline removeListener:liveEventsListener];
@@ -552,9 +551,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // Events for past timelines come only from pagination request
     if (_isLive)
     {
-        // And register a new one with the requested filter
-        _eventsFilterForMessages = [eventsFilterForMessages copy];
-        liveEventsListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+        // Register a new one with the requested filter
+        liveEventsListener = [_timeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
             if (MXTimelineDirectionForwards == direction)
             {
                 // Check for local echo suppression
@@ -678,7 +676,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     if (filterMessagesWithURL)
     {
-        self.eventsFilterForMessages = @[kMXEventTypeStringRoomMessage];
+        [self refreshEventListeners:@[kMXEventTypeStringRoomMessage]];
     }
 }
 
@@ -895,7 +893,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     // Define a new listener for this pagination
-    paginationListener = [_timeline listenToEventsOfTypes:_eventsFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+    paginationListener = [_timeline listenToEventsOfTypes:[MXKAppSettings standardAppSettings].allEventTypesForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
         
         if (direction2 == direction)
         {
@@ -1523,7 +1521,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     id<MXKRoomBubbleCellDataStoring> firstCellData = bubbles.firstObject;
                     
                     firstCellData.isPaginationFirstBubble = ((self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay) && firstCellData.date);
-                    firstCellData.shouldHideSenderInformation = NO;
+                    
+                    // Keep visible the sender information by default,
+                    // except if the bubble has no display (composed only by ignored events).
+                    firstCellData.shouldHideSenderInformation = firstCellData.hasNoDisplay;
                 }
                 else if (index < bubbles.count)
                 {
@@ -1566,8 +1567,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         }
                         
                         // Check whether the sender information is relevant for this bubble.
-                        cellData2.shouldHideSenderInformation = NO;
-                        if (cellData2.isPaginationFirstBubble == NO)
+                        // Check first if the bubble is not composed only by ignored events.
+                        cellData2.shouldHideSenderInformation = cellData2.hasNoDisplay;
+                        if (!cellData2.shouldHideSenderInformation && cellData2.isPaginationFirstBubble == NO)
                         {
                             // Check whether the neighbor bubbles have been sent by the same user.
                             cellData2.shouldHideSenderInformation = [cellData2 hasSameSenderAsBubbleCellData:cellData1];
@@ -1996,18 +1998,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     bubbleData.isPaginationFirstBubble = NO;
                                 }
 
-                                // Sender information are required for this new first bubble data
-                                bubbleData.shouldHideSenderInformation = NO;
+                                // Sender information are required for this new first bubble data,
+                                // except if the bubble has no display (composed only by ignored events).
+                                bubbleData.shouldHideSenderInformation = bubbleData.hasNoDisplay;
 
                                 // Check whether this information is relevant for the current first bubble.
-                                if (bubblesSnapshot.count)
+                                if (!bubbleData.shouldHideSenderInformation && bubblesSnapshot.count)
                                 {
                                     id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
 
                                     if (previousFirstBubbleData.isPaginationFirstBubble == NO)
                                     {
                                         // Check whether the current first bubble has been sent by the same user.
-                                        previousFirstBubbleData.shouldHideSenderInformation = [previousFirstBubbleData hasSameSenderAsBubbleCellData:bubbleData];
+                                        previousFirstBubbleData.shouldHideSenderInformation |= [previousFirstBubbleData hasSameSenderAsBubbleCellData:bubbleData];
                                     }
                                 }
 
@@ -2056,8 +2059,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
 
                                 // Check whether the sender information is relevant for this new bubble.
-                                bubbleData.shouldHideSenderInformation = NO;
-                                if (bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
+                                bubbleData.shouldHideSenderInformation = bubbleData.hasNoDisplay;
+                                if (!bubbleData.shouldHideSenderInformation && bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
                                 {
                                     // Check whether the previous bubble has been sent by the same user.
                                     id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot.lastObject;

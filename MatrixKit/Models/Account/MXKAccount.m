@@ -1025,16 +1025,17 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Apply first the event filter defined in the related room data source
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:mxSession];
         MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:event.roomId create:NO];
-        if (!roomDataSource || [roomDataSource.eventsFilterForMessages indexOfObject:event.type] == NSNotFound)
-        {
-            // Ignore
-            return;
-        }
         
-        // Check conditions to report this notification
-        if (nil == ignoredRooms || [ignoredRooms indexOfObject:event.roomId] == NSNotFound)
+        if (roomDataSource)
         {
-            onNotification(event, roomState, rule);
+            if (!roomDataSource.eventFormatter.eventTypesFilterForMessages || [roomDataSource.eventFormatter.eventTypesFilterForMessages indexOfObject:event.type] != NSNotFound)
+            {
+                // Check conditions to report this notification
+                if (nil == ignoredRooms || [ignoredRooms indexOfObject:event.roomId] == NSNotFound)
+                {
+                    onNotification(event, roomState, rule);
+                }
+            }
         }
     }];
 }
