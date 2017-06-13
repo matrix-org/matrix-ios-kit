@@ -26,7 +26,7 @@
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
 @synthesize textMessage, attributedTextMessage;
-@synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton;
+@synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton, hasNoDisplay;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
@@ -517,6 +517,11 @@
     }
     
     return nil;
+}
+
+- (BOOL)hasNoDisplay
+{
+    return (self.attributedTextMessage == nil && !attachment);
 }
 
 - (BOOL)isAttachmentWithThumbnail

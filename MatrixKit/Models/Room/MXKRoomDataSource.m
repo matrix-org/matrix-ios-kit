@@ -1522,8 +1522,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     
                     firstCellData.isPaginationFirstBubble = ((self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay) && firstCellData.date);
                     
-                    // Keep visible the sender information by default, except if the bubble is composed only by ignored events.
-                    firstCellData.shouldHideSenderInformation = (firstCellData.attributedTextMessage == nil);
+                    // Keep visible the sender information by default,
+                    // except if the bubble has no display (composed only by ignored events).
+                    firstCellData.shouldHideSenderInformation = firstCellData.hasNoDisplay;
                 }
                 else if (index < bubbles.count)
                 {
@@ -1567,7 +1568,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         
                         // Check whether the sender information is relevant for this bubble.
                         // Check first if the bubble is not composed only by ignored events.
-                        cellData2.shouldHideSenderInformation = (cellData2.attributedTextMessage == nil);
+                        cellData2.shouldHideSenderInformation = cellData2.hasNoDisplay;
                         if (!cellData2.shouldHideSenderInformation && cellData2.isPaginationFirstBubble == NO)
                         {
                             // Check whether the neighbor bubbles have been sent by the same user.
@@ -1998,8 +1999,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
 
                                 // Sender information are required for this new first bubble data,
-                                // except if the bubble is composed only by ignored events.
-                                bubbleData.shouldHideSenderInformation = (bubbleData.attributedTextMessage == nil);
+                                // except if the bubble has no display (composed only by ignored events).
+                                bubbleData.shouldHideSenderInformation = bubbleData.hasNoDisplay;
 
                                 // Check whether this information is relevant for the current first bubble.
                                 if (!bubbleData.shouldHideSenderInformation && bubblesSnapshot.count)
@@ -2058,7 +2059,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
 
                                 // Check whether the sender information is relevant for this new bubble.
-                                bubbleData.shouldHideSenderInformation = (bubbleData.attributedTextMessage == nil);
+                                bubbleData.shouldHideSenderInformation = bubbleData.hasNoDisplay;
                                 if (!bubbleData.shouldHideSenderInformation && bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
                                 {
                                     // Check whether the previous bubble has been sent by the same user.

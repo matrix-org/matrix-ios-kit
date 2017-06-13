@@ -69,6 +69,11 @@
 @property (nonatomic) BOOL shouldHideSenderInformation;
 
 /**
+ Tell whether this bubble has nothing to display (neither a message nor an attachment).
+ */
+@property (nonatomic) BOOL hasNoDisplay;
+
+/**
  The list of events (`MXEvent` instances) handled by this bubble.
  */
 @property (nonatomic, readonly) NSArray *events;
