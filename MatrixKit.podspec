@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'MatrixSDK', '0.7.11'
   s.dependency 'HPGrowingTextView', '~> 1.1'
-  s.dependency 'libPhoneNumber-iOS', '~> 0.8.14'
+  s.dependency 'libPhoneNumber-iOS', '~> 0.9.10'
   s.dependency 'DTCoreText', '~> 1.6.17'
   s.dependency 'cmark', '~> 0.24.1'
 
