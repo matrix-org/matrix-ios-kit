@@ -185,7 +185,7 @@ static NSAttributedString *messageSeparator = nil;
                 }
             }
             
-            for (; index < bubbleComponents.count; index++)
+            for (index++; index < bubbleComponents.count; index++)
             {
                 // Append the next text component
                 component = [bubbleComponents objectAtIndex:index];
