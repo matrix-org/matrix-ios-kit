@@ -566,7 +566,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             [localPreviewActivityView startAnimating];
             break;
         case MXCallStateCreateOffer:
-        case MXCallStateInviteSent:
             self.isRinging = YES;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
             break;
@@ -585,7 +584,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             rejectCallButton.hidden = NO;
             answerCallButton.hidden = NO;
             break;
-        case MXCallStateCreateAnswer:
         case MXCallStateConnecting:
             self.isRinging = NO;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
