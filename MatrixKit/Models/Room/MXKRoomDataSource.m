@@ -1342,14 +1342,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
     if (bubbleData)
     {
-        
         // Then look into the events in this cell
         for (MXEvent *event in bubbleData.events)
         {
-            
             if ([event.eventId isEqualToString:eventId])
             {
-                
                 theEvent = event;
                 break;
             }

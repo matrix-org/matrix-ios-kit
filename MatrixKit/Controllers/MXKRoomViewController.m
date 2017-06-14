@@ -2361,7 +2361,22 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                             if (acknowledge && self.isEventsAcknowledgementEnabled)
                             {
                                 // Indicate to the homeserver that the user has read this event.
-                                [self.roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:_updateRoomReadMarker];
+                                
+                                // Check whether the read marker must be updated.
+                                BOOL updateReadMarker = _updateRoomReadMarker;
+                                if (updateReadMarker && roomDataSource.room.accountData.readMarkerEventId)
+                                {
+                                    MXEvent *currentReadMarkerEvent = [roomDataSource.mxSession.store eventWithEventId:roomDataSource.room.accountData.readMarkerEventId inRoom:roomDataSource.roomId];
+                                    if (!currentReadMarkerEvent)
+                                    {
+                                        currentReadMarkerEvent = [roomDataSource eventWithEventId:roomDataSource.room.accountData.readMarkerEventId];
+                                    }
+                                    
+                                    // Update the read marker only if the current event is available, and the new event is posterior to it.
+                                    updateReadMarker = (currentReadMarkerEvent && (currentReadMarkerEvent.originServerTs <= component.event.originServerTs));
+                                }
+                                
+                                [roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:updateReadMarker];
                             }
                             break;
                         }
