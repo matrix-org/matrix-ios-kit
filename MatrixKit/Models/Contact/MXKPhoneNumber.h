@@ -54,7 +54,7 @@
  Create a new MXKPhoneNumber instance
  
  @param textNumber the phone number
- @param type
+ @param type the phone number type
  @param contactID The identifier of the contact to whom the data belongs to.
  @param matrixID The linked matrix identifier if any.
  */

@@ -151,16 +151,16 @@ typedef enum : NSUInteger {
 /**
  Save the attachment in user's photo library. This operation is available only for images and video.
  
- @param onSuccess
- @param onFailure
+ @param onSuccess the block called on success.
+ @param onFailure the block called on failure.
  */
 - (void)save:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure;
 
 /**
  Copy the attachment data in general pasteboard.
  
- @param onSuccess
- @param onFailure
+ @param onSuccess the block called on success.
+ @param onFailure the block called on failure.
  */
 - (void)copy:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure;
 

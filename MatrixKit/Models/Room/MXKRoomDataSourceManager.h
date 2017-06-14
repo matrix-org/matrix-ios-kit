@@ -96,7 +96,7 @@ typedef enum : NSUInteger {
  Use this method to add a MXKRoomDataSource-inherited instance that cannot be automatically created by
  [MXKRoomDataSourceManager roomDataSourceForRoom: create:].
  
- @param the MXKRoomDataSource-inherited object to the manager scope.
+ @param roomDataSource the MXKRoomDataSource-inherited object to the manager scope.
  */
 - (void)addRoomDataSource:(MXKRoomDataSource*)roomDataSource;
 
@@ -106,7 +106,7 @@ typedef enum : NSUInteger {
  The roomDataSource instance will be actually destroyed according to the current release policy.
 
  @param roomDataSource the data source to release.
- @param forceClose if yes the roomDataSource instance will be destroyed whatever the policy is.
+ @param forceRelease if yes the roomDataSource instance will be destroyed whatever the policy is.
  */
 - (void)closeRoomDataSource:(MXKRoomDataSource*)roomDataSource forceClose:(BOOL)forceRelease;
 

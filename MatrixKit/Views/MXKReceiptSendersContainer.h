@@ -64,7 +64,7 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  This is the designated initializer.
  
  @param frame the container frame. Note that avatar will be displayed in full height in this container.
- @param restClient the REST client used to resize matrix user's avatar.
+ @param restclient the REST client used to resize matrix user's avatar.
  @return The newly-initialized MXKReceiptSendersContainer instance
  */
 - (instancetype)initWithFrame:(CGRect)frame andRestClient:(MXRestClient*)restclient;

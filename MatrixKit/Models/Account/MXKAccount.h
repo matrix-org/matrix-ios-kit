@@ -171,14 +171,14 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  Register the MXKAccountOnCertificateChange block that will be used to handle certificate change during account use.
  This block is nil by default, any new certificate is ignored/untrusted (this will abort the connection to the server).
  
- @param onCertificateChangeBlock
+ @param onCertificateChangeBlock the block that will be used to handle certificate change.
  */
 + (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock;
 
 /**
  Get the color code related to a specific presence.
  
- @param presence
+ @param presence a user presence
  @return color defined for the provided presence (nil if no color is defined).
  */
 + (UIColor*)presenceColor:(MXPresence)presence;
@@ -243,7 +243,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 /**
  Close the potential matrix session and open a new one if the account is not disabled.
  
- @param clearStore set YES to delete all store data.
+ @param clearCache set YES to delete all store data.
  */
 - (void)reload:(BOOL)clearCache;
 
@@ -305,7 +305,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  
  You may use `[MXCAccount updateNotificationListenerForRoomId:]` to disable/enable all notifications from a specific room.
  
- @param listenerBlock the block that will be called once a live event matches a push rule.
+ @param onNotification the block that will be called once a live event matches a push rule.
  */
 - (void)listenToNotifications:(MXOnNotification)onNotification;
 

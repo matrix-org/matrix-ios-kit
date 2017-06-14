@@ -294,11 +294,15 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (NSArray*)matrixContacts
 {
+    NSParameterAssert([NSThread isMainThread]);
+
     return [matrixContactByContactID allValues];
 }
 
 - (NSArray*)localContacts
 {
+    NSParameterAssert([NSThread isMainThread]);
+
     // Return nil if the loading step is in progress.
     if (isLocalContactListRefreshing)
     {
@@ -310,6 +314,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (NSArray*)localContactsWithMethods
 {
+    NSParameterAssert([NSThread isMainThread]);
+
     // Return nil if the loading step is in progress.
     if (isLocalContactListRefreshing)
     {
@@ -341,6 +347,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (NSArray*)localContactsSplitByContactMethod
 {
+   NSParameterAssert([NSThread isMainThread]);
+
     // Return nil if the loading step is in progress.
     if (isLocalContactListRefreshing)
     {
@@ -387,8 +395,62 @@ static MXKContactManager* sharedMXKContactManager = nil;
     return splitLocalContacts;
 }
 
+
+//- (void)localContactsSplitByContactMethod:(void (^)(NSArray<MXKContact*> *localContactsSplitByContactMethod))onComplete
+//{
+//    NSParameterAssert([NSThread isMainThread]);
+//
+//    // Return nil if the loading step is in progress.
+//    if (isLocalContactListRefreshing)
+//    {
+//        onComplete(nil);
+//        return;
+//    }
+//    
+//    // Check whether the array must be prepared
+//    if (!splitLocalContacts)
+//    {
+//        // List all the local contacts with contact methods
+//        NSArray *contactsArray = self.localContactsWithMethods;
+//        
+//        splitLocalContacts = [NSMutableArray arrayWithCapacity:contactsArray.count];
+//        
+//        for (MXKContact* contact in contactsArray)
+//        {
+//            NSArray *emails = contact.emailAddresses;
+//            NSArray *phones = contact.phoneNumbers;
+//            
+//            if (emails.count + phones.count > 1)
+//            {
+//                for (MXKEmail *email in emails)
+//                {
+//                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:@[email] phoneNumbers:nil andThumbnail:contact.thumbnail];
+//                    [splitLocalContacts addObject:splitContact];
+//                }
+//                
+//                for (MXKPhoneNumber *phone in phones)
+//                {
+//                    MXKContact *splitContact = [[MXKContact alloc] initContactWithDisplayName:contact.displayName emails:nil phoneNumbers:@[phone] andThumbnail:contact.thumbnail];
+//                    [splitLocalContacts addObject:splitContact];
+//                }
+//            }
+//            else if (emails.count + phones.count)
+//            {
+//                [splitLocalContacts addObject:contact];
+//            }
+//        }
+//        
+//        // Sort alphabetically the resulting list
+//        [self sortAlphabeticallyContacts:splitLocalContacts];
+//    }
+//    
+//    onComplete(splitLocalContacts);
+//}
+
 - (NSArray*)directMatrixContacts
 {
+    NSParameterAssert([NSThread isMainThread]);
+
     NSMutableDictionary *directContacts = [NSMutableDictionary dictionary];
     
     NSArray *mxSessions = self.mxSessions;
@@ -415,6 +477,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (NSArray*)privateMatrixContacts:(MXSession *)mxSession
 {
+    NSParameterAssert([NSThread isMainThread]);
+    
     // Sanity check
     if (!mxSession)
     {

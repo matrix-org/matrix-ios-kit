@@ -182,7 +182,7 @@ typedef enum : NSUInteger {
  Tells the delegate that a matrix session has been added.
  
  @param dataSource the involved data source.
- @param the new added session.
+ @param mxSession the new added session.
  */
 - (void)dataSource:(MXKDataSource*)dataSource didAddMatrixSession:(MXSession*)mxSession;
 
@@ -191,7 +191,7 @@ typedef enum : NSUInteger {
  Tells the delegate that a matrix session has been removed.
  
  @param dataSource the involved data source.
- @param the removed session.
+ @param mxSession the removed session.
  */
 - (void)dataSource:(MXKDataSource*)dataSource didRemoveMatrixSession:(MXSession*)mxSession;
 

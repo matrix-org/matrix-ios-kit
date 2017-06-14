@@ -74,7 +74,7 @@
 /**
  Return an hexadecimal color value from UIColor
  
- @param the UIColor
+ @param color the UIColor
  @return rgbValue the color expressed in hexa (0xRRGGBB)
  */
 + (NSUInteger)rgbValueWithColor:(UIColor*)color;
@@ -82,7 +82,7 @@
 /**
  Return an hexadecimal color value with transparency from UIColor
  
- @param the UIColor
+ @param color the UIColor
  @return argbValue the color expressed in hexa (0xAARRGGBB)
  */
 + (NSUInteger)argbValueWithColor:(UIColor*)color;
@@ -92,7 +92,7 @@
 /**
  Force image orientation to up
  
- @param imageSrc
+ @param imageSrc the original image.
  @return image with `UIImageOrientationUp` orientation.
  */
 + (UIImage*)forceImageOrientationUp:(UIImage*)imageSrc;
@@ -122,7 +122,7 @@
  The aspect ratio is kept.
  If the image is smaller than the provided size, the image is not recomputed.
  
- @param image
+ @param image the image to modify.
  @param size to fit in.
  @return resized image.
  */
@@ -131,8 +131,8 @@
 /**
  Resize image to a provided size.
  
- @param image
- @param the destinated
+ @param image the image to modify.
+ @param size the new size.
  @return resized image.
  */
 + (UIImage*)resizeImage:(UIImage *)image toSize:(CGSize)size;
@@ -194,7 +194,8 @@
  Check required permission for the provided call.
 
  @param isVideoCall flag set to YES in case of video call.
- @param manualChangeMessage the message to display if the end user must change the app settings manually.
+ @param manualChangeMessageForAudio the message to display if the end user must change the app settings manually for audio.
+ @param manualChangeMessageForVideo the message to display if the end user must change the app settings manually for video
  @param viewController the view controller to attach the dialog displaying manualChangeMessage.
  @param handler the block called with the result of requesting access
  */

@@ -165,7 +165,7 @@
 Update the event because its sent state changed or it is has been redacted.
  
  @param eventId the id of the event to change.
- @param the new event data
+ @param event the new event data
  @return the number of events hosting by the object after the update.
  */
 - (NSUInteger)updateEvent:(NSString*)eventId withEvent:(MXEvent*)event;

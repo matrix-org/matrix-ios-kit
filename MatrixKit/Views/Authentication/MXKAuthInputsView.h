@@ -71,7 +71,7 @@ typedef enum {
  Note: This method is used to display the countries list during the phone number handling.
  
  @param authInputsView the authentication inputs view.
- @param viewControllerToPresent.
+ @param viewControllerToPresent the view controller to present.
  */
 - (void)authInputsView:(MXKAuthInputsView *)authInputsView presentViewController:(UIViewController*)viewControllerToPresent;
 

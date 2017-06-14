@@ -70,7 +70,7 @@ typedef enum : NSUInteger
  
  @param toolbarView the room input toolbar view.
  @param height the updated height of toolbar view.
- @param A block object to be executed when height change is taken into account.
+ @param completion a block object to be executed when height change is taken into account.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView heightDidChanged:(CGFloat)height completion:(void (^)(BOOL finished))completion;
 
@@ -148,7 +148,7 @@ typedef enum : NSUInteger
  Note: Media attachment is available only if the delegate implements this method.
  
  @param toolbarView the room input toolbar view.
- @param viewControllerToPresent.
+ @param viewControllerToPresent the view controller to present.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentViewController:(UIViewController*)viewControllerToPresent;
 

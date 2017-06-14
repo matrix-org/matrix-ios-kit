@@ -109,8 +109,8 @@ extern NSString *const kMXKContactDefaultContactPrefixId;
 /**
  Create a matrix contact with the dedicated info
  
- @param displayName
- @param matrixID
+ @param displayName the contact display name
+ @param matrixID the contact matrix id
  @return MXKContact instance
  */
 - (id)initMatrixContactWithDisplayName:(NSString*)displayName andMatrixID:(NSString*)matrixID;
@@ -118,10 +118,10 @@ extern NSString *const kMXKContactDefaultContactPrefixId;
 /**
  Create a contact with the dedicated info
  
- @param displayName
+ @param displayName the contact display name
  @param emails an array of emails
  @param phones an array of phone numbers
- @param thumbnail 
+ @param thumbnail  the contact thumbnail
  @return MXKContact instance
  */
 - (id)initContactWithDisplayName:(NSString*)displayName

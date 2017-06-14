@@ -362,7 +362,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  Once complete, this local echo will be replaced by the event saved by the homeserver.
  
  @param imageLocalURL the local filesystem path of the image to send.
- @param mimeType the mime type of the image
+ @param mimetype the mime type of the image
  @param success A block object called when the operation succeeds. It returns
  the event id of the event generated on the home server
  @param failure A block object called when the operation fails.

@@ -180,7 +180,7 @@ extern NSString *const MXKAuthErrorDomain;
  Customize the MXHTTPClientOnUnrecognizedCertificate block that will be used to handle unrecognized certificate observed during authentication challenge from a server.
  By default we prompt the user by displaying a fingerprint (SHA256) of the certificate. The user is then able to trust or not the certificate.
  
- @param onUnrecognizedCertificateBlock
+ @param onUnrecognizedCertificateBlock the block that will be used to handle unrecognized certificate
  */
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock;
 

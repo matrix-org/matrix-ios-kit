@@ -125,6 +125,8 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
  This list is alphabetically sorted.
  Each contact has one and only one contact method.
  */
+//- (void)localContactsSplitByContactMethod:(void (^)(NSArray<MXKContact*> *localContactsSplitByContactMethod))onComplete;
+
 @property (nonatomic, readonly) NSArray *localContactsSplitByContactMethod;
 
 /**
@@ -178,6 +180,13 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 - (void)updateMatrixIDsForAllLocalContacts;
 
 /**
+ The contacts list obtained by splitting each local contact by contact method.
+ This list is alphabetically sorted.
+ Each contact has one and only one contact method.
+ */
+//- (void)localContactsSplitByContactMethod:(void (^)(NSArray<MXKContact*> *localContactsSplitByContactMethod))onComplete;
+
+/**
  Sort a contacts array in sectioned arrays to be displayable in a UITableview
  */
 - (MXKSectionedContacts*)getSectionedContacts:(NSArray*)contactList;
@@ -200,7 +209,7 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 /**
  Refresh the international phonenumber of the local contacts (See kMXKContactManagerDidInternationalizeNotification).
  
- @param countryCode
+ @param countryCode the country code.
  */
 - (void)internationalizePhoneNumbers:(NSString*)countryCode;
 

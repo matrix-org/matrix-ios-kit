@@ -136,7 +136,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 /**
  Return an audio file url based on the provided name.
  
- @param name audio file name without extension.
+ @param soundName audio file name without extension.
  @return a NSURL instance.
  */
 - (NSURL*)audioURLWithName:(NSString*)soundName;
