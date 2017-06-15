@@ -104,10 +104,13 @@
         _encryptedMessagesTextFont = [UIFont italicSystemFontOfSize:14];
         
         _eventTypesFilterForMessages = nil;
-        
+
+        // Consider the shared app settings by default
+        _settings = [MXKAppSettings standardAppSettings];
+
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
-        defaultRoomSummaryUpdater.ignoreRedactedEvent = ![MXKAppSettings standardAppSettings].showRedactionsInRoomHistory;
+        defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
     }
     return self;
 }
