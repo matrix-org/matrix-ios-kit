@@ -378,4 +378,15 @@ extern NSString *const kCmdChangeRoomTopic;
  */
 - (void)showAttachmentInCell:(UITableViewCell*)cell;
 
+/**
+ Force a refresh of the room history display.
+ 
+ You should not call this method directly.
+ You may override it in inherited 'MXKRoomViewController' class.
+ 
+ @param useBottomAnchor tells whether the updated history must keep display the same event at the bottom.
+ @return a boolean value which tells whether the table has been scrolled to the bottom.
+ */
+- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor;
+
 @end

@@ -2157,7 +2157,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 #pragma mark - bubbles table
 
-// Return a boolean value which tells whether the table has been scrolled to the bottom
 - (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor
 {
     BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
