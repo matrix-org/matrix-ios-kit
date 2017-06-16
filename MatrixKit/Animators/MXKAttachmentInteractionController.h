@@ -19,7 +19,7 @@
 
 @interface MXKAttachmentInteractionController : UIPercentDrivenInteractiveTransition
 
-@property BOOL interactionInProgress;
+@property (nonatomic) BOOL interactionInProgress;
 
 - (instancetype)initWithDestinationViewController:(UIViewController <MXKDestinationAttachmentAnimatorDelegate> *)viewController sourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController;
 
