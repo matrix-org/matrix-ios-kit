@@ -1,8 +1,8 @@
-Changes in MatrixKit in 0. (2017-06-)
+Changes in MatrixKit in 0.5.0 (2017-06-16)
 ==========================================
 
 Improvements:
- * Upgrade MatrixSDK version (v0.).
+ * Upgrade MatrixSDK version (v0.8.0).
  * Add read markers synchronisation across matrix clients.
  * Add support of MXRoomSummary.
  * Add directory server list data model (datasource, cellDataStoring protocol and its minimal implementation).

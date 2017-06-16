@@ -32,33 +32,36 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.12):
     - DTFoundation/Core
+  - GZIP (1.1.1)
   - HPGrowingTextView (1.1)
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.9.6)
-  - MatrixSDK (0.7.11):
+  - libPhoneNumber-iOS (0.9.10)
+  - MatrixSDK (0.8.0):
     - AFNetworking (~> 3.1.0)
+    - GZIP (~> 1.1.1)
 
 DEPENDENCIES:
   - cmark (~> 0.24.1)
   - DTCoreText (~> 1.6.17)
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
-  - libPhoneNumber-iOS (~> 0.9.2)
-  - MatrixSDK (= 0.7.11)
+  - libPhoneNumber-iOS (~> 0.9.10)
+  - MatrixSDK (= 0.8.0)
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   cmark: ec0275215b504780287b6fca360224e384368af8
   DTCoreText: 51904f2374af443e0d270d6fdc76035ab6f9ef8a
   DTFoundation: 26a164ef510877387906fb92bff524a792db4bf8
+  GZIP: f8beb59597f651e6970a45b816508a9c6d700b77
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: 36044ed9658b5c11ee3cb3011751e47251d34992
-  MatrixSDK: 7508abee816785312d658dc7569ea63074025c27
+  libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
+  MatrixSDK: 6d1bf7ffc4792622da5441b4ddc6d5c02a0675b3
 
-PODFILE CHECKSUM: d66b8e529d642d2f4fc715c2ce43c826cc6842ac
+PODFILE CHECKSUM: 07118101753e3ec4606c5a1503fd361e4f142939
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.2.1

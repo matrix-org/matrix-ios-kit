@@ -8,7 +8,7 @@ target "MatrixKitSample" do
 
 # Different flavours of pods to Matrix SDK
 # The tagged version on which this version of MatrixKit has been built
-pod 'MatrixSDK', '0.7.11'
+pod 'MatrixSDK', '0.8.0'
 
 # The lastest release available on the CocoaPods repository 
 #pod 'MatrixSDK'
@@ -24,7 +24,7 @@ pod 'libPhoneNumber-iOS', '~> 0.9.10'
 pod 'HPGrowingTextView', '~> 1.1'
 pod 'JSQMessagesViewController', '~> 7.2.0'
 pod 'DTCoreText', '~> 1.6.17'
-pod 'cmark', '~> 0.24.1'
+pod 'cmark', '~> 0.24.1', :inhibit_warnings => true
 
 end
 
