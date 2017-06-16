@@ -2300,12 +2300,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         currentEventIdAtTableBottom = nil;
         
         // Consider the visible cells (starting by those displayed at the bottom)
-        NSArray *indexPathsForVisibleRows = [_bubblesTableView indexPathsForVisibleRows];
-        NSInteger index = indexPathsForVisibleRows.count;
+        NSArray *visibleCells = [_bubblesTableView visibleCells];
+        NSInteger index = visibleCells.count;
         UITableViewCell *cell;
         while (index--)
         {
-            cell = [_bubblesTableView cellForRowAtIndexPath:indexPathsForVisibleRows[index]];
+            cell = visibleCells[index];
             
             // Check whether the cell is actually visible
             if (cell && (cell.frame.origin.y < contentBottomOffsetY))
