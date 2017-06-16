@@ -31,6 +31,7 @@ static MXKAppSettings *standardAppSettings = nil;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
+@synthesize enableCallKit;
 
 + (MXKAppSettings *)standardAppSettings
 {
@@ -64,6 +65,8 @@ static MXKAppSettings *standardAppSettings = nil;
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        
+        enableCallKit = YES;
     }
     return self;
 }
@@ -95,6 +98,8 @@ static MXKAppSettings *standardAppSettings = nil;
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpLinkScheme"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
         
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
@@ -116,6 +121,8 @@ static MXKAppSettings *standardAppSettings = nil;
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        
+        enableCallKit = YES;
     }
 }
 
@@ -573,6 +580,40 @@ static MXKAppSettings *standardAppSettings = nil;
     else
     {
         presenceColorForOfflineUser = color ? color : [UIColor redColor];
+    }
+}
+
+#pragma mark - Calls
+
+- (BOOL)isCallKitEnabled
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"enableCallKit"];
+        if (storedValue)
+        {
+            return [(NSNumber *)storedValue boolValue];
+        }
+        else
+        {
+            return YES;
+        }
+    }
+    else
+    {
+        return enableCallKit;
+    }
+}
+
+- (void)setEnableCallKit:(BOOL)enable
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"enableCallKit"];
+    }
+    else
+    {
+        enableCallKit = enable;
     }
 }
 
