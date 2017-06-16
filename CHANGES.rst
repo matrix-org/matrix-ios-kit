@@ -1,3 +1,33 @@
+Changes in MatrixKit in 0. (2017-06-)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.).
+ * Add read markers synchronisation across matrix clients.
+ * Add support of MXRoomSummary.
+ * Add directory server list data model (datasource, cellDataStoring protocol and its minimal implementation).
+ * Add viewcontroller interactive animations to quit attachment viewer, thanks to @aramsargsyan (PR #259).
+ * MXKRecentsViewController: Update the pull to kick mechanism to take into account some recents table view settings (used in inherited class).
+ * MXKRecentListViewController: Add `hideSearchBar:` method.
+ * MXKRecentsDataSource: Expose the current search pattern list to the inherited classes.
+ * Chat screen: Recognise and make tappable phone numbers, address, etc.
+ * Call: Play the right sounds during call life, thanks to @morozkin (PR #298) (https://github.com/vector-im/riot-ios/issues/1101).
+ * Documentation: Updated example to display Recents List with correct datasource class, thanks to javierquevedo (PR #278).
+ * Pods: Use bundle ressource to store assets, thanks to Samuel Gallet (PR #279).
+ * Pods: Clean headers to be able to build MatrixKit pod as a module, thanks to Samuel Gallet (PR #282) and @morozkin (PR #286).
+ 
+Bug fixes:
+ * Bug Fix: App crashes when the attachments viewer is closed from an animated gif (#262).
+ * Chat screen: the navigation bar is missing after closing the attachments viewer (#264).
+ * Attachments viewer: Wrong attachment is displayed after screen rotation.
+ * App crashes after using the attachment viewer (https://github.com/vector-im/riot-ios#1143).
+ * App crashes when the user selects a picture from the FILES tab of the room settings (https://github.com/vector-im/riot-ios#1147).
+ * When bringing the app up again it freezes for about 5s before a loading wheel appears (https://github.com/vector-im/riot-ios#1213).
+ * Contacts picker: Local contacts are missing sometimes.
+ * MXKAlert: Prevent MXKAlert from being retained in action handler, thanks to @morozkin (PR #287).
+ * Photo selection and sending crash (https://github.com/vector-im/riot-ios#1025).
+ * A permalink is positioned off the screen (https://github.com/vector-im/riot-ios#553).
+
 Changes in MatrixKit in 0.4.11 (2017-03-23)
 ==========================================
 
