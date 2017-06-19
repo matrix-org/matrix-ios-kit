@@ -149,6 +149,15 @@
  */
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
 
+#pragma mark - Calls
+
+/**
+ Return YES if the user enable CallKit support.
+ 
+ This boolean value is defined in shared settings object with the key: `enableCallKit`.
+ Return YES if no value is defined.
+ */
+@property (nonatomic, getter=isCallKitEnabled) BOOL enableCallKit;
 
 #pragma mark - Class methods
 
