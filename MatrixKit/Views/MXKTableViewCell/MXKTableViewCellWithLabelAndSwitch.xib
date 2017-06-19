@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aCf-VI-ocb" id="Eg5-vl-rni">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9dA-E8-w3v">
@@ -34,8 +35,7 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="9dA-E8-w3v" firstAttribute="centerY" secondItem="Eg5-vl-rni" secondAttribute="centerY" id="HHv-PY-RDK"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="Xx4-AP-OQs" secondAttribute="bottom" constant="3.5" id="Ikz-iJ-l4h"/>
-                    <constraint firstItem="Xx4-AP-OQs" firstAttribute="centerY" secondItem="Eg5-vl-rni" secondAttribute="centerY" id="Uky-gM-6WY"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="Xx4-AP-OQs" secondAttribute="bottom" constant="3" id="Ikz-iJ-l4h"/>
                     <constraint firstItem="Xx4-AP-OQs" firstAttribute="top" secondItem="Eg5-vl-rni" secondAttribute="topMargin" constant="3" id="Vem-3Z-NyP"/>
                     <constraint firstItem="Xx4-AP-OQs" firstAttribute="leading" secondItem="Eg5-vl-rni" secondAttribute="leading" constant="8" id="Wih-ke-1dd"/>
                     <constraint firstItem="9dA-E8-w3v" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Xx4-AP-OQs" secondAttribute="trailing" constant="8" id="hms-8a-BYd"/>

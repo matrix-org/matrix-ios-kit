@@ -88,14 +88,14 @@
 }
 
 //animations
-@property MXKAttachmentInteractionController *interactionController;
+@property (nonatomic) MXKAttachmentInteractionController *interactionController;
 
-@property UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+@property (nonatomic) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
-@property UIImageView *originalImageView;
-@property CGRect convertedFrame;
+@property (nonatomic) UIImageView *originalImageView;
+@property (nonatomic) CGRect convertedFrame;
 
-@property BOOL customAnimationsEnabled;
+@property (nonatomic) BOOL customAnimationsEnabled;
 
 @end
 

@@ -24,8 +24,6 @@ typedef NS_ENUM(NSInteger, PhotoBrowserAnimationType) {
 
 @protocol MXKSourceAttachmentAnimatorDelegate <NSObject>
 
-@required
-
 - (UIImageView *)originalImageView;
 
 - (CGRect)convertedFrameForOriginalImageView;
@@ -33,8 +31,6 @@ typedef NS_ENUM(NSInteger, PhotoBrowserAnimationType) {
 @end
 
 @protocol MXKDestinationAttachmentAnimatorDelegate <NSObject>
-
-@required
 
 - (UIImageView *)finalImageView;
 
