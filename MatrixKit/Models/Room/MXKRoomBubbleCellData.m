@@ -521,7 +521,22 @@
 
 - (BOOL)hasNoDisplay
 {
-    return (self.attributedTextMessage == nil && !attachment);
+    BOOL noDisplay = YES;
+    
+    // Check whether at least one component has a string description.
+    @synchronized(bubbleComponents)
+    {
+        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+        {
+            if (roomBubbleComponent.attributedTextMessage)
+            {
+                noDisplay = NO;
+                break;
+            }
+        }
+    }
+    
+    return (noDisplay && !attachment);
 }
 
 - (BOOL)isAttachmentWithThumbnail
