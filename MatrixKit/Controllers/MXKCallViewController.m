@@ -16,12 +16,11 @@
 
 #import "MXKCallViewController.h"
 
-#import "MXMediaManager.h"
 #import "MXKAlert.h"
-
-#import "NSBundle+MatrixKit.h"
-
+#import "MXMediaManager.h"
+#import "MXKSoundPlayer.h"
 #import "MXKTools.h"
+#import "NSBundle+MatrixKit.h"
 
 NSString *const kMXKCallViewControllerWillAppearNotification = @"kMXKCallViewControllerWillAppearNotification";
 NSString *const kMXKCallViewControllerAppearedNotification = @"kMXKCallViewControllerAppearedNotification";
@@ -31,9 +30,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @interface MXKCallViewController ()
 {
-    AVAudioPlayer *audioPlayer;
-    
-    NSTimer *vibrateTimer;
     NSTimer *hideOverlayTimer;
     NSTimer *updateStatusTimer;
     
@@ -55,9 +51,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Observe AVAudioSessionRouteChangeNotification
     id audioSessionRouteChangeNotificationObserver;
-
-    // Cache of the current audio session category
-    NSString *savedAVAudioSessionCategory;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
@@ -233,7 +226,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     _delegate = nil;
     
     self.isRinging = NO;
-    audioPlayer = nil;
     
     [hideOverlayTimer invalidate];
     [updateStatusTimer invalidate];
@@ -399,52 +391,21 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         if (isRinging)
         {
-            if (audioPlayer)
-            {
-                [audioPlayer stop];
-            }
-
-            // Make the ringback ringing even in silent mode
-            if (!savedAVAudioSessionCategory)
-            {
-                savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
-            }
-            
-            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-            
-            NSError* error = nil;
             NSURL *audioUrl;
             if (mxCall.isIncoming)
             {
                 audioUrl = [self audioURLWithName:@"ring"];
-                
-                // Vibrate on incoming call
-                vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:1.24875 target:self selector:@selector(vibrate) userInfo:nil repeats:YES];
             }
             else
             {
                 audioUrl = [self audioURLWithName:@"ringback"];
             }
             
-            audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
-            
-            if (error)
-            {
-                NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
-            }
-            
-            audioPlayer.numberOfLoops = -1;
-            [audioPlayer play];
+            [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReciever:!mxCall.isIncoming];
         }
         else
         {
-            if (audioPlayer)
-            {
-                [audioPlayer stop];
-                audioPlayer = nil;
-            }
-            [vibrateTimer invalidate];
-            vibrateTimer = nil;
+            [[MXKSoundPlayer sharedInstance] stopPlaying];
         }
         
         _isRinging = isRinging;
@@ -621,28 +582,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = NO;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ended"];
             
-            if (audioPlayer)
-            {
-                [audioPlayer stop];
-            }
-            
             NSString *soundName = [self soundNameForCallEnding];
             if (soundName)
             {
-                NSError *error = nil;
                 NSURL *audioUrl = [self audioURLWithName:soundName];
-                audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
-                if (error)
-                {
-                    NSLog(@"[MXKCallVC] ringing initWithContentsOfURL failed : %@", error);
-                }
-                
-                // Listen (audioPlayerDidFinishPlaying) for the end of the playback of "callend"
-                // to release the audio session
-                audioPlayer.delegate = self;
-                
-                audioPlayer.numberOfLoops = 0;
-                [audioPlayer play];
+                [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:NO vibrate:NO routeToBuiltInReciever:YES];
+            }
+            else
+            {
+                [[MXKSoundPlayer sharedInstance] stopPlaying];
             }
             
             // Except in case of call error, quit the screen right now
@@ -687,21 +635,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // And interrupt the call
         [mxCall hangup];
-    }
-}
-
-#pragma mark - AVAudioPlayerDelegate
-
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
-{
-    // Release the audio session to allow resuming of background music app
-    [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
-
-    // Restore audio category
-    if (savedAVAudioSessionCategory)
-    {
-        [[AVAudioSession sharedInstance] setCategory:savedAVAudioSessionCategory error:nil];
-        savedAVAudioSessionCategory = nil;
     }
 }
 
@@ -757,11 +690,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         self.peer = theMember;
     }
-}
-
-- (void)vibrate
-{
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
 - (BOOL)isBuiltInReceiverAudioOuput
