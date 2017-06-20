@@ -401,7 +401,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 audioUrl = [self audioURLWithName:@"ringback"];
             }
             
-            [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReciever:!mxCall.isIncoming];
+            [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReceiver:!mxCall.isIncoming];
         }
         else
         {
@@ -586,7 +586,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             if (soundName)
             {
                 NSURL *audioUrl = [self audioURLWithName:soundName];
-                [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:NO vibrate:NO routeToBuiltInReciever:YES];
+                [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:NO vibrate:NO routeToBuiltInReceiver:YES];
             }
             else
             {
