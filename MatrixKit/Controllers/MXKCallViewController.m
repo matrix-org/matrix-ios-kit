@@ -78,14 +78,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MXKCallViewController class])
-                          bundle:[NSBundle bundleForClass:[MXKCallViewController class]]];
+    return [UINib nibWithNibName:NSStringFromClass(self.class)
+                          bundle:[NSBundle bundleForClass:self.class]];
 }
 
 + (instancetype)callViewController:(MXCall*)call
 {
-    MXKCallViewController* instance = [[[self class] alloc] initWithNibName:NSStringFromClass([MXKCallViewController class])
-                                                                     bundle:[NSBundle bundleForClass:[MXKCallViewController class]]];
+    MXKCallViewController *instance = [[[self class] alloc] initWithNibName:NSStringFromClass(self.class)
+                                                                     bundle:[NSBundle bundleForClass:self.class]];
     
     // Load the view controller's view now (buttons and views will then be available).
     if ([instance respondsToSelector:@selector(loadViewIfNeeded)])
