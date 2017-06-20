@@ -41,7 +41,7 @@ static const NSTimeInterval kVibrationInterval = 1.24875;
     return soundPlayer;
 }
 
-- (void)playSoundAt:(NSURL *)url repeat:(BOOL)repeat vibrate:(BOOL)vibrate routeToBuiltInReciever:(BOOL)useBuiltInReciever
+- (void)playSoundAt:(NSURL *)url repeat:(BOOL)repeat vibrate:(BOOL)vibrate routeToBuiltInReceiver:(BOOL)useBuiltInReceiver
 {
     if (self.audioPlayer)
     {
@@ -59,7 +59,7 @@ static const NSTimeInterval kVibrationInterval = 1.24875;
     
     // Setup AVAudioSession
     // We use SoloAmbient instead of Playback category to respect silent mode
-    NSString *audioSessionCategory = useBuiltInReciever ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategorySoloAmbient;
+    NSString *audioSessionCategory = useBuiltInReceiver ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategorySoloAmbient;
     [[AVAudioSession sharedInstance] setCategory:audioSessionCategory error:nil];
     
     if (vibrate)
