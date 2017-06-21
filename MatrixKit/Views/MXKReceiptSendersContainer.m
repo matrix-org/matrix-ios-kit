@@ -18,6 +18,15 @@
 
 #import "MXKImageView.h"
 
+
+@interface MXKReceiptSendersContainer ()
+
+@property (nonatomic) NSArray <MXRoomMember *> *roomMembers;
+@property (nonatomic) NSArray <UIImage *> *placeholders;
+
+@end
+
+
 @implementation MXKReceiptSendersContainer
 
 - (instancetype)initWithFrame:(CGRect)frame andRestClient:(MXRestClient*)restclient
@@ -29,12 +38,37 @@
         _maxDisplayedAvatars = 3;
         _avatarMargin = 2.0;
         _moreLabel = nil;
+        
+        [self addTapGestureRecognizer];
+        
+        //test
+        [self setBackgroundColor:[UIColor magentaColor]];
     }
     return self;
 }
 
+- (void)addTapGestureRecognizer
+{
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openRecieptDetails)];
+    [tapRecognizer setNumberOfTapsRequired:1];
+    [tapRecognizer setNumberOfTouchesRequired:1];
+    [self addGestureRecognizer:tapRecognizer];
+    self.userInteractionEnabled = YES;
+}
+
+- (void)openRecieptDetails
+{
+    if ([self.delegate respondsToSelector:@selector(didTapReceiptsContainerWithRestClient:RoomMembers:avatars:recieptDescriptions:)]) {
+        [self.delegate didTapReceiptsContainerWithRestClient:self.restClient RoomMembers:self.roomMembers avatars:self.placeholders recieptDescriptions:self.recieptDescriptions];
+    }
+}
+
 - (void)refreshReceiptSenders:(NSArray<MXRoomMember*>*)roomMembers withPlaceHolders:(NSArray<UIImage*>*)placeHolders andAlignment:(ReadReceiptsAlignment)alignment
 {
+    // Store the room members and placeholders for showing in the details view controller
+    self.roomMembers = roomMembers;
+    self.placeholders = placeHolders;
+    
     // Remove all previous content
     for (UIView* view in self.subviews)
     {

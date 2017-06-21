@@ -31,6 +31,17 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
     ReadReceiptAlignmentRight = 1,
 };
 
+/*
+ Protocol to provide interface for actions related to the MXKReceiptSendersContainer view
+ */
+@protocol MXKRecieptSendersContainerDelegate <NSObject>
+
+@optional
+
+- (void)didTapReceiptsContainerWithRestClient:(MXRestClient *)restClient RoomMembers:(NSArray *)roomMembers avatars:(NSArray *)avatars recieptDescriptions:(NSArray *)recieptDescriptions;
+
+@end
+
 /**
  `MXKReceiptSendersContainer` is a view dedicated to display receipt senders by using their avatars.
  
@@ -57,6 +68,16 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  The label added beside avatars when avatars are not all visible.
  */
 @property (nonatomic) UILabel* moreLabel;
+
+/**
+ The receipt descriptions to show in the details view controller.
+ */
+@property (nonatomic) NSArray <NSString *> *recieptDescriptions;
+
+/*
+ The delegate of the ReadReceiptsContainer
+ */
+@property (nonatomic, weak) id<MXKRecieptSendersContainerDelegate> delegate;
 
 /**
  Initializes an `MXKReceiptSendersContainer` object with a frame and a REST client.
