@@ -40,9 +40,6 @@
         _moreLabel = nil;
         
         [self addTapGestureRecognizer];
-        
-        //test
-        [self setBackgroundColor:[UIColor magentaColor]];
     }
     return self;
 }

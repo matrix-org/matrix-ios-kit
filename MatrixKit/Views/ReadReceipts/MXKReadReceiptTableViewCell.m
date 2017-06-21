@@ -19,14 +19,22 @@
 
 @implementation MXKReadReceiptTableViewCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
-    self.avatarImageView.layer.cornerRadius = CGRectGetWidth(self.avatarImageView.frame);
+    [self configureAvatarImageView];
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+- (void)configureAvatarImageView
+{
+    self.avatarImageView.layer.cornerRadius = CGRectGetWidth(self.avatarImageView.frame)/2;
+    self.avatarImageView.clipsToBounds = YES;
+    self.avatarImageView.enableInMemoryCache = YES;
+}
 
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
     // Configure the view for the selected state
 }
 

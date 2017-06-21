@@ -79,7 +79,7 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
-
+#import "MXKReadReceiptTableViewCell.h"
 #import "MXKPushRuleTableViewCell.h"
 #import "MXKPushRuleCreationTableViewCell.h"
 
