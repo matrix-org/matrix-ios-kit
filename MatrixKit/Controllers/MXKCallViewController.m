@@ -101,6 +101,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 - (void)finalizeInit
 {
     [super finalizeInit];
+    
+    _playRingtone = YES;
 }
 
 - (void)viewDidLoad
@@ -235,7 +237,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - Properties
 
-- (UIImage*)picturePlaceholder
+- (UIImage *)picturePlaceholder
 {
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
@@ -394,14 +396,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             NSURL *audioUrl;
             if (mxCall.isIncoming)
             {
-                audioUrl = [self audioURLWithName:@"ring"];
+                if (self.playRingtone)
+                    audioUrl = [self audioURLWithName:@"ring"];
             }
             else
             {
                 audioUrl = [self audioURLWithName:@"ringback"];
             }
             
-            [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReceiver:!mxCall.isIncoming];
+            if (audioUrl)
+            {
+                [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReceiver:!mxCall.isIncoming];
+            }
         }
         else
         {
@@ -428,7 +434,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - Sounds
 
-- (NSURL*)audioURLWithName:(NSString*)soundName
+- (NSURL *)audioURLWithName:(NSString *)soundName
 {
     return [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:soundName];
 }
@@ -829,7 +835,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - UIResponder Touch Events
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
@@ -840,13 +846,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     isMovingLocalPreview = NO;
     isSelectingLocalPreview = NO;
 }
 
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if (isMovingLocalPreview)
     {
@@ -873,7 +879,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     isSelectingLocalPreview = NO;
 }
 
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
