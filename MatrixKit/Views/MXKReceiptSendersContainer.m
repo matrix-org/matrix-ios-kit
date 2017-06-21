@@ -55,7 +55,8 @@
 
 - (void)openRecieptDetails
 {
-    if ([self.delegate respondsToSelector:@selector(didTapReceiptsContainerWithRestClient:RoomMembers:avatars:recieptDescriptions:)]) {
+    if ([self.delegate respondsToSelector:@selector(didTapReceiptsContainerWithRestClient:RoomMembers:avatars:recieptDescriptions:)])
+    {
         [self.delegate didTapReceiptsContainerWithRestClient:self.restClient RoomMembers:self.roomMembers avatars:self.placeholders recieptDescriptions:self.recieptDescriptions];
     }
 }
