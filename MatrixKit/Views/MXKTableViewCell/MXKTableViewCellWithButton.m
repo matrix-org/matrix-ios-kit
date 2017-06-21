@@ -18,5 +18,11 @@
 
 @implementation MXKTableViewCellWithButton
 
-@end
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    
+    self.mxkButton.titleLabel.text = nil;
+}
 
+@end

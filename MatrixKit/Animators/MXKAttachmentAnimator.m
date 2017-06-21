@@ -18,8 +18,8 @@
 
 @interface MXKAttachmentAnimator ()
 
-@property PhotoBrowserAnimationType animationType;
-@property (weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+@property (nonatomic) PhotoBrowserAnimationType animationType;
+@property (nonatomic, weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
 @end
 

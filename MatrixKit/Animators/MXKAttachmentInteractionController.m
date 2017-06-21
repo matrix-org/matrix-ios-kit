@@ -18,14 +18,14 @@
 
 @interface MXKAttachmentInteractionController ()
 
-@property (weak) UIViewController <MXKDestinationAttachmentAnimatorDelegate> *destinationViewController;
-@property (weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+@property (nonatomic, weak) UIViewController <MXKDestinationAttachmentAnimatorDelegate> *destinationViewController;
+@property (nonatomic, weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
-@property UIImageView *transitioningImageView;
-@property id <UIViewControllerContextTransitioning> transitionContext;
+@property (nonatomic) UIImageView *transitioningImageView;
+@property (nonatomic) id <UIViewControllerContextTransitioning> transitionContext;
 
-@property CGPoint translation;
-@property CGPoint delta;
+@property (nonatomic) CGPoint translation;
+@property (nonatomic) CGPoint delta;
 
 @end
 

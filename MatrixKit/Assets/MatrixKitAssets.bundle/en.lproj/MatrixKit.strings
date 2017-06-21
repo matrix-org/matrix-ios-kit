@@ -425,7 +425,8 @@
 
 // Settings keys 
 
-// call string 
+// call string
+"call_waiting" = "Waiting...";
 "call_connecting" = "Call connecting...";
 "call_ended" = "Call ended";
 "call_ring" = "Calling...";

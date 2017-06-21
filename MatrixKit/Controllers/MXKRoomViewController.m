@@ -148,14 +148,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 /**
  The eventId of the Attachment that was used to open the Attachments ViewController
  */
-@property NSString *openedAttachmentEventId;
+@property (nonatomic) NSString *openedAttachmentEventId;
 
 /**
  The eventId of the Attachment from which the Attachments ViewController was closed
  */
-@property NSString *closedAttachmentEventId;
+@property (nonatomic) NSString *closedAttachmentEventId;
 
-@property UIImageView *openedAttachmentImageView;
+@property (nonatomic) UIImageView *openedAttachmentImageView;
 
 @end
 

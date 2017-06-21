@@ -1,5 +1,5 @@
 /*
- Copyright 2017 Aram Sargsyan
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,13 +14,23 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
-#import "MXKAttachmentAnimator.h"
+#import <Foundation/Foundation.h>
 
-@interface MXKAttachmentInteractionController : UIPercentDrivenInteractiveTransition
+NS_ASSUME_NONNULL_BEGIN
 
-@property (nonatomic) BOOL interactionInProgress;
+@interface MXKSoundPlayer : NSObject
 
-- (instancetype)initWithDestinationViewController:(UIViewController <MXKDestinationAttachmentAnimatorDelegate> *)viewController sourceViewController:(UIViewController <MXKSourceAttachmentAnimatorDelegate> *)sourceViewController;
++ (instancetype)sharedInstance;
+
++ (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+- (void)playSoundAt:(NSURL *)url repeat:(BOOL)repeat vibrate:(BOOL)vibrate routeToBuiltInReceiver:(BOOL)useBuiltInReceiver;
+- (void)stopPlaying;
+
+- (void)vibrateWithRepeat:(BOOL)repeat;
+- (void)stopVibrating;
 
 @end
+
+NS_ASSUME_NONNULL_END
