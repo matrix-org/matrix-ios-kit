@@ -194,9 +194,12 @@ static Class _roomDataSourceClass;
 
 - (MXKRoomDataSource *)roomDataSourceForRoom:(NSString *)roomId create:(BOOL)create
 {
+    NSParameterAssert(roomId);
+
     // If not available yet, create the room data source
     MXKRoomDataSource *roomDataSource = roomDataSources[roomId];
-    if (!roomDataSource && create)
+
+    if (!roomDataSource && create && roomId)
     {
         roomDataSource = [[_roomDataSourceClass alloc] initWithRoomId:roomId andMatrixSession:mxSession];
         [roomDataSource finalizeInitialization];
