@@ -453,9 +453,22 @@
 {
     if (_delegate)
     {
-        id<MXKRecentCellDataStoring> cellData = [dataSource cellDataAtIndexPath:indexPath];
+        UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
         
-        [_delegate recentListViewController:self didSelectRoom:cellData.roomSummary.roomId inMatrixSession:cellData.roomSummary.room.mxSession];
+        if ([selectedCell conformsToProtocol:@protocol(MXKCellRendering)])
+        {
+            id<MXKCellRendering> cell = (id<MXKCellRendering>)selectedCell;
+            
+            if ([cell respondsToSelector:@selector(renderedCellData)])
+            {
+                MXKCellData *cellData = cell.renderedCellData;
+                if ([cellData conformsToProtocol:@protocol(MXKRecentCellDataStoring)])
+                {
+                    id<MXKRecentCellDataStoring> recentCellData = (id<MXKRecentCellDataStoring>)cellData;
+                    [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.roomSummary.room.mxSession];
+                }
+            }
+        }
     }
     
     // Hide the keyboard when user select a room
