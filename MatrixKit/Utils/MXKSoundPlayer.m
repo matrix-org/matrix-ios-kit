@@ -74,9 +74,6 @@ static const NSTimeInterval kVibrationInterval = 1.24875;
     {
         [self.audioPlayer stop];
         self.audioPlayer = nil;
-        
-        // Release the audio session to allow resuming of background music app
-        [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
     }
     
     if (self.isVibrating)
