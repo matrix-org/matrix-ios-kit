@@ -63,6 +63,13 @@
 @property (nonatomic, weak) id<MXKCellRenderingDelegate> delegate;
 
 /**
+ This optional getter allow to retrieve the data object currently rendered by the cell.
+ 
+ @return the current rendered data object.
+ */
+- (MXKCellData*)renderedCellData;
+
+/**
  Reset the cell.
 
  The cell is no more displayed. This is time to release resources and removing listeners.
