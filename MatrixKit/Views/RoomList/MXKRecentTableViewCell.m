@@ -89,4 +89,11 @@
     return 70;
 }
 
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    
+    roomCellData = nil;
+}
+
 @end
