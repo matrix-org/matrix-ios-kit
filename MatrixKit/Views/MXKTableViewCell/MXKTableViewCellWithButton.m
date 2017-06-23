@@ -21,8 +21,11 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    
-    self.mxkButton.titleLabel.text = nil;
+
+    // TODO: Code commented for a quick fix for https://github.com/vector-im/riot-ios/issues/1323
+    // This line was a fix for https://github.com/vector-im/riot-ios/issues/1354
+    // but it creates a regression that is worse than the bug it fixes.
+    // self.mxkButton.titleLabel.text = nil;
 }
 
 @end
