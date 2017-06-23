@@ -425,7 +425,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         else
         {
-            [[MXKSoundPlayer sharedInstance] stopPlaying];
+            [[MXKSoundPlayer sharedInstance] stopPlayingWithAudioSessionDeactivation:NO];
         }
         
         _isRinging = isRinging;
@@ -548,6 +548,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             break;
         case MXCallStateCreateOffer:
         {
+            // When CallKit is enabled and we have an outgoing call, we need to start playing ringback sound
+            // only after AVAudioSession will be activated by the system otherwise the sound will be gone.
+            // We always receive signal about MXCallStateCreateOffer earlier than the system activates AVAudioSession
+            // so we start playing ringback sound only on AVAudioSession activation in handleAudioSessionActivationNotification
             BOOL isCallKitAvailable = [MXCallKitAdapter callKitAvailable] && [MXKAppSettings standardAppSettings].isCallKitEnabled;
             if (!isCallKitAvailable)
             {
@@ -617,10 +621,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             }
             else
             {
-                [[MXKSoundPlayer sharedInstance] stopPlaying];
-                
-                // Release the audio session to allow resuming of background music app
-                [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+                [[MXKSoundPlayer sharedInstance] stopPlayingWithAudioSessionDeactivation:YES];
             }
             
             // Except in case of call error, quit the screen right now
