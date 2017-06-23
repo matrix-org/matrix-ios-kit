@@ -1,3 +1,16 @@
+Changes in MatrixKit in 0.5.1 (2017-06-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.8.1).
+ * MXCallViewController: Add waiting status string for MXCallViewController, thanks @morozkin.
+ * Add MXKSoundPlayer to handle app sounds, thanks to @morozkin (PR #306 #307).
+
+Bug fixes:
+ * MXKRoomDataSourceManager: Do not accept call of roomDataSourceForRoom with roomId = nil.
+ * Home: Tapping on an unread room on home page takes you to the wrong room (https://github.com/vector-im/riot-ios#1304).
+ * Member page: empty items (vector-im/riot-ios#1323).
+
 Changes in MatrixKit in 0.5.0 (2017-06-16)
 ==========================================
 
