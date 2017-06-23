@@ -21,8 +21,8 @@
 
 @interface MXKReceiptSendersContainer ()
 
-@property (nonatomic) NSArray <MXRoomMember *> *roomMembers;
-@property (nonatomic) NSArray <UIImage *> *placeholders;
+@property (nonatomic, readwrite) NSArray <MXRoomMember *> *roomMembers;
+@property (nonatomic, readwrite) NSArray <UIImage *> *placeholders;
 
 @end
 
@@ -46,18 +46,18 @@
 
 - (void)addTapGestureRecognizer
 {
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openRecieptDetails)];
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openReceiptDetails)];
     [tapRecognizer setNumberOfTapsRequired:1];
     [tapRecognizer setNumberOfTouchesRequired:1];
     [self addGestureRecognizer:tapRecognizer];
     self.userInteractionEnabled = YES;
 }
 
-- (void)openRecieptDetails
+- (void)openReceiptDetails
 {
-    if ([self.delegate respondsToSelector:@selector(didTapReceiptsContainerWithRestClient:RoomMembers:avatars:recieptDescriptions:)])
+    if ([self.delegate respondsToSelector:@selector(didTapReceiptsContainerWithRestClient:session:roomMembers:avatars:receipts:)])
     {
-        [self.delegate didTapReceiptsContainerWithRestClient:self.restClient RoomMembers:self.roomMembers avatars:self.placeholders recieptDescriptions:self.recieptDescriptions];
+        [self.delegate didTapReceiptsContainerWithRestClient:self.restClient session:self.mxSession roomMembers:self.roomMembers avatars:self.placeholders receipts:self.readReceipts];
     }
 }
 

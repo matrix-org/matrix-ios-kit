@@ -22,14 +22,16 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    [self configureAvatarImageView];
+    self.avatarImageView.enableInMemoryCache = YES;
 }
 
-- (void)configureAvatarImageView
-{
-    self.avatarImageView.layer.cornerRadius = CGRectGetWidth(self.avatarImageView.frame)/2;
-    self.avatarImageView.clipsToBounds = YES;
-    self.avatarImageView.enableInMemoryCache = YES;
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (self.avatarImageView) {
+        //Make imageView round
+        self.avatarImageView.layer.cornerRadius = CGRectGetWidth(self.avatarImageView.frame)/2;
+        self.avatarImageView.clipsToBounds = YES;
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

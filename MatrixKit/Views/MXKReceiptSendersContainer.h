@@ -34,11 +34,11 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
 /*
  Protocol to provide interface for actions related to the MXKReceiptSendersContainer view
  */
-@protocol MXKRecieptSendersContainerDelegate <NSObject>
+@protocol MXKReceiptSendersContainerDelegate <NSObject>
 
 @optional
 
-- (void)didTapReceiptsContainerWithRestClient:(MXRestClient *)restClient RoomMembers:(NSArray *)roomMembers avatars:(NSArray *)avatars recieptDescriptions:(NSArray *)recieptDescriptions;
+- (void)didTapReceiptsContainerWithRestClient:(MXRestClient *)restClient session:(MXSession *)session roomMembers:(NSArray *)roomMembers avatars:(NSArray *)avatars receipts:(NSArray *)readReceipts;
 
 @end
 
@@ -53,6 +53,11 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  The REST client used to resize matrix user's avatar.
  */
 @property (nonatomic) MXRestClient* restClient;
+
+/*
+ The MXSession used to format the events in the details view
+ */
+@property (nonatomic) MXSession *mxSession;
 
 /**
  The maximum number of avatars displayed in the container. 3 by default.
@@ -69,15 +74,25 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  */
 @property (nonatomic) UILabel* moreLabel;
 
-/**
- The receipt descriptions to show in the details view controller.
+/*
+ The read receipt objects for details required in the details view
  */
-@property (nonatomic) NSArray <NSString *> *recieptDescriptions;
+@property (nonatomic) NSArray <MXReceiptData *> *readReceipts;
 
 /*
  The delegate of the ReadReceiptsContainer
  */
-@property (nonatomic, weak) id<MXKRecieptSendersContainerDelegate> delegate;
+@property (nonatomic, weak) id<MXKReceiptSendersContainerDelegate> delegate;
+
+/*
+ The array of the room members that will be displayed in the container
+ */
+@property (nonatomic, readonly) NSArray <MXRoomMember *> *roomMembers;
+
+/*
+ The placeholders of the room members that will be shown if the users don't have avatars
+ */
+@property (nonatomic, readonly) NSArray <UIImage *> *placeholders;
 
 /**
  Initializes an `MXKReceiptSendersContainer` object with a frame and a REST client.
