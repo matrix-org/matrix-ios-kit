@@ -16,7 +16,10 @@
 
 #import "MXKCallViewController.h"
 
+#import <MatrixSDK/MXCallKitAdapter.h>
+
 #import "MXKAlert.h"
+#import "MXKAppSettings.h"
 #import "MXMediaManager.h"
 #import "MXKSoundPlayer.h"
 #import "MXKTools.h"
@@ -136,6 +139,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Refresh call information
     self.mxCall = mxCall;
+    
+    // Listen to AVAudioSession activation notification if CallKit is available and enabled
+    BOOL isCallKitAvailable = [MXCallKitAdapter callKitAvailable] && [MXKAppSettings standardAppSettings].isCallKitEnabled;
+    if (isCallKitAvailable)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleAudioSessionActivationNotification)
+                                                     name:kMXCallKitAdapterAudioSessionDidActive
+                                                   object:nil];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -145,6 +158,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXCallKitAdapterAudioSessionDidActive object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -411,7 +425,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         else
         {
-            [[MXKSoundPlayer sharedInstance] stopPlaying];
+            [[MXKSoundPlayer sharedInstance] stopPlayingWithAudioSessionDeactivation:NO];
         }
         
         _isRinging = isRinging;
@@ -533,9 +547,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             [localPreviewActivityView startAnimating];
             break;
         case MXCallStateCreateOffer:
-            self.isRinging = YES;
+        {
+            // When CallKit is enabled and we have an outgoing call, we need to start playing ringback sound
+            // only after AVAudioSession will be activated by the system otherwise the sound will be gone.
+            // We always receive signal about MXCallStateCreateOffer earlier than the system activates AVAudioSession
+            // so we start playing ringback sound only on AVAudioSession activation in handleAudioSessionActivationNotification
+            BOOL isCallKitAvailable = [MXCallKitAdapter callKitAvailable] && [MXKAppSettings standardAppSettings].isCallKitEnabled;
+            if (!isCallKitAvailable)
+            {
+                self.isRinging = YES;
+            }
+            
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
             break;
+        }
         case MXCallStateRinging:
             self.isRinging = YES;
             if (call.isVideoCall)
@@ -596,7 +621,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             }
             else
             {
-                [[MXKSoundPlayer sharedInstance] stopPlaying];
+                [[MXKSoundPlayer sharedInstance] stopPlayingWithAudioSessionDeactivation:YES];
             }
             
             // Except in case of call error, quit the screen right now
@@ -726,6 +751,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         return @"busy";
     
     return nil;
+}
+
+- (void)handleAudioSessionActivationNotification
+{
+    // It's only relevant for outgoing calls which aren't in connected state
+    if (self.mxCall.state >= MXCallStateCreateOffer && self.mxCall.state != MXCallStateConnected && self.mxCall.state != MXCallStateEnded)
+    {
+        self.isRinging = YES;
+    }
 }
 
 #pragma mark - UI methods

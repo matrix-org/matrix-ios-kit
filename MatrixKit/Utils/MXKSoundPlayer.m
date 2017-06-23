@@ -45,7 +45,7 @@ static const NSTimeInterval kVibrationInterval = 1.24875;
 {
     if (self.audioPlayer)
     {
-        [self stopPlaying];
+        [self stopPlayingWithAudioSessionDeactivation:NO];
     }
     
     self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
@@ -68,15 +68,18 @@ static const NSTimeInterval kVibrationInterval = 1.24875;
     [self.audioPlayer play];
 }
 
-- (void)stopPlaying
+- (void)stopPlayingWithAudioSessionDeactivation:(BOOL)deactivateAudioSession;
 {
     if (self.audioPlayer)
     {
         [self.audioPlayer stop];
         self.audioPlayer = nil;
         
-        // Release the audio session to allow resuming of background music app
-        [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+        if (deactivateAudioSession)
+        {
+            // Release the audio session to allow resuming of background music app
+            [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+        }
     }
     
     if (self.isVibrating)
