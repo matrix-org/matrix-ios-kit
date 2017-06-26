@@ -31,17 +31,6 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
     ReadReceiptAlignmentRight = 1,
 };
 
-/*
- Protocol to provide interface for actions related to the MXKReceiptSendersContainer view
- */
-@protocol MXKReceiptSendersContainerDelegate <NSObject>
-
-@optional
-
-- (void)didTapReceiptsContainerWithRestClient:(MXRestClient *)restClient session:(MXSession *)session roomMembers:(NSArray *)roomMembers avatars:(NSArray *)avatars receipts:(NSArray *)readReceipts;
-
-@end
-
 /**
  `MXKReceiptSendersContainer` is a view dedicated to display receipt senders by using their avatars.
  
@@ -53,11 +42,6 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  The REST client used to resize matrix user's avatar.
  */
 @property (nonatomic) MXRestClient* restClient;
-
-/*
- The MXSession used to format the events in the details view
- */
-@property (nonatomic) MXSession *mxSession;
 
 /**
  The maximum number of avatars displayed in the container. 3 by default.
@@ -78,11 +62,6 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  The read receipt objects for details required in the details view
  */
 @property (nonatomic) NSArray <MXReceiptData *> *readReceipts;
-
-/*
- The delegate of the ReadReceiptsContainer
- */
-@property (nonatomic, weak) id<MXKReceiptSendersContainerDelegate> delegate;
 
 /*
  The array of the room members that will be displayed in the container

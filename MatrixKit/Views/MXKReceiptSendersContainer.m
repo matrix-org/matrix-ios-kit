@@ -38,27 +38,8 @@
         _maxDisplayedAvatars = 3;
         _avatarMargin = 2.0;
         _moreLabel = nil;
-        
-        [self addTapGestureRecognizer];
     }
     return self;
-}
-
-- (void)addTapGestureRecognizer
-{
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openReceiptDetails)];
-    [tapRecognizer setNumberOfTapsRequired:1];
-    [tapRecognizer setNumberOfTouchesRequired:1];
-    [self addGestureRecognizer:tapRecognizer];
-    self.userInteractionEnabled = YES;
-}
-
-- (void)openReceiptDetails
-{
-    if ([self.delegate respondsToSelector:@selector(didTapReceiptsContainerWithRestClient:session:roomMembers:avatars:receipts:)])
-    {
-        [self.delegate didTapReceiptsContainerWithRestClient:self.restClient session:self.mxSession roomMembers:self.roomMembers avatars:self.placeholders receipts:self.readReceipts];
-    }
 }
 
 - (void)refreshReceiptSenders:(NSArray<MXRoomMember*>*)roomMembers withPlaceHolders:(NSArray<UIImage*>*)placeHolders andAlignment:(ReadReceiptsAlignment)alignment

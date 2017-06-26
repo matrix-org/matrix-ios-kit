@@ -74,6 +74,13 @@ extern NSString *const kMXKRoomBubbleCellTapOnOverlayContainer;
 extern NSString *const kMXKRoomBubbleCellTapOnContentView;
 
 /**
+ Action identifier used when the user tapped on receipts area.
+ 
+ The userInfo disctionary contains an 'MXKReceiptSendersContainer' object under the 'kMXKRoomBubbleCellReceiptsContainerKey' key, representing the receipts container which was tapped on.
+ */
+extern NSString *const kMXKRoomBubbleCellTapOnReceiptsContainer;
+
+/**
  Action identifier used when the user pressed unsent button displayed in front of an unsent event.
  
  The `userInfo` dictionary contains an `MXEvent` object under the `kMXKRoomBubbleCellEventKey` key, representing the unsent event.
@@ -120,6 +127,7 @@ extern NSString *const kMXKRoomBubbleCellShouldInteractWithURL;
  */
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
+extern NSString *const kMXKRoomBubbleCellReceiptsContainerKey;
 extern NSString *const kMXKRoomBubbleCellUrl;
 
 #pragma mark - MXKRoomBubbleTableViewCell
