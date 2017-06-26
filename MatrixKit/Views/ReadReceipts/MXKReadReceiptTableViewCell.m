@@ -23,6 +23,9 @@
 {
     [super awakeFromNib];
     self.avatarImageView.enableInMemoryCache = YES;
+    NSMutableAttributedString *readString = [[NSMutableAttributedString alloc] initWithAttributedString:self.readLabel.attributedText];
+    [readString setAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:15]} range:NSMakeRange(0, readString.length)];
+    self.readLabel.attributedText = readString;
 }
 
 - (void)layoutSubviews {

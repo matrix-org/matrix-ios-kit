@@ -23,6 +23,7 @@
 
 @property (weak, nonatomic) IBOutlet MXKImageView *avatarImageView;
 @property (weak, nonatomic) IBOutlet UILabel *displayNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *readLabel;
 @property (weak, nonatomic) IBOutlet UILabel *receiptDescriptionLabel;
 
 @end
