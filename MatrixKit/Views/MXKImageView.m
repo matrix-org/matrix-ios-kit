@@ -201,6 +201,9 @@
 
 - (void)setImage:(UIImage *)anImage
 {
+    // remove the observers
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     currentImage = anImage;
     imageView.image = anImage;
 
