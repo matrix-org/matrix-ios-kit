@@ -157,6 +157,11 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (nonatomic) UIImage *picturePlaceholder;
 
 /**
+ The list of the temporary subviews that should be removed before reusing the cell (nil by default).
+ */
+@property (nonatomic) NSMutableArray<UIView*> *tmpSubviews;
+
+/**
  The read receipts alignment.
  By default, they are left aligned.
  */
