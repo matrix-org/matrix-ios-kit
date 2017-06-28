@@ -91,6 +91,12 @@
             UIButton *unsentButton = (UIButton *)sender;
             for (MXKRoomBubbleComponent *component in bubbleComponents)
             {
+                // Ignore components without display.
+                if (!component.attributedTextMessage)
+                {
+                    continue;
+                }
+                
                 if (unsentButton.frame.origin.y == component.position.y)
                 {
                     selectedEvent = component.event;
