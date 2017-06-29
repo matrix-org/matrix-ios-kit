@@ -37,14 +37,14 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hYv-c6-BwP" userLabel="Read:">
-                        <rect key="frame" x="69" y="39" width="44" height="20"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hYv-c6-BwP">
+                        <rect key="frame" x="69" y="39" width="523" height="20"/>
                         <accessibility key="accessibilityConfiguration" identifier="ContactInformationLabel"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="Okh-b1-vgp"/>
                         </constraints>
                         <attributedString key="attributedText">
-                            <fragment content="Read: ">
+                            <fragment content="Receipt description">
                                 <attributes>
                                     <color key="NSColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <font key="NSFont" size="15" name=".SFNSText"/>
@@ -54,23 +54,15 @@
                         </attributedString>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XfT-4K-rHh">
-                        <rect key="frame" x="113" y="40" width="479" height="18"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstItem="81S-Eu-hhs" firstAttribute="top" secondItem="NZF-Mc-lUr" secondAttribute="top" constant="14" id="0FY-mW-Ezp"/>
-                    <constraint firstItem="XfT-4K-rHh" firstAttribute="leading" secondItem="hYv-c6-BwP" secondAttribute="trailing" id="Bz6-RJ-KZX"/>
                     <constraint firstItem="hYv-c6-BwP" firstAttribute="leading" secondItem="Shf-ua-Pvi" secondAttribute="trailing" constant="14" id="DOK-TI-C9o"/>
                     <constraint firstItem="Shf-ua-Pvi" firstAttribute="leading" secondItem="NZF-Mc-lUr" secondAttribute="leading" constant="13" id="KaH-46-6EX"/>
                     <constraint firstItem="Shf-ua-Pvi" firstAttribute="top" secondItem="NZF-Mc-lUr" secondAttribute="top" constant="15" id="Oy7-id-PWO"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="XfT-4K-rHh" secondAttribute="trailing" id="PZ7-FO-CMe"/>
-                    <constraint firstItem="XfT-4K-rHh" firstAttribute="centerY" secondItem="hYv-c6-BwP" secondAttribute="centerY" id="XBv-6K-ZFK"/>
                     <constraint firstItem="81S-Eu-hhs" firstAttribute="leading" secondItem="Shf-ua-Pvi" secondAttribute="trailing" constant="14" id="h7T-GG-Roz"/>
                     <constraint firstItem="hYv-c6-BwP" firstAttribute="top" secondItem="81S-Eu-hhs" secondAttribute="bottom" constant="4" id="hx7-bN-rVo"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="hYv-c6-BwP" secondAttribute="trailing" id="te4-DP-E42"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -78,8 +70,7 @@
             <connections>
                 <outlet property="avatarImageView" destination="Shf-ua-Pvi" id="ISY-lV-obs"/>
                 <outlet property="displayNameLabel" destination="81S-Eu-hhs" id="cRn-w0-jFZ"/>
-                <outlet property="readLabel" destination="hYv-c6-BwP" id="pbS-7I-TiI"/>
-                <outlet property="receiptDescriptionLabel" destination="XfT-4K-rHh" id="vkW-Su-Gex"/>
+                <outlet property="receiptDescriptionLabel" destination="hYv-c6-BwP" id="HSj-gj-jcQ"/>
             </connections>
             <point key="canvasLocation" x="109" y="125"/>
         </tableViewCell>
