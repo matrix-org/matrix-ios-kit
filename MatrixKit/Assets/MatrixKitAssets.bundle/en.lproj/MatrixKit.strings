@@ -270,7 +270,6 @@
 "network_error_not_reachable" = "Please check your network connectivity";
 "user_id_placeholder" = "ex: @bob:homeserver";
 "ssl_homeserver_url" = "Home Server URL: %@";
-"receipt_status_read" = "Read: ";
 
 // Permissions
 "camera_access_not_granted_for_call" = "Video calls require access to the Camera but %@ doesn't have permission to use it";

@@ -25,7 +25,8 @@
     self.avatarImageView.enableInMemoryCache = YES;
 }
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
     [super layoutSubviews];
     if (self.avatarImageView) {
         //Make imageView round
