@@ -48,11 +48,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.10)
-  - MatrixSDK (from `../matrix-ios-sdk/MatrixSDK.podspec`)
-
-EXTERNAL SOURCES:
-  MatrixSDK:
-    :path: ../matrix-ios-sdk/MatrixSDK.podspec
+  - MatrixSDK (= 0.8.1)
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
@@ -66,6 +62,6 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
   MatrixSDK: 0b7e63cd59a6344dcd503157f4bada4a69dc75bd
 
-PODFILE CHECKSUM: b9305562941e6fed0420ecc2a83bb490c48336fd
+PODFILE CHECKSUM: 86e76c844f1ebf805c7fc39235e6e719a98c05e1
 
 COCOAPODS: 1.2.1
