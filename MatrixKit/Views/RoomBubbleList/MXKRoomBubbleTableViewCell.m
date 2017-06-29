@@ -924,6 +924,12 @@ static NSMutableDictionary *childClasses;
                 
                 for (MXKRoomBubbleComponent *component in bubbleComponents)
                 {
+                    // Ignore components without display.
+                    if (!component.attributedTextMessage)
+                    {
+                        continue;
+                    }
+                        
                     if (tapPoint.y < component.position.y)
                     {
                         break;
@@ -1053,6 +1059,12 @@ static NSMutableDictionary *childClasses;
                 CGPoint longPressPoint = [longPressGestureRecognizer locationInView:view];
                 for (MXKRoomBubbleComponent *component in bubbleComponents)
                 {
+                    // Ignore components without display.
+                    if (!component.attributedTextMessage)
+                    {
+                        continue;
+                    }
+                    
                     if (longPressPoint.y < component.position.y)
                     {
                         break;
