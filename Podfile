@@ -8,7 +8,7 @@ target "MatrixKitSample" do
 
 # Different flavours of pods to Matrix SDK
 # The tagged version on which this version of MatrixKit has been built
-pod 'MatrixSDK', '0.8.1'
+#pod 'MatrixSDK', '0.8.1'
 
 # The lastest release available on the CocoaPods repository 
 #pod 'MatrixSDK'
@@ -18,7 +18,7 @@ pod 'MatrixSDK', '0.8.1'
 
 # The one used for developping both MatrixSDK and MatrixKit
 # Note that MatrixSDK must be cloned into a folder called matrix-ios-sdk next to the MatrixKit folder
-#pod 'MatrixSDK', :path => '../matrix-ios-sdk/MatrixSDK.podspec'
+pod 'MatrixSDK', :path => '../matrix-ios-sdk/MatrixSDK.podspec'
 
 pod 'libPhoneNumber-iOS', '~> 0.9.10'
 pod 'HPGrowingTextView', '~> 1.1'
