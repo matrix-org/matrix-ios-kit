@@ -45,6 +45,12 @@ extern NSString *const kCmdChangeRoomTopic;
 {
 @protected
     /**
+     The identifier of the current event displayed at the bottom of the table (just above the toolbar).
+     Use to anchor the message displayed at the bottom during table refresh.
+     */
+    NSString *currentEventIdAtTableBottom;
+    
+    /**
      Boolean value used to scroll to bottom the bubble history after refresh.
      */
     BOOL shouldScrollToBottomOnTableRefresh;

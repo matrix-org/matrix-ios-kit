@@ -68,12 +68,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     BOOL isScrollingToBottom;
     
     /**
-     The identifier of the current event displayed at the bottom of the table (just above the toolbar).
-     Use to anchor the message displayed at the bottom during table refresh.
-     */
-    NSString *currentEventIdAtTableBottom;
-    
-    /**
      Date of the last observed typing
      */
     NSDate *lastTypingDate;
