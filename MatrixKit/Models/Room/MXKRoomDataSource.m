@@ -1926,6 +1926,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         NSAssert([class conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)], @"MXKRoomDataSource only manages MXKCellData that conforms to MXKRoomBubbleCellDataStoring protocol");
 
                         BOOL eventManaged = NO;
+                        BOOL updatedBubbleDataHadNoDisplay = NO;
                         id<MXKRoomBubbleCellDataStoring> bubbleData;
                         if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
                         {
@@ -1941,6 +1942,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                             @synchronized (bubbleData)
                             {
+                                updatedBubbleDataHadNoDisplay = bubbleData.hasNoDisplay;
                                 eventManaged = [bubbleData addEvent:queuedEvent.event andRoomState:queuedEvent.state];
                             }
                         }
@@ -2068,6 +2070,116 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 [bubblesSnapshot addObject:bubbleData];
                                 
                                 addedLiveCellCount++;
+                            }
+                        }
+                        else if (updatedBubbleDataHadNoDisplay && !bubbleData.hasNoDisplay)
+                        {
+                            // Here the event has been added in an existing bubble data which had no display,
+                            // and the added event provides a display to this bubble data.
+                            if (queuedEvent.direction == MXTimelineDirectionBackwards)
+                            {
+                                // The bubble is the first one.
+                                
+                                // Pagination handling
+                                if ((self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay) && bubbleData.date)
+                                {
+                                    // A new pagination starts with this bubble data
+                                    bubbleData.isPaginationFirstBubble = YES;
+                                    
+                                    // Look for the first next bubble with date to check whether its pagination title is still relevant.
+                                    if (bubblesSnapshot.count)
+                                    {
+                                        NSInteger index = 1;
+                                        id<MXKRoomBubbleCellDataStoring> nextBubbleDataWithDate;
+                                        NSString *firstNextBubbleDateString;
+                                        while (index < bubblesSnapshot.count)
+                                        {
+                                            nextBubbleDataWithDate = bubblesSnapshot[index++];
+                                            firstNextBubbleDateString = [self.eventFormatter dateStringFromDate:nextBubbleDataWithDate.date withTime:NO];
+                                            
+                                            if (firstNextBubbleDateString)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if (firstNextBubbleDateString)
+                                        {
+                                            NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                            nextBubbleDataWithDate.isPaginationFirstBubble = (bubbleDateString && ![firstNextBubbleDateString isEqualToString:bubbleDateString]);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    bubbleData.isPaginationFirstBubble = NO;
+                                }
+                                
+                                // Sender information are required for this new first bubble data
+                                bubbleData.shouldHideSenderInformation = NO;
+                                
+                                // Check whether this information is still relevant for the next bubble.
+                                if (bubblesSnapshot.count > 1)
+                                {
+                                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubblesSnapshot[1];
+                                    
+                                    if (nextBubbleData.isPaginationFirstBubble == NO)
+                                    {
+                                        // Check whether the current first bubble has been sent by the same user.
+                                        nextBubbleData.shouldHideSenderInformation |= [nextBubbleData hasSameSenderAsBubbleCellData:bubbleData];
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // The bubble data is the last one
+                                
+                                // Pagination handling
+                                if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+                                {
+                                    // Check whether a new pagination starts at this bubble
+                                    NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                    
+                                    // Look for the first previous bubble with date
+                                    NSInteger index = bubblesSnapshot.count - 1;
+                                    NSString *firstPreviousBubbleDateString;
+                                    while (index--)
+                                    {
+                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = bubblesSnapshot[index];
+                                        firstPreviousBubbleDateString = [self.eventFormatter dateStringFromDate:previousBubbleData.date withTime:NO];
+                                        
+                                        if (firstPreviousBubbleDateString)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (firstPreviousBubbleDateString)
+                                    {
+                                        bubbleData.isPaginationFirstBubble = (bubbleDateString && ![bubbleDateString isEqualToString:firstPreviousBubbleDateString]);
+                                    }
+                                    else
+                                    {
+                                        bubbleData.isPaginationFirstBubble = (bubbleDateString != nil);
+                                    }
+                                }
+                                else
+                                {
+                                    bubbleData.isPaginationFirstBubble = NO;
+                                }
+                                
+                                // Check whether the sender information is relevant for this new bubble.
+                                bubbleData.shouldHideSenderInformation = NO;
+                                if (bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
+                                {
+                                    // Check whether the previous bubble has been sent by the same user.
+                                    NSInteger index = bubblesSnapshot.count - 1;
+                                    if (index--)
+                                    {
+                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = bubblesSnapshot[index];
+                                        bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
+                                    }
+                                }
                             }
                         }
                         
