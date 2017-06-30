@@ -1,3 +1,15 @@
+Changes in MatrixKit in 0.5.2 (2017-06-30)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.8.2).
+ * Add read receipts details screen, thanks to @aramsargsyan (PR #310).
+
+Bug fixes:
+ * Chat screen: the sender avatar is missing (https://github.com/vector-im/riot-ios#1361).
+ * MXKEventFormatter: Fix URLs with 2 hashes create wrong links (https://github.com/vector-im/riot-ios#1365).
+ * Room with no icon ended up with the icon of a different room.
+
 Changes in MatrixKit in 0.5.1 (2017-06-23)
 ==========================================
 
