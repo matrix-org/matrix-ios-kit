@@ -58,6 +58,21 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  */
 @property (nonatomic) UILabel* moreLabel;
 
+/*
+ The read receipt objects for details required in the details view
+ */
+@property (nonatomic) NSArray <MXReceiptData *> *readReceipts;
+
+/*
+ The array of the room members that will be displayed in the container
+ */
+@property (nonatomic, readonly) NSArray <MXRoomMember *> *roomMembers;
+
+/*
+ The placeholders of the room members that will be shown if the users don't have avatars
+ */
+@property (nonatomic, readonly) NSArray <UIImage *> *placeholders;
+
 /**
  Initializes an `MXKReceiptSendersContainer` object with a frame and a REST client.
  

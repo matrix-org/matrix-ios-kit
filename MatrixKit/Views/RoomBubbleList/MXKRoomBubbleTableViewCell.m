@@ -41,6 +41,7 @@ NSString *const kMXKRoomBubbleCellShouldInteractWithURL = @"kMXKRoomBubbleCellSh
 
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
+NSString *const kMXKRoomBubbleCellReceiptsContainerKey = @"kMXKRoomBubbleCellReceiptsContainerKey";
 NSString *const kMXKRoomBubbleCellUrl = @"kMXKRoomBubbleCellUrl";
 
 static BOOL _disableLongPressGestureOnEvent;
@@ -148,7 +149,7 @@ static BOOL _disableLongPressGestureOnEvent;
     
     if (self.bubbleOverlayContainer)
     {
-        // Add tap recognizer to open attachment
+        // Add tap recognizer on overlay container
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onOverlayTap:)];
         [tapGesture setNumberOfTouchesRequired:1];
         [tapGesture setNumberOfTapsRequired:1];
@@ -721,8 +722,18 @@ static BOOL _disableLongPressGestureOnEvent;
     }
     self.bubbleInfoContainer.hidden = YES;
     
+    // Remove temporary subviews
+    if (self.tmpSubviews)
+    {
+        for (UIView *view in self.tmpSubviews)
+        {
+            [view removeFromSuperview];
+        }
+        self.tmpSubviews = nil;
+    }
+    
     // Remove potential overlay subviews
-    if (self.bubbleOverlayContainer && self.bubbleOverlayContainer.subviews.count > 0)
+    if (self.bubbleOverlayContainer)
     {
         NSArray* subviews = self.bubbleOverlayContainer.subviews;
         
@@ -730,8 +741,9 @@ static BOOL _disableLongPressGestureOnEvent;
         {
             [view removeFromSuperview];
         }
+        
+        self.bubbleOverlayContainer.hidden = YES;
     }
-    self.bubbleOverlayContainer.hidden = YES;
     
     if (self.progressView)
     {

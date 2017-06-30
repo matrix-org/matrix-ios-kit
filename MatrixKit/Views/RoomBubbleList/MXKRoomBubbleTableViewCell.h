@@ -120,6 +120,7 @@ extern NSString *const kMXKRoomBubbleCellShouldInteractWithURL;
  */
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
+extern NSString *const kMXKRoomBubbleCellReceiptsContainerKey;
 extern NSString *const kMXKRoomBubbleCellUrl;
 
 #pragma mark - MXKRoomBubbleTableViewCell
@@ -154,6 +155,11 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  The default picture displayed when no picture is available.
  */
 @property (nonatomic) UIImage *picturePlaceholder;
+
+/**
+ The list of the temporary subviews that should be removed before reusing the cell (nil by default).
+ */
+@property (nonatomic) NSMutableArray<UIView*> *tmpSubviews;
 
 /**
  The read receipts alignment.
