@@ -22,9 +22,11 @@ Avery Pierce <aapierce0 at gmail.com>
  
 Denis Morozov <dmorozkn at gmail.com>
  * PR #256 Attachments viewcontroller: stop correctly the video player
+ * VoIP improvements
 
 Aram Sargsyan <aram.sargsyan.1997 at gmail.com>
  * PR #259 Attachments viewcontroller: interactive animations
+ * PR #1341: Read receipts details
  
 Javier Quevedo Fernández <jquevedo at gmail.com>
  * PR #278 Update a snippet of code in Readme
