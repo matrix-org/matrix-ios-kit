@@ -72,6 +72,8 @@
 		F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib */; };
 		F011FA681CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = F011FA671CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m */; };
 		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
+		F01439451F067929006E5D8C /* MXKReadReceiptTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01439431F067929006E5D8C /* MXKReadReceiptTableViewCell.m */; };
+		F01439461F067929006E5D8C /* MXKReadReceiptTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01439441F067929006E5D8C /* MXKReadReceiptTableViewCell.xib */; };
 		F01449AB1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */; };
 		F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */; };
 		F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A91B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m */; };
@@ -339,6 +341,9 @@
 		F011FA671CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAuthenticationRecaptchaWebView.m; sourceTree = "<group>"; };
 		F01267481AF8A9440067D962 /* MXK3PID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXK3PID.h; sourceTree = "<group>"; };
 		F01267491AF8A9440067D962 /* MXK3PID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXK3PID.m; sourceTree = "<group>"; };
+		F01439421F067929006E5D8C /* MXKReadReceiptTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKReadReceiptTableViewCell.h; sourceTree = "<group>"; };
+		F01439431F067929006E5D8C /* MXKReadReceiptTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKReadReceiptTableViewCell.m; sourceTree = "<group>"; };
+		F01439441F067929006E5D8C /* MXKReadReceiptTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKReadReceiptTableViewCell.xib; sourceTree = "<group>"; };
 		F01449A51B53FA7600EA7D73 /* MXKPushRuleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPushRuleTableViewCell.h; sourceTree = "<group>"; };
 		F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPushRuleTableViewCell.m; sourceTree = "<group>"; };
 		F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKPushRuleTableViewCell.xib; sourceTree = "<group>"; };
@@ -731,6 +736,7 @@
 		3219CBBD1AA6FB1C0027D7E2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F01439411F067929006E5D8C /* ReadReceipts */,
 				32FBDAF51E4484C40033C519 /* EncryptionKeys */,
 				F09617BF1DE881D800093E9D /* EncryptionInfoView */,
 				F09617B91DE8478C00093E9D /* DeviceView */,
@@ -938,6 +944,16 @@
 				F094D15D1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib */,
 			);
 			path = RoomInputToolbar;
+			sourceTree = "<group>";
+		};
+		F01439411F067929006E5D8C /* ReadReceipts */ = {
+			isa = PBXGroup;
+			children = (
+				F01439421F067929006E5D8C /* MXKReadReceiptTableViewCell.h */,
+				F01439431F067929006E5D8C /* MXKReadReceiptTableViewCell.m */,
+				F01439441F067929006E5D8C /* MXKReadReceiptTableViewCell.xib */,
+			);
+			path = ReadReceipts;
 			sourceTree = "<group>";
 		};
 		F01449A41B53FA7600EA7D73 /* PushRule */ = {
@@ -1340,6 +1356,7 @@
 				F06CDD601EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */,
+				F01439461F067929006E5D8C /* MXKReadReceiptTableViewCell.xib in Resources */,
 				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
 				F0316E441B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.xib in Resources */,
 				F00FA8651C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib in Resources */,
@@ -1623,6 +1640,7 @@
 				3230A3751ACADC1800CC57F5 /* MXKRoomDataSourceManager.m in Sources */,
 				F011FA681CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m in Sources */,
 				F0CF98E11B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSwitch.m in Sources */,
+				F01439451F067929006E5D8C /* MXKReadReceiptTableViewCell.m in Sources */,
 				F02528961C1092D300E1FE1B /* MXKCollectionViewCell.m in Sources */,
 				F0F148A61AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m in Sources */,
 				F096A3BF1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.m in Sources */,
