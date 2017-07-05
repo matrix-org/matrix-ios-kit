@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -71,12 +72,12 @@
 /**
  Tell whether this bubble has nothing to display (neither a message nor an attachment).
  */
-@property (nonatomic) BOOL hasNoDisplay;
+@property (nonatomic, readonly) BOOL hasNoDisplay;
 
 /**
  The list of events (`MXEvent` instances) handled by this bubble.
  */
-@property (nonatomic, readonly) NSArray *events;
+@property (nonatomic, readonly) NSArray<MXEvent*> *events;
 
 /**
  The bubble attachment (if any).
@@ -149,6 +150,12 @@
  A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
  */
 @property (nonatomic) BOOL useCustomUnsentButton;
+
+/**
+ An integer that you can use to identify cell data in your application.
+ The default value is 0. You can set the value of this tag and use that value to identify the cell data later.
+ */
+@property (nonatomic) NSInteger tag;
 
 #pragma mark - Public methods
 /**
