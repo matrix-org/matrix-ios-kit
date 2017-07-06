@@ -157,6 +157,37 @@
  */
 @property (nonatomic) NSInteger tag;
 
+/**
+ A Boolean value that indicates if the cell is collapsable.
+ */
+@property (nonatomic) BOOL collapsable;
+
+/**
+ A Boolean value that indicates if the cell and its serie is collapsed.
+ */
+@property (nonatomic) BOOL collapsed;
+
+/**
+ The attributed string to display when the collapsable cells serie is collapses.
+ It is not nil only for the oldest cell of the cells serie.
+ */
+@property (nonatomic) NSAttributedString *collapsedAttributedTextMessage;
+
+/**
+ Bidirectional linked list of cells that can be collapsed together.
+ If prevCollapsableCellData nil, this cell data instance is the data for the oldest
+ cell of the collapsable cells serie.
+ */
+@property (nonatomic, weak) id<MXKRoomBubbleCellDataStoring> prevCollapsableCellData;
+@property (nonatomic, weak) id<MXKRoomBubbleCellDataStoring> nextCollapsableCellData;
+
+/**
+ The room state to use for computing or updating the data to display for the serie when it is
+ collapsed.
+ It is not nil only for the oldest cell of the cells serie.
+ */
+@property (nonatomic, weak) MXRoomState *collapseState;
+
 #pragma mark - Public methods
 /**
  Create a new `MXKRoomBubbleCellDataStoring` object for a new bubble cell.

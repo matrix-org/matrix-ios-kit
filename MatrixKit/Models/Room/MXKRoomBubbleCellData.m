@@ -29,6 +29,7 @@
 @synthesize textMessage, attributedTextMessage;
 @synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton, hasNoDisplay;
 @synthesize tag;
+@synthesize collapsable, collapsed, collapsedAttributedTextMessage, prevCollapsableCellData, nextCollapsableCellData, collapseState;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
@@ -528,12 +529,20 @@
     // Check whether at least one component has a string description.
     @synchronized(bubbleComponents)
     {
-        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+        if (self.collapsed)
         {
-            if (roomBubbleComponent.attributedTextMessage)
+            // Collapsed cells have no display except their cell header
+            noDisplay = !self.collapsedAttributedTextMessage;
+        }
+        else
+        {
+            for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
             {
-                noDisplay = NO;
-                break;
+                if (roomBubbleComponent.attributedTextMessage)
+                {
+                    noDisplay = NO;
+                    break;
+                }
             }
         }
     }

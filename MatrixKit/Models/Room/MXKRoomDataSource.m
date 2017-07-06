@@ -1907,7 +1907,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 {
                     bubblesSnapshot = [bubbles mutableCopy];
                 }
-                
+
+                NSMutableSet<id<MXKRoomBubbleCellDataStoring>> *collapsingCellDataSeries = [NSMutableSet set];
+
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
                     @autoreleasepool
@@ -1950,12 +1952,53 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         if (NO == eventManaged)
                         {
                             // The event has not been concatenated to an existing cell, create a new bubble for this event
-                            bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
-                            if (!bubbleData)
+                            id<MXKRoomBubbleCellDataStoring> newBubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
+                            if (!newBubbleData)
                             {
                                 // The event is ignored
                                 continue;
                             }
+
+                            if (newBubbleData.collapsable)
+                            {
+                                if (bubbleData.collapsable)
+                                {
+                                    // TODO: check if types match before associate them
+
+                                    // Link collapsable cell data objects together
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards)
+                                    {
+                                        newBubbleData.nextCollapsableCellData = bubbleData;
+                                        bubbleData.prevCollapsableCellData = newBubbleData;
+
+                                        if (bubbleData.collapseState)
+                                        {
+                                            // newBubbleData becomes the oldest of the serie
+                                            newBubbleData.collapseState = queuedEvent.state;
+                                            bubbleData.collapseState = nil;
+                                            bubbleData.collapsedAttributedTextMessage = nil;
+
+                                            [collapsingCellDataSeries addObject:newBubbleData];
+                                            [collapsingCellDataSeries removeObject:bubbleData];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        bubbleData.nextCollapsableCellData = newBubbleData;
+                                        newBubbleData.prevCollapsableCellData = bubbleData;
+
+                                        [collapsingCellDataSeries addObject:bubbleData];
+                                    }
+                                }
+                                else
+                                {
+                                    // Starting point for a collapsable serie of cells
+                                    newBubbleData.collapseState = queuedEvent.state;
+                                    [collapsingCellDataSeries addObject:newBubbleData];
+                                }
+                            }
+
+                            bubbleData = newBubbleData;
 
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
@@ -2195,6 +2238,29 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(localEventDidChangeIdentifier:) name:kMXEventDidChangeIdentifierNotification object:queuedEvent.event];
                         }
                     }
+                }
+
+                // Compose collapsable data
+                for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
+                {
+                    // TODO: Manage serie of single element
+
+                    // Get all events of the series
+                    NSMutableArray<MXEvent*> *events = [NSMutableArray array];
+
+                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+                    do
+                    {
+                        NSLog(@"    - %@: %@", nextBubbleData, nextBubbleData.attributedTextMessage.string);
+                        [events addObjectsFromArray:nextBubbleData.events];
+                    }
+                    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+
+                    // TODO: use MXKEventFormatter and events and bubbleData.collapseState
+                    bubbleData.collapsedAttributedTextMessage = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ memberships", @(events.count)]];
+
+                    // TODO
+                    bubbleData.attributedTextMessage = bubbleData.collapsedAttributedTextMessage;
                 }
             }
             eventsToProcessSnapshot = nil;
