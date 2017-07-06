@@ -235,7 +235,7 @@
         }
         else if ([msgtype isEqualToString:kMXMessageTypeAudio])
         {
-            // Not supported yet
+            isSupportedAttachment = hasUrl || hasFile;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeVideo])
         {

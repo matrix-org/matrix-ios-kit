@@ -3425,13 +3425,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     NSLog(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
                 }
             }
-            else if (selectedAttachment.type == MXKAttachmentTypeAudio)
-            {
-            }
             else if (selectedAttachment.type == MXKAttachmentTypeLocation)
             {
             }
-            else if (selectedAttachment.type == MXKAttachmentTypeFile)
+            else if (selectedAttachment.type == MXKAttachmentTypeFile || selectedAttachment.type == MXKAttachmentTypeAudio)
             {
                 // Start activity indicator as feedback on file selection.
                 [self startActivityIndicator];

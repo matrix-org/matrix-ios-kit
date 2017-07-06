@@ -350,7 +350,7 @@
     
     if (firstComponent)
     {
-        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET : 0;
+        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile || attachment.type == MXKAttachmentTypeAudio) ? MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET : 0;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -628,7 +628,7 @@
                 _contentSize = CGSizeMake(width, height);
             }
         }
-        else if (attachment.type == MXKAttachmentTypeFile)
+        else if (attachment.type == MXKAttachmentTypeFile || attachment.type == MXKAttachmentTypeAudio)
         {
             // Presently we displayed only the file name for attached file (no icon yet)
             // Return suitable content size of a text view to display the file name (available in text message). 
