@@ -33,3 +33,6 @@ Javier Quevedo Fernández <jquevedo at gmail.com>
  
 Samuel Gallet <samuel.gallet at applidium.com>
  * PR #279 Use CocoaPods resource_bundles attributes to store assets
+
+Nathan van Beelen <nathan at vanbeelen.org>
+ * PR #318 Dutch translation of the strings
