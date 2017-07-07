@@ -1418,6 +1418,24 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+#pragma mark - Bubble collapsing
+
+- (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed
+{
+    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+    do
+    {
+        nextBubbleData.collapsed = collapsed;
+    }
+    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+
+    if (self.delegate)
+    {
+        // Reload all the table
+        [self.delegate dataSource:self didCellChange:nil];
+    }
+}
+
 #pragma mark - Private methods
 
 - (void)replaceEvent:(MXEvent*)eventToReplace withEvent:(MXEvent*)event
