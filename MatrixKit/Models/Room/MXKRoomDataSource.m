@@ -1429,6 +1429,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
+    // Select the attributed string to display
+    bubbleData.attributedTextMessage = bubbleData.collapsed ? bubbleData.collapsedAttributedTextMessage : bubbleData.attributedTextMessageBackup;
+
     if (self.delegate)
     {
         // Reload all the table
@@ -1994,6 +1997,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                             newBubbleData.collapseState = queuedEvent.state;
                                             bubbleData.collapseState = nil;
                                             bubbleData.collapsedAttributedTextMessage = nil;
+                                            bubbleData.attributedTextMessageBackup = nil;
 
                                             [collapsingCellDataSeries addObject:newBubbleData];
                                             [collapsingCellDataSeries removeObject:bubbleData];
@@ -2264,7 +2268,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 // Compose collapsable series
                 for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
                 {
-                    // TODO: Manage serie of single element
+                    // Backup the computed attributed string for future usage
+                    bubbleData.attributedTextMessageBackup = bubbleData.attributedTextMessage;
 
                     // Get all events of the serie
                     NSMutableArray<MXEvent*> *events = [NSMutableArray array];
@@ -2278,8 +2283,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Build the string for the summary
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
 
-                    // TODO
-                    bubbleData.attributedTextMessage = bubbleData.collapsedAttributedTextMessage;
+                    // Display it only if the cell is collapsed
+                    if (bubbleData.collapsed)
+                    {
+                        bubbleData.attributedTextMessage = bubbleData.collapsedAttributedTextMessage;
+                    }
                 }
             }
             eventsToProcessSnapshot = nil;
