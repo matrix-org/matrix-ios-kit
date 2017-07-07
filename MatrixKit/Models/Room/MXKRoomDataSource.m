@@ -1422,12 +1422,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed
 {
-    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
-    do
+    @synchronized(eventsToProcessSnapshot)
     {
-        nextBubbleData.collapsed = collapsed;
+        id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+        do
+        {
+            nextBubbleData.collapsed = collapsed;
+        }
+        while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
     }
-    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
     if (self.delegate)
     {
@@ -1979,10 +1982,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                             if (newBubbleData.collapsable)
                             {
-                                if (bubbleData.collapsable)
+                                // if possible, associate the cells
+                                if (bubbleData.collapsable && [bubbleData collaspseWith:newBubbleData])
                                 {
-                                    // TODO: check if types match before associate them
-
                                     // Link collapsable cell data objects together
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards)
                                     {
@@ -2002,11 +2004,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     }
                                     else
                                     {
+                                        // Put newBubbleData at the serie tail
                                         bubbleData.nextCollapsableCellData = newBubbleData;
                                         newBubbleData.prevCollapsableCellData = bubbleData;
 
                                         [collapsingCellDataSeries addObject:bubbleData];
                                     }
+
+                                    // The new cell must have the collapsed state as the serie
+                                    newBubbleData.collapsed = bubbleData.collapsed;
                                 }
                                 else
                                 {
@@ -2258,7 +2264,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
-                // Compose collapsable data
+                // Compose collapsable series
                 for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
                 {
                     // TODO: Manage serie of single element
@@ -2269,7 +2275,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
                     do
                     {
-                        NSLog(@"    - %@: %@", nextBubbleData, nextBubbleData.attributedTextMessage.string);
+                        //NSLog(@"    - %@: %@", nextBubbleData, nextBubbleData.attributedTextMessage.string);
                         [events addObjectsFromArray:nextBubbleData.events];
                     }
                     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));

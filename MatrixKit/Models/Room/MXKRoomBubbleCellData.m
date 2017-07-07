@@ -673,6 +673,13 @@
     return nil;
 }
 
+#pragma mark - Bubble collapsing
+
+- (BOOL)collaspseWith:(id<MXKRoomBubbleCellDataStoring>)cellData
+{
+    return NO;
+}
+
 #pragma mark - Internals
 
 - (void)highlightPattern
