@@ -1422,15 +1422,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed
 {
-    @synchronized(eventsToProcessSnapshot)
+    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+    do
     {
-        id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
-        do
-        {
-            nextBubbleData.collapsed = collapsed;
-        }
-        while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+        nextBubbleData.collapsed = collapsed;
     }
+    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
     if (self.delegate)
     {
@@ -2269,19 +2266,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 {
                     // TODO: Manage serie of single element
 
-                    // Get all events of the series
+                    // Get all events of the serie
                     NSMutableArray<MXEvent*> *events = [NSMutableArray array];
-
                     id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
                     do
                     {
-                        //NSLog(@"    - %@: %@", nextBubbleData, nextBubbleData.attributedTextMessage.string);
                         [events addObjectsFromArray:nextBubbleData.events];
                     }
                     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
-                    // TODO: use MXKEventFormatter and events and bubbleData.collapseState
-                    bubbleData.collapsedAttributedTextMessage = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ memberships", @(events.count)]];
+                    // Build the string for the summary
+                    bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
 
                     // TODO
                     bubbleData.attributedTextMessage = bubbleData.collapsedAttributedTextMessage;
