@@ -250,15 +250,15 @@ Update the event because its sent state changed or it is has been redacted.
  If prevCollapsableCellData nil, this cell data instance is the data for the oldest
  cell of the collapsable cells serie.
  */
-@property (nonatomic, weak) id<MXKRoomBubbleCellDataStoring> prevCollapsableCellData;
-@property (nonatomic, weak) id<MXKRoomBubbleCellDataStoring> nextCollapsableCellData;
+@property (nonatomic) id<MXKRoomBubbleCellDataStoring> prevCollapsableCellData;
+@property (nonatomic) id<MXKRoomBubbleCellDataStoring> nextCollapsableCellData;
 
 /**
  The room state to use for computing or updating the data to display for the serie when it is
  collapsed.
  It is not nil only for the oldest cell of the cells serie.
  */
-@property (nonatomic, weak) MXRoomState *collapseState;
+@property (nonatomic) MXRoomState *collapseState;
 
 /**
  Check whether the two cells can be collapsable together.
