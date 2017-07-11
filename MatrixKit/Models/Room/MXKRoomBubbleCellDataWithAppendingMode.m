@@ -260,7 +260,7 @@ static NSAttributedString *messageSeparator = nil;
 {
     @synchronized(bubbleComponents)
     {
-        if (!attributedTextMessage.length && bubbleComponents.count)
+        if (self.hasAttributedTextMessage && !attributedTextMessage.length && bubbleComponents.count)
         {
             // Create attributed string
             NSMutableAttributedString *currentAttributedTextMsg;

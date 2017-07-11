@@ -459,7 +459,7 @@
 
 - (NSAttributedString*)attributedTextMessage
 {
-    if (!attributedTextMessage.length)
+    if (self.hasAttributedTextMessage && !attributedTextMessage.length)
     {
         // By default only one component is supported, consider here the first component
         MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
@@ -476,6 +476,24 @@
     }
 
     return attributedTextMessage;
+}
+
+- (BOOL)hasAttributedTextMessage
+{
+    BOOL hasAttributedTextMessage = NO;
+
+    @synchronized(bubbleComponents)
+    {
+        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+        {
+            if (roomBubbleComponent.attributedTextMessage)
+            {
+                hasAttributedTextMessage = YES;
+                break;
+            }
+        }
+    }
+    return hasAttributedTextMessage;
 }
 
 - (BOOL)shouldHideSenderName

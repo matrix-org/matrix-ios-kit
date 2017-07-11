@@ -1982,7 +1982,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                             if (newBubbleData.collapsable)
                             {
-                                // if possible, associate the cells
+                                // If possible, associate the cells
                                 if (bubbleData.collapsable && [bubbleData collaspseWith:newBubbleData])
                                 {
                                     // Link collapsable cell data objects together
@@ -2015,9 +2015,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     // The new cell must have the collapsed state as the serie
                                     newBubbleData.collapsed = bubbleData.collapsed;
                                 }
-                                else
+                                else if (newBubbleData.attributedTextMessage)
                                 {
-                                    // Starting point for a collapsable serie of cells
+                                    // The cell contains valid data.
+                                    // This is a starting point for a collapsable serie of cells
                                     newBubbleData.collapseState = queuedEvent.state;
                                     [collapsingCellDataSeries addObject:newBubbleData];
                                 }

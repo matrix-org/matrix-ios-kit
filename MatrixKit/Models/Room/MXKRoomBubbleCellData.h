@@ -69,6 +69,14 @@
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
+ Flag that indicates if the event formatter has returned at least one string for
+ the events in this cell.
+ No string means that the event formatter has been configured so that it did not accept all events
+ of the cell.
+ */
+@property (nonatomic, readonly) BOOL hasAttributedTextMessage;
+
+/**
  The max width of the text view used to display the text message (relevant only for text message or attached file).
  */
 @property (nonatomic) CGFloat maxTextViewWidth;
