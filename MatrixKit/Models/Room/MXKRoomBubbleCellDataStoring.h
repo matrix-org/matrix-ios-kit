@@ -239,13 +239,6 @@ Update the event because its sent state changed or it is has been redacted.
 @property (nonatomic) NSAttributedString *collapsedAttributedTextMessage;
 
 /**
- Backup of self.attributedTextMessage.
- It is used so that the cell can switch the display between self.attributedTextMessage
- and self.collapsedAttributedTextMessage.
- */
-@property (nonatomic) NSAttributedString *attributedTextMessageBackup;
-
-/**
  Bidirectional linked list of cells that can be collapsed together.
  If prevCollapsableCellData nil, this cell data instance is the data for the oldest
  cell of the collapsable cells serie.

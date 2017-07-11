@@ -29,7 +29,7 @@
 @synthesize textMessage, attributedTextMessage;
 @synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton, hasNoDisplay;
 @synthesize tag;
-@synthesize collapsable, collapsed, collapsedAttributedTextMessage, attributedTextMessageBackup, prevCollapsableCellData, nextCollapsableCellData, collapseState;
+@synthesize collapsable, collapsed, collapsedAttributedTextMessage, prevCollapsableCellData, nextCollapsableCellData, collapseState;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 

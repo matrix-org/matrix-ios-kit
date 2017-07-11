@@ -1422,20 +1422,21 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed
 {
-    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
-    do
+    if (bubbleData.collapsed != collapsed)
     {
-        nextBubbleData.collapsed = collapsed;
-    }
-    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+        id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+        do
+        {
+            nextBubbleData.collapsed = collapsed;
+        }
+        while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
-    // Select the attributed string to display
-    bubbleData.attributedTextMessage = bubbleData.collapsed ? bubbleData.collapsedAttributedTextMessage : bubbleData.attributedTextMessageBackup;
 
-    if (self.delegate)
-    {
-        // Reload all the table
-        [self.delegate dataSource:self didCellChange:nil];
+        if (self.delegate)
+        {
+            // Reload all the table
+            [self.delegate dataSource:self didCellChange:nil];
+        }
     }
 }
 
@@ -1997,7 +1998,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                             newBubbleData.collapseState = queuedEvent.state;
                                             bubbleData.collapseState = nil;
                                             bubbleData.collapsedAttributedTextMessage = nil;
-                                            bubbleData.attributedTextMessageBackup = nil;
 
                                             [collapsingCellDataSeries addObject:newBubbleData];
                                             [collapsingCellDataSeries removeObject:bubbleData];
@@ -2269,9 +2269,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 // Compose collapsable series
                 for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
                 {
-                    // Backup the computed attributed string for future usage
-                    bubbleData.attributedTextMessageBackup = bubbleData.attributedTextMessage;
-
                     // Get all events of the serie
                     NSMutableArray<MXEvent*> *events = [NSMutableArray array];
                     id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
@@ -2283,12 +2280,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     // Build the string for the summary
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
-
-                    // Display it only if the cell is collapsed
-                    if (bubbleData.collapsed)
-                    {
-                        bubbleData.attributedTextMessage = bubbleData.collapsedAttributedTextMessage;
-                    }
                 }
             }
             eventsToProcessSnapshot = nil;
