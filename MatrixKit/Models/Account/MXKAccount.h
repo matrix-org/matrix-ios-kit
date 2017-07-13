@@ -223,11 +223,17 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 
 /**
  Pause the current matrix session.
+ 
+ @warning: This matrix session is paused without using background task if no background mode handler
+ is set in the MXSDKOptions sharedInstance (see `backgroundModeHandler`).
  */
 - (void)pauseInBackgroundTask;
 
 /**
  Perform a background sync by keeping the user offline.
+ 
+ @warning: This operation failed when no background mode handler is set in the
+ MXSDKOptions sharedInstance (see `backgroundModeHandler`).
  
  @param timeout the timeout in milliseconds.
  @param success A block object called when the operation succeeds.
