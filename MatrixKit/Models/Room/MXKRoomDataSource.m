@@ -2024,14 +2024,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                         else
                                         {
                                             // This is a ending point for a new collapsable serie of cells
-
-                                            if (collapsableSerieAtStart && collapsableSerieAtStart != collapsableSerieAtEnd)
-                                            {
-                                                // The serie hosted by collapsableSerieAtStart is complete.
-                                                // The room state can be released
-                                                collapsableSerieAtStart.collapseState = nil;
-                                            }
-
                                             collapsableSerieAtStart = bubbleData;
                                             collapsableSerieAtStart.collapseState = queuedEvent.state;
                                             [collapsingCellDataSeries addObject:collapsableSerieAtStart];
@@ -2059,14 +2051,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                         else
                                         {
                                             // This is a starting point for a new collapsable serie of cells
-
-                                            if (collapsableSerieAtEnd && collapsableSerieAtStart != collapsableSerieAtEnd)
-                                            {
-                                                // The serie hosted by collapsableSerieAtEnd is complete.
-                                                // The room state can be released
-                                                collapsableSerieAtEnd.collapseState = nil;
-                                            }
-
                                             collapsableSerieAtEnd = bubbleData;
                                             collapsableSerieAtEnd.collapseState = queuedEvent.state;
                                             [collapsingCellDataSeries addObject:collapsableSerieAtEnd];
@@ -2080,27 +2064,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSerieAtStart)
                                     {
                                         // This is the begin border of the serie
-
-                                        if (collapsableSerieAtStart != collapsableSerieAtEnd)
-                                        {
-                                            // The serie hosted by collapsableSerieAtStart is complete.
-                                            // The room state can be released
-                                            collapsableSerieAtStart.collapseState = nil;
-                                        }
-
                                         collapsableSerieAtStart = nil;
                                     }
                                     else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSerieAtEnd)
                                     {
                                         // This is the end border of the serie
-
-                                        if (collapsableSerieAtStart != collapsableSerieAtEnd)
-                                        {
-                                            // The serie hosted by collapsableSerieAtEnd is complete.
-                                            // The room state can be released
-                                            collapsableSerieAtEnd.collapseState = nil;
-                                        }
-                                        
                                         collapsableSerieAtEnd = nil;
                                     }
                                 }
@@ -2393,11 +2361,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Build the string for the summary
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
 
-                    // Make sure we release collapseState objects
-                    // Note that this was previously done for all series except for collapsableSerieAtStart.
+                    // Release collapseState objects even for collapsableSerieAtStart.
                     // We do not need to keep its state because if an collapsable event comes before collapsableSerieAtStart,
                     // we will take the room state of this event.
-                    if (bubbleData != collapsableSerieAtEnd && collapsableSerieAtStart != collapsableSerieAtEnd)
+                    if (bubbleData != collapsableSerieAtEnd &&
+                        (bubbleData == collapsableSerieAtStart && collapsableSerieAtStart != collapsableSerieAtEnd))
                     {
                         bubbleData.collapseState = nil;
                     }
