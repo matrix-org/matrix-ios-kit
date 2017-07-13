@@ -1440,10 +1440,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         do
         {
             nextBubbleData.collapsed = collapsed;
-            NSLog(@"--- %@ / %@", nextBubbleData.collapsedAttributedTextMessage.string, nextBubbleData.attributedTextMessage.string);
         }
         while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
-
 
         if (self.delegate)
         {
@@ -2016,7 +2014,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                             collapsableSerieAtStart.collapsedAttributedTextMessage = nil;
                                             [collapsingCellDataSeries removeObject:collapsableSerieAtStart];
 
-                                            // And keep a ref of data for new header of the serie
+                                            // And keep a ref of data for the new start of the serie
                                             collapsableSerieAtStart = bubbleData;
                                             collapsableSerieAtStart.collapseState = queuedEvent.state;
                                             [collapsingCellDataSeries addObject:collapsableSerieAtStart];
@@ -2314,7 +2312,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
-                // Check if self.bubbles contains a single serie of collapsable events.
+                // Check if all cells of self.bubbles belongs to a single collapse serie.
                 // In this case, collapsableSerieAtStart and collapsableSerieAtEnd must be equal
                 // in order to handle next forward or backward pagination.
                 if (collapsableSerieAtStart == bubbles.firstObject)
@@ -2346,7 +2344,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
-                // Compose collapsable series
+                // Compose (= compute collapsedAttributedTextMessage) of collapsable series
                 for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
                 {
                     // Get all events of the serie
@@ -2358,10 +2356,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
-                    // Build the string for the summary
+                    // Build the summary string for the serie
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
 
-                    // Release collapseState objects even for collapsableSerieAtStart.
+                    // Release collapseState objects, even the one of collapsableSerieAtStart.
                     // We do not need to keep its state because if an collapsable event comes before collapsableSerieAtStart,
                     // we will take the room state of this event.
                     if (bubbleData != collapsableSerieAtEnd &&

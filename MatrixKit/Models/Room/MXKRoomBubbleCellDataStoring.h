@@ -106,7 +106,7 @@
 
 /**
  Flag that indicates that self.attributedTextMessage will be not nil.
- This avoids the computation of self.attributedTextMessage that can be long.
+ This avoids the computation of self.attributedTextMessage that can take time.
  */
 @property (nonatomic, readonly) BOOL hasAttributedTextMessage;
 
@@ -239,14 +239,14 @@ Update the event because its sent state changed or it is has been redacted.
 @property (nonatomic) BOOL collapsed;
 
 /**
- The attributed string to display when the collapsable cells serie is collapses.
- It is not nil only for the oldest cell of the cells serie.
+ The attributed string to display when the collapsable cells serie is collapsed.
+ It is not nil only for the start cell of the cells serie.
  */
 @property (nonatomic) NSAttributedString *collapsedAttributedTextMessage;
 
 /**
  Bidirectional linked list of cells that can be collapsed together.
- If prevCollapsableCellData nil, this cell data instance is the data for the oldest
+ If prevCollapsableCellData is nil, this cell data instance is the data of the start
  cell of the collapsable cells serie.
  */
 @property (nonatomic) id<MXKRoomBubbleCellDataStoring> prevCollapsableCellData;
@@ -255,7 +255,7 @@ Update the event because its sent state changed or it is has been redacted.
 /**
  The room state to use for computing or updating the data to display for the serie when it is
  collapsed.
- It is not nil only for the oldest cell of the cells serie.
+ It is not nil only for the start cell of the cells serie.
  */
 @property (nonatomic) MXRoomState *collapseState;
 

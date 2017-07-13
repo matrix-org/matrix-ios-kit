@@ -698,6 +698,7 @@
 
 - (BOOL)collaspseWith:(id<MXKRoomBubbleCellDataStoring>)cellData
 {
+    // NO by default
     return NO;
 }
 
