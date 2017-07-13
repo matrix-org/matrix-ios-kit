@@ -27,9 +27,9 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#import "MXSession.h"
-
 #import <AFNetworking/AFNetworking.h>
+
+#import <MatrixSDK/MXBackgroundModeHandler.h>
 
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
@@ -768,24 +768,43 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     if (mxSession && mxSession.state == MXSessionStateRunning)
     {
-        _bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
-            _bgTask = UIBackgroundTaskInvalid;
+        id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
+        if (handler)
+        {
+            if (_bgTask == [handler invalidIdentifier])
+            {
+                _bgTask = [handler startBackgroundTaskWithName:@"MXKAccountBackgroundTask" completion:^{
+                    
+                    NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)_bgTask);
+                    [handler endBackgrounTaskWithIdentifier:_bgTask];
+                    _bgTask = [handler invalidIdentifier];
+                    
+                }];
+            }
             
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)_bgTask);
-        }];
+            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX starts", (unsigned long)_bgTask);
+        }
         
-        NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX starts", (unsigned long)_bgTask);
         // Pause SDK
         [mxSession pause];
         
         // Update user presence
         __weak typeof(self) weakSelf = self;
         [self setUserPresence:MXPresenceUnavailable andStatusMessage:nil completion:^{
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX ends", (unsigned long)weakSelf.bgTask);
-            [[UIApplication sharedApplication] endBackgroundTask:weakSelf.bgTask];
-            weakSelf.bgTask = UIBackgroundTaskInvalid;
-            NSLog(@"[MXKAccount] >>>>> background pause task finished");
+            
+            if (weakSelf)
+            {
+                typeof(self) self = weakSelf;
+                
+                if (self.bgTask != [handler invalidIdentifier])
+                {
+                    NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX ends", (unsigned long)self.bgTask);
+                    [handler endBackgrounTaskWithIdentifier:self.bgTask];
+                    self.bgTask = [handler invalidIdentifier];
+                    NSLog(@"[MXKAccount] >>>>> background pause task finished");
+                }
+            }
+            
         }];
     }
     else
@@ -833,12 +852,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             [self refreshPusher];
         }
         
-        if (_bgTask)
+        id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
+        if (handler && _bgTask != [handler invalidIdentifier])
         {
             // Cancel background task
-            [[UIApplication sharedApplication] endBackgroundTask:_bgTask];
-            _bgTask = UIBackgroundTaskInvalid;
+            [handler endBackgrounTaskWithIdentifier:_bgTask];
             NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
+            _bgTask = [handler invalidIdentifier];
         }
     }
 }
@@ -1299,12 +1319,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     backgroundSyncDone = nil;
     backgroundSyncfails = nil;
     
-    if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
+    id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
+    if (handler && backgroundSyncBgTask != [handler invalidIdentifier])
     {
         // End background task
-        [[UIApplication sharedApplication] endBackgroundTask:backgroundSyncBgTask];
-        backgroundSyncBgTask = UIBackgroundTaskInvalid;
+        [handler endBackgrounTaskWithIdentifier:backgroundSyncBgTask];
         NSLog(@"[MXKAccount] onBackgroundSyncDone: %08lX stop", (unsigned long)backgroundSyncBgTask);
+        backgroundSyncBgTask = [handler invalidIdentifier];
     }
 }
 
@@ -1315,56 +1336,66 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)backgroundSync:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
 {
-    // only work when the application is suspended
-    
-    // Check conditions before launching background sync
-    if (mxSession && mxSession.state == MXSessionStatePaused)
+    // Check whether a background mode handler has been set.
+    id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
+    if (handler)
     {
-        NSLog(@"[MXKAccount] starts a background Sync");
-        
-        backgroundSyncDone = success;
-        backgroundSyncfails = failure;
-        
-        if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
+        // Only work when the application is suspended.
+        // Check conditions before launching background sync
+        if (mxSession && mxSession.state == MXSessionStatePaused)
         {
-             [[UIApplication sharedApplication] endBackgroundTask:backgroundSyncBgTask];
-        }
-        
-        backgroundSyncBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            NSLog(@"[MXKAccount] the background Sync fails because of the bg task timeout");
-            [self cancelBackgroundSync];
+            NSLog(@"[MXKAccount] starts a background Sync");
             
-        }];
-        
-        // ensure that the backgroundSync will be really done in the expected time
-        // the request could be done but the treatment could be long so add a timer to cancel it
-        // if it takes too much time
-        backgroundSyncTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(timeout - 1) / 1000]
-                                                interval:0
-                                                  target:self
-                                                selector:@selector(onBackgroundSyncTimerOut)
-                                                userInfo:nil
-                                                 repeats:NO];
-        
-        [[NSRunLoop mainRunLoop] addTimer:backgroundSyncTimer forMode:NSDefaultRunLoopMode];
-        
+            backgroundSyncDone = success;
+            backgroundSyncfails = failure;
+            
+            if (backgroundSyncBgTask != [handler invalidIdentifier])
+            {
+                [handler endBackgrounTaskWithIdentifier:backgroundSyncBgTask];
+            }
+            
+            backgroundSyncBgTask = [handler startBackgroundTaskWithName:@"MXKAccountBackgroundSyncTask" completion:^{
+                
+                NSLog(@"[MXKAccount] the background Sync fails because of the bg task timeout");
+                [self cancelBackgroundSync];
+                
+            }];
+            
+            // ensure that the backgroundSync will be really done in the expected time
+            // the request could be done but the treatment could be long so add a timer to cancel it
+            // if it takes too much time
+            backgroundSyncTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(timeout - 1) / 1000]
+                                                           interval:0
+                                                             target:self
+                                                           selector:@selector(onBackgroundSyncTimerOut)
+                                                           userInfo:nil
+                                                            repeats:NO];
+            
+            [[NSRunLoop mainRunLoop] addTimer:backgroundSyncTimer forMode:NSDefaultRunLoopMode];
+            
             [mxSession backgroundSync:timeout success:^{
                 NSLog(@"[MXKAccount] the background Sync succeeds");
                 [self onBackgroundSyncDone:nil];
                 
             }
-                failure:^(NSError* error) {
-
-                NSLog(@"[MXKAccount] the background Sync fails");
-                [self onBackgroundSyncDone:error];
-                       
-            }
-
-         ];
+                              failure:^(NSError* error) {
+                                  
+                                  NSLog(@"[MXKAccount] the background Sync fails");
+                                  [self onBackgroundSyncDone:error];
+                                  
+                              }
+             
+             ];
+        }
+        else
+        {
+            NSLog(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
+            failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
+        }
     }
     else
     {
-        NSLog(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
+        NSLog(@"[MXKAccount] cannot start background Sync");
         failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
     }
 }
