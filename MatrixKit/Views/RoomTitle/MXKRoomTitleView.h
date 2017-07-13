@@ -16,18 +16,16 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-#import "MXKAlert.h"
-
 @class MXKRoomTitleView;
 @protocol MXKRoomTitleViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param titleView the room title view.
  @param alert the alert to present.
  */
-- (void)roomTitleView:(MXKRoomTitleView*)titleView presentMXKAlert:(MXKAlert*)alert;
+- (void)roomTitleView:(MXKRoomTitleView*)titleView presentAlertController:(UIAlertController*)alertController;
 
 /**
  Asks the delegate if editing should begin
@@ -58,7 +56,7 @@
     /**
      Potential alert.
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      Test fields input accessory.

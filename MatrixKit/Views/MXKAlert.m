@@ -31,13 +31,6 @@
 
 - (void)dealloc
 {
-    // iOS < 8
-    if ([_alert isKindOfClass:[UIActionSheet class]] || [_alert isKindOfClass:[UIAlertView class]])
-    {
-        // Dismiss here AlertView or ActionSheet (if any) because its delegate is released
-        [self dismiss:NO];
-    }
-    
     _alert = nil;
     parentViewController = nil;
     actions = nil;
@@ -47,25 +40,7 @@
 {
     if (self = [super init])
     {
-        // Check iOS version
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8)
-        {
-            _alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:(UIAlertControllerStyle)style];
-        }
-        else
-        {
-            // Use legacy objects
-            if (style == MXKAlertStyleActionSheet)
-            {
-                _alert = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-            }
-            else
-            {
-                _alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
-            }
-            
-            self.cancelButtonIndex = -1;
-        }
+        _alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:(UIAlertControllerStyle)style];
     }
     return self;
 }
@@ -97,65 +72,10 @@
         
         [(UIAlertController *)_alert addAction:action];
     }
-    else if ([_alert isKindOfClass:[UIActionSheet class]])
-    {
-        if (actions == nil)
-        {
-            actions = [NSMutableArray array];
-        }
-        index = [(UIActionSheet *)_alert addButtonWithTitle:title];
-        if (handler)
-        {
-            [actions addObject:handler];
-        }
-        else
-        {
-            [actions addObject:[NSNull null]];
-        }
-    }
-    else if ([_alert isKindOfClass:[UIAlertView class]])
-    {
-        if (actions == nil)
-        {
-            actions = [NSMutableArray array];
-        }
-        index = [(UIAlertView *)_alert addButtonWithTitle:title];
-        if (handler)
-        {
-            [actions addObject:handler];
-        }
-        else
-        {
-            [actions addObject:[NSNull null]];
-        }
-    }
     return index;
 }
 
-- (void)setMxkAccessibilityIdentifier:(NSString *)mxkAccessibilityIdentifier
-{
-    _mxkAccessibilityIdentifier = mxkAccessibilityIdentifier;
-    
-    // Consider only iOS >= 8.0
-    if ([_alert isKindOfClass:[UIAlertController class]])
-    {
-        UIAlertController *alertController = (UIAlertController *)_alert;
-        
-        alertController.view.accessibilityIdentifier = mxkAccessibilityIdentifier;
-        
-        for (UIAlertAction *action in alertController.actions)
-        {
-            action.accessibilityLabel = [NSString stringWithFormat:@"%@Action%@", mxkAccessibilityIdentifier, action.title];
-        }
-        
-        NSArray *textFieldArray = alertController.textFields;
-        for (NSUInteger index = 0; index < textFieldArray.count; index++)
-        {
-            UITextField *textField = textFieldArray[index];
-            textField.accessibilityIdentifier = [NSString stringWithFormat:@"%@TextField%tu", mxkAccessibilityIdentifier, index];
-        }
-    }
-}
+
 
 - (void)addTextFieldWithConfigurationHandler:(blockMXKAlert_textFieldHandler)configurationHandler
 {
@@ -176,37 +96,7 @@
             }
         }
     }
-    else if ([_alert isKindOfClass:[UIAlertView class]])
-    {
-        UIAlertView *alertView = (UIAlertView *)_alert;
-        // Check the current style
-        if (alertView.alertViewStyle == UIAlertViewStyleDefault)
-        {
-            // Add the first text fields
-            alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-            
-            if (configurationHandler)
-            {
-                // Store the callback
-                UITextField *textField = [alertView textFieldAtIndex:0];
-                objc_setAssociatedObject(textField, "configurationHandler", [configurationHandler copy], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            }
-        }
-        else if (alertView.alertViewStyle != UIAlertViewStyleLoginAndPasswordInput)
-        {
-            // Add a second text field
-            alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-            
-            if (configurationHandler)
-            {
-                // Store the callback
-                UITextField *textField = [alertView textFieldAtIndex:1];
-                objc_setAssociatedObject(textField, "configurationHandler", [configurationHandler copy], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            }
-        }
-        // CAUTION 1: only 2 text fields are supported for iOS < 8
-        // CAUTION 2: alert style "UIAlertViewStyleSecureTextInput" is not supported, use the configurationHandler to handle secure text field
-    }
+    
 }
 
 - (void)showInViewController:(UIViewController*)viewController

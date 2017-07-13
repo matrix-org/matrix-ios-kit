@@ -17,8 +17,6 @@
 
 #import "MXKAttachmentsViewController.h"
 
-#import "MXKAlert.h"
-
 #import "MXKMediaCollectionViewCell.h"
 
 #import "MXMediaManager.h"
@@ -40,7 +38,7 @@
     /**
      Current alert (if any).
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      SplitViewController handling
@@ -219,7 +217,7 @@
     
     if (currentAlert)
     {
-        [currentAlert dismiss:NO];
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
         currentAlert = nil;
     }
     
@@ -1129,120 +1127,133 @@
         
         if (currentAlert)
         {
-            [currentAlert dismiss:NO];
-            currentAlert = nil;
+            [currentAlert dismissViewControllerAnimated:NO completion:nil];
         }
         
         __weak __typeof(self) weakSelf = self;
-        currentAlert = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
         
-        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-            
-            [strongSelf startActivityIndicator];
-            
-            [attachment save:^{
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf stopActivityIndicator];
-                
-            } failure:^(NSError *error) {
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf stopActivityIndicator];
-                
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                
-            }];
-            
-        }];
+        currentAlert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
-        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-            
-            [strongSelf startActivityIndicator];
-            
-            [attachment copy:^{
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf stopActivityIndicator];
-                
-            } failure:^(NSError *error) {
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf stopActivityIndicator];
-                
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                
-            }];
-        }];
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    typeof(self) self = weakSelf;
+                                                    self->currentAlert = nil;
+                                                    
+                                                    [self startActivityIndicator];
+                                                    
+                                                    [attachment save:^{
+                                                        
+                                                        typeof(self) self = weakSelf;
+                                                        [self stopActivityIndicator];
+                                                        
+                                                    } failure:^(NSError *error) {
+                                                        
+                                                        typeof(self) self = weakSelf;
+                                                        [self stopActivityIndicator];
+                                                        
+                                                        // Notify MatrixKit user
+                                                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                        
+                                                    }];
+                                                    
+                                                }]];
         
-        [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-            
-            [strongSelf startActivityIndicator];
-            
-            [attachment prepareShare:^(NSURL *fileURL) {
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf stopActivityIndicator];
-                
-                strongSelf->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                [strongSelf->documentInteractionController setDelegate:strongSelf];
-                currentSharedAttachment = attachment;
-                
-                if (![strongSelf->documentInteractionController presentOptionsMenuFromRect:strongSelf.view.frame inView:strongSelf.view animated:YES])
-                {
-                    strongSelf->documentInteractionController = nil;
-                    [attachment onShareEnded];
-                    currentSharedAttachment = nil;
-                }
-                
-            } failure:^(NSError *error) {
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                [strongSelf stopActivityIndicator];
-                
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                
-            }];
-            
-        }];
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    typeof(self) self = weakSelf;
+                                                    self->currentAlert = nil;
+                                                    
+                                                    [self startActivityIndicator];
+                                                    
+                                                    [attachment copy:^{
+                                                        
+                                                        typeof(self) self = weakSelf;
+                                                        [self stopActivityIndicator];
+                                                        
+                                                    } failure:^(NSError *error) {
+                                                        
+                                                        typeof(self) self = weakSelf;
+                                                        [self stopActivityIndicator];
+                                                        
+                                                        // Notify MatrixKit user
+                                                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                        
+                                                    }];
+                                                    
+                                                }]];
+        
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           typeof(self) self = weakSelf;
+                                                           self->currentAlert = nil;
+                                                           
+                                                           [self startActivityIndicator];
+                                                           
+                                                           [attachment prepareShare:^(NSURL *fileURL) {
+                                                               
+                                                               typeof(self) self = weakSelf;
+                                                               [self stopActivityIndicator];
+                                                               
+                                                               self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                                                               [self->documentInteractionController setDelegate:self];
+                                                               currentSharedAttachment = attachment;
+                                                               
+                                                               if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                                                               {
+                                                                   self->documentInteractionController = nil;
+                                                                   [attachment onShareEnded];
+                                                                   currentSharedAttachment = nil;
+                                                               }
+                                                               
+                                                           } failure:^(NSError *error) {
+                                                               
+                                                               typeof(self) self = weakSelf;
+                                                               [self stopActivityIndicator];
+                                                               
+                                                               // Notify MatrixKit user
+                                                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                               
+                                                           }];
+                                                           
+                                                       }]];
         
         if ([MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath])
         {
-            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->currentAlert = nil;
-                
-                // Get again the loader
-                MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath];
-                if (loader)
-                {
-                    [loader cancel];
-                }
-            }];
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               typeof(self) self = weakSelf;
+                                                               self->currentAlert = nil;
+                                                               
+                                                               // Get again the loader
+                                                               MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath];
+                                                               if (loader)
+                                                               {
+                                                                   [loader cancel];
+                                                               }
+                                                               
+                                                           }]];
         }
         
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-            
-        }];
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           typeof(self) self = weakSelf;
+                                                           self->currentAlert = nil;
+                                                           
+                                                       }]];
         
-        currentAlert.sourceView = _attachmentsCollection;
-        [currentAlert showInViewController:self];
+        [currentAlert popoverPresentationController].sourceView = _attachmentsCollection;
+        [currentAlert popoverPresentationController].sourceRect = _attachmentsCollection.bounds;
+        [self presentViewController:currentAlert animated:YES completion:nil];
     }
 }
 

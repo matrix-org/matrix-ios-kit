@@ -122,7 +122,7 @@
 {
     if (inputsAlert)
     {
-        [inputsAlert dismiss:NO];
+        [inputsAlert dismissViewControllerAnimated:NO completion:nil];
         inputsAlert = nil;
     }
 }

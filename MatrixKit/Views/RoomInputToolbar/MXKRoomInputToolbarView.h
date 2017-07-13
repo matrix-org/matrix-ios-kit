@@ -18,8 +18,6 @@
 
 #import <Photos/Photos.h>
 
-#import "MXKAlert.h"
-
 /**
  List the predefined modes to handle the size of attached images
  */
@@ -48,12 +46,12 @@ typedef enum : NSUInteger
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param toolbarView the room input toolbar view.
  @param alert the alert to present.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentAlertController:(UIAlertController*)alertController;
 
 @optional
 

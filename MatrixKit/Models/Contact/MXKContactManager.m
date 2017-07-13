@@ -21,7 +21,6 @@
 
 #import "MXKAppSettings.h"
 #import "MXKTools.h"
-#import "MXKAlert.h"
 #import "NSBundle+MatrixKit.h"
 
 NSString *const kMXKContactManagerDidUpdateMatrixContactsNotification = @"kMXKContactManagerDidUpdateMatrixContactsNotification";
@@ -1162,26 +1161,29 @@ static MXKContactManager* sharedMXKContactManager = nil;
     }
     else
     {
-        MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
-
-        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-            [alert dismiss:NO];
-
-            [MXKTools checkAccessForContacts:manualPermissionChangeMessage showPopUpInViewController:viewController completionHandler:^(BOOL granted) {
-
-                handler(granted);
-            }];
-
-        }];
-
-        alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-            handler(NO);
-        }];
-
-
-        [alert showInViewController:viewController];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    [MXKTools checkAccessForContacts:manualPermissionChangeMessage showPopUpInViewController:viewController completionHandler:^(BOOL granted) {
+                                                        
+                                                        handler(granted);
+                                                    }];
+                                                    
+                                                }]];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    handler(NO);
+                                                    
+                                                }]];
+        
+        
+        [viewController presentViewController:alert animated:YES completion:nil];
     }
 }
 

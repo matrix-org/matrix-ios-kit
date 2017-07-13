@@ -96,6 +96,7 @@
 		F043563E1B2F124F0096FA02 /* MXKContactDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F043563D1B2F124F0096FA02 /* MXKContactDetailsViewController.xib */; };
 		F04356401B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F043563F1B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib */; };
 		F049FC201B2B878A00DD9D3C /* NSBundle+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */; };
+		F04F78351F17A1B60039485E /* UIAlertController+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */; };
 		F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */; };
 		F05FB1781AD5129500DC0647 /* MXKRoomMemberCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1741AD5129500DC0647 /* MXKRoomMemberCellData.m */; };
 		F05FB17C1AD5131300DC0647 /* MXKRoomMemberListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB17B1AD5131300DC0647 /* MXKRoomMemberListDataSource.m */; };
@@ -379,6 +380,8 @@
 		F043563F1B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomMemberDetailsViewController.xib; sourceTree = "<group>"; };
 		F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+MatrixKit.h"; sourceTree = "<group>"; };
 		F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+MatrixKit.m"; sourceTree = "<group>"; };
+		F04F78331F17A1B60039485E /* UIAlertController+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertController+MatrixKit.h"; sourceTree = "<group>"; };
+		F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertController+MatrixKit.m"; sourceTree = "<group>"; };
 		F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomMemberListViewController.h; sourceTree = "<group>"; };
 		F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomMemberListViewController.m; sourceTree = "<group>"; };
 		F05FB1731AD5129500DC0647 /* MXKRoomMemberCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomMemberCellData.h; sourceTree = "<group>"; };
@@ -1050,6 +1053,8 @@
 		F07E18111ABC563900DE3766 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				F04F78331F17A1B60039485E /* UIAlertController+MatrixKit.h */,
+				F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */,
 				F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */,
 				F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */,
 				F07E18121ABC563900DE3766 /* MXEvent+MatrixKit.h */,
@@ -1589,6 +1594,7 @@
 				3235CD771C32DC8A0084EA40 /* MXKSearchDataSource.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
 				92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */,
+				F04F78351F17A1B60039485E /* UIAlertController+MatrixKit.m in Sources */,
 				F00FA85D1C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m in Sources */,
 				F02D21491B7109950002DE01 /* MXKConstants.m in Sources */,
 				F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */,

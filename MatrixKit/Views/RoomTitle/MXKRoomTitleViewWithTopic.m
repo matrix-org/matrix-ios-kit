@@ -399,15 +399,20 @@
             __weak typeof(self) weakSelf = self;
             if (currentAlert)
             {
-                [currentAlert dismiss:NO];
+                [currentAlert dismissViewControllerAnimated:NO completion:nil];
             }
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->currentAlert = nil;
-            }];
-            [self.delegate roomTitleView:self presentMXKAlert:currentAlert];
+            currentAlert = [UIAlertController alertControllerWithTitle:nil message:alertMsg preferredStyle:UIAlertControllerStyleAlert];
+            
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               typeof(self) self = weakSelf;
+                                                               self->currentAlert = nil;
+                                                               
+                                                           }]];
+            
+            [self.delegate roomTitleView:self presentAlertController:currentAlert];
             return NO;
         }
         return YES;
