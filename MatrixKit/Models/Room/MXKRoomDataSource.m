@@ -2075,6 +2075,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
                                 else
                                 {
+                                    // The new bubble is not collapsable.
+                                    // We can close one border of the current serie being built (if any)
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSerieAtStart)
                                     {
                                         // This is the begin border of the serie
@@ -2344,35 +2346,21 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
-
-                NSLog(@"*************************");
-
                 // Compose collapsable series
                 for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
                 {
-                    NSMutableArray *bubbles2 = [NSMutableArray array];
-
                     // Get all events of the serie
                     NSMutableArray<MXEvent*> *events = [NSMutableArray array];
                     id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
                     do
                     {
                         [events addObjectsFromArray:nextBubbleData.events];
-
-                        [bubbles2 addObject:nextBubbleData];
                     }
                     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
                     // Build the string for the summary
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
-
-                    NSLog(@" - %@: %@", bubbleData, bubbles2);
                 }
-
-                NSLog(@"collapsableSerieAtStart: %@", collapsableSerieAtStart);
-                NSLog(@"collapsableSerieAtEnd: %@", collapsableSerieAtEnd);
-
-                NSLog(@"*************************");
             }
             eventsToProcessSnapshot = nil;
         }
