@@ -480,6 +480,9 @@
 
 - (BOOL)hasAttributedTextMessage
 {
+    // Determine if the event formatter will return at least one string for the events in this cell.
+    // No string means that the event formatter has been configured so that it did not accept all events
+    // of the cell.
     BOOL hasAttributedTextMessage = NO;
 
     @synchronized(bubbleComponents)

@@ -105,14 +105,20 @@
 @property (nonatomic) BOOL isAttachmentWithIcon;
 
 /**
- The raw text message (without attributes)
+ Flag that indicates that self.attributedTextMessage will be not nil.
+ This avoids the computation of self.attributedTextMessage that can be long.
  */
-@property (nonatomic) NSString *textMessage;
+@property (nonatomic, readonly) BOOL hasAttributedTextMessage;
 
 /**
  The body of the message with sets of attributes, or kind of content description in case of attachment (e.g. "image attachment")
  */
 @property (nonatomic) NSAttributedString *attributedTextMessage;
+
+/**
+ The raw text message (without attributes)
+ */
+@property (nonatomic) NSString *textMessage;
 
 /**
  Tell whether the sender's name is relevant or not for this bubble.
