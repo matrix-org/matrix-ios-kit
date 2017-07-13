@@ -101,6 +101,18 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXPeekingRoom *peekingRoom;
 
     /**
+     If any, the non terminated serie of collapsable events at the start of self.bubbles.
+     (Such serie is determined by the cell data of its oldest event).
+     */
+    id<MXKRoomBubbleCellDataStoring> collapsableSerieAtStart;
+
+    /**
+     If any, the non terminated serie of collapsable events at the end of self.bubbles.
+     (Such serie is determined by the cell data of its oldest event).
+     */
+    id<MXKRoomBubbleCellDataStoring> collapsableSerieAtEnd;
+
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
@@ -1428,6 +1440,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         do
         {
             nextBubbleData.collapsed = collapsed;
+            NSLog(@"--- %@ / %@", nextBubbleData.collapsedAttributedTextMessage.string, nextBubbleData.attributedTextMessage.string);
         }
         while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
@@ -1974,57 +1987,122 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         if (NO == eventManaged)
                         {
                             // The event has not been concatenated to an existing cell, create a new bubble for this event
-                            id<MXKRoomBubbleCellDataStoring> newBubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
-                            if (!newBubbleData)
+                            bubbleData = [[class alloc] initWithEvent:queuedEvent.event andRoomState:queuedEvent.state andRoomDataSource:self];
+                            if (!bubbleData)
                             {
                                 // The event is ignored
                                 continue;
                             }
 
-                            if (newBubbleData.collapsable)
+                            // Check cells collapsing
+                            if (bubbleData.hasAttributedTextMessage)
                             {
-                                // If possible, associate the cells
-                                if (bubbleData.collapsable && [bubbleData collaspseWith:newBubbleData])
+                                if (bubbleData.collapsable)
                                 {
-                                    // Link collapsable cell data objects together
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards)
                                     {
-                                        newBubbleData.nextCollapsableCellData = bubbleData;
-                                        bubbleData.prevCollapsableCellData = newBubbleData;
-
-                                        if (bubbleData.collapseState)
+                                        // Try to collapse it with the serie at the start of self.bubbles
+                                        if (collapsableSerieAtStart && [collapsableSerieAtStart collaspseWith:bubbleData])
                                         {
-                                            // newBubbleData becomes the oldest of the serie
-                                            newBubbleData.collapseState = queuedEvent.state;
-                                            bubbleData.collapseState = nil;
-                                            bubbleData.collapsedAttributedTextMessage = nil;
+                                            // bubbleData becomes the oldest cell data of the current serie
+                                            collapsableSerieAtStart.prevCollapsableCellData = bubbleData;
+                                            bubbleData.nextCollapsableCellData = collapsableSerieAtStart;
 
-                                            [collapsingCellDataSeries addObject:newBubbleData];
-                                            [collapsingCellDataSeries removeObject:bubbleData];
+                                            // The new cell must have the collapsed state as the serie
+                                            bubbleData.collapsed = collapsableSerieAtStart.collapsed;
+
+                                            // Release data of the previous header
+                                            collapsableSerieAtStart.collapseState = nil;
+                                            collapsableSerieAtStart.collapsedAttributedTextMessage = nil;
+                                            [collapsingCellDataSeries removeObject:collapsableSerieAtStart];
+
+                                            // And keep a ref of data for new header of the serie
+                                            collapsableSerieAtStart = bubbleData;
+                                            collapsableSerieAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeries addObject:collapsableSerieAtStart];
+                                        }
+                                        else
+                                        {
+                                            // This is a ending point for a new collapsable serie of cells
+
+                                            if (collapsableSerieAtStart && collapsableSerieAtStart != collapsableSerieAtEnd)
+                                            {
+                                                // The serie hosted by collapsableSerieAtStart is complete.
+                                                // The room state can be released
+                                                collapsableSerieAtStart.collapseState = nil;
+                                            }
+
+                                            collapsableSerieAtStart = bubbleData;
+                                            collapsableSerieAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeries addObject:collapsableSerieAtStart];
                                         }
                                     }
                                     else
                                     {
-                                        // Put newBubbleData at the serie tail
-                                        bubbleData.nextCollapsableCellData = newBubbleData;
-                                        newBubbleData.prevCollapsableCellData = bubbleData;
+                                        // Try to collapse it with the serie at the end of self.bubbles
+                                        if (collapsableSerieAtEnd && [collapsableSerieAtEnd collaspseWith:bubbleData])
+                                        {
+                                            // Put bubbleData at the serie tail
+                                            // Find the tail
+                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSerieAtEnd;
+                                            do
+                                            {
+                                            }
+                                            while ((tailBubbleData = tailBubbleData.nextCollapsableCellData));
 
-                                        [collapsingCellDataSeries addObject:bubbleData];
+                                            tailBubbleData.nextCollapsableCellData = bubbleData;
+                                            bubbleData.prevCollapsableCellData = tailBubbleData;
+
+                                            // The new cell must have the collapsed state as the serie
+                                            bubbleData.collapsed = tailBubbleData.collapsed;
+                                        }
+                                        else
+                                        {
+                                            // This is a starting point for a new collapsable serie of cells
+
+                                            if (collapsableSerieAtEnd && collapsableSerieAtStart != collapsableSerieAtEnd)
+                                            {
+                                                // The serie hosted by collapsableSerieAtEnd is complete.
+                                                // The room state can be released
+                                                collapsableSerieAtEnd.collapseState = nil;
+                                            }
+
+                                            collapsableSerieAtEnd = bubbleData;
+                                            collapsableSerieAtEnd.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeries addObject:collapsableSerieAtEnd];
+                                        }
                                     }
-
-                                    // The new cell must have the collapsed state as the serie
-                                    newBubbleData.collapsed = bubbleData.collapsed;
                                 }
-                                else if (newBubbleData.attributedTextMessage)
+                                else
                                 {
-                                    // The cell contains valid data.
-                                    // This is a starting point for a collapsable serie of cells
-                                    newBubbleData.collapseState = queuedEvent.state;
-                                    [collapsingCellDataSeries addObject:newBubbleData];
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSerieAtStart)
+                                    {
+                                        // This is the begin border of the serie
+
+                                        if (collapsableSerieAtStart != collapsableSerieAtEnd)
+                                        {
+                                            // The serie hosted by collapsableSerieAtStart is complete.
+                                            // The room state can be released
+                                            collapsableSerieAtStart.collapseState = nil;
+                                        }
+
+                                        collapsableSerieAtStart = nil;
+                                    }
+                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSerieAtEnd)
+                                    {
+                                        // This is the end border of the serie
+
+                                        if (collapsableSerieAtStart != collapsableSerieAtEnd)
+                                        {
+                                            // The serie hosted by collapsableSerieAtEnd is complete.
+                                            // The room state can be released
+                                            collapsableSerieAtEnd.collapseState = nil;
+                                        }
+                                        
+                                        collapsableSerieAtEnd = nil;
+                                    }
                                 }
                             }
-
-                            bubbleData = newBubbleData;
 
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
@@ -2266,21 +2344,35 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
+
+                NSLog(@"*************************");
+
                 // Compose collapsable series
                 for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
                 {
+                    NSMutableArray *bubbles2 = [NSMutableArray array];
+
                     // Get all events of the serie
                     NSMutableArray<MXEvent*> *events = [NSMutableArray array];
                     id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
                     do
                     {
                         [events addObjectsFromArray:nextBubbleData.events];
+
+                        [bubbles2 addObject:nextBubbleData];
                     }
                     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
                     // Build the string for the summary
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
+
+                    NSLog(@" - %@: %@", bubbleData, bubbles2);
                 }
+
+                NSLog(@"collapsableSerieAtStart: %@", collapsableSerieAtStart);
+                NSLog(@"collapsableSerieAtEnd: %@", collapsableSerieAtEnd);
+
+                NSLog(@"*************************");
             }
             eventsToProcessSnapshot = nil;
         }
