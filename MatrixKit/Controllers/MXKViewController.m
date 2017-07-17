@@ -635,13 +635,8 @@
         
         // The keyboard view has been modified (Maybe the user drag it down), we update the input toolbar bottom constraint to adjust layout.
         
-        // Compute keyboard height
+        // Compute keyboard height (on IOS 8 and later, the screen size is oriented)
         CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-        // on IOS 8, the screen size is oriented
-        if ((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
-        {
-            screenSize = CGSizeMake(screenSize.height, screenSize.width);
-        }
         self.keyboardHeight = screenSize.height - _keyboardView.frame.origin.y;
     }
 }

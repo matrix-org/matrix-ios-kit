@@ -734,7 +734,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)updateLocalPreviewLayout
 {
-    UIInterfaceOrientation screenOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    // On IOS 8 and later, the screen size is oriented.
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    BOOL isLandscapeOriented = (bounds.size.width > bounds.size.height);
     
     CGFloat maxPreviewFrameSize, minPreviewFrameSize;
     
@@ -749,7 +751,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         maxPreviewFrameSize = _localPreviewContainerViewWidthConstraint.constant;
     }
     
-    if (UIInterfaceOrientationIsLandscape(screenOrientation))
+    if (isLandscapeOriented)
     {
         _localPreviewContainerViewHeightConstraint.constant = minPreviewFrameSize;
         _localPreviewContainerViewWidthConstraint.constant = maxPreviewFrameSize;
@@ -759,8 +761,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         _localPreviewContainerViewHeightConstraint.constant = maxPreviewFrameSize;
         _localPreviewContainerViewWidthConstraint.constant = minPreviewFrameSize;
     }
-    
-    CGRect bounds = [[UIScreen mainScreen] bounds];
     
     CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
     
@@ -832,7 +832,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
     // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
     BOOL disableIdleTimer = inCall && (mxCall.isVideoCall || isBuiltInReceiverUsed);
-    [UIApplication sharedApplication].idleTimerDisabled = disableIdleTimer;
+    
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        sharedApplication.idleTimerDisabled = disableIdleTimer;
+    }
 }
 
 #pragma mark - UIResponder Touch Events
