@@ -2362,8 +2362,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Release collapseState objects, even the one of collapsableSerieAtStart.
                     // We do not need to keep its state because if an collapsable event comes before collapsableSerieAtStart,
                     // we will take the room state of this event.
-                    if (bubbleData != collapsableSerieAtEnd &&
-                        (bubbleData == collapsableSerieAtStart && collapsableSerieAtStart != collapsableSerieAtEnd))
+                    if (bubbleData != collapsableSerieAtEnd)
                     {
                         bubbleData.collapseState = nil;
                     }
