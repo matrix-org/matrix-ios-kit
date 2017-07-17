@@ -696,7 +696,7 @@
 
 #pragma mark - Bubble collapsing
 
-- (BOOL)collaspseWith:(id<MXKRoomBubbleCellDataStoring>)cellData
+- (BOOL)collapseWith:(id<MXKRoomBubbleCellDataStoring>)cellData
 {
     // NO by default
     return NO;

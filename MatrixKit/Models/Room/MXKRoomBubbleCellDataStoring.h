@@ -264,7 +264,7 @@ Update the event because its sent state changed or it is has been redacted.
 
  @return YES if YES.
  */
-- (BOOL)collaspseWith:(id<MXKRoomBubbleCellDataStoring>)cellData;
+- (BOOL)collapseWith:(id<MXKRoomBubbleCellDataStoring>)cellData;
 
 @optional
 /**

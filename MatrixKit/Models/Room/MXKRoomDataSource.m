@@ -2000,7 +2000,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards)
                                     {
                                         // Try to collapse it with the serie at the start of self.bubbles
-                                        if (collapsableSerieAtStart && [collapsableSerieAtStart collaspseWith:bubbleData])
+                                        if (collapsableSerieAtStart && [collapsableSerieAtStart collapseWith:bubbleData])
                                         {
                                             // bubbleData becomes the oldest cell data of the current serie
                                             collapsableSerieAtStart.prevCollapsableCellData = bubbleData;
@@ -2030,7 +2030,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     else
                                     {
                                         // Try to collapse it with the serie at the end of self.bubbles
-                                        if (collapsableSerieAtEnd && [collapsableSerieAtEnd collaspseWith:bubbleData])
+                                        if (collapsableSerieAtEnd && [collapsableSerieAtEnd collapseWith:bubbleData])
                                         {
                                             // Put bubbleData at the serie tail
                                             // Find the tail
