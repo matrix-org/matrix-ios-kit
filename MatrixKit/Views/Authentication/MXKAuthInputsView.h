@@ -17,8 +17,6 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-#import "MXKAlert.h"
-
 /**
  Authentication types
  */
@@ -44,13 +42,14 @@ typedef enum {
  `MXKAuthInputsView` delegate
  */
 @protocol MXKAuthInputsViewDelegate <NSObject>
+
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param authInputsView the authentication inputs view.
  @param alert the alert to present.
  */
-- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentMXKAlert:(MXKAlert*)alert;
+- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentAlertController:(UIAlertController*)alert;
 
 /**
  For some input fields, the return key of the keyboard is defined as `Done` key.
@@ -100,7 +99,7 @@ typedef enum {
     /**
      Alert used to display inputs error.
      */
-    MXKAlert *inputsAlert;
+    UIAlertController *inputsAlert;
 }
 
 /**

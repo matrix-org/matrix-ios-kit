@@ -55,7 +55,7 @@ extern NSString *const MXKAuthErrorDomain;
     /**
      Reference to any opened alert view.
      */
-    MXKAlert *alert;
+    UIAlertController *alert;
     
     /**
      Tell whether the password has been reseted with success.

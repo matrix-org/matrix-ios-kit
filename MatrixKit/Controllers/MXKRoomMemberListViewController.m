@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,8 +18,6 @@
 #import "MXKRoomMemberListViewController.h"
 
 #import "MXKRoomMemberTableViewCell.h"
-
-#import "MXKAlert.h"
 
 #import "MXKConstants.h"
 
@@ -45,7 +44,7 @@
     /**
      The current displayed alert (if any).
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      Search bar
@@ -272,7 +271,7 @@
     
     if (currentAlert)
     {
-        [currentAlert dismiss:NO];
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
         currentAlert = nil;
     }
     
@@ -512,46 +511,68 @@
 {
     __weak typeof(self) weakSelf = self;
     
-    // Ask for userId to invite
-    currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil style:MXKAlertStyleAlert];
-    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
+    if (currentAlert)
     {
-        typeof(self) self = weakSelf;
-        self->currentAlert = nil;
-    }];
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
+    }
+    
+    // Ask for userId to invite
+    currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
+    
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       
+                                                       if (weakSelf)
+                                                       {
+                                                           typeof(self) self = weakSelf;
+                                                           self->currentAlert = nil;
+                                                       }
+                                                       
+                                                   }]];
+    
     
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
         textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
     }];
-    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-    {
-        UITextField *textField = [alert textFieldAtIndex:0];
-        NSString *userId = textField.text;
-        
-        typeof(self) self = weakSelf;
-        self->currentAlert = nil;
-        
-        if (userId.length)
-        {
-            MXRoom *mxRoom = [self.mainSession roomWithRoomId:self.dataSource.roomId];
-            if (mxRoom)
-            {
-                [mxRoom inviteUser:userId success:^{
-                    
-                } failure:^(NSError *error) {
-                    
-                    NSLog(@"[MXKRoomVC] Invite %@ failed", userId);
-                    // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                    
-                }];
-            }
-        }
-    }];
     
-    [currentAlert showInViewController:self];
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"]
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       
+                                                       if (weakSelf)
+                                                       {
+                                                           typeof(self) self = weakSelf;
+                                                           
+                                                           UITextField *textField = [self->currentAlert textFields].firstObject;
+                                                           NSString *userId = textField.text;
+                                                           
+                                                           self->currentAlert = nil;
+                                                           
+                                                           if (userId.length)
+                                                           {
+                                                               MXRoom *mxRoom = [self.mainSession roomWithRoomId:self.dataSource.roomId];
+                                                               if (mxRoom)
+                                                               {
+                                                                   [mxRoom inviteUser:userId success:^{
+                                                                       
+                                                                   } failure:^(NSError *error) {
+                                                                       
+                                                                       NSLog(@"[MXKRoomVC] Invite %@ failed", userId);
+                                                                       // Notify MatrixKit user
+                                                                       [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                       
+                                                                   }];
+                                                               }
+                                                           }
+                                                       }
+                                                       
+                                                   }]];
+    
+    [self presentViewController:currentAlert animated:YES completion:nil];
 }
 
 @end

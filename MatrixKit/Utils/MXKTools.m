@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,7 +23,6 @@
 
 #import "NBPhoneNumberUtil.h"
 
-#import "MXKAlert.h"
 #import "MXCall.h"
 
 @implementation MXKTools
@@ -427,28 +427,34 @@ static NSMutableDictionary* backgroundByImageNameDict;
             {
                 // Access not granted to mediaType
                 // Display manualChangeMessage
-                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
                 // On iOS >= 8, add a shortcut to the app settings
                 if (UIApplicationOpenSettingsURLString)
                 {
-                    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                        [[UIApplication sharedApplication] openURL:url];
-
-                        // Note: it does not worth to check if the user changes the permission
-                        // because iOS restarts the app in case of change of app privacy settings
-                        handler(NO);
-                    }];
+                    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                                                                       
+                                                                       NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                                       [[UIApplication sharedApplication] openURL:url];
+                                                                       
+                                                                       // Note: it does not worth to check if the user changes the permission
+                                                                       // because iOS restarts the app in case of change of app privacy settings
+                                                                       handler(NO);
+                                                                       
+                                                                   }]];
                 }
-
-                alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    
-                    handler(NO);
-                }];
                 
-                [alert showInViewController:viewController];
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            handler(NO);
+                                                            
+                                                        }]];
+                
+                [viewController presentViewController:alert animated:YES completion:nil];
             }
             
         });
@@ -522,28 +528,33 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         // Access not granted to the local contacts
         // Display manualChangeMessage
-        MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
         // On iOS >= 8, add a shortcut to the app settings
         if (UIApplicationOpenSettingsURLString)
         {
-            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                [[UIApplication sharedApplication] openURL:url];
-
-                // Note: it does not worth to check if the user changes the permission
-                // because iOS restarts the app in case of change of app privacy settings
-                handler(NO);
-            }];
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                        [[UIApplication sharedApplication] openURL:url];
+                                                        
+                                                        // Note: it does not worth to check if the user changes the permission
+                                                        // because iOS restarts the app in case of change of app privacy settings
+                                                        handler(NO);
+                                                        
+                                                    }]];
         }
-
-        alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-            handler(NO);
-        }];
-
-        [alert showInViewController:viewController];
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    handler(NO);
+                                                    
+                                                }]];
+        
+        [viewController presentViewController:alert animated:YES completion:nil];
     }
     else
     {

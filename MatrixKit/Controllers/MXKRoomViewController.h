@@ -63,7 +63,7 @@ extern NSString *const kCmdChangeRoomTopic;
     /**
      Current alert (if any).
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      The document interaction Controller used to share attachment

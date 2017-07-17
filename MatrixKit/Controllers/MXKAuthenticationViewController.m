@@ -20,8 +20,6 @@
 #import "MXKAuthInputsEmailCodeBasedView.h"
 #import "MXKAuthInputsPasswordBasedView.h"
 
-#import "MXKAlert.h"
-
 #import "MXKAccountManager.h"
 
 #import "NSBundle+MatrixKit.h"
@@ -228,7 +226,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // close any opened alert
     if (alert)
     {
-        [alert dismiss:NO];
+        [alert dismissViewControllerAnimated:NO completion:nil];
         alert = nil;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
@@ -1132,13 +1130,21 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Alert user
     if (alert)
     {
-        [alert dismiss:NO];
+        [alert dismissViewControllerAnimated:NO completion:nil];
     }
     
-    alert = [[MXKAlert alloc] initWithTitle:title message:message style:MXKAlertStyleAlert];
-    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
-     {}];
-    [alert showInViewController:self];
+    alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                alert = nil;
+                                                
+                                            }]];
+    
+    
+    [self presentViewController:alert animated:YES completion:nil];
     
     // Update authentication inputs view to return in initial step
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
@@ -1155,12 +1161,27 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     {
         //Alert user
         __weak typeof(self) weakSelf = self;
-        alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil style:MXKAlertStyleAlert];
-        [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert) {
-            // We remove the authentication view controller.
-            [weakSelf withdrawViewControllerAnimated:YES completion:nil];
-        }];
-        [alert showInViewController:self];
+        
+        if (alert)
+        {
+            [alert dismissViewControllerAnimated:NO completion:nil];
+        }
+        
+        alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    // We remove the authentication view controller.
+                                                    typeof(self) self = weakSelf;
+                                                    self->alert = nil;
+                                                    [self withdrawViewControllerAnimated:YES completion:nil];
+                                                    
+                                                }]];
+        
+        
+        [self presentViewController:alert animated:YES completion:nil];
     }
     else
     {
@@ -1254,22 +1275,35 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 
                 NSString *msg = [NSString stringWithFormat:@"%@\n\n%@\n\n%@\n\n%@\n\n%@\n\n%@", [NSBundle mxk_localizedStringForKey:@"ssl_cert_not_trust"], [NSBundle mxk_localizedStringForKey:@"ssl_cert_new_account_expl"], homeserverURLStr, fingerprint, certFingerprint, [NSBundle mxk_localizedStringForKey:@"ssl_only_accept"]];
                 
-                alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-                alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert){
-                    
-                    isTrusted = NO;
-                    dispatch_semaphore_signal(semaphore);
-                    
-                }];
-                [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ssl_trust"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert){
-                    
-                    isTrusted = YES;
-                    dispatch_semaphore_signal(semaphore);
-                    
-                }];
+                if (alert)
+                {
+                    [alert dismissViewControllerAnimated:NO completion:nil];
+                }
+                
+                alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+                
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            alert = nil;
+                                                            isTrusted = NO;
+                                                            dispatch_semaphore_signal(semaphore);
+                                                            
+                                                        }]];
+                
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ssl_trust"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            alert = nil;
+                                                            isTrusted = YES;
+                                                            dispatch_semaphore_signal(semaphore);
+                                                            
+                                                        }]];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [alert showInViewController:self];
+                    [self presentViewController:alert animated:YES completion:nil];
                 });
                 
                 dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
@@ -1458,11 +1492,23 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             mxCurrentOperation = nil;
             [_authenticationActivityIndicator stopAnimating];
             
-            [alert dismiss:NO];
-            alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] style:MXKAlertStyleAlert];
-            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleCancel handler:^(MXKAlert *alert)
-             {}];
-            [alert showInViewController:self];
+            if (alert)
+            {
+                [alert dismissViewControllerAnimated:NO completion:nil];
+            }
+            
+            alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        alert = nil;
+                                                        
+                                                    }]];
+            
+            
+            [self presentViewController:alert animated:YES completion:nil];
         }
         else if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
         {
@@ -1515,9 +1561,23 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
-    alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {}];
-    [alert showInViewController:self];
+    if (alert)
+    {
+        [alert dismissViewControllerAnimated:NO completion:nil];
+    }
+    
+    alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                alert = nil;
+                                                
+                                            }]];
+    
+    
+    [self presentViewController:alert animated:YES completion:nil];
     
     // Handle specific error code here
     if ([error.domain isEqualToString:NSURLErrorDomain])
@@ -1638,10 +1698,10 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 #pragma mark - AuthInputsViewDelegate delegate
 
-- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentMXKAlert:(MXKAlert*)inputsAlert
+- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentAlertController:(UIAlertController*)inputsAlert
 {
     [self dismissKeyboard];
-    [inputsAlert showInViewController:self];
+    [self presentViewController:inputsAlert animated:YES completion:nil];
 }
 
 - (void)authInputsViewDidPressDoneKey:(MXKAuthInputsView *)authInputsView

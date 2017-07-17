@@ -32,14 +32,12 @@
 
 - (instancetype)initWithMatrixSession:(MXSession *)matrixSession
 {
-    // Reuse MXKAlert dialog
-    self = [super initWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_import_room_keys"]
-                        message:[NSBundle mxk_localizedStringForKey:@"e2e_import_prompt"]
-                          style:MXKAlertStyleAlert];
-
+    self = [super init];
     if (self)
     {
         mxSession = matrixSession;
+        
+        _alertController = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_import_room_keys"] message:[NSBundle mxk_localizedStringForKey:@"e2e_import_prompt"] preferredStyle:UIAlertControllerStyleAlert];
     }
     return self;
 }
@@ -49,65 +47,74 @@
     __weak typeof(self) weakSelf = self;
 
     // Finalise the dialog
-    [self addTextFieldWithConfigurationHandler:^(UITextField *textField)
+    [_alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
          textField.secureTextEntry = YES;
          textField.placeholder = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_enter"];
          [textField resignFirstResponder];
      }];
-
-    self.cancelButtonIndex = [self addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                              {
-                                  if (weakSelf)
-                                  {
-                                      onComplete();
-                                  }
-                              }];
-
-    [self addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_import"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-     {
-         if (weakSelf)
-         {
-             typeof(self) self = weakSelf;
-
-             // Retrieve the password
-             UITextField *textField = [self textFieldAtIndex:0];
-             NSString *password = textField.text;
-
-             // Start the import process
-             [mxkViewController startActivityIndicator];
-             [self->mxSession.crypto importRoomKeys:[NSData dataWithContentsOfURL:fileURL] withPassword:password success:^{
-
-                 if (weakSelf)
-                 {
-                     [mxkViewController stopActivityIndicator];
-                     onComplete();
-                 }
-
-             } failure:^(NSError *error) {
-
-                 if (weakSelf)
-                 {
-                     [mxkViewController stopActivityIndicator];
-
-                     // TODO: i18n the error
-                     MXKAlert *otherAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error.localizedDescription style:MXKAlertStyleAlert];
-
-                     otherAlert.cancelButtonIndex = [otherAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                         onComplete();
-                     }];
-
-                     [otherAlert showInViewController:mxkViewController];
-                 }
-
-             }];
-         }
-
-     }];
+    
+    [_alertController addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           if (weakSelf)
+                                                           {
+                                                               onComplete();
+                                                           }
+                                                           
+                                                       }]];
+    
+    [_alertController addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_import"]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           if (weakSelf)
+                                                           {
+                                                               typeof(self) self = weakSelf;
+                                                               
+                                                               // Retrieve the password
+                                                               UITextField *textField = [self.alertController textFields].firstObject;
+                                                               NSString *password = textField.text;
+                                                               
+                                                               // Start the import process
+                                                               [mxkViewController startActivityIndicator];
+                                                               [self->mxSession.crypto importRoomKeys:[NSData dataWithContentsOfURL:fileURL] withPassword:password success:^{
+                                                                   
+                                                                   if (weakSelf)
+                                                                   {
+                                                                       [mxkViewController stopActivityIndicator];
+                                                                       onComplete();
+                                                                   }
+                                                                   
+                                                               } failure:^(NSError *error) {
+                                                                   
+                                                                   if (weakSelf)
+                                                                   {
+                                                                       [mxkViewController stopActivityIndicator];
+                                                                       
+                                                                       // TODO: i18n the error
+                                                                       UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+                                                                       
+                                                                       [otherAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                           
+                                                                           if (weakSelf)
+                                                                           {
+                                                                               onComplete();
+                                                                           }
+                                                                           
+                                                                       }]];
+                                                                       
+                                                                       [mxkViewController presentViewController:otherAlert animated:YES completion:nil];                                                                       
+                                                                   }
+                                                                   
+                                                               }];
+                                                           }
+                                                           
+                                                       }]];
 
     // And show it
-    [self showInViewController:mxkViewController];
+    [mxkViewController presentViewController:_alertController animated:YES completion:nil];
 }
 
 @end

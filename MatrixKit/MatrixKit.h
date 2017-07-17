@@ -25,11 +25,11 @@
 
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
+#import "UIAlertController+MatrixKit.h"
 
 #import "MXKEventFormatter.h"
 
 #import "MXKTools.h"
-#import "MXKAlert.h"
 
 #import "MXKViewController.h"
 #import "MXKRoomViewController.h"

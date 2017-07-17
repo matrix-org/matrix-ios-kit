@@ -38,7 +38,7 @@ static NSAttributedString *verticalWhitespace = nil;
     /**
      The current alert
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      Current request in progress.
@@ -90,7 +90,7 @@ static NSAttributedString *verticalWhitespace = nil;
 {
     if (currentAlert)
     {
-        [currentAlert dismiss:NO];
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
         currentAlert = nil;
     }
     
@@ -235,12 +235,11 @@ static NSAttributedString *verticalWhitespace = nil;
         return;
     }
     
-    [currentAlert dismiss:NO];
-    
+    // Prompt the user to enter a device name.
+    [currentAlert dismissViewControllerAnimated:NO completion:nil];
     __weak typeof(self) weakSelf = self;
     
-    // Prompt the user to enter a device name.
-    currentAlert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_message"] style:MXKAlertStyleAlert];
+    currentAlert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
     
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         
@@ -254,62 +253,66 @@ static NSAttributedString *verticalWhitespace = nil;
         }
     }];
     
-    currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-        
-        if (weakSelf)
-        {
-            typeof(self) self = weakSelf;
-            self->currentAlert = nil;
-        }
-        
-    }];
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                if (weakSelf)
+                                                {
+                                                    typeof(self) self = weakSelf;
+                                                    self->currentAlert = nil;
+                                                }
+                                                
+                                            }]];
     
-    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-        
-        if (weakSelf)
-        {
-            UITextField *textField = [alert textFieldAtIndex:0];
-            
-            typeof(self) self = weakSelf;
-            self->currentAlert = nil;
-            
-            [self.activityIndicator startAnimating];
-            
-            self->mxCurrentOperation = [self->mxSession.matrixRestClient setDeviceName:textField.text forDeviceId:self->mxDevice.deviceId success:^{
-                
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    
-                    self->mxCurrentOperation = nil;
-                    [self.activityIndicator stopAnimating];
-                    
-                    [self removeFromSuperviewDidUpdate:YES];
-                }
-                
-            } failure:^(NSError *error) {
-                
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    
-                    self->mxCurrentOperation = nil;
-                    
-                    NSLog(@"[MXKDeviceView] Rename device (%@) failed", self->mxDevice.deviceId);
-                    
-                    [self.activityIndicator stopAnimating];
-                    
-                    [self removeFromSuperviewDidUpdate:NO];
-                }
-                
-            }];
-        }
-    }];
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       
+                                                       if (weakSelf)
+                                                       {
+                                                           typeof(self) self = weakSelf;
+                                                           UITextField *textField = [self->currentAlert textFields].firstObject;
+                                                           self->currentAlert = nil;
+                                                           
+                                                           [self.activityIndicator startAnimating];
+                                                           
+                                                           self->mxCurrentOperation = [self->mxSession.matrixRestClient setDeviceName:textField.text forDeviceId:self->mxDevice.deviceId success:^{
+                                                               
+                                                               if (weakSelf)
+                                                               {
+                                                                   typeof(self) self = weakSelf;
+                                                                   
+                                                                   self->mxCurrentOperation = nil;
+                                                                   [self.activityIndicator stopAnimating];
+                                                                   
+                                                                   [self removeFromSuperviewDidUpdate:YES];
+                                                               }
+                                                               
+                                                           } failure:^(NSError *error) {
+                                                               
+                                                               // Notify MatrixKit user
+                                                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                               
+                                                               if (weakSelf)
+                                                               {
+                                                                   typeof(self) self = weakSelf;
+                                                                   
+                                                                   self->mxCurrentOperation = nil;
+                                                                   
+                                                                   NSLog(@"[MXKDeviceView] Rename device (%@) failed", self->mxDevice.deviceId);
+                                                                   
+                                                                   [self.activityIndicator stopAnimating];
+                                                                   
+                                                                   [self removeFromSuperviewDidUpdate:NO];
+                                                               }
+                                                               
+                                                           }];
+                                                       }
+                                                       
+                                                   }]];
     
-    [self.delegate deviceView:self presentMXKAlert:currentAlert];
+    [self.delegate deviceView:self presentAlertController:currentAlert];
 }
 
 - (void)deleteDevice
@@ -342,12 +345,13 @@ static NSAttributedString *verticalWhitespace = nil;
         if (isPasswordBasedTypeSupported && authSession.session)
         {
             // Prompt for a password
-            [currentAlert dismiss:NO];
+            [currentAlert dismissViewControllerAnimated:NO completion:nil];
             
             __weak typeof(self) weakSelf = self;
             
-            // Prompt the user to enter a device name.
-            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_title"] message:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_message"] style:MXKAlertStyleAlert];
+            // Prompt the user before deleting the device.
+            currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_title"] message:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
+            
             
             [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 
@@ -356,75 +360,78 @@ static NSAttributedString *verticalWhitespace = nil;
                 textField.keyboardType = UIKeyboardTypeDefault;
             }];
             
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                    
-                    [self.activityIndicator stopAnimating];
-                }
-                
-            }];
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               if (weakSelf)
+                                                               {
+                                                                   typeof(self) self = weakSelf;
+                                                                   self->currentAlert = nil;
+                                                                   [self.activityIndicator stopAnimating];
+                                                               }
+                                                               
+                                                           }]];
             
-            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"submit"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                
-                if (weakSelf)
-                {
-                    UITextField *textField = [alert textFieldAtIndex:0];
-                    
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                    
-                    NSString *userId = self->mxSession.myUser.userId;
-                    NSDictionary *authParams;
-                    
-                    // Sanity check
-                    if (userId)
-                    {
-                        authParams = @{@"session":authSession.session,
-                                       @"user": userId,
-                                       @"password": textField.text,
-                                       @"type": kMXLoginFlowTypePassword};
-
-                    }
-                    
-                    self->mxCurrentOperation = [self->mxSession.matrixRestClient deleteDeviceByDeviceId:self->mxDevice.deviceId authParams:authParams success:^{
-                        
-                        if (weakSelf)
-                        {
-                            typeof(self) self = weakSelf;
-                            
-                            self->mxCurrentOperation = nil;
-                            [self.activityIndicator stopAnimating];
-                            
-                            [self removeFromSuperviewDidUpdate:YES];
-                        }
-                        
-                    } failure:^(NSError *error) {
-                        
-                        // Notify MatrixKit user
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                        
-                        if (weakSelf)
-                        {
-                            typeof(self) self = weakSelf;
-                            
-                            self->mxCurrentOperation = nil;
-                            
-                            NSLog(@"[MXKDeviceView] Delete device (%@) failed", self->mxDevice.deviceId);
-                            
-                            [self.activityIndicator stopAnimating];
-                            
-                            [self removeFromSuperviewDidUpdate:NO];
-                        }
-                        
-                    }];
-                }
-            }];
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"submit"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               if (weakSelf)
+                                                               {
+                                                                   typeof(self) self = weakSelf;
+                                                                   UITextField *textField = [currentAlert textFields].firstObject;
+                                                                   self->currentAlert = nil;
+                                                                   
+                                                                   NSString *userId = self->mxSession.myUser.userId;
+                                                                   NSDictionary *authParams;
+                                                                   
+                                                                   // Sanity check
+                                                                   if (userId)
+                                                                   {
+                                                                       authParams = @{@"session":authSession.session,
+                                                                                      @"user": userId,
+                                                                                      @"password": textField.text,
+                                                                                      @"type": kMXLoginFlowTypePassword};
+                                                                       
+                                                                   }
+                                                                   
+                                                                   self->mxCurrentOperation = [self->mxSession.matrixRestClient deleteDeviceByDeviceId:self->mxDevice.deviceId authParams:authParams success:^{
+                                                                       
+                                                                       if (weakSelf)
+                                                                       {
+                                                                           typeof(self) self = weakSelf;
+                                                                           
+                                                                           self->mxCurrentOperation = nil;
+                                                                           [self.activityIndicator stopAnimating];
+                                                                           
+                                                                           [self removeFromSuperviewDidUpdate:YES];
+                                                                       }
+                                                                       
+                                                                   } failure:^(NSError *error) {
+                                                                       
+                                                                       // Notify MatrixKit user
+                                                                       [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                       
+                                                                       if (weakSelf)
+                                                                       {
+                                                                           typeof(self) self = weakSelf;
+                                                                           
+                                                                           self->mxCurrentOperation = nil;
+                                                                           
+                                                                           NSLog(@"[MXKDeviceView] Delete device (%@) failed", self->mxDevice.deviceId);
+                                                                           
+                                                                           [self.activityIndicator stopAnimating];
+                                                                           
+                                                                           [self removeFromSuperviewDidUpdate:NO];
+                                                                       }
+                                                                       
+                                                                   }];
+                                                               }
+                                                               
+                                                           }]];
             
-            [self.delegate deviceView:self presentMXKAlert:currentAlert];
+            [self.delegate deviceView:self presentAlertController:currentAlert];
         }
         else
         {

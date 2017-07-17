@@ -16,7 +16,6 @@
 
 #import "MXKCallViewController.h"
 
-#import "MXKAlert.h"
 #import "MXMediaManager.h"
 #import "MXKSoundPlayer.h"
 #import "MXKTools.h"
@@ -41,7 +40,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     /**
      The popup showed in case of call stack error.
      */
-    MXKAlert *errorAlert;
+    UIAlertController *errorAlert;
     
     // the room events listener
     id roomListener;
@@ -596,7 +595,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             // Except in case of call error, quit the screen right now
             if (!errorAlert)
             {
-                [self dismiss];
+                [errorAlert dismissViewControllerAnimated:NO completion:nil];
             }
 
             break;
@@ -623,15 +622,24 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
 
         __weak typeof(self) weakSelf = self;
-        errorAlert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-        errorAlert.cancelButtonIndex = [errorAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                                style:MXKAlertActionStyleDefault
-                                                              handler:^(MXKAlert *alert)
-                                        {
-                                            errorAlert = nil;
-                                            [weakSelf dismiss];
-                                        }];
-        [errorAlert showInViewController:self];
+        errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+        
+        [errorAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           if (weakSelf)
+                                                           {
+                                                               typeof(self) self = weakSelf;
+                                                               self->errorAlert = nil;
+                                                               
+                                                               [self dismiss];
+                                                           }
+                                                           
+                                                       }]];
+        
+        
+        [self presentViewController:errorAlert animated:YES completion:nil];
         
         // And interrupt the call
         [mxCall hangup];

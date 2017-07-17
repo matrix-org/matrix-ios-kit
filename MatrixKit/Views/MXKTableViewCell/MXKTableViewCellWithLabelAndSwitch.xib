@@ -21,10 +21,6 @@
                 <subviews>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9dA-E8-w3v">
                         <rect key="frame" x="543" y="6" width="51" height="31"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="31" id="dBg-Ui-01K"/>
-                            <constraint firstAttribute="width" constant="49" id="fkc-2t-bv5"/>
-                        </constraints>
                     </switch>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xx4-AP-OQs">
                         <rect key="frame" x="8" y="11" width="42" height="21"/>
