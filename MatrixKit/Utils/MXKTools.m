@@ -429,15 +429,16 @@ static NSMutableDictionary* backgroundByImageNameDict;
                 // Display manualChangeMessage
                 UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-                // On iOS >= 8, add a shortcut to the app settings
-                if (UIApplicationOpenSettingsURLString)
+                // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
+                UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+                if (sharedApplication && UIApplicationOpenSettingsURLString)
                 {
                     [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                                                                        
                                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                                       [[UIApplication sharedApplication] openURL:url];
+                                                                       [sharedApplication openURL:url];
                                                                        
                                                                        // Note: it does not worth to check if the user changes the permission
                                                                        // because iOS restarts the app in case of change of app privacy settings
@@ -530,15 +531,16 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         // Display manualChangeMessage
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-        // On iOS >= 8, add a shortcut to the app settings
-        if (UIApplicationOpenSettingsURLString)
+        // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication && UIApplicationOpenSettingsURLString)
         {
             [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
                                                         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                        [[UIApplication sharedApplication] openURL:url];
+                                                        [sharedApplication openURL:url];
                                                         
                                                         // Note: it does not worth to check if the user changes the permission
                                                         // because iOS restarts the app in case of change of app privacy settings

@@ -309,11 +309,16 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     // the notifications permissions later in iOS setting, we have to call
     // [UIApplication currentUserNotificationSettings].
     
-    UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+    BOOL isRemoteNotificationsAllowed = NO;
     
-    BOOL isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
-    
-    NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
+        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
+        
+        NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    }
     
     return (isRemoteNotificationsAllowed && self.apnsDeviceToken);
 }

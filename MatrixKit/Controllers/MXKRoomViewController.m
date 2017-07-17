@@ -1779,8 +1779,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 - (void)triggerInitialBackPagination
 {
     // Trigger back pagination to fill all the screen
-    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    CGRect frame = window.rootViewController.view.bounds;
+    CGRect frame = [[UIScreen mainScreen] bounds];
     
     isPaginationInProgress = YES;
     [self startActivityIndicator];
@@ -2483,7 +2482,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
 - (void)dataSource:(MXKDataSource *)dataSource didCellChange:(id)changes
 {
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication && sharedApplication.applicationState != UIApplicationStateActive)
     {
         // Do nothing at the UI level if the application do a sync in background
         return;

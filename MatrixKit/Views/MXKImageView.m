@@ -217,20 +217,22 @@
 
 - (void)showFullScreen
 {
-    _fullScreen = YES;
-    
-    [self initLayout];
-    
-    if (_fullScreen)
+    // The full screen display mode is supported only if the shared application instance is available.
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
     {
+        _fullScreen = YES;
+        
+        [self initLayout];
+        
         if (self.superview)
         {
             [super removeFromSuperview];
         }
         
-        [UIApplication sharedApplication].statusBarHidden = YES;
+        sharedApplication.statusBarHidden = YES;
         
-        UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+        UIWindow *window = [sharedApplication keyWindow];
         
         self.frame = window.bounds;
         [window addSubview:self];
@@ -326,7 +328,11 @@
     
     if (_fullScreen)
     {
-        [UIApplication sharedApplication].statusBarHidden = NO;
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
+        {
+            sharedApplication.statusBarHidden = NO;
+        }
     }
     
     if (pieChartView)
@@ -371,12 +377,15 @@
     
     if (leftButtonTitle || rightButtonTitle)
     {
-        UIViewController *rootViewController = [[UIApplication sharedApplication] keyWindow].rootViewController;
-        
-        tabBarController = rootViewController.tabBarController;
-        if (!tabBarController && [rootViewController isKindOfClass:[UITabBarController class]])
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
         {
-            tabBarController = (UITabBarController*)rootViewController;
+            UIViewController *rootViewController = [sharedApplication keyWindow].rootViewController;
+            tabBarController = rootViewController.tabBarController;
+            if (!tabBarController && [rootViewController isKindOfClass:[UITabBarController class]])
+            {
+                tabBarController = (UITabBarController*)rootViewController;
+            }
         }
         
         if (tabBarController)
@@ -773,7 +782,11 @@
     
     if (_fullScreen)
     {
-        [UIApplication sharedApplication].statusBarHidden = NO;
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
+        {
+            sharedApplication.statusBarHidden = NO;
+        }
     }
 }
 
