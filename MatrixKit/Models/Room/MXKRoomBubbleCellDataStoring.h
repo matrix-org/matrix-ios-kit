@@ -234,28 +234,28 @@ Update the event because its sent state changed or it is has been redacted.
 @property (nonatomic) BOOL collapsable;
 
 /**
- A Boolean value that indicates if the cell and its serie is collapsed.
+ A Boolean value that indicates if the cell and its series is collapsed.
  */
 @property (nonatomic) BOOL collapsed;
 
 /**
- The attributed string to display when the collapsable cells serie is collapsed.
- It is not nil only for the start cell of the cells serie.
+ The attributed string to display when the collapsable cells series is collapsed.
+ It is not nil only for the start cell of the cells series.
  */
 @property (nonatomic) NSAttributedString *collapsedAttributedTextMessage;
 
 /**
  Bidirectional linked list of cells that can be collapsed together.
  If prevCollapsableCellData is nil, this cell data instance is the data of the start
- cell of the collapsable cells serie.
+ cell of the collapsable cells series.
  */
 @property (nonatomic) id<MXKRoomBubbleCellDataStoring> prevCollapsableCellData;
 @property (nonatomic) id<MXKRoomBubbleCellDataStoring> nextCollapsableCellData;
 
 /**
- The room state to use for computing or updating the data to display for the serie when it is
+ The room state to use for computing or updating the data to display for the series when it is
  collapsed.
- It is not nil only for the start cell of the cells serie.
+ It is not nil only for the start cell of the cells series.
  */
 @property (nonatomic) MXRoomState *collapseState;
 

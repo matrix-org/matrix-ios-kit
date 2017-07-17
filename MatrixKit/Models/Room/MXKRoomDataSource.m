@@ -101,16 +101,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXPeekingRoom *peekingRoom;
 
     /**
-     If any, the non terminated serie of collapsable events at the start of self.bubbles.
-     (Such serie is determined by the cell data of its oldest event).
+     If any, the non terminated series of collapsable events at the start of self.bubbles.
+     (Such series is determined by the cell data of its oldest event).
      */
-    id<MXKRoomBubbleCellDataStoring> collapsableSerieAtStart;
+    id<MXKRoomBubbleCellDataStoring> collapsableSeriesAtStart;
 
     /**
-     If any, the non terminated serie of collapsable events at the end of self.bubbles.
-     (Such serie is determined by the cell data of its oldest event).
+     If any, the non terminated series of collapsable events at the end of self.bubbles.
+     (Such series is determined by the cell data of its oldest event).
      */
-    id<MXKRoomBubbleCellDataStoring> collapsableSerieAtEnd;
+    id<MXKRoomBubbleCellDataStoring> collapsableSeriesAtEnd;
 
     /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
@@ -1941,7 +1941,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     bubblesSnapshot = [bubbles mutableCopy];
                 }
 
-                NSMutableSet<id<MXKRoomBubbleCellDataStoring>> *collapsingCellDataSeries = [NSMutableSet set];
+                NSMutableSet<id<MXKRoomBubbleCellDataStoring>> *collapsingCellDataSeriess = [NSMutableSet set];
 
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
@@ -1999,42 +1999,42 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 {
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards)
                                     {
-                                        // Try to collapse it with the serie at the start of self.bubbles
-                                        if (collapsableSerieAtStart && [collapsableSerieAtStart collapseWith:bubbleData])
+                                        // Try to collapse it with the series at the start of self.bubbles
+                                        if (collapsableSeriesAtStart && [collapsableSeriesAtStart collapseWith:bubbleData])
                                         {
-                                            // bubbleData becomes the oldest cell data of the current serie
-                                            collapsableSerieAtStart.prevCollapsableCellData = bubbleData;
-                                            bubbleData.nextCollapsableCellData = collapsableSerieAtStart;
+                                            // bubbleData becomes the oldest cell data of the current series
+                                            collapsableSeriesAtStart.prevCollapsableCellData = bubbleData;
+                                            bubbleData.nextCollapsableCellData = collapsableSeriesAtStart;
 
-                                            // The new cell must have the collapsed state as the serie
-                                            bubbleData.collapsed = collapsableSerieAtStart.collapsed;
+                                            // The new cell must have the collapsed state as the series
+                                            bubbleData.collapsed = collapsableSeriesAtStart.collapsed;
 
                                             // Release data of the previous header
-                                            collapsableSerieAtStart.collapseState = nil;
-                                            collapsableSerieAtStart.collapsedAttributedTextMessage = nil;
-                                            [collapsingCellDataSeries removeObject:collapsableSerieAtStart];
+                                            collapsableSeriesAtStart.collapseState = nil;
+                                            collapsableSeriesAtStart.collapsedAttributedTextMessage = nil;
+                                            [collapsingCellDataSeriess removeObject:collapsableSeriesAtStart];
 
-                                            // And keep a ref of data for the new start of the serie
-                                            collapsableSerieAtStart = bubbleData;
-                                            collapsableSerieAtStart.collapseState = queuedEvent.state;
-                                            [collapsingCellDataSeries addObject:collapsableSerieAtStart];
+                                            // And keep a ref of data for the new start of the series
+                                            collapsableSeriesAtStart = bubbleData;
+                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
                                         }
                                         else
                                         {
-                                            // This is a ending point for a new collapsable serie of cells
-                                            collapsableSerieAtStart = bubbleData;
-                                            collapsableSerieAtStart.collapseState = queuedEvent.state;
-                                            [collapsingCellDataSeries addObject:collapsableSerieAtStart];
+                                            // This is a ending point for a new collapsable series of cells
+                                            collapsableSeriesAtStart = bubbleData;
+                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
                                         }
                                     }
                                     else
                                     {
-                                        // Try to collapse it with the serie at the end of self.bubbles
-                                        if (collapsableSerieAtEnd && [collapsableSerieAtEnd collapseWith:bubbleData])
+                                        // Try to collapse it with the series at the end of self.bubbles
+                                        if (collapsableSeriesAtEnd && [collapsableSeriesAtEnd collapseWith:bubbleData])
                                         {
-                                            // Put bubbleData at the serie tail
+                                            // Put bubbleData at the series tail
                                             // Find the tail
-                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSerieAtEnd;
+                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtEnd;
                                             while (tailBubbleData.nextCollapsableCellData)
                                             {
                                                 tailBubbleData = tailBubbleData.nextCollapsableCellData;
@@ -2043,31 +2043,31 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                             tailBubbleData.nextCollapsableCellData = bubbleData;
                                             bubbleData.prevCollapsableCellData = tailBubbleData;
 
-                                            // The new cell must have the collapsed state as the serie
+                                            // The new cell must have the collapsed state as the series
                                             bubbleData.collapsed = tailBubbleData.collapsed;
                                         }
                                         else
                                         {
-                                            // This is a starting point for a new collapsable serie of cells
-                                            collapsableSerieAtEnd = bubbleData;
-                                            collapsableSerieAtEnd.collapseState = queuedEvent.state;
-                                            [collapsingCellDataSeries addObject:collapsableSerieAtEnd];
+                                            // This is a starting point for a new collapsable series of cells
+                                            collapsableSeriesAtEnd = bubbleData;
+                                            collapsableSeriesAtEnd.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtEnd];
                                         }
                                     }
                                 }
                                 else
                                 {
                                     // The new bubble is not collapsable.
-                                    // We can close one border of the current serie being built (if any)
-                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSerieAtStart)
+                                    // We can close one border of the current series being built (if any)
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSeriesAtStart)
                                     {
-                                        // This is the begin border of the serie
-                                        collapsableSerieAtStart = nil;
+                                        // This is the begin border of the series
+                                        collapsableSeriesAtStart = nil;
                                     }
-                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSerieAtEnd)
+                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSeriesAtEnd)
                                     {
-                                        // This is the end border of the serie
-                                        collapsableSerieAtEnd = nil;
+                                        // This is the end border of the series
+                                        collapsableSeriesAtEnd = nil;
                                     }
                                 }
                             }
@@ -2312,13 +2312,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
-                // Check if all cells of self.bubbles belongs to a single collapse serie.
-                // In this case, collapsableSerieAtStart and collapsableSerieAtEnd must be equal
+                // Check if all cells of self.bubbles belongs to a single collapse series.
+                // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
                 // in order to handle next forward or backward pagination.
-                if (collapsableSerieAtStart == bubbles.firstObject)
+                if (collapsableSeriesAtStart == bubbles.firstObject)
                 {
                     // Find the tail
-                    id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSerieAtStart;
+                    id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtStart;
                     while (tailBubbleData.nextCollapsableCellData)
                     {
                         tailBubbleData = tailBubbleData.nextCollapsableCellData;
@@ -2326,13 +2326,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     if (tailBubbleData == bubbles.lastObject)
                     {
-                        collapsableSerieAtEnd = collapsableSerieAtStart;
+                        collapsableSeriesAtEnd = collapsableSeriesAtStart;
                     }
                 }
-                else if (collapsableSerieAtEnd)
+                else if (collapsableSeriesAtEnd)
                 {
                     // Find the start
-                    id<MXKRoomBubbleCellDataStoring> startBubbleData = collapsableSerieAtEnd;
+                    id<MXKRoomBubbleCellDataStoring> startBubbleData = collapsableSeriesAtEnd;
                     while (startBubbleData.prevCollapsableCellData)
                     {
                         startBubbleData = startBubbleData.prevCollapsableCellData;
@@ -2340,14 +2340,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     if (startBubbleData == bubbles.firstObject)
                     {
-                        collapsableSerieAtStart = collapsableSerieAtEnd;
+                        collapsableSeriesAtStart = collapsableSeriesAtEnd;
                     }
                 }
 
-                // Compose (= compute collapsedAttributedTextMessage) of collapsable series
-                for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeries)
+                // Compose (= compute collapsedAttributedTextMessage) of collapsable seriess
+                for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeriess)
                 {
-                    // Get all events of the serie
+                    // Get all events of the series
                     NSMutableArray<MXEvent*> *events = [NSMutableArray array];
                     id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
                     do
@@ -2356,13 +2356,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                     while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
 
-                    // Build the summary string for the serie
+                    // Build the summary string for the series
                     bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
 
-                    // Release collapseState objects, even the one of collapsableSerieAtStart.
-                    // We do not need to keep its state because if an collapsable event comes before collapsableSerieAtStart,
+                    // Release collapseState objects, even the one of collapsableSeriesAtStart.
+                    // We do not need to keep its state because if an collapsable event comes before collapsableSeriesAtStart,
                     // we will take the room state of this event.
-                    if (bubbleData != collapsableSerieAtEnd)
+                    if (bubbleData != collapsableSeriesAtEnd)
                     {
                         bubbleData.collapseState = nil;
                     }

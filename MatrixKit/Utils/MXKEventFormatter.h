@@ -162,8 +162,8 @@ typedef enum : NSUInteger {
 /**
  Generate a displayable attributed string representating a summary for the provided events.
 
- @param events the serie of events to format.
- @param roomState the room state right before the first event in the serie.
+ @param events the series of events to format.
+ @param roomState the room state right before the first event in the series.
  @param error the error code. In case of formatting error, the formatter may return non nil string as a proposal.
  @return the attributed string.
  */
