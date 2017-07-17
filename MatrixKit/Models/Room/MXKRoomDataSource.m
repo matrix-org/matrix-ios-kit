@@ -101,6 +101,18 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXPeekingRoom *peekingRoom;
 
     /**
+     If any, the non terminated series of collapsable events at the start of self.bubbles.
+     (Such series is determined by the cell data of its oldest event).
+     */
+    id<MXKRoomBubbleCellDataStoring> collapsableSeriesAtStart;
+
+    /**
+     If any, the non terminated series of collapsable events at the end of self.bubbles.
+     (Such series is determined by the cell data of its oldest event).
+     */
+    id<MXKRoomBubbleCellDataStoring> collapsableSeriesAtEnd;
+
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
@@ -1418,6 +1430,27 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+#pragma mark - Bubble collapsing
+
+- (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed
+{
+    if (bubbleData.collapsed != collapsed)
+    {
+        id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+        do
+        {
+            nextBubbleData.collapsed = collapsed;
+        }
+        while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+
+        if (self.delegate)
+        {
+            // Reload all the table
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+    }
+}
+
 #pragma mark - Private methods
 
 - (void)replaceEvent:(MXEvent*)eventToReplace withEvent:(MXEvent*)event
@@ -1907,7 +1940,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 {
                     bubblesSnapshot = [bubbles mutableCopy];
                 }
-                
+
+                NSMutableSet<id<MXKRoomBubbleCellDataStoring>> *collapsingCellDataSeriess = [NSMutableSet set];
+
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
                     @autoreleasepool
@@ -1955,6 +1990,86 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             {
                                 // The event is ignored
                                 continue;
+                            }
+
+                            // Check cells collapsing
+                            if (bubbleData.hasAttributedTextMessage)
+                            {
+                                if (bubbleData.collapsable)
+                                {
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards)
+                                    {
+                                        // Try to collapse it with the series at the start of self.bubbles
+                                        if (collapsableSeriesAtStart && [collapsableSeriesAtStart collapseWith:bubbleData])
+                                        {
+                                            // bubbleData becomes the oldest cell data of the current series
+                                            collapsableSeriesAtStart.prevCollapsableCellData = bubbleData;
+                                            bubbleData.nextCollapsableCellData = collapsableSeriesAtStart;
+
+                                            // The new cell must have the collapsed state as the series
+                                            bubbleData.collapsed = collapsableSeriesAtStart.collapsed;
+
+                                            // Release data of the previous header
+                                            collapsableSeriesAtStart.collapseState = nil;
+                                            collapsableSeriesAtStart.collapsedAttributedTextMessage = nil;
+                                            [collapsingCellDataSeriess removeObject:collapsableSeriesAtStart];
+
+                                            // And keep a ref of data for the new start of the series
+                                            collapsableSeriesAtStart = bubbleData;
+                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
+                                        }
+                                        else
+                                        {
+                                            // This is a ending point for a new collapsable series of cells
+                                            collapsableSeriesAtStart = bubbleData;
+                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Try to collapse it with the series at the end of self.bubbles
+                                        if (collapsableSeriesAtEnd && [collapsableSeriesAtEnd collapseWith:bubbleData])
+                                        {
+                                            // Put bubbleData at the series tail
+                                            // Find the tail
+                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtEnd;
+                                            while (tailBubbleData.nextCollapsableCellData)
+                                            {
+                                                tailBubbleData = tailBubbleData.nextCollapsableCellData;
+                                            }
+
+                                            tailBubbleData.nextCollapsableCellData = bubbleData;
+                                            bubbleData.prevCollapsableCellData = tailBubbleData;
+
+                                            // The new cell must have the collapsed state as the series
+                                            bubbleData.collapsed = tailBubbleData.collapsed;
+                                        }
+                                        else
+                                        {
+                                            // This is a starting point for a new collapsable series of cells
+                                            collapsableSeriesAtEnd = bubbleData;
+                                            collapsableSeriesAtEnd.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtEnd];
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // The new bubble is not collapsable.
+                                    // We can close one border of the current series being built (if any)
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSeriesAtStart)
+                                    {
+                                        // This is the begin border of the series
+                                        collapsableSeriesAtStart = nil;
+                                    }
+                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSeriesAtEnd)
+                                    {
+                                        // This is the end border of the series
+                                        collapsableSeriesAtEnd = nil;
+                                    }
+                                }
                             }
 
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
@@ -2194,6 +2309,62 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             // Listen to the identifier change for the local events.
                             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(localEventDidChangeIdentifier:) name:kMXEventDidChangeIdentifierNotification object:queuedEvent.event];
                         }
+                    }
+                }
+
+                // Check if all cells of self.bubbles belongs to a single collapse series.
+                // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
+                // in order to handle next forward or backward pagination.
+                if (collapsableSeriesAtStart == bubbles.firstObject)
+                {
+                    // Find the tail
+                    id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtStart;
+                    while (tailBubbleData.nextCollapsableCellData)
+                    {
+                        tailBubbleData = tailBubbleData.nextCollapsableCellData;
+                    }
+
+                    if (tailBubbleData == bubbles.lastObject)
+                    {
+                        collapsableSeriesAtEnd = collapsableSeriesAtStart;
+                    }
+                }
+                else if (collapsableSeriesAtEnd)
+                {
+                    // Find the start
+                    id<MXKRoomBubbleCellDataStoring> startBubbleData = collapsableSeriesAtEnd;
+                    while (startBubbleData.prevCollapsableCellData)
+                    {
+                        startBubbleData = startBubbleData.prevCollapsableCellData;
+                    }
+
+                    if (startBubbleData == bubbles.firstObject)
+                    {
+                        collapsableSeriesAtStart = collapsableSeriesAtEnd;
+                    }
+                }
+
+                // Compose (= compute collapsedAttributedTextMessage) of collapsable seriess
+                for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeriess)
+                {
+                    // Get all events of the series
+                    NSMutableArray<MXEvent*> *events = [NSMutableArray array];
+                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+                    do
+                    {
+                        [events addObjectsFromArray:nextBubbleData.events];
+                    }
+                    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+
+                    // Build the summary string for the series
+                    bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
+
+                    // Release collapseState objects, even the one of collapsableSeriesAtStart.
+                    // We do not need to keep its state because if an collapsable event comes before collapsableSeriesAtStart,
+                    // we will take the room state of this event.
+                    if (bubbleData != collapsableSeriesAtEnd)
+                    {
+                        bubbleData.collapseState = nil;
                     }
                 }
             }

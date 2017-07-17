@@ -1095,6 +1095,12 @@
     return attributedDisplayText;
 }
 
+- (NSAttributedString*)attributedStringFromEvents:(NSArray<MXEvent*>*)events withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
+{
+    // TODO: Do a full summary
+    return nil;
+}
+
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
 {
     // Sanity check
