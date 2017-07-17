@@ -1,1 +1,14 @@
-
+"matrix" = "Matrix";
+// Login Screen
+"login_create_account" = "Konto erstellen:";
+"login_server_url_placeholder" = "URL (z.B. https://matrix.org)";
+"login_home_server_title" = "Heimserver:";
+"login_home_server_info" = "Dein Heimserver speichert all deine Gespräche und Kontodaten";
+"login_identity_server_title" = "Identitäten-Server:";
+"login_identity_server_info" = "";
+"login_user_id_placeholder" = "Matrix-ID (z.B. @bob:matrix.org oder bob)";
+"login_password_placeholder" = "Passwort";
+"login_optional_field" = "optional";
+"login_display_name_placeholder" = "Anzeigename (z.B. Peter Pan)";
+"login_email_placeholder" = "E-Mail-Adresse";
+"login_error_title" = "Anmeldung fehlgeschlagen";
