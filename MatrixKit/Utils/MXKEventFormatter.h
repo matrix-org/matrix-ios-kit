@@ -353,4 +353,10 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) UIFont *encryptedMessagesTextFont;
 
+/**
+ Text font used to display message containing a single emoji.
+ Default is nil (same font as self.defaultTextFont).
+ */
+@property (nonatomic) UIFont *singleEmojiTextFont;
+
 @end
