@@ -26,8 +26,6 @@
 
 #import <AFNetworking/AFNetworking.h>
 
-NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
-
 @interface MXKAuthenticationViewController ()
 {
     /**
@@ -802,7 +800,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
             if (_authType == MXKAuthenticationTypeLogin)
             {
                 // Prepare the parameters dict
-                [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                     
                     if (parameters && mxRestClient)
                     {
@@ -812,7 +810,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     else
                     {
                         NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
-                        [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                        [self onFailureDuringAuthRequest:error];
                     }
                     
                 }];
@@ -875,7 +873,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                 self.authInputsView.authSession.session = authSession.session;
                                 
                                 // Launch registration by preparing parameters dict
-                                [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                                [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                                     
                                     if (parameters && mxRestClient)
                                     {
@@ -885,7 +883,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                     else
                                     {
                                         NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
-                                        [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                                        [self onFailureDuringAuthRequest:error];
                                     }
                                     
                                 }];
@@ -910,7 +908,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                 [_authenticationActivityIndicator stopAnimating];
                                
                                 // Launch registration by preparing parameters dict
-                                [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                                [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                                     
                                     if (parameters && mxRestClient)
                                     {
@@ -920,7 +918,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                                     else
                                     {
                                         NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
-                                        [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                                        [self onFailureDuringAuthRequest:error];
                                     }
                                     
                                 }];
@@ -932,7 +930,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 else if (self.externalRegistrationParameters)
                 {
                     // Launch registration by preparing parameters dict
-                    [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                    [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                         
                         if (parameters && mxRestClient)
                         {
@@ -942,7 +940,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                         else
                         {
                             NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
-                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                            [self onFailureDuringAuthRequest:error];
                         }
                         
                     }];
@@ -964,7 +962,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                 else
                 {
                     // Prepare the parameters dict
-                    [self.authInputsView prepareParameters:^(NSDictionary *parameters) {
+                    [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                         
                         if (parameters && mxRestClient)
                         {
@@ -974,7 +972,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                         else
                         {
                             NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
-                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                            [self onFailureDuringAuthRequest:error];
                         }
                         
                     }];
@@ -1425,7 +1423,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                     // Update session identifier in case of change
                     self.authInputsView.authSession.session = authSession.session;
                     
-                    [self.authInputsView updateAuthSessionWithCompletedStages:authSession.completed didUpdateParameters:^(NSDictionary *parameters) {
+                    [self.authInputsView updateAuthSessionWithCompletedStages:authSession.completed didUpdateParameters:^(NSDictionary *parameters, NSError *error) {
                         
                         if (parameters)
                         {
@@ -1438,7 +1436,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
                         {
                             NSLog(@"[MXKAuthenticationVC] Failed to update parameters");
                             
-                            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                            [self onFailureDuringAuthRequest:error];
                         }
                         
                     }];

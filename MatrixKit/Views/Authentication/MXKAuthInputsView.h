@@ -17,6 +17,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+extern NSString *const MXKAuthErrorDomain;
+
 /**
  Authentication types
  */
@@ -172,18 +174,18 @@ typedef enum {
  Prepare the set of the inputs in order to launch an authentication process.
  
  @param callback the block called when the parameters are prepared. The resulting parameter dictionary is nil
- if something fails (for example when a parameter or a required input is missing).
+ if something fails (for example when a parameter or a required input is missing). The failure reason is provided in error parameter (nil by default).
  */
-- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback;
+- (void)prepareParameters:(void (^)(NSDictionary *parameters, NSError *error))callback;
 
 /**
  Update the current authentication session by providing the list of successful stages.
  
  @param completedStages the list of stages the client has completed successfully. This is an array of MXLoginFlowType.
  @param callback the block called when the parameters have been updated for the next stage. The resulting parameter dictionary is nil
- if something fails (for example when a parameter or a required input is missing).
+ if something fails (for example when a parameter or a required input is missing). The failure reason is provided in error parameter (nil by default).
  */
-- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback;
+- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters, NSError *error))callback;
 
 /**
  Update the current authentication session by providing a set of registration parameters.

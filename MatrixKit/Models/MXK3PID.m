@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -57,6 +58,7 @@
 }
 
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
+                              isDuringRegistration:(BOOL)isDuringRegistration
                                           nextLink:(NSString*)nextLink
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure
@@ -75,7 +77,7 @@
             _validationState = MXK3PIDAuthStateTokenRequested;
             mxRestClient = restClient;
             
-            currentRequest = [mxRestClient requestEmailValidation:self.address clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid) {
+            currentRequest = [mxRestClient requestTokenForEmail:self.address isDuringRegistration:isDuringRegistration clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid) {
                 
                 _validationState = MXK3PIDAuthStateTokenReceived;
                 currentRequest = nil;
@@ -108,7 +110,7 @@
             
             NSString *phoneNumber = [NSString stringWithFormat:@"+%@", self.address];
             
-            currentRequest = [mxRestClient requestPhoneNumberValidation:phoneNumber countryCode:nil clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid, NSString *msisdn) {
+            currentRequest = [mxRestClient requestTokenForPhoneNumber:phoneNumber isDuringRegistration:isDuringRegistration countryCode:nil clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid, NSString *msisdn) {
                 
                 _validationState = MXK3PIDAuthStateTokenReceived;
                 currentRequest = nil;

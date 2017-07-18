@@ -19,6 +19,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
+
 @implementation MXKAuthInputsView
 
 + (UINib *)nib
@@ -78,21 +80,21 @@
     return nil;
 }
 
-- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback
+- (void)prepareParameters:(void (^)(NSDictionary *parameters, NSError *error))callback
 {
     // Do nothing by default
     if (callback)
     {
-        callback (nil);
+        callback (nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]);
     }
 }
 
-- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback
+- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters, NSError *error))callback
 {
     // Do nothing by default
     if (callback)
     {
-        callback (nil);
+        callback (nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]);
     }
 }
 
