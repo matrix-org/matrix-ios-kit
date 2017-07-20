@@ -11,6 +11,8 @@
 		3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */; };
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
 		321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */; };
+		32185B2D1F20AFEB00752141 /* MXKLanguagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32185B2B1F20AFEB00752141 /* MXKLanguagePickerViewController.m */; };
+		32185B2E1F20AFEB00752141 /* MXKLanguagePickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32185B2C1F20AFEB00752141 /* MXKLanguagePickerViewController.xib */; };
 		3219CBC01AA6FB470027D7E2 /* MXKRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */; };
 		3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3230A3711ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m */; };
 		3230A3751ACADC1800CC57F5 /* MXKRoomDataSourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3230A3741ACADC1800CC57F5 /* MXKRoomDataSourceManager.m */; };
@@ -230,6 +232,9 @@
 		321313C61AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIOSOutgoingBubbleTableViewCell.h; sourceTree = "<group>"; };
 		321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSOutgoingBubbleTableViewCell.m; sourceTree = "<group>"; };
 		321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIOSOutgoingBubbleTableViewCell.xib; sourceTree = "<group>"; };
+		32185B2A1F20AFEB00752141 /* MXKLanguagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKLanguagePickerViewController.h; sourceTree = "<group>"; };
+		32185B2B1F20AFEB00752141 /* MXKLanguagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKLanguagePickerViewController.m; sourceTree = "<group>"; };
+		32185B2C1F20AFEB00752141 /* MXKLanguagePickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKLanguagePickerViewController.xib; sourceTree = "<group>"; };
 		3219CB681AA6F2780027D7E2 /* MatrixKitSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MatrixKitSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomViewController.h; sourceTree = "<group>"; };
 		3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomViewController.m; sourceTree = "<group>"; };
@@ -661,6 +666,9 @@
 		3219CBBB1AA6FB1C0027D7E2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				32185B2A1F20AFEB00752141 /* MXKLanguagePickerViewController.h */,
+				32185B2B1F20AFEB00752141 /* MXKLanguagePickerViewController.m */,
+				32185B2C1F20AFEB00752141 /* MXKLanguagePickerViewController.xib */,
 				F0FDF2641E53586A00D23C47 /* MXKCountryPickerViewController.h */,
 				F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */,
 				F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */,
@@ -1360,6 +1368,7 @@
 				F06CDD601EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */,
+				32185B2E1F20AFEB00752141 /* MXKLanguagePickerViewController.xib in Resources */,
 				F01439461F067929006E5D8C /* MXKReadReceiptTableViewCell.xib in Resources */,
 				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
 				F0316E441B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.xib in Resources */,
@@ -1613,6 +1622,7 @@
 				F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */,
 				F0DD7D851B7B3CF100C4BE02 /* MXKRoomCreationInputs.m in Sources */,
 				F094D15E1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m in Sources */,
+				32185B2D1F20AFEB00752141 /* MXKLanguagePickerViewController.m in Sources */,
 				328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */,
 				F05FB1811AD6643900DC0647 /* MXKRoomMemberTableViewCell.m in Sources */,
 				F095E50E1B25899F009606CE /* MXKContactField.m in Sources */,
