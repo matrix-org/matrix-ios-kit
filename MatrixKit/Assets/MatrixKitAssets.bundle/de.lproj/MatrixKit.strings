@@ -2,10 +2,10 @@
 // Login Screen
 "login_create_account" = "Konto erstellen:";
 "login_server_url_placeholder" = "URL (z.B. https://matrix.org)";
-"login_home_server_title" = "Heimserver:";
-"login_home_server_info" = "Dein Heimserver speichert all deine Gespräche und Kontodaten";
-"login_identity_server_title" = "Identitäten-Server:";
-"login_identity_server_info" = "Matrix nutzt Identitäts-Server um Verbindungen zwischen Email-Adressen, Telefonnummern etc. zu Matrix IDs herzustellen. Momentan existiert nur https://vector.im.";
+"login_home_server_title" = "Home-Server:";
+"login_home_server_info" = "Dein Home-Server speichert all deine Gespräche und Kontodaten";
+"login_identity_server_title" = "Identitätsserver:";
+"login_identity_server_info" = "Matrix nutzt Identitätsserver um Verbindungen zwischen Email-Adressen, Telefonnummern etc. zu Matrix IDs herzustellen. Momentan existiert nur https://vector.im.";
 "login_user_id_placeholder" = "Matrix-ID (z.B. @bob:matrix.org oder bob)";
 "login_password_placeholder" = "Passwort";
 "login_optional_field" = "optional";
@@ -14,8 +14,8 @@
 "login_error_title" = "Anmeldung fehlgeschlagen";
 "login_email_info" = "Gebe eine Email-Adresse an, damit dich andere Benutzer auf Matrix einfach finden können. Die Email-Adresse kann dann auch zum Zurücksetzen des Passworts verwendet werden.";
 "login_prompt_email_token" = "Gebe das Email-Validierungs-Token ein:";
-"login_error_no_login_flow" = "Die Authentifizierungs-Information von diesem Heimserver konnte nicht abgerufen werden";
-"login_error_do_not_support_login_flows" = "Momentan sind einige oder alle Login-Flows dieses Heimservers nicht unterstützt";
+"login_error_no_login_flow" = "Die Authentifizierungs-Information von diesem Home-Server konnte nicht abgerufen werden";
+"login_error_do_not_support_login_flows" = "Momentan sind einige oder alle Login-Flows dieses Home-Servers nicht unterstützt";
 "login_error_registration_is_not_supported" = "Registrierung wird momentan nicht unterstützt";
 "login_error_forbidden" = "Ungültiger Username oder Passwort";
 "login_error_unknown_token" = "Das angegebene Zugriffs-Token wurde nicht erkannt";
@@ -42,7 +42,7 @@
 "sign_up" = "Anmelden";
 "submit" = "Absenden";
 "submit_code" = "Code übermitteln";
-"set_default_power_level" = "Berechtigungsebene zurücksetzen";
+"set_default_power_level" = "Berechtigungsstufe zurücksetzen";
 "set_moderator" = "Setze Moderator";
 "set_admin" = "Setze Administrator";
 "start_chat" = "Starte Chat";
@@ -74,9 +74,9 @@
 "notice_profile_change_redacted" = "%@ aktualisierte sein Profil %@";
 "notice_room_created" = "%@ erstellte den Raum";
 "notice_room_join_rule" = "Die Beitrittsregel ist: %@";
-"notice_room_power_level_intro" = "Die Berechtigungsebene der Teilnehmer ist:";
-"notice_room_power_level_acting_requirement" = "Die minimale Berechtigungsebene die ein Benutzer zum Handeln benötigt:";
-"notice_room_power_level_event_requirement" = "Die minimale Berechtigungsebene bezogen auf Ereignisse:";
+"notice_room_power_level_intro" = "Die Berechtigungsstufe der Teilnehmer ist:";
+"notice_room_power_level_acting_requirement" = "Die minimale Berechtigungsstufe die ein Benutzer zum Handeln benötigt:";
+"notice_room_power_level_event_requirement" = "Die minimalen Berechtigungsstufen bezogen auf Ereignisse:";
 "notice_room_aliases" = "Die Raumnamen-Aliase sind: %@";
 "notice_encrypted_message" = "Verschlüsselte Nachricht";
 "notice_encryption_enabled" = "%@ schaltete Ende-zu-Ende Verschlüsselung ein (algorithm %@)";
@@ -170,7 +170,7 @@
 "room_error_join_failed_title" = "Konnte Raum nicht betreten";
 "room_error_join_failed_empty_room" = "Leeren Raum erneut betreten derzeit nicht möglich.";
 "room_error_name_edition_not_authorized" = "Du bist nicht authorisiert den Raum-Namen zu ändern";
-"room_error_topic_edition_not_authorized" = "Du bist nicht authorisiert das Raum-Thema zu ändern.";
+"room_error_topic_edition_not_authorized" = "Du bist nicht authorisiert das Raum-Thema zu ändern";
 "room_error_cannot_load_timeline" = "Konnte Verlauf nicht laden";
 "room_error_timeline_event_not_found_title" = "Konnte Position im Verlauf nicht laden";
 "room_error_timeline_event_not_found" = "Konnte spezifischen Punkt im Verlauf dieses Raumes nicht finden";
@@ -226,7 +226,7 @@
 "power_level" = "Berechtigungsstufe";
 "network_error_not_reachable" = "Bitte Netzwerkverbindung prüfen";
 "user_id_placeholder" = "z.B. @thomas:heimserver";
-"ssl_homeserver_url" = "Heimserver URL: %@";
+"ssl_homeserver_url" = "Home-Server URL: %@";
 // Permissions
 "camera_access_not_granted_for_call" = "Video-Anrufe benötigen Zugriff auf die Kamera, aber %@ hat keine Berechtigung";
 "microphone_access_not_granted_for_call" = "Anrufe benötigen Zugriff auf das Mikrofon, aber %@ hat keine Berechtigung";
