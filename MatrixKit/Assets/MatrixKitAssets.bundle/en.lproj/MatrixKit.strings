@@ -284,7 +284,7 @@
 
 // Language picker
 "language_picker_title" = "Choose a language";
-"language_picker_default_language" = "Default";
+"language_picker_default_language" = "Default (%@)";
 
 /* -*- 
    Automatic localization for en

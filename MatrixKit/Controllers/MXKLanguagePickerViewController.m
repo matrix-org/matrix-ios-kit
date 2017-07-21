@@ -70,9 +70,14 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         NSString *languageDescription = [locale displayNameForKey:NSLocaleIdentifier value:language];
         if (!languageDescription)
         {
-            // This is the "Base" localization, call it default
+            // This is the "Base" localization, call it default.
+            // Get the language chosen by the OS
+            NSString *defaultLanguageDescription = [locale displayNameForKey:NSLocaleIdentifier value:mainBundle.preferredLocalizations.firstObject];
+
+            languageDescription = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"language_picker_default_language"], defaultLanguageDescription];
+
             [cellDataArray addObject:@{
-                                       kMXKLanguagePickerCellDataKeyText: [NSBundle mxk_localizedStringForKey:@"language_picker_default_language"]
+                                       kMXKLanguagePickerCellDataKeyText:languageDescription
                                        }];
         }
         else
