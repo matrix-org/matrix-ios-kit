@@ -23,9 +23,17 @@
  
  The language can be changed at runtime but the app display must be reloaded.
  
- @param language the ISO language code.
+ @param language the ISO language code. nil lets the OS choose it according to the device language
+                 and languages available in the app bundle.
  */
 + (void)mxk_setLanguage:(NSString *)language;
+
+/**
+ The language set by mxk_setLanguage.
+
+ @return the ISO language code of the current language.
+ */
++ (NSString *)mxk_language;
 
 /**
  Some strings may lack a translation in a language. 
