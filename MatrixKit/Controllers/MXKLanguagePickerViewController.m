@@ -125,7 +125,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     }
 
     // Hide search bar for the moment
-    // TODO: Enable it once we have enough translations to fill pages
+    // TODO: Enable it once we have enough translations to fill pages and pages
     [self hideSearchBar:YES];
 
     self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"language_picker_title"];
@@ -208,11 +208,8 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         {
             language = cellDataArray[index][kMXKLanguagePickerCellDataKeyLanguage];
         }
-        
-        if (language)
-        {
-            [self.delegate languagePickerViewController:self didSelectLangugage:language];
-        }
+
+        [self.delegate languagePickerViewController:self didSelectLangugage:language];
     }
 }
 
