@@ -188,31 +188,39 @@
 {
     defaultBarTintColor = barTintColor;
     
-    // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
-    UINavigationController *mainNavigationController = nil;
-    if (self.splitViewController)
+    if (enableBarTintColorStatusChange)
     {
-        mainNavigationController = self.navigationController;
-        UIViewController *parentViewController = self.parentViewController;
-        while (parentViewController)
+        // Force update by taking into account the matrix session state.
+        [self onMatrixSessionChange];
+    }
+    else
+    {
+        // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
+        UINavigationController *mainNavigationController = nil;
+        if (self.splitViewController)
         {
-            if (parentViewController.navigationController)
+            mainNavigationController = self.navigationController;
+            UIViewController *parentViewController = self.parentViewController;
+            while (parentViewController)
             {
-                mainNavigationController = parentViewController.navigationController;
-                parentViewController = parentViewController.parentViewController;
-            }
-            else
-            {
-                break;
+                if (parentViewController.navigationController)
+                {
+                    mainNavigationController = parentViewController.navigationController;
+                    parentViewController = parentViewController.parentViewController;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
-    }
-    
-    // Set default tintColor
-    self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
-    if (mainNavigationController)
-    {
-        mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
+        
+        // Set default tintColor
+        self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
+        if (mainNavigationController)
+        {
+            mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
+        }
     }
 }
 
