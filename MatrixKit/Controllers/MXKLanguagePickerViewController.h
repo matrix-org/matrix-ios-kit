@@ -24,10 +24,10 @@
  @protocol MXKLanguagePickerViewControllerDelegate <NSObject>
 
  /**
-  Tells the delegate that the user selected a language.
+  Tells the delegate that the user has selected a language.
 
   @param languagePickerViewController the `MXKLanguagePickerViewController` instance.
-  @param language the ISO language code. nil means use the default language.
+  @param language the ISO language code. nil means use the language chosen by the OS.
   */
  - (void)languagePickerViewController:(MXKLanguagePickerViewController*)languagePickerViewController didSelectLangugage:(NSString*)language;
 
@@ -35,7 +35,7 @@
 
 /**
  'MXKLanguagePickerViewController' instance displays the list of languages.
- For the moment, it only displays languages in the application bundle.
+ For the moment, it displays only languages available in the application bundle.
  */
 @interface MXKLanguagePickerViewController : MXKTableViewController <UISearchBarDelegate>
 
@@ -84,7 +84,7 @@
 
 /**
  Get the ISO country code of the language selected by the OS according to
- the device language and languages available in the app bundle
+ the device language and languages available in the app bundle.
  */
 + (NSString *)defaultLanguage;
 

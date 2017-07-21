@@ -28,7 +28,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 @interface MXKLanguagePickerViewController ()
 {
     NSMutableArray<NSDictionary*> *cellDataArray;
-    NSMutableArray<NSDictionary*>*filteredCellDataArray;
+    NSMutableArray<NSDictionary*> *filteredCellDataArray;
     
     NSString *previousSearchPattern;
 }
@@ -124,7 +124,8 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
 
-    // Hide search bar by default
+    // Hide search bar for the moment
+    // TODO: Enable it once we have enough translations to fill pages
     [self hideSearchBar:YES];
 
     self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"language_picker_title"];
