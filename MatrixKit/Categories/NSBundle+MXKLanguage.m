@@ -20,6 +20,7 @@
 
 static const char _bundle = 0;
 static const char _fallbackBundle = 0;
+static const char _language = 0;
 
 @interface MXKLanguageBundle : NSBundle
 @end
@@ -57,6 +58,15 @@ static const char _fallbackBundle = 0;
     objc_setAssociatedObject([NSBundle mainBundle],
                              &_bundle, language ? [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:language ofType:@"lproj"]] : nil,
                              OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    objc_setAssociatedObject([NSBundle mainBundle],
+                             &_language, language,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (NSString *)mxk_language
+{
+    return objc_getAssociatedObject([NSBundle mainBundle], &_language);
 }
 
 + (void)mxk_setFallbackLanguage:(NSString *)language
