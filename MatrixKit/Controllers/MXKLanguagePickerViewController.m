@@ -72,30 +72,30 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 
     previousSearchPattern = nil;
 
-    // Populate cellDataArray with languages available in the app bundle
-    NSArray<NSString *> *localizations = [[NSBundle mainBundle] localizations];
+    // Populate cellDataArray
+    // Start by the default language chosen by the OS
+    NSString *defaultLanguage = [MXKLanguagePickerViewController defaultLanguage];
+    NSString *languageDescription = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"language_picker_default_language"], [MXKLanguagePickerViewController languageDescription:defaultLanguage]];
 
+    [cellDataArray addObject:@{
+                               kMXKLanguagePickerCellDataKeyText:languageDescription
+                               }];
+
+    // Then, add languages available in the app bundle
+    NSArray<NSString *> *localizations = [[NSBundle mainBundle] localizations];
     for (NSString *language in localizations)
     {
-        NSString *languageDescription = [MXKLanguagePickerViewController languageDescription:language];
-        if (!languageDescription)
+        // Do not duplicate the default lang
+        if (![language isEqualToString:defaultLanguage])
         {
-            // This is the "Base" localization, call it default.
-            // Get the language chosen by the OS
-            NSString *defaultLanguage = [MXKLanguagePickerViewController defaultLanguage];
-
-            languageDescription = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"language_picker_default_language"], [MXKLanguagePickerViewController languageDescription:defaultLanguage]];
-
-            [cellDataArray addObject:@{
-                                       kMXKLanguagePickerCellDataKeyText:languageDescription
-                                       }];
-        }
-        else
-        {
-            [cellDataArray addObject:@{
-                                       kMXKLanguagePickerCellDataKeyText: languageDescription,
-                                       kMXKLanguagePickerCellDataKeyLanguage: language
-                                       }];
+            languageDescription = [MXKLanguagePickerViewController languageDescription:language];
+            if (languageDescription)
+            {
+                [cellDataArray addObject:@{
+                                           kMXKLanguagePickerCellDataKeyText: languageDescription,
+                                           kMXKLanguagePickerCellDataKeyLanguage: language
+                                           }];
+            }
         }
     }
 
