@@ -51,6 +51,18 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
                                           bundle:[NSBundle bundleForClass:[MXKLanguagePickerViewController class]]];
 }
 
++ (NSString *)languageDescription:(NSString *)language
+{
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:[NSBundle mainBundle].preferredLocalizations.firstObject];
+
+    return [locale displayNameForKey:NSLocaleIdentifier value:language];
+}
+
++ (NSString *)defaultLanguage
+{
+    return [NSBundle mainBundle].preferredLocalizations.firstObject;
+}
+
 - (void)finalizeInit
 {
     [super finalizeInit];
@@ -60,21 +72,19 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 
     previousSearchPattern = nil;
 
-    // Populate cellDataArray with language available in the app bundle
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    NSArray<NSString *> *localizations = [mainBundle localizations];
+    // Populate cellDataArray with languages available in the app bundle
+    NSArray<NSString *> *localizations = [[NSBundle mainBundle] localizations];
 
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:mainBundle.preferredLocalizations.firstObject];
     for (NSString *language in localizations)
     {
-        NSString *languageDescription = [locale displayNameForKey:NSLocaleIdentifier value:language];
+        NSString *languageDescription = [MXKLanguagePickerViewController languageDescription:language];
         if (!languageDescription)
         {
             // This is the "Base" localization, call it default.
             // Get the language chosen by the OS
-            NSString *defaultLanguageDescription = [locale displayNameForKey:NSLocaleIdentifier value:mainBundle.preferredLocalizations.firstObject];
+            NSString *defaultLanguage = [MXKLanguagePickerViewController defaultLanguage];
 
-            languageDescription = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"language_picker_default_language"], defaultLanguageDescription];
+            languageDescription = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"language_picker_default_language"], [MXKLanguagePickerViewController languageDescription:defaultLanguage]];
 
             [cellDataArray addObject:@{
                                        kMXKLanguagePickerCellDataKeyText:languageDescription
