@@ -13,7 +13,7 @@
 "login_create_account" = "Créer un compte :";
 "login_server_url_placeholder" = "URL (par ex. https://matrix.org)";
 "login_home_server_title" = "Homeserver :";
-"login_home_server_info" = "Votre homeserver stocke toutes vos conversations et les données de votre compte";
+"login_home_server_info" = "Votre homeserver stocke toutes vos discussions et les données de votre compte";
 "login_identity_server_title" = "Serveur d'identité :";
 "login_identity_server_info" = "Matrix fournit des serveurs d'identité pour lier les e-mail, etc. aux identifiants Matrix. Seul https://matrix.org exite pour l'instant.";
 "login_user_id_placeholder" = "Identifiant Matrix (par ex. @bob:matrix.org ou bob)";
@@ -49,11 +49,11 @@
 "sign_up" = "S'incrire";
 "submit" = "Valider";
 "submit_code" = "Envoyer le code";
-"set_default_power_level" = "Réinitialiser les privilèges";
+"set_default_power_level" = "Réinitialiser le niveau d'autorité";
 "set_moderator" = "Promouvoir modérateur";
 "set_admin" = "Promouvoir administrateur";
 "start_chat" = "Nouvelle discussion";
-"start_voice_call" = "Nouvel appel audio";
+"start_voice_call" = "Nouvel appel vocal";
 "start_video_call" = "Nouvel appel vidéo";
 "mention" = "Mentionner";
 "select_account" = "Sélectionner un compte";
@@ -81,9 +81,9 @@
 "notice_profile_change_redacted" = "%@ ont mis à jour leur profil %@";
 "notice_room_created" = "%@ a créé le salon";
 "notice_room_join_rule" = "La règle pour rejoindre est : %@";
-"notice_room_power_level_intro" = "Les niveaux de privilèges des membres du salon sont :";
-"notice_room_power_level_acting_requirement" = "Le niveau minimum de privilège qu'un utilisateur doit avoir pour interagir est :";
-"notice_room_power_level_event_requirement" = "Le niveau de privilège minimum lié aux événements est :";
+"notice_room_power_level_intro" = "Les niveaux d'autorité des membres du salon sont :";
+"notice_room_power_level_acting_requirement" = "Le niveau minimum d'autorité qu'un utilisateur doit avoir pour interagir est :";
+"notice_room_power_level_event_requirement" = "Le niveau d'autorité minimum lié aux événements est :";
 "notice_room_aliases" = "Les alias du salon sont : %@";
 "notice_encrypted_message" = "Message chiffré";
 "notice_encryption_enabled" = "%@ a activé le chiffrement de bout en bout (algorithme %@)";
@@ -102,7 +102,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ a rendu l'historique futur du salon visible à tous les membres, à partir du moment où ils ont été invités.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ a rendu l'historique futur du salon visible à tous les membres, à partir de leur adhésion au salon.";
 "notice_crypto_unable_to_decrypt" = "** Impossible de déchiffrer : %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "L'appareil de l'émetteur ne nous a pas envoyé les clés pour ce message.";
+"notice_crypto_error_unknown_inbound_session_id" = "L'appareil de l'expéditeur ne nous a pas envoyé les clés pour ce message.";
 // Settings
 "settings" = "Paramètres";
 "settings_enable_inapp_notifications" = "Activer les notification dans l'application";
@@ -129,7 +129,7 @@
 "room_event_encryption_info_event_decryption_error" = "Erreur de déchiffrement\n";
 "room_event_encryption_info_event_unencrypted" = "non chiffré";
 "room_event_encryption_info_event_none" = "aucun";
-"room_event_encryption_info_device" = "\nInformation sur l'appareil émetteur\n";
+"room_event_encryption_info_device" = "\nInformation sur l'appareil expéditeur\n";
 "room_event_encryption_info_device_unknown" = "appareil inconnu\n";
 "room_event_encryption_info_device_name" = "Nom\n";
 "room_event_encryption_info_device_id" = "Identifiant de l'appareil\n";
@@ -143,7 +143,7 @@
 "room_event_encryption_info_block" = "Mettre sur liste noire";
 "room_event_encryption_info_unblock" = "Réhabiliter";
 "room_event_encryption_verify_title" = "Vérifier l'appareil\n\n";
-"room_event_encryption_verify_message" = "Pour vérifier que cet appareil est de confiance, contactez son propriétaire par un autre canal (par ex. en personne ou au téléphone) et demandez lui si la clé qu'il voit dans son profil utilisateur pour ce périphérique est identique à la clé ci-dessous :\n\n    Nom de l'appareil : %@\n    Identifiant de l'appareil : %@\n    Clé de l'appareil : %@\n\nSi les clés sont identiques, cliquez sur le bouton vérifier ci-dessous. Sinon, quelqu'un est probablement en train d'intercepter cet appareil et vous devriez plutôt le mettre sur liste noire.\n\nA l'avenir, ce processus de vérification sera plus élaboré.";
+"room_event_encryption_verify_message" = "Pour vérifier que cet appareil est de confiance, contactez son propriétaire par un autre canal (par ex. en personne ou au téléphone) et demandez lui si la clé qu'il voit dans son profil utilisateur pour cet appareil est identique à la clé ci-dessous :\n\n    Nom de l'appareil : %@\n    Identifiant de l'appareil : %@\n    Clé de l'appareil : %@\n\nSi les clés sont identiques, cliquez sur le bouton vérifier ci-dessous. Sinon, quelqu'un est probablement en train d'intercepter cet appareil et vous devriez plutôt le mettre sur liste noire.\n\nA l'avenir, ce processus de vérification sera plus élaboré.";
 "room_event_encryption_verify_ok" = "Vérifier";
 // Account
 "account_save_changes" = "Enregistrer les modifications";
@@ -184,7 +184,7 @@
 "room_no_conference_call_in_encrypted_rooms" = "Les appels ne sont pas supportés sur les salons chiffrés";
 // Room members
 "room_member_ignore_prompt" = "Êtes-vous sûr de vouloir masquer tous les messages de cet utilisateur ?";
-"room_member_power_level_prompt" = "Vous ne pourrez pas révoquer ce changement car vous promouvez cet utilisateur au même niveau de pouvoir que le vôtre.\nÊtes-vous sûr ?";
+"room_member_power_level_prompt" = "Vous ne pourrez pas révoquer ce changement car vous promouvez cet utilisateur au même niveau d'autorité que le vôtre.\nÊtes-vous sûr ?";
 // Attachment
 "attachment_size_prompt" = "Voulez-vous envoyer au format :";
 "attachment_original" = "Taille réelle : %@";
@@ -228,7 +228,7 @@
 "default" = "par défaut";
 "private" = "Privé";
 "public" = "Public";
-"power_level" = "Niveau de pouvoir";
+"power_level" = "Niveau d'autorité";
 "network_error_not_reachable" = "Vérifiez votre connectivité réseau";
 "user_id_placeholder" = "ex : @bob: homeserver";
 "ssl_homeserver_url" = "URL du homeserver : %@";
@@ -257,7 +257,7 @@
 "notice_display_name_removed" = "%@ a supprimé son nom d'affichage";
 "notice_topic_changed" = "%@ a modifié le sujet en : %@";
 "notice_room_name_changed" = "%@ a modifié le nom du salon en : %@";
-"notice_placed_voice_call" = "%@ a débuté un appel audio";
+"notice_placed_voice_call" = "%@ a débuté un appel vocal";
 "notice_placed_video_call" = "%@ a débuté un appel vidéo";
 "notice_answered_video_call" = "%@ a répondu à l'appel";
 "notice_ended_video_call" = "%@ a terminé l'appel";
@@ -299,7 +299,7 @@
 "notification_settings_disable_all" = "Désactiver toutes les notifications";
 "notification_settings_enable_notifications" = "Activer les notifications";
 "notification_settings_enable_notifications_warning" = "Toutes les notifications sont actuellement désactivées pour tous les appareils.";
-"notification_settings_global_info" = "Les paramètres de notifications sont sauvegardés sur le compte utilisateur et partagés entre tous les clients qui les supportent (y compris les notifications de bureau).\n\nLes règles s'appliquent dans l'ordre ; la première règle applicable définit le résultat.\nEn conséquence : les notification par mot-clé sont plus importantes que les notifications par salon, qui sont plus importantes que les notifications par émetteur.\nEntre plusieurs règles du même type, la première dans la liste est prioritaire.";
+"notification_settings_global_info" = "Les paramètres de notifications sont sauvegardés sur le compte utilisateur et partagés entre tous les clients qui les supportent (y compris les notifications de bureau).\n\nLes règles s'appliquent dans l'ordre ; la première règle applicable définit le résultat.\nEn conséquence : les notification par mot-clé sont plus importantes que les notifications par salon, qui sont plus importantes que les notifications par expéditeur.\nEntre plusieurs règles du même type, la première dans la liste est prioritaire.";
 "notification_settings_per_word_notifications" = "Notifications par mot-clé";
 "notification_settings_per_word_info" = "Les mots sont détectés sans tenir compte de la casse et peuvent contenir un caractère générique *. Par conséquent :\nfoo détecte la chaîne foo entourée de délimiteurs de mots (par ex. ponctuation, espace et début ou fin de ligne).\nfoo* détecte tous les mots commençant par foo.\n*foo* détecte tous les mots qui contiennent les trois lettres foo.";
 "notification_settings_always_notify" = "Toujours notifier";
@@ -308,7 +308,7 @@
 "notification_settings_highlight" = "Mettre en valeur";
 "notification_settings_custom_sound" = "Son personnalisé";
 "notification_settings_per_room_notifications" = "Notifications par salon";
-"notification_settings_per_sender_notifications" = "Notifications par émetteur";
+"notification_settings_per_sender_notifications" = "Notifications par expéditeur";
 "notification_settings_sender_hint" = "@utilisateur:domaine.com";
 "notification_settings_select_room" = "Choisir un salon";
 "notification_settings_other_alerts" = "Autres alertes";
@@ -329,9 +329,9 @@
 "call_waiting" = "En cours...";
 "call_connecting" = "Appel en cours d'établissement...";
 "call_ended" = "Appel terminé";
-"call_ring" = "Appel en cours...";
+"call_ring" = "Appel...";
 "incoming_video_call" = "Appel vidéo entrant";
-"incoming_voice_call" = "Appel audio entrant";
+"incoming_voice_call" = "Appel vocal entrant";
 "call_invite_expired" = "La demande d'appel a expiré";
 // unrecognized SSL certificate
 "ssl_trust" = "Faire confiance";
