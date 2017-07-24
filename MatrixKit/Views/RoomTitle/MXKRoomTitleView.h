@@ -24,7 +24,7 @@
  Tells the delegate that an alert must be presented.
  
  @param titleView the room title view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
 - (void)roomTitleView:(MXKRoomTitleView*)titleView presentAlertController:(UIAlertController*)alertController;
 
