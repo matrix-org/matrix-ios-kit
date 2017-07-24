@@ -166,6 +166,14 @@
     self.automaticallyAdjustsScrollViewInsets = NO;
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    // Hide status bar.
+    // Caution: Enable [UIViewController prefersStatusBarHidden] use at application level
+    // by turning on UIViewControllerBasedStatusBarAppearance in Info.plist.
+    return YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -175,6 +183,8 @@
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
     
     // Hide status bar
+    // TODO: remove this [UIApplication statusBarHidden] use (deprecated since iOS 9).
+    // Note: setting statusBarHidden does nothing if your application is using the default UIViewController-based status bar system.
     UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
     if (sharedApplication)
     {
@@ -239,6 +249,8 @@
     }
     
     // Restore status bar
+    // TODO: remove this [UIApplication statusBarHidden] use (deprecated since iOS 9).
+    // Note: setting statusBarHidden does nothing if your application is using the default UIViewController-based status bar system.
     UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
     if (sharedApplication)
     {

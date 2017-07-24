@@ -84,6 +84,11 @@ extern NSString *const kCmdChangeRoomTopic;
      Tell whether a device rotation is in progress
      */
     BOOL isSizeTransitionInProgress;
+    
+    /**
+     The current visibility of the status bar in this view controller.
+     */
+    BOOL isStatusBarHidden;
 }
 
 /**

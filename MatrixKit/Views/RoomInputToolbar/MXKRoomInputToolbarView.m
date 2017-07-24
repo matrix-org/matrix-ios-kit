@@ -1096,36 +1096,44 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 // the user validates the image
                 [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                  {
-                     __strong __typeof(weakSelf)strongSelf = weakSelf;
+                     if (weakSelf)
+                     {
+                         typeof(self) self = weakSelf;
+                         
+                         // Dismiss the image view
+                         [self dismissValidationViews];
+                         
+                         // attach the selected image
+                         [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
+                     }
                      
-                     // Dismiss the image view
-                     [strongSelf dismissValidationViews];
-                     
-                     // attach the selected image
-                     [strongSelf sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
                  }];
                 
                 // the user wants to use an other image
                 [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                  {
-                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                     
-                     // dismiss the image view
-                     [strongSelf dismissValidationViews];
-                     
-                     // Open again media gallery
-                     strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                     strongSelf->mediaPicker.delegate = strongSelf;
-                     strongSelf->mediaPicker.sourceType = picker.sourceType;
-                     strongSelf->mediaPicker.allowsEditing = NO;
-                     strongSelf->mediaPicker.mediaTypes = picker.mediaTypes;
-                     [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
+                     if (weakSelf)
+                     {
+                         typeof(self) self = weakSelf;
+                         
+                         // dismiss the image view
+                         [self dismissValidationViews];
+                         
+                         // Open again media gallery
+                         self->mediaPicker = [[UIImagePickerController alloc] init];
+                         self->mediaPicker.delegate = self;
+                         self->mediaPicker.sourceType = picker.sourceType;
+                         self->mediaPicker.allowsEditing = NO;
+                         self->mediaPicker.mediaTypes = picker.mediaTypes;
+                         [self.delegate roomInputToolbarView:self presentViewController:self->mediaPicker];
+                     }
                  }];
                 
                 imageValidationView.image = selectedImage;
                 
                 [validationViews addObject:imageValidationView];
                 [imageValidationView showFullScreen];
+                [self.delegate roomInputToolbarView:self hideStatusBar:YES];
             }
             else
             {
@@ -1149,13 +1157,36 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 - (void)dismissValidationViews
 {
-    for (MXKImageView *validationView in validationViews)
+    if (validationViews.count)
     {
-        [validationView dismissSelection];
-        [validationView removeFromSuperview];
+        for (MXKImageView *validationView in validationViews)
+        {
+            [validationView dismissSelection];
+            [validationView removeFromSuperview];
+        }
+        
+        [validationViews removeAllObjects];
+        
+        // Restore status bar
+        [self.delegate roomInputToolbarView:self hideStatusBar:NO];
     }
+}
+
+- (void)dismissValidationView:(MXKImageView*)validationView
+{
+    [validationView dismissSelection];
+    [validationView removeFromSuperview];
     
-    [validationViews removeAllObjects];
+    if (validationViews.count)
+    {
+        [validationViews removeObject:validationView];
+        
+        if (!validationViews.count)
+        {
+            // Restore status bar
+            [self.delegate roomInputToolbarView:self hideStatusBar:NO];
+        }
+    }
 }
 
 - (void)dismissMediaPicker
@@ -1202,30 +1233,30 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         // the user validates the image
                         [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             __strong __typeof(weakSelf)strongSelf = weakSelf;
-                             
-                             // dismiss the image validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
-                             [strongSelf.delegate roomInputToolbarView:strongSelf sendImage:pasteboardImage];
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                                 [self.delegate roomInputToolbarView:self sendImage:pasteboardImage];
+                             }
                          }];
                         
                         // the user wants to use an other image
                         [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             // dismiss the image validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
+                             // Dismiss the image validation view.
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                             }
                          }];
                         
                         imageValidationView.image = pasteboardImage;
                         
                         [validationViews addObject:imageValidationView];
                         [imageValidationView showFullScreen];
+                        [self.delegate roomInputToolbarView:self hideStatusBar:YES];
                     }
                     
                     break;
@@ -1255,30 +1286,31 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         // the user validates the image
                         [videoValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             __strong __typeof(weakSelf)strongSelf = weakSelf;
-                             
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
-                             [strongSelf.delegate roomInputToolbarView:strongSelf sendVideo:videoLocalURL withThumbnail:videoThumbnail];
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                                 
+                                 [self.delegate roomInputToolbarView:self sendVideo:videoLocalURL withThumbnail:videoThumbnail];
+                             }
                          }];
                         
                         // the user wants to use an other image
                         [videoValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
+                             // Dismiss the video validation view.
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                             }
                          }];
                         
                         videoValidationView.image = videoThumbnail;
                         
                         [validationViews addObject:videoValidationView];
                         [videoValidationView showFullScreen];
+                        [self.delegate roomInputToolbarView:self hideStatusBar:YES];
                         
                         // Add video icon
                         UIImageView *videoIconView = [[UIImageView alloc] initWithImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video"]];
@@ -1304,30 +1336,31 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         // the user validates the image
                         [docValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             __strong __typeof(weakSelf)strongSelf = weakSelf;
-                             
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
-                             [strongSelf.delegate roomInputToolbarView:strongSelf sendFile:localURL withMimeType:MIMEType];
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                                 
+                                 [self.delegate roomInputToolbarView:self sendFile:localURL withMimeType:MIMEType];
+                             }
                          }];
                         
                         // the user wants to use an other image
                         [docValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
+                             // Dismiss the validation view.
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                             }
                          }];
                         
                         docValidationView.image = nil;
                         
                         [validationViews addObject:docValidationView];
                         [docValidationView showFullScreen];
+                        [self.delegate roomInputToolbarView:self hideStatusBar:YES];
                         
                         // Create a fake name based on fileData to keep the same name for the same file.
                         NSString *dataHash = [pasteboardDocumentData mx_MD5];
