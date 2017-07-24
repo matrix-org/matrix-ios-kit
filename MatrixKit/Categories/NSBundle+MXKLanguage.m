@@ -23,6 +23,9 @@ static const char _fallbackBundle = 0;
 static const char _language = 0;
 static const char _fallbackLanguage = 0;
 
+@interface MXKLanguageBundle : NSBundle
+@end
+
 @implementation MXKLanguageBundle
 
 - (NSString*)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName

@@ -39,7 +39,7 @@ static NSString *customLocalizedStringTableName = nil;
 + (NSBundle*)mxk_fallbackBundle
 {
     // Return the sub bundle of the fallback language
-    return [NSBundle bundleWithPath:[[NSBundle mxk_assetsBundle] pathForResource:[MXKLanguageBundle mxk_fallbackLanguage] ofType:@"lproj"]];
+    return [NSBundle bundleWithPath:[[NSBundle mxk_assetsBundle] pathForResource:[NSBundle mxk_fallbackLanguage] ofType:@"lproj"]];
 }
 
 // use a cache to avoid loading images from file system.
