@@ -44,4 +44,11 @@
  */
 + (void)mxk_setFallbackLanguage:(NSString*)language;
 
+/**
+ The fallback language set by mxk_setFallbackLanguage.
+
+ @return the ISO language code of the current fallback language.
+ */
++ (NSString *)mxk_fallbackLanguage;
+
 @end
