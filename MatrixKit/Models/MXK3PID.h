@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -80,11 +81,13 @@ typedef enum : NSUInteger {
  in order to be able to call add3PIDToUser successfully.
  
  @param restClient used to make matrix API requests during validation process.
+ @param isDuringRegistration  tell whether this request occurs during a registration flow.
  @param nextLink the link the validation page will automatically open. Can be nil.
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
+                              isDuringRegistration:(BOOL)isDuringRegistration
                                           nextLink:(NSString*)nextLink
                                            success:(void (^)())success
                                            failure:(void (^)(NSError *error))failure;

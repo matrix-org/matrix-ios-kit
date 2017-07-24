@@ -1554,6 +1554,16 @@
     {
         font = _encryptedMessagesTextFont;
     }
+    else if (event.eventType == MXEventTypeRoomMessage && _singleEmojiTextFont)
+    {
+        NSString *message;
+        MXJSONModelSetString(message, event.content[@"body"]);
+
+        if ([MXKTools isSingleEmojiString:message])
+        {
+            font = _singleEmojiTextFont;
+        }
+    }
     return font;
 }
 

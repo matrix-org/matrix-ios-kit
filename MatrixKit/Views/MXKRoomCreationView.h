@@ -24,7 +24,7 @@
  Tells the delegate that an alert must be presented.
  
  @param creationView the view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
 - (void)roomCreationView:(MXKRoomCreationView*)creationView presentAlertController:(UIAlertController*)alertController;
 

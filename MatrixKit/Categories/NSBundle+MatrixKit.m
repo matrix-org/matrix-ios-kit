@@ -15,6 +15,7 @@
  */
 
 #import "NSBundle+MatrixKit.h"
+#import "NSBundle+MXKLanguage.h"
 #import "MXKViewController.h"
 
 @implementation NSBundle (MatrixKit)
@@ -38,6 +39,12 @@ static NSString *customLocalizedStringTableName = nil;
     }
 
     return [NSBundle bundleWithURL:assetsBundleURL];
+}
+
++ (NSBundle*)mxk_fallbackBundle
+{
+    // Return the sub bundle of the fallback language
+    return [NSBundle bundleWithPath:[[NSBundle mxk_assetsBundle] pathForResource:[NSBundle mxk_fallbackLanguage] ofType:@"lproj"]];
 }
 
 // use a cache to avoid loading images from file system.
@@ -91,7 +98,30 @@ static MXLRUCache *imagesResourceCache = nil;
 
     if (!localizedString || (localizedString.length == 1 && [localizedString isEqualToString:@"_"]))
     {
-        localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
+        // Check if we need to manage a fallback language
+        // as we do in NSBundle+MXKLanguage
+        NSString *language = [NSBundle mxk_language];
+        if (!language)
+        {
+            language = [NSBundle mainBundle].preferredLocalizations.firstObject;
+        }
+        NSString *fallbackLanguage = [NSBundle mxk_fallbackLanguage];
+
+        BOOL manageFallbackLanguage = fallbackLanguage && ![language isEqualToString:fallbackLanguage];
+
+        localizedString = NSLocalizedStringWithDefaultValue(key, @"MatrixKit",
+                                                            [NSBundle mxk_assetsBundle],
+                                                            manageFallbackLanguage ? @"_" : nil,
+                                                            nil);
+
+        if (manageFallbackLanguage
+            && (!localizedString || (localizedString.length == 1 && [localizedString isEqualToString:@"_"])))
+        {
+            // The translation is not available, use the fallback language
+            localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit",
+                                                                 [NSBundle mxk_fallbackBundle],
+                                                                 nil);
+        }
     }
     
     return localizedString;

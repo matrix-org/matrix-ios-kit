@@ -22,8 +22,6 @@
 #import "MXKAuthInputsView.h"
 #import "MXKAuthenticationFallbackWebView.h"
 
-extern NSString *const MXKAuthErrorDomain;
-
 @class MXKAuthenticationViewController;
 
 /**

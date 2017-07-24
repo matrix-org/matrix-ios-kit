@@ -203,6 +203,9 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     // Scroll to the bottom when a keyboard is presented
     _scrollHistoryToTheBottomOnKeyboardPresentation = YES;
+    
+    // Keep visible the status bar by default.
+    isStatusBarHidden = NO;
 }
 
 - (void)viewDidLoad
@@ -271,6 +274,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             self.bubbleTableViewDisplayInTransition = NO;
         }
     }];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    // Return the current status bar visibility.
+    // Caution: Enable [UIViewController prefersStatusBarHidden] use at application level
+    // by turning on UIViewControllerBasedStatusBarAppearance in Info.plist.
+    return isStatusBarHidden;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -3241,6 +3252,23 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 }
 
 #pragma mark - MXKRoomInputToolbarViewDelegate
+
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView *)toolbarView hideStatusBar:(BOOL)isHidden
+{
+    isStatusBarHidden = isHidden;
+    
+    // Trigger status bar update
+    [self setNeedsStatusBarAppearanceUpdate];
+    
+    // Handle status bar with the historical method.
+    // TODO: remove this [UIApplication statusBarHidden] use (deprecated since iOS 9).
+    // Note: setting statusBarHidden does nothing if your application is using the default UIViewController-based status bar system.
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        sharedApplication.statusBarHidden = isHidden;
+    }
+}
 
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView isTyping:(BOOL)typing
 {

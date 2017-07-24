@@ -831,7 +831,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         
         emailSubmitButton.enabled = NO;
 
-        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient nextLink:nil success:^{
+        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient isDuringRegistration:NO nextLink:nil success:^{
 
             [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_message"]];
 

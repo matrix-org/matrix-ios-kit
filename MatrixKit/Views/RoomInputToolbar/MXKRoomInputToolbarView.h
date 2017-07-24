@@ -50,9 +50,17 @@ typedef enum : NSUInteger
  Tells the delegate that an alert must be presented.
  
  @param toolbarView the room input toolbar view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentAlertController:(UIAlertController*)alertController;
+
+/**
+ Tells the delegate that the visibility of the status bar must be changed.
+ 
+ @param toolbarView the room input toolbar view.
+ @param isHidden tell whether the status bar must be hidden or not.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView hideStatusBar:(BOOL)isHidden;
 
 @optional
 

@@ -54,6 +54,8 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 
 /**
  Toggle display to fullscreen.
+ 
+ No change is applied on the status bar here, the caller has to handle it. 
  */
 - (void)showFullScreen;
 

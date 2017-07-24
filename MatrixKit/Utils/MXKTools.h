@@ -18,6 +18,16 @@
 
 @interface MXKTools : NSObject
 
+#pragma mark - Strings
+
+/**
+ Determine if a string contains only one emoji.
+ 
+ @param string the string to check.
+ @return YES if YES.
+ */
++ (BOOL)isSingleEmojiString:(NSString*)string;
+
 #pragma mark - Time
 
 /**

@@ -230,8 +230,6 @@
             [super removeFromSuperview];
         }
         
-        sharedApplication.statusBarHidden = YES;
-        
         UIWindow *window = [sharedApplication keyWindow];
         
         self.frame = window.bounds;
@@ -325,15 +323,6 @@
     [super removeFromSuperview];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    if (_fullScreen)
-    {
-        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-        if (sharedApplication)
-        {
-            sharedApplication.statusBarHidden = NO;
-        }
-    }
     
     if (pieChartView)
     {
@@ -778,15 +767,6 @@
     {
         [bottomBarView removeFromSuperview];
         bottomBarView = nil;
-    }
-    
-    if (_fullScreen)
-    {
-        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-        if (sharedApplication)
-        {
-            sharedApplication.statusBarHidden = NO;
-        }
     }
 }
 
