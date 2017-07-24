@@ -80,15 +80,17 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)saveAccounts
 {
+    //NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.matrix.riot"];
     if (mxAccounts.count)
     {
         NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
         
-        [[NSUserDefaults standardUserDefaults] setObject:accountData forKey:@"accounts"];
+        [userDefaults setObject:accountData forKey:@"accounts"];
     }
     else
     {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+        [userDefaults removeObjectForKey:@"accounts"];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -150,11 +152,16 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         return;
     }
     
+    NSUserDefaults *sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.matrix.riot"];
+    
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
     // Be sure that no account survive in local storage
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+    //[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+    [sharedUserDefaults removeObjectForKey:@"accounts"];
+    
     [[NSUserDefaults standardUserDefaults] synchronize];
+    [sharedUserDefaults synchronize];
 }
 
 - (MXKAccount *)accountForUserId:(NSString *)userId
@@ -327,7 +334,10 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)loadAccounts
 {
-    NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.matrix.riot"];
+    NSData *accountData = [sharedDefaults objectForKey:@"accounts"];
+    //TEST
+    
     if (accountData)
     {
         mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];

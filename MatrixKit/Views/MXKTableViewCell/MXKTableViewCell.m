@@ -22,6 +22,11 @@
 {
     // Check whether a nib file is available
     NSBundle *mainBundle = [NSBundle bundleForClass:self.class];
+    if ([[mainBundle.bundleURL pathExtension] isEqualToString:@"appex"]) {
+        // For App extensions, peel off two levels
+        mainBundle = [NSBundle bundleWithURL:[[mainBundle.bundleURL URLByDeletingLastPathComponent] URLByDeletingLastPathComponent]];
+    }
+    
     NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
     if (path)
     {
