@@ -197,6 +197,23 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     return theAccount;
 }
 
+- (MXKAccount *)accountKnowingUserWithUserId:(NSString *)userId
+{
+    MXKAccount *theAccount = nil;
+
+    NSArray *activeAccounts = self.activeAccounts;
+
+    for (MXKAccount *account in activeAccounts)
+    {
+        if ([account.mxSession userWithUserId:userId])
+        {
+            theAccount = account;
+            break;
+        }
+    }
+    return theAccount;
+}
+
 #pragma mark -
 
 - (void)setStoreClass:(Class)storeClass
