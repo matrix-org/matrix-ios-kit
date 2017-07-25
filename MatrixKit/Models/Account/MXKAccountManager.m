@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -309,19 +310,15 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     // [UIApplication currentUserNotificationSettings].
     
     BOOL isRemoteNotificationsAllowed = NO;
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)])
-    {
-        // iOS 8 and later
-        UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
-        
-        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
-    }
-    else
-    {
-        isRemoteNotificationsAllowed = [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone;
-    }
     
-    NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
+        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
+        
+        NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    }
     
     return (isRemoteNotificationsAllowed && self.apnsDeviceToken);
 }

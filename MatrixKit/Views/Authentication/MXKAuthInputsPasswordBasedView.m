@@ -96,14 +96,14 @@
     return errorMsg;
 }
 
-- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback
+- (void)prepareParameters:(void (^)(NSDictionary *parameters, NSError *error))callback
 {
     if (callback)
     {
         // Sanity check on required fields
         if (!self.areAllRequiredFieldsSet)
         {
-            callback(nil);
+            callback(nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"login_invalid_param"]}]);
             return;
         }
         
@@ -139,7 +139,7 @@
                            };
         }
         
-        callback(parameters);
+        callback(parameters, nil);
     }
 }
 

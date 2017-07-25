@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,8 +18,6 @@
 #import <UIKit/UIKit.h>
 
 #import <Photos/Photos.h>
-
-#import "MXKAlert.h"
 
 /**
  List the predefined modes to handle the size of attached images
@@ -48,12 +47,20 @@ typedef enum : NSUInteger
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param toolbarView the room input toolbar view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentAlertController:(UIAlertController*)alertController;
+
+/**
+ Tells the delegate that the visibility of the status bar must be changed.
+ 
+ @param toolbarView the room input toolbar view.
+ @param isHidden tell whether the status bar must be hidden or not.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView hideStatusBar:(BOOL)isHidden;
 
 @optional
 

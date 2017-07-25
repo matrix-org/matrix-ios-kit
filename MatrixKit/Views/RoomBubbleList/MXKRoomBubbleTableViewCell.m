@@ -414,7 +414,7 @@ static BOOL _disableLongPressGestureOnEvent;
             NSAttributedString* newText = nil;
             
             // Underline attached file name
-            if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
@@ -915,7 +915,7 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         // Check whether the current displayed text corresponds to an attached file
-        if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
         }

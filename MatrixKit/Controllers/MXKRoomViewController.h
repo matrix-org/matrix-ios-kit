@@ -63,7 +63,7 @@ extern NSString *const kCmdChangeRoomTopic;
     /**
      Current alert (if any).
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      The document interaction Controller used to share attachment
@@ -84,6 +84,11 @@ extern NSString *const kCmdChangeRoomTopic;
      Tell whether a device rotation is in progress
      */
     BOOL isSizeTransitionInProgress;
+    
+    /**
+     The current visibility of the status bar in this view controller.
+     */
+    BOOL isStatusBarHidden;
 }
 
 /**

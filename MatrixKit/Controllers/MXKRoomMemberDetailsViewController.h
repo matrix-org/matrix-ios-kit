@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,8 +19,6 @@
 
 #import "MXKViewController.h"
 #import "MXKImageView.h"
-
-#import "MXKAlert.h"
 
 /**
  Available actions on room member
@@ -93,7 +92,7 @@ typedef enum : NSUInteger
     /**
      Current alert (if any).
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      List of the allowed actions on this member.

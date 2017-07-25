@@ -16,8 +16,6 @@
 
 #import "MXKContactListViewController.h"
 
-#import "MXKAlert.h"
-
 #import "MXKSectionedContacts.h"
 
 #import "NSBundle+MatrixKit.h"

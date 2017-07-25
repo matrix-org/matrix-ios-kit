@@ -235,7 +235,7 @@
         }
         else if ([msgtype isEqualToString:kMXMessageTypeAudio])
         {
-            // Not supported yet
+            isSupportedAttachment = hasUrl || hasFile;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeVideo])
         {
@@ -1095,6 +1095,12 @@
     return attributedDisplayText;
 }
 
+- (NSAttributedString*)attributedStringFromEvents:(NSArray<MXEvent*>*)events withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
+{
+    // TODO: Do a full summary
+    return nil;
+}
+
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
 {
     // Sanity check
@@ -1547,6 +1553,16 @@
     else if (event.eventType == MXEventTypeRoomEncrypted)
     {
         font = _encryptedMessagesTextFont;
+    }
+    else if (!_isForSubtitle && event.eventType == MXEventTypeRoomMessage && _singleEmojiTextFont)
+    {
+        NSString *message;
+        MXJSONModelSetString(message, event.content[@"body"]);
+
+        if ([MXKTools isSingleEmojiString:message])
+        {
+            font = _singleEmojiTextFont;
+        }
     }
     return font;
 }

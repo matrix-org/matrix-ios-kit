@@ -85,7 +85,7 @@
     }
     
     // Mask the image with the bubble
-    if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile)
+    if (bubbleData.attachment && bubbleData.attachment.type != MXKAttachmentTypeFile && bubbleData.attachment.type != MXKAttachmentTypeAudio)
     {
         self.bubbleImageView.hidden = YES;
         

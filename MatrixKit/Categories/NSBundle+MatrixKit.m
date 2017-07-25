@@ -15,6 +15,7 @@
  */
 
 #import "NSBundle+MatrixKit.h"
+#import "NSBundle+MXKLanguage.h"
 #import "MXKViewController.h"
 
 @implementation NSBundle (MatrixKit)
@@ -33,6 +34,35 @@ static NSString *customLocalizedStringTableName = nil;
     }
 
     return [NSBundle bundleWithURL:assetsBundleURL];
+}
+
++ (NSBundle*)mxk_languageBundle
+{
+    NSString *language = [NSBundle mxk_language];
+    NSBundle *bundle = [NSBundle mxk_assetsBundle];
+
+    // If there is a runtime language (different from the legacy language chose by the OS),
+    // return the sub bundle for this language
+    if (language)
+    {
+        bundle =  [NSBundle bundleWithPath:[bundle pathForResource:[NSBundle mxk_language] ofType:@"lproj"]];
+    }
+
+    return bundle;
+}
+
++ (NSBundle*)mxk_fallbackLanguageBundle
+{
+    NSString *fallbackLanguage = [NSBundle mxk_fallbackLanguage];
+    NSBundle *bundle = [NSBundle mxk_assetsBundle];
+
+    // Return the sub bundle of the fallback language if any
+    if (fallbackLanguage)
+    {
+        bundle =  [NSBundle bundleWithPath:[bundle pathForResource:fallbackLanguage ofType:@"lproj"]];
+    }
+
+    return bundle;
 }
 
 // use a cache to avoid loading images from file system.
@@ -86,7 +116,26 @@ static MXLRUCache *imagesResourceCache = nil;
 
     if (!localizedString || (localizedString.length == 1 && [localizedString isEqualToString:@"_"]))
     {
-        localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit", [NSBundle mxk_assetsBundle], nil);
+        // Check if we need to manage a fallback language
+        // as we do in NSBundle+MXKLanguage
+        NSString *language = [NSBundle mxk_language];
+        NSString *fallbackLanguage = [NSBundle mxk_fallbackLanguage];
+
+        BOOL manageFallbackLanguage = fallbackLanguage && ![fallbackLanguage isEqualToString:language];
+
+        localizedString = NSLocalizedStringWithDefaultValue(key, @"MatrixKit",
+                                                            [NSBundle mxk_languageBundle],
+                                                            manageFallbackLanguage ? @"_" : nil,
+                                                            nil);
+
+        if (manageFallbackLanguage
+            && (!localizedString || (localizedString.length == 1 && [localizedString isEqualToString:@"_"])))
+        {
+            // The translation is not available, use the fallback language
+            localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit",
+                                                                 [NSBundle mxk_fallbackLanguageBundle],
+                                                                 nil);
+        }
     }
     
     return localizedString;

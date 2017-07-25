@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,10 +23,98 @@
 
 #import "NBPhoneNumberUtil.h"
 
-#import "MXKAlert.h"
 #import "MXCall.h"
 
 @implementation MXKTools
+
+#pragma mark - Strings
+
+// Highly inspired from https://stackoverflow.com/a/34659249
++ (BOOL)isSingleEmojiString:(NSString*)string
+{
+    __block BOOL containsEmoji = NO;
+
+    NSRange stringRange = NSMakeRange(0, [string length]);
+
+    [string enumerateSubstringsInRange:stringRange
+                               options:NSStringEnumerationByComposedCharacterSequences
+                            usingBlock:^(NSString *substring,
+                                         NSRange substringRange,
+                                         NSRange enclosingRange,
+                                         BOOL *stop)
+     {
+         if (!NSEqualRanges(stringRange, substringRange))
+         {
+             // The string contains several characters. Go out
+             *stop = YES;
+             return;
+         }
+
+         const unichar hs = [substring characterAtIndex:0];
+         // Surrogate pair
+         if (0xd800 <= hs &&
+             hs <= 0xdbff)
+         {
+             if (substring.length > 1)
+             {
+                 const unichar ls = [substring characterAtIndex:1];
+                 const int uc = ((hs - 0xd800) * 0x400) + (ls - 0xdc00) + 0x10000;
+                 if (0x1d000 <= uc &&
+                     uc <= 0x1f9c0)
+                 {
+                     containsEmoji = YES;
+                 }
+             }
+         }
+         else if (substring.length > 1)
+         {
+             const unichar ls = [substring characterAtIndex:1];
+             if (ls == 0x20e3 ||
+                 ls == 0xfe0f ||
+                 ls == 0xd83c)
+             {
+                 containsEmoji = YES;
+             }
+         }
+         else
+         {
+             // Non surrogate
+             if (0x2100 <= hs &&
+                 hs <= 0x27ff)
+             {
+                 containsEmoji = YES;
+             }
+             else if (0x2B05 <= hs &&
+                      hs <= 0x2b07)
+             {
+                 containsEmoji = YES;
+             }
+             else if (0x2934 <= hs &&
+                      hs <= 0x2935)
+             {
+                 containsEmoji = YES;
+             }
+             else if (0x3297 <= hs &&
+                      hs <= 0x3299)
+             {
+                 containsEmoji = YES;
+             }
+             else if (hs == 0xa9 ||
+                      hs == 0xae ||
+                      hs == 0x303d ||
+                      hs == 0x3030 ||
+                      hs == 0x2b55 ||
+                      hs == 0x2b1c ||
+                      hs == 0x2b1b ||
+                      hs == 0x2b50)
+             {
+                 containsEmoji = YES;
+             }
+         }
+     }];
+
+    return containsEmoji;
+}
 
 #pragma mark - Time interval
 
@@ -427,28 +516,35 @@ static NSMutableDictionary* backgroundByImageNameDict;
             {
                 // Access not granted to mediaType
                 // Display manualChangeMessage
-                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-                // On iOS >= 8, add a shortcut to the app settings
-                if (UIApplicationOpenSettingsURLString)
+                // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
+                UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+                if (sharedApplication && UIApplicationOpenSettingsURLString)
                 {
-                    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                        [[UIApplication sharedApplication] openURL:url];
-
-                        // Note: it does not worth to check if the user changes the permission
-                        // because iOS restarts the app in case of change of app privacy settings
-                        handler(NO);
-                    }];
+                    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                                                                       
+                                                                       NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                                       [sharedApplication openURL:url];
+                                                                       
+                                                                       // Note: it does not worth to check if the user changes the permission
+                                                                       // because iOS restarts the app in case of change of app privacy settings
+                                                                       handler(NO);
+                                                                       
+                                                                   }]];
                 }
-
-                alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    
-                    handler(NO);
-                }];
                 
-                [alert showInViewController:viewController];
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            handler(NO);
+                                                            
+                                                        }]];
+                
+                [viewController presentViewController:alert animated:YES completion:nil];
             }
             
         });
@@ -522,28 +618,34 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         // Access not granted to the local contacts
         // Display manualChangeMessage
-        MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-        // On iOS >= 8, add a shortcut to the app settings
-        if (UIApplicationOpenSettingsURLString)
+        // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication && UIApplicationOpenSettingsURLString)
         {
-            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                [[UIApplication sharedApplication] openURL:url];
-
-                // Note: it does not worth to check if the user changes the permission
-                // because iOS restarts the app in case of change of app privacy settings
-                handler(NO);
-            }];
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                        [sharedApplication openURL:url];
+                                                        
+                                                        // Note: it does not worth to check if the user changes the permission
+                                                        // because iOS restarts the app in case of change of app privacy settings
+                                                        handler(NO);
+                                                        
+                                                    }]];
         }
-
-        alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-            handler(NO);
-        }];
-
-        [alert showInViewController:viewController];
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    handler(NO);
+                                                    
+                                                }]];
+        
+        [viewController presentViewController:alert animated:YES completion:nil];
     }
     else
     {

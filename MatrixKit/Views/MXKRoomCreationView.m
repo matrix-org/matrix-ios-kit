@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@
 
 @interface MXKRoomCreationView ()
 {
-    MXKAlert *mxSessionPicker;
+    UIAlertController *mxSessionPicker;
     
     // Array of homeserver suffix (NSString instance)
     NSMutableArray *homeServerSuffixArray;
@@ -313,36 +314,51 @@
     {
         if (mxSessionPicker)
         {
-            [mxSessionPicker dismiss:NO];
+            [mxSessionPicker dismissViewControllerAnimated:NO completion:nil];
         }
         
-        mxSessionPicker = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"select_account"] message:nil style:MXKAlertStyleActionSheet];
+        mxSessionPicker = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"select_account"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
         __weak typeof(self) weakSelf = self;
+        
         for(MXSession *mxSession in _mxSessions)
         {
-            [mxSessionPicker addActionWithTitle:mxSession.myUser.userId style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->mxSessionPicker = nil;
-                if (onSelection)
-                {
-                    onSelection(mxSession);
-                }
-            }];
+            [mxSessionPicker addAction:[UIAlertAction actionWithTitle:mxSession.myUser.userId
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  if (weakSelf)
+                                                                  {
+                                                                      typeof(self) self = weakSelf;
+                                                                      self->mxSessionPicker = nil;
+                                                                      
+                                                                      if (onSelection)
+                                                                      {
+                                                                          onSelection(mxSession);
+                                                                      }
+                                                                  }
+                                                                  
+                                                              }]];
         }
         
-        mxSessionPicker.cancelButtonIndex = [mxSessionPicker addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-        {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->mxSessionPicker = nil;
-        }];
+        [mxSessionPicker addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              
+                                                              if (weakSelf)
+                                                              {
+                                                                  typeof(self) self = weakSelf;
+                                                                  self->mxSessionPicker = nil;
+                                                              }
+                                                              
+                                                          }]];
         
-        mxSessionPicker.sourceView = self;
+        [mxSessionPicker popoverPresentationController].sourceView = self;
+        [mxSessionPicker popoverPresentationController].sourceRect = self.bounds;
         
         if (self.delegate)
         {
-            [self.delegate roomCreationView:self presentMXKAlert:mxSessionPicker];
+            [self.delegate roomCreationView:self presentAlertController:mxSessionPicker];
         }
     }
 }

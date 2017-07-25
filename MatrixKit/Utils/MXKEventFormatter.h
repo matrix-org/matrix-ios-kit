@@ -160,6 +160,16 @@ typedef enum : NSUInteger {
 - (NSAttributedString*)attributedStringFromEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
 
 /**
+ Generate a displayable attributed string representating a summary for the provided events.
+
+ @param events the series of events to format.
+ @param roomState the room state right before the first event in the series.
+ @param error the error code. In case of formatting error, the formatter may return non nil string as a proposal.
+ @return the attributed string.
+ */
+- (NSAttributedString*)attributedStringFromEvents:(NSArray<MXEvent*>*)events withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error;
+
+/**
  Render a random string into an attributed string with the font and the text color
  that correspond to the passed event.
 
@@ -342,5 +352,11 @@ typedef enum : NSUInteger {
  Default is SFUIText-Regular 14.
  */
 @property (nonatomic) UIFont *encryptedMessagesTextFont;
+
+/**
+ Text font used to display message containing a single emoji.
+ Default is nil (same font as self.defaultTextFont).
+ */
+@property (nonatomic) UIFont *singleEmojiTextFont;
 
 @end
