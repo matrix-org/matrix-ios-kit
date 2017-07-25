@@ -53,7 +53,7 @@ static NSString *customLocalizedStringTableName = nil;
 
 + (NSBundle*)mxk_fallbackLanguageBundle
 {
-    NSString *fallbackLanguage = [NSBundle mxk_language];
+    NSString *fallbackLanguage = [NSBundle mxk_fallbackLanguage];
     NSBundle *bundle = [NSBundle mxk_assetsBundle];
 
     // Return the sub bundle of the fallback language if any
