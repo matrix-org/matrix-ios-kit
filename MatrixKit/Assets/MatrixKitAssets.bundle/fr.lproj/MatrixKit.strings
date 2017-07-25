@@ -346,3 +346,5 @@
 "ssl_only_accept" = "Accepter le certificat UNIQUEMENT si l'administrateur du serveur a publié une empreinte numérique correspondant à celle ci-dessus.";
 "notice_feedback" = "Evénément en retour (identifiant : %@) : %@";
 "notice_location_attachment" = "localisation en pièce-jointe";
+// Language picker
+"language_picker_title" = "Choisissez une langue";
