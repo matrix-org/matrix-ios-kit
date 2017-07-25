@@ -1,1 +1,17 @@
-
+"view" = "视图";
+"back" = "上一个";
+"continue" = "继续";
+"leave" = "离开";
+"invite" = "邀请";
+"retry" = "重试";
+"cancel" = "取消";
+"save" = "保存";
+// room details dialog screen
+"room_details_title" = "聊天室详情";
+"matrix" = "Matrix";
+// Login Screen
+"login_create_account" = "创建账户：";
+"login_server_url_placeholder" = "URL（例如 https://matrix.org）";
+"login_home_server_title" = "主服务器：";
+"login_home_server_info" = "您的主服务器存储了您所有对话和账户数据";
+"login_identity_server_title" = "身份服务器：";
