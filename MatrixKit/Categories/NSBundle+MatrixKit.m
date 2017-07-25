@@ -36,10 +36,33 @@ static NSString *customLocalizedStringTableName = nil;
     return [NSBundle bundleWithURL:assetsBundleURL];
 }
 
-+ (NSBundle*)mxk_fallbackBundle
++ (NSBundle*)mxk_languageBundle
 {
-    // Return the sub bundle of the fallback language
-    return [NSBundle bundleWithPath:[[NSBundle mxk_assetsBundle] pathForResource:[NSBundle mxk_fallbackLanguage] ofType:@"lproj"]];
+    NSString *language = [NSBundle mxk_language];
+    NSBundle *bundle = [NSBundle mxk_assetsBundle];
+
+    // If there is a runtime language (different from the legacy language chose by the OS),
+    // return the sub bundle for this language
+    if (language)
+    {
+        bundle =  [NSBundle bundleWithPath:[bundle pathForResource:[NSBundle mxk_language] ofType:@"lproj"]];
+    }
+
+    return bundle;
+}
+
++ (NSBundle*)mxk_fallbackLanguageBundle
+{
+    NSString *fallbackLanguage = [NSBundle mxk_language];
+    NSBundle *bundle = [NSBundle mxk_assetsBundle];
+
+    // Return the sub bundle of the fallback language if any
+    if (fallbackLanguage)
+    {
+        bundle =  [NSBundle bundleWithPath:[bundle pathForResource:fallbackLanguage ofType:@"lproj"]];
+    }
+
+    return bundle;
 }
 
 // use a cache to avoid loading images from file system.
@@ -96,16 +119,12 @@ static MXLRUCache *imagesResourceCache = nil;
         // Check if we need to manage a fallback language
         // as we do in NSBundle+MXKLanguage
         NSString *language = [NSBundle mxk_language];
-        if (!language)
-        {
-            language = [NSBundle mainBundle].preferredLocalizations.firstObject;
-        }
         NSString *fallbackLanguage = [NSBundle mxk_fallbackLanguage];
 
-        BOOL manageFallbackLanguage = fallbackLanguage && ![language isEqualToString:fallbackLanguage];
+        BOOL manageFallbackLanguage = fallbackLanguage && ![fallbackLanguage isEqualToString:language];
 
         localizedString = NSLocalizedStringWithDefaultValue(key, @"MatrixKit",
-                                                            [NSBundle mxk_assetsBundle],
+                                                            [NSBundle mxk_languageBundle],
                                                             manageFallbackLanguage ? @"_" : nil,
                                                             nil);
 
@@ -114,7 +133,7 @@ static MXLRUCache *imagesResourceCache = nil;
         {
             // The translation is not available, use the fallback language
             localizedString = NSLocalizedStringFromTableInBundle(key, @"MatrixKit",
-                                                                 [NSBundle mxk_fallbackBundle],
+                                                                 [NSBundle mxk_fallbackLanguageBundle],
                                                                  nil);
         }
     }
