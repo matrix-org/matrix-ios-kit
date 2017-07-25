@@ -346,3 +346,6 @@
 "ssl_unexpected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Das ist SEHR UNGEWÖHNLICH! Es wird empfohlen das neue Zertifikat NICHT ZU AKZEPTIEREN.";
 "ssl_expected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Der Server könnte sein Zertifikat erneuert haben. Kontaktiere den Server Administrator um den Fingerabdruck zu überprüfen.";
 "ssl_only_accept" = "Akzeptiere AUSSCHLIESSLICH Zertifikate für die der Server Administrator einen Fingerprint veröffentlicht hat.";
+// Language picker
+"language_picker_title" = "Wähle eine Sprache";
+"language_picker_default_language" = "Standard (%@)";
