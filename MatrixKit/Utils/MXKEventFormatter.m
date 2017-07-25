@@ -1554,7 +1554,7 @@
     {
         font = _encryptedMessagesTextFont;
     }
-    else if (event.eventType == MXEventTypeRoomMessage && _singleEmojiTextFont)
+    else if (!_isForSubtitle && event.eventType == MXEventTypeRoomMessage && _singleEmojiTextFont)
     {
         NSString *message;
         MXJSONModelSetString(message, event.content[@"body"]);
