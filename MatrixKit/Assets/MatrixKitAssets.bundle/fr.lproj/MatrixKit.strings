@@ -348,3 +348,4 @@
 "notice_location_attachment" = "localisation en pièce-jointe";
 // Language picker
 "language_picker_title" = "Choisissez une langue";
+"language_picker_default_language" = "Défaut (%@)";
