@@ -97,11 +97,18 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         if (![language isEqualToString:defaultLanguage])
         {
             languageDescription = [MXKLanguagePickerViewController languageDescription:language];
+            NSString *localisedLanguageDescription = [MXKLanguagePickerViewController languageLocalisedDescription:language];
+
+            // Capitalise the description in the language locale
+            NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:language];
+            languageDescription = [languageDescription capitalizedStringWithLocale:locale];
+            localisedLanguageDescription = [localisedLanguageDescription capitalizedStringWithLocale:locale];
+
             if (languageDescription)
             {
                 [cellDataArray addObject:@{
                                            kMXKLanguagePickerCellDataKeyText: languageDescription,
-                                           kMXKLanguagePickerCellDataKeyDetailText: [MXKLanguagePickerViewController languageLocalisedDescription:language],
+                                           kMXKLanguagePickerCellDataKeyDetailText: localisedLanguageDescription,
                                            kMXKLanguagePickerCellDataKeyLanguage: language
                                            }];
             }
