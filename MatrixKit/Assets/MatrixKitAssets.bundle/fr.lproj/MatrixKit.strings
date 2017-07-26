@@ -272,7 +272,7 @@
 "resend" = "Renvoyer";
 "redact" = "Effacer";
 "share" = "Partager";
-"set_power_level" = "Niveau de pouvoir";
+"set_power_level" = "Niveau";
 "delete" = "Supprimer";
 // actions 
 "action_logout" = "Se déconnecter";
