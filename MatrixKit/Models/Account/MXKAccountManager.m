@@ -80,7 +80,6 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)saveAccounts
 {
-    //NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.matrix.riot"];
     if (mxAccounts.count)
     {
@@ -92,7 +91,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     {
         [userDefaults removeObjectForKey:@"accounts"];
     }
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [userDefaults synchronize];
 }
 
 - (void)addAccount:(MXKAccount *)account andOpenSession:(BOOL)openSession
@@ -156,8 +155,8 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
+    
     // Be sure that no account survive in local storage
-    //[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
     [sharedUserDefaults removeObjectForKey:@"accounts"];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -335,12 +334,19 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 - (void)loadAccounts
 {
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.matrix.riot"];
+    
+    NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
+    if (oldAccountData) {
+        [sharedDefaults setObject:oldAccountData forKey:@"accounts"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+    }
+    
     NSData *accountData = [sharedDefaults objectForKey:@"accounts"];
     //TEST
     
     if (accountData)
     {
-        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
+        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:oldAccountData]];
     }
     else
     {
