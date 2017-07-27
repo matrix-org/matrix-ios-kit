@@ -247,6 +247,16 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     return self;
 }
 
+- (id)initMatrixContactWithDisplayName:(NSString*)displayName matrixID:(NSString*)matrixID andMatrixAvatarURL:(NSString*)matrixAvatarURL
+{
+    self = [self initMatrixContactWithDisplayName:displayName andMatrixID:matrixID];
+    if (self)
+    {
+        matrixIdField.matrixAvatarURL = matrixAvatarURL;
+    }
+    return self;
+}
+
 - (id)initContactWithDisplayName:(NSString*)displayName
                           emails:(NSArray<MXKEmail*> *)emails
                     phoneNumbers:(NSArray<MXKPhoneNumber*> *)phones
