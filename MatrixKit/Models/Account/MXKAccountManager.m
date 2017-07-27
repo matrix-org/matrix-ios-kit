@@ -17,6 +17,8 @@
 
 #import "MXKAccountManager.h"
 
+NSString *const kMXKAccountsKey = @"kMXKAccountsKey";
+
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
 
@@ -85,11 +87,11 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     {
         NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
         
-        [userDefaults setObject:accountData forKey:@"accounts"];
+        [userDefaults setObject:accountData forKey:kMXKAccountsKey];
     }
     else
     {
-        [userDefaults removeObjectForKey:@"accounts"];
+        [userDefaults removeObjectForKey:kMXKAccountsKey];
     }
     [userDefaults synchronize];
 }
@@ -157,7 +159,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
     
     // Be sure that no account survive in local storage
-    [sharedUserDefaults removeObjectForKey:@"accounts"];
+    [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
     [sharedUserDefaults synchronize];
@@ -335,13 +337,14 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 {
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.matrix.riot"];
     
-    NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
-    if (oldAccountData) {
-        [sharedDefaults setObject:oldAccountData forKey:@"accounts"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+    NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:kMXKAccountsKey];
+    if (oldAccountData)
+    {
+        [sharedDefaults setObject:oldAccountData forKey:kMXKAccountsKey];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
     }
     
-    NSData *accountData = [sharedDefaults objectForKey:@"accounts"];
+    NSData *accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
     //TEST
     
     if (accountData)
