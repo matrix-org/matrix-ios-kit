@@ -202,6 +202,7 @@
 "contact_local_contacts" = "Contacts locaux";
 // Search
 "search_no_results" = "Aucun résultat";
+"search_searching" = "Recherche en cours...";
 // Time
 "format_time_s" = "s";
 "format_time_m" = "m";
