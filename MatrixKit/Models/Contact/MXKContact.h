@@ -116,6 +116,16 @@ extern NSString *const kMXKContactDefaultContactPrefixId;
 - (id)initMatrixContactWithDisplayName:(NSString*)displayName andMatrixID:(NSString*)matrixID;
 
 /**
+ Create a matrix contact with the dedicated info
+
+ @param displayName the contact display name
+ @param matrixID the contact matrix id
+ @param matrixAvatarURL the matrix avatar url
+ @return MXKContact instance
+ */
+- (id)initMatrixContactWithDisplayName:(NSString*)displayName matrixID:(NSString*)matrixID andMatrixAvatarURL:(NSString*)matrixAvatarURL;
+
+/**
  Create a contact with the dedicated info
  
  @param displayName the contact display name

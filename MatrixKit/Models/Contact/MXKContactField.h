@@ -30,7 +30,7 @@
 /**
  The matrix avatar url, nil by default.
  */
-@property (nonatomic, readonly) NSString* matrixAvatarURL;
+@property (nonatomic) NSString* matrixAvatarURL;
 /**
  The current avatar downloaded by using the avatar url if any
  */
