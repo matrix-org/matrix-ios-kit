@@ -328,7 +328,7 @@
 // call string
 "call_waiting" = "Ожидание...";
 "call_connecting" = "Соединение…";
-"call_ended" = "Вызов завершён";
+"call_ended" = "Вызов завершен";
 "call_ring" = "Вызов...";
 "incoming_video_call" = "Входящий видеовызов";
 "incoming_voice_call" = "Входящий голосовой вызов";
