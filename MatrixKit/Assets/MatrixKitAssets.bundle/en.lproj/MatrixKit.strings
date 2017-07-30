@@ -236,6 +236,7 @@
 
 // Search
 "search_no_results" = "No Results";
+"search_searching" = "Search in progress...";
 
 // Time
 "format_time_s" = "s";

@@ -711,6 +711,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             // This will fix potential UISIs other peoples receive for our messages.
             [mxSession.crypto resetDeviceKeys];
         }
+        else
+        {
+            // For recomputing of room summaries as they are a cache of computed data
+            [mxSession resetRoomsSummariesLastMessage];
+        }
 
         // Close session
         [mxSession close];

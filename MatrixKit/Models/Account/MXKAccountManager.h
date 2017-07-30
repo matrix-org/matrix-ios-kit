@@ -121,4 +121,14 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  */
 - (MXKAccount*)accountKnowingRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias;
 
+/**
+ Retrieve an account that knows the user with the passed id.
+
+ Note: The method is not accurate as it returns the first account that matches.
+
+ @param userId the user id.
+ @return the user's account. Nil if no account matches.
+ */
+- (MXKAccount*)accountKnowingUserWithUserId:(NSString*)userId;
+
 @end

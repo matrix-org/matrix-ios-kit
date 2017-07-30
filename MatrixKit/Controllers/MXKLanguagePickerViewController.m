@@ -23,6 +23,7 @@
 NSString* const kMXKLanguagePickerViewControllerCellId = @"kMXKLanguagePickerViewControllerCellId";
 
 NSString* const kMXKLanguagePickerCellDataKeyText = @"text";
+NSString* const kMXKLanguagePickerCellDataKeyDetailText = @"detailText";
 NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 
 @interface MXKLanguagePickerViewController ()
@@ -52,6 +53,13 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 }
 
 + (NSString *)languageDescription:(NSString *)language
+{
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:language];
+
+    return [locale displayNameForKey:NSLocaleIdentifier value:language];
+}
+
++ (NSString *)languageLocalisedDescription:(NSString *)language
 {
     NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:[NSBundle mainBundle].preferredLocalizations.firstObject];
 
@@ -89,10 +97,18 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         if (![language isEqualToString:defaultLanguage])
         {
             languageDescription = [MXKLanguagePickerViewController languageDescription:language];
+            NSString *localisedLanguageDescription = [MXKLanguagePickerViewController languageLocalisedDescription:language];
+
+            // Capitalise the description in the language locale
+            NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:language];
+            languageDescription = [languageDescription capitalizedStringWithLocale:locale];
+            localisedLanguageDescription = [localisedLanguageDescription capitalizedStringWithLocale:locale];
+
             if (languageDescription)
             {
                 [cellDataArray addObject:@{
                                            kMXKLanguagePickerCellDataKeyText: languageDescription,
+                                           kMXKLanguagePickerCellDataKeyDetailText: localisedLanguageDescription,
                                            kMXKLanguagePickerCellDataKeyLanguage: language
                                            }];
             }
@@ -154,7 +170,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:kMXKLanguagePickerViewControllerCellId];
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kMXKLanguagePickerViewControllerCellId];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMXKLanguagePickerViewControllerCellId];
     }
     
     NSInteger index = indexPath.row;
@@ -175,6 +191,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     if (itemCellData)
     {
         cell.textLabel.text = itemCellData[kMXKLanguagePickerCellDataKeyText];
+        cell.detailTextLabel.text = itemCellData[kMXKLanguagePickerCellDataKeyDetailText];
 
         // Mark the cell with the selected language
         if (_selectedLanguage == itemCellData[kMXKLanguagePickerCellDataKeyLanguage] || [_selectedLanguage isEqualToString:itemCellData[kMXKLanguagePickerCellDataKeyLanguage]])

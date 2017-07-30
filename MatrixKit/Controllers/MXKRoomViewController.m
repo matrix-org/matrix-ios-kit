@@ -129,6 +129,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     UIView* reconnectingView;
     
     /**
+     The view to import e2e keys.
+     */
+    MXKEncryptionKeysImportView *importView;
+
+    /**
      The latest server sync date
      */
     NSDate* latestServerSync;
@@ -3596,7 +3601,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                                                                self->currentAlert = nil;
                                                                                
                                                                                // Show the keys import dialog
-                                                                               MXKEncryptionKeysImportView *importView = [[MXKEncryptionKeysImportView alloc] initWithMatrixSession:self->roomDataSource.mxSession];
+                                                                               importView = [[MXKEncryptionKeysImportView alloc] initWithMatrixSession:self->roomDataSource.mxSession];
                                                                                currentAlert = importView.alertController;
                                                                                [importView showInViewController:self toImportKeys:fileURL onComplete:^{
                                                                                    
@@ -3604,6 +3609,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                                                                    {
                                                                                        typeof(self) self = weakSelf;
                                                                                        self->currentAlert = nil;
+                                                                                       self->importView = nil;
                                                                                    }
                                                                                    
                                                                                }];

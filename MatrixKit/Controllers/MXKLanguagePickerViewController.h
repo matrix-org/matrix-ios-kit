@@ -75,12 +75,21 @@
 + (instancetype)languagePickerViewController;
 
 /**
- Get the localised description string of a language defined by its ISO country code.
+ Get the description string of a language defined by its ISO country code.
+ The description is localised in this language.
  
  @param language the ISO country code of the language (ex: "en").
- @return its localised description (ex: "English").
+ @return its description (ex: "English").
  */
 + (NSString *)languageDescription:(NSString*)language;
+
+/**
+ Get the localised description string of a language defined by its ISO country code.
+
+ @param language the ISO country code of the language (ex: "en").
+ @return its localised description (ex: "Anglais" on a device running in French).
+ */
++ (NSString *)languageLocalisedDescription:(NSString *)language;
 
 /**
  Get the ISO country code of the language selected by the OS according to
