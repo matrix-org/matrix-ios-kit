@@ -142,7 +142,8 @@ static MXLRUCache *imagesResourceCache = nil;
     return localizedString;
 }
 
-+ (NSBundle *)mxk_bundleForClass:(Class)aClass {
++ (NSBundle *)mxk_bundleForClass:(Class)aClass
+{
     NSBundle *bundle = [NSBundle bundleForClass:aClass];
     if ([[bundle.bundleURL pathExtension] isEqualToString:@"appex"])
     {
