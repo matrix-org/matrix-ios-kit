@@ -16,10 +16,9 @@
  */
 
 #import "MXKAccountManager.h"
+#import "MXKAppSettings.h"
 
 static NSString *const kMXKAccountsKey = @"kMXKAccountsKey";
-
-static NSString *const kMXAppGroupID = @"group.org.matrix";
 
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
@@ -84,7 +83,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)saveAccounts
 {
-    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:kMXAppGroupID];
+    NSUserDefaults *userDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
     if (mxAccounts.count)
     {
         NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
@@ -155,7 +154,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         return;
     }
     
-    NSUserDefaults *sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:kMXAppGroupID];
+    NSUserDefaults *sharedUserDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
     
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
@@ -354,7 +353,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)loadAccounts
 {
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kMXAppGroupID];
+    NSUserDefaults *sharedDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
     
     NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:kMXKAccountsKey];
     if (oldAccountData)
