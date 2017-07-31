@@ -55,4 +55,9 @@
  */
 + (NSString *)mxk_localizedStringForKey:(NSString *)key;
 
+/**
+ An AppExtension-compaitable wrapper for bundleForClass.
+ */
++ (NSBundle *)mxk_bundleForClass:(Class)aClass;
+
 @end

@@ -364,7 +364,6 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     }
     
     NSData *accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
-    //TEST
     
     if (accountData)
     {
