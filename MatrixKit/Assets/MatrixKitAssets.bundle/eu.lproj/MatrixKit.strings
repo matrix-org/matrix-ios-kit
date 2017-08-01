@@ -1,1 +1,8 @@
-
+"notice_conference_call_started" = "VoIP konferentzia hasita";
+"notice_conference_call_finished" = "VoIP konferentzia amaituta";
+// Events formatter
+"notice_avatar_changed_too" = "(abatarra ere aldatu da)";
+"notice_crypto_error_unknown_inbound_session_id" = "Igorlearen gailuak ez dizkigu mezu honetarako gakoak bidali.";
+"room_error_join_failed_empty_room" = "Ezin da oraingoz hutsik dagoen gela batetara berriro sartu.";
+"notice_encrypted_message" = "Zifratutako mezua";
+"login_email_placeholder" = "E-mail helbidea";
