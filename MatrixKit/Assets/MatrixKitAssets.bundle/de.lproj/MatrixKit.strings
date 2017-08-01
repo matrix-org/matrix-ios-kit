@@ -349,3 +349,4 @@
 // Language picker
 "language_picker_title" = "Wähle eine Sprache";
 "language_picker_default_language" = "Standard (%@)";
+"search_searching" = "Suche wird durchgeführt...";
