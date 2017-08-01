@@ -83,7 +83,7 @@
 "notice_room_join_rule" = "La règle pour rejoindre est : %@";
 "notice_room_power_level_intro" = "Les niveaux d'autorité des membres du salon sont :";
 "notice_room_power_level_acting_requirement" = "Le niveau minimum d'autorité qu'un utilisateur doit avoir pour interagir est :";
-"notice_room_power_level_event_requirement" = "Le niveau d'autorité minimum lié aux événements est :";
+"notice_room_power_level_event_requirement" = "Le niveau minimum lié aux événements est :";
 "notice_room_aliases" = "Les alias du salon sont : %@";
 "notice_encrypted_message" = "Message chiffré";
 "notice_encryption_enabled" = "%@ a activé le chiffrement de bout en bout (algorithme %@)";
@@ -279,9 +279,9 @@
 "create_room" = "Nouveau salon";
 "login" = "S'identifier";
 "create_account" = "Créer un compte";
-"membership_invite" = "Invités";
-"membership_leave" = "Quittés";
-"membership_ban" = "Bannis";
+"membership_invite" = "Invité";
+"membership_leave" = "Parti";
+"membership_ban" = "Banni";
 "num_members_one" = "%@ utilisateur";
 "num_members_other" = "%@ utilisateurs";
 "kick" = "Expulser";
@@ -345,7 +345,7 @@
 "ssl_unexpected_existing_expl" = "Le certificat a changé de celui qui a été approuvé par votre téléphone. Ce comportement est INATTENDU. Il est recommandé de ne PAS ACCEPTER ce nouveau certificat.";
 "ssl_expected_existing_expl" = "Le certificat était de confiance et a été remplacé par un certificat qui ne l'est pas. Le serveur a peut-être renouvelé son certificat. Contactez l'administrateur du serveur pour lui demander l'empreinte numérique de son certificat.";
 "ssl_only_accept" = "Accepter le certificat UNIQUEMENT si l'administrateur du serveur a publié une empreinte numérique correspondant à celle ci-dessus.";
-"notice_feedback" = "Evénément en retour (identifiant : %@) : %@";
+"notice_feedback" = "Evénement en retour (identifiant : %@) : %@";
 "notice_location_attachment" = "localisation en pièce-jointe";
 // Language picker
 "language_picker_title" = "Choisissez une langue";
