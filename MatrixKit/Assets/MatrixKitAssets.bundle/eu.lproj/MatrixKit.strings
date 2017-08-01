@@ -6,3 +6,88 @@
 "room_error_join_failed_empty_room" = "Ezin da oraingoz hutsik dagoen gela batetara berriro sartu.";
 "notice_encrypted_message" = "Zifratutako mezua";
 "login_email_placeholder" = "E-mail helbidea";
+// Settings
+"settings" = "Ezarpenak";
+// button names 
+"ok" = "Ados";
+"cancel" = "Utzi";
+"save" = "Gorde";
+"leave" = "Atera";
+"send" = "Bidali";
+"copy" = "Kopiatu";
+"resend" = "Birbidali";
+"redact" = "Ezabatu";
+"share" = "Partekatu";
+"delete" = "Ezabatu";
+"room_no_power_to_create_conference_call" = "Gonbidatzeko baimena behar duzu gela honetan konferentzia bat hasteko";
+"room_no_conference_call_in_encrypted_rooms" = "Konferentzia deiak ez daude onartuta zifratutako geletan";
+"invite" = "Gonbidatu";
+"close" = "Itxi";
+"start_voice_call" = "Hasi ahots deia";
+"start_video_call" = "Hasi bideo deia";
+"submit" = "Bidali";
+"login_password_placeholder" = "Pasahitza";
+"login_home_server_title" = "Hasiera zerbitzaria:";
+"login_identity_server_title" = "Identitate zerbitzaria:";
+"login_error_must_start_http" = "http[s]:// gisa hasi behar da URLa";
+"login_error_forbidden" = "Erabiltzaile-izen / pasahitz baliogabea";
+"login_error_unknown_token" = "Ez da ezagutzen zehaztutako sarbide katea";
+"login_error_bad_json" = "Gaizki osatutako JSON";
+"login_error_not_json" = "Ez zuen baliozko JSON-ik";
+"login_error_limit_exceeded" = "Eskaera gehiegi bidali dira";
+"login_error_user_in_use" = "Erabiltzaile-izen hau hartuta dago";
+"login_error_login_email_not_yet" = "Oraindik erabili ez den e-maileko esteka";
+"attachment_cancel_download" = "Utzi deskarga?";
+"attachment_cancel_upload" = "Utzi deskarga?";
+"call_ended" = "Deia amaitu da";
+"incoming_video_call" = "Bideo-deia jasotzen";
+"incoming_voice_call" = "Ahots-deia jasotzen";
+"continue" = "Jarraitu";
+// Time
+"format_time_s" = "s";
+"format_time_m" = "m";
+"format_time_h" = "h";
+"format_time_d" = "e";
+"ban" = "Debekatu";
+"mention" = "Aipamena";
+"room_member_power_level_prompt" = "Ezin izango duzu aldaketa hau desegin kidea zure botere maila berera ekartzen ari zarelako.\nZiur zaude?";
+// unrecognized SSL certificate
+"ssl_trust" = "Fidatu";
+"ssl_logout_account" = "Amaitu saioa";
+"ssl_remain_offline" = "Ezikusi";
+"ssl_could_not_verify" = "Ezin izan da urruneko zerbitzariaren identitatea egiaztatu.";
+"ssl_cert_not_trust" = "Honek esan lezake inor zure trafikoa antzematen dabilela asmo txarrez, edo zure telefonoa ez dela fidatzen urruneko zerbitzariaren ziurtagiriaz.";
+"ssl_cert_new_account_expl" = "Zerbitzariaren kudeatzaileak hau gerta daitekeela esaten badu, ziurtatu beheko hatz-marka beraiek emandako hatz-markarekin bat datorrela.";
+"ssl_unexpected_existing_expl" = "Ziurtagiria aldatu da eta ez da zure telefonoak onartzen zuena. Hau OSO ARRAROA da. Ziurtagiri berri hau EZ ONARTZEA aholkatzen da.";
+"ssl_expected_existing_expl" = "Ziurtagiria aldatu da, onartutako batetik onartu gabeko batera. Agian Zerbitzariak ziurtagiria berriztu du. Jarri kontaktuan zerbitzariaren kudeatzailearekin hatz-marka eskatzeko.";
+"ssl_only_accept" = "SOILIK onartu ziurtagiria zerbitzariaren kudeatzaileak goikoarekin bat datorren hatz-marka bat argitaratu badu.";
+// room details dialog screen
+"room_details_title" = "Gelaren xehetasunak";
+"cancel_upload" = "Utzi igoera";
+"cancel_download" = "Utzi deskarga";
+"settings_title_notifications" = "Jakinarazpenak";
+"device_details_delete_prompt_message" = "Eragiketa honek autentifikazio gehigarria behar du.\nJarraitzeko, idatzi zure pasahitza.";
+"device_details_delete_prompt_title" = "Autentifikazioa";
+// Language picker
+"language_picker_title" = "Hautatu hizkuntza";
+"account_email_validation_title" = "Egiaztaketa egiteke";
+"account_email_validation_message" = "Irakurri zure e-maila eta egin klik dakarren estekan. Behin eginda, egin klik Jarraitu botoian.";
+"account_email_validation_error" = "Ezin izan da e-mail helbidea egiaztatu. Irakurrri zure e-maila eta egin klik dakarren estekan. Behin eginda, egin klik Jarraitu botoian";
+// Country picker
+"country_picker_title" = "Hautatu herrialde bat";
+"account_msisdn_validation_message" = "Aktibazio kodea duen SMS mezu bat bidali dizugu. Idatzi kode hori hemen azpian.";
+"room_event_encryption_info_event_none" = "bat ere ez";
+// E2E export
+"e2e_export_room_keys" = "Esportatu gelako gakoak";
+"e2e_export" = "Esportatu";
+"e2e_passphrase_enter" = "Idatzi pasaesaldia";
+"e2e_passphrase_confirm" = "Berretsi pasaesaldia";
+// E2E import
+"e2e_import_room_keys" = "Inportatu gelako gakoak";
+"e2e_import" = "Inportatu";
+"room_event_encryption_info_device_verified" = "Egiaztatuta";
+"room_event_encryption_info_device_blocked" = "Zerrenda beltzean";
+"room_event_encryption_verify_ok" = "Egiaztatu";
+"room_event_encryption_info_unverify" = "Kendu egiaztaketa";
+"room_event_encryption_info_block" = "Sartu zerrenda beltzean";
+"room_event_encryption_info_unblock" = "Atera zerrenda beltzean";
