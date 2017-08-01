@@ -81,8 +81,8 @@
 "notice_profile_change_redacted" = "%@ ont mis à jour leur profil %@";
 "notice_room_created" = "%@ a créé le salon";
 "notice_room_join_rule" = "La règle pour rejoindre est : %@";
-"notice_room_power_level_intro" = "Les niveaux d'autorité des membres du salon sont :";
-"notice_room_power_level_acting_requirement" = "Le niveau minimum d'autorité qu'un utilisateur doit avoir pour interagir est :";
+"notice_room_power_level_intro" = "Les niveaux des membres du salon sont :";
+"notice_room_power_level_acting_requirement" = "Le niveau minimum qu'un utilisateur doit avoir pour interagir est :";
 "notice_room_power_level_event_requirement" = "Le niveau minimum lié aux événements est :";
 "notice_room_aliases" = "Les alias du salon sont : %@";
 "notice_encrypted_message" = "Message chiffré";
@@ -153,7 +153,7 @@
 "account_email_validation_message" = "Vérifiez vos e-mail et cliquez sur le lien fourni. Ensuite, cliquez sur continuer.";
 "account_email_validation_error" = "Impossible de vérifier l'adresse e-mail. Vérifiez vos e-mails et cliqué sur le lien fourni. Ensuite, cliquez sur continuer";
 "account_msisdn_validation_title" = "Vérification en cours";
-"account_msisdn_validation_message" = "Nou vous avons envoyé un SMS avec un code d'activation. Merci de le saisir ci-dessous.";
+"account_msisdn_validation_message" = "Nous vous avons envoyé un SMS avec un code d'activation. Merci de le saisir ci-dessous.";
 "account_msisdn_validation_error" = "Impossible de vérifier le numéro de téléphone.";
 "account_error_display_name_change_failed" = "Impossible de modifier le nom d'affichage";
 "account_error_picture_change_failed" = "Impossible de modifier l'image";
@@ -181,10 +181,10 @@
 "room_error_timeline_event_not_found" = "L'application a tenté de charger une position spécifique dans l'historique du salon, mais ne l'a pas trouvée";
 "room_left" = "Vous avez quitté le salon";
 "room_no_power_to_create_conference_call" = "Des permissions sont requises pour inviter ou démarrer une conférence sur ce salon";
-"room_no_conference_call_in_encrypted_rooms" = "Les appels ne sont pas supportés sur les salons chiffrés";
+"room_no_conference_call_in_encrypted_rooms" = "Les appels groupés ne sont pas supportés sur les salons chiffrés";
 // Room members
 "room_member_ignore_prompt" = "Êtes-vous sûr de vouloir masquer tous les messages de cet utilisateur ?";
-"room_member_power_level_prompt" = "Vous ne pourrez pas révoquer ce changement car vous promouvez cet utilisateur au même niveau d'autorité que le vôtre.\nÊtes-vous sûr ?";
+"room_member_power_level_prompt" = "Vous ne pourrez pas révoquer ce changement car vous promouvez cet utilisateur au même niveau que le vôtre.\nÊtes-vous sûr ?";
 // Attachment
 "attachment_size_prompt" = "Voulez-vous envoyer au format :";
 "attachment_original" = "Taille réelle : %@";
@@ -210,12 +210,12 @@
 "format_time_d" = "j";
 // E2E import
 "e2e_import_room_keys" = "Importer les clés du salon";
-"e2e_import_prompt" = "Ce processus permet d'importer les clés de chiffrement que vous avez précédemment exportées d'un autre client Matrix. Vous pourrez ensuite déchiffrer tous les messages que l'autre client pouvait déchiffrer.\nLe fichier d'export est protégé par une phrase de passe. Entrez la phrase de passe ci-dessous pour déchiffrer le fichier.";
+"e2e_import_prompt" = "Ce processus permet d'importer les clés de chiffrement que vous avez précédemment exportées d'un autre client Matrix. Vous pourrez ensuite déchiffrer tous les messages que l'autre client pouvait déchiffrer.\nLe fichier d'export est protégé par une phrase secrète. Entrez la phrase secrète ci-dessous pour déchiffrer le fichier.";
 "e2e_import" = "Importer";
-"e2e_passphrase_enter" = "Entrer la phrase de passe";
+"e2e_passphrase_enter" = "Entrer la phrase secrète";
 // E2E export
 "e2e_export_room_keys" = "Exporter les clé de salons";
-"e2e_export_prompt" = "Ce processus permet d'exporter les clé pour les messages que vous avez reçu sur les salons chiffrés vers un fichier local. Vous pourrez ensuite importer ce fichier sur un autre client Matrix, pour qu'il soit en messure de déchiffrer les messages.\nLe fichier exporté autorisera quiconque le lit à déchiffrer tous les messages chiffrés que vous pouvez voir, conservez-le de façon sécurisée.";
+"e2e_export_prompt" = "Ce processus permet d'exporter les clés pour les messages que vous avez reçu sur les salons chiffrés vers un fichier local. Vous pourrez ensuite importer ce fichier sur un autre client Matrix, pour qu'il soit en messure de déchiffrer les messages.\nLe fichier exporté autorisera quiconque le lit à déchiffrer tous les messages chiffrés que vous pouvez voir, conservez-le de façon sécurisée.";
 "e2e_export" = "Exporter";
 "e2e_passphrase_confirm" = "Confirmer la phrase de passe";
 "e2e_passphrase_empty" = "La phrase de passe ne peut être vide";
