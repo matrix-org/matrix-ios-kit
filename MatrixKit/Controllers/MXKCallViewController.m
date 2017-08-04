@@ -595,7 +595,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             // Except in case of call error, quit the screen right now
             if (!errorAlert)
             {
-                [errorAlert dismissViewControllerAnimated:NO completion:nil];
+                [self dismiss];
             }
 
             break;
