@@ -5,3 +5,11 @@
 "login_home_server_title" = "Mājas serveris:";
 "login_home_server_info" = "Tavs mājas serveris saglabā visus sarunu un konta datus";
 "login_identity_server_title" = "Identitātes serveris:";
+"view" = "Skatīt";
+"back" = "Atpakaļ";
+"continue" = "Turpināt";
+"leave" = "Atstāt";
+"invite" = "Uzaicināt";
+"retry" = "Atgriezties";
+"cancel" = "Atcelt";
+"save" = "Saglabāt";
