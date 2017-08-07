@@ -355,11 +355,17 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 {
     NSUserDefaults *sharedDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
     
+    //Migration of accountData from [NSUserDefaults standardUserDefaults] to sharedDefaults (shared between apps and extensions)
     NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:kMXKAccountsKey];
     if (oldAccountData)
     {
         [sharedDefaults setObject:oldAccountData forKey:kMXKAccountsKey];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
+        
+        [sharedDefaults synchronize];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        NSLog(@"[MXKAccountManager] performed data migration");
     }
     
     NSData *accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
