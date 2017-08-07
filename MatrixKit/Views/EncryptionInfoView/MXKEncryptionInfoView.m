@@ -54,8 +54,6 @@ static NSAttributedString *verticalWhitespace = nil;
 {
     [super awakeFromNib];
     
-    _defaultTextColor = [UIColor blackColor];
-    
     // Localize string
     [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateNormal];
     [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateHighlighted];
@@ -82,6 +80,17 @@ static NSAttributedString *verticalWhitespace = nil;
     
     [super removeFromSuperview];
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    _defaultTextColor = [UIColor blackColor];
+}
+
+#pragma mark -
 
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
 {

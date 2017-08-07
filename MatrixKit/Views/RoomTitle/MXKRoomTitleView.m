@@ -41,7 +41,6 @@
     [super awakeFromNib];
     
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
     inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -61,6 +60,17 @@
 {
     inputAccessoryView = nil;
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+#pragma mark -
 
 - (void)refreshDisplay
 {
