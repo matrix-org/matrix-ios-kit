@@ -18,7 +18,7 @@
 #import "MXKAccountManager.h"
 #import "MXKAppSettings.h"
 
-static NSString *const kMXKAccountsKey = @"kMXKAccountsKey";
+static NSString *const kMXKAccountsKey = @"accounts";
 
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
