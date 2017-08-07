@@ -17,6 +17,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKView.h"
+
 extern NSString *const MXKAuthErrorDomain;
 
 /**
@@ -85,7 +87,7 @@ typedef enum {
 /**
  `MXKAuthInputsView` is a base class to handle authentication inputs.
  */
-@interface MXKAuthInputsView : UIView <UITextFieldDelegate>
+@interface MXKAuthInputsView : MXKView <UITextFieldDelegate>
 {
 @protected
     /**
