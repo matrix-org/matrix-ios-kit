@@ -595,7 +595,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             // Except in case of call error, quit the screen right now
             if (!errorAlert)
             {
-                [errorAlert dismissViewControllerAnimated:NO completion:nil];
+                [self dismiss];
             }
 
             break;
@@ -625,18 +625,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
         
         [errorAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
-                                                           
-                                                           if (weakSelf)
-                                                           {
-                                                               typeof(self) self = weakSelf;
-                                                               self->errorAlert = nil;
-                                                               
-                                                               [self dismiss];
-                                                           }
-                                                           
-                                                       }]];
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * action) {
+                                                         
+                                                         typeof(self) self = weakSelf;
+                                                         if (self)
+                                                         {
+                                                             self->errorAlert = nil;
+                                                             
+                                                             [self dismiss];
+                                                         }
+                                                         
+                                                     }]];
         
         
         [self presentViewController:errorAlert animated:YES completion:nil];
