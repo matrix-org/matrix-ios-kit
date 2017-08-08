@@ -24,7 +24,8 @@ static NSString *customLocalizedStringTableName = nil;
 
 + (NSBundle*)mxk_assetsBundle
 {
-    NSBundle *bundle = [NSBundle bundleForClass:[MXKViewController class]];
+    NSBundle *bundle = [NSBundle mxk_bundleForClass:[MXKViewController class]];
+    
     NSURL *assetsBundleURL = [bundle URLForResource:@"MatrixKit" withExtension:@"bundle"];
 
     // Check whether MatrixKit is not integrated as a Pod
@@ -139,6 +140,17 @@ static MXLRUCache *imagesResourceCache = nil;
     }
     
     return localizedString;
+}
+
++ (NSBundle *)mxk_bundleForClass:(Class)aClass
+{
+    NSBundle *bundle = [NSBundle bundleForClass:aClass];
+    if ([[bundle.bundleURL pathExtension] isEqualToString:@"appex"])
+    {
+        // For App extensions, peel off two levels
+        bundle = [NSBundle bundleWithURL:[[bundle.bundleURL URLByDeletingLastPathComponent] URLByDeletingLastPathComponent]];
+    }
+    return bundle;
 }
 
 @end

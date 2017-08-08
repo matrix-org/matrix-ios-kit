@@ -149,6 +149,11 @@
  */
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
 
+/**
+ A userDefaults object that is shared within the group.org.matrix app group.
+ */
+@property (nonatomic, readonly) NSUserDefaults *sharedUserDefaults;
+
 
 #pragma mark - Class methods
 

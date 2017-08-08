@@ -15,13 +15,15 @@
  */
 
 #import "MXKTableViewCell.h"
+#import "NSBundle+MatrixKit.h"
 
 @implementation MXKTableViewCell
 
 + (UINib *)nib
 {
     // Check whether a nib file is available
-    NSBundle *mainBundle = [NSBundle bundleForClass:self.class];
+    NSBundle *mainBundle = [NSBundle mxk_bundleForClass:self.class];
+    
     NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
     if (path)
     {

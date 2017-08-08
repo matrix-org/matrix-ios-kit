@@ -26,11 +26,20 @@
 
 static MXKAppSettings *standardAppSettings = nil;
 
+static NSString *const kMXAppGroupID = @"group.org.matrix";
+
+@interface MXKAppSettings ()
+
+@property (nonatomic, readwrite) NSUserDefaults *sharedUserDefaults;
+
+@end
+
 @implementation MXKAppSettings
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
+@synthesize sharedUserDefaults;
 
 + (MXKAppSettings *)standardAppSettings
 {
@@ -117,6 +126,15 @@ static MXKAppSettings *standardAppSettings = nil;
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
     }
+}
+
+- (NSUserDefaults *)sharedUserDefaults
+{
+    if (!sharedUserDefaults)
+    {
+        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:kMXAppGroupID];
+    }
+    return sharedUserDefaults;
 }
 
 #pragma mark - Room display
