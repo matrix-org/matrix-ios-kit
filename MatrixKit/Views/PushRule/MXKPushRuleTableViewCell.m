@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,14 +24,20 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    
-    _controlButton.backgroundColor = [UIColor clearColor];
     [_controlButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_pause"] forState:UIControlStateNormal];
     [_controlButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_pause"] forState:UIControlStateHighlighted];
     
-    _deleteButton.backgroundColor = [UIColor clearColor];
     [_deleteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_minus"] forState:UIControlStateNormal];
     [_deleteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_minus"] forState:UIControlStateHighlighted];
+}
+
+- (void)customizeTableViewCellRendering
+{
+    [super customizeTableViewCellRendering];
+    
+    _controlButton.backgroundColor = [UIColor clearColor];
+    
+    _deleteButton.backgroundColor = [UIColor clearColor];
     
     _ruleDescription.numberOfLines = 0;
 }

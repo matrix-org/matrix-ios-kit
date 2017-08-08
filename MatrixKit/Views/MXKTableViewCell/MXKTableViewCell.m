@@ -35,6 +35,20 @@
     return NSStringFromClass([self class]);
 }
 
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    [self customizeTableViewCellRendering];
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    
+    [self customizeTableViewCellRendering];
+}
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     // Check whether a xib is defined
@@ -45,6 +59,7 @@
     else
     {
         self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+        [self customizeTableViewCellRendering];
     }
     
     if (reuseIdentifier.length)
@@ -72,6 +87,11 @@
     }
     
     return identifier;
+}
+
+- (void)customizeTableViewCellRendering
+{
+    // Do nothing by default.
 }
 
 @end
