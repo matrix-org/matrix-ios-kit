@@ -29,10 +29,25 @@
 
 #pragma mark - Strings
 
-// Highly inspired from https://stackoverflow.com/a/34659249
-+ (BOOL)isSingleEmojiString:(NSString*)string
++ (BOOL)isSingleEmojiString:(NSString *)string
 {
-    __block BOOL containsEmoji = NO;
+    return [MXKTools isEmojiString:string singleEmoji:YES];
+}
+
++ (BOOL)isEmojiOnlyString:(NSString *)string
+{
+    return [MXKTools isEmojiString:string singleEmoji:NO];
+}
+
+// Highly inspired from https://stackoverflow.com/a/34659249
++ (BOOL)isEmojiString:(NSString*)string singleEmoji:(BOOL)singleEmoji
+{
+    if (string.length == 0)
+    {
+        return NO;
+    }
+
+    __block BOOL containsOnlyEmoji = YES;
 
     NSRange stringRange = NSMakeRange(0, [string length]);
 
@@ -43,9 +58,12 @@
                                          NSRange enclosingRange,
                                          BOOL *stop)
      {
-         if (!NSEqualRanges(stringRange, substringRange))
+         BOOL containsEmoji = NO;
+
+         if (singleEmoji && !NSEqualRanges(stringRange, substringRange))
          {
              // The string contains several characters. Go out
+             containsOnlyEmoji = NO;
              *stop = YES;
              return;
          }
@@ -111,9 +129,15 @@
                  containsEmoji = YES;
              }
          }
+
+         if (!containsEmoji)
+         {
+             containsOnlyEmoji = NO;
+             *stop = YES;
+         }
      }];
 
-    return containsEmoji;
+    return containsOnlyEmoji;
 }
 
 #pragma mark - Time interval

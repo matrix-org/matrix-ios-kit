@@ -1554,12 +1554,16 @@
     {
         font = _encryptedMessagesTextFont;
     }
-    else if (!_isForSubtitle && event.eventType == MXEventTypeRoomMessage && _singleEmojiTextFont)
+    else if (!_isForSubtitle && event.eventType == MXEventTypeRoomMessage && (_emojiOnlyTextFont || _singleEmojiTextFont))
     {
         NSString *message;
         MXJSONModelSetString(message, event.content[@"body"]);
 
-        if ([MXKTools isSingleEmojiString:message])
+        if (_emojiOnlyTextFont && [MXKTools isEmojiOnlyString:message])
+        {
+            font = _emojiOnlyTextFont;
+        }
+        else if (_singleEmojiTextFont && [MXKTools isSingleEmojiString:message])
         {
             font = _singleEmojiTextFont;
         }
