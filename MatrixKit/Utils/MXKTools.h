@@ -21,12 +21,20 @@
 #pragma mark - Strings
 
 /**
- Determine if a string contains only one emoji.
+ Determine if a string contains one emoji and only one.
  
  @param string the string to check.
  @return YES if YES.
  */
 + (BOOL)isSingleEmojiString:(NSString*)string;
+
+/**
+ Determine if a string contains only emojis.
+
+ @param string the string to check.
+ @return YES if YES.
+ */
++ (BOOL)isEmojiOnlyString:(NSString*)string;
 
 #pragma mark - Time
 
