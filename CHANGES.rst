@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.6.1 (2017-08-08)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.9.1).
+ * MXKEventFormatter: Add emojiOnlyTextFont property to special case the display of message containing only emojis.
+
+Bug fixes:
+ * Fix problem with dismissing of MXCallViewController (https://github.com/vector-im/riot-ios/issues/1405), thanks to @morozkin (#342).
+ 
 Changes in MatrixKit in 0.6.0 (2017-08-01)
 ==========================================
 

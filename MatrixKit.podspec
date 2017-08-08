@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
 
   s.requires_arc  = true
 
-  s.dependency 'MatrixSDK', '0.9.0'
+  s.dependency 'MatrixSDK', '0.9.1'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.10'
   s.dependency 'DTCoreText', '~> 1.6.17'
