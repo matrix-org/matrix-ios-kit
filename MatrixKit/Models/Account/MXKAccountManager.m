@@ -360,10 +360,11 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     if (oldAccountData)
     {
         [sharedDefaults setObject:oldAccountData forKey:kMXKAccountsKey];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
-        
         [sharedDefaults synchronize];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        //TODO: Erase old location of accountData when the app goes to the app store
+        //[[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
+        //[[NSUserDefaults standardUserDefaults] synchronize];
         
         NSLog(@"[MXKAccountManager] performed data migration");
     }
