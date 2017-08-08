@@ -29,10 +29,25 @@
 
 #pragma mark - Strings
 
-// Highly inspired from https://stackoverflow.com/a/34659249
-+ (BOOL)isSingleEmojiString:(NSString*)string
++ (BOOL)isSingleEmojiString:(NSString *)string
 {
-    __block BOOL containsEmoji = NO;
+    return [MXKTools isEmojiString:string singleEmoji:YES];
+}
+
++ (BOOL)isEmojiOnlyString:(NSString *)string
+{
+    return [MXKTools isEmojiString:string singleEmoji:NO];
+}
+
+// Highly inspired from https://stackoverflow.com/a/34659249
++ (BOOL)isEmojiString:(NSString*)string singleEmoji:(BOOL)singleEmoji
+{
+    if (string.length == 0)
+    {
+        return NO;
+    }
+
+    __block BOOL result = YES;
 
     NSRange stringRange = NSMakeRange(0, [string length]);
 
@@ -43,9 +58,12 @@
                                          NSRange enclosingRange,
                                          BOOL *stop)
      {
-         if (!NSEqualRanges(stringRange, substringRange))
+         BOOL isEmoji = NO;
+
+         if (singleEmoji && !NSEqualRanges(stringRange, substringRange))
          {
              // The string contains several characters. Go out
+             result = NO;
              *stop = YES;
              return;
          }
@@ -62,7 +80,7 @@
                  if (0x1d000 <= uc &&
                      uc <= 0x1f9c0)
                  {
-                     containsEmoji = YES;
+                     isEmoji = YES;
                  }
              }
          }
@@ -73,7 +91,7 @@
                  ls == 0xfe0f ||
                  ls == 0xd83c)
              {
-                 containsEmoji = YES;
+                 isEmoji = YES;
              }
          }
          else
@@ -82,22 +100,22 @@
              if (0x2100 <= hs &&
                  hs <= 0x27ff)
              {
-                 containsEmoji = YES;
+                 isEmoji = YES;
              }
              else if (0x2B05 <= hs &&
                       hs <= 0x2b07)
              {
-                 containsEmoji = YES;
+                 isEmoji = YES;
              }
              else if (0x2934 <= hs &&
                       hs <= 0x2935)
              {
-                 containsEmoji = YES;
+                 isEmoji = YES;
              }
              else if (0x3297 <= hs &&
                       hs <= 0x3299)
              {
-                 containsEmoji = YES;
+                 isEmoji = YES;
              }
              else if (hs == 0xa9 ||
                       hs == 0xae ||
@@ -108,12 +126,18 @@
                       hs == 0x2b1b ||
                       hs == 0x2b50)
              {
-                 containsEmoji = YES;
+                 isEmoji = YES;
              }
+         }
+
+         if (!isEmoji)
+         {
+             result = NO;
+             *stop = YES;
          }
      }];
 
-    return containsEmoji;
+    return result;
 }
 
 #pragma mark - Time interval

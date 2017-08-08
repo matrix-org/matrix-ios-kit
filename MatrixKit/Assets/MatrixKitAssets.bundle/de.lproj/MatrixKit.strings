@@ -46,7 +46,7 @@
 "set_moderator" = "Setze Moderator";
 "set_admin" = "Setze Administrator";
 "start_chat" = "Starte Chat";
-"start_voice_call" = "Starte Sprachanruf";
+"start_voice_call" = "Sprachanruf starten";
 "start_video_call" = "Starte Videoanruf";
 "mention" = "Erwähnung";
 "select_account" = "Wähle ein Konto";
@@ -120,7 +120,7 @@
 "room_event_encryption_info_event_identity_key" = "Curve25519 Identitätsschlüssel\n";
 "room_event_encryption_info_event_fingerprint_key" = "Verlangter Ed25519 Fingerabdruck\n";
 "room_event_encryption_info_event_algorithm" = "Algorithmus\n";
-"room_event_encryption_info_event_session_id" = "Sitzungs ID\n";
+"room_event_encryption_info_event_session_id" = "Sitzungs-ID\n";
 "room_event_encryption_info_event_decryption_error" = "Entschlüsselungs-Fehler\n";
 "room_event_encryption_info_event_unencrypted" = "nicht verschlüsselt";
 "room_event_encryption_info_event_none" = "keine";
@@ -131,10 +131,10 @@
 "room_event_encryption_info_device_verification" = "Überprüfung\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 Fingerabdruck\n";
 "room_event_encryption_info_device_verified" = "Überprüft";
-"room_event_encryption_info_device_not_verified" = "NICHT überprüft";
+"room_event_encryption_info_device_not_verified" = "NICHT verifiziert";
 "room_event_encryption_info_device_blocked" = "auf schwarzer Liste";
 "room_event_encryption_info_verify" = "Überprüfe...";
-"room_event_encryption_info_unverify" = "Überprüfung rückgängig machen";
+"room_event_encryption_info_unverify" = "Verifizierung widerrufen";
 "room_event_encryption_info_block" = "Blockieren";
 "room_event_encryption_info_unblock" = "Blockierung aufheben";
 "room_event_encryption_verify_title" = "Überprüfe Gerät\n\n";
@@ -143,7 +143,7 @@
 // Account
 "account_save_changes" = "Änderungen speichern";
 "account_link_email" = "Verbinde E-Mail-Adresse";
-"account_linked_emails" = "Verbundene Emai-Adressen";
+"account_linked_emails" = "Verbundene E-Mail-Adressen";
 "account_email_validation_title" = "Verifizierung ausstehend";
 "account_email_validation_message" = "Bitte prüfe deine E-Mails und klicke auf den enthaltenen Link. Wenn dies erledigt ist, klicke auf \"Fortsetzen\".";
 "account_email_validation_error" = "Kann E_Mail-Adresse nicht verifizieren. Bitte prüfe deine Emails und klicke auf den enthaltenen Link. Wenn das erledigt ist, Schaltfläche \"Fortfahren\" drücken";
@@ -225,7 +225,7 @@
 "public" = "Öffentlich";
 "power_level" = "Berechtigungsstufe";
 "network_error_not_reachable" = "Bitte Netzwerkverbindung prüfen";
-"user_id_placeholder" = "z.B. @thomas:heimserver";
+"user_id_placeholder" = "z. B.: @thomas:heimserver";
 "ssl_homeserver_url" = "Home-Server URL: %@";
 // Permissions
 "camera_access_not_granted_for_call" = "Video-Anrufe benötigen Zugriff auf die Kamera, aber %@ hat keine Berechtigung";
@@ -249,7 +249,7 @@
 "notice_avatar_url_changed" = "%@ hat seinen Avatar geändert";
 "notice_display_name_set" = "%@ setzte seinen Anzeigenamen zu %@";
 "notice_display_name_changed_from" = "%@ änderte seinen Anzeigenamen von %@ auf %@";
-"notice_display_name_removed" = "%@ entfernte seinen Anzeigenamen";
+"notice_display_name_removed" = "%@ hat den Anzeigenamen entfernt";
 "notice_topic_changed" = "%@ wechselte das Thema zu: %@";
 "notice_room_name_changed" = "%@ änderte den Raum-Namen zu: %@";
 "notice_placed_voice_call" = "%@ tätigte einen Sprach-Anruf";
