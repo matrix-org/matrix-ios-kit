@@ -204,14 +204,14 @@
 "format_time_d" = "t";
 // E2E import
 "e2e_import_room_keys" = "Importiere Raum Schlüssel";
-"e2e_import_prompt" = "Dieser Prozeß erlaubt dir Schlüssel zu importieren die du vorher von einem anderen Matrix Client exportiert hast. Du kannst dan alle Nachrichten entschlüsseln die der andere Client entschlüsseln konnte. Die Export-Datei ist mit einem Passphrase geschützt. Gib die Passphrase hier ein, um die Datei zu importieren.";
+"e2e_import_prompt" = "Dieser Prozess erlaubt es dir, Schlüssel zu importieren, die du vorher von einem anderen Matrix-Client exportiert hast. Du kannst anschließend alle Nachrichten entschlüsseln, die auch bereits der andere Client entschlüsseln konnte. Die Export-Datei ist mit einer Passphrase geschützt. Gib die Passphrase hier ein, um die Datei zu importieren.";
 "e2e_import" = "Import";
 "e2e_passphrase_enter" = "Passphrase eingeben";
 // E2E export
 "e2e_export_room_keys" = "Exportiere Raum Schlüssel";
 "e2e_export_prompt" = "Dieser Prozeß erlaubt den Export von Schlüsseln, die du in verschlüsselten Räumen empfangen hast, in eine lokale Datei. Du kannst dann die Datei in einem anderen Matrix Client in Zukunft importieren, so dass dieser Client die Nachrichten auch entschlüsseln kann.\nDie exportierte Datei wird jedem der sie lesen kann erlauben, alle verschlüsselten Nachrichten sehen können, also verwahre die Datei sicher.";
 "e2e_export" = "Exportiere";
-"e2e_passphrase_confirm" = "Bestätige Passphrase";
+"e2e_passphrase_confirm" = "Passphrase bestätigen";
 "e2e_passphrase_empty" = "Die Passphrase darf nicht leer sein";
 "e2e_passphrase_not_match" = "Passphrasen stimmen nicht überein";
 // Others
