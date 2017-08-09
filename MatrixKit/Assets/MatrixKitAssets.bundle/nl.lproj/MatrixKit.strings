@@ -58,7 +58,7 @@
 "continue" = "Verder gaan";
 "discard" = "Weggooien";
 "dismiss" = "Wegsturen";
-"retry" = "Opnieuw probern";
+"retry" = "Opnieuw proberen";
 "sign_up" = "Aanmelden";
 "submit" = "Versturen";
 "submit_code" = "Code versturen";
@@ -225,7 +225,7 @@
 "format_time_d" = "d";
 // E2E import
 "e2e_import_room_keys" = "Ruimte sleutels importeren";
-"e2e_import_prompt" = "Dit proces maakt het mogelijk om versleutelingssleutels die je eerder hebt geëxporteerd vanaf een andere Matrix programma te importeren. Daarna kan je alle berichten ontsleutelen die het andere programma ook kon ontsleutelen.\n";
+"e2e_import_prompt" = "Dit proces maakt het mogelijk om versleutelingssleutels die je eerder hebt geëxporteerd vanaf een andere Matrix programma te importeren. Daarna kan je alle berichten ontsleutelen die het andere programma ook kon ontsleutelen.\nHet exporteerbestand is beschermd met een wachtzin. Je moet hier een wachtzin invoeren om later het bestand te ontsleutelen.";
 "e2e_import" = "Importeren";
 "e2e_passphrase_enter" = "Wachtzin invoeren";
 // E2E export
@@ -350,7 +350,7 @@
 // room info dialog Screen
 
 // room details dialog screen
-"room_details_title" = "Ruimte details";
+"room_details_title" = "Ruimte Details";
 // contacts list screen 
 "invitation_message" = "Ik wil graag met je praten via Matrix. Bezoek de website http://matrix.org voor meer informatie.";
 // Settings screen 
@@ -402,7 +402,7 @@
 "ssl_remain_offline" = "Negeren";
 "ssl_fingerprint_hash" = "Vingerafdruk (%@):";
 "ssl_could_not_verify" = "Kan de identiteit van de afgelegen server niet vastleggen.";
-"ssl_cert_not_trust" = "Dit kan betekent dat iemand onderschept je verkeer met schadelijke bedoelingen, of dat je telefoon niet het certificaat dat door de afgelegen server wordt geleverd vertrouwd. ";
+"ssl_cert_not_trust" = "Dit kan betekent dat iemand onderschept je verkeer met schadelijke bedoelingen, of dat je telefoon niet het certificaat dat door de afgelegen server wordt geleverd vertrouwd.";
 "ssl_cert_new_account_expl" = "Als de server administrator heeft gezegd dat dit de bedoeling is, wees er dan zeker van dat de vingerafdruk hieronder overeenkomt met de vingerafdruk dat door hen wordt geleverd.";
 "ssl_unexpected_existing_expl" = "Het certificaat is veraderd in iets anders dan degene die was vertrouwd door je telefoon. Dit is ERG ONGEBRUIKELIJK. Het is aangeraden dat je dit nieuwe certificaat NIET ACCEPTEERT.";
 "ssl_expected_existing_expl" = "Het certificaat is veranderd van een eerder vertrouwd certificaat naar een certificaat dat niet wordt vertrouwd. De server heeft misschien het certificaat vernieuwd. Contacteer de server administator voor de verwachte vingerafdruk.";
