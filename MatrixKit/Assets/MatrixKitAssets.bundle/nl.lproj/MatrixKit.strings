@@ -19,7 +19,6 @@
 /* *********************** */
 
 "matrix" = "Matrix";
-
 // Login Screen
 "login_create_account" = "Account aanmaken:";
 "login_server_url_placeholder" = "URL (bijv. https://matrix.org)";
@@ -50,7 +49,6 @@
 "login_invalid_param" = "Ongeldige parameter";
 "register_error_title" = "Registratie Mislukt";
 "login_error_forgot_password_is_not_supported" = "Wachtwoord vergeten is momenteel nog niet ondersteund";
-
 // Action
 "no" = "Nee";
 "yes" = "Ja";
@@ -87,7 +85,6 @@
 "end_call" = "Oproep beëindigen";
 "ignore" = "Negeren";
 "unignore" = "Stoppen met negeren";
-
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was ook veranderd)";
 "notice_room_name_removed" = "%@ heeft de ruimtenaam verwijderd";
@@ -122,15 +119,12 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ heeft toekomstige ruimte geschiedenis zichtbaar gemaakt voor alle ruimteleden, vanaf het punt dat ze toetreden.";
 "notice_crypto_unable_to_decrypt" = "** Niet mogelijk om te ontsleutelen: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Het apparaat van de verstuurder heeft ons niet de sleutels voor dit bericht gestuurd.";
-
 // Settings
 "settings" = "Instellingen";
 "settings_enable_inapp_notifications" = "In-App notificaties aanzetten";
 "settings_enable_push_notifications" = "Push notificaties aanzetten";
 "settings_enter_validation_token_for" = "Validatiebewijs voor %@ invoeren:";
-
 "notification_settings_room_rule_title" = "Ruimte: '%@'";
-
 // Devices
 "device_details_title" = "Apparaat informatie\n";
 "device_details_name" = "Naam\n";
@@ -140,7 +134,6 @@
 "device_details_rename_prompt_message" = "Apparaatnaam:";
 "device_details_delete_prompt_title" = "Authenticatie";
 "device_details_delete_prompt_message" = "Deze functionering vereist additionele authenticatie.\nOm verder te gaan, voer je wachtwoord in.";
-
 // Encryption information
 "room_event_encryption_info_title" = "Eind-tot-eind versleutelingsinformatie\n\n";
 "room_event_encryption_info_event" = "Gebeurtenis informatie\n";
@@ -168,20 +161,16 @@
 "room_event_encryption_verify_title" = "Apparaat verifiëren\n\n";
 "room_event_encryption_verify_message" = "Om te verifiëren dat dit apparaat vertrouwd kan worden, neem contact op met de eigenaar van het apparaat via iets anders dan Matrix (bijv. persoonlijk of door te bellen) en vraag aan diegene of de sleutel die ze in de Gebruiker Instellingen zien overeenkomt met de onderstaande sleutel:\n\n\t Apparaatnaam: %@\n\tApparaat ID: %@\n\tApparaat sleutel: %@\n\nAls het overeenkomt, klik op de verifiëren knop hieronder. Als het niet overeenkomt, dan onderschept iemand anders dit apparaat en wil je waarschijnlijk in plaats daarvan op de 'blokkeer' knop drukken.\n\nIn de toekomst zal dit verificatie proces meer geraffineerd zijn.";
 "room_event_encryption_verify_ok" = "Verifiëren";
-
 // Account
 "account_save_changes" = "Wijzigingen opslaan";
 "account_link_email" = "E-mail verbinden";
 "account_linked_emails" = "Verbonden e-mails";
-
 "account_email_validation_title" = "Verificatie Aanhangig";
 "account_email_validation_message" = "Bekijk je e-mail en klik op de link die het bevat. Wanneer dit gedaan is, klik op verder gaan.";
 "account_email_validation_error" = "Niet mogelijk om het e-mailadres te verifiëren. Bekijk je e-mail en klik op die link die het bevat. Wanneer dit gedaan is, klik op verder gaan";
-
 "account_msisdn_validation_title" = "Verificatie Aanhangig";
 "account_msisdn_validation_message" = "We hebben een SMS met een activatie code verstuurd. Voer deze code hieronder in.";
 "account_msisdn_validation_error" = "Niet mogelijk om het telefoonnummer te verifiëren.";
-
 "account_error_display_name_change_failed" = "Weergavenaam verandering mislukt";
 "account_error_picture_change_failed" = "Afbeelding verandering mislukt";
 "account_error_matrix_session_is_not_opened" = "Matrix sessie is niet geopend";
@@ -189,7 +178,6 @@
 "account_error_email_wrong_description" = "Het ziet er niet naar uit dat dit een geldig e-mailadres is";
 "account_error_msisdn_wrong_title" = "Ongeldig telefoonnummer";
 "account_error_msisdn_wrong_description" = "Het ziet er niet naar uit dat dit een geldig telefoonnummer is";
-
 // Room creation
 "room_creation_name_title" = "Ruimtenaam:";
 "room_creation_name_placeholder" = "(bijv. lunchGroep)";
@@ -198,7 +186,6 @@
 "room_creation_alias_placeholder_with_homeserver" = "(bijv. #foo%@)";
 "room_creation_participants_title" = "Deelnemers:";
 "room_creation_participants_placeholder" = "(bijv. @bob:thuisserver1; @joep:thuisserver2...)";
-
 // Room
 "room_please_select" = "Selecteer een ruimte";
 "room_error_join_failed_title" = "Toetreden tot de ruimte mislukt";
@@ -211,11 +198,9 @@
 "room_left" = "Je hebt de ruimte verlaten";
 "room_no_power_to_create_conference_call" = "Je hebt permissie nodig om een vergadering in deze ruimte te starten";
 "room_no_conference_call_in_encrypted_rooms" = "Vergadergesprekken zijn niet ondersteund in versleutelde ruimtes";
-
 // Room members
 "room_member_ignore_prompt" = "Weet je zeker dat je alle berichten van deze gebruiker wilt verbergen?";
 "room_member_power_level_prompt" = "Het is niet mogelijk om deze verandering terug te draaien want je promoot de gebruiker naar hetzelfde machtsniveau als jezelf.\nWeet je het zeker?";
-
 // Attachment
 "attachment_size_prompt" = "Wil je het versturen als:";
 "attachment_original" = "Werkelijke grootte: %@";
@@ -228,26 +213,21 @@
 "attachment_multiselection_original" = "Werkelijke grootte";
 "attachment_e2e_keys_file_prompt" = "Dit bestand bevat versleutelingssleutels die van een Matrix client geëxporteerd zijn.\nWil je de bestandsinhoud bekijken of de sleutels die het bevat importeren?";
 "attachment_e2e_keys_import" = "Importeren...";
-
 // Contacts
 "contact_mx_users" = "Matrix Gebruikers";
 "contact_local_contacts" = "Lokale contacten";
-
 // Search
 "search_no_results" = "Geen resultaten";
-
 // Time
 "format_time_s" = "s";
 "format_time_m" = "m";
 "format_time_h" = "u";
 "format_time_d" = "d";
-
 // E2E import
 "e2e_import_room_keys" = "Ruimte sleutels importeren";
 "e2e_import_prompt" = "Dit proces maakt het mogelijk om versleutelingssleutels die je eerder hebt geëxporteerd vanaf een andere Matrix programma te importeren. Daarna kan je alle berichten ontsleutelen die het andere programma ook kon ontsleutelen.\n";
 "e2e_import" = "Importeren";
 "e2e_passphrase_enter" = "Wachtzin invoeren";
-
 // E2E export
 "e2e_export_room_keys" = "Ruimte sleutels exporteren";
 "e2e_export_prompt" = "Dit proces maakt het mogelijk om de sleutels voor berichten die je hebt ontvangen in versleutelde ruimtes te exporteren naar een lokaal bestand. Daarna kan je het bestand in een ander Matrix programma in de toekomst importeren, zodat het programma ook deze berichten kan ontsleutelen.\nHet geëxporteerde bestand zal iedereen die het leest mogelijk maken om de versleutelde berichten die jij kan zien te ontsleutelen, dus wees voorzichtig en berg het bestand veilig op.";
@@ -255,7 +235,6 @@
 "e2e_passphrase_confirm" = "Wachtzin bevestigen";
 "e2e_passphrase_empty" = "Wachtzin mag niet leeg zijn";
 "e2e_passphrase_not_match" = "Wachtzinnen moeten overeenkomen";
-
 // Others
 "user_id_title" = "Gebruiker ID:";
 "offline" = "offline";
@@ -269,19 +248,14 @@
 "network_error_not_reachable" = "Controleer de netwerkconnectiviteit";
 "user_id_placeholder" = "bv: @bob:thuisserver";
 "ssl_homeserver_url" = "Thuisserver URL: %@";
-
 // Permissions
 "camera_access_not_granted_for_call" = "Videogresprekken hebben toegang tot de camera nodig maar %@ heeft hier geen permissie voor";
 "microphone_access_not_granted_for_call" = "Oproepen hebben toegang tot de camera nodig maar %@ heeft hier geen permissie voor";
 "local_contacts_access_not_granted" = "Er is toegang tot je contacten nodig om gebruikers te vinden maar %@ heeft hier geen permissie voor";
-
 "local_contacts_access_discovery_warning_title" = "Gebruikers vinden";
 "local_contacts_access_discovery_warning" = "%@ wil e-mails en telefoonnummer van je contacten uploaden om gebruikers te vinden";
-
 // Country picker
 "country_picker_title" = "Kies een land";
-
-
 /* -*- 
    Automatic localization for en
 
@@ -313,7 +287,6 @@
 "notice_conference_call_request" = "%@ heeft een VoIP vergadering aangevraagd";
 "notice_conference_call_started" = "VoIP vergadering gestart";
 "notice_conference_call_finished" = "VoIP vergadering beëindigd";
-
 // Room Screen 
 
 // general errors 
@@ -331,7 +304,6 @@
     /console/src/main/res/values/strings.xml.
 */
 
-
 // titles 
 
 // button names 
@@ -347,7 +319,6 @@
 "set_power_level" = "Machtsniveau";
 "delete" = "Verwijderen";
 "view" = "Weergeven";
-
 // actions 
 "action_logout" = "Uitloggen";
 "create_room" = "Ruimte maken";
@@ -363,11 +334,9 @@
 "ban" = "verbannen";
 "unban" = "Ontbannen";
 "message_unsaved_changes" = "Er zijn niet opgeslagen wijzigingen. Verlaten zal ze verwijderen.";
-
 // Login Screen 
 "login_error_already_logged_in" = "Al ingelogd";
 "login_error_must_start_http" = "URL moet beginnen met http[s]://";
-
 // members list Screen 
 
 // accounts list Screen 
@@ -382,14 +351,11 @@
 
 // room details dialog screen
 "room_details_title" = "Ruimte details";
-
 // contacts list screen 
 "invitation_message" = "Ik wil graag met je praten via Matrix. Bezoek de website http://matrix.org voor meer informatie.";
-
 // Settings screen 
 "settings_title_config" = "Configuratie";
 "settings_title_notifications" = "Notificaties";
-
 // Notification settings screen 
 "notification_settings_disable_all" = "Alle notificaties uitzetten";
 "notification_settings_enable_notifications" = "Notificaties aanzetten";
@@ -404,7 +370,7 @@
 "notification_settings_custom_sound" = "Aangepast geluid";
 "notification_settings_per_room_notifications" = "Per-ruimte notificaties";
 "notification_settings_per_sender_notifications" = "Per-afzender notificaties";
-"notification_settings_sender_hint" = "\@gebruiker:domein.com";
+"notification_settings_sender_hint" = "@gebruiker:domein.com";
 "notification_settings_select_room" = "Selecteer een ruimte";
 "notification_settings_other_alerts" = "Andere alerts";
 "notification_settings_contain_my_user_name" = "Notificeer mij met geluid over berichten dat mijn gebruikersnaam bevat";
@@ -416,12 +382,10 @@
 "notification_settings_suppress_from_bots" = "Notificaties van Robots onderdrukken";
 "notification_settings_by_default" = "Standaard...";
 "notification_settings_notify_all_other" = "Notificeren voor alle anderen berichten/ruimtes";
-
 // gcm section 
 "settings_config_home_server" = "Thuisserver: %@";
 "settings_config_identity_server" = "Identiteitsserver: %@";
 "settings_config_user_id" = "Gebruiker ID: %@";
-
 // Settings keys 
 
 // call string
@@ -432,7 +396,6 @@
 "incoming_video_call" = "Inkomende video-oproep";
 "incoming_voice_call" = "Inkomende spraakoproep";
 "call_invite_expired" = "Oproep uitnodiging verlopen";
-
 // unrecognized SSL certificate
 "ssl_trust" = "Vertrouwen";
 "ssl_logout_account" = "Uitloggen";
@@ -444,3 +407,7 @@
 "ssl_unexpected_existing_expl" = "Het certificaat is veraderd in iets anders dan degene die was vertrouwd door je telefoon. Dit is ERG ONGEBRUIKELIJK. Het is aangeraden dat je dit nieuwe certificaat NIET ACCEPTEERT.";
 "ssl_expected_existing_expl" = "Het certificaat is veranderd van een eerder vertrouwd certificaat naar een certificaat dat niet wordt vertrouwd. De server heeft misschien het certificaat vernieuwd. Contacteer de server administator voor de verwachte vingerafdruk.";
 "ssl_only_accept" = "Accepteer ALLEEN het certificaat als de server administrator een vingerafdruk heeft gepubliceerd dat overeenkomt met degene die hierboven staat.";
+"search_searching" = "Bezig met zoeken...";
+// Language picker
+"language_picker_title" = "Kies een taal";
+"language_picker_default_language" = "Standaard (%@)";
