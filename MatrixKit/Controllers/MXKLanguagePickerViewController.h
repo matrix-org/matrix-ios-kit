@@ -36,6 +36,8 @@
 /**
  'MXKLanguagePickerViewController' instance displays the list of languages.
  For the moment, it displays only languages available in the application bundle.
+ 
+ TODO: UISearchDisplayController is deprecated in iOS 8. MXKLanguagePickerViewController must use UISearchController to manage the presentation of a search bar and display search results.
  */
 @interface MXKLanguagePickerViewController : MXKTableViewController <UISearchBarDelegate>
 
