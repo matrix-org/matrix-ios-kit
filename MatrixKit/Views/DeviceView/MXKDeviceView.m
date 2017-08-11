@@ -60,13 +60,6 @@ static NSAttributedString *verticalWhitespace = nil;
     [tap setDelegate:self];
     [self.bgView addGestureRecognizer:tap];
     
-    _defaultTextColor = [UIColor blackColor];
-    
-    // Add shadow on added view
-    _containerView.layer.cornerRadius = 5;
-    _containerView.layer.shadowOffset = CGSizeMake(0, 1);
-    _containerView.layer.shadowOpacity = 0.5f;
-    
     // Localize string
     [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateNormal];
     [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateHighlighted];
@@ -85,6 +78,22 @@ static NSAttributedString *verticalWhitespace = nil;
     // Scroll to the top the text view content
     self.textView.contentOffset = CGPointZero;
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    _defaultTextColor = [UIColor blackColor];
+    
+    // Add shadow on added view
+    _containerView.layer.cornerRadius = 5;
+    _containerView.layer.shadowOffset = CGSizeMake(0, 1);
+    _containerView.layer.shadowOpacity = 0.5f;
+}
+
+#pragma mark -
 
 - (void)removeFromSuperviewDidUpdate:(BOOL)isUpdated
 {

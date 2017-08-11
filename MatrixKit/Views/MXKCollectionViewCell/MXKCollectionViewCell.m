@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -35,6 +36,20 @@
     return NSStringFromClass([self class]);
 }
 
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    [self customizeCollectionViewCellRendering];
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    
+    [self customizeCollectionViewCellRendering];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     // Check whether a xib is defined
@@ -46,9 +61,15 @@
     else
     {
         self = [super initWithFrame:frame];
+        [self customizeCollectionViewCellRendering];
     }
     
     return self;
+}
+
+- (void)customizeCollectionViewCellRendering
+{
+    // Do nothing by default.
 }
 
 @end

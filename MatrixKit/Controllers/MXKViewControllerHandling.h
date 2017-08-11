@@ -38,6 +38,11 @@
 @property (nonatomic) UIColor *defaultBarTintColor;
 
 /**
+ The color of the title in the navigation bar (nil by default).
+ */
+@property (nonatomic) UIColor *barTitleColor;
+
+/**
  Enable the change of the navigation bar tint color according to the matrix homeserver reachability status (YES by default).
  Set NO this property to disable navigation tint color change.
  */

@@ -17,6 +17,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKView.h"
+
 @class MXKRoomTitleView;
 @protocol MXKRoomTitleViewDelegate <NSObject>
 
@@ -51,7 +53,7 @@
 /**
  'MXKRoomTitleView' instance displays editable room display name.
  */
-@interface MXKRoomTitleView : UIView <UITextFieldDelegate>
+@interface MXKRoomTitleView : MXKView <UITextFieldDelegate>
 {
 @protected
     /**

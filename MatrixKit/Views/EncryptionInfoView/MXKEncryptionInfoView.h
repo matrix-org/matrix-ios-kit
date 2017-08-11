@@ -17,13 +17,15 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKView.h"
+
 @protocol MXKEncryptionInfoViewDelegate;
 
 /**
  MXKEncryptionInfoView class may be used to display the available information on a encrypted event.
  The event sender device may be verified, unverified, blocked or unblocked from this view.
  */
-@interface MXKEncryptionInfoView : UIView
+@interface MXKEncryptionInfoView : MXKView
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet UIButton *cancelButton;

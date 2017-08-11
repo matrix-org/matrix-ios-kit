@@ -17,6 +17,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKView.h"
+
 /**
  MXKDeviceView class may be used to display the information of a user's device.
  The displayed device may be renamed or removed.
@@ -45,7 +47,7 @@
 
 @end
 
-@interface MXKDeviceView : UIView <UIGestureRecognizerDelegate>
+@interface MXKDeviceView : MXKView <UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (weak, nonatomic) IBOutlet UIView *containerView;

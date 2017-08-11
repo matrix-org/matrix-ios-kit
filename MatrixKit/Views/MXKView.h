@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +14,21 @@
  limitations under the License.
  */
 
-#import <MatrixSDK/MatrixSDK.h>
+#import <UIKit/UIKit.h>
 
-#import "MXKView.h"
+/**
+ `MXKView` is a base class used to add some functionalities to the UIView class.
+ */
+@interface MXKView : UIView
 
-@interface MXKEventDetailsView : MXKView
-
-@property (weak, nonatomic) IBOutlet UITextView *textView;
-@property (weak, nonatomic) IBOutlet UIButton *redactButton;
-@property (weak, nonatomic) IBOutlet UIButton *closeButton;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
-
-- (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session;
+/**
+ Customize the rendering of the view and its subviews (Do nothing by default).
+ This method is called when the view is initialized.
+ 
+ Override this method to customize the view instance at the application level.
+ It may be used to handle different rendering themes. In this case this method should be called whenever the theme has changed.
+ */
+- (void)customizeViewRendering;
 
 @end
 
