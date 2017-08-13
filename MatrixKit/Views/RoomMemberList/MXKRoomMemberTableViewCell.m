@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -43,9 +44,14 @@
 {
     [super awakeFromNib];
     
-    self.pictureView.backgroundColor = [UIColor clearColor];
-    
     self.typingBadge.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_keyboard"];
+}
+
+- (void)customizeTableViewCellRendering
+{
+    [super customizeTableViewCellRendering];
+    
+    self.pictureView.backgroundColor = [UIColor clearColor];
 }
 
 - (UIImage*)picturePlaceholder

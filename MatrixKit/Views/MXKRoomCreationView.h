@@ -17,6 +17,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKView.h"
+
 @class MXKRoomCreationView;
 @protocol MXKRoomCreationViewDelegate <NSObject>
 
@@ -42,7 +44,7 @@
  MXKRoomCreationView instance is a cell dedicated to room creation.
  Add this view in your app to offer room creation option.
  */
-@interface MXKRoomCreationView : UIView <UITextFieldDelegate> {
+@interface MXKRoomCreationView : MXKView <UITextFieldDelegate> {
 @protected
     UIView *inputAccessoryView;
 }

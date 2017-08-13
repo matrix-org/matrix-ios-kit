@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,12 +17,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MXKView.h"
+
 @protocol MXKRoomActivitiesViewDelegate;
 
 /**
  Customize UIView to display some extra info above the RoomInputToolBar
  */
-@interface MXKRoomActivitiesView : UIView
+@interface MXKRoomActivitiesView : MXKView
 
 @property (nonatomic) CGFloat height;
 

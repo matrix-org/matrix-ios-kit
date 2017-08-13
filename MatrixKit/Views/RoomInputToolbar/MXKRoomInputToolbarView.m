@@ -89,12 +89,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     // Finalize setup
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
     
-    // Reset default container background color
-    messageComposerContainer.backgroundColor = [UIColor clearColor];
-    
-    // Set default toolbar background color
-    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-    
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
     
@@ -111,6 +105,21 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     
     [self destroy];
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    // Reset default container background color
+    messageComposerContainer.backgroundColor = [UIColor clearColor];
+    
+    // Set default toolbar background color
+    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+}
+
+#pragma mark -
 
 - (IBAction)onTouchUpInside:(UIButton*)button
 {

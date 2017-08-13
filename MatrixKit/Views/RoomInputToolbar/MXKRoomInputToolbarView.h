@@ -19,6 +19,8 @@
 
 #import <Photos/Photos.h>
 
+#import "MXKView.h"
+
 /**
  List the predefined modes to handle the size of attached images
  */
@@ -179,7 +181,7 @@ typedef enum : NSUInteger
  By default the left button is used to send the content of the message composer.
  By default 'messageComposerContainer' is empty.
  */
-@interface MXKRoomInputToolbarView : UIView <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
+@interface MXKRoomInputToolbarView : MXKView <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
     /**
      The message composer container view. Your own message composer may be added inside this container.
      */

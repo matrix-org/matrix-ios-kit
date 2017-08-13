@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,12 +17,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MXKView.h"
+
 @class MXKAttachment;
 
 /**
  Customize UIView in order to display image defined with remote url. Zooming inside the image (Stretching) is supported.
  */
-@interface MXKImageView : UIView <UIScrollViewDelegate>
+@interface MXKImageView : MXKView <UIScrollViewDelegate>
 
 typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* title);
 

@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +14,30 @@
  limitations under the License.
  */
 
-#import <MatrixSDK/MatrixSDK.h>
-
 #import "MXKView.h"
 
-@interface MXKEventDetailsView : MXKView
+@implementation MXKView
 
-@property (weak, nonatomic) IBOutlet UITextView *textView;
-@property (weak, nonatomic) IBOutlet UIButton *redactButton;
-@property (weak, nonatomic) IBOutlet UIButton *closeButton;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    [self customizeViewRendering];
+}
 
-- (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session;
+- (instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        [self customizeViewRendering];
+    }
+    return self;
+}
+
+- (void)customizeViewRendering
+{
+    // Do nothing by default.
+}
 
 @end
-

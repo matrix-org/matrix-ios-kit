@@ -1,5 +1,6 @@
 /*
-Copyright 2015 OpenMarket Ltd
+ Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,6 +43,14 @@ limitations under the License.
  This view controller displays a room list.
  */
 @interface MXKRecentListViewController : MXKViewController <MXKDataSourceDelegate, UITableViewDelegate, UISearchBarDelegate>
+{
+@protected
+    
+    /**
+     The fake top view displayed in case of vertical bounce.
+     */
+    UIView *topview;
+}
 
 @property (weak, nonatomic) IBOutlet UISearchBar *recentsSearchBar;
 @property (weak, nonatomic) IBOutlet UITableView *recentsTableView;

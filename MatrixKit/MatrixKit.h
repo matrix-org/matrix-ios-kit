@@ -53,6 +53,8 @@
 #import "MXKAuthenticationFallbackWebView.h"
 #import "MXKAuthenticationRecaptchaWebView.h"
 
+#import "MXKView.h"
+
 #import "MXKRoomCreationInputs.h"
 
 #import "MXKInterleavedRecentsDataSource.h"
