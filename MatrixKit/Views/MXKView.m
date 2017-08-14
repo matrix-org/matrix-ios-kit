@@ -25,16 +25,6 @@
     [self customizeViewRendering];
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self)
-    {
-        [self customizeViewRendering];
-    }
-    return self;
-}
-
 - (void)customizeViewRendering
 {
     // Do nothing by default.

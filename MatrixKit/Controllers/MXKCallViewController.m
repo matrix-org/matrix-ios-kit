@@ -108,7 +108,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTimeStatusLabel) userInfo:nil repeats:YES];
     
-    self.callerImageView.backgroundColor = [UIColor clearColor];
+    self.callerImageView.defaultBackgroundColor = [UIColor clearColor];
     self.backToAppButton.backgroundColor = [UIColor clearColor];
     self.audioMuteButton.backgroundColor = [UIColor clearColor];
     self.videoMuteButton.backgroundColor = [UIColor clearColor];

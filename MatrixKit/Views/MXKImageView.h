@@ -62,6 +62,12 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
  */
 - (void)showFullScreen;
 
+/**
+ The default background color.
+ Default is [UIColor blackColor].
+ */
+@property (nonatomic) UIColor *defaultBackgroundColor;
+
 // Use this boolean to hide activity indicator during image downloading
 @property (nonatomic) BOOL hideActivityIndicator;
 

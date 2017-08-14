@@ -51,7 +51,7 @@
 {
     [super customizeTableViewCellRendering];
     
-    self.pictureView.backgroundColor = [UIColor clearColor];
+    self.pictureView.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (UIImage*)picturePlaceholder

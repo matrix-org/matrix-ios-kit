@@ -27,7 +27,7 @@
 {
     [super customizeTableViewCellRendering];
     
-    self.accountPicture.backgroundColor = [UIColor clearColor];
+    self.accountPicture.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)setMxAccount:(MXKAccount *)mxAccount

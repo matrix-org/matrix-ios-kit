@@ -577,7 +577,7 @@
     
     // set the thumbnail info
     self.memberThumbnail.contentMode = UIViewContentModeScaleAspectFill;
-    self.memberThumbnail.backgroundColor = [UIColor clearColor];
+    self.memberThumbnail.defaultBackgroundColor = [UIColor clearColor];
     [self.memberThumbnail.layer setCornerRadius:self.memberThumbnail.frame.size.width / 2];
     [self.memberThumbnail setClipsToBounds:YES];
     
