@@ -36,6 +36,19 @@
 
 @implementation MXKEventDetailsView
 
++ (UINib *)nib
+{
+    // Check whether a nib file is available
+    NSBundle *mainBundle = [NSBundle mxk_bundleForClass:self.class];
+    
+    NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
+    if (path)
+    {
+        return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:mainBundle];
+    }
+    return [UINib nibWithNibName:NSStringFromClass([MXKEventDetailsView class]) bundle:[NSBundle mxk_bundleForClass:[MXKEventDetailsView class]]];
+}
+
 - (void)awakeFromNib
 {
     [super awakeFromNib];
@@ -49,10 +62,7 @@
 
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKEventDetailsView class]] loadNibNamed:NSStringFromClass([MXKEventDetailsView class])
-                                                                                      owner:nil
-                                                                                    options:nil];
-    self = nibViews.firstObject;
+    self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     if (self)
     {
         mxEvent = event;
