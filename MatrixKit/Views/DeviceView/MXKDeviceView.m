@@ -49,6 +49,19 @@ static NSAttributedString *verticalWhitespace = nil;
 
 @implementation MXKDeviceView
 
++ (UINib *)nib
+{
+    // Check whether a nib file is available
+    NSBundle *mainBundle = [NSBundle mxk_bundleForClass:self.class];
+    
+    NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
+    if (path)
+    {
+        return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:mainBundle];
+    }
+    return [UINib nibWithNibName:NSStringFromClass([MXKDeviceView class]) bundle:[NSBundle mxk_bundleForClass:[MXKDeviceView class]]];
+}
+
 - (void)awakeFromNib
 {
     [super awakeFromNib];
@@ -121,10 +134,7 @@ static NSAttributedString *verticalWhitespace = nil;
 
 - (instancetype)initWithDevice:(MXDevice*)device andMatrixSession:(MXSession*)session
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKDeviceView class]] loadNibNamed:NSStringFromClass([MXKDeviceView class])
-                                                                                      owner:nil
-                                                                                    options:nil];
-    self = nibViews.firstObject;
+    self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     if (self)
     {
         mxDevice = device;
