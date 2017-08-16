@@ -342,6 +342,14 @@ extern NSString *const kCmdChangeRoomTopic;
 - (void)setAttachmentsViewerClass:(Class)attachmentsViewerClass;
 
 /**
+ Register the view class used to display the details of an event.
+ MXKEventDetailsView is used by default.
+ 
+ @param eventDetailsViewClass a MXKEventDetailsView-inherited class.
+ */
+- (void)setEventDetailsViewClass:(Class)eventDetailsViewClass;
+
+/**
  Detect and process potential IRC command in provided string.
  
  @param string to analyse

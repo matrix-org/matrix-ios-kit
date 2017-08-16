@@ -61,7 +61,7 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 {
     [super customizeTableViewCellRendering];
     
-    self.thumbnailView.backgroundColor = [UIColor clearColor];
+    self.thumbnailView.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)layoutSubviews

@@ -171,7 +171,8 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     [super customizeTableViewCellRendering];
     
-    self.pictureView.backgroundColor = [UIColor blackColor];
+    // Clear the default background color of a MXKImageView instance
+    self.pictureView.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)layoutSubviews
@@ -332,9 +333,6 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             self.pictureView.enableInMemoryCache = YES;
             [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];
-            
-            // Clear the default background color of a MXKImageView instance
-            self.pictureView.backgroundColor = [UIColor clearColor];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)

@@ -90,7 +90,7 @@
         }
         
         MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-        imageView.backgroundColor = [UIColor clearColor];
+        imageView.defaultBackgroundColor = [UIColor clearColor];
         
         if (alignment == ReadReceiptAlignmentRight)
         {
