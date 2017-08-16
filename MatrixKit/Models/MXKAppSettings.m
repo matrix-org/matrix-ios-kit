@@ -26,7 +26,7 @@
 
 static MXKAppSettings *standardAppSettings = nil;
 
-static NSString *const kMXAppGroupID = @"group.org.matrix";
+static NSString *const kMXAppGroupID = @"group.im.vector";
 
 @interface MXKAppSettings ()
 
