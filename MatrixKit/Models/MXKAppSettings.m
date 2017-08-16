@@ -73,6 +73,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        
+        _applicationGroup = kMXAppGroupID;
     }
     return self;
 }
@@ -128,11 +130,19 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     }
 }
 
+- (void)setApplicationGroup:(NSString *)applicationGroup
+{
+    // Reset the existing shared object (if any).
+    sharedUserDefaults = nil;
+    
+    _applicationGroup = applicationGroup.length ? applicationGroup : kMXAppGroupID;
+}
+
 - (NSUserDefaults *)sharedUserDefaults
 {
     if (!sharedUserDefaults)
     {
-        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:kMXAppGroupID];
+        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:_applicationGroup];
     }
     return sharedUserDefaults;
 }
