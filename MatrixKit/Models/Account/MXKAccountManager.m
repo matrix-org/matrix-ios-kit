@@ -160,6 +160,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
     
     // Be sure that no account survive in local storage
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
     [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
