@@ -351,8 +351,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     self.textMessage = [NSString stringWithFormat:@"%@%@", self.textMessage, text];
 }
 
-#pragma mark - MXKImageCompressionSize
-
 
 #pragma mark - MXKFileSizes
 
