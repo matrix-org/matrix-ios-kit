@@ -65,10 +65,19 @@
 
 - (void)customizeViewRendering
 {
+    [super customizeViewRendering];
+    
     self.pieChartView.backgroundColor = [UIColor clearColor];
     self.pieChartView.progressColor = [UIColor whiteColor];
     self.pieChartView.unprogressColor = [UIColor clearColor];
     self.pieChartView.tintColor = [UIColor cyanColor];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    [self.pieChartView.layer setCornerRadius:self.pieChartView.frame.size.width / 2];
 }
 
 #pragma mark - Public
