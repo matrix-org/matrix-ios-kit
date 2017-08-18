@@ -118,18 +118,34 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
-- (void)removeAccount:(MXKAccount*)account completion:(void (^)())completion;
+- (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)())completion;
 {
-    NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
+    NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
     
     // Close session and clear associated store.
-    [account logout:^{
+    [theAccount logout:^{
         
-        [mxAccounts removeObject:account];
-        [self saveAccounts];
+        // Retrieve the corresponding account in the internal array
+        MXKAccount* removedAccount = nil;
         
-        // Post notification
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account userInfo:nil];
+        for (MXKAccount *account in mxAccounts)
+        {
+            if ([account.mxCredentials.userId isEqualToString:theAccount.mxCredentials.userId])
+            {
+                removedAccount = account;
+                break;
+            }
+        }
+        
+        if (removedAccount)
+        {
+            [mxAccounts removeObject:removedAccount];
+            
+            [self saveAccounts];
+            
+            // Post notification
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:removedAccount userInfo:nil];
+        }
         
         if (completion)
         {
@@ -385,6 +401,12 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     {
         mxAccounts = [NSMutableArray array];
     }
+}
+
+- (void)forceReloadAccounts
+{
+    NSLog(@"[MXKAccountManager] Force reload existing accounts from local storage");
+    [self loadAccounts];
 }
 
 @end
