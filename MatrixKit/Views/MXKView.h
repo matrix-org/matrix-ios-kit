@@ -23,7 +23,7 @@
 
 /**
  Customize the rendering of the view and its subviews (Do nothing by default).
- This method is called automatically when the view is loaded from an Interface Builder archive, or nib file.
+ This method is called automatically when the view is initialized or loaded from an Interface Builder archive (or nib file).
  
  Override this method to customize the view instance at the application level.
  It may be used to handle different rendering themes. In this case this method should be called whenever the theme has changed.
