@@ -45,6 +45,7 @@ typedef enum : NSUInteger
     
 } MXKRoomInputToolbarCompressionMode;
 
+
 @class MXKRoomInputToolbarView;
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
