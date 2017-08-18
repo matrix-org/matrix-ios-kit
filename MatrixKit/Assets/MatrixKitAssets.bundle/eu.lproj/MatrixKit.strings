@@ -132,7 +132,7 @@
 "discard" = "Baztertu";
 "sign_up" = "Erregistratu";
 "submit_code" = "Bidali kodea";
-"login_error_do_not_support_login_flows" = "Orain ez ditugu onartzen hasiera zerbitzari honek zehaztutako saio hasiera metodo guztak, edo batere.";
+"login_error_do_not_support_login_flows" = "Orain ez ditugu onartzen hasiera zerbitzari honek zehaztutako saio hasiera metodo guztiak, edo batere";
 "login_error_registration_is_not_supported" = "Oraindik ezin da aplikazioarekin erregistratu";
 "login_use_fallback" = "Erabili ordezko orria";
 "login_error_forgot_password_is_not_supported" = "Oraindik ezin da aplikazioarekin pasahitza berreskuratu";
@@ -160,3 +160,27 @@
 "notice_room_created" = "%@ erabiltzaileak gela sortu du";
 "notice_room_join_rule" = "Elkartzeko baldintza: %@";
 "notice_room_power_level_intro" = "Gelako kideen botere maila:";
+// Others
+"user_id_title" = "Erabiltzaile ID-a:";
+"offline" = "deskonektatuta";
+"unsent" = "Bidali gabe";
+"not_supported_yet" = "Oraindik ez da onartzen";
+"default" = "lehenetsia";
+"private" = "Pribatua";
+"public" = "Publikoa";
+"power_level" = "Botere maila";
+"network_error_not_reachable" = "Egiaztatu zure sare konexioa";
+"user_id_placeholder" = "adib: @urko:hasierazerbitzaria";
+"ssl_homeserver_url" = "Hasiera zerbitzariaren URL-a: %@";
+"language_picker_default_language" = "Lehenetsia (%@)";
+"notice_room_invite" = "%@ erabiltzaileak %@ gonbidatu du";
+"notice_room_third_party_invite" = "%@ erabiltzaileak gelara elkartzeko gonbidapen bat bidali dio %@ erabiltzaileari";
+"notice_room_third_party_registered_invite" = "%@ erabiltzaileak %@ gelarako gonbidapena onartu du";
+"notice_room_join" = "%@ elkartu da";
+"notice_room_leave" = "%@ atera da";
+"notice_room_reject" = "%@ erabiltzaileak gonbidapena baztertu du";
+"notice_room_kick" = "%@ erabiltzaileak %@ kanporatu du";
+"notice_room_unban" = "%@ erabiltzaileak debekua kendu dio %@ erabiltzaileari";
+"notice_room_ban" = "%@ erabiltzaileak %@ debekatu du";
+"notice_profile_change_redacted" = "%@ erabiltzaileak bere %@ profila eguneratu du";
+"notice_room_power_level_acting_requirement" = "Hemen aritu ahal izateko erabiltzaileak behar duen botere maila:";
