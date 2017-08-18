@@ -31,10 +31,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
-#define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
-#define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
-
 NSString *const kPasteboardItemPrefix = @"pasteboard-";
 
 @interface MXKRoomInputToolbarView()
@@ -93,12 +89,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     // Finalize setup
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
     
-    // Reset default container background color
-    messageComposerContainer.backgroundColor = [UIColor clearColor];
-    
-    // Set default toolbar background color
-    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-    
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
     
@@ -115,6 +105,21 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     
     [self destroy];
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    // Reset default container background color
+    messageComposerContainer.backgroundColor = [UIColor clearColor];
+    
+    // Set default toolbar background color
+    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+}
+
+#pragma mark -
 
 - (IBAction)onTouchUpInside:(UIButton*)button
 {
@@ -346,95 +351,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     self.textMessage = [NSString stringWithFormat:@"%@%@", self.textMessage, text];
 }
 
-#pragma mark - MXKImageCompressionSize
-
-/**
- Structure representing an the size of an image and its file size.
- */
-typedef struct
-{
-    CGSize imageSize;
-    NSUInteger fileSize;
-
-} MXKImageCompressionSize;
-
-/**
- Structure representing the sizes of image (image size and file size) according to
- different level of compression.
- */
-typedef struct
-{
-    MXKImageCompressionSize small;
-    MXKImageCompressionSize medium;
-    MXKImageCompressionSize large;
-    MXKImageCompressionSize original;
-
-    CGFloat actualLargeSize;
-
-} MXKImageCompressionSizes;
-
-- (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
-{
-    MXKImageCompressionSizes compressionSizes;
-    memset(&compressionSizes, 0, sizeof(MXKImageCompressionSizes));
-
-    // Store the original
-    compressionSizes.original.imageSize = image.size;
-    compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
-
-   NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
-
-    compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-
-    // Compute the file size for each compression level
-    CGFloat maxSize = MAX(compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
-    if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)
-    {
-        compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE) canExpand:NO];
-
-        compressionSizes.small.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
-
-        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
-        {
-            compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE) canExpand:NO];
-
-            compressionSizes.medium.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
-
-            if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
-            {
-                // In case of panorama the large resolution (1024 x ...) is not relevant. We prefer consider the third of the panarama width.
-                compressionSizes.actualLargeSize = maxSize / 3;
-                if (compressionSizes.actualLargeSize < MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
-                {
-                    compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-                }
-                else
-                {
-                    // Keep a multiple of predefined large size
-                    compressionSizes.actualLargeSize = floor(compressionSizes.actualLargeSize / MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE) * MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-                }
-
-                compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
-
-                compressionSizes.large.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
-            }
-            else
-            {
-                NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
-            }
-        }
-        else
-        {
-            NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
-        }
-    }
-    else
-    {
-        NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
-    }
-
-    return compressionSizes;
-}
 
 #pragma mark - MXKFileSizes
 
@@ -483,7 +399,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         UIImage *image = [UIImage imageWithData:data];
 
-        MXKImageCompressionSizes compressionSizes = [self availableCompressionSizesForImage:image];
+        MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image];
 
         sizes.small = compressionSizes.small.fileSize;
         sizes.medium = compressionSizes.medium.fileSize;
@@ -669,7 +585,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 
     // Get availabe sizes for this image
-    MXKImageCompressionSizes compressionSizes = [self availableCompressionSizesForImage:image];
+    MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image];
 
     // Apply the compression mode
     if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
@@ -694,7 +610,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                         typeof(self) self = weakSelf;
                                                                         
                                                                         // Send the small image
-                                                                        UIImage *smallImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
+                                                                        UIImage *smallImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_SMALL_IMAGE_SIZE, MXKTOOLS_SMALL_IMAGE_SIZE)];
                                                                         [self.delegate roomInputToolbarView:self sendImage:smallImage];
                                                                         
                                                                         [self dismissCompressionPrompt];
@@ -718,7 +634,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                         typeof(self) self = weakSelf;
                                                                         
                                                                         // Send the medium image
-                                                                        UIImage *mediumImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
+                                                                        UIImage *mediumImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_MEDIUM_IMAGE_SIZE, MXKTOOLS_MEDIUM_IMAGE_SIZE)];
                                                                         [self.delegate roomInputToolbarView:self sendImage:mediumImage];
                                                                         
                                                                         [self dismissCompressionPrompt];
@@ -802,14 +718,14 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             case MXKRoomInputToolbarCompressionModeSmall:
                 if (compressionSizes.small.fileSize)
                 {
-                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_SMALL_IMAGE_SIZE, MXKTOOLS_SMALL_IMAGE_SIZE)];
                 }
                 break;
                 
             case MXKRoomInputToolbarCompressionModeMedium:
                 if (compressionSizes.medium.fileSize)
                 {
-                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_MEDIUM_IMAGE_SIZE, MXKTOOLS_MEDIUM_IMAGE_SIZE)];
                 }
                 break;
                 

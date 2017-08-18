@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -58,28 +59,6 @@
 
 #define CUSTOM_IMAGE_VIEW_BUTTON_WIDTH 100
 
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    
-    self.backgroundColor = [UIColor blackColor];
-    self.contentMode = UIViewContentModeScaleAspectFit;
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
-}
-
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self)
-    {
-        self.backgroundColor = [UIColor blackColor];
-        self.contentMode = UIViewContentModeScaleAspectFit;
-        self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
-    }
-    
-    return self;
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -100,6 +79,20 @@
     
     pieChartView = nil;
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    self.backgroundColor = (_defaultBackgroundColor ? _defaultBackgroundColor : [UIColor blackColor]);
+    
+    self.contentMode = UIViewContentModeScaleAspectFit;
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
+}
+
+#pragma mark -
 
 - (void)startActivityIndicator
 {
@@ -198,6 +191,12 @@
 }
 
 #pragma mark - setters/getters
+
+- (void)setDefaultBackgroundColor:(UIColor *)defaultBackgroundColor
+{
+    _defaultBackgroundColor = defaultBackgroundColor;
+    [self customizeViewRendering];
+}
 
 - (void)setImage:(UIImage *)anImage
 {

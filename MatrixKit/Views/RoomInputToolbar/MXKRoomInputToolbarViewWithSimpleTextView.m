@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -28,12 +29,17 @@
 {
     [super awakeFromNib];
     
-    // Set default message composer background color
-    self.messageComposerTextView.backgroundColor = [UIColor whiteColor];
-    
     // Add an accessory view to the text view in order to retrieve keyboard view.
     inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     self.messageComposerTextView.inputAccessoryView = self.inputAccessoryView;
+}
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    // Set default message composer background color
+    self.messageComposerTextView.backgroundColor = [UIColor whiteColor];
 }
 
 - (NSString*)textMessage

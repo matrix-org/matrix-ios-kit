@@ -175,11 +175,10 @@
     
     // Add a top view which will be displayed in case of vertical bounce.
     CGFloat height = self.recentsTableView.frame.size.height;
-    UIView *topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.recentsTableView.frame.size.width,height)];
+    topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.recentsTableView.frame.size.width,height)];
     topview.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     topview.backgroundColor = [UIColor groupTableViewBackgroundColor];
     [self.recentsTableView addSubview:topview];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -284,6 +283,9 @@
     dataSource = nil;
     
     _delegate = nil;
+    
+    [topview removeFromSuperview];
+    topview = nil;
     
     [super destroy];
 }
@@ -574,7 +576,7 @@
         spinner.bounds = frame;
         spinner.color = [UIColor darkGrayColor];
         spinner.hidesWhenStopped = NO;
-        spinner.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        spinner.backgroundColor = _recentsTableView.backgroundColor;
         [spinner startAnimating];
         
         // no need to manage constraints here, IOS defines them.

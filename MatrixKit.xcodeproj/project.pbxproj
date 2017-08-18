@@ -118,6 +118,7 @@
 		F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76921AF0FED000980E5A /* MXKAuthInputsView.m */; };
 		F06E769A1AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76941AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m */; };
 		F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */; };
+		F079333E1F38A6A600F04D4C /* MXKView.m in Sources */ = {isa = PBXBuildFile; fileRef = F079333D1F38A6A600F04D4C /* MXKView.m */; };
 		F07B9C2A1D3587B0000CB20E /* MXKEventFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */; };
 		F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */; };
 		F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148C51AB31240005F5D4A /* MXKTools.m */; };
@@ -420,6 +421,8 @@
 		F06E76931AF0FED000980E5A /* MXKAuthenticationFallbackWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAuthenticationFallbackWebView.h; sourceTree = "<group>"; };
 		F06E76941AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAuthenticationFallbackWebView.m; sourceTree = "<group>"; };
 		F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomMemberListViewController.xib; sourceTree = "<group>"; };
+		F079333C1F38A6A600F04D4C /* MXKView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKView.h; sourceTree = "<group>"; };
+		F079333D1F38A6A600F04D4C /* MXKView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKView.m; sourceTree = "<group>"; };
 		F07D74AA1AC5A29800D83B98 /* MXKEventDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEventDetailsView.h; sourceTree = "<group>"; };
 		F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventDetailsView.m; sourceTree = "<group>"; };
 		F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKEventDetailsView.xib; sourceTree = "<group>"; };
@@ -746,6 +749,8 @@
 		3219CBBD1AA6FB1C0027D7E2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F079333C1F38A6A600F04D4C /* MXKView.h */,
+				F079333D1F38A6A600F04D4C /* MXKView.m */,
 				F01439411F067929006E5D8C /* ReadReceipts */,
 				32FBDAF51E4484C40033C519 /* EncryptionKeys */,
 				F09617BF1DE881D800093E9D /* EncryptionInfoView */,
@@ -1546,6 +1551,7 @@
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
 				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
+				F079333E1F38A6A600F04D4C /* MXKView.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */,
 				323F9AF61F1E53730013AFDE /* NSBundle+MXKLanguage.m in Sources */,

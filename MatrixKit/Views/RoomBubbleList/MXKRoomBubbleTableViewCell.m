@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -102,7 +103,6 @@ static BOOL _disableLongPressGestureOnEvent;
     
     if (self.pictureView)
     {
-        self.pictureView.backgroundColor = [UIColor blackColor];
         self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         
         // Listen to avatar tap
@@ -165,6 +165,14 @@ static BOOL _disableLongPressGestureOnEvent;
     [self.contentView addGestureRecognizer:tapGesture];
     
     self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
+}
+
+- (void)customizeTableViewCellRendering
+{
+    [super customizeTableViewCellRendering];
+    
+    // Clear the default background color of a MXKImageView instance
+    self.pictureView.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)layoutSubviews
@@ -325,9 +333,6 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             self.pictureView.enableInMemoryCache = YES;
             [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];
-            
-            // Clear the default background color of a MXKImageView instance
-            self.pictureView.backgroundColor = [UIColor clearColor];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)

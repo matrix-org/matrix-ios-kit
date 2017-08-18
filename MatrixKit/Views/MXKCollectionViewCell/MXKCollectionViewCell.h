@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -34,5 +35,13 @@
  The default reuseIdentifier of the 'MXKCollectionViewCell-inherited' class.
  */
 + (NSString*)defaultReuseIdentifier;
+
+/**
+ Customize the rendering of the collection view cell and its subviews (Do nothing by default).
+ This method is called when the view is initialized or prepared for reuse.
+ 
+ Override this method to customize the collection view cell at the application level.
+ */
+- (void)customizeCollectionViewCellRendering;
 
 @end

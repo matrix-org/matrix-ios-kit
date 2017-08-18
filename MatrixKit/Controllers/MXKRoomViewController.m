@@ -124,6 +124,11 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     Class attachmentsViewerClass;
     
     /**
+     The class used to display event details.
+     */
+    Class customEventDetailsViewClass;
+    
+    /**
      The reconnection animated view.
      */
     UIView* reconnectingView;
@@ -1264,6 +1269,17 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     attachmentsViewerClass = theAttachmentsViewerClass;
 }
 
+- (void)setEventDetailsViewClass:(Class)eventDetailsViewClass
+{
+    if (eventDetailsViewClass)
+    {
+        // Sanity check: accept only MXKEventDetailsView classes or sub-classes
+        NSParameterAssert([eventDetailsViewClass isSubclassOfClass:MXKEventDetailsView.class]);
+    }
+    
+    customEventDetailsViewClass = eventDetailsViewClass;
+}
+
 - (BOOL)isIRCStyleCommand:(NSString*)string
 {
     // Check whether the provided text may be an IRC-style command
@@ -2085,7 +2101,14 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Remove potential existing subviews
     [self dismissTemporarySubViews];
     
-    eventDetailsView = [[MXKEventDetailsView alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+    if (customEventDetailsViewClass)
+    {
+        eventDetailsView = [[customEventDetailsViewClass alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+    }
+    else
+    {
+        eventDetailsView = [[MXKEventDetailsView alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+    }    
     
     // Add shadow on event details view
     eventDetailsView.layer.cornerRadius = 5;

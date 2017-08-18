@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,12 +17,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MXKView.h"
+
 @class MXKAttachment;
 
 /**
  Customize UIView in order to display image defined with remote url. Zooming inside the image (Stretching) is supported.
  */
-@interface MXKImageView : UIView <UIScrollViewDelegate>
+@interface MXKImageView : MXKView <UIScrollViewDelegate>
 
 typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* title);
 
@@ -58,6 +61,12 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
  No change is applied on the status bar here, the caller has to handle it. 
  */
 - (void)showFullScreen;
+
+/**
+ The default background color.
+ Default is [UIColor blackColor].
+ */
+@property (nonatomic) UIColor *defaultBackgroundColor;
 
 // Use this boolean to hide activity indicator during image downloading
 @property (nonatomic) BOOL hideActivityIndicator;

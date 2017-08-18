@@ -39,7 +39,7 @@
         if (_attachmentImageView)
         {
             _attachmentImageView.image = nil;
-            self.attachmentImageView.backgroundColor = [UIColor clearColor];
+            self.attachmentImageView.defaultBackgroundColor = [UIColor clearColor];
             
             if (searchCellData.isAttachmentWithThumbnail)
             {
@@ -64,7 +64,7 @@
                 {
                     self.attachmentImageView.enableInMemoryCache = YES;
                     [self.attachmentImageView setImageURL:url withType:mimetype andImageOrientation:searchCellData.attachment.thumbnailOrientation previewImage:preview];
-                    self.attachmentImageView.backgroundColor = [UIColor whiteColor];
+                    self.attachmentImageView.defaultBackgroundColor = [UIColor whiteColor];
                 }
             }
         }

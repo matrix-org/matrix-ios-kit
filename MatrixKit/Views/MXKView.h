@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,19 +16,19 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MXKView.h"
-
-@interface MXKPieChartView : MXKView
+/**
+ `MXKView` is a base class used to add some functionalities to the UIView class.
+ */
+@interface MXKView : UIView
 
 /**
- The current progress level in [0, 1] range.
- The pie chart is automatically hidden if progress <= 0.
- It is shown for other progress values.
+ Customize the rendering of the view and its subviews (Do nothing by default).
+ This method is called automatically when the view is initialized or loaded from an Interface Builder archive (or nib file).
+ 
+ Override this method to customize the view instance at the application level.
+ It may be used to handle different rendering themes. In this case this method should be called whenever the theme has changed.
  */
-@property (nonatomic) CGFloat progress;
-
-@property (strong, nonatomic) UIColor* progressColor;
-@property (strong, nonatomic) UIColor* unprogressColor;
+- (void)customizeViewRendering;
 
 @end
 

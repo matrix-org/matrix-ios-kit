@@ -26,11 +26,20 @@
 
 static MXKAppSettings *standardAppSettings = nil;
 
+static NSString *const kMXAppGroupID = @"group.org.matrix";
+
+@interface MXKAppSettings ()
+
+@property (nonatomic, readwrite) NSUserDefaults *sharedUserDefaults;
+
+@end
+
 @implementation MXKAppSettings
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
+@synthesize sharedUserDefaults;
 
 + (MXKAppSettings *)standardAppSettings
 {
@@ -64,6 +73,8 @@ static MXKAppSettings *standardAppSettings = nil;
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        
+        _applicationGroup = kMXAppGroupID;
     }
     return self;
 }
@@ -117,6 +128,23 @@ static MXKAppSettings *standardAppSettings = nil;
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
     }
+}
+
+- (void)setApplicationGroup:(NSString *)applicationGroup
+{
+    // Reset the existing shared object (if any).
+    sharedUserDefaults = nil;
+    
+    _applicationGroup = applicationGroup.length ? applicationGroup : kMXAppGroupID;
+}
+
+- (NSUserDefaults *)sharedUserDefaults
+{
+    if (!sharedUserDefaults)
+    {
+        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:_applicationGroup];
+    }
+    return sharedUserDefaults;
 }
 
 #pragma mark - Room display

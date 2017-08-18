@@ -296,6 +296,70 @@
     return retImage;
 }
 
++ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
+{
+    MXKImageCompressionSizes compressionSizes;
+    memset(&compressionSizes, 0, sizeof(MXKImageCompressionSizes));
+    
+    // Store the original
+    compressionSizes.original.imageSize = image.size;
+    compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
+    
+    NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
+    
+    compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
+    
+    // Compute the file size for each compression level
+    CGFloat maxSize = MAX(compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
+    if (maxSize >= MXKTOOLS_SMALL_IMAGE_SIZE)
+    {
+        compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKTOOLS_SMALL_IMAGE_SIZE, MXKTOOLS_SMALL_IMAGE_SIZE) canExpand:NO];
+        
+        compressionSizes.small.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
+        
+        if (maxSize >= MXKTOOLS_MEDIUM_IMAGE_SIZE)
+        {
+            compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKTOOLS_MEDIUM_IMAGE_SIZE, MXKTOOLS_MEDIUM_IMAGE_SIZE) canExpand:NO];
+            
+            compressionSizes.medium.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
+            
+            if (maxSize >= MXKTOOLS_LARGE_IMAGE_SIZE)
+            {
+                // In case of panorama the large resolution (1024 x ...) is not relevant. We prefer consider the third of the panarama width.
+                compressionSizes.actualLargeSize = maxSize / 3;
+                if (compressionSizes.actualLargeSize < MXKTOOLS_LARGE_IMAGE_SIZE)
+                {
+                    compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
+                }
+                else
+                {
+                    // Keep a multiple of predefined large size
+                    compressionSizes.actualLargeSize = floor(compressionSizes.actualLargeSize / MXKTOOLS_LARGE_IMAGE_SIZE) * MXKTOOLS_LARGE_IMAGE_SIZE;
+                }
+                
+                compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
+                
+                compressionSizes.large.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
+            }
+            else
+            {
+                NSLog(@"    - too small to fit in %d", MXKTOOLS_LARGE_IMAGE_SIZE);
+            }
+        }
+        else
+        {
+            NSLog(@"    - too small to fit in %d", MXKTOOLS_MEDIUM_IMAGE_SIZE);
+        }
+    }
+    else
+    {
+        NSLog(@"    - too small to fit in %d", MXKTOOLS_SMALL_IMAGE_SIZE);
+    }
+    
+    return compressionSizes;
+}
+
+
 + (CGSize)resizeImageSize:(CGSize)originalSize toFitInSize:(CGSize)maxSize canExpand:(BOOL)canExpand
 {
     if ((originalSize.width == 0) || (originalSize.height == 0))
@@ -551,7 +615,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
                                                                    handler:^(UIAlertAction * action) {
                                                                        
                                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                                       [sharedApplication openURL:url];
+                                                                       [sharedApplication performSelector:@selector(openURL:) withObject:url];
                                                                        
                                                                        // Note: it does not worth to check if the user changes the permission
                                                                        // because iOS restarts the app in case of change of app privacy settings
@@ -653,7 +717,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                                                     handler:^(UIAlertAction * action) {
                                                         
                                                         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                        [sharedApplication openURL:url];
+                                                        [sharedApplication performSelector:@selector(openURL:) withObject:url];
                                                         
                                                         // Note: it does not worth to check if the user changes the permission
                                                         // because iOS restarts the app in case of change of app privacy settings

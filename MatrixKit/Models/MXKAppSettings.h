@@ -149,6 +149,18 @@
  */
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
 
+/**
+ The application group to which the application or the extension belongs.
+ The default group is "group.org.matrix".
+ */
+@property (nonatomic) NSString *applicationGroup;
+
+
+/**
+ A userDefaults object that is shared within the application group (see `applicationGroup` property).
+ */
+@property (nonatomic, readonly) NSUserDefaults *sharedUserDefaults;
+
 
 #pragma mark - Class methods
 
