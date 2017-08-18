@@ -59,26 +59,6 @@
 
 #define CUSTOM_IMAGE_VIEW_BUTTON_WIDTH 100
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self)
-    {
-        _defaultBackgroundColor = [UIColor blackColor];
-    }
-    return self;
-}
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self)
-    {
-        _defaultBackgroundColor = [UIColor blackColor];
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -106,7 +86,7 @@
 {
     [super customizeViewRendering];
     
-    self.backgroundColor = self.defaultBackgroundColor;
+    self.backgroundColor = (_defaultBackgroundColor ? _defaultBackgroundColor : [UIColor blackColor]);
     
     self.contentMode = UIViewContentModeScaleAspectFit;
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin;
@@ -215,7 +195,7 @@
 - (void)setDefaultBackgroundColor:(UIColor *)defaultBackgroundColor
 {
     _defaultBackgroundColor = defaultBackgroundColor;
-    self.backgroundColor = defaultBackgroundColor;
+    [self customizeViewRendering];
 }
 
 - (void)setImage:(UIImage *)anImage
