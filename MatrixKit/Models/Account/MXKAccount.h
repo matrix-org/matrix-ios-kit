@@ -168,6 +168,12 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic,getter=isWarnedAboutEncryption) BOOL warnedAboutEncryption;
 
 /**
+ Flag indicating whether to show decrypted content in notifications.
+ NO by default
+ */
+@property (nonatomic) BOOL showDecryptedContentInNotifications;
+
+/**
  Register the MXKAccountOnCertificateChange block that will be used to handle certificate change during account use.
  This block is nil by default, any new certificate is ignored/untrusted (this will abort the connection to the server).
  
