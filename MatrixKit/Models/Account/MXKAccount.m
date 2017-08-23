@@ -430,6 +430,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [[MXKAccountManager sharedManager] saveAccounts];
 }
 
+- (void)setShowDecryptedContentInNotifications:(BOOL)showDecryptedContentInNotifications
+{
+    _showDecryptedContentInNotifications = showDecryptedContentInNotifications;
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
 #pragma mark - Matrix user's profile
 
 - (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure
