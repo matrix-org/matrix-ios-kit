@@ -150,14 +150,9 @@
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
 
 /**
- The application group to which the application or the extension belongs.
+ A userDefaults object that is shared within the application group. The application group identifier
+ is retrieved from MXSDKOptions sharedInstance (see `applicationGroupIdentifier` property).
  The default group is "group.org.matrix".
- */
-@property (nonatomic) NSString *applicationGroup;
-
-
-/**
- A userDefaults object that is shared within the application group (see `applicationGroup` property).
  */
 @property (nonatomic, readonly) NSUserDefaults *sharedUserDefaults;
 

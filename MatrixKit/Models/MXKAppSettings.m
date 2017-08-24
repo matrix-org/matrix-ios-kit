@@ -31,6 +31,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @interface MXKAppSettings ()
 
 @property (nonatomic, readwrite) NSUserDefaults *sharedUserDefaults;
+@property (nonatomic) NSString *currentApplicationGroup;
 
 @end
 
@@ -73,8 +74,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
-        
-        _applicationGroup = kMXAppGroupID;
     }
     return self;
 }
@@ -130,20 +129,35 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     }
 }
 
-- (void)setApplicationGroup:(NSString *)applicationGroup
-{
-    // Reset the existing shared object (if any).
-    sharedUserDefaults = nil;
-    
-    _applicationGroup = applicationGroup.length ? applicationGroup : kMXAppGroupID;
-}
-
 - (NSUserDefaults *)sharedUserDefaults
 {
+    if (sharedUserDefaults)
+    {
+        // Check whether the current group id did not change.
+        NSString *applicationGroup = [MXSDKOptions sharedInstance].applicationGroupIdentifier;
+        if (!applicationGroup.length)
+        {
+            applicationGroup = kMXAppGroupID;
+        }
+        
+        if (![_currentApplicationGroup isEqualToString:applicationGroup])
+        {
+            // Reset the existing shared object
+            sharedUserDefaults = nil;
+        }
+    }
+    
     if (!sharedUserDefaults)
     {
-        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:_applicationGroup];
+        _currentApplicationGroup = [MXSDKOptions sharedInstance].applicationGroupIdentifier;
+        if (!_currentApplicationGroup.length)
+        {
+            _currentApplicationGroup = kMXAppGroupID;
+        }
+        
+        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:_currentApplicationGroup];
     }
+    
     return sharedUserDefaults;
 }
 
