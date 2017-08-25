@@ -164,11 +164,10 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 - (void)updateProximityAndSleep;
 
 /**
- Return a view that is used for informing about incoming call.
+ Prepare and return the optional view displayed during incoming call notification.
+ Return nil by default
  
- @return a view that stands for informing about incoming call or nil
- 
- @discussion Subclasses must override this method to provide appropriate for their app view.
+ Subclasses may override this method to provide appropriate for their app view.
  When this method is called peer and mxCall are valid so you can use them.
  */
 - (UIView *)createIncomingCallView;
