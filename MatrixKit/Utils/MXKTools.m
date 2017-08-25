@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,10 +23,122 @@
 
 #import "NBPhoneNumberUtil.h"
 
-#import "MXKAlert.h"
 #import "MXCall.h"
 
 @implementation MXKTools
+
+#pragma mark - Strings
+
++ (BOOL)isSingleEmojiString:(NSString *)string
+{
+    return [MXKTools isEmojiString:string singleEmoji:YES];
+}
+
++ (BOOL)isEmojiOnlyString:(NSString *)string
+{
+    return [MXKTools isEmojiString:string singleEmoji:NO];
+}
+
+// Highly inspired from https://stackoverflow.com/a/34659249
++ (BOOL)isEmojiString:(NSString*)string singleEmoji:(BOOL)singleEmoji
+{
+    if (string.length == 0)
+    {
+        return NO;
+    }
+
+    __block BOOL result = YES;
+
+    NSRange stringRange = NSMakeRange(0, [string length]);
+
+    [string enumerateSubstringsInRange:stringRange
+                               options:NSStringEnumerationByComposedCharacterSequences
+                            usingBlock:^(NSString *substring,
+                                         NSRange substringRange,
+                                         NSRange enclosingRange,
+                                         BOOL *stop)
+     {
+         BOOL isEmoji = NO;
+
+         if (singleEmoji && !NSEqualRanges(stringRange, substringRange))
+         {
+             // The string contains several characters. Go out
+             result = NO;
+             *stop = YES;
+             return;
+         }
+
+         const unichar hs = [substring characterAtIndex:0];
+         // Surrogate pair
+         if (0xd800 <= hs &&
+             hs <= 0xdbff)
+         {
+             if (substring.length > 1)
+             {
+                 const unichar ls = [substring characterAtIndex:1];
+                 const int uc = ((hs - 0xd800) * 0x400) + (ls - 0xdc00) + 0x10000;
+                 if (0x1d000 <= uc &&
+                     uc <= 0x1f9c0)
+                 {
+                     isEmoji = YES;
+                 }
+             }
+         }
+         else if (substring.length > 1)
+         {
+             const unichar ls = [substring characterAtIndex:1];
+             if (ls == 0x20e3 ||
+                 ls == 0xfe0f ||
+                 ls == 0xd83c)
+             {
+                 isEmoji = YES;
+             }
+         }
+         else
+         {
+             // Non surrogate
+             if (0x2100 <= hs &&
+                 hs <= 0x27ff)
+             {
+                 isEmoji = YES;
+             }
+             else if (0x2B05 <= hs &&
+                      hs <= 0x2b07)
+             {
+                 isEmoji = YES;
+             }
+             else if (0x2934 <= hs &&
+                      hs <= 0x2935)
+             {
+                 isEmoji = YES;
+             }
+             else if (0x3297 <= hs &&
+                      hs <= 0x3299)
+             {
+                 isEmoji = YES;
+             }
+             else if (hs == 0xa9 ||
+                      hs == 0xae ||
+                      hs == 0x303d ||
+                      hs == 0x3030 ||
+                      hs == 0x2b55 ||
+                      hs == 0x2b1c ||
+                      hs == 0x2b1b ||
+                      hs == 0x2b50)
+             {
+                 isEmoji = YES;
+             }
+         }
+
+         if (!isEmoji)
+         {
+             result = NO;
+             *stop = YES;
+         }
+     }];
+
+    return result;
+}
 
 #pragma mark - Time interval
 
@@ -182,6 +295,70 @@
     
     return retImage;
 }
+
++ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
+{
+    MXKImageCompressionSizes compressionSizes;
+    memset(&compressionSizes, 0, sizeof(MXKImageCompressionSizes));
+    
+    // Store the original
+    compressionSizes.original.imageSize = image.size;
+    compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
+    
+    NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
+    
+    compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
+    
+    // Compute the file size for each compression level
+    CGFloat maxSize = MAX(compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
+    if (maxSize >= MXKTOOLS_SMALL_IMAGE_SIZE)
+    {
+        compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKTOOLS_SMALL_IMAGE_SIZE, MXKTOOLS_SMALL_IMAGE_SIZE) canExpand:NO];
+        
+        compressionSizes.small.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
+        
+        if (maxSize >= MXKTOOLS_MEDIUM_IMAGE_SIZE)
+        {
+            compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKTOOLS_MEDIUM_IMAGE_SIZE, MXKTOOLS_MEDIUM_IMAGE_SIZE) canExpand:NO];
+            
+            compressionSizes.medium.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
+            
+            if (maxSize >= MXKTOOLS_LARGE_IMAGE_SIZE)
+            {
+                // In case of panorama the large resolution (1024 x ...) is not relevant. We prefer consider the third of the panarama width.
+                compressionSizes.actualLargeSize = maxSize / 3;
+                if (compressionSizes.actualLargeSize < MXKTOOLS_LARGE_IMAGE_SIZE)
+                {
+                    compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
+                }
+                else
+                {
+                    // Keep a multiple of predefined large size
+                    compressionSizes.actualLargeSize = floor(compressionSizes.actualLargeSize / MXKTOOLS_LARGE_IMAGE_SIZE) * MXKTOOLS_LARGE_IMAGE_SIZE;
+                }
+                
+                compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
+                
+                compressionSizes.large.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
+            }
+            else
+            {
+                NSLog(@"    - too small to fit in %d", MXKTOOLS_LARGE_IMAGE_SIZE);
+            }
+        }
+        else
+        {
+            NSLog(@"    - too small to fit in %d", MXKTOOLS_MEDIUM_IMAGE_SIZE);
+        }
+    }
+    else
+    {
+        NSLog(@"    - too small to fit in %d", MXKTOOLS_SMALL_IMAGE_SIZE);
+    }
+    
+    return compressionSizes;
+}
+
 
 + (CGSize)resizeImageSize:(CGSize)originalSize toFitInSize:(CGSize)maxSize canExpand:(BOOL)canExpand
 {
@@ -427,28 +604,35 @@ static NSMutableDictionary* backgroundByImageNameDict;
             {
                 // Access not granted to mediaType
                 // Display manualChangeMessage
-                MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-                // On iOS >= 8, add a shortcut to the app settings
-                if (UIApplicationOpenSettingsURLString)
+                // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
+                UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+                if (sharedApplication && UIApplicationOpenSettingsURLString)
                 {
-                    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                        [[UIApplication sharedApplication] openURL:url];
-
-                        // Note: it does not worth to check if the user changes the permission
-                        // because iOS restarts the app in case of change of app privacy settings
-                        handler(NO);
-                    }];
+                    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                                                                       
+                                                                       NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                                       [sharedApplication performSelector:@selector(openURL:) withObject:url];
+                                                                       
+                                                                       // Note: it does not worth to check if the user changes the permission
+                                                                       // because iOS restarts the app in case of change of app privacy settings
+                                                                       handler(NO);
+                                                                       
+                                                                   }]];
                 }
-
-                alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    
-                    handler(NO);
-                }];
                 
-                [alert showInViewController:viewController];
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            handler(NO);
+                                                            
+                                                        }]];
+                
+                [viewController presentViewController:alert animated:YES completion:nil];
             }
             
         });
@@ -522,28 +706,34 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         // Access not granted to the local contacts
         // Display manualChangeMessage
-        MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:manualChangeMessage style:MXKAlertStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-        // On iOS >= 8, add a shortcut to the app settings
-        if (UIApplicationOpenSettingsURLString)
+        // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication && UIApplicationOpenSettingsURLString)
         {
-            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                [[UIApplication sharedApplication] openURL:url];
-
-                // Note: it does not worth to check if the user changes the permission
-                // because iOS restarts the app in case of change of app privacy settings
-                handler(NO);
-            }];
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                        [sharedApplication performSelector:@selector(openURL:) withObject:url];
+                                                        
+                                                        // Note: it does not worth to check if the user changes the permission
+                                                        // because iOS restarts the app in case of change of app privacy settings
+                                                        handler(NO);
+                                                        
+                                                    }]];
         }
-
-        alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-            handler(NO);
-        }];
-
-        [alert showInViewController:viewController];
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    
+                                                    handler(NO);
+                                                    
+                                                }]];
+        
+        [viewController presentViewController:alert animated:YES completion:nil];
     }
     else
     {

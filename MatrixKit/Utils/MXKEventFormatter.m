@@ -53,6 +53,11 @@
     NSRegularExpression *roomIdRegex;
     NSRegularExpression *roomAliasRegex;
     NSRegularExpression *eventIdRegex;
+
+    /**
+     A regex to find http URLs. 
+     */
+    NSRegularExpression *httpLinksRegex;
 }
 @end
 
@@ -111,6 +116,8 @@
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
+
+        httpLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"(?i)\\b(https?://.*)\\b" options:NSRegularExpressionCaseInsensitive error:nil];
     }
     return self;
 }
@@ -228,7 +235,7 @@
         }
         else if ([msgtype isEqualToString:kMXMessageTypeAudio])
         {
-            // Not supported yet
+            isSupportedAttachment = hasUrl || hasFile;
         }
         else if ([msgtype isEqualToString:kMXMessageTypeVideo])
         {
@@ -1088,6 +1095,12 @@
     return attributedDisplayText;
 }
 
+- (NSAttributedString*)attributedStringFromEvents:(NSArray<MXEvent*>*)events withRoomState:(MXRoomState*)roomState error:(MXKEventFormatterError*)error
+{
+    // TODO: Do a full summary
+    return nil;
+}
+
 - (NSAttributedString*)renderString:(NSString*)string forEvent:(MXEvent*)event
 {
     // Sanity check
@@ -1238,8 +1251,12 @@
             if (!linkMatches)
             {
                 // Search for the links in the string only once
-                NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
-                linkMatches = [detector matchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length)];
+                // Do not use NSDataDetector with NSTextCheckingTypeLink because is not able to
+                // manage URLs with 2 hashes like "https://matrix.to/#/#matrix:matrix.org"
+                // Such URL is not valid but web browsers can open them and users C+P them...
+                // NSDataDetector does not support it but UITextView and UIDataDetectorTypeLink
+                // detect them when they are displayed. So let the UI create the link at display.
+                linkMatches = [httpLinksRegex matchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length)];
             }
 
             for (NSTextCheckingResult *linkMatch in linkMatches)
@@ -1536,6 +1553,20 @@
     else if (event.eventType == MXEventTypeRoomEncrypted)
     {
         font = _encryptedMessagesTextFont;
+    }
+    else if (!_isForSubtitle && event.eventType == MXEventTypeRoomMessage && (_emojiOnlyTextFont || _singleEmojiTextFont))
+    {
+        NSString *message;
+        MXJSONModelSetString(message, event.content[@"body"]);
+
+        if (_emojiOnlyTextFont && [MXKTools isEmojiOnlyString:message])
+        {
+            font = _emojiOnlyTextFont;
+        }
+        else if (_singleEmojiTextFont && [MXKTools isSingleEmojiString:message])
+        {
+            font = _singleEmojiTextFont;
+        }
     }
     return font;
 }

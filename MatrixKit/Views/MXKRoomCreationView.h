@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,18 +17,18 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-#import "MXKAlert.h"
+#import "MXKView.h"
 
 @class MXKRoomCreationView;
 @protocol MXKRoomCreationViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param creationView the view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
-- (void)roomCreationView:(MXKRoomCreationView*)creationView presentMXKAlert:(MXKAlert*)alert;
+- (void)roomCreationView:(MXKRoomCreationView*)creationView presentAlertController:(UIAlertController*)alertController;
 
 /**
  Tells the delegate to open the room with the provided identifier in a specific matrix session.
@@ -43,7 +44,7 @@
  MXKRoomCreationView instance is a cell dedicated to room creation.
  Add this view in your app to offer room creation option.
  */
-@interface MXKRoomCreationView : UIView <UITextFieldDelegate> {
+@interface MXKRoomCreationView : MXKView <UITextFieldDelegate> {
 @protected
     UIView *inputAccessoryView;
 }

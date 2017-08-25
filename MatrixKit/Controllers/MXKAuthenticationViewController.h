@@ -22,8 +22,6 @@
 #import "MXKAuthInputsView.h"
 #import "MXKAuthenticationFallbackWebView.h"
 
-extern NSString *const MXKAuthErrorDomain;
-
 @class MXKAuthenticationViewController;
 
 /**
@@ -55,7 +53,7 @@ extern NSString *const MXKAuthErrorDomain;
     /**
      Reference to any opened alert view.
      */
-    MXKAlert *alert;
+    UIAlertController *alert;
     
     /**
      Tell whether the password has been reseted with success.

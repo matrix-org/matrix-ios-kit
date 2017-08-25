@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -30,10 +31,6 @@
 
 #import "NSBundle+MatrixKit.h"
 
-#define MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE    1024
-#define MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE   768
-#define MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE    512
-
 NSString *const kPasteboardItemPrefix = @"pasteboard-";
 
 @interface MXKRoomInputToolbarView()
@@ -41,7 +38,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     /**
      Alert used to list options.
      */
-    MXKAlert *optionsListView;
+    UIAlertController *optionsListView;
     
     /**
      Current media picker
@@ -56,7 +53,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     /**
      Handle images attachment
      */
-    MXKAlert *compressionPrompt;
+    UIAlertController *compressionPrompt;
     NSMutableArray *pendingImages;
 }
 
@@ -92,12 +89,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     // Finalize setup
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
     
-    // Reset default container background color
-    messageComposerContainer.backgroundColor = [UIColor clearColor];
-    
-    // Set default toolbar background color
-    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
-    
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
     
@@ -115,13 +106,28 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     [self destroy];
 }
 
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    // Reset default container background color
+    messageComposerContainer.backgroundColor = [UIColor clearColor];
+    
+    // Set default toolbar background color
+    self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
+}
+
+#pragma mark -
+
 - (IBAction)onTouchUpInside:(UIButton*)button
 {
     if (button == self.leftInputToolbarButton)
     {
         if (optionsListView)
         {
-            [optionsListView dismiss:NO];
+            [optionsListView dismissViewControllerAnimated:NO completion:nil];
             optionsListView = nil;
         }
         
@@ -132,35 +138,47 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
         // Check whether media attachment is supported
         if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:presentViewController:)])
         {
-            optionsListView = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
+            optionsListView = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             
-            [optionsListView addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"attach_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->optionsListView = nil;
-                
-                // Open media gallery
-                strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                strongSelf->mediaPicker.delegate = strongSelf;
-                strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-                strongSelf->mediaPicker.allowsEditing = NO;
-                strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
-                [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
-            }];
+            [optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"attach_media"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  if (weakSelf)
+                                                                  {
+                                                                      typeof(self) self = weakSelf;
+                                                                      self->optionsListView = nil;
+                                                                      
+                                                                      // Open media gallery
+                                                                      self->mediaPicker = [[UIImagePickerController alloc] init];
+                                                                      self->mediaPicker.delegate = self;
+                                                                      self->mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                                                                      self->mediaPicker.allowsEditing = NO;
+                                                                      self->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
+                                                                      [self.delegate roomInputToolbarView:self presentViewController:self->mediaPicker];
+                                                                  }
+                                                                  
+                                                              }]];
             
-            [optionsListView addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"capture_media"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->optionsListView = nil;
-                
-                // Open Camera
-                strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                strongSelf->mediaPicker.delegate = strongSelf;
-                strongSelf->mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-                strongSelf->mediaPicker.allowsEditing = NO;
-                strongSelf->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
-                [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
-            }];
+            [optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"capture_media"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  if (weakSelf)
+                                                                  {
+                                                                      typeof(self) self = weakSelf;
+                                                                      self->optionsListView = nil;
+                                                                      
+                                                                      // Open Camera
+                                                                      self->mediaPicker = [[UIImagePickerController alloc] init];
+                                                                      self->mediaPicker.delegate = self;
+                                                                      self->mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+                                                                      self->mediaPicker.allowsEditing = NO;
+                                                                      self->mediaPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, nil];
+                                                                      [self.delegate roomInputToolbarView:self presentViewController:self->mediaPicker];
+                                                                  }
+                                                                  
+                                                              }]];
         }
         else
         {
@@ -172,42 +190,61 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
         {
             if (!optionsListView)
             {
-                optionsListView = [[MXKAlert alloc] initWithTitle:nil message:nil style:MXKAlertStyleActionSheet];
+                optionsListView = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             }
             
-            [optionsListView addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite_user"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                
-                // Ask for userId to invite
-                strongSelf->optionsListView = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil style:MXKAlertStyleAlert];
-                strongSelf->optionsListView.cancelButtonIndex = [strongSelf->optionsListView addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                {
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->optionsListView = nil;
-                }];
-                
-                [strongSelf->optionsListView addTextFieldWithConfigurationHandler:^(UITextField *textField)
-                {
-                    textField.secureTextEntry = NO;
-                    textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
-                }];
-                [strongSelf->optionsListView addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                {
-                    UITextField *textField = [alert textFieldAtIndex:0];
-                    NSString *userId = textField.text;
-                    
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->optionsListView = nil;
-                    
-                    if (userId.length)
-                    {
-                        [strongSelf.delegate roomInputToolbarView:strongSelf inviteMatrixUser:userId];
-                    }
-                }];
-                
-                [strongSelf.delegate roomInputToolbarView:strongSelf presentMXKAlert:strongSelf->optionsListView];
-            }];
+            [optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite_user"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  if (weakSelf)
+                                                                  {
+                                                                      typeof(self) self = weakSelf;
+                                                                      
+                                                                      // Ask for userId to invite
+                                                                      self->optionsListView = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                                                      
+                                                                      
+                                                                      [self->optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                          
+                                                                          if (weakSelf)
+                                                                          {
+                                                                              typeof(self) self = weakSelf;
+                                                                              self->optionsListView = nil;
+                                                                          }
+                                                                          
+                                                                      }]];
+                                                                      
+                                                                      [self->optionsListView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                                                          
+                                                                           textField.secureTextEntry = NO;
+                                                                           textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
+                                                                          
+                                                                       }];
+                                                                      
+                                                                      [self->optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                          
+                                                                          if (weakSelf)
+                                                                          {
+                                                                              typeof(self) self = weakSelf;
+                                                                              
+                                                                              UITextField *textField = [self->optionsListView textFields].firstObject;
+                                                                              NSString *userId = textField.text;
+                                                                              
+                                                                              self->optionsListView = nil;
+                                                                              
+                                                                              if (userId.length)
+                                                                              {
+                                                                                  [self.delegate roomInputToolbarView:self inviteMatrixUser:userId];
+                                                                              }
+                                                                          }
+                                                                          
+                                                                      }]];
+                                                                      
+                                                                      [self.delegate roomInputToolbarView:self presentAlertController:self->optionsListView];
+                                                                  }
+                                                                  
+                                                              }]];
         }
         else
         {
@@ -216,15 +253,20 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
         
         if (optionsListView)
         {
-            optionsListView.cancelButtonIndex = [optionsListView addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->optionsListView = nil;
-            }];
             
-            optionsListView.sourceView = button;
+            [self->optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                
+                if (weakSelf)
+                {
+                    typeof(self) self = weakSelf;
+                    self->optionsListView = nil;
+                }
+                
+            }]];
             
-            [self.delegate roomInputToolbarView:self presentMXKAlert:optionsListView];
+            [optionsListView popoverPresentationController].sourceView = button;
+            [optionsListView popoverPresentationController].sourceRect = button.bounds;
+            [self.delegate roomInputToolbarView:self presentAlertController:optionsListView];
         }
         else
         {
@@ -271,7 +313,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
 {
     if (compressionPrompt)
     {
-        [compressionPrompt dismiss:NO];
+        [compressionPrompt dismissViewControllerAnimated:NO completion:nil];
         compressionPrompt = nil;
     }
     
@@ -290,7 +332,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     
     if (optionsListView)
     {
-        [optionsListView dismiss:NO];
+        [optionsListView dismissViewControllerAnimated:NO completion:nil];
         optionsListView = nil;
     }
     
@@ -309,95 +351,6 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     self.textMessage = [NSString stringWithFormat:@"%@%@", self.textMessage, text];
 }
 
-#pragma mark - MXKImageCompressionSize
-
-/**
- Structure representing an the size of an image and its file size.
- */
-typedef struct
-{
-    CGSize imageSize;
-    NSUInteger fileSize;
-
-} MXKImageCompressionSize;
-
-/**
- Structure representing the sizes of image (image size and file size) according to
- different level of compression.
- */
-typedef struct
-{
-    MXKImageCompressionSize small;
-    MXKImageCompressionSize medium;
-    MXKImageCompressionSize large;
-    MXKImageCompressionSize original;
-
-    CGFloat actualLargeSize;
-
-} MXKImageCompressionSizes;
-
-- (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
-{
-    MXKImageCompressionSizes compressionSizes;
-    memset(&compressionSizes, 0, sizeof(MXKImageCompressionSizes));
-
-    // Store the original
-    compressionSizes.original.imageSize = image.size;
-    compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
-
-   NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
-
-    compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-
-    // Compute the file size for each compression level
-    CGFloat maxSize = MAX(compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height);
-    if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)
-    {
-        compressionSizes.small.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE) canExpand:NO];
-
-        compressionSizes.small.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.small.imageSize.width * compressionSizes.small.imageSize.height * 0.20)];
-
-        if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)
-        {
-            compressionSizes.medium.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE) canExpand:NO];
-
-            compressionSizes.medium.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.medium.imageSize.width * compressionSizes.medium.imageSize.height * 0.20)];
-
-            if (maxSize >= MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
-            {
-                // In case of panorama the large resolution (1024 x ...) is not relevant. We prefer consider the third of the panarama width.
-                compressionSizes.actualLargeSize = maxSize / 3;
-                if (compressionSizes.actualLargeSize < MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE)
-                {
-                    compressionSizes.actualLargeSize = MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-                }
-                else
-                {
-                    // Keep a multiple of predefined large size
-                    compressionSizes.actualLargeSize = floor(compressionSizes.actualLargeSize / MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE) * MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE;
-                }
-
-                compressionSizes.large.imageSize = [MXKTools resizeImageSize:compressionSizes.original.imageSize toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize) canExpand:NO];
-
-                compressionSizes.large.fileSize = (NSUInteger)[MXTools roundFileSize:(long long)(compressionSizes.large.imageSize.width * compressionSizes.large.imageSize.height * 0.20)];
-            }
-            else
-            {
-                NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_LARGE_IMAGE_SIZE);
-            }
-        }
-        else
-        {
-            NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE);
-        }
-    }
-    else
-    {
-        NSLog(@"    - too small to fit in %d", MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE);
-    }
-
-    return compressionSizes;
-}
 
 #pragma mark - MXKFileSizes
 
@@ -446,7 +399,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         UIImage *image = [UIImage imageWithData:data];
 
-        MXKImageCompressionSizes compressionSizes = [self availableCompressionSizesForImage:image];
+        MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image];
 
         sizes.small = compressionSizes.small.fileSize;
         sizes.medium = compressionSizes.medium.fileSize;
@@ -613,7 +566,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 {
     if (optionsListView)
     {
-        [optionsListView dismiss:NO];
+        [optionsListView dismissViewControllerAnimated:NO completion:nil];
         optionsListView = nil;
     }
     
@@ -632,30 +585,38 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 
     // Get availabe sizes for this image
-    MXKImageCompressionSizes compressionSizes = [self availableCompressionSizesForImage:image];
+    MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image];
 
     // Apply the compression mode
     if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
         && (compressionSizes.small.fileSize || compressionSizes.medium.fileSize || compressionSizes.large.fileSize))
     {
-        compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
         __weak typeof(self) weakSelf = self;
+        
+        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
         if (compressionSizes.small.fileSize)
         {
             NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.small.fileSize round:NO], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
-
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                
-                // Send the small image
-                UIImage *smallImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
-                [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:smallImage];
-                
-                [strongSelf dismissCompressionPrompt];
-            }];
+            
+            [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    
+                                                                    if (weakSelf)
+                                                                    {
+                                                                        typeof(self) self = weakSelf;
+                                                                        
+                                                                        // Send the small image
+                                                                        UIImage *smallImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_SMALL_IMAGE_SIZE, MXKTOOLS_SMALL_IMAGE_SIZE)];
+                                                                        [self.delegate roomInputToolbarView:self sendImage:smallImage];
+                                                                        
+                                                                        [self dismissCompressionPrompt];
+                                                                    }
+                                                                    
+                                                                }]];
         }
         
         if (compressionSizes.medium.fileSize)
@@ -663,16 +624,23 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.medium.fileSize round:NO], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
-
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                
-                // Send the medium image
-                UIImage *mediumImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
-                [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:mediumImage];
-                
-                [strongSelf dismissCompressionPrompt];
-            }];
+            
+            [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    
+                                                                    if (weakSelf)
+                                                                    {
+                                                                        typeof(self) self = weakSelf;
+                                                                        
+                                                                        // Send the medium image
+                                                                        UIImage *mediumImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_MEDIUM_IMAGE_SIZE, MXKTOOLS_MEDIUM_IMAGE_SIZE)];
+                                                                        [self.delegate roomInputToolbarView:self sendImage:mediumImage];
+                                                                        
+                                                                        [self dismissCompressionPrompt];
+                                                                    }
+                                                                    
+                                                                }]];
         }
         
         if (compressionSizes.large.fileSize)
@@ -680,39 +648,61 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.large.fileSize round:NO], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
 
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
-
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                
-                // Send the large image
-                UIImage *largeImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize)];
-                [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:largeImage];
-                
-                [strongSelf dismissCompressionPrompt];
-            }];
+            
+            [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    
+                                                                    if (weakSelf)
+                                                                    {
+                                                                        typeof(self) self = weakSelf;
+                                                                        
+                                                                        // Send the large image
+                                                                        UIImage *largeImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(compressionSizes.actualLargeSize, compressionSizes.actualLargeSize)];
+                                                                        [self.delegate roomInputToolbarView:self sendImage:largeImage];
+                                                                        
+                                                                        [self dismissCompressionPrompt];
+                                                                    }
+                                                                    
+                                                                }]];
         }
         
         NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.original.fileSize round:NO], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
 
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], resolution];
-
-        [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            
-            // Send the original image
-            [strongSelf.delegate roomInputToolbarView:weakSelf sendImage:image];
-            
-            [strongSelf dismissCompressionPrompt];
-        }];
         
-        compressionPrompt.cancelButtonIndex = [compressionPrompt addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            [strongSelf dismissCompressionPrompt];
-        }];
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                
+                                                                if (weakSelf)
+                                                                {
+                                                                    typeof(self) self = weakSelf;
+                                                                    
+                                                                    // Send the original image
+                                                                    [self.delegate roomInputToolbarView:self sendImage:image];
+                                                                    
+                                                                    [self dismissCompressionPrompt];
+                                                                }
+                                                                
+                                                            }]];
         
-        compressionPrompt.sourceView = self;
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                
+                                                                if (weakSelf)
+                                                                {
+                                                                    typeof(self) self = weakSelf;
+                                                                    
+                                                                    [self dismissCompressionPrompt];
+                                                                }
+                                                                
+                                                            }]];
         
-        [self.delegate roomInputToolbarView:self presentMXKAlert:compressionPrompt];
+        [compressionPrompt popoverPresentationController].sourceView = self;
+        [compressionPrompt popoverPresentationController].sourceRect = self.bounds;
+        [self.delegate roomInputToolbarView:self presentAlertController:compressionPrompt];
     }
     else
     {
@@ -728,14 +718,14 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             case MXKRoomInputToolbarCompressionModeSmall:
                 if (compressionSizes.small.fileSize)
                 {
-                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_SMALL_IMAGE_SIZE)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_SMALL_IMAGE_SIZE, MXKTOOLS_SMALL_IMAGE_SIZE)];
                 }
                 break;
                 
             case MXKRoomInputToolbarCompressionModeMedium:
                 if (compressionSizes.medium.fileSize)
                 {
-                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE, MXKROOM_INPUT_TOOLBAR_VIEW_MEDIUM_IMAGE_SIZE)];
+                    finalImage = [MXKTools reduceImage:image toFitInSize:CGSizeMake(MXKTOOLS_MEDIUM_IMAGE_SIZE, MXKTOOLS_MEDIUM_IMAGE_SIZE)];
                 }
                 break;
                 
@@ -834,66 +824,103 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         && (fileSizes.small || fileSizes.medium || fileSizes.large))
     {
         // Ask the user for the compression value
-        compressionPrompt = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil style:MXKAlertStyleActionSheet];
+        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        
         __weak typeof(self) weakSelf = self;
 
         if (fileSizes.small)
         {
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXTools fileSizeToString:fileSizes.small round:NO]];
-
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeSmall];
-            }];
+            
+            [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    
+                                                                    if (weakSelf)
+                                                                    {
+                                                                        typeof(self) self = weakSelf;
+                                                                        
+                                                                        [self dismissCompressionPrompt];
+                                                                        
+                                                                        [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeSmall];
+                                                                    }
+                                                                    
+                                                                }]];
         }
 
         if (fileSizes.medium)
         {
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXTools fileSizeToString:fileSizes.medium round:NO]];
-
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeMedium];
-            }];
+            
+            [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    
+                                                                    if (weakSelf)
+                                                                    {
+                                                                        typeof(self) self = weakSelf;
+                                                                        
+                                                                        [self dismissCompressionPrompt];
+                                                                        
+                                                                        [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeMedium];
+                                                                    }
+                                                                    
+                                                                }]];
         }
 
         if (fileSizes.large)
         {
             NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXTools fileSizeToString:fileSizes.large round:NO]];
-
-            [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-                [strongSelf dismissCompressionPrompt];
-
-                [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeLarge];
-            }];
+            
+            [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    
+                                                                    if (weakSelf)
+                                                                    {
+                                                                        typeof(self) self = weakSelf;
+                                                                        
+                                                                        [self dismissCompressionPrompt];
+                                                                        
+                                                                        [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeLarge];
+                                                                    }
+                                                                    
+                                                                }]];
         }
 
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXTools fileSizeToString:fileSizes.original round:NO]];
-
-        [compressionPrompt addActionWithTitle:title style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-            [strongSelf dismissCompressionPrompt];
-
-            [strongSelf sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeNone];
-        }];
-
-        compressionPrompt.cancelButtonIndex = [compressionPrompt addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            [strongSelf dismissCompressionPrompt];
-        }];
-
-        compressionPrompt.sourceView = self;
-
-        [self.delegate roomInputToolbarView:self presentMXKAlert:compressionPrompt];
+        
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                
+                                                                if (weakSelf)
+                                                                {
+                                                                    typeof(self) self = weakSelf;
+                                                                    
+                                                                    [self dismissCompressionPrompt];
+                                                                    
+                                                                    [self sendSelectedAssets:contentEditingInputs withFileSizes:fileSizes andCompressionMode:MXKRoomInputToolbarCompressionModeNone];
+                                                                }
+                                                                
+                                                            }]];
+        
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                
+                                                                if (weakSelf)
+                                                                {
+                                                                    typeof(self) self = weakSelf;
+                                                                    
+                                                                    [self dismissCompressionPrompt];
+                                                                }
+                                                                
+                                                            }]];
+        
+        [compressionPrompt popoverPresentationController].sourceView = self;
+        [compressionPrompt popoverPresentationController].sourceRect = self.bounds;
+        [self.delegate roomInputToolbarView:self presentAlertController:compressionPrompt];
     }
     else
     {
@@ -985,36 +1012,44 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 // the user validates the image
                 [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                  {
-                     __strong __typeof(weakSelf)strongSelf = weakSelf;
+                     if (weakSelf)
+                     {
+                         typeof(self) self = weakSelf;
+                         
+                         // Dismiss the image view
+                         [self dismissValidationViews];
+                         
+                         // attach the selected image
+                         [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
+                     }
                      
-                     // Dismiss the image view
-                     [strongSelf dismissValidationViews];
-                     
-                     // attach the selected image
-                     [strongSelf sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
                  }];
                 
                 // the user wants to use an other image
                 [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                  {
-                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                     
-                     // dismiss the image view
-                     [strongSelf dismissValidationViews];
-                     
-                     // Open again media gallery
-                     strongSelf->mediaPicker = [[UIImagePickerController alloc] init];
-                     strongSelf->mediaPicker.delegate = strongSelf;
-                     strongSelf->mediaPicker.sourceType = picker.sourceType;
-                     strongSelf->mediaPicker.allowsEditing = NO;
-                     strongSelf->mediaPicker.mediaTypes = picker.mediaTypes;
-                     [strongSelf.delegate roomInputToolbarView:strongSelf presentViewController:strongSelf->mediaPicker];
+                     if (weakSelf)
+                     {
+                         typeof(self) self = weakSelf;
+                         
+                         // dismiss the image view
+                         [self dismissValidationViews];
+                         
+                         // Open again media gallery
+                         self->mediaPicker = [[UIImagePickerController alloc] init];
+                         self->mediaPicker.delegate = self;
+                         self->mediaPicker.sourceType = picker.sourceType;
+                         self->mediaPicker.allowsEditing = NO;
+                         self->mediaPicker.mediaTypes = picker.mediaTypes;
+                         [self.delegate roomInputToolbarView:self presentViewController:self->mediaPicker];
+                     }
                  }];
                 
                 imageValidationView.image = selectedImage;
                 
                 [validationViews addObject:imageValidationView];
                 [imageValidationView showFullScreen];
+                [self.delegate roomInputToolbarView:self hideStatusBar:YES];
             }
             else
             {
@@ -1038,13 +1073,36 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 - (void)dismissValidationViews
 {
-    for (MXKImageView *validationView in validationViews)
+    if (validationViews.count)
     {
-        [validationView dismissSelection];
-        [validationView removeFromSuperview];
+        for (MXKImageView *validationView in validationViews)
+        {
+            [validationView dismissSelection];
+            [validationView removeFromSuperview];
+        }
+        
+        [validationViews removeAllObjects];
+        
+        // Restore status bar
+        [self.delegate roomInputToolbarView:self hideStatusBar:NO];
     }
+}
+
+- (void)dismissValidationView:(MXKImageView*)validationView
+{
+    [validationView dismissSelection];
+    [validationView removeFromSuperview];
     
-    [validationViews removeAllObjects];
+    if (validationViews.count)
+    {
+        [validationViews removeObject:validationView];
+        
+        if (!validationViews.count)
+        {
+            // Restore status bar
+            [self.delegate roomInputToolbarView:self hideStatusBar:NO];
+        }
+    }
 }
 
 - (void)dismissMediaPicker
@@ -1091,30 +1149,30 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         // the user validates the image
                         [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             __strong __typeof(weakSelf)strongSelf = weakSelf;
-                             
-                             // dismiss the image validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
-                             [strongSelf.delegate roomInputToolbarView:strongSelf sendImage:pasteboardImage];
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                                 [self.delegate roomInputToolbarView:self sendImage:pasteboardImage];
+                             }
                          }];
                         
                         // the user wants to use an other image
                         [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             // dismiss the image validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
+                             // Dismiss the image validation view.
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                             }
                          }];
                         
                         imageValidationView.image = pasteboardImage;
                         
                         [validationViews addObject:imageValidationView];
                         [imageValidationView showFullScreen];
+                        [self.delegate roomInputToolbarView:self hideStatusBar:YES];
                     }
                     
                     break;
@@ -1144,30 +1202,31 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         // the user validates the image
                         [videoValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             __strong __typeof(weakSelf)strongSelf = weakSelf;
-                             
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
-                             [strongSelf.delegate roomInputToolbarView:strongSelf sendVideo:videoLocalURL withThumbnail:videoThumbnail];
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                                 
+                                 [self.delegate roomInputToolbarView:self sendVideo:videoLocalURL withThumbnail:videoThumbnail];
+                             }
                          }];
                         
                         // the user wants to use an other image
                         [videoValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
+                             // Dismiss the video validation view.
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                             }
                          }];
                         
                         videoValidationView.image = videoThumbnail;
                         
                         [validationViews addObject:videoValidationView];
                         [videoValidationView showFullScreen];
+                        [self.delegate roomInputToolbarView:self hideStatusBar:YES];
                         
                         // Add video icon
                         UIImageView *videoIconView = [[UIImageView alloc] initWithImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video"]];
@@ -1193,30 +1252,31 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         // the user validates the image
                         [docValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             __strong __typeof(weakSelf)strongSelf = weakSelf;
-                             
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
-                             [strongSelf.delegate roomInputToolbarView:strongSelf sendFile:localURL withMimeType:MIMEType];
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                                 
+                                 [self.delegate roomInputToolbarView:self sendFile:localURL withMimeType:MIMEType];
+                             }
                          }];
                         
                         // the user wants to use an other image
                         [docValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
-                             // dismiss the video validation view
-                             [imageView dismissSelection];
-                             [imageView removeFromSuperview];
-                             [validationViews removeObject:imageView];
-                             
+                             // Dismiss the validation view.
+                             if (weakSelf)
+                             {
+                                 typeof(self) self = weakSelf;
+                                 [self dismissValidationView:imageView];
+                             }
                          }];
                         
                         docValidationView.image = nil;
                         
                         [validationViews addObject:docValidationView];
                         [docValidationView showFullScreen];
+                        [self.delegate roomInputToolbarView:self hideStatusBar:YES];
                         
                         // Create a fake name based on fileData to keep the same name for the same file.
                         NSString *dataHash = [pasteboardDocumentData mx_MD5];

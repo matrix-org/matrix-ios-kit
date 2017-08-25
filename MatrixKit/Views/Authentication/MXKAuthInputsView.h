@@ -17,7 +17,9 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-#import "MXKAlert.h"
+#import "MXKView.h"
+
+extern NSString *const MXKAuthErrorDomain;
 
 /**
  Authentication types
@@ -44,13 +46,14 @@ typedef enum {
  `MXKAuthInputsView` delegate
  */
 @protocol MXKAuthInputsViewDelegate <NSObject>
+
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param authInputsView the authentication inputs view.
  @param alert the alert to present.
  */
-- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentMXKAlert:(MXKAlert*)alert;
+- (void)authInputsView:(MXKAuthInputsView*)authInputsView presentAlertController:(UIAlertController*)alert;
 
 /**
  For some input fields, the return key of the keyboard is defined as `Done` key.
@@ -84,7 +87,7 @@ typedef enum {
 /**
  `MXKAuthInputsView` is a base class to handle authentication inputs.
  */
-@interface MXKAuthInputsView : UIView <UITextFieldDelegate>
+@interface MXKAuthInputsView : MXKView <UITextFieldDelegate>
 {
 @protected
     /**
@@ -100,7 +103,7 @@ typedef enum {
     /**
      Alert used to display inputs error.
      */
-    MXKAlert *inputsAlert;
+    UIAlertController *inputsAlert;
 }
 
 /**
@@ -173,18 +176,18 @@ typedef enum {
  Prepare the set of the inputs in order to launch an authentication process.
  
  @param callback the block called when the parameters are prepared. The resulting parameter dictionary is nil
- if something fails (for example when a parameter or a required input is missing).
+ if something fails (for example when a parameter or a required input is missing). The failure reason is provided in error parameter (nil by default).
  */
-- (void)prepareParameters:(void (^)(NSDictionary *parameters))callback;
+- (void)prepareParameters:(void (^)(NSDictionary *parameters, NSError *error))callback;
 
 /**
  Update the current authentication session by providing the list of successful stages.
  
  @param completedStages the list of stages the client has completed successfully. This is an array of MXLoginFlowType.
  @param callback the block called when the parameters have been updated for the next stage. The resulting parameter dictionary is nil
- if something fails (for example when a parameter or a required input is missing).
+ if something fails (for example when a parameter or a required input is missing). The failure reason is provided in error parameter (nil by default).
  */
-- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters))callback;
+- (void)updateAuthSessionWithCompletedStages:(NSArray *)completedStages didUpdateParameters:(void (^)(NSDictionary *parameters, NSError *error))callback;
 
 /**
  Update the current authentication session by providing a set of registration parameters.

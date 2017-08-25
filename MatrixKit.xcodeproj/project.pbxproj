@@ -11,6 +11,8 @@
 		3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */; };
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
 		321313CA1AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */; };
+		32185B2D1F20AFEB00752141 /* MXKLanguagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32185B2B1F20AFEB00752141 /* MXKLanguagePickerViewController.m */; };
+		32185B2E1F20AFEB00752141 /* MXKLanguagePickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32185B2C1F20AFEB00752141 /* MXKLanguagePickerViewController.xib */; };
 		3219CBC01AA6FB470027D7E2 /* MXKRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */; };
 		3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3230A3711ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m */; };
 		3230A3751ACADC1800CC57F5 /* MXKRoomDataSourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3230A3741ACADC1800CC57F5 /* MXKRoomDataSourceManager.m */; };
@@ -21,6 +23,7 @@
 		3235CD7C1C32DEBF0084EA40 /* MXKSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD7A1C32DEBF0084EA40 /* MXKSearchViewController.xib */; };
 		3235CD801C33C6640084EA40 /* MXKSearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */; };
 		3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */; };
+		323F9AF61F1E53730013AFDE /* NSBundle+MXKLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */; };
 		32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
 		327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */; };
 		328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */; };
@@ -28,7 +31,6 @@
 		328AC48C1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC48B1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.m */; };
 		328AC48F1AA86E110044A6FB /* MXKDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC48E1AA86E110044A6FB /* MXKDataSource.m */; };
 		328AC4931AA8B05C0044A6FB /* MXKCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4921AA8B05C0044A6FB /* MXKCellData.m */; };
-		32952C621D5B2D190039DC0C /* MXKAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB01ADD6E5D007197D2 /* MXKAlert.m */; };
 		329CF77B1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */; };
 		32CEE21F1AB1A57E00F7C74D /* MXKEventFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */; };
 		32CEE2231AB1E37600F7C74D /* MXKRecentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */; };
@@ -72,6 +74,8 @@
 		F00FA87A1C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F00FA8721C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.xib */; };
 		F011FA681CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = F011FA671CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m */; };
 		F012674A1AF8A9440067D962 /* MXK3PID.m in Sources */ = {isa = PBXBuildFile; fileRef = F01267491AF8A9440067D962 /* MXK3PID.m */; };
+		F01439451F067929006E5D8C /* MXKReadReceiptTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01439431F067929006E5D8C /* MXKReadReceiptTableViewCell.m */; };
+		F01439461F067929006E5D8C /* MXKReadReceiptTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01439441F067929006E5D8C /* MXKReadReceiptTableViewCell.xib */; };
 		F01449AB1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */; };
 		F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */; };
 		F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F01449A91B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m */; };
@@ -94,6 +98,7 @@
 		F043563E1B2F124F0096FA02 /* MXKContactDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F043563D1B2F124F0096FA02 /* MXKContactDetailsViewController.xib */; };
 		F04356401B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F043563F1B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib */; };
 		F049FC201B2B878A00DD9D3C /* NSBundle+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */; };
+		F04F78351F17A1B60039485E /* UIAlertController+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */; };
 		F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */; };
 		F05FB1781AD5129500DC0647 /* MXKRoomMemberCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB1741AD5129500DC0647 /* MXKRoomMemberCellData.m */; };
 		F05FB17C1AD5131300DC0647 /* MXKRoomMemberListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F05FB17B1AD5131300DC0647 /* MXKRoomMemberListDataSource.m */; };
@@ -113,6 +118,7 @@
 		F06E76991AF0FED000980E5A /* MXKAuthInputsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76921AF0FED000980E5A /* MXKAuthInputsView.m */; };
 		F06E769A1AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = F06E76941AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m */; };
 		F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */; };
+		F079333E1F38A6A600F04D4C /* MXKView.m in Sources */ = {isa = PBXBuildFile; fileRef = F079333D1F38A6A600F04D4C /* MXKView.m */; };
 		F07B9C2A1D3587B0000CB20E /* MXKEventFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */; };
 		F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */; };
 		F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148C51AB31240005F5D4A /* MXKTools.m */; };
@@ -197,7 +203,6 @@
 		F0DB1AC61B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0DB1AC41B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.xib */; };
 		F0DD7D851B7B3CF100C4BE02 /* MXKRoomCreationInputs.m in Sources */ = {isa = PBXBuildFile; fileRef = F0DD7D841B7B3CF100C4BE02 /* MXKRoomCreationInputs.m */; };
 		F0E0CE6B1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */; };
-		F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB01ADD6E5D007197D2 /* MXKAlert.m */; };
 		F0EA4CB41ADD6E98007197D2 /* MXKAppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */; };
 		F0F1489B1AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F1489A1AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.m */; };
 		F0F148A51AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148A21AB08F48005F5D4A /* MXKSampleJSQRoomBubbleCellData.m */; };
@@ -228,6 +233,9 @@
 		321313C61AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIOSOutgoingBubbleTableViewCell.h; sourceTree = "<group>"; };
 		321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSOutgoingBubbleTableViewCell.m; sourceTree = "<group>"; };
 		321313C81AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomIOSOutgoingBubbleTableViewCell.xib; sourceTree = "<group>"; };
+		32185B2A1F20AFEB00752141 /* MXKLanguagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKLanguagePickerViewController.h; sourceTree = "<group>"; };
+		32185B2B1F20AFEB00752141 /* MXKLanguagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKLanguagePickerViewController.m; sourceTree = "<group>"; };
+		32185B2C1F20AFEB00752141 /* MXKLanguagePickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKLanguagePickerViewController.xib; sourceTree = "<group>"; };
 		3219CB681AA6F2780027D7E2 /* MatrixKitSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MatrixKitSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomViewController.h; sourceTree = "<group>"; };
 		3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomViewController.m; sourceTree = "<group>"; };
@@ -248,6 +256,8 @@
 		3235CD7E1C33C6640084EA40 /* MXKSearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MXKSearchTableViewCell.h; path = Search/MXKSearchTableViewCell.h; sourceTree = "<group>"; };
 		3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MXKSearchTableViewCell.m; path = Search/MXKSearchTableViewCell.m; sourceTree = "<group>"; };
 		3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MXKSearchTableViewCell.xib; path = Search/MXKSearchTableViewCell.xib; sourceTree = "<group>"; };
+		323F9AF41F1E53730013AFDE /* NSBundle+MXKLanguage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+MXKLanguage.h"; sourceTree = "<group>"; };
+		323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+MXKLanguage.m"; sourceTree = "<group>"; };
 		32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventFormatterTests.m; sourceTree = "<group>"; };
 		327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRecentTableViewCell.xib; sourceTree = "<group>"; };
 		328AC4841AA75E000044A6FB /* MXKRoomBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleTableViewCell.h; sourceTree = "<group>"; };
@@ -339,6 +349,9 @@
 		F011FA671CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAuthenticationRecaptchaWebView.m; sourceTree = "<group>"; };
 		F01267481AF8A9440067D962 /* MXK3PID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXK3PID.h; sourceTree = "<group>"; };
 		F01267491AF8A9440067D962 /* MXK3PID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXK3PID.m; sourceTree = "<group>"; };
+		F01439421F067929006E5D8C /* MXKReadReceiptTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKReadReceiptTableViewCell.h; sourceTree = "<group>"; };
+		F01439431F067929006E5D8C /* MXKReadReceiptTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKReadReceiptTableViewCell.m; sourceTree = "<group>"; };
+		F01439441F067929006E5D8C /* MXKReadReceiptTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKReadReceiptTableViewCell.xib; sourceTree = "<group>"; };
 		F01449A51B53FA7600EA7D73 /* MXKPushRuleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPushRuleTableViewCell.h; sourceTree = "<group>"; };
 		F01449A61B53FA7600EA7D73 /* MXKPushRuleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPushRuleTableViewCell.m; sourceTree = "<group>"; };
 		F01449A71B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKPushRuleTableViewCell.xib; sourceTree = "<group>"; };
@@ -374,6 +387,8 @@
 		F043563F1B2F63090096FA02 /* MXKRoomMemberDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomMemberDetailsViewController.xib; sourceTree = "<group>"; };
 		F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+MatrixKit.h"; sourceTree = "<group>"; };
 		F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+MatrixKit.m"; sourceTree = "<group>"; };
+		F04F78331F17A1B60039485E /* UIAlertController+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertController+MatrixKit.h"; sourceTree = "<group>"; };
+		F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertController+MatrixKit.m"; sourceTree = "<group>"; };
 		F05FB16F1AD4236800DC0647 /* MXKRoomMemberListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomMemberListViewController.h; sourceTree = "<group>"; };
 		F05FB1701AD4236800DC0647 /* MXKRoomMemberListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomMemberListViewController.m; sourceTree = "<group>"; };
 		F05FB1731AD5129500DC0647 /* MXKRoomMemberCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomMemberCellData.h; sourceTree = "<group>"; };
@@ -406,6 +421,8 @@
 		F06E76931AF0FED000980E5A /* MXKAuthenticationFallbackWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAuthenticationFallbackWebView.h; sourceTree = "<group>"; };
 		F06E76941AF0FED000980E5A /* MXKAuthenticationFallbackWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAuthenticationFallbackWebView.m; sourceTree = "<group>"; };
 		F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomMemberListViewController.xib; sourceTree = "<group>"; };
+		F079333C1F38A6A600F04D4C /* MXKView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKView.h; sourceTree = "<group>"; };
+		F079333D1F38A6A600F04D4C /* MXKView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKView.m; sourceTree = "<group>"; };
 		F07D74AA1AC5A29800D83B98 /* MXKEventDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEventDetailsView.h; sourceTree = "<group>"; };
 		F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventDetailsView.m; sourceTree = "<group>"; };
 		F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKEventDetailsView.xib; sourceTree = "<group>"; };
@@ -539,8 +556,6 @@
 		F0DD7D841B7B3CF100C4BE02 /* MXKRoomCreationInputs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomCreationInputs.m; sourceTree = "<group>"; };
 		F0E0CE691AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleRoomMembersViewController.h; sourceTree = "<group>"; };
 		F0E0CE6A1AD6B3BA00A7FD45 /* MXKSampleRoomMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleRoomMembersViewController.m; sourceTree = "<group>"; };
-		F0EA4CAF1ADD6E5D007197D2 /* MXKAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAlert.h; sourceTree = "<group>"; };
-		F0EA4CB01ADD6E5D007197D2 /* MXKAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAlert.m; sourceTree = "<group>"; };
 		F0EA4CB21ADD6E98007197D2 /* MXKAppSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAppSettings.h; sourceTree = "<group>"; };
 		F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAppSettings.m; sourceTree = "<group>"; };
 		F0F148991AB059AC005F5D4A /* MXKSampleJSQMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleJSQMessagesViewController.h; sourceTree = "<group>"; };
@@ -654,6 +669,9 @@
 		3219CBBB1AA6FB1C0027D7E2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				32185B2A1F20AFEB00752141 /* MXKLanguagePickerViewController.h */,
+				32185B2B1F20AFEB00752141 /* MXKLanguagePickerViewController.m */,
+				32185B2C1F20AFEB00752141 /* MXKLanguagePickerViewController.xib */,
 				F0FDF2641E53586A00D23C47 /* MXKCountryPickerViewController.h */,
 				F0FDF2651E53586A00D23C47 /* MXKCountryPickerViewController.m */,
 				F0FDF2661E53586A00D23C47 /* MXKCountryPickerViewController.xib */,
@@ -731,6 +749,9 @@
 		3219CBBD1AA6FB1C0027D7E2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F079333C1F38A6A600F04D4C /* MXKView.h */,
+				F079333D1F38A6A600F04D4C /* MXKView.m */,
+				F01439411F067929006E5D8C /* ReadReceipts */,
 				32FBDAF51E4484C40033C519 /* EncryptionKeys */,
 				F09617BF1DE881D800093E9D /* EncryptionInfoView */,
 				F09617B91DE8478C00093E9D /* DeviceView */,
@@ -746,8 +767,6 @@
 				F05FB17D1AD6643900DC0647 /* RoomMemberList */,
 				F0B0ECC11B14B16C005EB20D /* RoomTitle */,
 				3235CD7D1C33C64F0084EA40 /* Search */,
-				F0EA4CAF1ADD6E5D007197D2 /* MXKAlert.h */,
-				F0EA4CB01ADD6E5D007197D2 /* MXKAlert.m */,
 				328AC4901AA8AF5B0044A6FB /* MXKCellRendering.h */,
 				F07D74AA1AC5A29800D83B98 /* MXKEventDetailsView.h */,
 				F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */,
@@ -940,6 +959,16 @@
 			path = RoomInputToolbar;
 			sourceTree = "<group>";
 		};
+		F01439411F067929006E5D8C /* ReadReceipts */ = {
+			isa = PBXGroup;
+			children = (
+				F01439421F067929006E5D8C /* MXKReadReceiptTableViewCell.h */,
+				F01439431F067929006E5D8C /* MXKReadReceiptTableViewCell.m */,
+				F01439441F067929006E5D8C /* MXKReadReceiptTableViewCell.xib */,
+			);
+			path = ReadReceipts;
+			sourceTree = "<group>";
+		};
 		F01449A41B53FA7600EA7D73 /* PushRule */ = {
 			isa = PBXGroup;
 			children = (
@@ -1034,8 +1063,12 @@
 		F07E18111ABC563900DE3766 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				F04F78331F17A1B60039485E /* UIAlertController+MatrixKit.h */,
+				F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */,
 				F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */,
 				F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */,
+				323F9AF41F1E53730013AFDE /* NSBundle+MXKLanguage.h */,
+				323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */,
 				F07E18121ABC563900DE3766 /* MXEvent+MatrixKit.h */,
 				F07E18131ABC563900DE3766 /* MXEvent+MatrixKit.m */,
 			);
@@ -1340,6 +1373,8 @@
 				F06CDD601EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.xib in Resources */,
 				F094D15F1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.xib in Resources */,
 				3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */,
+				32185B2E1F20AFEB00752141 /* MXKLanguagePickerViewController.xib in Resources */,
+				F01439461F067929006E5D8C /* MXKReadReceiptTableViewCell.xib in Resources */,
 				F01449AC1B53FA7600EA7D73 /* MXKPushRuleTableViewCell.xib in Resources */,
 				F0316E441B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.xib in Resources */,
 				F00FA8651C089D2100E25826 /* MXKRoomIncomingTextMsgBubbleCell.xib in Resources */,
@@ -1404,13 +1439,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MatrixKitTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		31DF541766F395AA9A742AC8 /* [CP] Copy Pods Resources */ = {
@@ -1434,9 +1472,19 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample-resources.sh",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Controllers/JSQMessagesViewController.xib",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesCollectionViewCellIncoming.xib",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesCollectionViewCellOutgoing.xib",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesLoadEarlierHeaderView.xib",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesToolbarContentView.xib",
+				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesTypingIndicatorFooterView.xib",
+				"${PODS_ROOT}/MatrixSDK/MatrixSDK/Data/Store/MXCoreDataStore/MXCoreDataStore.xcdatamodeld",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1464,13 +1512,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MatrixKitSample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FC08C2D46757964161ED45BA /* [CP] Embed Pods Frameworks */ = {
@@ -1495,7 +1546,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				32952C621D5B2D190039DC0C /* MXKAlert.m in Sources */,
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
 				F07B9C2A1D3587B0000CB20E /* MXKEventFormatter.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
@@ -1517,8 +1567,10 @@
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
 				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
+				F079333E1F38A6A600F04D4C /* MXKView.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
 				F07E180F1ABC2EDA00DE3766 /* MXKRoomBubbleCellDataWithAppendingMode.m in Sources */,
+				323F9AF61F1E53730013AFDE /* NSBundle+MXKLanguage.m in Sources */,
 				3205ED791E96905A003D65FA /* MXKDirectoryServerCellData.m in Sources */,
 				F04356361B2EF9D80096FA02 /* MXKTableViewCellWithLabelAndButton.m in Sources */,
 				F0CF98F81B0C6EA000EAE373 /* MXKAccountTableViewCell.m in Sources */,
@@ -1566,12 +1618,12 @@
 				F093BCAD1C21BDD80010D05F /* MXKReceiptSendersContainer.m in Sources */,
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
 				32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */,
-				F0EA4CB11ADD6E5D007197D2 /* MXKAlert.m in Sources */,
 				F06CDD5F1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				3235CD771C32DC8A0084EA40 /* MXKSearchDataSource.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
 				92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */,
+				F04F78351F17A1B60039485E /* UIAlertController+MatrixKit.m in Sources */,
 				F00FA85D1C0867F900E25826 /* MXKRoomIncomingAttachmentWithoutSenderInfoBubbleCell.m in Sources */,
 				F02D21491B7109950002DE01 /* MXKConstants.m in Sources */,
 				F07E18101ABC2EDA00DE3766 /* MXKRoomDataSource.m in Sources */,
@@ -1592,6 +1644,7 @@
 				F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */,
 				F0DD7D851B7B3CF100C4BE02 /* MXKRoomCreationInputs.m in Sources */,
 				F094D15E1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m in Sources */,
+				32185B2D1F20AFEB00752141 /* MXKLanguagePickerViewController.m in Sources */,
 				328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */,
 				F05FB1811AD6643900DC0647 /* MXKRoomMemberTableViewCell.m in Sources */,
 				F095E50E1B25899F009606CE /* MXKContactField.m in Sources */,
@@ -1623,6 +1676,7 @@
 				3230A3751ACADC1800CC57F5 /* MXKRoomDataSourceManager.m in Sources */,
 				F011FA681CA3F43C009EA677 /* MXKAuthenticationRecaptchaWebView.m in Sources */,
 				F0CF98E11B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSwitch.m in Sources */,
+				F01439451F067929006E5D8C /* MXKReadReceiptTableViewCell.m in Sources */,
 				F02528961C1092D300E1FE1B /* MXKCollectionViewCell.m in Sources */,
 				F0F148A61AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m in Sources */,
 				F096A3BF1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.m in Sources */,
@@ -1796,7 +1850,7 @@
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Samples/MatrixKitSample/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1812,7 +1866,7 @@
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Samples/MatrixKitSample/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,11 +23,11 @@
 
 @implementation MXKAccountTableViewCell
 
-- (void)awakeFromNib
+- (void)customizeTableViewCellRendering
 {
-    [super awakeFromNib];
+    [super customizeTableViewCellRendering];
     
-    self.accountPicture.backgroundColor = [UIColor clearColor];
+    self.accountPicture.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)setMxAccount:(MXKAccount *)mxAccount

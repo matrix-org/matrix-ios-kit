@@ -13,21 +13,27 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-#import "MXKAlert.h"
+
+#import <UIKit/UIKit.h>
 
 @class MXSession, MXKViewController, MXKRoomDataSource;
 
 /**
- `MXKEncryptionKeysExportView` is a MXKAlert dialog to export encryption keys from
+ `MXKEncryptionKeysExportView` is a dialog to export encryption keys from
  the user's crypto store.
  */
-@interface MXKEncryptionKeysExportView : MXKAlert
+@interface MXKEncryptionKeysExportView : NSObject
+
+/**
+ The UIAlertController instance which handles the dialog.
+ */
+@property (nonatomic, readonly) UIAlertController *alertController;
 
 /**
  Create the `MXKEncryptionKeysExportView` instance.
 
  @param mxSession the mxSession to export keys from.
- @return the newly created MXKEncryptionKeysImportView instance.
+ @return the newly created MXKEncryptionKeysExportView instance.
  */
 - (instancetype)initWithMatrixSession:(MXSession*)mxSession;
 

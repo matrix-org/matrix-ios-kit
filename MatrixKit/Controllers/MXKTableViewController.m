@@ -32,6 +32,7 @@
 
 @implementation MXKTableViewController
 @synthesize defaultBarTintColor, enableBarTintColorStatusChange;
+@synthesize barTitleColor;
 @synthesize mainSession;
 @synthesize activityIndicator, rageShakeManager;
 @synthesize childViewControllers;
@@ -64,6 +65,7 @@
 {
     // Set default properties values
     defaultBarTintColor = nil;
+    barTitleColor = nil;
     enableBarTintColorStatusChange = YES;
     rageShakeManager = nil;
     
@@ -90,6 +92,10 @@
     
     activityIndicator.center = self.view.center;
     [self.view addSubview:activityIndicator];
+    
+    // Apply the navigation bar tint color.
+    self.defaultBarTintColor = defaultBarTintColor;
+    self.barTitleColor = barTitleColor;
 }
 
 - (void)dealloc
@@ -178,6 +184,99 @@
         enableBarTintColorStatusChange = enable;
         
         [self onMatrixSessionChange];
+    }
+}
+
+- (void)setDefaultBarTintColor:(UIColor *)barTintColor
+{
+    defaultBarTintColor = barTintColor;
+    
+    if (enableBarTintColorStatusChange)
+    {
+        // Force update by taking into account the matrix session state.
+        [self onMatrixSessionChange];
+    }
+    else
+    {
+        // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
+        UINavigationController *mainNavigationController = nil;
+        if (self.splitViewController)
+        {
+            mainNavigationController = self.navigationController;
+            UIViewController *parentViewController = self.parentViewController;
+            while (parentViewController)
+            {
+                if (parentViewController.navigationController)
+                {
+                    mainNavigationController = parentViewController.navigationController;
+                    parentViewController = parentViewController.parentViewController;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        
+        // Set default tintColor
+        self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
+        if (mainNavigationController)
+        {
+            mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
+        }
+    }
+}
+
+- (void)setBarTitleColor:(UIColor *)titleColor
+{
+    barTitleColor = titleColor;
+    
+    // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
+    UINavigationController *mainNavigationController = nil;
+    if (self.splitViewController)
+    {
+        mainNavigationController = self.navigationController;
+        UIViewController *parentViewController = self.parentViewController;
+        while (parentViewController)
+        {
+            if (parentViewController.navigationController)
+            {
+                mainNavigationController = parentViewController.navigationController;
+                parentViewController = parentViewController.parentViewController;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    
+    // Set navigation bar title color
+    NSDictionary<NSString *,id> *titleTextAttributes = self.navigationController.navigationBar.titleTextAttributes;
+    if (titleTextAttributes)
+    {
+        NSMutableDictionary *textAttributes = [NSMutableDictionary dictionaryWithDictionary:titleTextAttributes];
+        textAttributes[NSForegroundColorAttributeName] = barTitleColor;
+        self.navigationController.navigationBar.titleTextAttributes = textAttributes;
+    }
+    else if (barTitleColor)
+    {
+        self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: barTitleColor};
+    }
+    
+    if (mainNavigationController)
+    {
+        titleTextAttributes = mainNavigationController.navigationBar.titleTextAttributes;
+        if (titleTextAttributes)
+        {
+            NSMutableDictionary *textAttributes = [NSMutableDictionary dictionaryWithDictionary:titleTextAttributes];
+            textAttributes[NSForegroundColorAttributeName] = barTitleColor;
+            mainNavigationController.navigationBar.titleTextAttributes = textAttributes;
+        }
+        else if (barTitleColor)
+        {
+            mainNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: barTitleColor};
+        }
     }
 }
 
@@ -433,11 +532,15 @@
         // Hide potential activity indicator
         [self stopActivityIndicator];
         
-        // Restore default tintColor
-        self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
-        if (mainNavigationController)
+        // Check whether the navigation bar color depends on homeserver reachability.
+        if (enableBarTintColorStatusChange)
         {
-            mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
+            // Restore default tintColor
+            self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
+            if (mainNavigationController)
+            {
+                mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
+            }
         }
     }
 }

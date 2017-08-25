@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -48,14 +49,19 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
 {
     [super awakeFromNib];
     
-    self.thumbnailView.backgroundColor = [UIColor clearColor];
-    
     self.thumbnailDisplayBoxType = MXKTableViewCellDisplayBoxTypeDefault;
     
     // No accessory view by default
     self.contactAccessoryViewType = MXKContactTableCellAccessoryCustom;
     
     self.hideMatrixPresence = NO;
+}
+
+- (void)customizeTableViewCellRendering
+{
+    [super customizeTableViewCellRendering];
+    
+    self.thumbnailView.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)layoutSubviews

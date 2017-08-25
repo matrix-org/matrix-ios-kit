@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -52,16 +53,6 @@
     inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     growingTextView.internalTextView.inputAccessoryView = self.inputAccessoryView;
     
-    // set text input font
-    growingTextView.font = [UIFont systemFontOfSize:14];
-    
-    // draw a rounded border around the textView
-    growingTextView.layer.cornerRadius = 5;
-    growingTextView.layer.borderWidth = 1;
-    growingTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    growingTextView.clipsToBounds = YES;
-    growingTextView.backgroundColor = [UIColor whiteColor];
-    
     // on IOS 8, the growing textview animation could trigger weird UI animations
     // indeed, the messages tableView can be refreshed while its height is updated (e.g. when setting a message)
     growingTextView.animateHeightChange = NO;
@@ -72,6 +63,21 @@
 - (void)dealloc
 {
     [self destroy];
+}
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    // set text input font
+    growingTextView.font = [UIFont systemFontOfSize:14];
+    
+    // draw a rounded border around the textView
+    growingTextView.layer.cornerRadius = 5;
+    growingTextView.layer.borderWidth = 1;
+    growingTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    growingTextView.clipsToBounds = YES;
+    growingTextView.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)destroy

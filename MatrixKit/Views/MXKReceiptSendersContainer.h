@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,9 +15,9 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
-
 #import <MatrixSDK/MatrixSDK.h>
+
+#import "MXKView.h"
 
 typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
 {
@@ -36,7 +37,7 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  
  This container handles automatically the number of visible avatars. A label is added when avatars are not all visible (see 'moreLabel' property).
  */
-@interface MXKReceiptSendersContainer : UIView
+@interface MXKReceiptSendersContainer : MXKView
 
 /**
  The REST client used to resize matrix user's avatar.
@@ -57,6 +58,21 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  The label added beside avatars when avatars are not all visible.
  */
 @property (nonatomic) UILabel* moreLabel;
+
+/*
+ The read receipt objects for details required in the details view
+ */
+@property (nonatomic) NSArray <MXReceiptData *> *readReceipts;
+
+/*
+ The array of the room members that will be displayed in the container
+ */
+@property (nonatomic, readonly) NSArray <MXRoomMember *> *roomMembers;
+
+/*
+ The placeholders of the room members that will be shown if the users don't have avatars
+ */
+@property (nonatomic, readonly) NSArray <UIImage *> *placeholders;
 
 /**
  Initializes an `MXKReceiptSendersContainer` object with a frame and a REST client.

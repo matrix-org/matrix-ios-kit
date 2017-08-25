@@ -22,12 +22,18 @@ Avery Pierce <aapierce0 at gmail.com>
  
 Denis Morozov <dmorozkn at gmail.com>
  * PR #256 Attachments viewcontroller: stop correctly the video player
+ * VoIP improvements
 
 Aram Sargsyan <aram.sargsyan.1997 at gmail.com>
  * PR #259 Attachments viewcontroller: interactive animations
+ * PR #1341: Read receipts details
+ * App extension support
  
 Javier Quevedo Fernández <jquevedo at gmail.com>
  * PR #278 Update a snippet of code in Readme
  
 Samuel Gallet <samuel.gallet at applidium.com>
  * PR #279 Use CocoaPods resource_bundles attributes to store assets
+
+Nathan van Beelen <nathan at vanbeelen.org>
+ * PR #318 Dutch translation of the strings

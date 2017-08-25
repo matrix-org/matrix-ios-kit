@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@
 
 #import <Photos/Photos.h>
 
-#import "MXKAlert.h"
+#import "MXKView.h"
 
 /**
  List the predefined modes to handle the size of attached images
@@ -44,16 +45,25 @@ typedef enum : NSUInteger
     
 } MXKRoomInputToolbarCompressionMode;
 
+
 @class MXKRoomInputToolbarView;
 @protocol MXKRoomInputToolbarViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param toolbarView the room input toolbar view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentMXKAlert:(MXKAlert*)alert;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView presentAlertController:(UIAlertController*)alertController;
+
+/**
+ Tells the delegate that the visibility of the status bar must be changed.
+ 
+ @param toolbarView the room input toolbar view.
+ @param isHidden tell whether the status bar must be hidden or not.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView hideStatusBar:(BOOL)isHidden;
 
 @optional
 
@@ -171,7 +181,7 @@ typedef enum : NSUInteger
  By default the left button is used to send the content of the message composer.
  By default 'messageComposerContainer' is empty.
  */
-@interface MXKRoomInputToolbarView : UIView <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
+@interface MXKRoomInputToolbarView : MXKView <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
     /**
      The message composer container view. Your own message composer may be added inside this container.
      */

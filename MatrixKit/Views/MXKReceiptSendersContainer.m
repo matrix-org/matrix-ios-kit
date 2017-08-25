@@ -18,6 +18,15 @@
 
 #import "MXKImageView.h"
 
+
+@interface MXKReceiptSendersContainer ()
+
+@property (nonatomic, readwrite) NSArray <MXRoomMember *> *roomMembers;
+@property (nonatomic, readwrite) NSArray <UIImage *> *placeholders;
+
+@end
+
+
 @implementation MXKReceiptSendersContainer
 
 - (instancetype)initWithFrame:(CGRect)frame andRestClient:(MXRestClient*)restclient
@@ -35,6 +44,10 @@
 
 - (void)refreshReceiptSenders:(NSArray<MXRoomMember*>*)roomMembers withPlaceHolders:(NSArray<UIImage*>*)placeHolders andAlignment:(ReadReceiptsAlignment)alignment
 {
+    // Store the room members and placeholders for showing in the details view controller
+    self.roomMembers = roomMembers;
+    self.placeholders = placeHolders;
+    
     // Remove all previous content
     for (UIView* view in self.subviews)
     {
@@ -77,7 +90,7 @@
         }
         
         MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
-        imageView.backgroundColor = [UIColor clearColor];
+        imageView.defaultBackgroundColor = [UIColor clearColor];
         
         if (alignment == ReadReceiptAlignmentRight)
         {

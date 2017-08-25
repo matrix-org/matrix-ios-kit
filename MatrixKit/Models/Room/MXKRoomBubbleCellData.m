@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
- 
+ Copyright 2017 Vector Creations Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -27,6 +28,8 @@
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
 @synthesize textMessage, attributedTextMessage;
 @synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton, hasNoDisplay;
+@synthesize tag;
+@synthesize collapsable, collapsed, collapsedAttributedTextMessage, prevCollapsableCellData, nextCollapsableCellData, collapseState;
 
 #pragma mark - MXKRoomBubbleCellDataStoring
 
@@ -348,7 +351,7 @@
     
     if (firstComponent)
     {
-        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile) ? MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET : 0;
+        CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile || attachment.type == MXKAttachmentTypeAudio) ? MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET : 0;
         firstComponent.position = CGPointMake(0, positionY);
     }
 }
@@ -456,7 +459,7 @@
 
 - (NSAttributedString*)attributedTextMessage
 {
-    if (!attributedTextMessage.length)
+    if (self.hasAttributedTextMessage && !attributedTextMessage.length)
     {
         // By default only one component is supported, consider here the first component
         MXKRoomBubbleComponent *firstComponent = [self getFirstBubbleComponent];
@@ -473,6 +476,27 @@
     }
 
     return attributedTextMessage;
+}
+
+- (BOOL)hasAttributedTextMessage
+{
+    // Determine if the event formatter will return at least one string for the events in this cell.
+    // No string means that the event formatter has been configured so that it did not accept all events
+    // of the cell.
+    BOOL hasAttributedTextMessage = NO;
+
+    @synchronized(bubbleComponents)
+    {
+        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+        {
+            if (roomBubbleComponent.attributedTextMessage)
+            {
+                hasAttributedTextMessage = YES;
+                break;
+            }
+        }
+    }
+    return hasAttributedTextMessage;
 }
 
 - (BOOL)shouldHideSenderName
@@ -526,12 +550,20 @@
     // Check whether at least one component has a string description.
     @synchronized(bubbleComponents)
     {
-        for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
+        if (self.collapsed)
         {
-            if (roomBubbleComponent.attributedTextMessage)
+            // Collapsed cells have no display except their cell header
+            noDisplay = !self.collapsedAttributedTextMessage;
+        }
+        else
+        {
+            for (MXKRoomBubbleComponent *roomBubbleComponent in bubbleComponents)
             {
-                noDisplay = NO;
-                break;
+                if (roomBubbleComponent.attributedTextMessage)
+                {
+                    noDisplay = NO;
+                    break;
+                }
             }
         }
     }
@@ -626,7 +658,7 @@
                 _contentSize = CGSizeMake(width, height);
             }
         }
-        else if (attachment.type == MXKAttachmentTypeFile)
+        else if (attachment.type == MXKAttachmentTypeFile || attachment.type == MXKAttachmentTypeAudio)
         {
             // Presently we displayed only the file name for attached file (no icon yet)
             // Return suitable content size of a text view to display the file name (available in text message). 
@@ -660,6 +692,14 @@
     }
     
     return nil;
+}
+
+#pragma mark - Bubble collapsing
+
+- (BOOL)collapseWith:(id<MXKRoomBubbleCellDataStoring>)cellData
+{
+    // NO by default
+    return NO;
 }
 
 #pragma mark - Internals

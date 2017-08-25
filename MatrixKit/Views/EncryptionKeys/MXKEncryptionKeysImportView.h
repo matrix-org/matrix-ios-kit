@@ -14,17 +14,20 @@
  limitations under the License.
  */
 
-#import <Foundation/Foundation.h>
-
-#import "MXKAlert.h"
+#import <UIKit/UIKit.h>
 
 @class MXSession, MXKViewController;
 
 /**
- `MXKEncryptionKeysImportView` is a MXKAlert dialog to import encryption keys into
+ `MXKEncryptionKeysImportView` is a dialog to import encryption keys into
  the user's crypto store.
  */
-@interface MXKEncryptionKeysImportView : MXKAlert
+@interface MXKEncryptionKeysImportView : NSObject
+
+/**
+ The UIAlertController instance which handles the dialog.
+ */
+@property (nonatomic, readonly) UIAlertController *alertController;
 
 /**
  Create the `MXKEncryptionKeysImportView` instance.

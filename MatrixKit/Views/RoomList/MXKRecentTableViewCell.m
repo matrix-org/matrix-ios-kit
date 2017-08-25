@@ -78,10 +78,22 @@
     }
 }
 
+- (MXKCellData*)renderedCellData
+{
+    return roomCellData;
+}
+
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
     // The height is fixed
     return 70;
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    
+    roomCellData = nil;
 }
 
 @end

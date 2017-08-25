@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,6 +16,9 @@
  */
 
 #import "MXKAccountManager.h"
+#import "MXKAppSettings.h"
+
+static NSString *const kMXKAccountsKey = @"accounts";
 
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
@@ -79,17 +83,18 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)saveAccounts
 {
+    NSUserDefaults *userDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
     if (mxAccounts.count)
     {
         NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
         
-        [[NSUserDefaults standardUserDefaults] setObject:accountData forKey:@"accounts"];
+        [userDefaults setObject:accountData forKey:kMXKAccountsKey];
     }
     else
     {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+        [userDefaults removeObjectForKey:kMXKAccountsKey];
     }
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [userDefaults synchronize];
 }
 
 - (void)addAccount:(MXKAccount *)account andOpenSession:(BOOL)openSession
@@ -113,18 +118,34 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
-- (void)removeAccount:(MXKAccount*)account completion:(void (^)())completion;
+- (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)())completion;
 {
-    NSLog(@"[MXKAccountManager] logout (%@)", account.mxCredentials.userId);
+    NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
     
     // Close session and clear associated store.
-    [account logout:^{
+    [theAccount logout:^{
         
-        [mxAccounts removeObject:account];
-        [self saveAccounts];
+        // Retrieve the corresponding account in the internal array
+        MXKAccount* removedAccount = nil;
         
-        // Post notification
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:account userInfo:nil];
+        for (MXKAccount *account in mxAccounts)
+        {
+            if ([account.mxCredentials.userId isEqualToString:theAccount.mxCredentials.userId])
+            {
+                removedAccount = account;
+                break;
+            }
+        }
+        
+        if (removedAccount)
+        {
+            [mxAccounts removeObject:removedAccount];
+            
+            [self saveAccounts];
+            
+            // Post notification
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:removedAccount userInfo:nil];
+        }
         
         if (completion)
         {
@@ -149,11 +170,17 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         return;
     }
     
+    NSUserDefaults *sharedUserDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
+    
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
+    
     // Be sure that no account survive in local storage
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accounts"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
+    [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
+    
     [[NSUserDefaults standardUserDefaults] synchronize];
+    [sharedUserDefaults synchronize];
 }
 
 - (MXKAccount *)accountForUserId:(NSString *)userId
@@ -191,6 +218,23 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
                 theAccount = account;
                 break;
             }
+        }
+    }
+    return theAccount;
+}
+
+- (MXKAccount *)accountKnowingUserWithUserId:(NSString *)userId
+{
+    MXKAccount *theAccount = nil;
+
+    NSArray *activeAccounts = self.activeAccounts;
+
+    for (MXKAccount *account in activeAccounts)
+    {
+        if ([account.mxSession userWithUserId:userId])
+        {
+            theAccount = account;
+            break;
         }
     }
     return theAccount;
@@ -309,19 +353,15 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     // [UIApplication currentUserNotificationSettings].
     
     BOOL isRemoteNotificationsAllowed = NO;
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)])
-    {
-        // iOS 8 and later
-        UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
-        
-        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
-    }
-    else
-    {
-        isRemoteNotificationsAllowed = [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone;
-    }
     
-    NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
+        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
+        
+        NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    }
     
     return (isRemoteNotificationsAllowed && self.apnsDeviceToken);
 }
@@ -330,7 +370,29 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)loadAccounts
 {
-    NSData *accountData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accounts"];
+    NSUserDefaults *sharedDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
+
+    NSData *accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
+
+    if (!accountData)
+    {
+        // Migration of accountData from [NSUserDefaults standardUserDefaults] to sharedDefaults (shared between apps and extensions)
+        NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:kMXKAccountsKey];
+        if (oldAccountData)
+        {
+            [sharedDefaults setObject:oldAccountData forKey:kMXKAccountsKey];
+            [sharedDefaults synchronize];
+
+            // TODO: Erase old location of accountData when the app goes to the app store
+            //[[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
+            //[[NSUserDefaults standardUserDefaults] synchronize];
+
+            NSLog(@"[MXKAccountManager] loadAccounts: performed data migration");
+        }
+
+        accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
+    }
+    
     if (accountData)
     {
         mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
@@ -339,6 +401,12 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     {
         mxAccounts = [NSMutableArray array];
     }
+}
+
+- (void)forceReloadAccounts
+{
+    NSLog(@"[MXKAccountManager] Force reload existing accounts from local storage");
+    [self loadAccounts];
 }
 
 @end

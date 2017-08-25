@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,18 +17,18 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-#import "MXKAlert.h"
+#import "MXKView.h"
 
 @class MXKRoomTitleView;
 @protocol MXKRoomTitleViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param titleView the room title view.
- @param alert the alert to present.
+ @param alertController the alert to present.
  */
-- (void)roomTitleView:(MXKRoomTitleView*)titleView presentMXKAlert:(MXKAlert*)alert;
+- (void)roomTitleView:(MXKRoomTitleView*)titleView presentAlertController:(UIAlertController*)alertController;
 
 /**
  Asks the delegate if editing should begin
@@ -52,13 +53,13 @@
 /**
  'MXKRoomTitleView' instance displays editable room display name.
  */
-@interface MXKRoomTitleView : UIView <UITextFieldDelegate>
+@interface MXKRoomTitleView : MXKView <UITextFieldDelegate>
 {
 @protected
     /**
      Potential alert.
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      Test fields input accessory.

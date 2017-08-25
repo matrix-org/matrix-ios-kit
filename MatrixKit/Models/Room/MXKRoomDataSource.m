@@ -101,6 +101,18 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXPeekingRoom *peekingRoom;
 
     /**
+     If any, the non terminated series of collapsable events at the start of self.bubbles.
+     (Such series is determined by the cell data of its oldest event).
+     */
+    id<MXKRoomBubbleCellDataStoring> collapsableSeriesAtStart;
+
+    /**
+     If any, the non terminated series of collapsable events at the end of self.bubbles.
+     (Such series is determined by the cell data of its oldest event).
+     */
+    id<MXKRoomBubbleCellDataStoring> collapsableSeriesAtEnd;
+
+    /**
      Observe UIApplicationSignificantTimeChangeNotification to trigger cell change on time formatting change.
      */
     id UIApplicationSignificantTimeChangeNotificationObserver;
@@ -1418,6 +1430,27 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+#pragma mark - Bubble collapsing
+
+- (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed
+{
+    if (bubbleData.collapsed != collapsed)
+    {
+        id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+        do
+        {
+            nextBubbleData.collapsed = collapsed;
+        }
+        while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+
+        if (self.delegate)
+        {
+            // Reload all the table
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+    }
+}
+
 #pragma mark - Private methods
 
 - (void)replaceEvent:(MXEvent*)eventToReplace withEvent:(MXEvent*)event
@@ -1907,7 +1940,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 {
                     bubblesSnapshot = [bubbles mutableCopy];
                 }
-                
+
+                NSMutableSet<id<MXKRoomBubbleCellDataStoring>> *collapsingCellDataSeriess = [NSMutableSet set];
+
                 for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
                 {
                     @autoreleasepool
@@ -1926,6 +1961,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         NSAssert([class conformsToProtocol:@protocol(MXKRoomBubbleCellDataStoring)], @"MXKRoomDataSource only manages MXKCellData that conforms to MXKRoomBubbleCellDataStoring protocol");
 
                         BOOL eventManaged = NO;
+                        BOOL updatedBubbleDataHadNoDisplay = NO;
                         id<MXKRoomBubbleCellDataStoring> bubbleData;
                         if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
                         {
@@ -1941,6 +1977,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                             @synchronized (bubbleData)
                             {
+                                updatedBubbleDataHadNoDisplay = bubbleData.hasNoDisplay;
                                 eventManaged = [bubbleData addEvent:queuedEvent.event andRoomState:queuedEvent.state];
                             }
                         }
@@ -1953,6 +1990,86 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             {
                                 // The event is ignored
                                 continue;
+                            }
+
+                            // Check cells collapsing
+                            if (bubbleData.hasAttributedTextMessage)
+                            {
+                                if (bubbleData.collapsable)
+                                {
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards)
+                                    {
+                                        // Try to collapse it with the series at the start of self.bubbles
+                                        if (collapsableSeriesAtStart && [collapsableSeriesAtStart collapseWith:bubbleData])
+                                        {
+                                            // bubbleData becomes the oldest cell data of the current series
+                                            collapsableSeriesAtStart.prevCollapsableCellData = bubbleData;
+                                            bubbleData.nextCollapsableCellData = collapsableSeriesAtStart;
+
+                                            // The new cell must have the collapsed state as the series
+                                            bubbleData.collapsed = collapsableSeriesAtStart.collapsed;
+
+                                            // Release data of the previous header
+                                            collapsableSeriesAtStart.collapseState = nil;
+                                            collapsableSeriesAtStart.collapsedAttributedTextMessage = nil;
+                                            [collapsingCellDataSeriess removeObject:collapsableSeriesAtStart];
+
+                                            // And keep a ref of data for the new start of the series
+                                            collapsableSeriesAtStart = bubbleData;
+                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
+                                        }
+                                        else
+                                        {
+                                            // This is a ending point for a new collapsable series of cells
+                                            collapsableSeriesAtStart = bubbleData;
+                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Try to collapse it with the series at the end of self.bubbles
+                                        if (collapsableSeriesAtEnd && [collapsableSeriesAtEnd collapseWith:bubbleData])
+                                        {
+                                            // Put bubbleData at the series tail
+                                            // Find the tail
+                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtEnd;
+                                            while (tailBubbleData.nextCollapsableCellData)
+                                            {
+                                                tailBubbleData = tailBubbleData.nextCollapsableCellData;
+                                            }
+
+                                            tailBubbleData.nextCollapsableCellData = bubbleData;
+                                            bubbleData.prevCollapsableCellData = tailBubbleData;
+
+                                            // The new cell must have the collapsed state as the series
+                                            bubbleData.collapsed = tailBubbleData.collapsed;
+                                        }
+                                        else
+                                        {
+                                            // This is a starting point for a new collapsable series of cells
+                                            collapsableSeriesAtEnd = bubbleData;
+                                            collapsableSeriesAtEnd.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtEnd];
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // The new bubble is not collapsable.
+                                    // We can close one border of the current series being built (if any)
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSeriesAtStart)
+                                    {
+                                        // This is the begin border of the series
+                                        collapsableSeriesAtStart = nil;
+                                    }
+                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSeriesAtEnd)
+                                    {
+                                        // This is the end border of the series
+                                        collapsableSeriesAtEnd = nil;
+                                    }
+                                }
                             }
 
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
@@ -2070,6 +2187,116 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 addedLiveCellCount++;
                             }
                         }
+                        else if (updatedBubbleDataHadNoDisplay && !bubbleData.hasNoDisplay)
+                        {
+                            // Here the event has been added in an existing bubble data which had no display,
+                            // and the added event provides a display to this bubble data.
+                            if (queuedEvent.direction == MXTimelineDirectionBackwards)
+                            {
+                                // The bubble is the first one.
+                                
+                                // Pagination handling
+                                if ((self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay) && bubbleData.date)
+                                {
+                                    // A new pagination starts with this bubble data
+                                    bubbleData.isPaginationFirstBubble = YES;
+                                    
+                                    // Look for the first next bubble with date to check whether its pagination title is still relevant.
+                                    if (bubblesSnapshot.count)
+                                    {
+                                        NSInteger index = 1;
+                                        id<MXKRoomBubbleCellDataStoring> nextBubbleDataWithDate;
+                                        NSString *firstNextBubbleDateString;
+                                        while (index < bubblesSnapshot.count)
+                                        {
+                                            nextBubbleDataWithDate = bubblesSnapshot[index++];
+                                            firstNextBubbleDateString = [self.eventFormatter dateStringFromDate:nextBubbleDataWithDate.date withTime:NO];
+                                            
+                                            if (firstNextBubbleDateString)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if (firstNextBubbleDateString)
+                                        {
+                                            NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                            nextBubbleDataWithDate.isPaginationFirstBubble = (bubbleDateString && ![firstNextBubbleDateString isEqualToString:bubbleDateString]);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    bubbleData.isPaginationFirstBubble = NO;
+                                }
+                                
+                                // Sender information are required for this new first bubble data
+                                bubbleData.shouldHideSenderInformation = NO;
+                                
+                                // Check whether this information is still relevant for the next bubble.
+                                if (bubblesSnapshot.count > 1)
+                                {
+                                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubblesSnapshot[1];
+                                    
+                                    if (nextBubbleData.isPaginationFirstBubble == NO)
+                                    {
+                                        // Check whether the current first bubble has been sent by the same user.
+                                        nextBubbleData.shouldHideSenderInformation |= [nextBubbleData hasSameSenderAsBubbleCellData:bubbleData];
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // The bubble data is the last one
+                                
+                                // Pagination handling
+                                if (self.bubblesPagination == MXKRoomDataSourceBubblesPaginationPerDay)
+                                {
+                                    // Check whether a new pagination starts at this bubble
+                                    NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
+                                    
+                                    // Look for the first previous bubble with date
+                                    NSInteger index = bubblesSnapshot.count - 1;
+                                    NSString *firstPreviousBubbleDateString;
+                                    while (index--)
+                                    {
+                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = bubblesSnapshot[index];
+                                        firstPreviousBubbleDateString = [self.eventFormatter dateStringFromDate:previousBubbleData.date withTime:NO];
+                                        
+                                        if (firstPreviousBubbleDateString)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (firstPreviousBubbleDateString)
+                                    {
+                                        bubbleData.isPaginationFirstBubble = (bubbleDateString && ![bubbleDateString isEqualToString:firstPreviousBubbleDateString]);
+                                    }
+                                    else
+                                    {
+                                        bubbleData.isPaginationFirstBubble = (bubbleDateString != nil);
+                                    }
+                                }
+                                else
+                                {
+                                    bubbleData.isPaginationFirstBubble = NO;
+                                }
+                                
+                                // Check whether the sender information is relevant for this new bubble.
+                                bubbleData.shouldHideSenderInformation = NO;
+                                if (bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
+                                {
+                                    // Check whether the previous bubble has been sent by the same user.
+                                    NSInteger index = bubblesSnapshot.count - 1;
+                                    if (index--)
+                                    {
+                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = bubblesSnapshot[index];
+                                        bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
+                                    }
+                                }
+                            }
+                        }
                         
                         // Store event-bubble link to the map
                         @synchronized (eventIdToBubbleMap)
@@ -2082,6 +2309,62 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             // Listen to the identifier change for the local events.
                             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(localEventDidChangeIdentifier:) name:kMXEventDidChangeIdentifierNotification object:queuedEvent.event];
                         }
+                    }
+                }
+
+                // Check if all cells of self.bubbles belongs to a single collapse series.
+                // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
+                // in order to handle next forward or backward pagination.
+                if (collapsableSeriesAtStart == bubbles.firstObject)
+                {
+                    // Find the tail
+                    id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtStart;
+                    while (tailBubbleData.nextCollapsableCellData)
+                    {
+                        tailBubbleData = tailBubbleData.nextCollapsableCellData;
+                    }
+
+                    if (tailBubbleData == bubbles.lastObject)
+                    {
+                        collapsableSeriesAtEnd = collapsableSeriesAtStart;
+                    }
+                }
+                else if (collapsableSeriesAtEnd)
+                {
+                    // Find the start
+                    id<MXKRoomBubbleCellDataStoring> startBubbleData = collapsableSeriesAtEnd;
+                    while (startBubbleData.prevCollapsableCellData)
+                    {
+                        startBubbleData = startBubbleData.prevCollapsableCellData;
+                    }
+
+                    if (startBubbleData == bubbles.firstObject)
+                    {
+                        collapsableSeriesAtStart = collapsableSeriesAtEnd;
+                    }
+                }
+
+                // Compose (= compute collapsedAttributedTextMessage) of collapsable seriess
+                for (id<MXKRoomBubbleCellDataStoring> bubbleData in collapsingCellDataSeriess)
+                {
+                    // Get all events of the series
+                    NSMutableArray<MXEvent*> *events = [NSMutableArray array];
+                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubbleData;
+                    do
+                    {
+                        [events addObjectsFromArray:nextBubbleData.events];
+                    }
+                    while ((nextBubbleData = nextBubbleData.nextCollapsableCellData));
+
+                    // Build the summary string for the series
+                    bubbleData.collapsedAttributedTextMessage = [self.eventFormatter attributedStringFromEvents:events withRoomState:bubbleData.collapseState error:nil];
+
+                    // Release collapseState objects, even the one of collapsableSeriesAtStart.
+                    // We do not need to keep its state because if an collapsable event comes before collapsableSeriesAtStart,
+                    // we will take the room state of this event.
+                    if (bubbleData != collapsableSeriesAtEnd)
+                    {
+                        bubbleData.collapseState = nil;
                     }
                 }
             }

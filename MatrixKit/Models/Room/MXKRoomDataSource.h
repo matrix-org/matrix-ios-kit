@@ -470,4 +470,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (void)handleUnsentMessages;
 
+#pragma mark - Bubble collapsing
+
+/**
+ Collapse or expand a series of collapsable bubbles.
+ 
+ @param bubbleData the first bubble of the series.
+ @param collapsed YES to collapse. NO to expand.
+ */
+- (void)collapseRoomBubble:(id<MXKRoomBubbleCellDataStoring>)bubbleData collapsed:(BOOL)collapsed;
+
 @end

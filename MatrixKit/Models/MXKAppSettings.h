@@ -159,6 +159,15 @@
  */
 @property (nonatomic, getter=isCallKitEnabled) BOOL enableCallKit;
 
+#pragma mark - Shared userDefaults
+
+/**
+ A userDefaults object that is shared within the application group. The application group identifier
+ is retrieved from MXSDKOptions sharedInstance (see `applicationGroupIdentifier` property).
+ The default group is "group.org.matrix".
+ */
+@property (nonatomic, readonly) NSUserDefaults *sharedUserDefaults;
+
 #pragma mark - Class methods
 
 /**

@@ -1,3 +1,82 @@
+Changes in MatrixKit in 0.6.2 (2017-08-25)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.9.2).
+ * Support App Extension, thanks to @aramsargsyan (#336).
+ * MXKAppSettings: Add a userDefaults object shared within the application group.
+ * Dark Theme support - MXKView: a new base class to add some functionalities to the UIView (#339).
+ * Dark Theme support - MXKTableViewCell/MXKCollectionViewCell: support customization when the view is initialized or prepared for reuse (#339).
+ * Dark Theme support - MXKRoomViewController: support the customization of the event details view (#343).
+ * MXKPieChartHUD: a new class based on MXKPieChartView used to display pie chart HUDs, thanks to @aramsargsyan (#346).
+ * MXKAccountManager: Add a method to reload existing accounts from the local storage.
+ 
+Translations:
+  * Basque, thanks to @osoitz (PR #348).
+
+Changes in MatrixKit in 0.6.1 (2017-08-08)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.9.1).
+ * MXKEventFormatter: Add emojiOnlyTextFont property to special case the display of message containing only emojis.
+
+Bug fixes:
+ * Fix problem with dismissing of MXCallViewController (https://github.com/vector-im/riot-ios/issues/1405), thanks to @morozkin (#342).
+ 
+Changes in MatrixKit in 0.6.0 (2017-08-01)
+==========================================
+
+Improvements:
+ * Minimum target is now iOS 8.0.
+ * Upgrade MatrixSDK version (v0.9.0).
+ * MXKRoomViewController: Merge of membership events (MELS).
+ * Translation: Add NSBundle+MXKLanguage to change language at runtime and define a fallback language for missing translations.
+ * New MXKLanguagePickerViewController screen to select a language.
+ * MXKEventFormatter: Add singleEmojiTextFont property to special case the display of message with a single emoji (https://github.com/vector-im/riot-ios#1157).
+ * Add the m.audio attachments support (https://github.com/vector-im/riot-ios#1102).
+ * Remove MXKAlert, use UIAlertViewController instead.
+ * MXKRoomBubbleCellDataStoring: Add the tag property.
+ * App Extension support: wrap access to the UIApplication shared instance.
+
+Translations:
+ * Dutch, thanks to @nvbln (PR #318).
+ * German, thanks to @krombel, @esackbauer, @Bamstam.
+ * French, thanks to @krombel, @kaiyou, @babolivier and @bestspyever.
+ * Russian, thanks to @gabrin, @Andrey and @shvchk.
+ * Simplified Chinese, thanks to @tonghuix.
+ * Latvian, thanks to @lauris79.
+
+Bug fixes:
+ * Chat screen: the sender avatar is missing (https://github.com/vector-im/riot-ios#1361).
+ * MXKEventFormatter: Fix URLs with 2 hashes create wrong links (https://github.com/vector-im/riot-ios#1365).
+ * Room with no icon ended up with the icon of a different room.
+
+Changes in MatrixKit in 0.5.2 (2017-06-30)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.8.2).
+ * Add read receipts details screen, thanks to @aramsargsyan (PR #310).
+
+Bug fixes:
+ * Chat screen: the sender avatar is missing (https://github.com/vector-im/riot-ios#1361).
+ * MXKEventFormatter: Fix URLs with 2 hashes create wrong links (https://github.com/vector-im/riot-ios#1365).
+ * Room with no icon ended up with the icon of a different room.
+
+Changes in MatrixKit in 0.5.1 (2017-06-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.8.1).
+ * MXCallViewController: Add waiting status string for MXCallViewController, thanks @morozkin.
+ * Add MXKSoundPlayer to handle app sounds, thanks to @morozkin (PR #306 #307).
+
+Bug fixes:
+ * MXKRoomDataSourceManager: Do not accept call of roomDataSourceForRoom with roomId = nil.
+ * Home: Tapping on an unread room on home page takes you to the wrong room (https://github.com/vector-im/riot-ios#1304).
+ * Member page: empty items (vector-im/riot-ios#1323).
+
 Changes in MatrixKit in 0.5.0 (2017-06-16)
 ==========================================
 

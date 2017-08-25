@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,7 +19,6 @@
 
 #import "MXMediaLoader.h"
 #import "MXK3PID.h"
-#import "MXKAlert.h"
 
 #import "MXMediaManager.h"
 #import "MXKTools.h"
@@ -247,28 +247,41 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     if (saveUserInfoButton.enabled)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            MXKAlert *alert = [[MXKAlert alloc] initWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"message_unsaved_changes"] style:MXKAlertStyleAlert];
+            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"message_unsaved_changes"] preferredStyle:UIAlertControllerStyleAlert];
+            
             [alertsArray addObject:alert];
-            alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"discard"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                [alertsArray removeObject:alert];
-                // Discard changes
-                self.userDisplayName.text = currentDisplayName;
-                [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
-                
-                // Ready to leave
-                if (handler)
-                {
-                    handler();
-                }
-            }];
-            [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                [alertsArray removeObject:alert];
-                
-                // Start saving (Report handler to leave at the end).
-                onReadyToLeaveHandler = handler;
-                [self saveUserInfo];
-            }];
-            [alert showInViewController:self];
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"discard"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        [alertsArray removeObject:alert];
+                                                        
+                                                        // Discard changes
+                                                        self.userDisplayName.text = currentDisplayName;
+                                                        [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                                                        
+                                                        // Ready to leave
+                                                        if (handler)
+                                                        {
+                                                            handler();
+                                                        }
+                                                        
+                                                    }]];
+            
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        [alertsArray removeObject:alert];
+                                                        
+                                                        // Start saving (Report handler to leave at the end).
+                                                        onReadyToLeaveHandler = handler;
+                                                        [self saveUserInfo];
+                                                        
+                                                    }]];
+            
+            [self presentViewController:alert animated:YES completion:nil];
         });
         
         return NO;
@@ -326,8 +339,9 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     
     // Cancel potential alerts
-    for (MXKAlert *alert in alertsArray){
-        [alert dismiss:NO];
+    for (UIAlertController *alert in alertsArray)
+    {
+        [alert dismissViewControllerAnimated:NO completion:nil];
     }
     
     // Remove listener
@@ -388,49 +402,67 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     NSString *displayname = self.userDisplayName.text;
     if ((displayname.length || currentDisplayName.length) && [displayname isEqualToString:currentDisplayName] == NO)
     {
-        
         // Save display name
         __weak typeof(self) weakSelf = self;
+        
         [_mxAccount setUserDisplayName:displayname success:^{
             
-            // Update the current displayname
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentDisplayName = displayname;
-            
-            // Go to the next change saving step
-            [strongSelf saveUserInfo];
+            if (weakSelf)
+            {
+                // Update the current displayname
+                typeof(self) self = weakSelf;
+                self->currentDisplayName = displayname;
+                
+                // Go to the next change saving step
+                [self saveUserInfo];
+            }
             
         } failure:^(NSError *error) {
-             
-             NSLog(@"[MXKAccountDetailsVC] Failed to set displayName");
-             __strong __typeof(weakSelf)strongSelf = weakSelf;
-             
-             // Alert user
-             NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
-             if (!title)
-             {
-                 title = [NSBundle mxk_localizedStringForKey:@"account_error_display_name_change_failed"];
-             }
-             NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-             
-             MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-             [strongSelf->alertsArray addObject:alert];
-             alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                                        {
-                                            [strongSelf->alertsArray removeObject:alert];
-                                            // Discard changes
-                                            strongSelf.userDisplayName.text = strongSelf->currentDisplayName;
-                                            [strongSelf updateUserPicture:strongSelf.mxAccount.userAvatarUrl force:YES];
-                                            // Loop to end saving
-                                            [strongSelf saveUserInfo];
-                                        }];
-             [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"retry"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-              {
-                  [strongSelf->alertsArray removeObject:alert];
-                  // Loop to retry saving
-                  [strongSelf saveUserInfo];
-              }];
-             [alert showInViewController:strongSelf];
+            
+            NSLog(@"[MXKAccountDetailsVC] Failed to set displayName");
+            if (weakSelf)
+            {
+                typeof(self) self = weakSelf;
+                
+                // Alert user
+                NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
+                if (!title)
+                {
+                    title = [NSBundle mxk_localizedStringForKey:@"account_error_display_name_change_failed"];
+                }
+                NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+                
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+                
+                [self->alertsArray addObject:alert];
+                
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            [self->alertsArray removeObject:alert];
+                                                            // Discard changes
+                                                            self.userDisplayName.text = self->currentDisplayName;
+                                                            [self updateUserPicture:self.mxAccount.userAvatarUrl force:YES];
+                                                            // Loop to end saving
+                                                            [self saveUserInfo];
+                                                            
+                                                        }]];
+                
+                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"retry"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            
+                                                            [self->alertsArray removeObject:alert];
+                                                            // Loop to retry saving
+                                                            [self saveUserInfo];
+                                                            
+                                                        }]];
+                
+                
+                [self presentViewController:alert animated:YES completion:nil];
+            }
+            
          }];
         
         return;
@@ -502,25 +534,35 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
-    MXKAlert *alert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-    [alertsArray addObject:alert];
-    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-                               {
-                                   [alertsArray removeObject:alert];
-                                   // Remove change
-                                   self.userDisplayName.text = currentDisplayName;
-                                   [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
-                                   // Loop to end saving
-                                   [self saveUserInfo];
-                               }];
-    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"retry"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-     {
-         [alertsArray removeObject:alert];
-         // Loop to retry saving
-         [self saveUserInfo];
-     }];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
     
-    [alert showInViewController:self];
+    [alertsArray addObject:alert];
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                [alertsArray removeObject:alert];
+                                                
+                                                // Remove change
+                                                self.userDisplayName.text = currentDisplayName;
+                                                [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                                                // Loop to end saving
+                                                [self saveUserInfo];
+                                                
+                                            }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"retry"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                [alertsArray removeObject:alert];
+                                                
+                                                // Loop to retry saving
+                                                [self saveUserInfo];
+                                                
+                                            }]];
+    
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)updateUserPicture:(NSString *)avatar_url force:(BOOL)force
@@ -657,62 +699,71 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
 - (void)showValidationEmailDialogWithMessage:(NSString*)message
 {
-    MXKAlert *alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"account_email_validation_title"]
-                                              message:message
-                                                style:MXKAlertStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"account_email_validation_title"] message:message preferredStyle:UIAlertControllerStyleAlert];
+    
     [alertsArray addObject:alert];
-
-    alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert){
-
-        [alertsArray removeObject:alert];
-
-        emailSubmitButton.enabled = YES;
-
-    }];
-
-    [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"continue"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-        [alertsArray removeObject:alert];
-
-        __weak typeof(self) weakSelf = self;
-
-        // We always bind emails when registering, so let's do the same here
-        [submittedEmail add3PIDToUser:YES success:^{
-
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-            // Release pending email and refresh table to remove related cell
-            strongSelf->emailTextField.text = nil;
-            strongSelf->submittedEmail = nil;
-
-            // Update linked emails
-            [strongSelf loadLinkedEmails];
-
-        } failure:^(NSError *error) {
-
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-            NSLog(@"[MXKAccountDetailsVC] Failed to bind email");
-
-            // Display the same popup again if the error is M_THREEPID_AUTH_FAILED
-            MXError *mxError = [[MXError alloc] initWithNSError:error];
-            if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringThreePIDAuthFailed])
-            {
-                [strongSelf showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_error"]];
-            }
-            else
-            {
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-            }
-
-            // Release the pending email (even if it is Authenticated)
-            [strongSelf.tableView reloadData];
-
-        }];
-    }];
-
-    [alert showInViewController:self];
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                [alertsArray removeObject:alert];
+                                                
+                                                emailSubmitButton.enabled = YES;
+                                                
+                                            }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"continue"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action) {
+                                                
+                                                [alertsArray removeObject:alert];
+                                                
+                                                __weak typeof(self) weakSelf = self;
+                                                
+                                                // We always bind emails when registering, so let's do the same here
+                                                [submittedEmail add3PIDToUser:YES success:^{
+                                                    
+                                                    if (weakSelf)
+                                                    {
+                                                        typeof(self) self = weakSelf;
+                                                        
+                                                        // Release pending email and refresh table to remove related cell
+                                                        self->emailTextField.text = nil;
+                                                        self->submittedEmail = nil;
+                                                        
+                                                        // Update linked emails
+                                                        [self loadLinkedEmails];
+                                                    }
+                                                    
+                                                } failure:^(NSError *error) {
+                                                    
+                                                    if (weakSelf)
+                                                    {
+                                                        typeof(self) self = weakSelf;
+                                                        
+                                                        NSLog(@"[MXKAccountDetailsVC] Failed to bind email");
+                                                        
+                                                        // Display the same popup again if the error is M_THREEPID_AUTH_FAILED
+                                                        MXError *mxError = [[MXError alloc] initWithNSError:error];
+                                                        if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringThreePIDAuthFailed])
+                                                        {
+                                                            [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_error"]];
+                                                        }
+                                                        else
+                                                        {
+                                                            // Notify MatrixKit user
+                                                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                        }
+                                                        
+                                                        // Release the pending email (even if it is Authenticated)
+                                                        [self.tableView reloadData];
+                                                    }
+                                                    
+                                                }];
+                                                
+                                            }]];
+    
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)loadLinkedEmails
@@ -757,13 +808,18 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         // Email check
         if (![MXTools isEmailAddress:emailTextField.text])
         {
-            MXKAlert *alert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_title"] message:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_description"] style:MXKAlertStyleAlert];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_title"] message:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_description"] preferredStyle:UIAlertControllerStyleAlert];
+            
             [alertsArray addObject:alert];
-
-            alert.cancelButtonIndex = [alert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                [alertsArray removeObject:alert];
-            }];
-            [alert showInViewController:self];
+            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        [alertsArray removeObject:alert];
+                                                        
+                                                    }]];
+            
+            [self presentViewController:alert animated:YES completion:nil];
 
             return;
         }
@@ -775,7 +831,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         
         emailSubmitButton.enabled = NO;
 
-        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient nextLink:nil success:^{
+        [submittedEmail requestValidationTokenWithMatrixRestClient:self.mainSession.matrixRestClient isDuringRegistration:NO nextLink:nil success:^{
 
             [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_message"]];
 

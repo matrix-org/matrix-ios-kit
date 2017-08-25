@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -71,12 +72,12 @@
 /**
  Tell whether this bubble has nothing to display (neither a message nor an attachment).
  */
-@property (nonatomic) BOOL hasNoDisplay;
+@property (nonatomic, readonly) BOOL hasNoDisplay;
 
 /**
  The list of events (`MXEvent` instances) handled by this bubble.
  */
-@property (nonatomic, readonly) NSArray *events;
+@property (nonatomic, readonly) NSArray<MXEvent*> *events;
 
 /**
  The bubble attachment (if any).
@@ -104,14 +105,20 @@
 @property (nonatomic) BOOL isAttachmentWithIcon;
 
 /**
- The raw text message (without attributes)
+ Flag that indicates that self.attributedTextMessage will be not nil.
+ This avoids the computation of self.attributedTextMessage that can take time.
  */
-@property (nonatomic) NSString *textMessage;
+@property (nonatomic, readonly) BOOL hasAttributedTextMessage;
 
 /**
  The body of the message with sets of attributes, or kind of content description in case of attachment (e.g. "image attachment")
  */
 @property (nonatomic) NSAttributedString *attributedTextMessage;
+
+/**
+ The raw text message (without attributes)
+ */
+@property (nonatomic) NSString *textMessage;
 
 /**
  Tell whether the sender's name is relevant or not for this bubble.
@@ -149,6 +156,12 @@
  A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
  */
 @property (nonatomic) BOOL useCustomUnsentButton;
+
+/**
+ An integer that you can use to identify cell data in your application.
+ The default value is 0. You can set the value of this tag and use that value to identify the cell data later.
+ */
+@property (nonatomic) NSInteger tag;
 
 #pragma mark - Public methods
 /**
@@ -212,6 +225,46 @@ Update the event because its sent state changed or it is has been redacted.
  @param patternFont optional text font (the pattern font is unchanged if nil).
  */
 - (void)highlightPatternInTextMessage:(NSString*)pattern withForegroundColor:(UIColor*)patternColor andFont:(UIFont*)patternFont;
+
+#pragma mark - Bubble collapsing
+
+/**
+ A Boolean value that indicates if the cell is collapsable.
+ */
+@property (nonatomic) BOOL collapsable;
+
+/**
+ A Boolean value that indicates if the cell and its series is collapsed.
+ */
+@property (nonatomic) BOOL collapsed;
+
+/**
+ The attributed string to display when the collapsable cells series is collapsed.
+ It is not nil only for the start cell of the cells series.
+ */
+@property (nonatomic) NSAttributedString *collapsedAttributedTextMessage;
+
+/**
+ Bidirectional linked list of cells that can be collapsed together.
+ If prevCollapsableCellData is nil, this cell data instance is the data of the start
+ cell of the collapsable cells series.
+ */
+@property (nonatomic) id<MXKRoomBubbleCellDataStoring> prevCollapsableCellData;
+@property (nonatomic) id<MXKRoomBubbleCellDataStoring> nextCollapsableCellData;
+
+/**
+ The room state to use for computing or updating the data to display for the series when it is
+ collapsed.
+ It is not nil only for the start cell of the cells series.
+ */
+@property (nonatomic) MXRoomState *collapseState;
+
+/**
+ Check whether the two cells can be collapsable together.
+
+ @return YES if YES.
+ */
+- (BOOL)collapseWith:(id<MXKRoomBubbleCellDataStoring>)cellData;
 
 @optional
 /**

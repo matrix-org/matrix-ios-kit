@@ -18,7 +18,6 @@
 
 #import <MatrixSDK/MXCallKitAdapter.h>
 
-#import "MXKAlert.h"
 #import "MXKAppSettings.h"
 #import "MXMediaManager.h"
 #import "MXKSoundPlayer.h"
@@ -44,7 +43,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     /**
      The popup showed in case of call stack error.
      */
-    MXKAlert *errorAlert;
+    UIAlertController *errorAlert;
     
     // the room events listener
     id roomListener;
@@ -114,7 +113,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTimeStatusLabel) userInfo:nil repeats:YES];
     
-    self.callerImageView.backgroundColor = [UIColor clearColor];
+    self.callerImageView.defaultBackgroundColor = [UIColor clearColor];
     self.backToAppButton.backgroundColor = [UIColor clearColor];
     self.audioMuteButton.backgroundColor = [UIColor clearColor];
     self.videoMuteButton.backgroundColor = [UIColor clearColor];
@@ -654,15 +653,24 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
 
         __weak typeof(self) weakSelf = self;
-        errorAlert = [[MXKAlert alloc] initWithTitle:title message:msg style:MXKAlertStyleAlert];
-        errorAlert.cancelButtonIndex = [errorAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                                style:MXKAlertActionStyleDefault
-                                                              handler:^(MXKAlert *alert)
-                                        {
-                                            errorAlert = nil;
-                                            [weakSelf dismiss];
-                                        }];
-        [errorAlert showInViewController:self];
+        errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+        
+        [errorAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * action) {
+                                                         
+                                                         typeof(self) self = weakSelf;
+                                                         if (self)
+                                                         {
+                                                             self->errorAlert = nil;
+                                                             
+                                                             [self dismiss];
+                                                         }
+                                                         
+                                                     }]];
+        
+        
+        [self presentViewController:errorAlert animated:YES completion:nil];
         
         // And interrupt the call
         [mxCall hangup];
@@ -766,7 +774,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)updateLocalPreviewLayout
 {
-    UIInterfaceOrientation screenOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    // On IOS 8 and later, the screen size is oriented.
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    BOOL isLandscapeOriented = (bounds.size.width > bounds.size.height);
     
     CGFloat maxPreviewFrameSize, minPreviewFrameSize;
     
@@ -781,7 +791,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         maxPreviewFrameSize = _localPreviewContainerViewWidthConstraint.constant;
     }
     
-    if (UIInterfaceOrientationIsLandscape(screenOrientation))
+    if (isLandscapeOriented)
     {
         _localPreviewContainerViewHeightConstraint.constant = minPreviewFrameSize;
         _localPreviewContainerViewWidthConstraint.constant = maxPreviewFrameSize;
@@ -791,8 +801,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         _localPreviewContainerViewHeightConstraint.constant = maxPreviewFrameSize;
         _localPreviewContainerViewWidthConstraint.constant = minPreviewFrameSize;
     }
-    
-    CGRect bounds = [[UIScreen mainScreen] bounds];
     
     CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
     
@@ -864,7 +872,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
     // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
     BOOL disableIdleTimer = inCall && (mxCall.isVideoCall || isBuiltInReceiverUsed);
-    [UIApplication sharedApplication].idleTimerDisabled = disableIdleTimer;
+    
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        sharedApplication.idleTimerDisabled = disableIdleTimer;
+    }
 }
 
 #pragma mark - UIResponder Touch Events

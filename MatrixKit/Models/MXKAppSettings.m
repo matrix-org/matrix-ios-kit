@@ -26,12 +26,22 @@
 
 static MXKAppSettings *standardAppSettings = nil;
 
+static NSString *const kMXAppGroupID = @"group.org.matrix";
+
+@interface MXKAppSettings ()
+
+@property (nonatomic, readwrite) NSUserDefaults *sharedUserDefaults;
+@property (nonatomic) NSString *currentApplicationGroup;
+
+@end
+
 @implementation MXKAppSettings
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 @synthesize enableCallKit;
+@synthesize sharedUserDefaults;
 
 + (MXKAppSettings *)standardAppSettings
 {
@@ -124,6 +134,38 @@ static MXKAppSettings *standardAppSettings = nil;
         
         enableCallKit = YES;
     }
+}
+
+- (NSUserDefaults *)sharedUserDefaults
+{
+    if (sharedUserDefaults)
+    {
+        // Check whether the current group id did not change.
+        NSString *applicationGroup = [MXSDKOptions sharedInstance].applicationGroupIdentifier;
+        if (!applicationGroup.length)
+        {
+            applicationGroup = kMXAppGroupID;
+        }
+        
+        if (![_currentApplicationGroup isEqualToString:applicationGroup])
+        {
+            // Reset the existing shared object
+            sharedUserDefaults = nil;
+        }
+    }
+    
+    if (!sharedUserDefaults)
+    {
+        _currentApplicationGroup = [MXSDKOptions sharedInstance].applicationGroupIdentifier;
+        if (!_currentApplicationGroup.length)
+        {
+            _currentApplicationGroup = kMXAppGroupID;
+        }
+        
+        sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:_currentApplicationGroup];
+    }
+    
+    return sharedUserDefaults;
 }
 
 #pragma mark - Room display

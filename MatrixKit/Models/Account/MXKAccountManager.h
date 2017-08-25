@@ -121,4 +121,21 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  */
 - (MXKAccount*)accountKnowingRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias;
 
+/**
+ Retrieve an account that knows the user with the passed id.
+
+ Note: The method is not accurate as it returns the first account that matches.
+
+ @param userId the user id.
+ @return the user's account. Nil if no account matches.
+ */
+- (MXKAccount*)accountKnowingUserWithUserId:(NSString*)userId;
+
+/**
+ Force the account manager to reload existing accounts from the local storage.
+ The account manager is supposed to handle itself the list of the accounts.
+ Call this method only when an account has been changed from an other application from the same group.
+ */
+- (void)forceReloadAccounts;
+
 @end

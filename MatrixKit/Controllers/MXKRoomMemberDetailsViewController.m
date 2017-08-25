@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -101,7 +102,7 @@
     // close any pending actionsheet
     if (currentAlert)
     {
-        [currentAlert dismiss:NO];
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
         currentAlert = nil;
     }
     
@@ -277,40 +278,55 @@
             {
                 // Prompt user to ignore content from this user
                 __weak __typeof(self) weakSelf = self;
-                [currentAlert dismiss:NO];
-                currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_ignore_prompt"]  message:nil style:MXKAlertStyleAlert];
+                if (currentAlert)
+                {
+                    [currentAlert dismissViewControllerAnimated:NO completion:nil];
+                }
                 
-                [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->currentAlert = nil;
-                    
-                    // Add the user to the blacklist: ignored users
-                    [strongSelf addPendingActionMask];
-                    [strongSelf.mainSession ignoreUsers:@[strongSelf.mxRoomMember.userId]
-                                         success:^{
-                                             
-                                             [strongSelf removePendingActionMask];
-                                             
-                                         } failure:^(NSError *error) {
-                                             
-                                             [strongSelf removePendingActionMask];
-                                             NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", strongSelf.mxRoomMember.userId);
-                                             
-                                             // Notify MatrixKit user
-                                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                             
-                                         }];
-                    
-                }];
+                currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_ignore_prompt"] message:nil preferredStyle:UIAlertControllerStyleAlert];
                 
-                currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-                    
-                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-                    strongSelf->currentAlert = nil;
-                }];
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"]
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * action) {
+                                                                   
+                                                                   if (weakSelf)
+                                                                   {
+                                                                       typeof(self) self = weakSelf;
+                                                                       self->currentAlert = nil;
+                                                                       
+                                                                       // Add the user to the blacklist: ignored users
+                                                                       [self addPendingActionMask];
+                                                                       [self.mainSession ignoreUsers:@[self.mxRoomMember.userId]
+                                                                                             success:^{
+                                                                                                 
+                                                                                                 [self removePendingActionMask];
+                                                                                                 
+                                                                                             } failure:^(NSError *error) {
+                                                                                                 
+                                                                                                 [self removePendingActionMask];
+                                                                                                 NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", self.mxRoomMember.userId);
+                                                                                                 
+                                                                                                 // Notify MatrixKit user
+                                                                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                                                 
+                                                                                             }];
+                                                                   }
+                                                                   
+                                                               }]];
                 
-                [currentAlert showInViewController:self];
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"]
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * action) {
+                                                                   
+                                                                   if (weakSelf)
+                                                                   {
+                                                                       typeof(self) self = weakSelf;
+                                                                       self->currentAlert = nil;
+                                                                   }
+                                                                   
+                                                               }]];
+                
+                [self presentViewController:currentAlert animated:YES completion:nil];
                 break;
             }
             case MXKRoomMemberDetailsActionUnignore:
@@ -525,7 +541,7 @@
     // Hide potential action sheet
     if (currentAlert)
     {
-        [currentAlert dismiss:NO];
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
         currentAlert = nil;
     }
     
@@ -561,7 +577,7 @@
     
     // set the thumbnail info
     self.memberThumbnail.contentMode = UIViewContentModeScaleAspectFill;
-    self.memberThumbnail.backgroundColor = [UIColor clearColor];
+    self.memberThumbnail.defaultBackgroundColor = [UIColor clearColor];
     [self.memberThumbnail.layer setCornerRadius:self.memberThumbnail.frame.size.width / 2];
     [self.memberThumbnail setClipsToBounds:YES];
     
@@ -852,25 +868,41 @@
         if (promptUser && value == [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId])
         {
             // If the user is setting the same power level as his to another user, ask him for a confirmation
-            [currentAlert dismiss:NO];
-            currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_power_level_prompt"]  message:nil style:MXKAlertStyleAlert];
-
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->currentAlert = nil;
-            }];
-
-            [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert) {
-
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->currentAlert = nil;
-
-                // The user confirms. Apply the power level
-                [strongSelf setPowerLevel:value promptUser:NO];
-            }];
-
-            [currentAlert showInViewController:self];
+            if (currentAlert)
+            {
+                [currentAlert dismissViewControllerAnimated:NO completion:nil];
+            }
+            
+            currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_power_level_prompt"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+            
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               if (weakSelf)
+                                                               {
+                                                                   typeof(self) self = weakSelf;
+                                                                   self->currentAlert = nil;
+                                                               }
+                                                               
+                                                           }]];
+            
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               if (weakSelf)
+                                                               {
+                                                                   typeof(self) self = weakSelf;
+                                                                   self->currentAlert = nil;
+                                                                   
+                                                                   // The user confirms. Apply the power level
+                                                                   [self setPowerLevel:value promptUser:NO];
+                                                               }
+                                                               
+                                                           }]];
+            
+            [self presentViewController:currentAlert animated:YES completion:nil];
         }
         else
         {
@@ -900,42 +932,60 @@
 {
     __weak typeof(self) weakSelf = self;
     
-    // Ask for the power level to set
-    [currentAlert dismiss:NO];
-    currentAlert = [[MXKAlert alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"]  message:nil style:MXKAlertStyleAlert];
+    if (currentAlert)
+    {
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
+    }
+    
+    currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
     
     if (![self.mainSession.myUser.userId isEqualToString:_mxRoomMember.userId])
     {
-        currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-        {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            strongSelf->currentAlert = nil;
-            
-            [strongSelf setPowerLevel:strongSelf.mxRoom.state.powerLevels.usersDefault promptUser:YES];
-        }];
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                           if (weakSelf)
+                                                           {
+                                                               typeof(self) self = weakSelf;
+                                                               self->currentAlert = nil;
+                                                               
+                                                               [self setPowerLevel:self.mxRoom.state.powerLevels.usersDefault promptUser:YES];
+                                                           }
+                                                           
+                                                       }]];
     }
+    
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        typeof(self) self = weakSelf;
         
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%zd", [strongSelf.mxRoom.state.powerLevels powerLevelOfUserWithUserID:strongSelf.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%zd", [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
-    [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-    {
-        UITextField *textField = [alert textFieldAtIndex:0];
-        
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
-        strongSelf->currentAlert = nil;
-        
-        if (textField.text.length > 0)
-        {
-            [strongSelf setPowerLevel:[textField.text integerValue] promptUser:YES];
-        }
-    }];
-    [currentAlert showInViewController:self];
+    
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       
+                                                       if (weakSelf)
+                                                       {
+                                                           typeof(self) self = weakSelf;
+                                                           UITextField *textField = [self->currentAlert textFields].firstObject;
+                                                           self->currentAlert = nil;
+                                                           
+                                                           if (textField.text.length > 0)
+                                                           {
+                                                               [self setPowerLevel:[textField.text integerValue] promptUser:YES];
+                                                           }
+                                                       }
+                                                       
+                                                   }]];
+    
+    [self presentViewController:currentAlert animated:YES completion:nil];
 }
 
 @end

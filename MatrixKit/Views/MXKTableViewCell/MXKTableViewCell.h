@@ -67,6 +67,14 @@ typedef enum : NSUInteger {
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
 
 /**
+ Customize the rendering of the table view cell and its subviews (Do nothing by default).
+ This method is called when the view is initialized or prepared for reuse.
+ 
+ Override this method to customize the table view cell at the application level.
+ */
+- (void)customizeTableViewCellRendering;
+
+/**
  The current cell data displayed by the table view cell
  */
 @property (weak, nonatomic, readonly) MXKCellData *mxkCellData;

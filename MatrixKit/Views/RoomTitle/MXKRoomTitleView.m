@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -40,7 +41,6 @@
     [super awakeFromNib];
     
     [self setTranslatesAutoresizingMaskIntoConstraints: NO];
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     // Add an accessory view to the text view in order to retrieve keyboard view.
     inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -60,6 +60,17 @@
 {
     inputAccessoryView = nil;
 }
+
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+#pragma mark -
 
 - (void)refreshDisplay
 {
@@ -168,15 +179,21 @@
             __weak typeof(self) weakSelf = self;
             if (currentAlert)
             {
-                [currentAlert dismiss:NO];
+                [currentAlert dismissViewControllerAnimated:NO completion:nil];
             }
-            currentAlert = [[MXKAlert alloc] initWithTitle:nil message:alertMsg style:MXKAlertStyleAlert];
-            currentAlert.cancelButtonIndex = [currentAlert addActionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:MXKAlertActionStyleDefault handler:^(MXKAlert *alert)
-            {
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                strongSelf->currentAlert = nil;
-            }];
-            [self.delegate roomTitleView:self presentMXKAlert:currentAlert];
+            
+            currentAlert = [UIAlertController alertControllerWithTitle:nil message:alertMsg preferredStyle:UIAlertControllerStyleAlert];
+            
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action) {
+                                                        
+                                                        typeof(self) self = weakSelf;
+                                                        self->currentAlert = nil;
+                                                        
+                                                    }]];
+            
+            [self.delegate roomTitleView:self presentAlertController:currentAlert];
             return NO;
         }
         return YES;

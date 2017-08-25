@@ -16,7 +16,55 @@
 
 #import <UIKit/UIKit.h>
 
+#define MXKTOOLS_LARGE_IMAGE_SIZE    1024
+#define MXKTOOLS_MEDIUM_IMAGE_SIZE   768
+#define MXKTOOLS_SMALL_IMAGE_SIZE    512
+
+/**
+ Structure representing an the size of an image and its file size.
+ */
+typedef struct
+{
+    CGSize imageSize;
+    NSUInteger fileSize;
+    
+} MXKImageCompressionSize;
+
+/**
+ Structure representing the sizes of image (image size and file size) according to
+ different level of compression.
+ */
+
+typedef struct
+{
+    MXKImageCompressionSize small;
+    MXKImageCompressionSize medium;
+    MXKImageCompressionSize large;
+    MXKImageCompressionSize original;
+    
+    CGFloat actualLargeSize;
+    
+} MXKImageCompressionSizes;
+
 @interface MXKTools : NSObject
+
+#pragma mark - Strings
+
+/**
+ Determine if a string contains one emoji and only one.
+ 
+ @param string the string to check.
+ @return YES if YES.
+ */
++ (BOOL)isSingleEmojiString:(NSString*)string;
+
+/**
+ Determine if a string contains only emojis.
+
+ @param string the string to check.
+ @return YES if YES.
+ */
++ (BOOL)isEmojiOnlyString:(NSString*)string;
 
 #pragma mark - Time
 
@@ -96,6 +144,13 @@
  @return image with `UIImageOrientationUp` orientation.
  */
 + (UIImage*)forceImageOrientationUp:(UIImage*)imageSrc;
+
+/**
+ Return struct MXKImageCompressionSizes representing the available compresseion sizes for the image
+ 
+ @param image the image to get available sizes for
+ */
++ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image;
 
 /**
  Compute image size to fit in specific box size (in aspect fit mode)

@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -41,6 +42,7 @@ NSString *const kMXKRoomBubbleCellShouldInteractWithURL = @"kMXKRoomBubbleCellSh
 
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
+NSString *const kMXKRoomBubbleCellReceiptsContainerKey = @"kMXKRoomBubbleCellReceiptsContainerKey";
 NSString *const kMXKRoomBubbleCellUrl = @"kMXKRoomBubbleCellUrl";
 
 static BOOL _disableLongPressGestureOnEvent;
@@ -101,7 +103,6 @@ static BOOL _disableLongPressGestureOnEvent;
     
     if (self.pictureView)
     {
-        self.pictureView.backgroundColor = [UIColor blackColor];
         self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         
         // Listen to avatar tap
@@ -148,7 +149,7 @@ static BOOL _disableLongPressGestureOnEvent;
     
     if (self.bubbleOverlayContainer)
     {
-        // Add tap recognizer to open attachment
+        // Add tap recognizer on overlay container
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onOverlayTap:)];
         [tapGesture setNumberOfTouchesRequired:1];
         [tapGesture setNumberOfTapsRequired:1];
@@ -164,6 +165,14 @@ static BOOL _disableLongPressGestureOnEvent;
     [self.contentView addGestureRecognizer:tapGesture];
     
     self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
+}
+
+- (void)customizeTableViewCellRendering
+{
+    [super customizeTableViewCellRendering];
+    
+    // Clear the default background color of a MXKImageView instance
+    self.pictureView.defaultBackgroundColor = [UIColor clearColor];
 }
 
 - (void)layoutSubviews
@@ -324,9 +333,6 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             self.pictureView.enableInMemoryCache = YES;
             [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];
-            
-            // Clear the default background color of a MXKImageView instance
-            self.pictureView.backgroundColor = [UIColor clearColor];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)
@@ -413,7 +419,7 @@ static BOOL _disableLongPressGestureOnEvent;
             NSAttributedString* newText = nil;
             
             // Underline attached file name
-            if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
@@ -721,8 +727,18 @@ static BOOL _disableLongPressGestureOnEvent;
     }
     self.bubbleInfoContainer.hidden = YES;
     
+    // Remove temporary subviews
+    if (self.tmpSubviews)
+    {
+        for (UIView *view in self.tmpSubviews)
+        {
+            [view removeFromSuperview];
+        }
+        self.tmpSubviews = nil;
+    }
+    
     // Remove potential overlay subviews
-    if (self.bubbleOverlayContainer && self.bubbleOverlayContainer.subviews.count > 0)
+    if (self.bubbleOverlayContainer)
     {
         NSArray* subviews = self.bubbleOverlayContainer.subviews;
         
@@ -730,8 +746,9 @@ static BOOL _disableLongPressGestureOnEvent;
         {
             [view removeFromSuperview];
         }
+        
+        self.bubbleOverlayContainer.hidden = YES;
     }
-    self.bubbleOverlayContainer.hidden = YES;
     
     if (self.progressView)
     {
@@ -903,7 +920,7 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         // Check whether the current displayed text corresponds to an attached file
-        if (bubbleData.attachment && bubbleData.attachment.type == MXKAttachmentTypeFile && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
         }
@@ -924,6 +941,12 @@ static NSMutableDictionary *childClasses;
                 
                 for (MXKRoomBubbleComponent *component in bubbleComponents)
                 {
+                    // Ignore components without display.
+                    if (!component.attributedTextMessage)
+                    {
+                        continue;
+                    }
+                        
                     if (tapPoint.y < component.position.y)
                     {
                         break;
@@ -1053,6 +1076,12 @@ static NSMutableDictionary *childClasses;
                 CGPoint longPressPoint = [longPressGestureRecognizer locationInView:view];
                 for (MXKRoomBubbleComponent *component in bubbleComponents)
                 {
+                    // Ignore components without display.
+                    if (!component.attributedTextMessage)
+                    {
+                        continue;
+                    }
+                    
                     if (longPressPoint.y < component.position.y)
                     {
                         break;

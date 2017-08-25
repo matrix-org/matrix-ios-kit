@@ -45,6 +45,12 @@ extern NSString *const kCmdChangeRoomTopic;
 {
 @protected
     /**
+     The identifier of the current event displayed at the bottom of the table (just above the toolbar).
+     Use to anchor the message displayed at the bottom during table refresh.
+     */
+    NSString *currentEventIdAtTableBottom;
+    
+    /**
      Boolean value used to scroll to bottom the bubble history after refresh.
      */
     BOOL shouldScrollToBottomOnTableRefresh;
@@ -57,7 +63,7 @@ extern NSString *const kCmdChangeRoomTopic;
     /**
      Current alert (if any).
      */
-    MXKAlert *currentAlert;
+    UIAlertController *currentAlert;
     
     /**
      The document interaction Controller used to share attachment
@@ -78,6 +84,11 @@ extern NSString *const kCmdChangeRoomTopic;
      Tell whether a device rotation is in progress
      */
     BOOL isSizeTransitionInProgress;
+    
+    /**
+     The current visibility of the status bar in this view controller.
+     */
+    BOOL isStatusBarHidden;
 }
 
 /**
@@ -329,6 +340,14 @@ extern NSString *const kCmdChangeRoomTopic;
  @param attachmentsViewerClass a MXKAttachmentsViewController-inherited class, or nil to restore the default class.
  */
 - (void)setAttachmentsViewerClass:(Class)attachmentsViewerClass;
+
+/**
+ Register the view class used to display the details of an event.
+ MXKEventDetailsView is used by default.
+ 
+ @param eventDetailsViewClass a MXKEventDetailsView-inherited class.
+ */
+- (void)setEventDetailsViewClass:(Class)eventDetailsViewClass;
 
 /**
  Detect and process potential IRC command in provided string.

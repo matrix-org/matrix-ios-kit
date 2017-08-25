@@ -50,11 +50,22 @@ static NSAttributedString *verticalWhitespace = nil;
 
 @implementation MXKEncryptionInfoView
 
++ (UINib *)nib
+{
+    // Check whether a nib file is available
+    NSBundle *mainBundle = [NSBundle mxk_bundleForClass:self.class];
+    
+    NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
+    if (path)
+    {
+        return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:mainBundle];
+    }
+    return [UINib nibWithNibName:NSStringFromClass([MXKEncryptionInfoView class]) bundle:[NSBundle mxk_bundleForClass:[MXKEncryptionInfoView class]]];
+}
+
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    
-    _defaultTextColor = [UIColor blackColor];
     
     // Localize string
     [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateNormal];
@@ -83,12 +94,20 @@ static NSAttributedString *verticalWhitespace = nil;
     [super removeFromSuperview];
 }
 
+#pragma mark - Override MXKView
+
+-(void)customizeViewRendering
+{
+    [super customizeViewRendering];
+    
+    _defaultTextColor = [UIColor blackColor];
+}
+
+#pragma mark -
+
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKEncryptionInfoView class]] loadNibNamed:NSStringFromClass([MXKEncryptionInfoView class])
-                                                                                      owner:nil
-                                                                                    options:nil];
-    self = nibViews.firstObject;
+    self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     if (self)
     {
         mxEvent = event;
@@ -105,10 +124,7 @@ static NSAttributedString *verticalWhitespace = nil;
 
 - (instancetype)initWithDeviceInfo:(MXDeviceInfo*)deviceInfo andMatrixSession:(MXSession*)session
 {
-    NSArray *nibViews = [[NSBundle bundleForClass:[MXKEncryptionInfoView class]] loadNibNamed:NSStringFromClass([MXKEncryptionInfoView class])
-                                                                                        owner:nil
-                                                                                      options:nil];
-    self = nibViews.firstObject;
+    self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     if (self)
     {
         mxEvent = nil;

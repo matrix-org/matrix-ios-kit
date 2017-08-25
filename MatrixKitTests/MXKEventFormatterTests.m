@@ -36,6 +36,11 @@
     // Create a minimal event formatter
     // Note: it may not be enough for testing all MXKEventFormatter methods
     eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:nil];
+
+    eventFormatter.treatMatrixUserIdAsLink = YES;
+    eventFormatter.treatMatrixRoomIdAsLink = YES;
+    eventFormatter.treatMatrixRoomAliasAsLink = YES;
+    eventFormatter.treatMatrixEventIdAsLink = YES;
     
     anEvent = [[MXEvent alloc] init];
     anEvent.roomId = @"aRoomId";
@@ -85,5 +90,45 @@
     XCTAssert(!openParagraphExists && !closeParagraphExists, "The html must not contain any opening or closing paragraph tags.");
 }
 
+#pragma mark - Links
+
+- (void)testRoomAliasLink
+{
+    NSString *s = @"Matrix HQ room is at #matrix:matrix.org.";
+    NSAttributedString *as = [eventFormatter renderString:s forEvent:anEvent];
+
+    NSRange linkRange = [s rangeOfString:@"#matrix:matrix.org"];
+
+    __block NSUInteger ranges = 0;
+    __block BOOL linkCreated = NO;
+
+    [as enumerateAttributesInRange:NSMakeRange(0, as.length) options:(0) usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+
+        ranges++;
+
+        if (NSEqualRanges(linkRange, range))
+        {
+            linkCreated = (attrs[NSLinkAttributeName] != nil);
+        }
+    }];
+
+    XCTAssertEqual(ranges, 3, @"A sub-component must have been found");
+    XCTAssert(linkCreated, @"Link not created as expected: %@", as);
+}
+
+- (void)testLinkWithRoomAliasLink
+{
+    NSString *s = @"Matrix HQ room is at https://matrix.to/#/room/#matrix:matrix.org.";
+    NSAttributedString *as = [eventFormatter renderString:s forEvent:anEvent];
+
+    __block NSUInteger ranges = 0;
+
+    [as enumerateAttributesInRange:NSMakeRange(0, as.length) options:(0) usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+
+        ranges++;
+    }];
+
+    XCTAssertEqual(ranges, 1, @"There should be no link in this case. We let the UI manage the link");
+}
 
 @end

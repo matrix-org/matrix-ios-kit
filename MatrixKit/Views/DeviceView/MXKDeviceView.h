@@ -17,7 +17,7 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
-#import "MXKAlert.h"
+#import "MXKView.h"
 
 /**
  MXKDeviceView class may be used to display the information of a user's device.
@@ -28,12 +28,12 @@
 @protocol MXKDeviceViewDelegate <NSObject>
 
 /**
- Tells the delegate that a MXKAlert must be presented.
+ Tells the delegate that an alert must be presented.
  
  @param deviceView the device view.
  @param alert the alert to present.
  */
-- (void)deviceView:(MXKDeviceView*)deviceView presentMXKAlert:(MXKAlert*)alert;
+- (void)deviceView:(MXKDeviceView*)deviceView presentAlertController:(UIAlertController*)alert;
 
 @optional
 
@@ -47,7 +47,7 @@
 
 @end
 
-@interface MXKDeviceView : UIView <UIGestureRecognizerDelegate>
+@interface MXKDeviceView : MXKView <UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (weak, nonatomic) IBOutlet UIView *containerView;

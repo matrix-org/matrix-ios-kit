@@ -25,11 +25,12 @@
 
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
+#import "NSBundle+MXKLanguage.h"
+#import "UIAlertController+MatrixKit.h"
 
 #import "MXKEventFormatter.h"
 
 #import "MXKTools.h"
-#import "MXKAlert.h"
 
 #import "MXKViewController.h"
 #import "MXKRoomViewController.h"
@@ -51,6 +52,8 @@
 #import "MXKAuthInputsEmailCodeBasedView.h"
 #import "MXKAuthenticationFallbackWebView.h"
 #import "MXKAuthenticationRecaptchaWebView.h"
+
+#import "MXKView.h"
 
 #import "MXKRoomCreationInputs.h"
 
@@ -79,7 +82,7 @@
 
 #import "MXKRoomMemberTableViewCell.h"
 #import "MXKAccountTableViewCell.h"
-
+#import "MXKReadReceiptTableViewCell.h"
 #import "MXKPushRuleTableViewCell.h"
 #import "MXKPushRuleCreationTableViewCell.h"
 
@@ -130,4 +133,4 @@
 #import "MXKEncryptionInfoView.h"
 
 #import "MXKCountryPickerViewController.h"
-
+#import "MXKLanguagePickerViewController.h"
