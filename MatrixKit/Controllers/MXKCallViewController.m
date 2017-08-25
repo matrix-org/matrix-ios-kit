@@ -231,6 +231,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [hideOverlayTimer invalidate];
     [updateStatusTimer invalidate];
     
+    _incomingCallView = nil;
+    
     [super destroy];
 }
 
