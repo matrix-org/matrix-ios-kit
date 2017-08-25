@@ -196,6 +196,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
         _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
+        _showDecryptedContentInNotifications = [coder decodeBoolForKey:@"showDecryptedContentInNotifications"];
+        
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
     }
@@ -245,6 +247,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeBool:_disabled forKey:@"disabled"];
 
     [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
+    
+    [coder encodeBool:_showDecryptedContentInNotifications forKey:@"showDecryptedContentInNotifications"];
 }
 
 #pragma mark - Properties
@@ -422,6 +426,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     _warnedAboutEncryption = warnedAboutEncryption;
 
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
+- (void)setShowDecryptedContentInNotifications:(BOOL)showDecryptedContentInNotifications
+{
+    _showDecryptedContentInNotifications = showDecryptedContentInNotifications;
+    
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
 }
