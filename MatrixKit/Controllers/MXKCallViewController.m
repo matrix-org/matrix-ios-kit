@@ -523,6 +523,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
+            speakerButton.selected = call.audioToSpeaker;
             [localPreviewActivityView startAnimating];
             break;
         case MXCallStateCreateOffer:
@@ -560,15 +561,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 // Well, hide does not work. So, shrink the view to nil
                 self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
             }
-            
-            // Check whether it is an actual state change or just a refresh
-            if (event)
-            {
-                // Turn on speaker on connected video call (ONLY when the built-in receiver is currently used)
-                call.audioToSpeaker = (call.isVideoCall && self.isBuiltInReceiverAudioOuput);
-                speakerButton.selected = call.audioToSpeaker;
-            }
-            
+
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
