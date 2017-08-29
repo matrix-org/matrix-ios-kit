@@ -54,6 +54,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @property (nonatomic, assign) Boolean isRinging;
 
+@property (nonatomic, nullable) UIView *incomingCallView;
+
 @end
 
 @implementation MXKCallViewController
@@ -228,6 +230,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     [hideOverlayTimer invalidate];
     [updateStatusTimer invalidate];
+    
+    _incomingCallView = nil;
     
     [super destroy];
 }
@@ -525,6 +529,54 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = NO;
             speakerButton.selected = call.audioToSpeaker;
             [localPreviewActivityView startAnimating];
+            
+            // Try to show a special view for incoming view
+            if (call.isIncoming && !self.incomingCallView)
+            {
+                UIView *incomingCallView = [self createIncomingCallView];
+                if (incomingCallView)
+                {
+                    self.incomingCallView = incomingCallView;
+                    [self.view addSubview:incomingCallView];
+                    
+                    incomingCallView.translatesAutoresizingMaskIntoConstraints = NO;
+                    
+                    [NSLayoutConstraint activateConstraints:@[
+                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
+                                                                                           attribute:NSLayoutAttributeTop
+                                                                                           relatedBy:NSLayoutRelationEqual
+                                                                                              toItem:self.view
+                                                                                           attribute:NSLayoutAttributeTop
+                                                                                          multiplier:1.0
+                                                                                            constant:0.0],
+                                                              
+                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
+                                                                                           attribute:NSLayoutAttributeLeading
+                                                                                           relatedBy:NSLayoutRelationEqual
+                                                                                              toItem:self.view
+                                                                                           attribute:NSLayoutAttributeLeading
+                                                                                          multiplier:1.0
+                                                                                            constant:0.0],
+                                                              
+                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
+                                                                                           attribute:NSLayoutAttributeBottom
+                                                                                           relatedBy:NSLayoutRelationEqual
+                                                                                              toItem:self.view
+                                                                                           attribute:NSLayoutAttributeBottom
+                                                                                          multiplier:1.0
+                                                                                            constant:0.0],
+                                                              
+                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
+                                                                                           attribute:NSLayoutAttributeTrailing
+                                                                                           relatedBy:NSLayoutRelationEqual
+                                                                                              toItem:self.view
+                                                                                           attribute:NSLayoutAttributeTrailing
+                                                                                          multiplier:1.0
+                                                                                            constant:0.0]
+                                                              ]];
+                }
+            }
+            
             break;
         case MXCallStateCreateOffer:
             self.isRinging = YES;
@@ -548,6 +600,21 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         case MXCallStateConnecting:
             self.isRinging = NO;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
+            
+            // User has accepted the call and we can remove incomingCallView
+            if (self.incomingCallView)
+            {
+                [UIView transitionWithView:self.view
+                                  duration:0.33
+                                   options:UIViewAnimationOptionTransitionCrossDissolve | UIViewAnimationOptionCurveEaseOut
+                                animations:^{
+                                    [self.incomingCallView removeFromSuperview];
+                                }
+                                completion:^(BOOL finished) {
+                                    self.incomingCallView = nil;
+                                }];
+            }
+            
             break;
         case MXCallStateConnected:
             self.isRinging = NO;
@@ -831,6 +898,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         sharedApplication.idleTimerDisabled = disableIdleTimer;
     }
+}
+
+- (UIView *)createIncomingCallView
+{
+    return nil;
 }
 
 #pragma mark - UIResponder Touch Events
