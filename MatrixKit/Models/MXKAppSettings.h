@@ -40,12 +40,26 @@
  The types of events allowed to be displayed in room history.
  Its value depends on `showAllEventsInRoomHistory`.
  */
-@property (nonatomic, readonly) NSArray *eventsFilterForMessages;
+@property (nonatomic) NSArray<MXEventTypeString> *eventsFilterForMessages;
 
 /**
  All the event types which may be displayed in the room history.
  */
-@property (nonatomic, readonly) NSArray *allEventTypesForMessages;
+@property (nonatomic, readonly) NSArray<MXEventTypeString> *allEventTypesForMessages;
+
+/**
+ Add event types to `eventsFilterForMessages` and `eventsFilterForMessages`.
+ 
+ @param eventTypes the event types to add.
+ */
+- (void)addSupportedEventTypes:(NSArray<MXEventTypeString> *)eventTypes;
+
+/**
+ Remove event types from `eventsFilterForMessages` and `eventsFilterForMessages`.
+
+ @param eventTypes the event types to remove.
+ */
+- (void)removeSupportedEventTypes:(NSArray<MXEventTypeString> *)eventTypes;
 
 /**
  Display redacted events in room history.

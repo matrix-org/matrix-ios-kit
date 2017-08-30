@@ -29,6 +29,10 @@ static MXKAppSettings *standardAppSettings = nil;
 static NSString *const kMXAppGroupID = @"group.org.matrix";
 
 @interface MXKAppSettings ()
+{
+    NSMutableArray <NSString*> *eventsFilterForMessages;
+    NSMutableArray <NSString*> *allEventTypesForMessages;
+}
 
 @property (nonatomic, readwrite) NSUserDefaults *sharedUserDefaults;
 @property (nonatomic) NSString *currentApplicationGroup;
@@ -74,6 +78,41 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+
+        eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
+                                                                  kMXEventTypeStringRoomName,
+                                                                  kMXEventTypeStringRoomTopic,
+                                                                  kMXEventTypeStringRoomMember,
+                                                                  kMXEventTypeStringRoomEncrypted,
+                                                                  kMXEventTypeStringRoomEncryption,
+                                                                  kMXEventTypeStringRoomHistoryVisibility,
+                                                                  kMXEventTypeStringRoomMessage,
+                                                                  kMXEventTypeStringRoomThirdPartyInvite,
+                                                                  kMXEventTypeStringCallInvite,
+                                                                  kMXEventTypeStringCallAnswer,
+                                                                  kMXEventTypeStringCallHangup
+                                                                  ]];
+
+        // List all the event types, except kMXEventTypeStringPresence which are not related to a specific room.
+        allEventTypesForMessages = [NSMutableArray arrayWithArray:@[
+                                                                    kMXEventTypeStringRoomName,
+                                                                    kMXEventTypeStringRoomTopic,
+                                                                    kMXEventTypeStringRoomMember,
+                                                                    kMXEventTypeStringRoomCreate,
+                                                                    kMXEventTypeStringRoomEncrypted,
+                                                                    kMXEventTypeStringRoomEncryption,
+                                                                    kMXEventTypeStringRoomJoinRules,
+                                                                    kMXEventTypeStringRoomPowerLevels,
+                                                                    kMXEventTypeStringRoomAliases,
+                                                                    kMXEventTypeStringRoomHistoryVisibility,
+                                                                    kMXEventTypeStringRoomMessage,
+                                                                    kMXEventTypeStringRoomMessageFeedback,
+                                                                    kMXEventTypeStringRoomRedaction,
+                                                                    kMXEventTypeStringRoomThirdPartyInvite,
+                                                                    kMXEventTypeStringCallInvite,
+                                                                    kMXEventTypeStringCallAnswer,
+                                                                    kMXEventTypeStringCallHangup
+                                                                   ]];
     }
     return self;
 }
@@ -198,44 +237,25 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         // Display only a subset of events
-        return @[
-                 kMXEventTypeStringRoomName,
-                 kMXEventTypeStringRoomTopic,
-                 kMXEventTypeStringRoomMember,
-                 kMXEventTypeStringRoomEncrypted,
-                 kMXEventTypeStringRoomEncryption,
-                 kMXEventTypeStringRoomHistoryVisibility,
-                 kMXEventTypeStringRoomMessage,
-                 kMXEventTypeStringRoomThirdPartyInvite,
-                 kMXEventTypeStringCallInvite,
-                 kMXEventTypeStringCallAnswer,
-                 kMXEventTypeStringCallHangup
-                 ];
+        return eventsFilterForMessages;
     }
 }
 
 - (NSArray *)allEventTypesForMessages
 {
-    // List all the event types, except kMXEventTypeStringPresence which are not related to a specific room.
-    return @[
-             kMXEventTypeStringRoomName,
-             kMXEventTypeStringRoomTopic,
-             kMXEventTypeStringRoomMember,
-             kMXEventTypeStringRoomCreate,
-             kMXEventTypeStringRoomEncrypted,
-             kMXEventTypeStringRoomEncryption,
-             kMXEventTypeStringRoomJoinRules,
-             kMXEventTypeStringRoomPowerLevels,
-             kMXEventTypeStringRoomAliases,
-             kMXEventTypeStringRoomHistoryVisibility,
-             kMXEventTypeStringRoomMessage,
-             kMXEventTypeStringRoomMessageFeedback,
-             kMXEventTypeStringRoomRedaction,
-             kMXEventTypeStringRoomThirdPartyInvite,
-             kMXEventTypeStringCallInvite,
-             kMXEventTypeStringCallAnswer,
-             kMXEventTypeStringCallHangup
-             ];
+    return allEventTypesForMessages;
+}
+
+- (void)addSupportedEventTypes:(NSArray<NSString *> *)eventTypes
+{
+    [eventsFilterForMessages addObjectsFromArray:eventTypes];
+    [allEventTypesForMessages addObjectsFromArray:eventTypes];
+}
+
+- (void)removeSupportedEventTypes:(NSArray<NSString *> *)eventTypes
+{
+    [eventsFilterForMessages removeObjectsInArray:eventTypes];
+    [allEventTypesForMessages removeObjectsInArray:eventTypes];
 }
 
 - (BOOL)showRedactionsInRoomHistory
