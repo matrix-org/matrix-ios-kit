@@ -40,7 +40,7 @@
  The types of events allowed to be displayed in room history.
  Its value depends on `showAllEventsInRoomHistory`.
  */
-@property (nonatomic) NSArray<MXEventTypeString> *eventsFilterForMessages;
+@property (nonatomic, readonly) NSArray<MXEventTypeString> *eventsFilterForMessages;
 
 /**
  All the event types which may be displayed in the room history.
