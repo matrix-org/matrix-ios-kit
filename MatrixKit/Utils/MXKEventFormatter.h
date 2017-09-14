@@ -56,6 +56,11 @@ typedef enum : NSUInteger {
 {
 @protected
     /**
+     The matrix session. Used to get contextual data.
+     */
+    MXSession *mxSession;
+    
+    /**
      The date formatter used to build date string without time information.
      */
     NSDateFormatter *dateFormatter;
