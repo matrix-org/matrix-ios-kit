@@ -32,11 +32,6 @@
 @interface MXKEventFormatter ()
 {
     /**
-     The matrix session. Used to get contextual data.
-     */
-    MXSession *mxSession;
-
-    /**
      The default room summary updater from the MXSession.
      */
     MXRoomSummaryUpdater *defaultRoomSummaryUpdater;

@@ -262,9 +262,9 @@
 "notice_placed_video_call" = "%@ a débuté un appel vidéo";
 "notice_answered_video_call" = "%@ a répondu à l'appel";
 "notice_ended_video_call" = "%@ a terminé l'appel";
-"notice_conference_call_request" = "%@ a débuté une conférence audio";
-"notice_conference_call_started" = "Conférence audio démarrée";
-"notice_conference_call_finished" = "Conférence audio terminée";
+"notice_conference_call_request" = "%@ a débuté une conférence";
+"notice_conference_call_started" = "Conférence démarrée";
+"notice_conference_call_finished" = "Conférence terminée";
 // button names 
 "ok" = "OK";
 "send" = "Envoyer";

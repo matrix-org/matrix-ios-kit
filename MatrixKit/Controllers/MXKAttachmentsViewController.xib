@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKAttachmentsViewController">
             <connections>
                 <outlet property="attachmentsCollection" destination="LOp-cf-Sji" id="4Zx-KZ-fkh"/>
+                <outlet property="backButton" destination="VjO-K2-a0w" id="VlD-Iw-NT5"/>
+                <outlet property="navigationBar" destination="orb-yb-k6g" id="ILw-DO-IH2"/>
                 <outlet property="view" destination="iN0-l3-epB" id="ieV-u7-rXU"/>
             </connections>
         </placeholder>
@@ -32,6 +34,19 @@
                         <outlet property="delegate" destination="-1" id="z1d-ep-n4n"/>
                     </connections>
                 </collectionView>
+                <navigationBar contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="orb-yb-k6g">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <items>
+                        <navigationItem id="lP4-eZ-AQ8">
+                            <barButtonItem key="leftBarButtonItem" image="back_icon.png" style="plain" id="VjO-K2-a0w">
+                                <connections>
+                                    <action selector="onButtonPressed:" destination="-1" id="PEa-WB-Up1"/>
+                                </connections>
+                            </barButtonItem>
+                        </navigationItem>
+                    </items>
+                </navigationBar>
             </subviews>
             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -43,4 +58,7 @@
             <nil key="simulatedStatusBarMetrics"/>
         </view>
     </objects>
+    <resources>
+        <image name="back_icon.png" width="13" height="23"/>
+    </resources>
 </document>

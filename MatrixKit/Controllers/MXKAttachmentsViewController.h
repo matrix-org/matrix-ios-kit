@@ -29,6 +29,8 @@ limitations under the License.
 @interface MXKAttachmentsViewController : MXKViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentInteractionControllerDelegate, MXKDestinationAttachmentAnimatorDelegate>
 
 @property (nonatomic) IBOutlet UICollectionView *attachmentsCollection;
+@property (nonatomic) IBOutlet UINavigationBar *navigationBar;
+@property (unsafe_unretained, nonatomic) IBOutlet UIBarButtonItem *backButton;
 
 /**
  The attachments array.
@@ -85,6 +87,11 @@ limitations under the License.
  
  */
 - (void)displayAttachments:(NSArray*)attachmentArray focusOn:(NSString*)eventId;
+
+/**
+ Action used to handle the `backButton` in the navigation bar. 
+ */
+- (IBAction)onButtonPressed:(id)sender;
 
 @end
 

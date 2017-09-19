@@ -1008,6 +1008,11 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         {
             notificationsCell = [[MXKTableViewCellWithLabelAndSwitch alloc] init];
         }
+        else
+        {
+            // Force layout before reusing a cell (fix switch displayed outside the screen)
+            [notificationsCell layoutIfNeeded];
+        }
         
         [notificationsCell.mxkSwitch addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventValueChanged];
         
