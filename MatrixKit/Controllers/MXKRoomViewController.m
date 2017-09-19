@@ -336,13 +336,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         _bubblesTableView.hidden = NO;
     }
-    
-    // Remove potential attachments viewer
-    if (attachmentsViewer)
-    {
-        [attachmentsViewer destroy];
-        attachmentsViewer = nil;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated

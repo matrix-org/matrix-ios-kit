@@ -194,7 +194,7 @@ before opening MatrixKit.xcworkspace.
 Attributions
 ============
 
-The filled icons play, pause, minus and keyboard are taken from icons8: http://icons8.com/
+The filled icons play, pause, minus, back and keyboard are taken from icons8: http://icons8.com/
 
 Copyright & License
 ==================
