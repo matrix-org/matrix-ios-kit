@@ -494,7 +494,11 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 
     // Send data without compression if the image type is not jpeg
-    if (mimetype && [mimetype isEqualToString:@"image/jpeg"] == NO && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:withMimeType:)])
+    // Force compression for a heic image so that we generate jpeg from it
+    if (mimetype
+        && [mimetype isEqualToString:@"image/jpeg"] == NO
+        && [mimetype isEqualToString:@"image/heic"] == NO
+        && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:withMimeType:)])
     {
         // Check whether the url references the image in the AssetsLibrary framework
         if ([imageURL.scheme isEqualToString:@"assets-library"])
