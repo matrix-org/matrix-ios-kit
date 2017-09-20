@@ -494,6 +494,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 
     // Send data without compression if the image type is not jpeg
+    // Force compression for a heic image so that we generate jpeg from it
     if (mimetype
         && [mimetype isEqualToString:@"image/jpeg"] == NO
         && [mimetype isEqualToString:@"image/heic"] == NO
