@@ -137,17 +137,27 @@
     UIViewController *fromViewController = [self.transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIImageView *destinationImageView = [self.destinationViewController finalImageView];
     UIImageView *originalImageView = [self.sourceViewController originalImageView];
-    
+
+    __weak typeof(self) weakSelf = self;
+
     [UIView animateWithDuration:([self transitionDuration:self.transitionContext]/2) animations:^{
-        fromViewController.view.alpha = 1;
-        self.transitioningImageView.frame = [MXKAttachmentAnimator aspectFitImage:destinationImageView.image inFrame:destinationImageView.frame];
+        if (weakSelf)
+        {
+            typeof(self) self = weakSelf;
+            fromViewController.view.alpha = 1;
+            self.transitioningImageView.frame = [MXKAttachmentAnimator aspectFitImage:destinationImageView.image inFrame:destinationImageView.frame];
+        }
     } completion:^(BOOL finished) {
-        destinationImageView.hidden = NO;
-        originalImageView.hidden = NO;
-        [self.transitioningImageView removeFromSuperview];
-        
-        [self.transitionContext cancelInteractiveTransition];
-        [self.transitionContext completeTransition:NO];
+        if (weakSelf)
+        {
+            typeof(self) self = weakSelf;
+            destinationImageView.hidden = NO;
+            originalImageView.hidden = NO;
+            [self.transitioningImageView removeFromSuperview];
+
+            [self.transitionContext cancelInteractiveTransition];
+            [self.transitionContext completeTransition:NO];
+        }
     }];
 }
 
@@ -158,17 +168,27 @@
     
     UIImageView *originalImageView = [self.sourceViewController originalImageView];
     CGRect originalImageViewFrame = [self.sourceViewController convertedFrameForOriginalImageView];
+
+    __weak typeof(self) weakSelf = self;
     
     [UIView animateWithDuration:[self transitionDuration:self.transitionContext] animations:^{
-        fromViewController.view.alpha = 0.0;
-        self.transitioningImageView.frame = originalImageViewFrame;
+        if (weakSelf)
+        {
+            typeof(self) self = weakSelf;
+            fromViewController.view.alpha = 0.0;
+            self.transitioningImageView.frame = originalImageViewFrame;
+        }
     } completion:^(BOOL finished) {
-        [self.transitioningImageView removeFromSuperview];
-        destinationImageView.hidden = NO;
-        originalImageView.hidden = NO;
-        
-        [self.transitionContext finishInteractiveTransition];
-        [self.transitionContext completeTransition:YES];
+        if (weakSelf)
+        {
+            typeof(self) self = weakSelf;
+            [self.transitioningImageView removeFromSuperview];
+            destinationImageView.hidden = NO;
+            originalImageView.hidden = NO;
+
+            [self.transitionContext finishInteractiveTransition];
+            [self.transitionContext completeTransition:YES];
+        }
     }];
 }
 
