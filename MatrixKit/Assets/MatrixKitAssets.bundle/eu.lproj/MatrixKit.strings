@@ -184,3 +184,36 @@
 "notice_room_ban" = "%@ erabiltzaileak %@ debekatu du";
 "notice_profile_change_redacted" = "%@ erabiltzaileak bere %@ profila eguneratu du";
 "notice_room_power_level_acting_requirement" = "Hemen aritu ahal izateko erabiltzaileak behar duen botere maila:";
+"notice_image_attachment" = "irudi-eranskina";
+"notice_audio_attachment" = "audio-eranskina";
+"notice_video_attachment" = "bideo-eranskina";
+"notice_location_attachment" = "kokaleku-eranskina";
+"notice_file_attachment" = "fitxategi-eranskina";
+"notice_invalid_attachment" = "eranskin baliogabea";
+"notice_unsupported_attachment" = "Onartu gabeko eranskina: %@";
+"notice_crypto_unable_to_decrypt" = "** Ezin izan da deszifratu: %@ **";
+"settings_enable_inapp_notifications" = "Gaitu aplikazio barneko jakinarazpenak";
+"notification_settings_room_rule_title" = "Gela: '%@'";
+// Devices
+"device_details_title" = "Gailuaren informazioa\n";
+"device_details_name" = "Izena\n";
+"device_details_identifier" = "Gailuaren ID-a\n";
+"device_details_last_seen" = "Azkenekoz ikusia\n";
+"device_details_last_seen_format" = "%@ @ %@\n";
+"device_details_rename_prompt_message" = "Gailuaren izena:";
+// Encryption information
+"room_event_encryption_info_title" = "Muturretik muturrerako zifratzearen informazioa\n\n";
+"room_event_encryption_info_event_user_id" = "Erabiltzailearen ID-a\n";
+"room_event_encryption_info_event_identity_key" = "Curve25519 identitate-gakoa\n";
+"room_event_encryption_info_event_algorithm" = "Algoritmoa\n";
+"room_event_encryption_info_event_session_id" = "Saioaren ID-a\n";
+"room_event_encryption_info_event_decryption_error" = "Deszifratze errorea\n";
+"room_event_encryption_info_device" = "\nIgorlearen gailuaren informazioa\n";
+"room_event_encryption_info_device_unknown" = "gailu ezezaguna\n";
+"room_event_encryption_info_device_name" = "Izena\n";
+"room_event_encryption_info_device_id" = "Gailuaren ID-a\n";
+"room_event_encryption_info_device_fingerprint" = "Ed25519 hatz-marka\n";
+// Account
+"account_save_changes" = "Gorde aldaketak";
+"account_msisdn_validation_error" = "Ezin izan da telefono zenbakia egiaztatu";
+"account_msisdn_validation_title" = "Egiaztaketa egiteke";
