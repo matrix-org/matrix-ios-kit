@@ -32,11 +32,6 @@
 @interface MXKEventFormatter ()
 {
     /**
-     The matrix session. Used to get contextual data.
-     */
-    MXSession *mxSession;
-
-    /**
      The default room summary updater from the MXSession.
      */
     MXRoomSummaryUpdater *defaultRoomSummaryUpdater;
@@ -1584,15 +1579,19 @@
     {
         htmlString = [htmlString substringToIndex:htmlString.length - 1];
     }
-    
-    // Strip start and end <p> tags else you get 'orrible spacing
-    if ([htmlString hasPrefix:@"<p>"])
+
+    // Strip start and end <p> tags else you get 'orrible spacing.
+    // But only do this if it's a single paragraph we're dealing with,
+    // otherwise we'll produce some garbage (`something</p><p>another`).
+    if ([htmlString hasPrefix:@"<p>"] && [htmlString hasSuffix:@"</p>"])
     {
-        htmlString = [htmlString substringFromIndex:3];
-    }
-    if ([htmlString hasSuffix:@"</p>"])
-    {
-        htmlString = [htmlString substringToIndex:htmlString.length - 4];
+        NSArray *components = [htmlString componentsSeparatedByString:@"<p>"];
+        NSUInteger paragrapsCount = components.count - 1;
+
+        if (paragrapsCount == 1) {
+            htmlString = [htmlString substringFromIndex:3];
+            htmlString = [htmlString substringToIndex:htmlString.length - 4];
+        }
     }
 
     return htmlString;

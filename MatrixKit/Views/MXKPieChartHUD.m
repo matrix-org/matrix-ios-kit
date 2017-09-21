@@ -55,6 +55,8 @@
 {
     NSBundle *bundle = [NSBundle mxk_bundleForClass:self.class];
     [bundle loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
+    [self customizeViewRendering];
+    
     self.hudView.frame = self.bounds;
     
     self.clipsToBounds = YES;
@@ -65,10 +67,19 @@
 
 - (void)customizeViewRendering
 {
+    [super customizeViewRendering];
+    
     self.pieChartView.backgroundColor = [UIColor clearColor];
     self.pieChartView.progressColor = [UIColor whiteColor];
     self.pieChartView.unprogressColor = [UIColor clearColor];
-    self.pieChartView.tintColor = [UIColor cyanColor];
+    self.pieChartView.tintColor = [UIColor whiteColor];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    [self.pieChartView.layer setCornerRadius:self.pieChartView.frame.size.width / 2];
 }
 
 #pragma mark - Public
@@ -83,7 +94,7 @@
     NSLayoutConstraint *centerXConstraint = [NSLayoutConstraint constraintWithItem:hud attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
     NSLayoutConstraint *centerYConstraint = [NSLayoutConstraint constraintWithItem:hud attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
     NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:hud attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:160];
-    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:hud attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:100];
+    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:hud attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:105];
     [NSLayoutConstraint activateConstraints:@[centerXConstraint, centerYConstraint, widthConstraint, heightConstraint]];
     
     hud.titleLabel.text = message;

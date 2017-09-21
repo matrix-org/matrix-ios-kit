@@ -27,6 +27,7 @@ Denis Morozov <dmorozkn at gmail.com>
 Aram Sargsyan <aram.sargsyan.1997 at gmail.com>
  * PR #259 Attachments viewcontroller: interactive animations
  * PR #1341: Read receipts details
+ * App extension support
  
 Javier Quevedo Fernández <jquevedo at gmail.com>
  * PR #278 Update a snippet of code in Readme

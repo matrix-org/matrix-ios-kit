@@ -131,4 +131,11 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  */
 - (MXKAccount*)accountKnowingUserWithUserId:(NSString*)userId;
 
+/**
+ Force the account manager to reload existing accounts from the local storage.
+ The account manager is supposed to handle itself the list of the accounts.
+ Call this method only when an account has been changed from an other application from the same group.
+ */
+- (void)forceReloadAccounts;
+
 @end

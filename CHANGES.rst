@@ -1,3 +1,19 @@
+Changes in MatrixKit in 0.6.2 (2017-08-25)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.9.2).
+ * Support App Extension, thanks to @aramsargsyan (#336).
+ * MXKAppSettings: Add a userDefaults object shared within the application group.
+ * Dark Theme support - MXKView: a new base class to add some functionalities to the UIView (#339).
+ * Dark Theme support - MXKTableViewCell/MXKCollectionViewCell: support customization when the view is initialized or prepared for reuse (#339).
+ * Dark Theme support - MXKRoomViewController: support the customization of the event details view (#343).
+ * MXKPieChartHUD: a new class based on MXKPieChartView used to display pie chart HUDs, thanks to @aramsargsyan (#346).
+ * MXKAccountManager: Add a method to reload existing accounts from the local storage.
+ 
+Translations:
+  * Basque, thanks to @osoitz (PR #348).
+
 Changes in MatrixKit in 0.6.1 (2017-08-08)
 ==========================================
 

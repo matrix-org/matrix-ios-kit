@@ -41,6 +41,11 @@
     UIAlertController *currentAlert;
     
     /**
+     Navigation bar handling
+     */
+    NSTimer *navigationBarDisplayTimer;
+    
+    /**
      SplitViewController handling
      */
     BOOL shouldRestoreBottomBar;
@@ -156,6 +161,8 @@
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
+    self.backButton.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"back_icon"];
+    
     // Register collection view cell class
     [self.attachmentsCollection registerClass:MXKMediaCollectionViewCell.class forCellWithReuseIdentifier:[MXKMediaCollectionViewCell defaultReuseIdentifier]];
     
@@ -181,6 +188,9 @@
     videoFile = nil;
     
     savedAVAudioSessionCategory = [[AVAudioSession sharedInstance] category];
+    
+    // Hide navigation bar by default.
+    [self hideNavigationBar];
     
     // Hide status bar
     // TODO: remove this [UIApplication statusBarHidden] use (deprecated since iOS 9).
@@ -248,6 +258,9 @@
         savedAVAudioSessionCategory = nil;
     }
     
+    [navigationBarDisplayTimer invalidate];
+    navigationBarDisplayTimer = nil;
+    
     // Restore status bar
     // TODO: remove this [UIApplication statusBarHidden] use (deprecated since iOS 9).
     // Note: setting statusBarHidden does nothing if your application is using the default UIViewController-based status bar system.
@@ -283,29 +296,6 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         // Cell width will be updated, force collection layout refresh to take into account the changes
-        [_attachmentsCollection.collectionViewLayout invalidateLayout];
-        
-        // Refresh the current attachment display
-        [self refreshAttachmentCollectionContentOffset];
-        
-    });
-}
-
-// The 2 following methods are deprecated since iOS 8
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    
-    // Store index of the current displayed attachment, to restore it after refreshing
-    [self refreshCurrentVisibleItemIndex];
-}
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    
-    // Cell width will be updated, force collection refresh to take into account changes.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
         [_attachmentsCollection.collectionViewLayout invalidateLayout];
         
         // Refresh the current attachment display
@@ -449,7 +439,23 @@
     }
 }
 
+- (IBAction)onButtonPressed:(id)sender
+{
+    if (sender == self.backButton)
+    {
+        [self withdrawViewControllerAnimated:YES completion:nil];
+    }
+}
+
 #pragma mark - Privates
+
+- (IBAction)hideNavigationBar
+{
+    self.navigationBar.hidden = YES;
+    
+    [navigationBarDisplayTimer invalidate];
+    navigationBarDisplayTimer = nil;
+}
 
 - (void)refreshCurrentVisibleItemIndex
 {
@@ -826,6 +832,8 @@
 {
     NSInteger item = indexPath.item;
     
+    BOOL navigationBarDisplayHandled = NO;
+    
     if (isBackPaginationInProgress)
     {
         if (item == 0)
@@ -953,6 +961,18 @@
                             }
                         }
                     }
+                    
+                    // Apply the same display to the navigation bar
+                    self.navigationBar.hidden = !controlsVisible;
+                    
+                    navigationBarDisplayHandled = YES;
+                    if (!self.navigationBar.hidden)
+                    {
+                        // Automaticaly hide the nav bar after 5s. This is the same timer value that
+                        // MPMoviePlayerController uses for its controls bar
+                        [navigationBarDisplayTimer invalidate];
+                        navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
+                    }
                 }
                 else
                 {
@@ -983,6 +1003,7 @@
                     }];
                     
                     [self prepareVideoForItem:item success:^{
+                        
                         if (selectedCell.notificationObserver)
                         {
                             [[NSNotificationCenter defaultCenter] removeObserver:selectedCell.notificationObserver];
@@ -997,8 +1018,12 @@
                             [selectedCell.moviePlayer play];
                             
                             [pieChartView removeFromSuperview];
+                            
+                            [self hideNavigationBar];
                         }
+                        
                     } failure:^(NSError *error) {
+                        
                         if (selectedCell.notificationObserver)
                         {
                             [[NSNotificationCenter defaultCenter] removeObserver:selectedCell.notificationObserver];
@@ -1009,14 +1034,33 @@
                         
                         [pieChartView removeFromSuperview];
                         
+                        // Display the navigation bar so that the user can leave this screen
+                        self.navigationBar.hidden = NO;
+                        
                         // Notify MatrixKit user
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                        
                     }];
                     
                     // Do not animate the navigation bar on video playback preparing
                     return;
                 }
             }
+        }
+    }
+    
+    // Animate navigation bar if it is has not been handled
+    if (!navigationBarDisplayHandled)
+    {
+        if (self.navigationBar.hidden)
+        {
+            self.navigationBar.hidden = NO;
+            [navigationBarDisplayTimer invalidate];
+            navigationBarDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(hideNavigationBar) userInfo:self repeats:NO];
+        }
+        else
+        {
+            [self hideNavigationBar];
         }
     }
 }
@@ -1101,6 +1145,9 @@
         if (mediaPlayerError)
         {
             NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
+            
+            // Display the navigation bar so that the user can leave this screen
+            self.navigationBar.hidden = NO;
 
             // Notify MatrixKit user
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
@@ -1339,6 +1386,8 @@
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
 {
+    [self hideNavigationBar];
+    
     if (self.customAnimationsEnabled)
     {
         return [[MXKAttachmentAnimator alloc] initWithAnimationType:PhotoBrowserZoomOutAnimation sourceViewController:self.sourceViewController];
