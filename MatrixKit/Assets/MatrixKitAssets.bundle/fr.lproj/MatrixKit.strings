@@ -276,23 +276,23 @@
 "delete" = "Supprimer";
 // actions 
 "action_logout" = "Se déconnecter";
-"create_room" = "Nouveau salon";
-"login" = "S'identifier";
+"create_room" = "Créer un salon";
+"login" = "Connexion";
 "create_account" = "Créer un compte";
 "membership_invite" = "Invité";
 "membership_leave" = "Parti";
 "membership_ban" = "Banni";
 "num_members_one" = "%@ utilisateur";
 "num_members_other" = "%@ utilisateurs";
-"kick" = "Expulser";
+"kick" = "Exclure";
 "ban" = "Bannir";
-"unban" = "Amnistier";
+"unban" = "Révoquer le bannissement";
 "message_unsaved_changes" = "Il y a des modifications non enregistrées. Quitter les annulera.";
 // Login Screen 
-"login_error_already_logged_in" = "Déjà identifié";
+"login_error_already_logged_in" = "Déjà connecté";
 "login_error_must_start_http" = "L'URL doit débuter par http[s]://";
 // contacts list screen 
-"invitation_message" = "Je souhaiterais discuter avec vous sur Matrix. Merci de visiter le site web http://matrix.org pour plus d'informations.";
+"invitation_message" = "Je souhaiterais discuter avec vous sur Matrix. Veuillez visiter le site web http://matrix.org pour plus d'informations.";
 // Settings screen 
 "settings_title_config" = "Configuration";
 "settings_title_notifications" = "Notifications";
@@ -300,9 +300,9 @@
 "notification_settings_disable_all" = "Désactiver toutes les notifications";
 "notification_settings_enable_notifications" = "Activer les notifications";
 "notification_settings_enable_notifications_warning" = "Toutes les notifications sont actuellement désactivées pour tous les appareils.";
-"notification_settings_global_info" = "Les paramètres de notifications sont sauvegardés sur le compte utilisateur et partagés entre tous les clients qui les supportent (y compris les notifications de bureau).\n\nLes règles s'appliquent dans l'ordre ; la première règle applicable définit le résultat.\nEn conséquence : les notification par mot-clé sont plus importantes que les notifications par salon, qui sont plus importantes que les notifications par expéditeur.\nEntre plusieurs règles du même type, la première dans la liste est prioritaire.";
+"notification_settings_global_info" = "Les paramètres de notification sont sauvegardés sur le compte utilisateur et partagés entre tous les clients qui les supportent (y compris les notifications de bureau).\n\nLes règles s'appliquent dans l'ordre ; la première règle applicable définit le résultat.\nEn conséquence : les notification par mot-clé sont plus importantes que les notifications par salon, qui sont plus importantes que les notifications par expéditeur.\nEntre plusieurs règles du même type, la première dans la liste est prioritaire.";
 "notification_settings_per_word_notifications" = "Notifications par mot-clé";
-"notification_settings_per_word_info" = "Les mots sont détectés sans tenir compte de la casse et peuvent contenir un caractère générique *. Par conséquent :\nfoo détecte la chaîne foo entourée de délimiteurs de mots (par ex. ponctuation, espace et début ou fin de ligne).\nfoo* détecte tous les mots commençant par foo.\n*foo* détecte tous les mots qui contiennent les trois lettres foo.";
+"notification_settings_per_word_info" = "Les mots sont détectés sans tenir compte de la casse et peuvent contenir un joker *. Par conséquent :\nfoo détecte la chaîne foo entourée de délimiteurs de mots (par ex. ponctuation, espace et début ou fin de ligne).\nfoo* détecte tous les mots commençant par foo.\n*foo* détecte tous les mots qui contiennent les trois lettres foo.";
 "notification_settings_always_notify" = "Toujours notifier";
 "notification_settings_never_notify" = "Ne jamais notifier";
 "notification_settings_word_to_match" = "mots à détecter";
@@ -315,7 +315,7 @@
 "notification_settings_other_alerts" = "Autres alertes";
 "notification_settings_contain_my_user_name" = "Me notifier par un son lorsqu'un message contient mon nom d'utilisateur";
 "notification_settings_contain_my_display_name" = "Me notifier par un son lorsqu'un message contient mon nom d'affichage";
-"notification_settings_just_sent_to_me" = "Me notifier par un son des messages qui me sont destinés";
+"notification_settings_just_sent_to_me" = "Me notifier par un son lorsqu'un message direct m'est envoyé";
 "notification_settings_invite_to_a_new_room" = "Me notifier lorsque je suis invité sur un salon";
 "notification_settings_people_join_leave_rooms" = "Me notifier lorsque des membres rejoignent et quittent les salons";
 "notification_settings_receive_a_call" = "Me notifier lorsque je reçois un appel";
@@ -323,11 +323,11 @@
 "notification_settings_by_default" = "Par défaut...";
 "notification_settings_notify_all_other" = "Notifier pour tous les autres messages ou salons";
 // gcm section 
-"settings_config_home_server" = "Homeserver : %@";
+"settings_config_home_server" = "Serveur d'accueil : %@";
 "settings_config_identity_server" = "Serveur d'identité : %@";
 "settings_config_user_id" = "Identifiant utilisateur : %@";
 // call string
-"call_waiting" = "En cours...";
+"call_waiting" = "En attente...";
 "call_connecting" = "Appel en cours d'établissement...";
 "call_ended" = "Appel terminé";
 "call_ring" = "Appel...";
@@ -341,10 +341,10 @@
 "ssl_fingerprint_hash" = "Empreinte (%@) :";
 "ssl_could_not_verify" = "Impossible de vérifier l'identité du serveur distant.";
 "ssl_cert_not_trust" = "Cela pourrait signifier que quelqu'un de malveillant intercepte votre trafic, ou que votre téléphone ne fait pas confiance au certificat fourni par le serveur distant.";
-"ssl_cert_new_account_expl" = "Si l'administrateur affirme que le comportement est attendu, assurez-vous que l'empreinte ci-dessous est identique à celle qu'il fournit.";
-"ssl_unexpected_existing_expl" = "Le certificat a changé de celui qui a été approuvé par votre téléphone. Ce comportement est INATTENDU. Il est recommandé de ne PAS ACCEPTER ce nouveau certificat.";
-"ssl_expected_existing_expl" = "Le certificat était de confiance et a été remplacé par un certificat qui ne l'est pas. Le serveur a peut-être renouvelé son certificat. Contactez l'administrateur du serveur pour lui demander l'empreinte numérique de son certificat.";
-"ssl_only_accept" = "Accepter le certificat UNIQUEMENT si l'administrateur du serveur a publié une empreinte numérique correspondant à celle ci-dessus.";
+"ssl_cert_new_account_expl" = "Si l'administrateur affirme que ce comportement est normal, assurez-vous que l'empreinte ci-dessous est identique à celle qu'il fournit.";
+"ssl_unexpected_existing_expl" = "Le certificat a changé depuis qu'il a été approuvé par votre téléphone. Ce comportement est INATTENDU. Il est recommandé de ne PAS ACCEPTER ce nouveau certificat.";
+"ssl_expected_existing_expl" = "Le certificat était fiable et a été remplacé par un certificat qui ne l'est pas. Le serveur a peut-être renouvelé son certificat. Contactez l'administrateur du serveur pour lui demander l'empreinte de son certificat.";
+"ssl_only_accept" = "Accepter le certificat UNIQUEMENT si l'administrateur du serveur a publié une empreinte correspondant à celle ci-dessus.";
 "notice_feedback" = "Événement en retour (identifiant : %@) : %@";
 "notice_location_attachment" = "position en pièce-jointe";
 // Language picker
