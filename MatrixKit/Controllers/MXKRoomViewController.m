@@ -1023,14 +1023,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Remove potential title view
     if (titleView)
     {
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:titleView.constraints];
-        }
-        else
-        {
-            [_roomTitleViewContainer removeConstraints:titleView.constraints];
-        }
+        [NSLayoutConstraint deactivateConstraints:titleView.constraints];
+        
         [titleView dismissKeyboard];
         [titleView removeFromSuperview];
         [titleView destroy];
@@ -1043,34 +1037,36 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Add the title view and define edge constraints
     titleView.translatesAutoresizingMaskIntoConstraints = NO;
     [_roomTitleViewContainer addSubview:titleView];
-    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+    NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
                                                                         attribute:NSLayoutAttributeBottom
                                                                         relatedBy:NSLayoutRelationEqual
                                                                            toItem:titleView
                                                                         attribute:NSLayoutAttributeBottom
                                                                        multiplier:1.0f
-                                                                         constant:0.0f]];
-    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                         constant:0.0f];
+    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
                                                                         attribute:NSLayoutAttributeTop
                                                                         relatedBy:NSLayoutRelationEqual
                                                                            toItem:titleView
                                                                         attribute:NSLayoutAttributeTop
                                                                        multiplier:1.0f
-                                                                         constant:0.0f]];
-    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                         constant:0.0f];
+    NSLayoutConstraint *leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
                                                                         attribute:NSLayoutAttributeLeading
                                                                         relatedBy:NSLayoutRelationEqual
                                                                            toItem:titleView
                                                                         attribute:NSLayoutAttributeLeading
                                                                        multiplier:1.0f
-                                                                         constant:0.0f]];
-    [_roomTitleViewContainer addConstraint:[NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                         constant:0.0f];
+    NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
                                                                         attribute:NSLayoutAttributeTrailing
                                                                         relatedBy:NSLayoutRelationEqual
                                                                            toItem:titleView
                                                                         attribute:NSLayoutAttributeTrailing
                                                                        multiplier:1.0f
-                                                                         constant:0.0f]];
+                                                                         constant:0.0f];
+    
+    [NSLayoutConstraint activateConstraints:@[topConstraint, bottomConstraint, leadingConstraint, trailingConstraint]];
     [_roomTitleViewContainer setNeedsUpdateConstraints];
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
