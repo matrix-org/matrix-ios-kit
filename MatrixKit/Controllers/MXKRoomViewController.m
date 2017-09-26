@@ -47,6 +47,7 @@
 #import "MXKEncryptionKeysImportView.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "UIScrollView+MatrixKit.h"
 
 NSString *const kCmdChangeDisplayName = @"/nick";
 NSString *const kCmdEmote = @"/me";
@@ -470,7 +471,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [self.view setNeedsLayout];
     
     // Compute the visible area (tableview + toolbar) at the end of animation
-    CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top - keyboardHeight;
+    CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.top - keyboardHeight;
     // Deduce max height of the message text input by considering the minimum height of the table view.
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
@@ -621,7 +622,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     if (!self.keyboardView)
     {
         // Compute the visible area (tableview + toolbar)
-        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.contentInset.top;
+        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.top;
         // Deduce max height of the message text input by considering the minimum height of the table view.
         inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     }
@@ -1014,12 +1015,6 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Sanity check: accept only MXKRoomTitleView classes or sub-classes
     NSParameterAssert([roomTitleViewClass isSubclassOfClass:MXKRoomTitleView.class]);
     
-    if (!_roomTitleViewContainer)
-    {
-        NSLog(@"[MXKRoomVC] Set roomTitleViewClass failed: container is missing");
-        return;
-    }
-    
     // Remove potential title view
     if (titleView)
     {
@@ -1034,40 +1029,54 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     
     titleView.delegate = self;
     
-    // Add the title view and define edge constraints
-    titleView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_roomTitleViewContainer addSubview:titleView];
-    NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                        attribute:NSLayoutAttributeBottom
-                                                                        relatedBy:NSLayoutRelationEqual
-                                                                           toItem:titleView
-                                                                        attribute:NSLayoutAttributeBottom
-                                                                       multiplier:1.0f
-                                                                         constant:0.0f];
-    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                        attribute:NSLayoutAttributeTop
-                                                                        relatedBy:NSLayoutRelationEqual
-                                                                           toItem:titleView
-                                                                        attribute:NSLayoutAttributeTop
-                                                                       multiplier:1.0f
-                                                                         constant:0.0f];
-    NSLayoutConstraint *leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                        attribute:NSLayoutAttributeLeading
-                                                                        relatedBy:NSLayoutRelationEqual
-                                                                           toItem:titleView
-                                                                        attribute:NSLayoutAttributeLeading
-                                                                       multiplier:1.0f
-                                                                         constant:0.0f];
-    NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                        attribute:NSLayoutAttributeTrailing
-                                                                        relatedBy:NSLayoutRelationEqual
-                                                                           toItem:titleView
-                                                                        attribute:NSLayoutAttributeTrailing
-                                                                       multiplier:1.0f
-                                                                         constant:0.0f];
-    
-    [NSLayoutConstraint activateConstraints:@[topConstraint, bottomConstraint, leadingConstraint, trailingConstraint]];
-    [_roomTitleViewContainer setNeedsUpdateConstraints];
+    if (@available(iOS 11.0, *))
+    {
+        // Define directly the navigation titleView with the custom title view instance. Do not use anymore a container.
+        self.navigationItem.titleView = titleView;
+    }
+    else
+    {
+        if (!_roomTitleViewContainer)
+        {
+            _roomTitleViewContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 600, 40)];
+            self.navigationItem.titleView = _roomTitleViewContainer;
+        }
+        
+        // Add the title view and define edge constraints
+        titleView.translatesAutoresizingMaskIntoConstraints = NO;
+        [_roomTitleViewContainer addSubview:titleView];
+        NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:titleView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                           multiplier:1.0f
+                                                                             constant:0.0f];
+        NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:titleView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0f
+                                                                          constant:0.0f];
+        NSLayoutConstraint *leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:titleView
+                                                                             attribute:NSLayoutAttributeLeading
+                                                                            multiplier:1.0f
+                                                                              constant:0.0f];
+        NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
+                                                                              attribute:NSLayoutAttributeTrailing
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:titleView
+                                                                              attribute:NSLayoutAttributeTrailing
+                                                                             multiplier:1.0f
+                                                                               constant:0.0f];
+        
+        [NSLayoutConstraint activateConstraints:@[topConstraint, bottomConstraint, leadingConstraint, trailingConstraint]];
+        [_roomTitleViewContainer setNeedsUpdateConstraints];
+    }
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
@@ -1669,7 +1678,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     {
         // Check whether the most recent message is visible.
         // Compute the max vertical position visible according to contentOffset
-        CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+        CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
         // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
         maxPositionY += 30;
         BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
@@ -1686,10 +1695,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 {
     if (_bubblesTableView.contentSize.height)
     {
-        CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.top - _bubblesTableView.contentInset.bottom;
+        CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.top - _bubblesTableView.mxk_adjustedContentInset.bottom;
         if (visibleHeight < _bubblesTableView.contentSize.height)
         {
-            CGFloat wantedOffsetY = _bubblesTableView.contentSize.height - visibleHeight - _bubblesTableView.contentInset.top;
+            CGFloat wantedOffsetY = _bubblesTableView.contentSize.height - visibleHeight - _bubblesTableView.mxk_adjustedContentInset.top;
             CGFloat currentOffsetY = _bubblesTableView.contentOffset.y;
             if (wantedOffsetY != currentOffsetY)
             {
@@ -1707,7 +1716,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         }
         else
         {
-            [_bubblesTableView setContentOffset:CGPointMake(0, -_bubblesTableView.contentInset.top) animated:animated];
+            [_bubblesTableView setContentOffset:CGPointMake(0, -_bubblesTableView.mxk_adjustedContentInset.top) animated:animated];
         }
         
         shouldScrollToBottomOnTableRefresh = NO;
@@ -1831,8 +1840,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                            UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
                                            
                                            CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                           CGFloat firstVisibleContentRowOffset = _bubblesTableView.contentOffset.y + _bubblesTableView.contentInset.top;
-                                           CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom;
+                                           CGFloat firstVisibleContentRowOffset = _bubblesTableView.contentOffset.y + _bubblesTableView.mxk_adjustedContentInset.top;
+                                           CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom;
                                            
                                            CGFloat localPositionOfEvent = 0.0;
                                            
@@ -2273,7 +2282,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 }
                 
                 // Compute the offset of the content displayed at the bottom.
-                CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+                CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
                 if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
                 {
                     contentBottomOffsetY = _bubblesTableView.contentSize.height;
@@ -2283,13 +2292,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 if ((contentBottomOffsetY <= eventTopPosition ) || (eventBottomPosition < contentBottomOffsetY))
                 {
                     // Compute the top content offset to display again this event at the table bottom
-                    CGFloat contentOffsetY = eventBottomPosition - (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+                    CGFloat contentOffsetY = eventBottomPosition - (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
                     
                     // Check if there are enought data to fill the top
-                    if (contentOffsetY < -_bubblesTableView.contentInset.top)
+                    if (contentOffsetY < -_bubblesTableView.mxk_adjustedContentInset.top)
                     {
                         // Scroll to the top
-                        contentOffsetY = -_bubblesTableView.contentInset.top;
+                        contentOffsetY = -_bubblesTableView.mxk_adjustedContentInset.top;
                     }
                     
                     CGPoint contentOffset = _bubblesTableView.contentOffset;
@@ -2325,7 +2334,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     if (!isSizeTransitionInProgress && !self.isBubbleTableViewDisplayInTransition)
     {
         // Compute the content offset corresponding to the line displayed at the table bottom (just above the toolbar).
-        CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.contentInset.bottom);
+        CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
         if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
         {
             contentBottomOffsetY = _bubblesTableView.contentSize.height;
@@ -3135,7 +3144,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     if (scrollView == _bubblesTableView)
     {
         // Detect top bounce
-        if (scrollView.contentOffset.y < -scrollView.contentInset.top)
+        if (scrollView.contentOffset.y < -scrollView.mxk_adjustedContentInset.top)
         {
             // Shall we add back pagination spinner?
             if (isPaginationInProgress && !backPaginationActivityView)
@@ -3217,7 +3226,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             // when the content size if smaller that the frame
             // scrollViewDidEndDecelerating is not called
             // so test it when the content offset goes back to the screen top.
-            if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.contentInset.top))
+            if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.mxk_adjustedContentInset.top))
             {
                 [self managePullToKick:scrollView];
             }
