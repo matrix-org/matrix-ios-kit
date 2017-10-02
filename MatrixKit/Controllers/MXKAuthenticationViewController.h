@@ -127,6 +127,12 @@
 @property(nonatomic,getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
 
 /**
+ The device name used to display it in the user's devices list (nil by default).
+ If nil, the device display name field is filled with a default string: "Mobile", "Tablet"...
+ */
+@property (nonatomic) NSString *deviceDisplayName;
+
+/**
  The delegate for the view controller.
  */
 @property (nonatomic) id<MXKAuthenticationViewControllerDelegate> delegate;
