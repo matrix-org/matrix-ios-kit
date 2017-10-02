@@ -101,6 +101,8 @@
     // Set initial auth type
     _authType = MXKAuthenticationTypeLogin;
     
+    _deviceDisplayName = nil;
+    
     // Initialize authInputs view classes
     loginAuthInputsViewClass = MXKAuthInputsPasswordBasedView.class;
     registerAuthInputsViewClass = nil; // No registration flow is supported yet
@@ -829,7 +831,9 @@
                         NSDictionary *parameters = @{@"auth": @{},
                                                      @"username": self.authInputsView.userId,
                                                      @"password": self.authInputsView.password,
-                                                     @"bind_email": @(NO)};
+                                                     @"bind_email": @(NO),
+                                                     @"initial_device_display_name":self.deviceDisplayName
+                                                     };
                         
                         mxCurrentOperation = [mxRestClient registerWithParameters:parameters success:^(NSDictionary *JSONResponse) {
                             
@@ -1198,6 +1202,22 @@
 
 #pragma mark - Privates
 
+- (NSString *)deviceDisplayName
+{
+    if (_deviceDisplayName)
+    {
+        return _deviceDisplayName;
+    }
+    
+#if TARGET_OS_IPHONE
+    NSString *deviceName = [[UIDevice currentDevice].model isEqualToString:@"iPad"] ? [NSBundle mxk_localizedStringForKey:@"login_tablet_device"] : [NSBundle mxk_localizedStringForKey:@"login_mobile_device"];
+#elif TARGET_OS_OSX
+    NSString *deviceName = [NSBundle mxk_localizedStringForKey:@"login_desktop_device"];
+#endif
+    
+    return deviceName;
+}
+
 - (void)refreshForgotPasswordSession
 {
     [_authenticationActivityIndicator stopAnimating];
@@ -1334,7 +1354,11 @@
 
 - (void)loginWithParameters:(NSDictionary*)parameters
 {
-    mxCurrentOperation = [mxRestClient login:parameters success:^(NSDictionary *JSONResponse) {
+    // Add the device name
+    NSMutableDictionary *theParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
+    theParameters[@"initial_device_display_name"] = self.deviceDisplayName;
+    
+    mxCurrentOperation = [mxRestClient login:theParameters success:^(NSDictionary *JSONResponse) {
         
         MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
         
@@ -1370,7 +1394,11 @@
         registrationTimer = nil;
     }
     
-    mxCurrentOperation = [mxRestClient registerWithParameters:parameters success:^(NSDictionary *JSONResponse) {
+    // Add the device name
+    NSMutableDictionary *theParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
+    theParameters[@"initial_device_display_name"] = self.deviceDisplayName;
+    
+    mxCurrentOperation = [mxRestClient registerWithParameters:theParameters success:^(NSDictionary *JSONResponse) {
         
         MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
         
