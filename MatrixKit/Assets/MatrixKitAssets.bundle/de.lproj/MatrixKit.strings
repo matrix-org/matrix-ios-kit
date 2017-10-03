@@ -269,7 +269,7 @@
 "resend" = "Erneut senden";
 "redact" = "Schwärzen";
 "share" = "Teilen";
-"set_power_level" = "Berechtigungsstufe";
+"set_power_level" = "Berechtigungslevel";
 "delete" = "Löschen";
 "view" = "Ansehen";
 // actions 
@@ -350,3 +350,6 @@
 "language_picker_title" = "Wähle eine Sprache";
 "language_picker_default_language" = "Standard (%@)";
 "search_searching" = "Suche wird durchgeführt...";
+"login_mobile_device" = "Mobilgerät";
+"login_tablet_device" = "Tabletgerät";
+"login_desktop_device" = "Desktopgerät";
