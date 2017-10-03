@@ -15,13 +15,13 @@ PODS:
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
   - cmark (0.24.1)
-  - DTCoreText (1.6.20):
-    - DTCoreText/Core (= 1.6.20)
+  - DTCoreText (1.6.21):
+    - DTCoreText/Core (= 1.6.21)
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTCoreText/Core (1.6.20):
+  - DTCoreText/Core (1.6.21):
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
@@ -38,7 +38,7 @@ PODS:
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.9.10)
-  - MatrixSDK (0.9.2):
+  - MatrixSDK (0.9.3):
     - AFNetworking (~> 3.1.0)
     - GZIP (~> 1.1.1)
 
@@ -48,20 +48,20 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.10)
-  - MatrixSDK (= 0.9.2)
+  - MatrixSDK (= 0.9.3)
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   cmark: ec0275215b504780287b6fca360224e384368af8
-  DTCoreText: 51904f2374af443e0d270d6fdc76035ab6f9ef8a
+  DTCoreText: e5d688cffc9f6a61eddd1a4f94e2046851230de3
   DTFoundation: 26a164ef510877387906fb92bff524a792db4bf8
   GZIP: f8beb59597f651e6970a45b816508a9c6d700b77
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
-  MatrixSDK: 0499dd3dbe293ce1e743a7cda181dcf50eda7f10
+  MatrixSDK: 834a8a059de81a967404b04086a4abe28456f49a
 
-PODFILE CHECKSUM: 12ba6fa2e38c7541d35a1ffb936a83c1f132a36c
+PODFILE CHECKSUM: 8ca420a3d758d36244e8ec57a0d91f859792c750
 
 COCOAPODS: 1.3.1
