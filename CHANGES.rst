@@ -3,14 +3,14 @@ Changes in MatrixKit in 0.6.3 (2017-10-03)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.9.3).
- * Add showDecryptedContentInNotifications property to MXKAccount, thanks to @aramsargsyan (PR #351).
- * Add incoming calls view, thanks to @aramsargsyan (PR #352).
+ * Add showDecryptedContentInNotifications property to MXKAccount, thanks to @morozkin (PR #351).
+ * Add incoming calls view, thanks to @morozkin (PR #352).
  * MXKAppSettings: Add addSupportedEventTypes and removeSupportedEventTypes (PR #354).
  * Add a back button in the attachments viewer (PR #356).
  * Fix iOS11 disruption (PR #361).
 
 Bug fixes:
- * Fix inbound video calls don't have speakerphone turned on by default (vector-im/riot-ios#933), thanks to @aramsargsyan (PR #353).
+ * Fix inbound video calls don't have speakerphone turned on by default (vector-im/riot-ios#933), thanks to @morozkin (PR #353).
  * Fix garbled HTML paragraph syntax during markdown conversion, thanks to @spantaleev (PR #355).
  * Crash in [MXKAttachmentInteractionController finishInteractiveTransition] (PR #358).
  * Riot on iOS11 sends images as HEIC format, which nothing else can display (PR #359).
