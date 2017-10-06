@@ -1,12 +1,12 @@
 /*
- Copyright 2015 OpenMarket Ltd
-
+ Copyright 2017 Vector Creations Ltd
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,8 +14,20 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import "UIScrollView+MatrixKit.h"
 
-NSString *const MatrixKitVersion = @"0.6.3";
+@implementation UIScrollView (MatrixKit)
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+- (UIEdgeInsets)mxk_adjustedContentInset
+{
+    if (@available(iOS 11.0, *))
+    {
+        return self.adjustedContentInset;
+    }
+    else
+    {
+        return self.contentInset;
+    }
+}
+
+@end
