@@ -1570,6 +1570,28 @@
 
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
+    if ([markdownString containsString:@"—"]) {
+        //Because iOS 11's Smart Punctuation feature automatically converts double-hyphens
+        //to longer en-dashes (`—`), it becomes complicated to create
+        //- horizontal rules (`text\n\n---\n\ntext` -> `text<hr />text`)
+        //- H2 headings (`Heading\n--` -> `<h2>Heading</h2>`)
+        //
+        //To fix this: for all strings having an en-dash,
+        //normalize sequences of 2 dashes of any kind (hyphen, en-dash) to 2 regular hyphens.
+        //
+        //This should be safe, because we don't expect regular content to contain
+        //2 mixed-kind dashes one after the other.
+        //If it happens, it's likely an attempt to create a horizontal rule or an H2 heading.
+        //
+        //Ideally, we would only be replacing such sequences when they appear on their own
+        //line (a line containing nothing but dashes of some sort).
+        //But that's a more complicated replacement regex for not much gain.
+        NSString *regexFind = @"(-|—){2}";
+        NSString *regexReplace = @"--";
+        NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:regexFind options: NSRegularExpressionCaseInsensitive error: nil];
+        markdownString = [regex stringByReplacingMatchesInString: markdownString options: 0 range: NSMakeRange(0, [markdownString length]) withTemplate: regexReplace];
+    }
+
     const char *cstr = [markdownString cStringUsingEncoding: NSUTF8StringEncoding];
     const char *htmlCString = cmark_markdown_to_html(cstr, strlen(cstr), CMARK_OPT_HARDBREAKS);
     NSString *htmlString = [[NSString alloc] initWithCString:htmlCString encoding:NSUTF8StringEncoding];
