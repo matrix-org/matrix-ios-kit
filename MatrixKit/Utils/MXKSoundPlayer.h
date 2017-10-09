@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 
 - (void)playSoundAt:(NSURL *)url repeat:(BOOL)repeat vibrate:(BOOL)vibrate routeToBuiltInReceiver:(BOOL)useBuiltInReceiver;
-- (void)stopPlaying;
+- (void)stopPlayingWithAudioSessionDeactivation:(BOOL)deactivateAudioSession;
 
 - (void)vibrateWithRepeat:(BOOL)repeat;
 - (void)stopVibrating;

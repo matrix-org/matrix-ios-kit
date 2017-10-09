@@ -175,6 +175,10 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     // Remove APNS device token
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
     
+    // Remove Push device token
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+    
     // Be sure that no account survive in local storage
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
     [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
@@ -364,6 +368,127 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     }
     
     return (isRemoteNotificationsAllowed && self.apnsDeviceToken);
+}
+
+- (NSData *)pushDeviceToken
+{
+    NSData *token = [[NSUserDefaults standardUserDefaults] objectForKey:@"pushDeviceToken"];
+    if (!token.length)
+    {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        token = nil;
+    }
+    return token;
+}
+
+- (NSDictionary *)pushOptions
+{
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"pushOptions"];
+}
+
+- (void)setPushDeviceToken:(NSData *)pushDeviceToken withPushOptions:(NSDictionary *)pushOptions
+{
+    NSData *oldToken = self.pushDeviceToken;
+    if (!pushDeviceToken.length)
+    {
+        NSLog(@"[MXKAccountManager] reset Push device token");
+        
+        if (oldToken)
+        {
+            // turn off the Push flag for all accounts if any
+            for (MXKAccount *account in mxAccounts)
+            {
+                account.enablePushKitNotifications = NO;
+            }
+        }
+        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else
+    {
+        NSArray *activeAccounts = self.activeAccounts;
+        
+        if (!oldToken)
+        {
+            NSLog(@"[MXKAccountManager] set Push device token");
+            
+            [[NSUserDefaults standardUserDefaults] setObject:pushDeviceToken forKey:@"pushDeviceToken"];
+            if (pushOptions)
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:pushOptions forKey:@"pushOptions"];
+            }
+            else
+            {
+                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+            }
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
+            // turn on the Push flag for all accounts
+            for (MXKAccount *account in activeAccounts)
+            {
+                account.enablePushKitNotifications = YES;
+            }
+        }
+        else if (![oldToken isEqualToData:pushDeviceToken])
+        {
+            NSLog(@"[MXKAccountManager] update Push device token");
+            
+            // Delete the pushers related to the old token
+            for (MXKAccount *account in activeAccounts)
+            {
+                [account deletePushKitPusher];
+            }
+            
+            // Update the token
+            [[NSUserDefaults standardUserDefaults] setObject:pushDeviceToken forKey:@"pushDeviceToken"];
+            if (pushOptions)
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:pushOptions forKey:@"pushOptions"];
+            }
+            else
+            {
+                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+            }
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
+            // Refresh pushers with the new token.
+            for (MXKAccount *account in activeAccounts)
+            {
+                if (account.isPushKitNotificationActive)
+                {
+                    NSLog(@"[MXKAccountManager] Resync Push for %@ account", account.mxCredentials.userId);
+                    account.enablePushKitNotifications = YES;
+                }
+            }
+        }
+    }
+}
+
+- (BOOL)isPushAvailable
+{
+    // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
+    // remote notifications or not. However receiving remote notifications does not mean it
+    // will also display them to the user.
+    // To check whether the user allowed or denied remote notification or in fact changed
+    // the notifications permissions later in iOS setting, we have to call
+    // [UIApplication currentUserNotificationSettings].
+    
+    BOOL isRemoteNotificationsAllowed = NO;
+    
+    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+    if (sharedApplication)
+    {
+        UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
+        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
+        
+        NSLog(@"[MXKAccountManager] the user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+    }
+    
+    return (isRemoteNotificationsAllowed && self.pushDeviceToken);
 }
 
 #pragma mark -

@@ -44,6 +44,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
+@synthesize enableCallKit;
 @synthesize sharedUserDefaults;
 
 + (MXKAppSettings *)standardAppSettings
@@ -78,7 +79,9 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
-
+        
+        enableCallKit = YES;
+        
         eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
                                                                   kMXEventTypeStringRoomName,
                                                                   kMXEventTypeStringRoomTopic,
@@ -144,6 +147,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpLinkScheme"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
         
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
@@ -165,6 +170,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        
+        enableCallKit = YES;
     }
 }
 
@@ -635,6 +642,40 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         presenceColorForOfflineUser = color ? color : [UIColor redColor];
+    }
+}
+
+#pragma mark - Calls
+
+- (BOOL)isCallKitEnabled
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"enableCallKit"];
+        if (storedValue)
+        {
+            return [(NSNumber *)storedValue boolValue];
+        }
+        else
+        {
+            return YES;
+        }
+    }
+    else
+    {
+        return enableCallKit;
+    }
+}
+
+- (void)setEnableCallKit:(BOOL)enable
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"enableCallKit"];
+    }
+    else
+    {
+        enableCallKit = enable;
     }
 }
 
