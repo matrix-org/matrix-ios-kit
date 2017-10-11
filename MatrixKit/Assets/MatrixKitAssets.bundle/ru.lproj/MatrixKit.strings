@@ -216,7 +216,7 @@
 "account_error_matrix_session_is_not_opened" = "Сессия Matrix не открыта";
 "account_error_email_wrong_title" = "Неверный адрес электронной почты";
 "account_error_email_wrong_description" = "Похоже это недействительный адрес электронной почты";
-"account_error_msisdn_wrong_title" = "Некорректный телефонный номер";
+"account_error_msisdn_wrong_title" = "Некорректный номер телефона";
 "account_error_msisdn_wrong_description" = "Это недействительный номер телефона";
 "room_creation_name_placeholder" = "(напр. lunchGroup)";
 "room_creation_alias_title" = "Псевдоним комнаты:";
