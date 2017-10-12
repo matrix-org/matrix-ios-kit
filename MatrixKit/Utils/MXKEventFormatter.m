@@ -1154,6 +1154,15 @@
     // Do some sanitisation before rendering the string
     NSString *html = [self sanitiseHTML:htmlString];
 
+    // HTML which is bare, like `something` or `something<br />another`,
+    // would (for some reason) be represented in the NSAttributedString below as a paragraph.
+    // Since our regular `<p>` paragraphs have bottom-spacing (as is expected of paragraphs),
+    // but such bare messages shouldn't, we avoid the paragraph-representation
+    // by wrapping the plain text in another container element.
+    if (![html hasPrefix:@"<"]) {
+        html = [NSString stringWithFormat:@"<div>%@</div>", html];
+    }
+
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
     NSDictionary *options = @{
@@ -1287,24 +1296,13 @@
 {
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
 
-    // Trim trailing whitespace and newlines in the string content
+    // Trim trailing whitespace and newlines in the string content.
+    // This takes care of removing the bottom-spacing from the "last paragraph"
+    // of paragraph-containing messages.
     while ([str.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
     {
         [str deleteCharactersInRange:NSMakeRange(str.length - 1, 1)];
     }
-
-    // New lines may have also been introduced by the paragraph style
-    // Make sure the last paragraph style has no spacing
-    [str enumerateAttributesInRange:NSMakeRange(0, str.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
-        if (attrs[NSParagraphStyleAttributeName])
-        {
-            NSMutableParagraphStyle *paragraphStyle = attrs[NSParagraphStyleAttributeName];
-            paragraphStyle.paragraphSpacing = 0;
-        }
-
-        // Check only the last paragraph
-        *stop = YES;
-    }];
 
     return str;
 }
