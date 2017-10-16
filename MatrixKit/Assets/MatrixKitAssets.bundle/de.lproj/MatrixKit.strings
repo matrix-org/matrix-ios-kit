@@ -99,7 +99,7 @@
 "notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Das Gerät des Absenders hat keine Schlüssel für diese Nachricht gesendet.";
 // Settings
-"settings" = "Einstelllungen";
+"settings" = "Einstellungen";
 "settings_enable_inapp_notifications" = "Benachrichtigungen innerhalb der App aktivieren";
 "settings_enable_push_notifications" = "Push Benachrichtigungen aktivieren";
 "settings_enter_validation_token_for" = "Eingabe Validierungs-Token für %@:";
