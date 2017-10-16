@@ -24,6 +24,9 @@
 @interface MXKRoomTitleView ()
 {
     id roomListener;
+    
+    // Observer kMXRoomSummaryDidChangeNotification to keep updated the room name.
+    id mxRoomSummaryDidChangeObserver;
 }
 @end
 
@@ -76,8 +79,8 @@
 {
     if (_mxRoom)
     {
-        // replace empty string by nil : avoid having the placeholder 'Room name" when there is no displayname
-        self.displayNameTextField.text = (_mxRoom.state.displayname.length) ? _mxRoom.state.displayname : nil;
+        // Replace empty string by nil : avoid having the placeholder 'Room name" when there is no displayname
+        self.displayNameTextField.text = (_mxRoom.summary.displayname.length) ? _mxRoom.summary.displayname : nil;
     }
     else
     {
@@ -107,28 +110,23 @@
     if (_mxRoom != mxRoom)
     {
         // Remove potential listener
-        if (roomListener && _mxRoom)
+        if (mxRoomSummaryDidChangeObserver)
         {
-            [_mxRoom.liveTimeline removeListener:roomListener];
-            roomListener = nil;
+            [[NSNotificationCenter defaultCenter] removeObserver:mxRoomSummaryDidChangeObserver];
+            mxRoomSummaryDidChangeObserver = nil;
         }
         
         if (mxRoom)
         {
-            // Register a listener to handle messages related to room name
-            roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomMember]
-                                                 onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
-            {
-                // Consider only live events
-                if (direction == MXTimelineDirectionForwards)
+            // Register a listener to handle the room name change
+            mxRoomSummaryDidChangeObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSummaryDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                // Check whether the text field is editing before refreshing title view
+                if (!self.isEditing)
                 {
-                    
-                    // In case of room member change, check whether the text field is editing before refreshing title view
-                    if (event.eventType != MXEventTypeRoomMember || !self.isEditing)
-                    {
-                        [self refreshDisplay];
-                    }
+                    [self refreshDisplay];
                 }
+                
             }];
         }
         _mxRoom = mxRoom;
@@ -227,9 +225,6 @@
                     [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
                 }
                 
-                // Refresh title display
-                textField.text = strongSelf.mxRoom.state.displayname;
-                
             } failure:^(NSError *error) {
                 
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -239,7 +234,7 @@
                 }
                 
                 // Revert change
-                textField.text = strongSelf.mxRoom.state.displayname;
+                textField.text = strongSelf.mxRoom.summary.displayname;
                 NSLog(@"[MXKRoomTitleView] Rename room failed");
                 // Notify MatrixKit user
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
@@ -249,7 +244,7 @@
         else
         {
             // No change on room name, restore title with room displayName
-            textField.text = _mxRoom.state.displayname;
+            textField.text = _mxRoom.summary.displayname;
         }
     }
 }
