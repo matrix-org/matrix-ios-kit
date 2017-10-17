@@ -215,5 +215,5 @@
 "room_event_encryption_info_device_fingerprint" = "Ed25519 hatz-marka\n";
 // Account
 "account_save_changes" = "Gorde aldaketak";
-"account_msisdn_validation_error" = "Ezin izan da telefono zenbakia egiaztatu";
+"account_msisdn_validation_error" = "Ezin izan da telefono zenbakia egiaztatu.";
 "account_msisdn_validation_title" = "Egiaztaketa egiteke";
