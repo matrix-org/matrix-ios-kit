@@ -26,10 +26,16 @@
 extern NSString *const kMXKAccountUserInfoDidChangeNotification;
 
 /**
- Posted when the activity of the Push notification service has been changed.
+ Posted when the activity of the Apple Push Notification Service has been changed.
  The notification object is the matrix user id of the account.
  */
 extern NSString *const kMXKAccountAPNSActivityDidChangeNotification;
+
+/**
+ Posted when the activity of the Push notification based on PushKit has been changed.
+ The notification object is the matrix user id of the account.
+ */
+extern NSString *const kMXKAccountPushKitActivityDidChangeNotification;
 
 /**
  MXKAccount error domain
@@ -131,15 +137,26 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic, readonly) UIColor *userTintColor;
 
 /**
- The Push notification activity for this account. YES when APNS is turned on (locally available and synced with server).
+ The Apple Push Notification Service activity for this account. YES when APNS is turned on (locally available and synced with server).
  */
 @property (nonatomic, readonly) BOOL pushNotificationServiceIsActive;
 
 /**
- Enable Push notifications. Set YES to sync the device with the server.
+ Enable Apple Push Notification Service (APNS). Set YES to sync the device with the server.
  NO by default.
  */
 @property (nonatomic) BOOL enablePushNotifications;
+
+/**
+ The Push notification activity (based on PushKit) for this account. YES when Push is turned on (locally available and synced with server).
+ */
+@property (nonatomic, readonly) BOOL isPushKitNotificationActive;
+
+/**
+ Enable Push notification based on Pushkit. Set YES to sync the device with the server.
+ NO by default.
+ */
+@property (nonatomic) BOOL enablePushKitNotifications;
 
 /**
  Enable In-App notifications based on Remote notifications rules.
@@ -222,10 +239,16 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 - (void)logout:(void (^)())completion;
 
 /**
- Delete the potential pusher used to receive push notifications, without changing 'enablePushNotifications' property.
- Used to delete existing pusher related to out-of-date device token.
+ Delete the potential APNS pusher, without changing 'enablePushNotifications' property.
+ Used to delete existing pusher related to out-of-date APNS device token.
  */
 - (void)deletePusher;
+
+/**
+ Delete the potential pusher used to receive push notifications via PushKit, without changing 'enablePushKitNotifications' property.
+ Used to delete existing pusher related to out-of-date Push device token.
+ */
+- (void)deletePushKitPusher;
 
 /**
  Pause the current matrix session.

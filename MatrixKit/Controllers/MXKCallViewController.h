@@ -92,7 +92,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 /**
  The call status bar displayed on the top of the app during a call.
  */
-@property (nonatomic, readonly) UIWindow* backToAppStatusWindow;
+@property (nonatomic, readonly) UIWindow *backToAppStatusWindow;
 
 /**
  The current call
@@ -108,6 +108,14 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  The delegate.
  */
 @property (nonatomic, weak) id<MXKCallViewControllerDelegate> delegate;
+
+/*
+ Specifies whether a ringtone must be played on incoming call.
+ It's important to set this value before you will set `mxCall` otherwise value of this property can has no effect.
+ 
+ Defaults to YES.
+ */
+@property (nonatomic) BOOL playRingtone;
 
 #pragma mark - Class methods
 
@@ -131,7 +139,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  @param call a MXCall instance.
  @return An initialized `MXKRoomViewController` object if successful, `nil` otherwise.
  */
-+ (instancetype)callViewController:(MXCall*)call;
++ (instancetype)callViewController:(MXCall *)call;
 
 /**
  Return an audio file url based on the provided name.
@@ -139,7 +147,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  @param soundName audio file name without extension.
  @return a NSURL instance.
  */
-- (NSURL*)audioURLWithName:(NSString*)soundName;
+- (NSURL*)audioURLWithName:(NSString *)soundName;
 
 /**
  Refresh the peer information in the call viewcontroller's view.

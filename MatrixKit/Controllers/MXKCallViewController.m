@@ -16,6 +16,9 @@
 
 #import "MXKCallViewController.h"
 
+#import <MatrixSDK/MXCallKitAdapter.h>
+
+#import "MXKAppSettings.h"
 #import "MXMediaManager.h"
 #import "MXKSoundPlayer.h"
 #import "MXKTools.h"
@@ -102,6 +105,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 - (void)finalizeInit
 {
     [super finalizeInit];
+    
+    _playRingtone = YES;
 }
 
 - (void)viewDidLoad
@@ -135,6 +140,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Refresh call information
     self.mxCall = mxCall;
+    
+    // Listen to AVAudioSession activation notification if CallKit is available and enabled
+    BOOL isCallKitAvailable = [MXCallKitAdapter callKitAvailable] && [MXKAppSettings standardAppSettings].isCallKitEnabled;
+    if (isCallKitAvailable)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleAudioSessionActivationNotification)
+                                                     name:kMXCallKitAdapterAudioSessionDidActive
+                                                   object:nil];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -144,6 +159,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXCallKitAdapterAudioSessionDidActive object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -238,7 +254,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - Properties
 
-- (UIImage*)picturePlaceholder
+- (UIImage *)picturePlaceholder
 {
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
@@ -397,18 +413,22 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             NSURL *audioUrl;
             if (mxCall.isIncoming)
             {
-                audioUrl = [self audioURLWithName:@"ring"];
+                if (self.playRingtone)
+                    audioUrl = [self audioURLWithName:@"ring"];
             }
             else
             {
                 audioUrl = [self audioURLWithName:@"ringback"];
             }
             
-            [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReceiver:!mxCall.isIncoming];
+            if (audioUrl)
+            {
+                [[MXKSoundPlayer sharedInstance] playSoundAt:audioUrl repeat:YES vibrate:mxCall.isIncoming routeToBuiltInReceiver:!mxCall.isIncoming];
+            }
         }
         else
         {
-            [[MXKSoundPlayer sharedInstance] stopPlaying];
+            [[MXKSoundPlayer sharedInstance] stopPlayingWithAudioSessionDeactivation:NO];
         }
         
         _isRinging = isRinging;
@@ -431,7 +451,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - Sounds
 
-- (NSURL*)audioURLWithName:(NSString*)soundName
+- (NSURL *)audioURLWithName:(NSString *)soundName
 {
     return [NSBundle mxk_audioURLFromMXKAssetsBundleWithName:soundName];
 }
@@ -579,9 +599,20 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             break;
         case MXCallStateCreateOffer:
-            self.isRinging = YES;
+        {
+            // When CallKit is enabled and we have an outgoing call, we need to start playing ringback sound
+            // only after AVAudioSession will be activated by the system otherwise the sound will be gone.
+            // We always receive signal about MXCallStateCreateOffer earlier than the system activates AVAudioSession
+            // so we start playing ringback sound only on AVAudioSession activation in handleAudioSessionActivationNotification
+            BOOL isCallKitAvailable = [MXCallKitAdapter callKitAvailable] && [MXKAppSettings standardAppSettings].isCallKitEnabled;
+            if (!isCallKitAvailable)
+            {
+                self.isRinging = YES;
+            }
+            
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
             break;
+        }
         case MXCallStateRinging:
             self.isRinging = YES;
             if (call.isVideoCall)
@@ -649,7 +680,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             }
             else
             {
-                [[MXKSoundPlayer sharedInstance] stopPlaying];
+                [[MXKSoundPlayer sharedInstance] stopPlayingWithAudioSessionDeactivation:YES];
             }
             
             // Except in case of call error, quit the screen right now
@@ -790,6 +821,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     return nil;
 }
 
+- (void)handleAudioSessionActivationNotification
+{
+    // It's only relevant for outgoing calls which aren't in connected state
+    if (self.mxCall.state >= MXCallStateCreateOffer && self.mxCall.state != MXCallStateConnected && self.mxCall.state != MXCallStateEnded)
+    {
+        self.isRinging = YES;
+    }
+}
+
 #pragma mark - UI methods
 
 - (void)updateLocalPreviewLayout
@@ -907,7 +947,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 #pragma mark - UIResponder Touch Events
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
@@ -918,13 +958,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     isMovingLocalPreview = NO;
     isSelectingLocalPreview = NO;
 }
 
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if (isMovingLocalPreview)
     {
@@ -951,7 +991,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     isSelectingLocalPreview = NO;
 }
 
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];

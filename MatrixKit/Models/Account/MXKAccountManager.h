@@ -53,7 +53,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 @property (nonatomic, readonly) NSArray* activeAccounts;
 
 /**
- The device token used for Push notifications registration
+ The device token used for Apple Push Notification Service registration.
  */
 @property (nonatomic, copy) NSData *apnsDeviceToken;
 
@@ -61,6 +61,33 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  The APNS status: YES when app is registered for remote notif, and devive token is known.
  */
 @property (nonatomic) BOOL isAPNSAvailable;
+
+/**
+ The device token used for Push notifications registration (PushKit support).
+ */
+@property (nonatomic, copy, readonly) NSData *pushDeviceToken;
+
+/**
+ The current options of the Push notifications based on PushKit.
+ */
+@property (nonatomic, copy, readonly) NSDictionary *pushOptions;
+
+/**
+ Set the push token and the potential push options.
+ For example, for clients that want to go & fetch the body of the event themselves anyway,
+ the key-value `format: event_id_only` may be used in `pushOptions` dictionary to tell the
+ HTTP pusher to send just the event_id of the event it's notifying about, the room id and
+ the notification counts.
+ 
+ @param pushDeviceToken the push token.
+ @param pushOptions dictionary of the push options (may be nil).
+ */
+- (void)setPushDeviceToken:(NSData *)pushDeviceToken withPushOptions:(NSDictionary *)pushOptions;
+
+/**
+ The PushKit status: YES when app is registered for push notif, and push token is known.
+ */
+@property (nonatomic) BOOL isPushAvailable;
 
 /**
  Retrieve the MXKAccounts manager.

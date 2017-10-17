@@ -19,7 +19,7 @@
 "login_user_id_placeholder" = "Identifiant Matrix (par ex. @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Mot de passe";
 "login_optional_field" = "facultatif";
-"login_display_name_placeholder" = "Nom affiché (par ex. Bob Obson)";
+"login_display_name_placeholder" = "Nom d'affichage (par ex. Bob Obson)";
 "login_email_info" = "Définir une adresse e-mail permet aux autres utilisateurs de vous retrouver plus facilement sur Matrix et vous permettra de réinitialiser votre mot de passe.";
 "login_email_placeholder" = "Adresse e-mail";
 "login_prompt_email_token" = "Veuillez saisir votre jeton de validation d'e-mail :";
@@ -155,7 +155,7 @@
 "account_msisdn_validation_title" = "Vérification en attente";
 "account_msisdn_validation_message" = "Nous vous avons envoyé un SMS avec un code d'activation. Veuillez le saisir ci-dessous.";
 "account_msisdn_validation_error" = "Impossible de vérifier le numéro de téléphone.";
-"account_error_display_name_change_failed" = "Échec de modification du nom affiché";
+"account_error_display_name_change_failed" = "Échec de modification du nom d'affichage";
 "account_error_picture_change_failed" = "Échec de modification de l'image";
 "account_error_matrix_session_is_not_opened" = "La session Matrix n'est pas ouverte";
 "account_error_email_wrong_title" = "Adresse e-mail non valide";
@@ -253,9 +253,9 @@
 "notice_room_withdraw" = "%@ a annulé l'invitation de %@";
 "notice_room_reason" = ". Raison : %@";
 "notice_avatar_url_changed" = "%@ ont changé d'avatar";
-"notice_display_name_set" = "%@ a modifié son nom affiché en %@";
-"notice_display_name_changed_from" = "%@ a modifié son nom affiché de %@ à %@";
-"notice_display_name_removed" = "%@ a supprimé son nom affiché";
+"notice_display_name_set" = "%@ a modifié son nom en %@";
+"notice_display_name_changed_from" = "%@ a modifié son nom de %@ à %@";
+"notice_display_name_removed" = "%@ a supprimé son nom d'affichage";
 "notice_topic_changed" = "%@ a modifié le sujet en : %@";
 "notice_room_name_changed" = "%@ a modifié le nom du salon en : %@";
 "notice_placed_voice_call" = "%@ a passé un appel vocal";
