@@ -45,12 +45,12 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
 /**
  List of all available accounts (enabled and disabled).
  */
-@property (nonatomic, readonly) NSArray* accounts;
+@property (nonatomic, readonly) NSArray<MXKAccount *> *accounts;
 
 /**
  List of active accounts (only enabled accounts)
  */
-@property (nonatomic, readonly) NSArray* activeAccounts;
+@property (nonatomic, readonly) NSArray<MXKAccount *> *activeAccounts;
 
 /**
  The device token used for Apple Push Notification Service registration.
@@ -94,7 +94,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  
  @return the MXKAccounts manager.
  */
-+ (MXKAccountManager*)sharedManager;
++ (MXKAccountManager *)sharedManager;
 
 /**
  Check for each enabled account if a matrix session is already opened.
@@ -123,7 +123,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param account a matrix account.
  @param completion the block to execute at the end of the operation.
  */
-- (void)removeAccount:(MXKAccount*)account completion:(void (^)())completion;
+- (void)removeAccount:(MXKAccount *)account completion:(void (^)())completion;
 
 /**
  Log out and remove all the existing accounts
@@ -136,7 +136,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param userId the user id.
  @return the user's account (nil if no account exist).
  */
-- (MXKAccount*)accountForUserId:(NSString*)userId;
+- (MXKAccount *)accountForUserId:(NSString *)userId;
 
 /**
  Retrieve an account that knows the room with the passed id or alias.
@@ -146,7 +146,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param roomIdOrAlias the room id or alias.
  @return the user's account. Nil if no account matches.
  */
-- (MXKAccount*)accountKnowingRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias;
+- (MXKAccount *)accountKnowingRoomWithRoomIdOrAlias:(NSString *)roomIdOrAlias;
 
 /**
  Retrieve an account that knows the user with the passed id.
@@ -156,7 +156,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param userId the user id.
  @return the user's account. Nil if no account matches.
  */
-- (MXKAccount*)accountKnowingUserWithUserId:(NSString*)userId;
+- (MXKAccount *)accountKnowingUserWithUserId:(NSString *)userId;
 
 /**
  Force the account manager to reload existing accounts from the local storage.
