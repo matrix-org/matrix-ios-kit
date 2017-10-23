@@ -269,7 +269,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             [activeAccounts addObject:account];
         }
     }
-    return [activeAccounts copy];
+    return activeAccounts;
 }
 
 - (NSData *)apnsDeviceToken
