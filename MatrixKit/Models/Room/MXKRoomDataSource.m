@@ -1073,6 +1073,20 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 #pragma mark - Sending
 - (void)sendTextMessage:(NSString *)text success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
+    //Remove NULL bytes from the string, as they are likely to trip up many things later,
+    //including our own C-based Markdown-to-HTML convertor.
+    //
+    //Normally, we don't expect people to be entering NULL bytes in messages,
+    //but because of a bug in iOS 11, it's easy to have it happen.
+    //
+    //iOS 11's Smart Punctuation feature "conveniently" converts double hyphens (`--`) to longer en-dashes (`—`).
+    //However, when adding any kind of dash/hyphen after such an en-dash,
+    //iOS would also insert a NULL byte inbetween the dashes (`<en-dash>NULL<some other dash>`).
+    //
+    //Even if a future iOS update fixes this,
+    //we'd better be defensive and always remove occurrences of NULL bytes from text messages.
+    text = [text stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%C", 0x00000000] withString:@""];
+
     // Check whether the message is an emote
     BOOL isEmote = NO;
     if ([text hasPrefix:@"/me "])

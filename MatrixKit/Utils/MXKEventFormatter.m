@@ -1296,10 +1296,31 @@
     // New lines may have also been introduced by the paragraph style
     // Make sure the last paragraph style has no spacing
     [str enumerateAttributesInRange:NSMakeRange(0, str.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        
         if (attrs[NSParagraphStyleAttributeName])
         {
-            NSMutableParagraphStyle *paragraphStyle = attrs[NSParagraphStyleAttributeName];
+            NSString *subString = [str.string substringWithRange:range];
+            NSArray *components = [subString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+            
+            NSMutableDictionary *updatedAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+            NSMutableParagraphStyle *paragraphStyle = [updatedAttrs[NSParagraphStyleAttributeName] mutableCopy];
             paragraphStyle.paragraphSpacing = 0;
+            updatedAttrs[NSParagraphStyleAttributeName] = paragraphStyle;
+            
+            if (components.count > 1)
+            {
+                NSString *lastComponent = components.lastObject;
+                
+                NSRange range2 = NSMakeRange(range.location, range.length - lastComponent.length);
+                [str setAttributes:attrs range:range2];
+                
+                range2 = NSMakeRange(range2.location + range2.length, lastComponent.length);
+                [str setAttributes:updatedAttrs range:range2];
+            }
+            else
+            {
+                [str setAttributes:updatedAttrs range:range];
+            }
         }
 
         // Check only the last paragraph
