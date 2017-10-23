@@ -1,3 +1,17 @@
+Changes in MatrixKit in 0.7.0 (2017-10-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.0).
+ * Support Callkit and PushKit.
+ * Remove NULL bytes from text messages, thanks to @spantaleev (PR #364).
+ * Add generic annotations for MXKAccountManager, thanks to @morozkin (PR #371).
+
+Bug fixes:
+ * Once I changed my room title it is not updating in the room (vector-im/riot-ios#1569).
+ * Wrong paragraph rendering in the room messages (vector-im/riot-ios#1500).
+ * MXKInterleavedRecentsDataSource: Fix crash (matrix-org/riot-ios-rageshakes#483).
+
 Changes in MatrixKit in 0.6.3 (2017-10-03)
 ==========================================
 
