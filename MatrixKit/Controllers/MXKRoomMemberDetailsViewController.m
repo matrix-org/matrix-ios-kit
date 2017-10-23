@@ -820,7 +820,8 @@
         return cell;
     }
     
-    return nil;
+    // Return a fake cell to prevent app from crashing.
+    return [[UITableViewCell alloc] init];
 }
 
 
