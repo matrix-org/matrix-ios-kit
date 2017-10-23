@@ -28,7 +28,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     /**
      The list of all accounts (enabled and disabled). Each value is a `MXKAccount` instance.
      */
-    NSMutableArray *mxAccounts;
+    NSMutableArray<MXKAccount *> *mxAccounts;
 }
 
 @end
@@ -254,12 +254,12 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     _storeClass = storeClass;
 }
 
-- (NSArray *)accounts
+- (NSArray<MXKAccount *> *)accounts
 {
     return [mxAccounts copy];
 }
 
-- (NSArray *)activeAccounts
+- (NSArray<MXKAccount *> *)activeAccounts
 {
     NSMutableArray *activeAccounts = [NSMutableArray arrayWithCapacity:mxAccounts.count];
     for (MXKAccount *account in mxAccounts)
