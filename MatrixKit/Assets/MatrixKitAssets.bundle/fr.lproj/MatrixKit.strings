@@ -350,3 +350,6 @@
 // Language picker
 "language_picker_title" = "Choisissez une langue";
 "language_picker_default_language" = "Défaut (%@)";
+"login_mobile_device" = "Téléphone";
+"login_tablet_device" = "Tablette";
+"login_desktop_device" = "Ordinateur";
