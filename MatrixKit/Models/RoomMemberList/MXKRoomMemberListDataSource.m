@@ -440,7 +440,8 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         }
     }
     
-    return nil;
+    // Return a fake cell to prevent app from crashing.
+    return [[UITableViewCell alloc] init];
 }
 
 @end
