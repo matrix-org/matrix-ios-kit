@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "MatrixKit"
-  s.version      = "0.7.0"
+  s.version      = "0.7.1"
   s.summary      = "The Matrix reusable UI library for iOS based on MatrixSDK."
 
   s.description  = <<-DESC
@@ -17,14 +17,14 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, "8.0"
 
-  s.source       = { :git => "https://github.com/matrix-org/matrix-ios-kit.git", :tag => "v0.7.0" }
+  s.source       = { :git => "https://github.com/matrix-org/matrix-ios-kit.git", :tag => "v0.7.1" }
 
   s.resources	 = "MatrixKit/**/*.{xib}"
   s.resource_bundles = { 'MatrixKit' => ['MatrixKit/Assets/MatrixKitAssets.bundle/**'] }
 
   s.requires_arc  = true
 
-  s.dependency 'MatrixSDK', '0.10.0'
+  s.dependency 'MatrixSDK', '0.10.1'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.10'
   s.dependency 'DTCoreText', '~> 1.6.17'
