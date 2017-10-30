@@ -316,7 +316,7 @@
 "notification_settings_other_alerts" = "Andere Alarme";
 "notification_settings_contain_my_user_name" = "Klänge bei Nachrichten die meinen Benutzernamen enthalten";
 "notification_settings_contain_my_display_name" = "Klänge bei Nachrichten die meinen Anzeigenamen enthalten";
-"notification_settings_just_sent_to_me" = "Klänge bei Nachrichten die gerade zu mir gesendet wurden";
+"notification_settings_just_sent_to_me" = "Mich über gerade empfangene Nachrichten mit einem Klang informieren";
 "notification_settings_invite_to_a_new_room" = "Benachrichtige, wenn ich zu einem neuen Raum eingeladen werde";
 "notification_settings_people_join_leave_rooms" = "Benachrichtige, wenn Benutzer einen Raum betreten oder verlassen";
 "notification_settings_receive_a_call" = "Benachrichtige, wenn ich einen Anruf erhalte";
