@@ -146,11 +146,12 @@ typedef struct
 + (UIImage*)forceImageOrientationUp:(UIImage*)imageSrc;
 
 /**
- Return struct MXKImageCompressionSizes representing the available compresseion sizes for the image
+ Return struct MXKImageCompressionSizes representing the available compression sizes for the image
  
  @param image the image to get available sizes for
+ @param originalFileSize the size in bytes of the original image file or the image data (0 if this value is unknown).
  */
-+ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image;
++ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image originalFileSize:(NSUInteger)originalFileSize;
 
 /**
  Compute image size to fit in specific box size (in aspect fit mode)

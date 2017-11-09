@@ -296,14 +296,14 @@
     return retImage;
 }
 
-+ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image
++ (MXKImageCompressionSizes)availableCompressionSizesForImage:(UIImage*)image originalFileSize:(NSUInteger)originalFileSize
 {
     MXKImageCompressionSizes compressionSizes;
     memset(&compressionSizes, 0, sizeof(MXKImageCompressionSizes));
     
     // Store the original
     compressionSizes.original.imageSize = image.size;
-    compressionSizes.original.fileSize = UIImageJPEGRepresentation(image, 0.9).length;
+    compressionSizes.original.fileSize = originalFileSize ? originalFileSize : UIImageJPEGRepresentation(image, 0.9).length;
     
     NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
     
