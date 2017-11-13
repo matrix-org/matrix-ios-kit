@@ -1,3 +1,12 @@
+Changes in MatrixKit in 0.7.2 (2017-11-13)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.3).
+
+Bug fixes:
+ * Share silently fails on big pics - eg panoramas (vector-im/riot-ios#1627).
+
 Changes in MatrixKit in 0.7.1 (2017-10-27)
 ==========================================
 
