@@ -399,7 +399,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         UIImage *image = [UIImage imageWithData:data];
 
-        MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image];
+        MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image originalFileSize:data.length];
 
         sizes.small = compressionSizes.small.fileSize;
         sizes.medium = compressionSizes.medium.fileSize;
@@ -589,7 +589,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 
     // Get availabe sizes for this image
-    MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image];
+    MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image originalFileSize:0];
 
     // Apply the compression mode
     if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
