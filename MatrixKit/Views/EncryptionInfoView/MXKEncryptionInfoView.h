@@ -76,4 +76,13 @@
  */
 - (void)encryptionInfoView:(MXKEncryptionInfoView*)encryptionInfoView didDeviceInfoVerifiedChange:(MXDeviceInfo*)deviceInfo;
 
+@optional
+
+/**
+ Called when the user close the view without changing value.
+
+ @param encryptionInfoView the view.
+ */
+- (void)encryptionInfoViewDidClose:(MXKEncryptionInfoView*)encryptionInfoView;
+
 @end
