@@ -3360,10 +3360,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }];
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSURL *)imageLocalURL withMimeType:(NSString*)mimetype
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSData*)imageData withMimeType:(NSString*)mimetype
 {
     // Let the datasource send it and manage the local echo
-    [roomDataSource sendImage:imageLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
+    [roomDataSource sendImage:imageData mimeType:mimetype success:nil failure:^(NSError *error)
     {
         // Nothing to do. The image is marked as unsent in the room history by the datasource
         NSLog(@"[MXKRoomViewController] sendImage with mimetype failed.");

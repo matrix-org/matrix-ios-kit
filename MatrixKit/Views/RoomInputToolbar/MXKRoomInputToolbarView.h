@@ -104,10 +104,10 @@ typedef enum : NSUInteger
  Tells the delegate that the user wants to send an image.
  
  @param toolbarView the room input toolbar view.
- @param imageLocalURL the local filesystem path of the image to send.
+ @param imageData the full-sized image data of the image.
  @param mimetype image mime type
  */
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSURL*)imageLocalURL withMimeType:(NSString*)mimetype;
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendImage:(NSData*)imageData withMimeType:(NSString*)mimetype;
 
 /**
  Tells the delegate that the user wants to send a video.
@@ -248,13 +248,15 @@ typedef enum : NSUInteger
 - (IBAction)onTouchUpInside:(UIButton*)button;
 
 /**
- Handle image attachment according to the compression mode. Save the image in user's photos library when the local url is nil and auto saving is enabled.
+ Handle image attachment
+ Save the image in user's photos library when 'isPhotoLibraryAsset' flag is NO and auto saving is enabled.
  
- @param selectedImage the original selected image.
- @param compressionMode the compression mode to apply on this image (see MXKRoomInputToolbarCompressionMode). This option is considered only for jpeg image.
- @param imageURL the url that references the image in the file system or in the AssetsLibrary framework (nil if the image is not stored in Photos library).
+ @param imageData the full-sized image data of the selected image.
+ @param mimetype the image MIME type (nil if unknown).
+ @param compressionMode the compression mode to apply on this image. This option is considered only for jpeg image.
+ @param isPhotoLibraryAsset tell whether the image has been selected from the user's photos library or not.
  */
-- (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL;
+- (void)sendSelectedImage:(NSData*)imageData withMimeType:(NSString *)mimetype andCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset;
 
 /**
  Handle video attachment.

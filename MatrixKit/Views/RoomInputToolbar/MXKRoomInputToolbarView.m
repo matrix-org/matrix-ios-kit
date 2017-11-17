@@ -21,8 +21,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <Photos/Photos.h>
-#import <AssetsLibrary/ALAsset.h>
-#import <AssetsLibrary/ALAssetRepresentation.h>
 
 #import "MXKImageView.h"
 
@@ -477,20 +475,14 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 #pragma mark - Attachment handling
 
-- (void)sendSelectedImage:(UIImage*)selectedImage withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode andLocalURL:(NSURL*)imageURL
+- (void)sendSelectedImage:(NSData*)imageData withMimeType:(NSString *)mimetype andCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
 {
-    // Retrieve image mimetype if the image is saved in photos library
-    NSString *mimetype = nil;
-    if (imageURL)
-    {
-        CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[imageURL.path pathExtension] , NULL);
-        mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
-        CFRelease(uti);
-    }
-    else if (_enableAutoSaving)
+    // Check condition before saving this media in user's library
+    if (_enableAutoSaving && !isPhotoLibraryAsset)
     {
         // Save the original image in user's photos library
-        [MXMediaManager saveImageToPhotosLibrary:selectedImage success:nil failure:nil];
+        UIImage *image = [UIImage imageWithData:imageData];
+        [MXMediaManager saveImageToPhotosLibrary:image success:nil failure:nil];
     }
 
     // Send data without compression if the image type is not jpeg
@@ -500,64 +492,13 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         && [mimetype isEqualToString:@"image/heic"] == NO
         && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:withMimeType:)])
     {
-        // Check whether the url references the image in the AssetsLibrary framework
-        if ([imageURL.scheme isEqualToString:@"assets-library"])
-        {
-            // Retrieve the local full-sized image URL
-            // Use the Photos framework on iOS 8 and later (use AssetsLibrary framework on iOS < 8).
-            Class PHAsset_class = NSClassFromString(@"PHAsset");
-            if (PHAsset_class)
-            {
-                PHFetchResult *result = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
-                if (result.count)
-                {
-                    PHAsset *asset = result[0];
-                    PHContentEditingInputRequestOptions *option = [[PHContentEditingInputRequestOptions alloc] init];
-                    [asset requestContentEditingInputWithOptions:option completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
-
-                        [self.delegate roomInputToolbarView:self sendImage:contentEditingInput.fullSizeImageURL withMimeType:mimetype];
-
-                    }];
-                }
-                else
-                {
-                    NSLog(@"[MXKRoomInputToolbarView] Attach image failed");
-                }
-            }
-            else
-            {
-                ALAssetsLibrary *assetLibrary=[[ALAssetsLibrary alloc] init];
-                [assetLibrary assetForURL:imageURL resultBlock:^(ALAsset *asset) {
-
-                    // asset may be nil if the image is not saved in photos library
-                    if (asset)
-                    {
-                        ALAssetRepresentation* assetRepresentation = [asset defaultRepresentation];
-                        [self.delegate roomInputToolbarView:self sendImage:assetRepresentation.url withMimeType:mimetype];
-                    }
-                    else
-                    {
-                        NSLog(@"[MXKRoomInputToolbarView] Attach image failed");
-                    }
-
-                } failureBlock:^(NSError *err) {
-
-                    NSLog(@"[MXKRoomInputToolbarView] Attach image failed: %@", err);
-
-                }];
-            }
-        }
-        else
-        {
-            // Consider the provided URL as the filesystem one
-            [self.delegate roomInputToolbarView:self sendImage:imageURL withMimeType:mimetype];
-        }
+        [self.delegate roomInputToolbarView:self sendImage:imageData withMimeType:mimetype];
     }
     else
     {
         if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
         {
-            [self sendImage:selectedImage withCompressionMode:compressionMode];
+            [self sendImage:imageData withCompressionMode:compressionMode];
         }
         else
         {
@@ -566,7 +507,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 }
 
-- (void)sendImage:(UIImage*)image withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
+- (void)sendImage:(NSData*)imageData withCompressionMode:(MXKRoomInputToolbarCompressionMode)compressionMode
 {
     if (optionsListView)
     {
@@ -579,17 +520,18 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         // Delay the image sending
         if (!pendingImages)
         {
-            pendingImages = [NSMutableArray arrayWithObject:image];
+            pendingImages = [NSMutableArray arrayWithObject:imageData];
         }
         else
         {
-            [pendingImages addObject:image];
+            [pendingImages addObject:imageData];
         }
         return;
     }
 
     // Get availabe sizes for this image
-    MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image originalFileSize:0];
+    UIImage *image = [UIImage imageWithData:imageData];
+    MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image originalFileSize:imageData.length];
 
     // Apply the compression mode
     if (compressionMode == MXKRoomInputToolbarCompressionModePrompt
@@ -934,10 +876,12 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             if (contentEditingInput.mediaType == PHAssetMediaTypeImage)
             {
                 // Retrieve the fullSizeImage thanks to its local file path
-                NSData *data = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
-                UIImage *image = [UIImage imageWithData:data];
-
-                [self sendSelectedImage:image withCompressionMode:compressionMode andLocalURL:contentEditingInput.fullSizeImageURL];
+                NSData *imageData = [NSData dataWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+                CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[contentEditingInput.fullSizeImageURL.path pathExtension] , NULL);
+                NSString *mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+                CFRelease(uti);
+                
+                [self sendSelectedImage:imageData withMimeType:mimetype andCompressionMode:compressionMode isPhotoLibraryAsset:YES];
             }
             else if (contentEditingInput.mediaType == PHAssetMediaTypeVideo)
             {
@@ -948,7 +892,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 }
                 else
                 {
-                    NSLog(@"[MediaPickerVC] Selected video asset is not initialized from an URL!");
+                    NSLog(@"[MXKRoomInputToolbarView] Selected video asset is not initialized from an URL!");
                 }
             }
         }
@@ -962,6 +906,8 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc] init];
 
     [assets[contentEditingInputs.count] requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+        
+        NSLog(@"[MXKRoomInputToolbarView] contentEditingInputsForAssets requestContentEditingInput (mediaType: %tu) %@", contentEditingInput.mediaType, info);
         
         // Sanity check
         if (contentEditingInput)
@@ -1023,8 +969,18 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                          // Dismiss the image view
                          [self dismissValidationViews];
                          
-                         // attach the selected image
-                         [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:[info objectForKey:UIImagePickerControllerReferenceURL]];
+                         NSURL *imageLocalURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+                         if (imageLocalURL)
+                         {
+                             CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[imageLocalURL.path pathExtension] , NULL);
+                             NSString *mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+                             CFRelease(uti);
+                             
+                             NSData *imageData = [NSData dataWithContentsOfFile:imageLocalURL.path];
+                             
+                             // attach the selected image
+                             [self sendSelectedImage:imageData withMimeType:mimetype andCompressionMode:MXKRoomInputToolbarCompressionModePrompt isPhotoLibraryAsset:YES];
+                         }
                      }
                      
                  }];
@@ -1058,7 +1014,8 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             else
             {
                 // Suggest compression before sending image
-                [self sendSelectedImage:selectedImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt andLocalURL:nil];
+                NSData *imageData = UIImageJPEGRepresentation(selectedImage, 0.9);
+                [self sendSelectedImage:imageData withMimeType:nil andCompressionMode:MXKRoomInputToolbarCompressionModePrompt isPhotoLibraryAsset:NO];
             }
         }
     }

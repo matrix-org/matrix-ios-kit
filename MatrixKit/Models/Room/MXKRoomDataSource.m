@@ -1149,9 +1149,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     [self sendImageData:imageData withImageSize:image.size mimeType:mimetype andThumbnail:thumbnail success:success failure:failure];
 }
 
-- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString *)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)sendImage:(NSData *)imageData mimeType:(NSString *)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-    NSData *imageData = [NSData dataWithContentsOfFile:imageLocalURL.path];
     UIImage *image = [UIImage imageWithData:imageData];
     
     // Shall we need to consider a thumbnail?
