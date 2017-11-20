@@ -81,6 +81,11 @@ extern NSString *const kCmdChangeRoomTopic;
     NSString *savedInputToolbarPlaceholder;
     
     /**
+     Tell whether the input toolbar required to run an animation indicator.
+     */
+    BOOL isInputToolbarProcessing;
+    
+    /**
      Tell whether a device rotation is in progress
      */
     BOOL isSizeTransitionInProgress;

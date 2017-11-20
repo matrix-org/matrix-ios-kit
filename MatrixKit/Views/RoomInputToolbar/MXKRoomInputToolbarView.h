@@ -171,6 +171,14 @@ typedef enum : NSUInteger
  */
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion;
 
+/**
+ Tells the delegate to start or stop an activity indicator.
+ 
+ @param toolbarView the room input toolbar view
+ @param isAnimating YES if the activity indicator should run.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView updateActivityIndicator:(BOOL)isAnimating;
+
 @end
 
 /**

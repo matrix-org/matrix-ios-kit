@@ -308,6 +308,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Observe the server sync
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncNotification) name:kMXSessionDidSyncNotification object:nil];
     
+    // Be sure to display the activity indicator during back pagination
+    if (isPaginationInProgress)
+    {
+        [self startActivityIndicator];
+    }
+    
     // Finalize view controller appearance
     [self updateViewControllerAppearanceOnRoomDataSourceState];
     
@@ -1794,7 +1800,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     }
     
     // Check internal processes before stopping the loading wheel
-    if (isPaginationInProgress)
+    if (isPaginationInProgress || isInputToolbarProcessing)
     {
         // Keep activity indicator running
         return;
@@ -3407,6 +3413,19 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     [self dismissViewControllerAnimated:flag completion:completion];
 }
 
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView updateActivityIndicator:(BOOL)isAnimating
+{
+    isInputToolbarProcessing = isAnimating;
+    
+    if (isAnimating)
+    {
+        [self startActivityIndicator];
+    }
+    else
+    {
+        [self stopActivityIndicator];
+    }
+}
 # pragma mark - Typing notification
 
 - (void)handleTypingNotification:(BOOL)typing
