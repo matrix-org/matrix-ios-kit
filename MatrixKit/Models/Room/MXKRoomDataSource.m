@@ -1277,7 +1277,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     
                     if (mimetype)
                     {
-                        [self sendImage:[NSURL fileURLWithPath:localImagePath isDirectory:NO] mimeType:mimetype success:success failure:failure];
+                        NSData *imageData = [NSData dataWithContentsOfFile:localImagePath];
+                        [self sendImage:imageData mimeType:mimetype success:success failure:failure];
                     }
                     else
                     {

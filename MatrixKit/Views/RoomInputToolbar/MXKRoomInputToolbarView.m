@@ -318,7 +318,7 @@ NSString *const kPasteboardItemPrefix = @"pasteboard-";
     
     if (pendingImages.count)
     {
-        UIImage *firstImage = pendingImages.firstObject;
+        NSData *firstImage = pendingImages.firstObject;
         [pendingImages removeObjectAtIndex:0];
         [self sendImage:firstImage withCompressionMode:MXKRoomInputToolbarCompressionModePrompt];
     }
