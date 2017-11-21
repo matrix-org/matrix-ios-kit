@@ -27,7 +27,7 @@ limitations under the License.
 /**
  Display a room.
  
- @param roomDataSource the data source.
+ @param inRoomDataSource the data source.
  */
 - (void)displayRoom:(MXKSampleJSQRoomDataSource*)inRoomDataSource;
 
