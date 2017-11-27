@@ -2801,10 +2801,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                                                    NSArray *activityItems = [NSArray arrayWithObjects:selectedComponent.textMessage, nil];
                                                                    
                                                                    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-                                                                   activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-                                                                   
                                                                    if (activityViewController)
                                                                    {
+                                                                       activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                                                                       activityViewController.popoverPresentationController.sourceView = roomBubbleTableViewCell;
+                                                                       activityViewController.popoverPresentationController.sourceRect = roomBubbleTableViewCell.bounds;
+                                                                       
                                                                        [self presentViewController:activityViewController animated:YES completion:nil];
                                                                    }
                                                                    
@@ -3091,10 +3093,12 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         NSArray *activityItems = [NSArray arrayWithObjects:selectedText, nil];
         
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-        activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        
         if (activityViewController)
         {
+            activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+            activityViewController.popoverPresentationController.sourceView = self.view;
+            activityViewController.popoverPresentationController.sourceRect = self.view.bounds;
+            
             [self presentViewController:activityViewController animated:YES completion:nil];
         }
     }
