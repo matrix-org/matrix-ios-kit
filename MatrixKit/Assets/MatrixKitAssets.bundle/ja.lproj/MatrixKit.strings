@@ -5,3 +5,15 @@
 "login_home_server_title" = "接続先サーバ:";
 "login_home_server_info" = "あなたの接続先サーバは、あなたの全ての会話とアカウント情報を保存します";
 "login_identity_server_title" = "認証サーバ:";
+"login_password_placeholder" = "パスワード";
+"login_email_placeholder" = "メールアドレス";
+// Action
+"no" = "いいえ";
+"yes" = "はい";
+"back" = "戻る";
+"close" = "閉じる";
+"continue" = "続く";
+"sign_up" = "登録";
+"resend_message" = "メッセージを再送信する";
+"select_all" = "全て選択";
+"show_details" = "詳細を表示する";
