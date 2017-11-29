@@ -415,6 +415,11 @@ static NSAttributedString *verticalWhitespace = nil;
     if (sender == _cancelButton)
     {
         [self removeFromSuperview];
+
+        if ([_delegate respondsToSelector:@selector(encryptionInfoViewDidClose:)])
+        {
+            [_delegate encryptionInfoViewDidClose:self];
+        }
     }
     // Note: Verify and Block buttons are hidden when the deviceInfo is not available
     else if (sender == _confirmVerifyButton && mxDeviceInfo)

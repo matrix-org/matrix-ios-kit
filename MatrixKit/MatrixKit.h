@@ -103,6 +103,8 @@
 #import "MXKTableViewCellWithTextView.h"
 
 #import "MXKMediaCollectionViewCell.h"
+#import "MXKPieChartView.h"
+#import "MXKPieChartHUD.h"
 
 #import "MXKRoomTitleView.h"
 #import "MXKRoomTitleViewWithTopic.h"
@@ -132,6 +134,7 @@
 
 #import "MXKDeviceView.h"
 #import "MXKEncryptionInfoView.h"
+#import "MXKEncryptionKeysExportView.h"
 
 #import "MXKCountryPickerViewController.h"
 #import "MXKLanguagePickerViewController.h"

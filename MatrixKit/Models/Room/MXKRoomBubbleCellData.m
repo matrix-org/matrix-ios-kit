@@ -111,7 +111,7 @@
                 self.attributedTextMessage = nil;
                 
                 // Handle here attachment update.
-                // The case of update of attachment event happens when an echo is replaced by its true event
+                // For example: the case of update of attachment event happens when an echo is replaced by its true event
                 // received back by the events stream.
                 if (attachment)
                 {
@@ -123,7 +123,13 @@
                         eventContentURL = event.content[@"file"][@"url"];
                     }
                     
-                    if (![attachment.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:eventContentURL])
+                    if (!eventContentURL.length)
+                    {
+                        // The attachment has been redacted.
+                        attachment = nil;
+                        _contentSize = CGSizeZero;
+                    }
+                    else if (![attachment.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:eventContentURL])
                     {
                         MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
                         
@@ -170,7 +176,7 @@
                 }
                 else if ([roomDataSource.eventFormatter isSupportedAttachment:event])
                 {
-                    // The event is updated to an even with attachement
+                    // The event is updated to an event with attachement
                     attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
                     if (attachment && attachment.type == MXKAttachmentTypeImage)
                     {

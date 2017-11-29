@@ -16,8 +16,6 @@
 
 #import "MXKCallViewController.h"
 
-#import <MatrixSDK/MXCallKitAdapter.h>
-
 #import "MXKAppSettings.h"
 #import "MXMediaManager.h"
 #import "MXKSoundPlayer.h"

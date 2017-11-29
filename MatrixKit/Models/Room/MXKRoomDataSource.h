@@ -361,13 +361,13 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  While sending, a fake event will be echoed in the messages list.
  Once complete, this local echo will be replaced by the event saved by the homeserver.
  
- @param imageLocalURL the local filesystem path of the image to send.
+ @param imageData the full-sized image data of the image to send.
  @param mimetype the mime type of the image
  @param success A block object called when the operation succeeds. It returns
  the event id of the event generated on the home server
  @param failure A block object called when the operation fails.
  */
-- (void)sendImage:(NSURL *)imageLocalURL mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure;
+- (void)sendImage:(NSData*)imageData mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure;
 
 /**
  Send an video to the room.
