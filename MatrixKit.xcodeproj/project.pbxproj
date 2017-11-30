@@ -1485,7 +1485,6 @@
 				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesLoadEarlierHeaderView.xib",
 				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesToolbarContentView.xib",
 				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesTypingIndicatorFooterView.xib",
-				"${PODS_ROOT}/MatrixSDK/MatrixSDK/Data/Store/MXCoreDataStore/MXCoreDataStore.xcdatamodeld",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (

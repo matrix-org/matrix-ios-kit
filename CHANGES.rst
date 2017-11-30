@@ -1,3 +1,24 @@
+Changes in MatrixKit in 0.7.3 (2017-11-30)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.4).
+ * MXKEncryptionInfoView: add encryptionInfoViewDidClose.
+
+Bug fixes:
+ * Failed to send photos which are not stored on the local device and must be downloaded from iCloud (vector-im/riot-ios#1654).
+ * App crashes when user wants to share a message (matrix-org/riot-ios-rageshakes#676).
+ * Wrong bubble layout after an image redaction (#380).
+ 
+API breaks:
+ * MXKRoomInputToolbarView: `roomInputToolbarView:sendImage:withMimeType:` method considers the full-sized image data instead of the local image URL.
+ * MXKRoomInputToolbarView: `sendSelectedImage:withCompressionMode:andLocalURL:` is replaced with `sendSelectedImage:withMimeType:andCompressionMode:isPhotoLibraryAsset:`.
+ * MXKRoomDataSource: `sendImage:mimeType:success:failure:` method considers the full-sized image data instead of the local image URL.
+ 
+Translations:
+  * Vietnamese (100%), added thanks to @loulsle (PR #381).
+  * Japanese (5.2%), updated thanks to @libraryxhime (PR #381).
+
 Changes in MatrixKit in 0.7.2 (2017-11-13)
 ==========================================
 
