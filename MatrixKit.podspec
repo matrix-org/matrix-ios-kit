@@ -19,9 +19,6 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/matrix-org/matrix-ios-kit.git", :tag => "v0.7.3" }
 
-  s.resources	 = "MatrixKit/**/*.{xib}"
-  s.resource_bundles = { 'MatrixKit' => ['MatrixKit/Assets/MatrixKitAssets.bundle/**'] }
-
   s.requires_arc  = true
 
   s.dependency 'MatrixSDK', '0.10.4'
@@ -34,11 +31,13 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |core|
     core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m}"
+    core.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     core.dependency 'DTCoreText'
   end
 
   s.subspec 'AppExtension' do |ext|
     ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m}"
+    ext.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     ext.dependency 'DTCoreText/Extension'
   end
 
