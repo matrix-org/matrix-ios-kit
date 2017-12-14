@@ -83,4 +83,11 @@ extern NSString *const kMXKGroupCellIdentifier;
  */
 - (CGFloat)cellHeightAtIndexPath:(NSIndexPath*)indexPath;
 
+/**
+ Leave the group displayed at the provided path.
+ 
+ @param indexPath the index of the group cell in the table
+ */
+- (void)leaveGroupAtIndexPath:(NSIndexPath *)indexPath;
+
 @end
