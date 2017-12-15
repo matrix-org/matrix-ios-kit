@@ -138,3 +138,8 @@
 
 #import "MXKCountryPickerViewController.h"
 #import "MXKLanguagePickerViewController.h"
+
+#import "MXKGroupCellData.h"
+#import "MXKSessionGroupsDataSource.h"
+#import "MXKGroupListViewController.h"
+#import "MXKGroupTableViewCell.h"

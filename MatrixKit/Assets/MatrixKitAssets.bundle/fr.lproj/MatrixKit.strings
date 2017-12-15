@@ -200,6 +200,9 @@
 // Contacts
 "contact_mx_users" = "Utilisateurs Matrix";
 "contact_local_contacts" = "Contacts locaux";
+// Groups
+"group_invite_section" = "Invitations";
+"group_section" = "Groupes";
 // Search
 "search_no_results" = "Aucun résultat";
 "search_searching" = "Recherche en cours...";
