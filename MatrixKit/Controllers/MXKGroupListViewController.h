@@ -98,7 +98,7 @@
 /**
  Display the groups described in the provided data source.
  
- Note1: The provided data source will replace the current data source if any. The caller
+ Note: The provided data source will replace the current data source if any. The caller
  should dispose properly this data source if it is not used anymore.
 
  @param listDataSource the data source providing the groups list.
