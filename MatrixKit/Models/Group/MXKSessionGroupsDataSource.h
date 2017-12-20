@@ -51,6 +51,15 @@ extern NSString *const kMXKGroupCellIdentifier;
 #pragma mark - Life cycle
 
 /**
+ Refresh all the groups summary.
+ The group data are not synced with the server, use this method to refresh them according to your needs.
+ 
+ @param completion the block to execute when a request has been done for each group (whatever the result of the requests).
+ You may specify nil for this parameter.
+ */
+- (void)refreshGroupsSummary:(void (^)(void))completion;
+
+/**
  Filter the current groups list according to the provided patterns.
  When patterns are not empty, the search result is stored in `filteredGroupsCellDataArray`,
  this array provides then data for the cells served by `MXKSessionGroupsDataSource`.
