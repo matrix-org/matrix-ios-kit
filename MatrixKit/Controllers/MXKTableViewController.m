@@ -377,30 +377,46 @@
     // Check whether the view controller is embedded inside a navigation controller.
     if (self.navigationController)
     {
-        // We pop the view controller (except if it is the root view controller).
-        NSUInteger index = [self.navigationController.viewControllers indexOfObject:self];
-        if (index != NSNotFound)
-        {
-            if (index > 0)
-            {
-                UIViewController *previousViewController = [self.navigationController.viewControllers objectAtIndex:(index - 1)];
-                [self.navigationController popToViewController:previousViewController animated:animated];
-                
-                if (completion)
-                {
-                    completion();
-                }
-            }
-            else
-            {
-                [self.navigationController dismissViewControllerAnimated:animated completion:completion];
-            }
-        }
+        [self popViewController:self navigationController:self.navigationController animated:animated completion:completion];
     }
     else
     {
         // Suppose here the view controller has been presented modally. We dismiss it
         [self dismissViewControllerAnimated:animated completion:completion];
+    }
+}
+
+- (void)popViewController:(UIViewController*)viewController navigationController:(UINavigationController*)navigationController animated:(BOOL)animated completion:(void (^)(void))completion
+{
+    // We pop the view controller (except if it is the root view controller).
+    NSUInteger index = [navigationController.viewControllers indexOfObject:viewController];
+    if (index != NSNotFound)
+    {
+        if (index > 0)
+        {
+            UIViewController *previousViewController = [navigationController.viewControllers objectAtIndex:(index - 1)];
+            [navigationController popToViewController:previousViewController animated:animated];
+            
+            if (completion)
+            {
+                completion();
+            }
+        }
+        else
+        {
+            // Check whether the navigation controller is embedded inside a navigation controller, to pop it.
+            if (navigationController.navigationController)
+            {
+                [self popViewController:navigationController navigationController:navigationController.navigationController animated:animated completion:completion];
+            }
+            else
+            {
+                // Remove the root view controller
+                navigationController.viewControllers = @[];
+                // Suppose here the navigation controller has been presented modally. We dismiss it
+                [navigationController dismissViewControllerAnimated:animated completion:completion];
+            }
+        }
     }
 }
 
