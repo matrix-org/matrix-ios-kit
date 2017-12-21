@@ -37,7 +37,7 @@
     group = theGroup;
     
     // Keep ref on displayed last event
-    groupDisplayname = sortingDisplayname = group.summary.profile.name;
+    groupDisplayname = sortingDisplayname = group.profile.name;
     
     if (!groupDisplayname.length)
     {

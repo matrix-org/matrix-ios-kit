@@ -72,9 +72,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)destroy
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewGroupInviteNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidJoinGroupNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveGroupNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     groupsCellDataArray = nil;
     groupsInviteCellDataArray = nil;
@@ -97,14 +95,53 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
         {
             [self loadData];
         }
-        else
+        else if (self.mxSession.state == MXSessionStateRunning)
         {
-            [self onCellDataChange];
+            // Refresh the group data
+            [self refreshGroupsSummary:nil];
         }
     }
 }
 
 #pragma mark -
+
+- (void)refreshGroupsSummary:(void (^)(void))completion
+{
+    NSLog(@"[MXKSessionGroupsDataSource] refreshGroupsSummary");
+    
+    __block NSUInteger count = internalCellDataArray.count;
+    
+    if (count)
+    {
+        for (id<MXKGroupCellDataStoring> groupData in internalCellDataArray)
+        {
+            // Force the matrix session to refresh the group summary.
+            [self.mxSession updateGroupSummary:groupData.group success:^{
+                
+                if (completion && !(--count))
+                {
+                    // All the requests have been done.
+                    completion ();
+                }
+                
+            } failure:^(NSError *error) {
+                
+                NSLog(@"[MXKSessionGroupsDataSource] refreshGroupsSummary: group summary update failed %@", groupData.group.groupId);
+                
+                if (completion && !(--count))
+                {
+                    // All the requests have been done.
+                    completion ();
+                }
+                
+            }];
+        }
+    }
+    else if (completion)
+    {
+        completion();
+    }
+}
 
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
@@ -191,9 +228,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)loadData
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewGroupInviteNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidJoinGroupNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveGroupNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // Reset the table
     [internalCellDataArray removeAllObjects];
@@ -201,6 +236,12 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
     // Retrieve the MXKCellData class to manage the data
     Class class = [self cellDataClassForCellIdentifier:kMXKGroupCellIdentifier];
     NSAssert([class conformsToProtocol:@protocol(MXKGroupCellDataStoring)], @"MXKSessionGroupsDataSource only manages MXKCellData that conforms to MXKGroupCellDataStoring protocol");
+    
+    // Listen to MXSession groups changes
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onNewGroupInvite:) name:kMXSessionNewGroupInviteNotification object:self.mxSession];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didJoinGroup:) name:kMXSessionDidJoinGroupNotification object:self.mxSession];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLeaveGroup:) name:kMXSessionDidLeaveGroupNotification object:self.mxSession];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateGroup:) name:kMXSessionDidUpdateGroupSummaryNotification object:self.mxSession];
     
     NSDate *startDate = [NSDate date];
     
@@ -211,6 +252,11 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
         if (cellData)
         {
             [internalCellDataArray addObject:cellData];
+            
+            // Force the matrix session to refresh the group summary.
+            [self.mxSession updateGroupSummary:group success:nil failure:^(NSError *error) {
+                NSLog(@"[MXKSessionGroupsDataSource] loadData: group summary update failed %@", group.groupId);
+            }];
         }
     }
     
@@ -218,17 +264,11 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
     
     [self sortCellData];
     [self onCellDataChange];
-    
-    // Listen to MXSession groups changes
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onNewGroupInvite:) name:kMXSessionNewGroupInviteNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didJoinGroup:) name:kMXSessionDidJoinGroupNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLeaveGroup:) name:kMXSessionDidLeaveGroupNotification object:nil];
 }
 
-// @TODO: listen group update
-- (void)didGroupUpdated:(NSNotification *)notif
+- (void)didUpdateGroup:(NSNotification *)notif
 {
-    MXGroup *group = notif.object;
+    MXGroup *group = notif.userInfo[kMXSessionNotificationGroupKey];
     if (group)
     {
         id<MXKGroupCellDataStoring> groupData = [self cellDataWithGroupId:group.groupId];
@@ -238,7 +278,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
         }
         else
         {
-            NSLog(@"[MXKSessionGroupsDataSource] didGroupUpdated: Cannot find the changed group for %@ (%@). It is probably not managed by this group data source", group.groupId, group);
+            NSLog(@"[MXKSessionGroupsDataSource] didUpdateGroup: Cannot find the changed group for %@ (%@). It is probably not managed by this group data source", group.groupId, group);
             return;
         }
     }
@@ -249,10 +289,8 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)onNewGroupInvite:(NSNotification *)notif
 {
-    MXSession *mxSession = notif.object;
     MXGroup *group = notif.userInfo[kMXSessionNotificationGroupKey];
-    
-    if (mxSession == self.mxSession && group)
+    if (group)
     {
         // Add the group if there is not yet a cell for it
         id<MXKGroupCellDataStoring> groupData = [self cellDataWithGroupId:group.groupId];
@@ -277,10 +315,8 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)didJoinGroup:(NSNotification *)notif
 {
-    MXSession *mxSession = notif.object;
     MXGroup *group = notif.userInfo[kMXSessionNotificationGroupKey];
-    
-    if (mxSession == self.mxSession && group)
+    if (group)
     { 
         id<MXKGroupCellDataStoring> groupData = [self cellDataWithGroupId:group.groupId];
         if (groupData)
@@ -309,10 +345,8 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)didLeaveGroup:(NSNotification *)notif
 {
-    MXSession *mxSession = notif.object;
     NSString *groupId = notif.userInfo[kMXSessionNotificationGroupIdKey];
-    
-    if (mxSession == self.mxSession && groupId)
+    if (groupId)
     {
         [self removeGroup:groupId];
     }

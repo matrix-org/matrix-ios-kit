@@ -28,17 +28,17 @@
     groupCellData = (id<MXKGroupCellDataStoring>)cellData;
     if (groupCellData)
     {
-        // Report computed values as is
+        // Render the current group values.
         _groupName.text = groupCellData.groupDisplayname;
-        _groupDescription.text = groupCellData.group.summary.profile.shortDescription;
+        _groupDescription.text = groupCellData.group.profile.shortDescription;
         
         if (_memberCount)
         {
-            if (groupCellData.group.users.totalUserCountEstimate > 1)
+            if (groupCellData.group.summary.usersSection.totalUserCountEstimate > 1)
             {
-                _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_other"], @(groupCellData.group.users.totalUserCountEstimate)];
+                _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_other"], @(groupCellData.group.summary.usersSection.totalUserCountEstimate)];
             }
-            else if (groupCellData.group.users.totalUserCountEstimate == 1)
+            else if (groupCellData.group.summary.usersSection.totalUserCountEstimate == 1)
             {
                 _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_one"], @1];
             }

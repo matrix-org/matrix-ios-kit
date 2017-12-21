@@ -161,6 +161,9 @@
     
     // Do a full reload
     [self refreshGroupsTable];
+    
+    // Refresh all groups summary
+    [self.dataSource refreshGroupsSummary:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -480,7 +483,11 @@
 - (void)onSyncNotification
 {
     latestServerSync = [NSDate date];
-    [self removeReconnectingView];
+    
+    // Refresh all groups summary
+    [self.dataSource refreshGroupsSummary:^{
+        [self removeReconnectingView];
+    }];
 }
 
 - (BOOL)canReconnect
