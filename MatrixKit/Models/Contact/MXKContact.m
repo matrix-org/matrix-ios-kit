@@ -647,8 +647,11 @@ NSString *const kMXKContactDefaultContactPrefixId = @"Default_";
     
     if (contactThumbnail)
     {
-        NSData *data = UIImageJPEGRepresentation(contactThumbnail, 0.8);
-        [coder encodeObject:data forKey:@"contactThumbnail"];
+        @autoreleasepool
+        {
+            NSData *data = UIImageJPEGRepresentation(contactThumbnail, 0.8);
+            [coder encodeObject:data forKey:@"contactThumbnail"];
+        }
     }
 }
 
