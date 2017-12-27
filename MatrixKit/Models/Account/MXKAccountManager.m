@@ -83,18 +83,11 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)saveAccounts
 {
-    NSUserDefaults *userDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
-    if (mxAccounts.count)
-    {
-        NSData *accountData = [NSKeyedArchiver archivedDataWithRootObject:mxAccounts];
-        
-        [userDefaults setObject:accountData forKey:kMXKAccountsKey];
-    }
-    else
-    {
-        [userDefaults removeObjectForKey:kMXKAccountsKey];
-    }
-    [userDefaults synchronize];
+    NSDate *startDate = [NSDate date];
+    
+    NSLog(@"[MXKAccountManager] saveAccounts...");
+    BOOL result = [NSKeyedArchiver archiveRootObject:mxAccounts toFile:[self accountFile]];
+    NSLog(@"[MXKAccountManager] saveAccounts. Done (result: %@) in %.0fms", @(result), [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
 }
 
 - (void)addAccount:(MXKAccount *)account andOpenSession:(BOOL)openSession
@@ -182,6 +175,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     // Be sure that no account survive in local storage
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
     [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
+    [[NSFileManager defaultManager] removeItemAtPath:[self accountFile] error:nil];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
     [sharedUserDefaults synchronize];
@@ -493,37 +487,64 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 #pragma mark -
 
+// Return the path of the file containing stored MXAccounts array
+- (NSString*)accountFile
+{
+    NSString *matrixKitCacheFolder = [MXKAppSettings cacheFolder];
+    return [matrixKitCacheFolder stringByAppendingPathComponent:kMXKAccountsKey];
+}
+
 - (void)loadAccounts
 {
-    NSUserDefaults *sharedDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
+    NSLog(@"[MXKAccountManager] loadAccounts");
 
-    NSData *accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
-
-    if (!accountData)
+    NSString *accountFile = [self accountFile];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:accountFile])
     {
-        // Migration of accountData from [NSUserDefaults standardUserDefaults] to sharedDefaults (shared between apps and extensions)
-        NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:kMXKAccountsKey];
-        if (oldAccountData)
-        {
-            [sharedDefaults setObject:oldAccountData forKey:kMXKAccountsKey];
-            [sharedDefaults synchronize];
-
-            // TODO: Erase old location of accountData when the app goes to the app store
-            //[[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
-            //[[NSUserDefaults standardUserDefaults] synchronize];
-
-            NSLog(@"[MXKAccountManager] loadAccounts: performed data migration");
-        }
-
-        accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
-    }
-    
-    if (accountData)
-    {
-        mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
+        NSDate *startDate = [NSDate date];
+        mxAccounts = [NSKeyedUnarchiver unarchiveObjectWithFile:accountFile];
+        NSLog(@"[MXKAccountManager] loadAccounts. %tu accounts loaded in %.0fms", mxAccounts.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
     }
     else
     {
+        // Migration of accountData from [NSUserDefaults standardUserDefaults] to a file
+        NSUserDefaults *sharedDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
+
+        NSData *accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
+        if (!accountData)
+        {
+            // Migration of accountData from [NSUserDefaults standardUserDefaults] to sharedDefaults (shared between apps and extensions)
+            NSData *oldAccountData = [[NSUserDefaults standardUserDefaults] objectForKey:kMXKAccountsKey];
+            if (oldAccountData)
+            {
+                [sharedDefaults setObject:oldAccountData forKey:kMXKAccountsKey];
+                [sharedDefaults synchronize];;
+
+                NSLog(@"[MXKAccountManager] loadAccounts: performed data migration #1");
+            }
+
+            accountData = [sharedDefaults objectForKey:kMXKAccountsKey];
+        }
+
+        if (accountData)
+        {
+            mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
+            [self saveAccounts];
+
+            NSLog(@"[MXKAccountManager] loadAccounts: performed data migration #2");
+
+            // Now that data has been migrated, erase old location of accountData
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+
+            [sharedDefaults removeObjectForKey:kMXKAccountsKey];
+            [sharedDefaults synchronize];
+        }
+    }
+
+    if (!mxAccounts)
+    {
+        NSLog(@"[MXKAccountManager] loadAccounts. No accounts");
         mxAccounts = [NSMutableArray array];
     }
 }
