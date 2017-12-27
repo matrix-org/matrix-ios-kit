@@ -190,6 +190,11 @@
 + (MXKAppSettings *)standardAppSettings;
 
 /**
+ Return the folder to use for caching MatrixKit data.
+ */
++ (NSString*)cacheFolder;
+
+/**
  Restore the default values.
  */
 - (void)reset;
