@@ -59,6 +59,40 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     return standardAppSettings;
 }
 
++ (NSString *)cacheFolder
+{
+    NSString *cacheFolder;
+
+    // Check for a potential application group id
+    NSString *applicationGroupIdentifier = [MXSDKOptions sharedInstance].applicationGroupIdentifier;
+    if (applicationGroupIdentifier)
+    {
+        NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:applicationGroupIdentifier];
+        cacheFolder = [sharedContainerURL path];
+    }
+    else
+    {
+        NSArray *cacheDirList = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        cacheFolder  = [cacheDirList objectAtIndex:0];
+    }
+
+    // Use a dedicated cache folder for MatrixKit
+    cacheFolder = [cacheFolder stringByAppendingPathComponent:@"MatrixKit"];
+
+    // Make sure the folder exists so that it can be used
+    if (cacheFolder && ![[NSFileManager defaultManager] fileExistsAtPath:cacheFolder])
+    {
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:cacheFolder withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error)
+        {
+            NSLog(@"[MXKAppSettings] cacheFolder: Error: Cannot create MatrixKit folder at %@. Error: %@", cacheFolder, error);
+        }
+    }
+
+    return cacheFolder;
+}
+
 #pragma  mark -
 
 -(instancetype)init
