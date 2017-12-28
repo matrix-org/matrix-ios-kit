@@ -211,19 +211,6 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
     return nil;
 }
 
-- (CGFloat)cellHeightAtIndexPath:(NSIndexPath*)indexPath
-{
-    if (self.delegate)
-    {
-        id<MXKGroupCellDataStoring> cellData = [self cellDataAtIndex:indexPath];
-        
-        Class<MXKCellRendering> class = [self.delegate cellViewClassForCellData:cellData];
-        return [class heightForCellData:cellData withMaximumWidth:0];
-    }
-    
-    return 0;
-}
-
 #pragma mark - Groups processing
 
 - (void)loadData

@@ -49,6 +49,11 @@
 /**
  Compute the height of the cell to display the passed data.
  
+ @TODO: To support correctly the dynamic fonts, we have to remove this method and
+ its use by enabling self sizing cells at the table view level.
+ When we create a self-sizing table view cell, we need to set the property `estimatedRowHeight` of the table view
+ and use constraints to define the cell’s size.
+ 
  @param cellData the data object to render.
  @param maxWidth the maximum available width.
  @return the cell height
