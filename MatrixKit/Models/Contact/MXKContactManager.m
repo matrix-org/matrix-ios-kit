@@ -242,7 +242,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 }
             }];
         }
-        [self refreshMatrixContacts];
+
+        // refreshMatrixContacts can take time. Delay its execution to not overload
+        // launch of apps that call [MXKContactManager addMatrixSession] at startup
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self refreshMatrixContacts];
+        });
     }
     
     // Lookup the matrix users in all the local contacts.
@@ -1468,6 +1473,8 @@ static NSString *contactsBookInfoFile = @"contacts";
 
 - (void)loadCachedMatrixContacts
 {
+    NSDate *startDate = [NSDate date];
+    
     NSString *dataFilePath = [self dataFilePathForComponent:matrixContactsFile];
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
@@ -1519,6 +1526,8 @@ static NSString *contactsBookInfoFile = @"contacts";
         // One and only one matrix id is expected for each listed contact.
         [matrixContactByMatrixID setObject:contact forKey:contact.matrixIdentifiers.firstObject];
     }
+
+    NSLog(@"[MXKContactManager] loadCachedMatrixContacts : Loaded %tu contacts in %.0fms", matrixContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
 }
 
 - (void)cacheMatrixIDsDict
