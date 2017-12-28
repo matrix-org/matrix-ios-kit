@@ -364,10 +364,6 @@
 }
 
 #pragma mark - UITableView delegate
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [dataSource cellHeightAtIndexPath:indexPath];
-}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {

@@ -85,14 +85,6 @@ extern NSString *const kMXKGroupCellIdentifier;
 - (NSIndexPath*)cellIndexPathWithGroupId:(NSString*)groupId;
 
 /**
- Get height of the cell at the given index.
- 
- @param indexPath the index of the cell in the table
- @return the cell height
- */
-- (CGFloat)cellHeightAtIndexPath:(NSIndexPath*)indexPath;
-
-/**
  Leave the group displayed at the provided path.
  
  @param indexPath the index of the group cell in the table
