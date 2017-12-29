@@ -32,6 +32,18 @@
         _groupName.text = groupCellData.groupDisplayname;
         _groupDescription.text = groupCellData.group.profile.shortDescription;
         
+        if (_groupDescription.text.length)
+        {
+            _groupDescription.hidden = NO;
+        }
+        else
+        {
+            // Hide and fill the label with a fake description to harmonize the height of all the cells.
+            // This is a drawback of the self-sizing cell.
+            _groupDescription.hidden = YES;
+            _groupDescription.text = @"No description";
+        }
+        
         if (_memberCount)
         {
             if (groupCellData.group.summary.usersSection.totalUserCountEstimate > 1)

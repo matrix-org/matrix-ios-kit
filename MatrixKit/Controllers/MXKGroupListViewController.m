@@ -139,6 +139,7 @@
     // Note: self-sizing cells and self-sizing section headers are enabled from the nib file.
     self.groupsTableView.delegate = self;
     self.groupsTableView.dataSource = dataSource; // Note: dataSource may be nil here
+    self.groupsTableView.estimatedSectionHeaderHeight = 30; // The value set in the nib seems not available for iOS version < 10.
     
     // Set up classes to use for the cells and the section headers.
     [self.groupsTableView registerNib:MXKGroupTableViewCell.nib forCellReuseIdentifier:MXKGroupTableViewCell.defaultReuseIdentifier];
@@ -367,6 +368,33 @@
 }
 
 #pragma mark - UITableView delegate
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return tableView.estimatedRowHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForHeaderInSection:(NSInteger)section
+{
+    if (tableView.numberOfSections > 1)
+    {
+        return tableView.estimatedSectionHeaderHeight;
+    }
+    
+    return 0;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Refresh here the estimated row height
+    tableView.estimatedRowHeight = cell.frame.size.height;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(nonnull UIView *)view forSection:(NSInteger)section
+{
+    // Refresh here the estimated header height
+    tableView.estimatedSectionHeaderHeight = view.frame.size.height;
+}
 
 - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
