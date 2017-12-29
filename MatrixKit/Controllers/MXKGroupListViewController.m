@@ -17,6 +17,7 @@
 #import "MXKGroupListViewController.h"
 
 #import "MXKGroupTableViewCell.h"
+#import "MXKTableViewHeaderFooterWithLabel.h"
 
 #import "UIScrollView+MatrixKit.h"
 
@@ -135,11 +136,13 @@
     self.groupsSearchBar.inputAccessoryView = [[UIView alloc] initWithFrame:CGRectZero];
     
     // Finalize table view configuration
+    // Note: self-sizing cells and self-sizing section headers are enabled from the nib file.
     self.groupsTableView.delegate = self;
     self.groupsTableView.dataSource = dataSource; // Note: dataSource may be nil here
     
-    // Set up classes to use for cells
+    // Set up classes to use for the cells and the section headers.
     [self.groupsTableView registerNib:MXKGroupTableViewCell.nib forCellReuseIdentifier:MXKGroupTableViewCell.defaultReuseIdentifier];
+    [self.groupsTableView registerNib:MXKTableViewHeaderFooterWithLabel.nib forHeaderFooterViewReuseIdentifier:MXKTableViewHeaderFooterWithLabel.defaultReuseIdentifier];
     
     // Add a top view which will be displayed in case of vertical bounce.
     CGFloat height = self.groupsTableView.frame.size.height;
@@ -365,14 +368,18 @@
 
 #pragma mark - UITableView delegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    // Section header is required only when several group lists are displayed.
+    MXKTableViewHeaderFooterWithLabel *sectionHeader;
+    
     if (tableView.numberOfSections > 1)
     {
-        return 35;
+        sectionHeader = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MXKTableViewHeaderFooterWithLabel.defaultReuseIdentifier];
+        
+        sectionHeader.mxkLabel.text = [self.dataSource tableView:tableView titleForHeaderInSection:section];
     }
-    return 0;
+    
+    return sectionHeader;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

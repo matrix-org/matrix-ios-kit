@@ -505,17 +505,13 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 {
     NSString* sectionTitle = nil;
     
-    // Check whether there are more than 1 section.
-    if (_groupInvitesSection != -1)
+    if (section == _groupInvitesSection)
     {
-        if (section == _groupInvitesSection)
-        {
-            sectionTitle = [NSBundle mxk_localizedStringForKey:@"group_invite_section"];
-        }
-        else if (section == _joinedGroupsSection)
-        {
-            sectionTitle = [NSBundle mxk_localizedStringForKey:@"group_section"];
-        }
+        sectionTitle = [NSBundle mxk_localizedStringForKey:@"group_invite_section"];
+    }
+    else if (section == _joinedGroupsSection)
+    {
+        sectionTitle = [NSBundle mxk_localizedStringForKey:@"group_section"];
     }
     
     return sectionTitle;
