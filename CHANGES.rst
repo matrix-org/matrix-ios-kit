@@ -1,3 +1,11 @@
+Changes in MatrixKit in 0.7.4 (2017-12-27)
+==========================================
+
+Bug fixes:
+ * Silent crash at startup in [MXKContactManager loadCachedMatrixContacts] (https://github.com/vector-im/riot-ios#1711).
+ * Should fix missing push notifications (https://github.com/vector-im/riot-ios/issues/1696).
+ * Should fix the application crash on "Failed to grow buffer" when loading local phonebook contacts (https://github.com/matrix-org/riot-ios-rageshakes/issues/779).
+
 Changes in MatrixKit in 0.7.3 (2017-11-30)
 ==========================================
 
