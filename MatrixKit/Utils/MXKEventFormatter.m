@@ -48,6 +48,7 @@
     NSRegularExpression *roomIdRegex;
     NSRegularExpression *roomAliasRegex;
     NSRegularExpression *eventIdRegex;
+    NSRegularExpression *groupIdRegex;
 
     /**
      A regex to find http URLs. 
@@ -189,6 +190,19 @@
     else
     {
         eventIdRegex = nil;
+    }
+}
+
+- (void)setTreatMatrixGroupIdAsLink:(BOOL)treatMatrixGroupIdAsLink
+{
+    _treatMatrixGroupIdAsLink = treatMatrixGroupIdAsLink;
+    if (_treatMatrixGroupIdAsLink && !groupIdRegex)
+    {
+        groupIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixGroupIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    else
+    {
+        groupIdRegex = nil;
     }
 }
 
@@ -1215,6 +1229,12 @@
     if (eventIdRegex)
     {
         [self createLinksInAttributedString:attributedString matchingRegex:eventIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+    
+    // If enabled, make group id clickable
+    if (groupIdRegex)
+    {
+        [self createLinksInAttributedString:attributedString matchingRegex:groupIdRegex withWorkingAttributedString:&postRenderAttributedString];
     }
 
     return postRenderAttributedString ? postRenderAttributedString : attributedString;
