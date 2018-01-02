@@ -102,6 +102,8 @@
 #import "MXKTableViewCellWithTextFieldAndButton.h"
 #import "MXKTableViewCellWithTextView.h"
 
+#import "MXKTableViewHeaderFooterWithLabel.h"
+
 #import "MXKMediaCollectionViewCell.h"
 #import "MXKPieChartView.h"
 #import "MXKPieChartHUD.h"
