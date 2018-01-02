@@ -93,6 +93,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL treatMatrixRoomIdAsLink;
 @property (nonatomic) BOOL treatMatrixRoomAliasAsLink;
 @property (nonatomic) BOOL treatMatrixEventIdAsLink;
+@property (nonatomic) BOOL treatMatrixGroupIdAsLink;
 
 /**
  Initialise the event formatter.
