@@ -153,7 +153,7 @@
 "ignore" = "Ezikusi";
 "unignore" = "Berriro aintzat hartu";
 "notice_room_name_removed" = "%@ erabiltzaileak gelaren izena kendu du";
-"notice_room_topic_removed" = "%@ erabiltzaileak gelaren gaia kendu du";
+"notice_room_topic_removed" = "%@ erabiltzaileak gelaren mintzagaia kendu du";
 "notice_event_redacted" = "<kenduta %1$s>";
 "notice_event_redacted_by" = " nork: %@";
 "notice_event_redacted_reason" = " [arrazoia: %@]";
@@ -217,3 +217,139 @@
 "account_save_changes" = "Gorde aldaketak";
 "account_msisdn_validation_error" = "Ezin izan da telefono zenbakia egiaztatu.";
 "account_msisdn_validation_title" = "Egiaztaketa egiteke";
+"login_mobile_device" = "Mugikorra";
+"login_tablet_device" = "Tableta";
+"login_desktop_device" = "Mahaigainekoa";
+"notification_settings_people_join_leave_rooms" = "Jakinarazi niri jendea gelera elkartu edo gelatik ateratzean";
+"notice_room_power_level_event_requirement" = "Gertaerekin lotutako gutxieneko botere maila:";
+"notice_room_aliases" = "Gelaren ezizenak: %@";
+"notice_encryption_enabled" = "%@ erabiltzaileak muturretik muturrera zifratzea gaitu du (%@ algoritmoa)";
+"notice_redaction" = "%@ erabiltzaileak gertaera bat kendu du (id: %@)";
+"notice_error_unsupported_event" = "Onartu gabeko gertaera";
+"notice_error_unexpected_event" = "Ustekabeko gertaera";
+"notice_error_unknown_event_type" = "Gertaera mota ezezaguna";
+"notice_room_history_visible_to_anyone" = "%@ erabiltzaileak etorkizuneko gelaren historiala ikusgai jarri du edonorentzat.";
+"notice_room_history_visible_to_members" = "%@ erabiltzaileak etorkizuneko gelaren historiala ikusgai jarri du gelako kide guztientzat, gonbidapena egiten zaienetik.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ erabiltzaileak etorkizuneko gelaren historiala ikusgai jarri du gelako kide guztientzat, gonbidapena egiten zaienetik.";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ erabiltzaileak etorkizuneko gelaren historiala ikusgai jarri du gelako kide guztientzat, elkartzen direnetik.";
+"room_event_encryption_info_event" = "Gertaeraren informazioa\n";
+"room_event_encryption_info_device_verification" = "Egiaztaketa\n";
+"room_event_encryption_verify_title" = "Egiaztatu gailua\n\n";
+"account_link_email" = "Lotu e-maila";
+"account_linked_emails" = "Lotutako e-mailak";
+"account_error_display_name_change_failed" = "Huts egin du pantaila-izenaren aldaketak";
+"account_error_picture_change_failed" = "Huts egin du irudiaren aldaketak";
+"account_error_matrix_session_is_not_opened" = "Matrix saioa ez dago irekita";
+"account_error_msisdn_wrong_title" = "Telefono zenbaki baliogabea";
+"account_error_msisdn_wrong_description" = "Honek ez du baliozko telefono zenbaki baten antzik";
+// Room creation
+"room_creation_name_title" = "Gelaren izena:";
+"room_creation_name_placeholder" = "(adib. lagunKuadrilla)";
+"room_creation_alias_title" = "Gelaren ezizena:";
+"room_creation_alias_placeholder" = "(adib. #gela:adibidea.org)";
+"room_creation_alias_placeholder_with_homeserver" = "(adib. #gela%@)";
+"room_creation_participants_title" = "Parte hartzaileak:";
+"room_creation_participants_placeholder" = "(adib. @miren:1zerbitzaria; @peio:2zerbitzaria...)";
+// Room
+"room_please_select" = "Hautatu gela bat";
+"room_error_name_edition_not_authorized" = "Ez duzu gela honen izena aldatzeko baimenik";
+"room_error_topic_edition_not_authorized" = "Ez duzu gela honen mintzagaia aldatzeko baimenik";
+"notice_topic_changed" = "%@ erabiltzaileak mintzagaia honetara aldatu du: %@";
+"notice_room_name_changed" = "%@ erabiltzaileak gelaren izena honetara aldatu du: %@";
+"settings_enable_push_notifications" = "Gaitu jakinarazpenak";
+"settings_enter_validation_token_for" = "Sartu %@ balidazio tokena:";
+"room_event_encryption_info_event_fingerprint_key" = "Aldarrikatutako Ed25519 hatz-marka gakoa\n";
+"room_error_cannot_load_timeline" = "Huts egin du denbora lerroa kargatzean";
+"room_left" = "Gelatik atera zara";
+// Room members
+"room_member_ignore_prompt" = "Ziur erabiltzaile honen mezu guztiak ezkutatu nahi dituzula?";
+// Attachment
+"attachment_size_prompt" = "Nola bidali nahi duzu:";
+"attachment_original" = "Jatorrizko tamaina: %@";
+"attachment_small" = "Txikia: %@";
+"attachment_medium" = "Ertaina: %@";
+"attachment_large" = "Handia: %@";
+"attachment_multiselection_size_prompt" = "Irudiak nola bidali nahi dituzu:";
+"attachment_multiselection_original" = "Jatorrizko tamaina";
+"attachment_e2e_keys_file_prompt" = "Fitxategi honek Matrix bezero batetik esportatutako zifratze gakoak ditu.\nFitxategiaren edukia ikusi nahi duzu edo dauzkan gakoak inportatu?";
+"attachment_e2e_keys_import" = "Inportatu...";
+// Contacts
+"contact_mx_users" = "Matrix erabiltzaileak";
+"contact_local_contacts" = "Kontaktu lokalak";
+// Search
+"search_no_results" = "Emaitzarik ez";
+"search_searching" = "Bilaketa abian...";
+// Permissions
+"camera_access_not_granted_for_call" = "Bideo deiek kamera atzitzeko baimena behar dute baina %@ aplikazioak ez du baimenik";
+"microphone_access_not_granted_for_call" = "Deiek mikrofonoa atzitzeko baimena behar dute baina %@ aplikazioak ez du baimenik";
+"local_contacts_access_discovery_warning_title" = "Erabiltzaileak aurkitzea";
+"local_contacts_access_discovery_warning" = "%@ aplikazioak zure kontaktuen e-mail eta telefono zenbakiak igo nahi ditu erabiltzaileak aurkitu ahal izateko";
+"notice_room_withdraw" = "%@ erabiltzaileak %@ erabiltzailearen gonbidapena atzera bota du";
+"notice_room_reason" = ".Arrazoia: %@";
+"notice_avatar_url_changed" = "%@ erabiltzaileak abatarra aldatu du";
+"notice_display_name_set" = "%@ erabiltzaileak bere pantaila izena aldatu du beste honetara: %@";
+"notice_display_name_changed_from" = "%@ erabiltzaileak bere pantaila izena aldatu du, honetatik: %@ honetara: %@";
+"notice_display_name_removed" = "%@ erabiltzaileak bere pantaila izena kendu du";
+"notice_placed_voice_call" = "%@ erabiltzaileak ahots deia hasi du";
+"notice_placed_video_call" = "%@ erabiltzaileak bideo deia hasi du";
+"notice_answered_video_call" = "%@ erabiltzaileak deia erantzun du";
+"notice_ended_video_call" = "%@ erabiltzaileak deia amaitu du";
+"notice_conference_call_request" = "%@ erabiltzaileak VoIP konferentzia bat eskatu du";
+"set_power_level" = "Botere maila";
+// actions 
+"action_logout" = "Amaitu saioa";
+"login" = "Hasi saioa";
+"create_account" = "Sortu kontua";
+"membership_leave" = "Atera da";
+"membership_ban" = "Debekatua";
+"num_members_one" = "erabiltzaile %@";
+"num_members_other" = "%@ erabiltzaile";
+"unban" = "Kendu debekua";
+"message_unsaved_changes" = "Gorde gabeko aldaketak daude. Irtenez gero baztertuko dira.";
+// Login Screen 
+"login_error_already_logged_in" = "Saioa hasita zegoen jada";
+// contacts list screen 
+"invitation_message" = "Zurekin hitz egin nahiko nuke matrix erabilita, zoaz http://matrix.org webgunera informazio gehiagorako.";
+// Settings screen 
+"settings_title_config" = "Konfigurazioa";
+// Notification settings screen 
+"notification_settings_disable_all" = "Desgaitu jakinarazpen guztiak";
+"notification_settings_enable_notifications" = "Gaitu jakinarazpenak";
+"notification_settings_enable_notifications_warning" = "Jakinarazpen guztiak desgaituta daude gailu guztientzat.";
+"notification_settings_per_word_notifications" = "Hitzen jakinarazpenak";
+"notification_settings_always_notify" = "Jakinarazi beti";
+"notification_settings_never_notify" = "Ez jakinarazi inoiz";
+"notification_settings_word_to_match" = "behatu beharreko hitza";
+"notification_settings_highlight" = "Nabarmendu";
+"notification_settings_custom_sound" = "Soinu pertsonalizatua";
+"notification_settings_per_room_notifications" = "Gelen jakinarazpenak";
+"notification_settings_per_sender_notifications" = "Igorleen jakinarazpenak";
+"notification_settings_sender_hint" = "@erabiltzailea:domeinua.eus";
+"notification_settings_select_room" = "Hautatu gela bat";
+"notification_settings_other_alerts" = "Beste alertak";
+"notification_settings_contain_my_user_name" = "Jakinarazi niri soinuarekin nire erabiltzaile izena duten mezuak daudenean";
+"notification_settings_contain_my_display_name" = "Jakinarazi niri soinuarekin nire pantaila izena duten mezuak daudenean";
+"notification_settings_just_sent_to_me" = "Jakinarazi niri soinuarekin niri bakarrik bidalitako mezuak daudenean";
+"notification_settings_invite_to_a_new_room" = "Jakinarazi niri gela batera gonbidatzen nautenean";
+"notification_settings_receive_a_call" = "Jakinarazi niri dei bat jasotzen dudanean";
+"notification_settings_suppress_from_bots" = "Kendu boten jakinarazpenak";
+"notification_settings_by_default" = "Lehenetsita...";
+"notification_settings_notify_all_other" = "Jakinarazi beste mezu/gela guztietarako";
+// gcm section 
+"settings_config_home_server" = "Hasiera zerbitzaria: %@";
+"settings_config_identity_server" = "Identitate zerbitzaria: %@";
+"settings_config_user_id" = "Erabiltzaile ID-a: %@";
+// call string
+"call_waiting" = "Itxaroten...";
+"call_connecting" = "Deia konektatzen…";
+"call_ring" = "Deitzen…";
+"call_invite_expired" = "Dei-gonbidapena iraungi da";
+"ssl_fingerprint_hash" = "Hatz-marka (%@):";
+"notice_feedback" = "Informazio gertaera (id: %@): %@";
+"room_event_encryption_verify_message" = "Gailu hau fidagarria dela egiaztatzeko, jarri kontaktuan jabearekin beste medio batzuk erabilita (adib. aurrez-aurre edo telefonoz deituz) eta galdetu bere erabiltzaile-ezarpenetan ikusten duten gakoa honekin bat datorren:\n\n\tGailuaren izena: %@\n\tGailuaren ID-a: %@\n\tGailuaren gakoa: %@\n\nBat badatoz, sakatu beheko egiaztatu botoia. Ez badatoz bat, beste norbait egon daiteke gailua atzematen eta ziur aski zerrenda beltzaren botoia zapaldu nahiko duzu.\n\nEtorkizunean egiaztaketa prozesu hau sofistikatuagoa izango da.";
+"room_error_timeline_event_not_found" = "Aplikazioa gela honen denbora lerroko puntu zehatz bat kargatzen saiatu da baina ezin izan du aurkitu";
+"e2e_import_prompt" = "Prozesu honek aurretik beste Matrix bezero batetik esportatutako zifratze gakoak inportatzea ahalbidetzen du. Beste bezeroak dezifratu zitekeen mezuak deszifratu ahal izango duzu.\nEsportazio fitxategia pasaesaldi batez babestuta dago. Pasaesaldi hori hemen jarri behar duzu fitxategia deszifratzeko.";
+"e2e_export_prompt" = "Prozesu honek zifratutako geletan jaso dituzun mezuen gakoak fitxategi lokal batera esportatzea ahalbidetzen dizu. Gero beste Matrix bezero batera inportatu ditzakezu, bezero horrek ere mezu hauek dezifratu ahal izateko.\nEsportatutako fitxategiak berau irakurri dezakeen edonori zuk ikusi ditzakezun mezuak deszifratzea ahalbidetuko dio, beraz kontuz non gordetzen duzun.";
+"local_contacts_access_not_granted" = "Kontaktu lokaletatik erabiltzaileak aurkitzeko zure kontaktua atzitzeko baimena behar da baina %@ aplikazioak ez du baimenik";
+"notification_settings_global_info" = "Jakinarazpen ezarpenak zure erabiltzaile kontuan gordetzen dira eta onartutako bezeroen artean partekatzen dira (mahaigaineko jakinarazpenak barne).\n\nArauak ordenan aplikatzen dira;  bat datorren lehen arauak zehazten du zer gertatzen den mezuarekin.\nBeraz: Hitzen jakinarazpenak gelen jakinarazpenak baino garrantzitsuagoak dira, eta hauek igorleen jakinarazpenak baino garrantzitsuagoak.\nMota bereko arauentzat, zerrendan bat datorren lehenak lehentasuna hartzen du.";
+"notification_settings_per_word_info" = "Hitzak ez dituzte bereizten maiuskula eta minuskulak, eta * komodina izan dezakete. Beraz:\nmar bat dator mar katearekin hitz mugatzaileez inguratuta dagoenean (adib. puntuazioa, zuriunea, lerro hasiera edo bukaera).\nmar* bat dator mar-ez hasten den edozein hitzekin.\n*mar* bat dator edozein posiziotan mar duten hitzekin.";
