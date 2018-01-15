@@ -303,12 +303,14 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         imageHandler:(NSString* (^)(NSString *sourceURL, CGFloat width, CGFloat height))imageHandler;
 
 /**
- Trim trailing whitespace and newlines in the string content
+ Removing DTCoreText artifacts:
+ - Trim trailing whitespace and newlines in the string content.
+ - Replace DTImageTextAttachments with a simple NSTextAttachment subclass.
  
  @param attributedString an attributed string.
  @return the resulting string.
  */
-+ (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString;
++ (NSAttributedString*)removeDTCoreTextArtifacts:(NSAttributedString*)attributedString;
 
 /**
  Make some matrix identifiers clickable in the string content.

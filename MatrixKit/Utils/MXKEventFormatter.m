@@ -1112,10 +1112,8 @@
     // Apply additional treatments
     str = [self postRenderAttributedString:str];
 
-    // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
-    // or after a blockquote section.
-    // Trim trailing newlines
-    return [MXKTools removeTrailingNewlines:str];
+    // Finalize the attributed string by removing DTCoreText artifacts (Trim trailing newlines).
+    return [MXKTools removeDTCoreTextArtifacts:str];
 }
 
 - (NSAttributedString*)postRenderAttributedString:(NSAttributedString*)attributedString

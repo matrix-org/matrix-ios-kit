@@ -792,21 +792,52 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         }
         else if ([tag isEqualToString:@"img"])
         {
+            NSString *originalStr;
+            NSString *sourceURL;
             NSString *localSourcePath;
             
             if (imageHandler)
             {
-                NSString *sourceURL;
-                CGFloat width, height;
+                CGFloat width = -1;
+                CGFloat height = -1;
                 
-                // TODO: Parse image parameters
+                NSMutableCharacterSet *characterSet = [NSMutableCharacterSet characterSetWithCharactersInString:@"\""];
+                [characterSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
+                
+                // Parse image parameters
+                originalStr = [htmlString substringWithRange:[result rangeAtIndex:0]];
+                NSArray *components = [originalStr componentsSeparatedByString:@" "];
+                for (NSUInteger index = 1; index < components.count; index++)
+                {
+                    NSArray *attributs = [components[index] componentsSeparatedByString:@"="];
+                    
+                    if (attributs.count == 2)
+                    {
+                        if ([attributs[0] isEqualToString:@"src"])
+                        {
+                            sourceURL = [attributs[1] stringByTrimmingCharactersInSet:characterSet];
+                        }
+                        else if ([attributs[0] isEqualToString:@"width"])
+                        {
+                            NSString *widthStr = [attributs[1] stringByTrimmingCharactersInSet:characterSet];
+                            width = [widthStr floatValue];
+                        }
+                        else if ([attributs[0] isEqualToString:@"height"])
+                        {
+                            NSString *heightStr = [attributs[1] stringByTrimmingCharactersInSet:characterSet];
+                            height = [heightStr floatValue];
+                        }
+                    }
+                }
                 
                 localSourcePath = imageHandler (sourceURL, width, height);
             }
             
             if (localSourcePath)
             {
-                // TODO: Replace the image source with the right local url
+                // Replace the image source with the right local url
+                NSString *updatedStr = [originalStr stringByReplacingOccurrencesOfString:sourceURL withString:localSourcePath];
+                html = [html stringByReplacingCharactersInRange:[result rangeAtIndex:0] withString:updatedStr];
             }
             else
             {
@@ -837,23 +868,25 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     return html;
 }
 
-+ (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
++ (NSAttributedString*)removeDTCoreTextArtifacts:(NSAttributedString*)attributedString
 {
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+    NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
     
+    // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
+    // or after a blockquote section.
     // Trim trailing whitespace and newlines in the string content
-    while ([str.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
+    while ([mutableAttributedString.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
     {
-        [str deleteCharactersInRange:NSMakeRange(str.length - 1, 1)];
+        [mutableAttributedString deleteCharactersInRange:NSMakeRange(mutableAttributedString.length - 1, 1)];
     }
     
     // New lines may have also been introduced by the paragraph style
     // Make sure the last paragraph style has no spacing
-    [str enumerateAttributesInRange:NSMakeRange(0, str.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+    [mutableAttributedString enumerateAttributesInRange:NSMakeRange(0, mutableAttributedString.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
         
         if (attrs[NSParagraphStyleAttributeName])
         {
-            NSString *subString = [str.string substringWithRange:range];
+            NSString *subString = [mutableAttributedString.string substringWithRange:range];
             NSArray *components = [subString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
             
             NSMutableDictionary *updatedAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
@@ -866,14 +899,14 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                 NSString *lastComponent = components.lastObject;
                 
                 NSRange range2 = NSMakeRange(range.location, range.length - lastComponent.length);
-                [str setAttributes:attrs range:range2];
+                [mutableAttributedString setAttributes:attrs range:range2];
                 
                 range2 = NSMakeRange(range2.location + range2.length, lastComponent.length);
-                [str setAttributes:updatedAttrs range:range2];
+                [mutableAttributedString setAttributes:updatedAttrs range:range2];
             }
             else
             {
-                [str setAttributes:updatedAttrs range:range];
+                [mutableAttributedString setAttributes:updatedAttrs range:range];
             }
         }
         
@@ -881,7 +914,32 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         *stop = YES;
     }];
     
-    return str;
+    // Image rendering failed on an exception until we replace the DTImageTextAttachments with a simple NSTextAttachment subclass
+    // (thanks to https://github.com/Cocoanetics/DTCoreText/issues/863).
+    [mutableAttributedString enumerateAttribute:NSAttachmentAttributeName
+                                        inRange:NSMakeRange(0, mutableAttributedString.length)
+                                        options:0
+                                     usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                         
+                                         if ([value isKindOfClass:DTImageTextAttachment.class])
+                                         {
+                                             DTImageTextAttachment *attachment = (DTImageTextAttachment*)value;
+                                             NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+                                             if (attachment.image)
+                                             {
+                                                 textAttachment.image = attachment.image;
+                                                 
+                                                 CGRect frame = textAttachment.bounds;
+                                                 frame.size = attachment.displaySize;
+                                                 textAttachment.bounds = frame;
+                                             }
+                                             // Note we remove here attachment without image.
+                                             NSAttributedString *attrStringWithImage = [NSAttributedString attributedStringWithAttachment:textAttachment];
+                                             [mutableAttributedString replaceCharactersInRange:range withAttributedString:attrStringWithImage];
+                                         }
+                                     }];
+    
+    return mutableAttributedString;
 }
 
 + (NSAttributedString*)createLinksInAttributedString:(NSAttributedString*)attributedString forEnabledMatrixIds:(NSInteger)enabledMatrixIdsBitMask
