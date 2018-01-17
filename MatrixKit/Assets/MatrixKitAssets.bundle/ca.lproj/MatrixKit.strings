@@ -1,1 +1,4 @@
-
+"matrix" = "Matrix";
+"login_password_placeholder" = "Contrasenya";
+"login_optional_field" = "opcional";
+"login_email_placeholder" = "Adreça de correu electrònic";
