@@ -766,6 +766,21 @@
             }
             break;
         }
+        case MXEventTypeRoomRelatedGroups:
+        {
+            NSArray *groups;
+            MXJSONModelSetArray(groups, event.content[@"groups"]);
+            if (groups)
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_related_groups"], groups];
+                // Append redacted info if any
+                if (redactedInfo)
+                {
+                    displayText = [NSString stringWithFormat:@"%@\n %@", displayText, redactedInfo];
+                }
+            }
+            break;
+        }
         case MXEventTypeRoomEncrypted:
         {
             // Is redacted?
