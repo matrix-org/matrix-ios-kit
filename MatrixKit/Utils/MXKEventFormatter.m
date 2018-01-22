@@ -40,20 +40,6 @@
      The default CSS converted in DTCoreText object.
      */
     DTCSSStylesheet *dtCSS;
-
-    /**
-     Regex for finding Matrix ids in events content.
-     */
-    NSRegularExpression *userIdRegex;
-    NSRegularExpression *roomIdRegex;
-    NSRegularExpression *roomAliasRegex;
-    NSRegularExpression *eventIdRegex;
-    NSRegularExpression *groupIdRegex;
-
-    /**
-     A regex to find http URLs. 
-     */
-    NSRegularExpression *httpLinksRegex;
 }
 @end
 
@@ -112,8 +98,6 @@
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
-
-        httpLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"(?i)\\b(https?://.*)\\b" options:NSRegularExpressionCaseInsensitive error:nil];
     }
     return self;
 }
@@ -141,70 +125,6 @@
 }
 
 #pragma mark - Event formatter settings
-- (void)setTreatMatrixUserIdAsLink:(BOOL)treatMatrixUserIdAsLink
-{
-    _treatMatrixUserIdAsLink = treatMatrixUserIdAsLink;
-    if (_treatMatrixUserIdAsLink && !userIdRegex)
-    {
-        userIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixUserIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
-    }
-    else
-    {
-        userIdRegex = nil;
-    }
-}
-
-- (void)setTreatMatrixRoomIdAsLink:(BOOL)treatMatrixRoomIdAsLink
-{
-    _treatMatrixRoomIdAsLink = treatMatrixRoomIdAsLink;
-    if (_treatMatrixRoomIdAsLink && !roomIdRegex)
-    {
-        roomIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixRoomIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
-    }
-    else
-    {
-        roomIdRegex = nil;
-    }
-}
-
-- (void)setTreatMatrixRoomAliasAsLink:(BOOL)treatMatrixRoomAliasAsLink
-{
-    _treatMatrixRoomAliasAsLink = treatMatrixRoomAliasAsLink;
-    if (_treatMatrixRoomAliasAsLink && !roomAliasRegex)
-    {
-        roomAliasRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixRoomAlias options:NSRegularExpressionCaseInsensitive error:nil];
-    }
-    else
-    {
-        roomAliasRegex = nil;
-    }
-}
-
-- (void)setTreatMatrixEventIdAsLink:(BOOL)treatMatrixEventIdAsLink
-{
-    _treatMatrixEventIdAsLink = treatMatrixEventIdAsLink;
-    if (_treatMatrixEventIdAsLink && !eventIdRegex)
-    {
-        eventIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixEventIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
-    }
-    else
-    {
-        eventIdRegex = nil;
-    }
-}
-
-- (void)setTreatMatrixGroupIdAsLink:(BOOL)treatMatrixGroupIdAsLink
-{
-    _treatMatrixGroupIdAsLink = treatMatrixGroupIdAsLink;
-    if (_treatMatrixGroupIdAsLink && !groupIdRegex)
-    {
-        groupIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixGroupIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
-    }
-    else
-    {
-        groupIdRegex = nil;
-    }
-}
 
 // Checks whether the event is related to an attachment and if it is supported
 - (BOOL)isSupportedAttachment:(MXEvent*)event
@@ -1166,7 +1086,7 @@
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
     // Do some sanitisation before rendering the string
-    NSString *html = [self sanitiseHTML:htmlString];
+    NSString *html = [MXKTools sanitiseHTML:htmlString withAllowedHTMLTags:_allowedHTMLTags imageHandler:nil];
 
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
@@ -1188,14 +1108,12 @@
     // that could happen with the default HTML renderer of NSAttributedString which is a
     // webview.
     NSAttributedString *str = [[NSAttributedString alloc] initWithHTMLData:[html dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL];
-
+        
     // Apply additional treatments
     str = [self postRenderAttributedString:str];
 
-    // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
-    // or after a blockquote section.
-    // Trim trailing newlines
-    return [self removeTrailingNewlines:str];
+    // Finalize the attributed string by removing DTCoreText artifacts (Trim trailing newlines).
+    return [MXKTools removeDTCoreTextArtifacts:str];
 }
 
 - (NSAttributedString*)postRenderAttributedString:(NSAttributedString*)attributedString
@@ -1205,149 +1123,39 @@
         return nil;
     }
     
-    NSMutableAttributedString *postRenderAttributedString;
+    NSInteger enabledMatrixIdsBitMask= 0;
 
     // If enabled, make user id clickable
-    if (userIdRegex)
+    if (_treatMatrixUserIdAsLink)
     {
-        [self createLinksInAttributedString:attributedString matchingRegex:userIdRegex withWorkingAttributedString:&postRenderAttributedString];
+        enabledMatrixIdsBitMask |= MXKTOOLS_USER_IDENTIFIER_BITWISE;
     }
 
     // If enabled, make room id clickable
-    if (roomIdRegex)
+    if (_treatMatrixRoomIdAsLink)
     {
-        [self createLinksInAttributedString:attributedString matchingRegex:roomIdRegex withWorkingAttributedString:&postRenderAttributedString];
+        enabledMatrixIdsBitMask |= MXKTOOLS_ROOM_IDENTIFIER_BITWISE;
     }
 
     // If enabled, make room alias clickable
-    if (roomAliasRegex)
+    if (_treatMatrixRoomAliasAsLink)
     {
-        [self createLinksInAttributedString:attributedString matchingRegex:roomAliasRegex withWorkingAttributedString:&postRenderAttributedString];
+        enabledMatrixIdsBitMask |= MXKTOOLS_ROOM_ALIAS_BITWISE;
     }
 
     // If enabled, make event id clickable
-    if (eventIdRegex)
+    if (_treatMatrixEventIdAsLink)
     {
-        [self createLinksInAttributedString:attributedString matchingRegex:eventIdRegex withWorkingAttributedString:&postRenderAttributedString];
+        enabledMatrixIdsBitMask |= MXKTOOLS_EVENT_IDENTIFIER_BITWISE;
     }
     
     // If enabled, make group id clickable
-    if (groupIdRegex)
+    if (_treatMatrixGroupIdAsLink)
     {
-        [self createLinksInAttributedString:attributedString matchingRegex:groupIdRegex withWorkingAttributedString:&postRenderAttributedString];
+        enabledMatrixIdsBitMask |= MXKTOOLS_GROUP_IDENTIFIER_BITWISE;
     }
 
-    return postRenderAttributedString ? postRenderAttributedString : attributedString;
-}
-
-- (void)createLinksInAttributedString:(NSAttributedString*)attributedString matchingRegex:(NSRegularExpression*)regex withWorkingAttributedString:(NSMutableAttributedString**)mutableAttributedString
-{
-    __block NSArray *linkMatches;
-
-    // Enumerate each string matching the regex
-    [regex enumerateMatchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
-
-        // Do not create a link if there is already one on the found match
-        __block BOOL hasAlreadyLink = NO;
-        [attributedString enumerateAttributesInRange:match.range options:0 usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-
-            if (attrs[NSLinkAttributeName])
-            {
-                hasAlreadyLink = YES;
-                *stop = YES;
-            }
-        }];
-
-        // Do not create a link if the match is part of an http link.
-        // The http link will be automatically generated by the UI afterwards.
-        // So, do not break it now by adding a link on a subset of this http link.
-        if (!hasAlreadyLink)
-        {
-            if (!linkMatches)
-            {
-                // Search for the links in the string only once
-                // Do not use NSDataDetector with NSTextCheckingTypeLink because is not able to
-                // manage URLs with 2 hashes like "https://matrix.to/#/#matrix:matrix.org"
-                // Such URL is not valid but web browsers can open them and users C+P them...
-                // NSDataDetector does not support it but UITextView and UIDataDetectorTypeLink
-                // detect them when they are displayed. So let the UI create the link at display.
-                linkMatches = [httpLinksRegex matchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length)];
-            }
-
-            for (NSTextCheckingResult *linkMatch in linkMatches)
-            {
-                // If the match is fully in the link, skip it
-                if (NSIntersectionRange(match.range, linkMatch.range).length == match.range.length)
-                {
-                    hasAlreadyLink = YES;
-                    break;
-                }
-            }
-        }
-
-        if (!hasAlreadyLink)
-        {
-            // Create the output string only if it is necessary because attributed strings cost CPU
-            if (!*mutableAttributedString)
-            {
-                *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
-            }
-
-            // Make the link clickable
-            // Caution: We need here to escape the non-ASCII characters (like '#' in room alias)
-            // to convert the link into a legal URL string.
-            NSString *link = [attributedString.string substringWithRange:match.range];
-            link = [link stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            [*mutableAttributedString addAttribute:NSLinkAttributeName value:link range:match.range];
-        }
-    }];
-}
-
-- (NSAttributedString*)removeTrailingNewlines:(NSAttributedString*)attributedString
-{
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
-
-    // Trim trailing whitespace and newlines in the string content
-    while ([str.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
-    {
-        [str deleteCharactersInRange:NSMakeRange(str.length - 1, 1)];
-    }
-
-    // New lines may have also been introduced by the paragraph style
-    // Make sure the last paragraph style has no spacing
-    [str enumerateAttributesInRange:NSMakeRange(0, str.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
-        
-        if (attrs[NSParagraphStyleAttributeName])
-        {
-            NSString *subString = [str.string substringWithRange:range];
-            NSArray *components = [subString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-            
-            NSMutableDictionary *updatedAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
-            NSMutableParagraphStyle *paragraphStyle = [updatedAttrs[NSParagraphStyleAttributeName] mutableCopy];
-            paragraphStyle.paragraphSpacing = 0;
-            updatedAttrs[NSParagraphStyleAttributeName] = paragraphStyle;
-            
-            if (components.count > 1)
-            {
-                NSString *lastComponent = components.lastObject;
-                
-                NSRange range2 = NSMakeRange(range.location, range.length - lastComponent.length);
-                [str setAttributes:attrs range:range2];
-                
-                range2 = NSMakeRange(range2.location + range2.length, lastComponent.length);
-                [str setAttributes:updatedAttrs range:range2];
-            }
-            else
-            {
-                [str setAttributes:updatedAttrs range:range];
-            }
-        }
-
-        // Check only the last paragraph
-        *stop = YES;
-    }];
-
-    return str;
+    return [MXKTools createLinksInAttributedString:attributedString forEnabledMatrixIds:enabledMatrixIdsBitMask];
 }
 
 - (NSAttributedString *)renderString:(NSString *)string withPrefix:(NSString *)prefix forEvent:(MXEvent *)event
@@ -1373,47 +1181,6 @@
         // Use the legacy method
         return [self renderString:string forEvent:event];
     }
-}
-
-- (NSString*)sanitiseHTML:(NSString*)htmlString
-{
-    NSString *html = htmlString;
-
-    // List all HTML tags used in htmlString
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];
-    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [regex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
-
-    // Find those that are not allowed
-    NSMutableSet *tagsToRemoveSet = [NSMutableSet set];
-    for (NSTextCheckingResult *result in tagsInTheHTML)
-    {
-        NSString *tag = [htmlString substringWithRange:[result rangeAtIndex:1]].lowercaseString;
-        if ([_allowedHTMLTags indexOfObject:tag] == NSNotFound)
-        {
-            [tagsToRemoveSet addObject:tag];
-        }
-    }
-
-    // And remove them from the HTML string
-    if (tagsToRemoveSet.count)
-    {
-        NSArray *tagsToRemove = tagsToRemoveSet.allObjects;
-
-        NSString *tagsToRemoveString = tagsToRemove[0];
-        for (NSInteger i = 1; i < tagsToRemove.count; i++)
-        {
-            tagsToRemoveString  = [tagsToRemoveString stringByAppendingString:[NSString stringWithFormat:@"|%@", tagsToRemove[i]]];
-        }
-
-        html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<\\/?(%@)[^>]*>", tagsToRemoveString]
-                                               withString:@""
-                                                  options:NSRegularExpressionSearch | NSCaseInsensitiveSearch
-                                                    range:NSMakeRange(0, html.length)];
-    }
-
-    // TODO: Sanitise other things: attributes, URL schemes, etc
-    
-    return html;
 }
 
 - (void)setDefaultCSS:(NSString*)defaultCSS
