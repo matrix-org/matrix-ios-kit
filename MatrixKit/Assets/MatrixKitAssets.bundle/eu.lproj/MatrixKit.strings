@@ -117,7 +117,7 @@
 "login_identity_server_info" = "Matrixek identitate zerbitzariak hornitzen ditu e-mailak eta abar zein Matrix ID-ri dagokien jakiteko, Orain https://matrix.org da dagoen bakarra.";
 "login_user_id_placeholder" = "Matrix ID-a (adib. @urko:matrix.org edo urko)";
 "login_optional_field" = "aukerazkoa";
-"login_display_name_placeholder" = "Pantaila izena (adib. Urko Etxeberria)";
+"login_display_name_placeholder" = "Pantaila-izena (adib. Urko Etxeberria)";
 "login_error_title" = "Saio hasierak huts egin du";
 "login_email_info" = "Zehaztu e-mail helbide bat beste Matrix erabiltzaileek zu errazago aurkitzeko, e-mail helbidea izateak ere etorkizunean pasahitza aldatzea ahalbidetuko dizu.";
 "login_prompt_email_token" = "Sartu zure e-mail egiaztaketa tokena:";
@@ -287,9 +287,9 @@
 "notice_room_withdraw" = "%@ erabiltzaileak %@ erabiltzailearen gonbidapena atzera bota du";
 "notice_room_reason" = ".Arrazoia: %@";
 "notice_avatar_url_changed" = "%@ erabiltzaileak abatarra aldatu du";
-"notice_display_name_set" = "%@ erabiltzaileak bere pantaila izena aldatu du beste honetara: %@";
-"notice_display_name_changed_from" = "%@ erabiltzaileak bere pantaila izena aldatu du, honetatik: %@ honetara: %@";
-"notice_display_name_removed" = "%@ erabiltzaileak bere pantaila izena kendu du";
+"notice_display_name_set" = "%@ erabiltzaileak bere pantaila-izena aldatu du beste honetara: %@";
+"notice_display_name_changed_from" = "%@ erabiltzaileak bere pantaila-izena aldatu du, honetatik: %@ honetara: %@";
+"notice_display_name_removed" = "%@ erabiltzaileak bere pantaila-izena kendu du";
 "notice_placed_voice_call" = "%@ erabiltzaileak ahots deia hasi du";
 "notice_placed_video_call" = "%@ erabiltzaileak bideo deia hasi du";
 "notice_answered_video_call" = "%@ erabiltzaileak deia erantzun du";
@@ -328,7 +328,7 @@
 "notification_settings_select_room" = "Hautatu gela bat";
 "notification_settings_other_alerts" = "Beste alertak";
 "notification_settings_contain_my_user_name" = "Jakinarazi niri soinuarekin nire erabiltzaile izena duten mezuak daudenean";
-"notification_settings_contain_my_display_name" = "Jakinarazi niri soinuarekin nire pantaila izena duten mezuak daudenean";
+"notification_settings_contain_my_display_name" = "Jakinarazi niri soinuarekin nire pantaila-izena duten mezuak daudenean";
 "notification_settings_just_sent_to_me" = "Jakinarazi niri soinuarekin niri bakarrik bidalitako mezuak daudenean";
 "notification_settings_invite_to_a_new_room" = "Jakinarazi niri gela batera gonbidatzen nautenean";
 "notification_settings_receive_a_call" = "Jakinarazi niri dei bat jasotzen dudanean";
