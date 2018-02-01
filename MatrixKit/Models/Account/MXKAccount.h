@@ -236,7 +236,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  
  @param completion the block to execute at the end of the operation (independently if it succeeded or not).
  */
-- (void)logout:(void (^)())completion;
+- (void)logout:(void (^)(void))completion;
 
 /**
  Delete the potential APNS pusher, without changing 'enablePushNotifications' property.
@@ -268,7 +268,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)backgroundSync:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure;
+- (void)backgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure;
 
 /**
  Resume the current matrix session.
@@ -290,7 +290,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)setUserDisplayName:(NSString*)displayname success:(void (^)(void))success failure:(void (^)(NSError *error))failure;
 
 /**
  Set the avatar url of the account user.
@@ -300,7 +300,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)(void))success failure:(void (^)(NSError *error))failure;
 
 /**
  Update the account password.
@@ -311,7 +311,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)changePassword:(NSString*)oldPassword with:(NSString*)newPassword success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)changePassword:(NSString*)oldPassword with:(NSString*)newPassword success:(void (^)(void))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load the 3PIDs linked to this account.
@@ -320,7 +320,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)load3PIDs:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)load3PIDs:(void (^)(void))success failure:(void (^)(NSError *error))failure;
 
 /**
  Load the current device information for this account.
@@ -329,7 +329,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)loadDeviceInformation:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)loadDeviceInformation:(void (^)(void))success failure:(void (^)(NSError *error))failure;
 
 #pragma mark - Push notification listeners
 /**

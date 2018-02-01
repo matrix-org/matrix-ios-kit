@@ -111,7 +111,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
-- (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)())completion;
+- (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)(void))completion;
 {
     NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
     

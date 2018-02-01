@@ -123,7 +123,7 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param account a matrix account.
  @param completion the block to execute at the end of the operation.
  */
-- (void)removeAccount:(MXKAccount *)account completion:(void (^)())completion;
+- (void)removeAccount:(MXKAccount *)account completion:(void (^)(void))completion;
 
 /**
  Log out and remove all the existing accounts

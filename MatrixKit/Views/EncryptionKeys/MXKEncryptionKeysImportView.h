@@ -44,6 +44,6 @@
  @param fileURL the url of the keys file.
  @param onComplete a block called when the operation is done (whatever it succeeded or failed).
  */
-- (void)showInViewController:(MXKViewController*)mxkViewController toImportKeys:(NSURL*)fileURL onComplete:(void(^)())onComplete;
+- (void)showInViewController:(MXKViewController*)mxkViewController toImportKeys:(NSURL*)fileURL onComplete:(void(^)(void))onComplete;
 
 @end

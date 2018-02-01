@@ -966,7 +966,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }];
 }
 
-- (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)(void))success failure:(void (^)(NSError *error))failure
 {
     NSLog(@"[MXKRoomDataSource] paginateToFillRect: %@", NSStringFromCGRect(rect));
     

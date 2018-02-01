@@ -321,7 +321,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  @param success a block called when the operation succeeds.
  @param failure a block called when the operation fails.
  */
-- (void)paginateToFillRect:(CGRect)rect  direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)paginateToFillRect:(CGRect)rect  direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)(void))success failure:(void (^)(NSError *error))failure;
 
 
 #pragma mark - Sending

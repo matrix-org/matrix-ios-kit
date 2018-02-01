@@ -146,7 +146,7 @@ typedef enum : NSUInteger {
  @param onAttachmentReady block called when attachment is available at 'cacheFilePath'.
  @param onFailure the block called on failure.
  */
-- (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure;
+- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure;
 
 /**
  Save the attachment in user's photo library. This operation is available only for images and video.
@@ -154,7 +154,7 @@ typedef enum : NSUInteger {
  @param onSuccess the block called on success.
  @param onFailure the block called on failure.
  */
-- (void)save:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)save:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure;
 
 /**
  Copy the attachment data in general pasteboard.
@@ -162,7 +162,7 @@ typedef enum : NSUInteger {
  @param onSuccess the block called on success.
  @param onFailure the block called on failure.
  */
-- (void)copy:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)copy:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure;
 
 /**
  Prepare the attachment data to share it. The original name of the attachment (if any) is used

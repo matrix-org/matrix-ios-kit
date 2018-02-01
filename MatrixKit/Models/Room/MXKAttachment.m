@@ -279,7 +279,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     
     if (thumbnailFile && thumbnailFile[@"url"])
     {
-        void (^decryptAndCache)() = ^{
+        void (^decryptAndCache)(void) = ^{
             NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:thumbCachePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
             NSError *err = [MXEncryptedAttachments decryptAttachment:thumbnailFile inputStream:instream outputStream:outstream];
@@ -422,7 +422,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return tempPath;
 }
 
-- (void)prepare:(void (^)())onAttachmentReady failure:(void (^)(NSError *error))onFailure
+- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:_cacheFilePath])
     {
@@ -499,7 +499,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     }
 }
 
-- (void)save:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure
+- (void)save:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure
 {
     if (_type == MXKAttachmentTypeImage || _type == MXKAttachmentTypeVideo)
     {
@@ -548,7 +548,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     }
 }
 
-- (void)copy:(void (^)())onSuccess failure:(void (^)(NSError *error))onFailure
+- (void)copy:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure
 {
     [self prepare:^{
         

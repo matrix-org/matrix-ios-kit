@@ -60,7 +60,7 @@
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
                               isDuringRegistration:(BOOL)isDuringRegistration
                                           nextLink:(NSString*)nextLink
-                                           success:(void (^)())success
+                                           success:(void (^)(void))success
                                            failure:(void (^)(NSError *error))failure
 {
     // Sanity Check
@@ -148,7 +148,7 @@
 }
 
 - (void)submitValidationToken:(NSString *)token
-                      success:(void (^)())success
+                      success:(void (^)(void))success
                       failure:(void (^)(NSError *error))failure
 {
     // Sanity Check
@@ -186,7 +186,7 @@
 }
 
 - (void)add3PIDToUser:(BOOL)bind
-              success:(void (^)())success
+              success:(void (^)(void))success
               failure:(void (^)(NSError *error))failure
 {
     if ([self.medium isEqualToString:kMX3PIDMediumEmail] || [self.medium isEqualToString:kMX3PIDMediumMSISDN])

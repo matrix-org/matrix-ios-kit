@@ -42,7 +42,7 @@
     return self;
 }
 
-- (void)showInViewController:(MXKViewController*)mxkViewController toImportKeys:(NSURL*)fileURL onComplete:(void(^)())onComplete
+- (void)showInViewController:(MXKViewController*)mxkViewController toImportKeys:(NSURL*)fileURL onComplete:(void(^)(void))onComplete
 {
     __weak typeof(self) weakSelf = self;
 
