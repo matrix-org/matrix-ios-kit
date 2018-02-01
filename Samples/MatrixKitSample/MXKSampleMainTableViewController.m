@@ -868,7 +868,7 @@
 
 #pragma mark - MXKCallViewControllerDelegate
 
-- (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)())completion
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)(void))completion
 {
     if (callViewController == currentCallViewController)
     {

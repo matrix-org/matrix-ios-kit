@@ -3591,7 +3591,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     [self stopActivityIndicator];
 
-                    void(^viewAttachment)() = ^() {
+                    void(^viewAttachment)(void) = ^() {
 
                         documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [documentInteractionController setDelegate:self];
