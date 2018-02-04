@@ -200,6 +200,15 @@ typedef struct
 + (UIImage*)resizeImage:(UIImage *)image toSize:(CGSize)size;
 
 /**
+ Resize image with rounded corners to a provided size.
+ 
+ @param image the image to modify.
+ @param size the new size.
+ @return resized image.
+ */
++ (UIImage*)resizeImageWithRoundedCorners:(UIImage *)image toSize:(CGSize)size;
+
+/**
  Paint an image with a color.
  
  @discussion
