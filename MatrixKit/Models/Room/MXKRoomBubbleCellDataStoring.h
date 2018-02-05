@@ -59,6 +59,11 @@
 @property (nonatomic) UIImage *senderAvatarPlaceholder;
 
 /**
+ The current sender flair (list of the publicised groups in the sender profile which matches the room flair settings)
+ */
+@property (nonatomic) NSArray<MXGroup*> *senderFlair;
+
+/**
  Tell whether a new pagination starts with this bubble.
  */
 @property (nonatomic) BOOL isPaginationFirstBubble;
@@ -225,6 +230,11 @@ Update the event because its sent state changed or it is has been redacted.
  @param patternFont optional text font (the pattern font is unchanged if nil).
  */
 - (void)highlightPatternInTextMessage:(NSString*)pattern withForegroundColor:(UIColor*)patternColor andFont:(UIFont*)patternFont;
+
+/**
+ Refresh the sender flair information
+ */
+- (void)refreshSenderFlair;
 
 #pragma mark - Bubble collapsing
 

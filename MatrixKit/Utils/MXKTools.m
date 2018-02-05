@@ -462,7 +462,14 @@ static NSRegularExpression *httpLinksRegex;
         {
             // Create the thumbnail
             CGSize imageSize = CGSizeMake(width, height);
-            UIGraphicsBeginImageContext(imageSize);
+            
+            // Convert first the provided size in pixels
+#if TARGET_OS_IPHONE
+            CGFloat scale = [[UIScreen mainScreen] scale];
+#elif TARGET_OS_OSX
+            CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#endif
+            UIGraphicsBeginImageContextWithOptions(imageSize, NO, scale);
             
             //            // set to the top quality
             //            CGContextRef context = UIGraphicsGetCurrentContext();
@@ -489,10 +496,46 @@ static NSRegularExpression *httpLinksRegex;
     // Check whether resize is required
     if (size.width && size.height)
     {
-        UIGraphicsBeginImageContext(size);
+        // Convert first the provided size in pixels
+#if TARGET_OS_IPHONE
+        CGFloat scale = [[UIScreen mainScreen] scale];
+#elif TARGET_OS_OSX
+        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#endif
+        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
         
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+        
+        [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        UIGraphicsEndImageContext();
+    }
+    
+    return resizedImage;
+}
+
++ (UIImage*)resizeImageWithRoundedCorners:(UIImage *)image toSize:(CGSize)size
+{
+    UIImage *resizedImage = image;
+    
+    // Check whether resize is required
+    if (size.width && size.height)
+    {
+        // Convert first the provided size in pixels
+#if TARGET_OS_IPHONE
+        CGFloat scale = [[UIScreen mainScreen] scale];
+#elif TARGET_OS_OSX
+        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#endif
+        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+        
+        // Add a clip to round corners
+        [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, size.width, size.height) cornerRadius:size.width/2] addClip];
         
         [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
         resizedImage = UIGraphicsGetImageFromCurrentImageContext();

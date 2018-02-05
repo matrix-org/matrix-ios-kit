@@ -71,6 +71,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     id receiptsListener;
     
     /**
+     The listener to the related groups state events in the room.
+     */
+    id relatedGroupsListener;
+    
+    /**
      Mapping between events ids and bubbles.
      */
     NSMutableDictionary *eventIdToBubbleMap;
@@ -307,6 +312,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         [_timeline removeListener:receiptsListener];
         receiptsListener = nil;
+        
+        [_timeline removeListener:relatedGroupsListener];
+        relatedGroupsListener = nil;
     }
     
     if (_room && typingNotifListener)
@@ -363,6 +371,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)destroy
 {
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeSentStateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidDecryptNotification object:nil];
@@ -474,8 +484,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Less things need to configured
                     _timeline = [_room timelineOnEvent:initialEventId];
 
-                    // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter).
-                    [self refreshEventListeners:[MXKAppSettings standardAppSettings].allEventTypesForMessages];
+                    // Refresh the event listeners. Note: events for past timelines come only from pagination request
+                    [self refreshEventListeners:nil];
 
                     // Preload the state and some messages around the initial event
                     [_timeline resetPaginationAroundInitialEventWithLimit:_paginationLimitAroundInitialEvent success:^{
@@ -503,6 +513,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                                                                      kMXKRoomDataSourceTimelineErrorErrorKey: error
                                                                                      }];
                     }];
+                }
+                
+                // Flair handling: observe the update in the publicised groups by users when the flair is enabled in the room.
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+                if (_room.state.relatedGroups.count)
+                {
+                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionUpdatePublicisedGroupsForUsers:) name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
                 }
             }
             else
@@ -557,6 +574,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [_timeline removeListener:liveEventsListener];
         [_timeline removeListener:redactionListener];
         [_timeline removeListener:receiptsListener];
+        [_timeline removeListener:relatedGroupsListener];
     }
 
     // Listen to live events only for live timeline
@@ -604,6 +622,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 // Handle this read receipt
                 [self didReceiveReceiptEvent:event roomState:roomState];
+            }
+        }];
+        
+        // Flair handling: register a listener for the related groups state event in this room.
+        relatedGroupsListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRelatedGroups] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
+            if (MXTimelineDirectionForwards == direction)
+            {
+                // The flair settings have been updated: flush the current bubble data and rebuild them.
+                [self reload];
             }
         }];
     }
@@ -1639,6 +1667,32 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
         
         [self reload];
+    }
+}
+
+- (void)didMXSessionUpdatePublicisedGroupsForUsers:(NSNotification *)notif
+{
+    // Retrieved the list of the concerned users
+    NSArray<NSString*> *userIds = notif.userInfo[kMXSessionNotificationUserIdsArrayKey];
+    if (userIds.count)
+    {
+        // Check whether at least one listed user is a room member.
+        for (NSString* userId in userIds)
+        {
+            MXRoomMember * roomMember = [self.room.state memberWithUserId:userId];
+            if (roomMember)
+            {
+                // Inform the delegate to refresh the bubble display
+                // We dispatch here this action in order to let each bubble data update their sender flair.
+                if (self.delegate)
+                {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.delegate dataSource:self didCellChange:nil];
+                    });
+                }
+                break;
+            }
+        }
     }
 }
 
