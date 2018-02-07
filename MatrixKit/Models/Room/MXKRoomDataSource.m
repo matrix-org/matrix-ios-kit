@@ -154,6 +154,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         bubbles = [NSMutableArray array];
         eventsToProcess = [NSMutableArray array];
         eventIdToBubbleMap = [NSMutableDictionary dictionary];
+        
+        externalRelatedGroups = [NSMutableDictionary dictionary];
 
         // Set default data and view classes
         // Cell data
@@ -280,6 +282,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)reset
 {
+    [externalRelatedGroups removeAllObjects];
+    
     if (roomDidFlushDataNotificationObserver)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:roomDidFlushDataNotificationObserver];
@@ -406,6 +410,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     [_timeline destroy];
     
+    externalRelatedGroups = nil;
+    
     [super destroy];
 }
 
@@ -520,6 +526,40 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 if (_room.state.relatedGroups.count)
                 {
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionUpdatePublicisedGroupsForUsers:) name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+                    
+                    // Get a fresh profile for all the related groups. Trigger a table refresh when all requests are done.
+                    __block NSUInteger count = _room.state.relatedGroups.count;
+                    for (NSString *groupId in _room.state.relatedGroups)
+                    {
+                        MXGroup *group = [self.mxSession groupWithGroupId:groupId];
+                        if (!group)
+                        {
+                            // Create a group instance for the groups that the current user did not join.
+                            group = [[MXGroup alloc] initWithGroupId:groupId];
+                            [externalRelatedGroups setObject:group forKey:groupId];
+                        }
+                        
+                        // Refresh the group profile from server.
+                        [self.mxSession updateGroupProfile:group success:^{
+                            
+                            if (self.delegate && !(--count))
+                            {
+                                // All the requests have been done.
+                                [self.delegate dataSource:self didCellChange:nil];
+                            }
+                            
+                        } failure:^(NSError *error) {
+                            
+                            NSLog(@"[MXKRoomDataSource] group profile update failed %@", groupId);
+                            
+                            if (self.delegate && !(--count))
+                            {
+                                // All the requests have been done.
+                                [self.delegate dataSource:self didCellChange:nil];
+                            }
+                            
+                        }];
+                    }
                 }
             }
             else
@@ -2555,6 +2595,34 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     return cell;
+}
+
+#pragma mark - Groups
+
+- (MXGroup *)groupWithGroupId:(NSString*)groupId
+{
+    MXGroup *group = [self.mxSession groupWithGroupId:groupId];
+    if (!group)
+    {
+        // Check whether an instance has been already created.
+        group = [externalRelatedGroups objectForKey:groupId];
+    }
+        
+    if (!group)
+    {
+        // Create a new group instance.
+        group = [[MXGroup alloc] initWithGroupId:groupId];
+        [externalRelatedGroups setObject:group forKey:groupId];
+        
+        // Retrieve at least the group profile
+        [self.mxSession updateGroupProfile:group success:nil failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRoomDataSource] groupWithGroupId: group profile update failed %@", groupId);
+            
+        }];
+    }
+    
+    return group;
 }
 
 @end

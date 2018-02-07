@@ -384,22 +384,8 @@
             {
                 if ([senderPublicisedGroups indexOfObject:groupId] != NSNotFound)
                 {
-                    MXGroup *group = [self.mxSession groupWithGroupId:groupId];
-                    if (!group)
-                    {
-                        // The current user doesn't belong to this group.
-                        // Create a group instance.
-                        group = [[MXGroup alloc] initWithGroupId:groupId];
-                    }
-                    
+                    MXGroup *group = [roomDataSource groupWithGroupId:groupId];
                     [flair addObject:group];
-                    
-                    // Refresh the group profile from server.
-                    [self.mxSession updateGroupProfile:group success:nil failure:^(NSError *error) {
-                        
-                        NSLog(@"[MXKRoomBubbleCellData] refreshSenderFlair: group profile update failed %@", groupId);
-                        
-                    }];
                 }
             }
             
@@ -411,6 +397,10 @@
             {
                 self.senderFlair = nil;
             }
+        }
+        else
+        {
+            self.senderFlair = nil;
         }
         
         // Observe any change on publicised groups for the message sender
