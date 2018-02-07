@@ -353,3 +353,7 @@
 "login_mobile_device" = "Мобильное устройство";
 "login_tablet_device" = "Планшет";
 "login_desktop_device" = "Компьютер";
+"notice_room_related_groups" = "Группы, связанные с этой комнатой: %@";
+// Groups
+"group_invite_section" = "Приглашения";
+"group_section" = "Группы";

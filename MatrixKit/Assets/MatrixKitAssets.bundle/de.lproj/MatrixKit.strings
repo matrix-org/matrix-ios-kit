@@ -353,3 +353,7 @@
 "login_mobile_device" = "Mobilgerät";
 "login_tablet_device" = "Tablet";
 "login_desktop_device" = "Desktop";
+"notice_room_related_groups" = "Die Gruppen, die mit diesem Raum verknüpft sind: %@";
+// Groups
+"group_invite_section" = "Einladungen";
+"group_section" = "Gruppen";
