@@ -267,7 +267,7 @@
 "send" = "Senden";
 "copy" = "Kopieren";
 "resend" = "Erneut senden";
-"redact" = "Schwärzen";
+"redact" = "Entfernen";
 "share" = "Teilen";
 "set_power_level" = "Berechtigungslevel";
 "delete" = "Löschen";
@@ -351,5 +351,5 @@
 "language_picker_default_language" = "Standard (%@)";
 "search_searching" = "Suche wird durchgeführt...";
 "login_mobile_device" = "Mobilgerät";
-"login_tablet_device" = "Tabletgerät";
-"login_desktop_device" = "Desktopgerät";
+"login_tablet_device" = "Tablet";
+"login_desktop_device" = "Desktop";

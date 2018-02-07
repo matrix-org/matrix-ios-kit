@@ -411,3 +411,6 @@
 // Language picker
 "language_picker_title" = "Kies een taal";
 "language_picker_default_language" = "Standaard (%@)";
+"login_mobile_device" = "Mobiel";
+"login_tablet_device" = "Tablet";
+"login_desktop_device" = "Desktop";
