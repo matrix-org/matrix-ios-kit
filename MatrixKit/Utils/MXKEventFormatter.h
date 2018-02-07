@@ -93,6 +93,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL treatMatrixRoomIdAsLink;
 @property (nonatomic) BOOL treatMatrixRoomAliasAsLink;
 @property (nonatomic) BOOL treatMatrixEventIdAsLink;
+@property (nonatomic) BOOL treatMatrixGroupIdAsLink;
 
 /**
  Initialise the event formatter.
@@ -204,18 +205,6 @@ typedef enum : NSUInteger {
  @return an attributed string.
  */
 - (NSAttributedString*)renderString:(NSString*)string withPrefix:(NSString*)prefix forEvent:(MXEvent*)event;
-
-/**
- Sanitise an HTML string to keep permitted HTML tags defined by 'allowedHTMLTags'.
-
- !!!!!! WARNING !!!!!!
- IT IS NOT REMOTELY A COMPREHENSIVE SANITIZER AND SHOULD NOT BE TRUSTED FOR SECURITY PURPOSES.
- WE ARE EFFECTIVELY RELYING ON THE LIMITED CAPABILITIES OF THE HTML RENDERER UI TO AVOID SECURITY ISSUES LEAKING UP.
-
- @param htmlString the HTML code to sanitise.
- @return a sanitised HTML string.
- */
-- (NSString*)sanitiseHTML:(NSString*)htmlString;
 
 #pragma mark - Conversion tools
 

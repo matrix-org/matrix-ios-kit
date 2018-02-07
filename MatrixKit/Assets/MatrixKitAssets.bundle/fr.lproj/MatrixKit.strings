@@ -85,6 +85,7 @@
 "notice_room_power_level_acting_requirement" = "Le rang minimum qu'un utilisateur doit avoir pour interagir est :";
 "notice_room_power_level_event_requirement" = "Le rang minimum lié aux événements est :";
 "notice_room_aliases" = "Les alias du salon sont : %@";
+"notice_room_related_groups" = "Les groupes associés à ce salon sont : %@";
 "notice_encrypted_message" = "Message chiffré";
 "notice_encryption_enabled" = "%@ a activé le chiffrement de bout en bout (algorithme %@)";
 "notice_image_attachment" = "image en pièce-jointe";
@@ -200,6 +201,9 @@
 // Contacts
 "contact_mx_users" = "Utilisateurs Matrix";
 "contact_local_contacts" = "Contacts locaux";
+// Groups
+"group_invite_section" = "Invitations";
+"group_section" = "Groupes";
 // Search
 "search_no_results" = "Aucun résultat";
 "search_searching" = "Recherche en cours...";

@@ -25,7 +25,7 @@
 #import "MXMediaManager.h"
 
 @implementation MXKRoomBubbleCellData
-@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment;
+@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment, senderFlair;
 @synthesize textMessage, attributedTextMessage;
 @synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton, hasNoDisplay;
 @synthesize tag;
@@ -86,6 +86,9 @@
 
 - (void)dealloc
 {
+    // Reset any observer on publicised groups by user.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+    
     roomDataSource = nil;
     bubbleComponents = nil;
 }
@@ -346,6 +349,63 @@
     
     // flush the current attributed string to force refresh
     self.attributedTextMessage = nil;
+}
+
+- (void)setShouldHideSenderInformation:(BOOL)inShouldHideSenderInformation
+{
+    shouldHideSenderInformation = inShouldHideSenderInformation;
+    
+    if (!shouldHideSenderInformation)
+    {
+        // Refresh the flair
+        [self refreshSenderFlair];
+    }
+}
+
+- (void)refreshSenderFlair
+{
+    // Reset by default any observer on publicised groups by user.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+    
+    // Check first whether the room enabled the flair for some groups
+    NSArray<NSString *> *roomRelatedGroups = roomDataSource.room.state.relatedGroups;
+    if (roomRelatedGroups.count && senderId)
+    {
+        NSArray<NSString *> *senderPublicisedGroups;
+        
+        senderPublicisedGroups = [self.mxSession publicisedGroupsForUser:senderId];
+        
+        if (senderPublicisedGroups.count)
+        {
+            // Cross the 2 arrays to keep only the common group ids
+            NSMutableArray *flair = [NSMutableArray arrayWithCapacity:roomRelatedGroups.count];
+            
+            for (NSString *groupId in roomRelatedGroups)
+            {
+                if ([senderPublicisedGroups indexOfObject:groupId] != NSNotFound)
+                {
+                    MXGroup *group = [roomDataSource groupWithGroupId:groupId];
+                    [flair addObject:group];
+                }
+            }
+            
+            if (flair.count)
+            {
+                self.senderFlair = flair;
+            }
+            else
+            {
+                self.senderFlair = nil;
+            }
+        }
+        else
+        {
+            self.senderFlair = nil;
+        }
+        
+        // Observe any change on publicised groups for the message sender
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionUpdatePublicisedGroupsForUsers:) name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+    }
 }
 
 #pragma mark -
@@ -771,6 +831,20 @@
     }
 
     return index;
+}
+
+- (void)didMXSessionUpdatePublicisedGroupsForUsers:(NSNotification *)notif
+{
+    // Retrieved the list of the concerned users
+    NSArray<NSString*> *userIds = notif.userInfo[kMXSessionNotificationUserIdsArrayKey];
+    if (userIds.count && self.senderId)
+    {
+        // Check whether the current sender is concerned.
+        if ([userIds indexOfObject:self.senderId] != NSNotFound)
+        {
+            [self refreshSenderFlair];
+        }
+    }
 }
 
 @end

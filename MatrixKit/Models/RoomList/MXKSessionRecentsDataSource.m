@@ -357,17 +357,6 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     }
 }
 
-- (void)didMXSessionInviteRoomUpdate:(NSNotification *)notif
-{
-    MXSession *mxSession = notif.object;
-    if (mxSession == self.mxSession)
-    {
-        // do nothing by default
-        // the inherited classes might require to perform a full or a particial refresh.
-        //[self.delegate dataSource:self didCellChange:nil];
-    }
-}
-
 // Order cells
 - (void)sortCellDataAndNotifyChanges
 {

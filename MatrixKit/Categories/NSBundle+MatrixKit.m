@@ -24,15 +24,9 @@ static NSString *customLocalizedStringTableName = nil;
 
 + (NSBundle*)mxk_assetsBundle
 {
+    // Get the bundle within MatrixKit
     NSBundle *bundle = [NSBundle mxk_bundleForClass:[MXKViewController class]];
-    
-    NSURL *assetsBundleURL = [bundle URLForResource:@"MatrixKit" withExtension:@"bundle"];
-
-    // Check whether MatrixKit is not integrated as a Pod
-    if (!assetsBundleURL)
-    {
-        assetsBundleURL = [bundle URLForResource:@"MatrixKitAssets" withExtension:@"bundle"];
-    }
+    NSURL *assetsBundleURL = [bundle URLForResource:@"MatrixKitAssets" withExtension:@"bundle"];
 
     return [NSBundle bundleWithURL:assetsBundleURL];
 }

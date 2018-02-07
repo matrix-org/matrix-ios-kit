@@ -89,7 +89,7 @@ typedef enum : NSUInteger {
 - (void)requestValidationTokenWithMatrixRestClient:(MXRestClient*)restClient
                               isDuringRegistration:(BOOL)isDuringRegistration
                                           nextLink:(NSString*)nextLink
-                                           success:(void (^)())success
+                                           success:(void (^)(void))success
                                            failure:(void (^)(NSError *error))failure;
 
 /**
@@ -100,7 +100,7 @@ typedef enum : NSUInteger {
  @param failure A block object called when the operation fails.
  */
 - (void)submitValidationToken:(NSString *)token
-                      success:(void (^)())success
+                      success:(void (^)(void))success
                       failure:(void (^)(NSError *error))failure;
 
 /**
@@ -113,7 +113,7 @@ typedef enum : NSUInteger {
  @param failure A block object called when the operation fails.
  */
 - (void)add3PIDToUser:(BOOL)bind
-              success:(void (^)())success
+              success:(void (^)(void))success
               failure:(void (^)(NSError *error))failure;
 
 @end

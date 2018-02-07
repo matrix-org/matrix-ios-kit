@@ -87,14 +87,6 @@
 - (void)searchWithPatterns:(NSArray*)patternsList;
 
 /**
- Get the title of the header of the specified section.
- 
- @param section the section  index.
- @return the section title.
- */
-- (NSString *)titleForHeaderInSection:(NSInteger)section;
-
-/**
  Get the section header view.
  
  @param section the section  index

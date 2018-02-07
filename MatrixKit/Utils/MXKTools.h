@@ -20,6 +20,12 @@
 #define MXKTOOLS_MEDIUM_IMAGE_SIZE   768
 #define MXKTOOLS_SMALL_IMAGE_SIZE    512
 
+#define MXKTOOLS_USER_IDENTIFIER_BITWISE  0x01
+#define MXKTOOLS_ROOM_IDENTIFIER_BITWISE  0x02
+#define MXKTOOLS_ROOM_ALIAS_BITWISE       0x04
+#define MXKTOOLS_EVENT_IDENTIFIER_BITWISE 0x08
+#define MXKTOOLS_GROUP_IDENTIFIER_BITWISE 0x10
+
 /**
  Structure representing an the size of an image and its file size.
  */
@@ -194,6 +200,15 @@ typedef struct
 + (UIImage*)resizeImage:(UIImage *)image toSize:(CGSize)size;
 
 /**
+ Resize image with rounded corners to a provided size.
+ 
+ @param image the image to modify.
+ @param size the new size.
+ @return resized image.
+ */
++ (UIImage*)resizeImageWithRoundedCorners:(UIImage *)image toSize:(CGSize)size;
+
+/**
  Paint an image with a color.
  
  @discussion
@@ -277,5 +292,42 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
 + (void)checkAccessForContacts:(NSString*)manualChangeMessage
      showPopUpInViewController:(UIViewController*)viewController
              completionHandler:(void (^)(BOOL granted))handler;
+
+#pragma mark - HTML processing
+
+/**
+ Sanitise an HTML string to keep permitted HTML tags defined by 'allowedHTMLTags'.
+ 
+ !!!!!! WARNING !!!!!!
+ IT IS NOT REMOTELY A COMPREHENSIVE SANITIZER AND SHOULD NOT BE TRUSTED FOR SECURITY PURPOSES.
+ WE ARE EFFECTIVELY RELYING ON THE LIMITED CAPABILITIES OF THE HTML RENDERER UI TO AVOID SECURITY ISSUES LEAKING UP.
+ 
+ @param htmlString the HTML code to sanitise.
+ @param allowedHTMLTags the list of allowed HTML tags
+ @param imageHandler the block called with the parameters of each image when 'img' tag is allowed. This handler must return a local path for this image. The image is removed from the html content if this handler is nil or the returned url is nil.
+ @return a sanitised HTML string.
+ */
++ (NSString*)sanitiseHTML:(NSString*)htmlString
+      withAllowedHTMLTags:(NSArray<NSString*>*)allowedHTMLTags
+        imageHandler:(NSString* (^)(NSString *sourceURL, CGFloat width, CGFloat height))imageHandler;
+
+/**
+ Removing DTCoreText artifacts:
+ - Trim trailing whitespace and newlines in the string content.
+ - Replace DTImageTextAttachments with a simple NSTextAttachment subclass.
+ 
+ @param attributedString an attributed string.
+ @return the resulting string.
+ */
++ (NSAttributedString*)removeDTCoreTextArtifacts:(NSAttributedString*)attributedString;
+
+/**
+ Make some matrix identifiers clickable in the string content.
+ 
+ @param attributedString an attributed string.
+ @param enabledMatrixIdsBitMask the bitmask used to list the types of matrix id to process (see MXKTOOLS_XXX__BITWISE).
+ @return the resulting string.
+ */
++ (NSAttributedString*)createLinksInAttributedString:(NSAttributedString*)attributedString forEnabledMatrixIds:(NSInteger)enabledMatrixIdsBitMask;
 
 @end

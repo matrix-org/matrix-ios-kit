@@ -1,5 +1,5 @@
 /*
- Copyright 2015 OpenMarket Ltd
+ Copyright 2017 Vector Creations Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import "MXKGroupCellDataStoring.h"
 
-NSString *const MatrixKitVersion = @"0.7.4";
+/**
+ `MXKGroupCellData` modelised the data for a `MXKGroupTableViewCell` cell.
+ */
+@interface MXKGroupCellData : MXKCellData <MXKGroupCellDataStoring>
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+@end

@@ -310,7 +310,16 @@ static BOOL _disableLongPressGestureOnEvent;
             // Display sender's name except if the name appears in the displayed text (see emote and membership events)
             if (bubbleData.shouldHideSenderName == NO)
             {
-                self.userNameLabel.text = bubbleData.senderDisplayName;
+                if (bubbleData.senderFlair)
+                {
+                    [self renderSenderFlair];
+                }
+                else
+                {
+                    self.userNameLabel.text = bubbleData.senderDisplayName;
+                }
+                
+                
                 self.userNameLabel.hidden = NO;
                 self.userNameTapGestureMaskView.userInteractionEnabled = YES;
             }
@@ -633,6 +642,66 @@ static BOOL _disableLongPressGestureOnEvent;
     }
 }
 
+- (void)renderSenderFlair
+{
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  ", bubbleData.senderDisplayName]];
+    
+    NSUInteger index = 0;
+    NSString *mimeType;
+    
+    for (MXGroup *group in bubbleData.senderFlair)
+    {
+        // Compute the group avatar URL
+        NSString *avatarUrl = group.profile.avatarUrl;
+        
+        if (avatarUrl.length)
+        {
+            avatarUrl = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:avatarUrl toFitViewSize:CGSizeMake(12, 12) withMethod:MXThumbnailingMethodCrop];
+            
+            // Check if the extension could not be deduced from url
+            if (![avatarUrl pathExtension].length)
+            {
+                // Set default mime type if no information is available
+                mimeType = @"image/jpeg";
+            }
+            else
+            {
+                mimeType = nil;
+            }
+            
+            NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:avatarUrl andType:mimeType inFolder:kMXMediaManagerDefaultCacheFolder];
+            UIImage *image = [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath];
+            if (image)
+            {
+                NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+                textAttachment.image = [MXKTools resizeImageWithRoundedCorners:image toSize:CGSizeMake(12, 12)];
+                NSAttributedString *attrStringWithImage = [NSAttributedString attributedStringWithAttachment:textAttachment];
+                [attributedString appendAttributedString:attrStringWithImage];
+                [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+            }
+            else
+            {
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:avatarUrl];
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:avatarUrl];
+                
+                MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+                if (!loader)
+                {
+                    [MXMediaManager downloadMediaFromURL:avatarUrl andSaveAtFilePath:cacheFilePath];
+                }
+            }
+            
+            index++;
+            if (index == 3)
+            {
+                break;
+            }
+        }
+    }
+    
+    self.userNameLabel.attributedText = attributedString;
+}
+
 + (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth
 {
     return [self originalHeightForCellData:cellData withMaximumWidth:maxWidth];
@@ -753,7 +822,6 @@ static BOOL _disableLongPressGestureOnEvent;
     if (self.progressView)
     {
         [self stopProgressUI];
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
         
         // Remove long tap gesture on the progressView
         while (self.progressView.gestureRecognizers.count)
@@ -761,6 +829,8 @@ static BOOL _disableLongPressGestureOnEvent;
             [self.progressView removeGestureRecognizer:self.progressView.gestureRecognizers[0]];
         }
     }
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     delegate = nil;
 }
@@ -830,14 +900,17 @@ static BOOL _disableLongPressGestureOnEvent;
         if ([url isEqualToString:bubbleData.attachment.actualURL])
         {
             [self stopProgressUI];
-            
-            // the job is really over
-            if ([notif.name isEqualToString:kMXMediaDownloadDidFinishNotification])
-            {
-                // remove any pending observers
-                [[NSNotificationCenter defaultCenter] removeObserver:self];
-            }
         }
+        else
+        {
+            // Refresh sender flair
+            [self renderSenderFlair];
+        }
+        
+        // remove any pending observers
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
     }
 }
 
@@ -845,12 +918,16 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     BOOL isHidden = YES;
     
-    // remove any pending observers
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     // there is an attachment URL
     if (bubbleData.attachment.actualURL)
     {
+        NSString* url = bubbleData.attachment.actualURL;
+        
+        // remove any pending observers
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
+        
         // check if there is a download in progress
         MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
         if (loader)
@@ -865,9 +942,9 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             
             // anyway listen to the progress event
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:url];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:url];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:url];
         }
     }
     

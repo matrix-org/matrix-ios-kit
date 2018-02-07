@@ -38,7 +38,7 @@
  @param callViewController the call view controller.
  @param completion the block to execute at the end of the operation.
  */
-- (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)())completion;
+- (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)(void))completion;
 
 @end
 

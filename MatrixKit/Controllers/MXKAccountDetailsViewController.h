@@ -24,7 +24,7 @@ limitations under the License.
 
 /**
  */
-typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)();
+typedef void (^blockMXKAccountDetailsViewController_onReadyToLeave)(void);
 
 /**
  MXKAccountDetailsViewController instance may be used to display/edit the details of a matrix account.

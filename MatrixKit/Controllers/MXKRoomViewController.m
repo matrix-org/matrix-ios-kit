@@ -348,7 +348,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
+    if (@available(iOS 11.0, *))
+    {
+        // Remove the rounded bottom unsafe area of the iPhone X
+        _bubblesTableViewBottomConstraint.constant += self.view.safeAreaInsets.bottom;
+    }
+
     if (_saveProgressTextInput && roomDataSource)
     {
         // Retrieve the potential message partially typed during last room display.
@@ -472,7 +478,13 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // Update constraints
     _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
     _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
-    
+
+    if (@available(iOS 11.0, *))
+    {
+        // Remove the rounded bottom unsafe area of the iPhone X
+        _bubblesTableViewBottomConstraint.constant += self.view.safeAreaInsets.bottom;
+    }
+
     // Invalidate the current layout to take into account the new constraints in the next update cycle.
     [self.view setNeedsLayout];
     
@@ -3591,7 +3603,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     [self stopActivityIndicator];
 
-                    void(^viewAttachment)() = ^() {
+                    void(^viewAttachment)(void) = ^() {
 
                         documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                         [documentInteractionController setDelegate:self];

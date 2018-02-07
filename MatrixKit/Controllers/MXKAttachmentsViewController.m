@@ -567,7 +567,7 @@
     }
 }
 
-- (void)prepareVideoForItem:(NSInteger)item success:(void(^)())success failure:(void(^)(NSError *))failure
+- (void)prepareVideoForItem:(NSInteger)item success:(void(^)(void))success failure:(void(^)(NSError *))failure
 {
     MXKAttachment *attachment = attachments[item];
     if (attachment.isEncrypted)

@@ -25,7 +25,35 @@
 
 #import "MXCall.h"
 
+#import "DTCoreText.h"
+
+#pragma mark - MXKTools static private members
+// The regex used to find matrix ids.
+static NSRegularExpression *userIdRegex;
+static NSRegularExpression *roomIdRegex;
+static NSRegularExpression *roomAliasRegex;
+static NSRegularExpression *eventIdRegex;
+static NSRegularExpression *groupIdRegex;
+// A regex to find http URLs.
+static NSRegularExpression *httpLinksRegex;
+
 @implementation MXKTools
+
++ (void)initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        userIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixUserIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+        roomIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixRoomIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+        roomAliasRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixRoomAlias options:NSRegularExpressionCaseInsensitive error:nil];
+        eventIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixEventIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+        groupIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixGroupIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
+        
+        httpLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"(?i)\\b(https?://.*)\\b" options:NSRegularExpressionCaseInsensitive error:nil];
+        
+    });
+}
 
 #pragma mark - Strings
 
@@ -434,7 +462,14 @@
         {
             // Create the thumbnail
             CGSize imageSize = CGSizeMake(width, height);
-            UIGraphicsBeginImageContext(imageSize);
+            
+            // Convert first the provided size in pixels
+#if TARGET_OS_IPHONE
+            CGFloat scale = [[UIScreen mainScreen] scale];
+#elif TARGET_OS_OSX
+            CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#endif
+            UIGraphicsBeginImageContextWithOptions(imageSize, NO, scale);
             
             //            // set to the top quality
             //            CGContextRef context = UIGraphicsGetCurrentContext();
@@ -461,10 +496,46 @@
     // Check whether resize is required
     if (size.width && size.height)
     {
-        UIGraphicsBeginImageContext(size);
+        // Convert first the provided size in pixels
+#if TARGET_OS_IPHONE
+        CGFloat scale = [[UIScreen mainScreen] scale];
+#elif TARGET_OS_OSX
+        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#endif
+        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
         
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+        
+        [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        UIGraphicsEndImageContext();
+    }
+    
+    return resizedImage;
+}
+
++ (UIImage*)resizeImageWithRoundedCorners:(UIImage *)image toSize:(CGSize)size
+{
+    UIImage *resizedImage = image;
+    
+    // Check whether resize is required
+    if (size.width && size.height)
+    {
+        // Convert first the provided size in pixels
+#if TARGET_OS_IPHONE
+        CGFloat scale = [[UIScreen mainScreen] scale];
+#elif TARGET_OS_OSX
+        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#endif
+        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+        
+        // Add a clip to round corners
+        [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, size.width, size.height) cornerRadius:size.width/2] addClip];
         
         [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
         resizedImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -739,6 +810,284 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         handler(NO);
     }
+}
+
+#pragma mark - HTML processing
+
++ (NSString*)sanitiseHTML:(NSString*)htmlString
+      withAllowedHTMLTags:(NSArray<NSString*>*)allowedHTMLTags
+             imageHandler:(NSString* (^)(NSString *sourceURL, CGFloat width, CGFloat height))imageHandler
+{
+    NSString *html = htmlString;
+    
+    // List all HTML tags used in htmlString
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [regex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
+    
+    // Find those that are not allowed
+    NSMutableSet *tagsToRemoveSet = [NSMutableSet set];
+    for (NSTextCheckingResult *result in tagsInTheHTML)
+    {
+        NSString *tag = [htmlString substringWithRange:[result rangeAtIndex:1]].lowercaseString;
+        if ([allowedHTMLTags indexOfObject:tag] == NSNotFound)
+        {
+            [tagsToRemoveSet addObject:tag];
+        }
+        else if ([tag isEqualToString:@"img"])
+        {
+            NSString *originalStr;
+            NSString *sourceURL;
+            NSString *localSourcePath;
+            
+            if (imageHandler)
+            {
+                CGFloat width = -1;
+                CGFloat height = -1;
+                
+                NSMutableCharacterSet *characterSet = [NSMutableCharacterSet characterSetWithCharactersInString:@"\""];
+                [characterSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
+                
+                // Parse image parameters
+                originalStr = [htmlString substringWithRange:[result rangeAtIndex:0]];
+                NSArray *components = [originalStr componentsSeparatedByString:@" "];
+                for (NSUInteger index = 1; index < components.count; index++)
+                {
+                    NSArray *attributs = [components[index] componentsSeparatedByString:@"="];
+                    
+                    if (attributs.count == 2)
+                    {
+                        if ([attributs[0] isEqualToString:@"src"])
+                        {
+                            sourceURL = [attributs[1] stringByTrimmingCharactersInSet:characterSet];
+                        }
+                        else if ([attributs[0] isEqualToString:@"width"])
+                        {
+                            NSString *widthStr = [attributs[1] stringByTrimmingCharactersInSet:characterSet];
+                            width = [widthStr floatValue];
+                        }
+                        else if ([attributs[0] isEqualToString:@"height"])
+                        {
+                            NSString *heightStr = [attributs[1] stringByTrimmingCharactersInSet:characterSet];
+                            height = [heightStr floatValue];
+                        }
+                    }
+                }
+                
+                localSourcePath = imageHandler (sourceURL, width, height);
+            }
+            
+            if (localSourcePath)
+            {
+                // Replace the image source with the right local url
+                NSString *updatedStr = [originalStr stringByReplacingOccurrencesOfString:sourceURL withString:localSourcePath];
+                html = [html stringByReplacingCharactersInRange:[result rangeAtIndex:0] withString:updatedStr];
+            }
+            else
+            {
+                [tagsToRemoveSet addObject:tag];
+            }
+        }
+    }
+    
+    // And remove them from the HTML string
+    if (tagsToRemoveSet.count)
+    {
+        NSArray *tagsToRemove = tagsToRemoveSet.allObjects;
+        
+        NSString *tagsToRemoveString = tagsToRemove[0];
+        for (NSInteger i = 1; i < tagsToRemove.count; i++)
+        {
+            tagsToRemoveString  = [tagsToRemoveString stringByAppendingString:[NSString stringWithFormat:@"|%@", tagsToRemove[i]]];
+        }
+        
+        html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<\\/?(%@)[^>]*>", tagsToRemoveString]
+                                               withString:@""
+                                                  options:NSRegularExpressionSearch | NSCaseInsensitiveSearch
+                                                    range:NSMakeRange(0, html.length)];
+    }
+    
+    // TODO: Sanitise other things: attributes, URL schemes, etc
+    
+    return html;
+}
+
++ (NSAttributedString*)removeDTCoreTextArtifacts:(NSAttributedString*)attributedString
+{
+    NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+    
+    // DTCoreText adds a newline at the end of plain text ( https://github.com/Cocoanetics/DTCoreText/issues/779 )
+    // or after a blockquote section.
+    // Trim trailing whitespace and newlines in the string content
+    while ([mutableAttributedString.string hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
+    {
+        [mutableAttributedString deleteCharactersInRange:NSMakeRange(mutableAttributedString.length - 1, 1)];
+    }
+    
+    // New lines may have also been introduced by the paragraph style
+    // Make sure the last paragraph style has no spacing
+    [mutableAttributedString enumerateAttributesInRange:NSMakeRange(0, mutableAttributedString.length) options:(NSAttributedStringEnumerationReverse) usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        
+        if (attrs[NSParagraphStyleAttributeName])
+        {
+            NSString *subString = [mutableAttributedString.string substringWithRange:range];
+            NSArray *components = [subString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+            
+            NSMutableDictionary *updatedAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+            NSMutableParagraphStyle *paragraphStyle = [updatedAttrs[NSParagraphStyleAttributeName] mutableCopy];
+            paragraphStyle.paragraphSpacing = 0;
+            updatedAttrs[NSParagraphStyleAttributeName] = paragraphStyle;
+            
+            if (components.count > 1)
+            {
+                NSString *lastComponent = components.lastObject;
+                
+                NSRange range2 = NSMakeRange(range.location, range.length - lastComponent.length);
+                [mutableAttributedString setAttributes:attrs range:range2];
+                
+                range2 = NSMakeRange(range2.location + range2.length, lastComponent.length);
+                [mutableAttributedString setAttributes:updatedAttrs range:range2];
+            }
+            else
+            {
+                [mutableAttributedString setAttributes:updatedAttrs range:range];
+            }
+        }
+        
+        // Check only the last paragraph
+        *stop = YES;
+    }];
+    
+    // Image rendering failed on an exception until we replace the DTImageTextAttachments with a simple NSTextAttachment subclass
+    // (thanks to https://github.com/Cocoanetics/DTCoreText/issues/863).
+    [mutableAttributedString enumerateAttribute:NSAttachmentAttributeName
+                                        inRange:NSMakeRange(0, mutableAttributedString.length)
+                                        options:0
+                                     usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                         
+                                         if ([value isKindOfClass:DTImageTextAttachment.class])
+                                         {
+                                             DTImageTextAttachment *attachment = (DTImageTextAttachment*)value;
+                                             NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+                                             if (attachment.image)
+                                             {
+                                                 textAttachment.image = attachment.image;
+                                                 
+                                                 CGRect frame = textAttachment.bounds;
+                                                 frame.size = attachment.displaySize;
+                                                 textAttachment.bounds = frame;
+                                             }
+                                             // Note we remove here attachment without image.
+                                             NSAttributedString *attrStringWithImage = [NSAttributedString attributedStringWithAttachment:textAttachment];
+                                             [mutableAttributedString replaceCharactersInRange:range withAttributedString:attrStringWithImage];
+                                         }
+                                     }];
+    
+    return mutableAttributedString;
+}
+
++ (NSAttributedString*)createLinksInAttributedString:(NSAttributedString*)attributedString forEnabledMatrixIds:(NSInteger)enabledMatrixIdsBitMask
+{
+    if (!attributedString)
+    {
+        return nil;
+    }
+    
+    NSMutableAttributedString *postRenderAttributedString;
+    
+    // If enabled, make user id clickable
+    if (enabledMatrixIdsBitMask & MXKTOOLS_USER_IDENTIFIER_BITWISE)
+    {
+        [MXKTools createLinksInAttributedString:attributedString matchingRegex:userIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+    
+    // If enabled, make room id clickable
+    if (enabledMatrixIdsBitMask & MXKTOOLS_ROOM_IDENTIFIER_BITWISE)
+    {
+        [MXKTools createLinksInAttributedString:attributedString matchingRegex:roomIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+    
+    // If enabled, make room alias clickable
+    if (enabledMatrixIdsBitMask & MXKTOOLS_ROOM_ALIAS_BITWISE)
+    {
+        [MXKTools createLinksInAttributedString:attributedString matchingRegex:roomAliasRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+    
+    // If enabled, make event id clickable
+    if (enabledMatrixIdsBitMask & MXKTOOLS_EVENT_IDENTIFIER_BITWISE)
+    {
+        [MXKTools createLinksInAttributedString:attributedString matchingRegex:eventIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+    
+    // If enabled, make group id clickable
+    if (enabledMatrixIdsBitMask & MXKTOOLS_GROUP_IDENTIFIER_BITWISE)
+    {
+        [MXKTools createLinksInAttributedString:attributedString matchingRegex:groupIdRegex withWorkingAttributedString:&postRenderAttributedString];
+    }
+    
+    return postRenderAttributedString ? postRenderAttributedString : attributedString;
+}
+
++ (void)createLinksInAttributedString:(NSAttributedString*)attributedString matchingRegex:(NSRegularExpression*)regex withWorkingAttributedString:(NSMutableAttributedString* __autoreleasing *)mutableAttributedString
+{
+    __block NSArray *linkMatches;
+    
+    // Enumerate each string matching the regex
+    [regex enumerateMatchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
+        
+        // Do not create a link if there is already one on the found match
+        __block BOOL hasAlreadyLink = NO;
+        [attributedString enumerateAttributesInRange:match.range options:0 usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+            
+            if (attrs[NSLinkAttributeName])
+            {
+                hasAlreadyLink = YES;
+                *stop = YES;
+            }
+        }];
+        
+        // Do not create a link if the match is part of an http link.
+        // The http link will be automatically generated by the UI afterwards.
+        // So, do not break it now by adding a link on a subset of this http link.
+        if (!hasAlreadyLink)
+        {
+            if (!linkMatches)
+            {
+                // Search for the links in the string only once
+                // Do not use NSDataDetector with NSTextCheckingTypeLink because is not able to
+                // manage URLs with 2 hashes like "https://matrix.to/#/#matrix:matrix.org"
+                // Such URL is not valid but web browsers can open them and users C+P them...
+                // NSDataDetector does not support it but UITextView and UIDataDetectorTypeLink
+                // detect them when they are displayed. So let the UI create the link at display.
+                linkMatches = [httpLinksRegex matchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.length)];
+            }
+            
+            for (NSTextCheckingResult *linkMatch in linkMatches)
+            {
+                // If the match is fully in the link, skip it
+                if (NSIntersectionRange(match.range, linkMatch.range).length == match.range.length)
+                {
+                    hasAlreadyLink = YES;
+                    break;
+                }
+            }
+        }
+        
+        if (!hasAlreadyLink)
+        {
+            // Create the output string only if it is necessary because attributed strings cost CPU
+            if (!*mutableAttributedString)
+            {
+                *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+            }
+            
+            // Make the link clickable
+            // Caution: We need here to escape the non-ASCII characters (like '#' in room alias)
+            // to convert the link into a legal URL string.
+            NSString *link = [attributedString.string substringWithRange:match.range];
+            link = [link stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            [*mutableAttributedString addAttribute:NSLinkAttributeName value:link range:match.range];
+        }
+    }];
 }
 
 @end

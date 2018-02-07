@@ -1,3 +1,32 @@
+Changes in MatrixKit in 0.7.4 (2017-12-27)
+==========================================
+
+Bug fixes:
+ * Silent crash at startup in [MXKContactManager loadCachedMatrixContacts] (https://github.com/vector-im/riot-ios#1711).
+ * Should fix missing push notifications (https://github.com/vector-im/riot-ios/issues/1696).
+ * Should fix the application crash on "Failed to grow buffer" when loading local phonebook contacts (https://github.com/matrix-org/riot-ios-rageshakes/issues/779).
+
+Changes in MatrixKit in 0.7.3 (2017-11-30)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.4).
+ * MXKEncryptionInfoView: add encryptionInfoViewDidClose.
+
+Bug fixes:
+ * Failed to send photos which are not stored on the local device and must be downloaded from iCloud (vector-im/riot-ios#1654).
+ * App crashes when user wants to share a message (matrix-org/riot-ios-rageshakes#676).
+ * Wrong bubble layout after an image redaction (#380).
+ 
+API breaks:
+ * MXKRoomInputToolbarView: `roomInputToolbarView:sendImage:withMimeType:` method considers the full-sized image data instead of the local image URL.
+ * MXKRoomInputToolbarView: `sendSelectedImage:withCompressionMode:andLocalURL:` is replaced with `sendSelectedImage:withMimeType:andCompressionMode:isPhotoLibraryAsset:`.
+ * MXKRoomDataSource: `sendImage:mimeType:success:failure:` method considers the full-sized image data instead of the local image URL.
+ 
+Translations:
+  * Vietnamese (100%), added thanks to @loulsle (PR #381).
+  * Japanese (5.2%), updated thanks to @libraryxhime (PR #381).
+
 Changes in MatrixKit in 0.7.2 (2017-11-13)
 ==========================================
 

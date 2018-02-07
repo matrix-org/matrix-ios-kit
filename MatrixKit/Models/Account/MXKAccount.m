@@ -478,7 +478,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 #pragma mark - Matrix user's profile
 
-- (void)setUserDisplayName:(NSString*)displayname success:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)setUserDisplayName:(NSString*)displayname success:(void (^)(void))success failure:(void (^)(NSError *error))failure
 {
     if (mxSession && mxSession.myUser)
     {
@@ -498,7 +498,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
-- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)setUserAvatarUrl:(NSString*)avatarUrl success:(void (^)(void))success failure:(void (^)(NSError *error))failure
 {
     if (mxSession && mxSession.myUser)
     {
@@ -518,7 +518,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
-- (void)changePassword:(NSString*)oldPassword with:(NSString*)newPassword success:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)changePassword:(NSString*)oldPassword with:(NSString*)newPassword success:(void (^)(void))success failure:(void (^)(NSError *error))failure
 {
     if (mxSession)
     {
@@ -539,7 +539,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
-- (void)load3PIDs:(void (^)())success failure:(void (^)(NSError *))failure
+- (void)load3PIDs:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     [mxRestClient threePIDs:^(NSArray<MXThirdPartyIdentifier *> *threePIDs2) {
 
@@ -561,7 +561,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }];
 }
 
-- (void)loadDeviceInformation:(void (^)())success failure:(void (^)(NSError *error))failure
+- (void)loadDeviceInformation:(void (^)(void))success failure:(void (^)(NSError *error))failure
 {
     if (mxCredentials.deviceId)
     {
@@ -784,7 +784,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     notifyOpenSessionFailure = YES;
 }
 
-- (void)logout:(void (^)())completion
+- (void)logout:(void (^)(void))completion
 {
     [self deletePusher];
     [self deletePushKitPusher];
@@ -976,7 +976,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 }
 
 // Enable/Disable the APNS pusher for this account on this device on the Home Server.
-- (void)enableAPNSPusher:(BOOL)enabled success:(void (^)())success failure:(void (^)(NSError *))failure
+- (void)enableAPNSPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
 #ifdef DEBUG
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdDev"];
@@ -1063,7 +1063,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 }
 
 // Enable/Disable the pusher based on PushKit for this account on this device on the Home Server.
-- (void)enablePushKitPusher:(BOOL)enabled success:(void (^)())success failure:(void (^)(NSError *))failure
+- (void)enablePushKitPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pushKitAppIdProd"];
     
@@ -1124,7 +1124,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }];
 }
 
-- (void)enablePusher:(BOOL)enabled appId:(NSString*)appId token:(NSData*)token pushData:(NSDictionary*)pushData success:(void (^)())success failure:(void (^)(NSError *))failure
+- (void)enablePusher:(BOOL)enabled appId:(NSString*)appId token:(NSData*)token pushData:(NSDictionary*)pushData success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     // Refuse to try & turn push on if we're not logged in, it's nonsensical.
     if (!mxCredentials)
@@ -1499,7 +1499,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [self cancelBackgroundSync];
 }
 
-- (void)backgroundSync:(unsigned int)timeout success:(void (^)())success failure:(void (^)(NSError *))failure
+- (void)backgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     // Check whether a background mode handler has been set.
     id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;

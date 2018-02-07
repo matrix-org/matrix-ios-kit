@@ -102,6 +102,8 @@
 #import "MXKTableViewCellWithTextFieldAndButton.h"
 #import "MXKTableViewCellWithTextView.h"
 
+#import "MXKTableViewHeaderFooterWithLabel.h"
+
 #import "MXKMediaCollectionViewCell.h"
 #import "MXKPieChartView.h"
 #import "MXKPieChartHUD.h"
@@ -138,3 +140,8 @@
 
 #import "MXKCountryPickerViewController.h"
 #import "MXKLanguagePickerViewController.h"
+
+#import "MXKGroupCellData.h"
+#import "MXKSessionGroupsDataSource.h"
+#import "MXKGroupListViewController.h"
+#import "MXKGroupTableViewCell.h"
