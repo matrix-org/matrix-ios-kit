@@ -694,6 +694,11 @@ static BOOL _disableLongPressGestureOnEvent;
             index++;
             if (index == 3)
             {
+                if (bubbleData.senderFlair.count > 3)
+                {
+                    NSAttributedString *more = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"+%tu", (bubbleData.senderFlair.count - 3)] attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:11.0], NSBaselineOffsetAttributeName:@(+2)}];
+                    [attributedString appendAttributedString:more];
+                }
                 break;
             }
         }
