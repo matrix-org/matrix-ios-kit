@@ -353,3 +353,7 @@
 "local_contacts_access_not_granted" = "Kontaktu lokaletatik erabiltzaileak aurkitzeko zure kontaktua atzitzeko baimena behar da baina %@ aplikazioak ez du baimenik";
 "notification_settings_global_info" = "Jakinarazpen ezarpenak zure erabiltzaile kontuan gordetzen dira eta onartutako bezeroen artean partekatzen dira (mahaigaineko jakinarazpenak barne).\n\nArauak ordenan aplikatzen dira;  bat datorren lehen arauak zehazten du zer gertatzen den mezuarekin.\nBeraz: Hitzen jakinarazpenak gelen jakinarazpenak baino garrantzitsuagoak dira, eta hauek igorleen jakinarazpenak baino garrantzitsuagoak.\nMota bereko arauentzat, zerrendan bat datorren lehenak lehentasuna hartzen du.";
 "notification_settings_per_word_info" = "Hitzak ez dituzte bereizten maiuskula eta minuskulak, eta * komodina izan dezakete. Beraz:\nmar bat dator mar katearekin hitz mugatzaileez inguratuta dagoenean (adib. puntuazioa, zuriunea, lerro hasiera edo bukaera).\nmar* bat dator mar-ez hasten den edozein hitzekin.\n*mar* bat dator edozein posiziotan mar duten hitzekin.";
+"notice_room_related_groups" = "Gela honekin lotura duten taldeak hauek dira: %@";
+// Groups
+"group_invite_section" = "Gonbidapenak";
+"group_section" = "Taldeak";
