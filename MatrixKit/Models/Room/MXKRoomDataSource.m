@@ -492,20 +492,27 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     // Refresh the event listeners. Note: events for past timelines come only from pagination request
                     [self refreshEventListeners:nil];
+                    
+                    __weak typeof(self) weakSelf = self;
 
                     // Preload the state and some messages around the initial event
                     [_timeline resetPaginationAroundInitialEventWithLimit:_paginationLimitAroundInitialEvent success:^{
 
-                        // Do a "classic" reset. The room view controller will paginate
-                        // from the events stored in the timeline store
-                        [_timeline resetPagination];
-
-                        // Update here data source state if it is not already ready
-                        state = MXKDataSourceStateReady;
-
-                        if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                        if (weakSelf)
                         {
-                            [self.delegate dataSource:self didStateChange:state];
+                            typeof(self) self = weakSelf;
+                            
+                            // Do a "classic" reset. The room view controller will paginate
+                            // from the events stored in the timeline store
+                            [self.timeline resetPagination];
+                            
+                            // Update here data source state if it is not already ready
+                            self->state = MXKDataSourceStateReady;
+                            
+                            if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                            {
+                                [self.delegate dataSource:self didStateChange:self->state];
+                            }
                         }
 
                     } failure:^(NSError *error) {
@@ -520,47 +527,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                                                                      }];
                     }];
                 }
-                
-                // Flair handling: observe the update in the publicised groups by users when the flair is enabled in the room.
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
-                if (_room.state.relatedGroups.count)
-                {
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionUpdatePublicisedGroupsForUsers:) name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
-                    
-                    // Get a fresh profile for all the related groups. Trigger a table refresh when all requests are done.
-                    __block NSUInteger count = _room.state.relatedGroups.count;
-                    for (NSString *groupId in _room.state.relatedGroups)
-                    {
-                        MXGroup *group = [self.mxSession groupWithGroupId:groupId];
-                        if (!group)
-                        {
-                            // Create a group instance for the groups that the current user did not join.
-                            group = [[MXGroup alloc] initWithGroupId:groupId];
-                            [externalRelatedGroups setObject:group forKey:groupId];
-                        }
-                        
-                        // Refresh the group profile from server.
-                        [self.mxSession updateGroupProfile:group success:^{
-                            
-                            if (self.delegate && !(--count))
-                            {
-                                // All the requests have been done.
-                                [self.delegate dataSource:self didCellChange:nil];
-                            }
-                            
-                        } failure:^(NSError *error) {
-                            
-                            NSLog(@"[MXKRoomDataSource] group profile update failed %@", groupId);
-                            
-                            if (self.delegate && !(--count))
-                            {
-                                // All the requests have been done.
-                                [self.delegate dataSource:self didCellChange:nil];
-                            }
-                            
-                        }];
-                    }
-                }
             }
             else
             {
@@ -573,6 +539,50 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
             {
                 [self.delegate dataSource:self didStateChange:state];
+            }
+        }
+        
+        if (_room && MXSessionStateRunning == self.mxSession.state)
+        {
+            // Flair handling: observe the update in the publicised groups by users when the flair is enabled in the room.
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+            if (_room.state.relatedGroups.count)
+            {
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXSessionUpdatePublicisedGroupsForUsers:) name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
+                
+                // Get a fresh profile for all the related groups. Trigger a table refresh when all requests are done.
+                __block NSUInteger count = _room.state.relatedGroups.count;
+                for (NSString *groupId in _room.state.relatedGroups)
+                {
+                    MXGroup *group = [self.mxSession groupWithGroupId:groupId];
+                    if (!group)
+                    {
+                        // Create a group instance for the groups that the current user did not join.
+                        group = [[MXGroup alloc] initWithGroupId:groupId];
+                        [externalRelatedGroups setObject:group forKey:groupId];
+                    }
+                    
+                    // Refresh the group profile from server.
+                    [self.mxSession updateGroupProfile:group success:^{
+                        
+                        if (self.delegate && !(--count))
+                        {
+                            // All the requests have been done.
+                            [self.delegate dataSource:self didCellChange:nil];
+                        }
+                        
+                    } failure:^(NSError *error) {
+                        
+                        NSLog(@"[MXKRoomDataSource] group profile update failed %@", groupId);
+                        
+                        if (self.delegate && !(--count))
+                        {
+                            // All the requests have been done.
+                            [self.delegate dataSource:self didCellChange:nil];
+                        }
+                        
+                    }];
+                }
             }
         }
     }
