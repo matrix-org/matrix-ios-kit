@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.7.6 (2018-02-14)
+==========================================
+
+Improvement:
+ * Flair handling - MXKRoomDataSource: Wait for the session to be running before refreshing the related groups (PR #401).
+
 Changes in MatrixKit in 0.7.5 (2018-02-09)
 ==========================================
 
@@ -8,7 +14,7 @@ Improvements:
  * MXKEventFormatter: Treat the matrix group ids as link.
  
 Bug fixes:
- * iPhone X: room messages overlap the room activity view (#1754).
+ * iPhone X: room messages overlap the room activity view (vector-im/riot-ios#1754).
 
 API breaks:
  * MXKEventFormater: Move into MXKTools the methods used to process html content (PR #392).
