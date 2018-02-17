@@ -13,7 +13,7 @@
 // Login Screen
 "login_create_account" = "Crear compte:";
 "login_server_url_placeholder" = "URL (ex. https://matrix.org)";
-"login_home_server_title" = "Servidor hoste";
+"login_home_server_title" = "Servidor hoste:";
 "login_home_server_info" = "El teu servidor hoste desa totes les teves converses i dades del compte";
 "login_identity_server_title" = "Servidor d'identitat:";
 "login_identity_server_info" = "Matrix proporciona servidors d'identitat per fer un seguiment dels correus electrònics etc. que pertanyen als identificadors Matrix. Actualment només existeix https://matrix.org.";
