@@ -928,7 +928,7 @@
                         NSMutableAttributedString *newAttributedDisplayText =
                         [[NSMutableAttributedString alloc] initWithString:emotePrefix
                                                                attributes:@{
-                                                                            NSForegroundColorAttributeName: [self textColorForEvent:event],
+                                                                            NSForegroundColorAttributeName: _defaultTextColor,
                                                                             NSFontAttributeName: _defaultTextFont
                                                                             }];
 
