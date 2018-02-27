@@ -167,7 +167,7 @@ static NSAttributedString *verticalWhitespace = nil;
             if (!mxDeviceInfo)
             {
                 // Trigger a server request to get the device information for the event sender
-                mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
+                mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] forceDownload:NO success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
                     
                     mxCurrentOperation = nil;
                     
