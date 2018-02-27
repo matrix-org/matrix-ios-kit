@@ -835,11 +835,7 @@
 
                 if (body)
                 {
-                    if ([msgtype isEqualToString:kMXMessageTypeEmote])
-                    {
-                        body = [NSString stringWithFormat:@"* %@ %@", senderDisplayName, body];
-                    }
-                    else if ([msgtype isEqualToString:kMXMessageTypeImage])
+                    if ([msgtype isEqualToString:kMXMessageTypeImage])
                     {
                         body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_image_attachment"];
                         // Check attachment validity
@@ -922,6 +918,23 @@
                     {
                         // Build the attributed string with the right font and color for the event
                         attributedDisplayText = [self renderString:body forEvent:event];
+                    }
+
+                    // Build the full emote string after the body message formatting
+                    if ([msgtype isEqualToString:kMXMessageTypeEmote])
+                    {
+                        // Always use default font and color for the emote prefix
+                        NSString *emotePrefix = [NSString stringWithFormat:@"* %@ ", senderDisplayName];
+                        NSMutableAttributedString *newAttributedDisplayText =
+                        [[NSMutableAttributedString alloc] initWithString:emotePrefix
+                                                               attributes:@{
+                                                                            NSForegroundColorAttributeName: _defaultTextColor,
+                                                                            NSFontAttributeName: _defaultTextFont
+                                                                            }];
+
+                        // Then, append the styled body message
+                        [newAttributedDisplayText appendAttributedString:attributedDisplayText];
+                        attributedDisplayText = newAttributedDisplayText;
                     }
                 }
             }

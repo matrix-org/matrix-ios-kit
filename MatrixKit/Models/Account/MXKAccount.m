@@ -656,6 +656,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     MXKEventFormatter *eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];
     eventFormatter.isForSubtitle = YES;
 
+    // Apply the event types filter to display only the wanted event types.
+    eventFormatter.eventTypesFilterForMessages = [MXKAppSettings standardAppSettings].eventsFilterForMessages;
+
     mxSession.roomSummaryUpdateDelegate = eventFormatter;
 
     // Observe UIApplicationSignificantTimeChangeNotification to refresh to MXRoomSummaries if date/time are shown.

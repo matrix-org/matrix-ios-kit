@@ -215,7 +215,10 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)loadData
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewGroupInviteNotification object:self.mxSession];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidJoinGroupNotification object:self.mxSession];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveGroupNotification object:self.mxSession];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdateGroupSummaryNotification object:self.mxSession];
     
     // Reset the table
     [internalCellDataArray removeAllObjects];
