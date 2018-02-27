@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.7.7 (2018-02-27)
+==========================================
+
+Bug fix:
+ * My communities screen is empty despite me being in several groups (vector-im/riot-ios#1792).
+
 Changes in MatrixKit in 0.7.6 (2018-02-14)
 ==========================================
 
