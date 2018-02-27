@@ -86,11 +86,11 @@
 "e2e_import_room_keys" = "Inportatu gelako gakoak";
 "e2e_import" = "Inportatu";
 "room_event_encryption_info_device_verified" = "Egiaztatuta";
-"room_event_encryption_info_device_blocked" = "Zerrenda beltzean";
+"room_event_encryption_info_device_blocked" = "Blokeatuta";
 "room_event_encryption_verify_ok" = "Egiaztatu";
 "room_event_encryption_info_unverify" = "Kendu egiaztaketa";
-"room_event_encryption_info_block" = "Sartu zerrenda beltzean";
-"room_event_encryption_info_unblock" = "Atera zerrenda beltzean";
+"room_event_encryption_info_block" = "Blokeatu";
+"room_event_encryption_info_unblock" = "Desblokeatu";
 "view" = "Ikusi";
 "back" = "Atzera";
 "retry" = "Saiatu berriro";
