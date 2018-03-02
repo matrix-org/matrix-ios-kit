@@ -317,8 +317,8 @@
 "notification_settings_word_to_match" = "дума, която да потърсим";
 "notification_settings_highlight" = "Подчертаване";
 "notification_settings_custom_sound" = "Индивидуален звук";
-"notification_settings_per_room_notifications" = "Известия за всяка стая";
-"notification_settings_per_sender_notifications" = "Известия на всеки подател";
+"notification_settings_per_room_notifications" = "Известия за конкретна стая";
+"notification_settings_per_sender_notifications" = "Известия за конкретен подател";
 "notification_settings_sender_hint" = "@потребител:domain.com";
 "notification_settings_select_room" = "Избиране на стая";
 "notification_settings_other_alerts" = "Други сигнали,аларми,предупреждения";
@@ -331,7 +331,7 @@
 "notification_settings_suppress_from_bots" = "Блокирай известията от ботове";
 "notification_settings_by_default" = "По подразбиране...";
 "notification_settings_notify_all_other" = "Известявай ме за всички други съобщения/стаи";
-"notification_settings_per_word_notifications" = "Известия за всяка дума";
+"notification_settings_per_word_notifications" = "Известия за конкретна дума";
 // gcm section 
 "settings_config_home_server" = "Home сървър: %@";
 "settings_config_identity_server" = "Сървър за самоличност: %@";
@@ -350,7 +350,7 @@
 "ssl_fingerprint_hash" = "Отпечатък (%@):";
 "ssl_could_not_verify" = "Неуспешно потвърждаване на самоличността на отдалечен сървър.";
 "ssl_cert_not_trust" = "Това може да означава, че някой злонамерено прихваща Вашата връзка, или че телефонът Ви не се доверява на сертификата, предоставен от отдалечения сървър.";
-"ssl_cert_new_account_expl" = "Ако администраторът на сървъра е казал, че той е изтекъл, уверете се, че отпечатъкът по-долу съвпада с този, предоставен от него.";
+"ssl_cert_new_account_expl" = "Ако администраторът на сървъра е обявил, че той е изтекъл, уверете се, че отпечатъкът по-долу съвпада с този, предоставен от него.";
 "ssl_unexpected_existing_expl" = "Сертификатът е различен от този, който е доверен от телефона Ви. Това е МНОГО НЕОБИЧАЙНО. Препоръчваме ВИ да НЕ ПРИЕМАТЕ този нов серфитикат.";
 "ssl_expected_existing_expl" = "Сертификатът се промени от такъв, който е бил доверен, на такъв който вече не е. Сървърът може да е подновил своя сертификат. Свържете се с администратора за правилния отпечатък.";
 "ssl_only_accept" = "Приемайте сертификата САМО ако администратора на сървъра е публикурал отпечатък, който съвпада с този по-горе.";
