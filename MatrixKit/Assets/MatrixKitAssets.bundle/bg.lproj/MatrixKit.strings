@@ -25,7 +25,7 @@
 "login_prompt_email_token" = "Моля, въведете кода за потвърждение от имейл адреса:";
 "login_error_title" = "Неуспешно влизане в профила";
 "login_error_no_login_flow" = "Не успяхме да извлечем информация за автентикация от този Home сървър";
-"login_error_do_not_support_login_flows" = "В момента не поддържаме методи за влизане, определени от този Home сървър";
+"login_error_do_not_support_login_flows" = "В момента не поддържаме методите за влизане, определени от този Home сървър";
 "login_error_registration_is_not_supported" = "В момента не се поддържа регистрация";
 "login_error_forbidden" = "Невалидно потребителско име или парола";
 "login_error_unknown_token" = "Не е разпознат указаният token за достъп";
@@ -33,7 +33,7 @@
 "login_error_not_json" = "Не съдържаше валиден JSON";
 "login_error_limit_exceeded" = "Бяха изпратени твърде много заявки";
 "login_error_user_in_use" = "Това потребителско име е вече заето";
-"login_error_login_email_not_yet" = "Връзката в имейла, върху която все още не е кликнато";
+"login_error_login_email_not_yet" = "Все още не сте кликнали върху връзката в имейла";
 "login_use_fallback" = "Използване на страница заместител";
 "login_leave_fallback" = "Откажи";
 "login_invalid_param" = "Невалиден параметър";
@@ -60,7 +60,7 @@
 "start_video_call" = "Започни видео разговор";
 "mention" = "Спомени";
 "select_account" = "Изберете профил";
-"attach_media" = "Прикачи файл от библиотека";
+"attach_media" = "Прикачи файл от галерията";
 "capture_media" = "Направи снимка/видео";
 "invite_user" = "Покани matrix потребител";
 "resend_message" = "Изпрати съобщението отново";
@@ -77,7 +77,7 @@
 "notice_avatar_changed_too" = "(аватарът също беше променен)";
 "notice_room_name_removed" = "%@ премахна името на стаята";
 "notice_room_topic_removed" = "%@ премахна темата";
-"notice_event_redacted" = "<редактирано%@>";
+"notice_event_redacted" = "<изтрито%@>";
 "notice_event_redacted_by" = " от %@";
 "notice_event_redacted_reason" = " [причина: %@]";
 "notice_profile_change_redacted" = "%@ обнови своя профил %@";
@@ -85,10 +85,10 @@
 "notice_room_join_rule" = "Правилото за присъединяване е: %@";
 "notice_room_power_level_intro" = "Нивата на достъп на членовете в стаята са:";
 "end_call" = "Прекрати разговора";
-"notice_room_power_level_acting_requirement" = "Минималните нива на достъп, които потребител трябва да има преди да действа са:";
+"notice_room_power_level_acting_requirement" = "Минималните нива на достъп, които потребител трябва да има за следните действия са:";
 "notice_room_power_level_event_requirement" = "Минималните нива на достъп отнасящи се към събития са:";
 "notice_room_aliases" = "Адресите на стаята са: %@";
-"notice_room_related_groups" = "Групите асоциирани с тази стая са: %@";
+"notice_room_related_groups" = "Групите, асоциирани с тази стая, са: %@";
 "notice_encrypted_message" = "Шифровано съобщение";
 "notice_encryption_enabled" = "%@ включи шифроването от край до край (алгоритъм %@)";
 "notice_image_attachment" = "прикачена снимка";
@@ -99,7 +99,7 @@
 "notice_invalid_attachment" = "невалидно прикачване";
 "notice_unsupported_attachment" = "Прикачен файл, който не се поддържа: %@";
 "notice_feedback" = "Събитие за обратна връзка (id: %@): %@";
-"notice_redaction" = "%@ редактира събитие (id: %@)";
+"notice_redaction" = "%@ изтри събитие (id: %@)";
 "notice_error_unsupported_event" = "Събитие, което не се поддържа";
 "notice_error_unexpected_event" = "Неочаквано събитие";
 "notice_error_unknown_event_type" = "Непознат вид на събитието";
@@ -108,7 +108,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ направи бъдещата история на стаята видима за всички членове, от момента на поканването им в нея.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ направи бъдещата история на стаята видима за всички членове, от момента на присъединяването им в нея.";
 "notice_crypto_unable_to_decrypt" = "** Неуспешно разшифроване: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Изпращащото устройство не ни е изпратило ключовете за това съобщение.";
+"notice_crypto_error_unknown_inbound_session_id" = "Устройството на подателя не изпрати ключовете за това съобщение.";
 // Settings
 "settings" = "Настройки";
 "settings_enable_inapp_notifications" = "Включване на известия в приложението";
@@ -144,10 +144,10 @@
 "room_event_encryption_info_device_verified" = "Потвърдено";
 "room_event_encryption_info_device_not_verified" = "НЕ е потвърдено";
 "room_event_encryption_info_device_blocked" = "В черния списък";
-"room_event_encryption_info_unblock" = "Премахни от черния списък";
-"room_event_encryption_info_block" = "Добави в черен списък";
+"room_event_encryption_info_unblock" = "Отблокирай";
+"room_event_encryption_info_block" = "Блокирай";
 "room_event_encryption_info_verify" = "Потвърди...";
-"room_event_encryption_info_unverify" = "Махни потвърждението";
+"room_event_encryption_info_unverify" = "Махни потвържд.";
 "room_event_encryption_verify_title" = "Потвърди устройството\n\n";
 "room_event_encryption_verify_ok" = "Потвърди";
 // Account
@@ -161,7 +161,7 @@
 "account_msisdn_validation_message" = "Изпратихме Ви SMS с код за активиране. Моля, въведете този код по-долу.";
 "account_msisdn_validation_error" = "Неуспешно потвърждение на телефонен номер.";
 "account_error_display_name_change_failed" = "Неуспешна смяна на име";
-"account_error_picture_change_failed" = "Неуспешна смяна на снимка";
+"account_error_picture_change_failed" = "Неуспешна смяна на профилната снимка";
 "account_error_matrix_session_is_not_opened" = "Matrix сесията не е отворена";
 "account_error_email_wrong_title" = "Невалиден имейл адрес";
 "account_error_email_wrong_description" = "Това не изглежда да е валиден имейл адрес";
@@ -185,7 +185,7 @@
 "room_error_timeline_event_not_found_title" = "Неуспешно зареждане на позицията в хронологията";
 "room_error_timeline_event_not_found" = "Беше направен опит да се зареди конкретна точка в хронологията на тази стая, но не я намери";
 "room_left" = "Вие напуснахте стаята";
-"room_no_power_to_create_conference_call" = "Трябва да имате разрешение, за да изпратите покана за групов разговор в тази стая";
+"room_no_power_to_create_conference_call" = "Трябва да имате разрешение за изпращане на покани, за да може да започнете групов разговор в тази стая";
 "room_no_conference_call_in_encrypted_rooms" = "Не се поддържат групови разговори в шифровани стаи";
 // Room members
 "room_member_ignore_prompt" = "Сигурни ли сте, че искате да скриете всички съобщения от този потребител?";
@@ -198,7 +198,7 @@
 "attachment_large" = "Голям: %@";
 "attachment_cancel_download" = "Отказване на свалянето?";
 "attachment_cancel_upload" = "Отказване на качването?";
-"attachment_multiselection_size_prompt" = "Изпратете снимката с размер:";
+"attachment_multiselection_size_prompt" = "Изпратете снимките с размер:";
 "attachment_multiselection_original" = "Оригинален";
 "attachment_e2e_keys_file_prompt" = "Файлът съдържа ключове за шифроване, експортирани от Matrix клиент.\nИскате ли да видите съдържанието на файла или да импортирате ключовете, които съдържа?";
 "attachment_e2e_keys_import" = "Импортиране...";
@@ -210,7 +210,7 @@
 "group_section" = "Групи";
 // Search
 "search_no_results" = "Няма резултати";
-"search_searching" = "Търсенето е в прогрес....";
+"search_searching" = "В процес на търсене...";
 // Time
 "format_time_s" = "сек";
 "format_time_m" = "мин";
@@ -236,22 +236,22 @@
 "error" = "Грешка";
 "not_supported_yet" = "Все още не се поддържа";
 "default" = "по подразбиране";
-"private" = "Личен";
-"public" = "Публичен";
+"private" = "Лична";
+"public" = "Публична";
 "power_level" = "Ниво на достъп";
 "network_error_not_reachable" = "Моля, проверете интернет връзката си";
 "user_id_placeholder" = "напр.: @ivan:homeserver";
 "ssl_homeserver_url" = "URL на Home сървър: %@";
 // Permissions
-"camera_access_not_granted_for_call" = "Видео разговори изискват достъп до камерата, но %@ няма разрешение да я използва";
-"microphone_access_not_granted_for_call" = "Разговори изискват достъп до микрофона, но %@ няма разрешение да го използва";
+"camera_access_not_granted_for_call" = "Видео разговорите изискват достъп до камерата, но %@ няма разрешение да я използва";
+"microphone_access_not_granted_for_call" = "Разговорите изискват достъп до микрофона, но %@ няма разрешение да го използва";
 "local_contacts_access_not_granted" = "Откриване на потребители от локални контакти изисква достъп до контактите Ви, но %@ няма разрешение да ги използва";
 "local_contacts_access_discovery_warning_title" = "Откриване на потребители";
 "local_contacts_access_discovery_warning" = "За да открие потребители, %@ желае да качи имейли и телефонни номера от Вашите контакти";
 // Country picker
-"country_picker_title" = "Изберете държава";
+"country_picker_title" = "Избор на държава";
 // Language picker
-"language_picker_title" = "Изберете език";
+"language_picker_title" = "Избор на език";
 "language_picker_default_language" = "По подразбиране (%@)";
 "notice_room_invite" = "%@ покани %@";
 "notice_room_third_party_invite" = "%@ изпрати покана на %@ да се присъедини към стаята";
@@ -282,7 +282,7 @@
 "send" = "Изпрати";
 "copy" = "Копирай";
 "resend" = "Изпрати отново";
-"redact" = "Редактирай";
+"redact" = "Изтрий";
 "share" = "Сподели";
 "set_power_level" = "Ниво на достъп";
 "delete" = "Изтрий";
@@ -292,17 +292,17 @@
 "login" = "Влез";
 "create_account" = "Създай профил";
 "membership_invite" = "Поканен";
-"membership_leave" = "Напуснали";
-"membership_ban" = "Блокирани";
+"membership_leave" = "Напуснал";
+"membership_ban" = "Блокиран";
 "num_members_one" = "%@ потребител";
 "num_members_other" = "%@ потребители";
 "kick" = "Изгони";
 "ban" = "Блокирай";
 "unban" = "Отблокирай";
-"message_unsaved_changes" = "Има незапазени промени.";
+"message_unsaved_changes" = "Има незапазени промени. При напускане ще се загубят.";
 // Login Screen 
-"login_error_already_logged_in" = "Вече сте в профила";
-"login_error_must_start_http" = "URL трябва да започва с http[s]://";
+"login_error_already_logged_in" = "Вече сте в профила си";
+"login_error_must_start_http" = "URL адресът трябва да започва с http[s]://";
 // contacts list screen 
 "invitation_message" = "Бих искал да си пиша с Вас в matrix. За повече информация, моля, посетете уебсайта http://matrix.org.";
 // Settings screen 
@@ -311,7 +311,7 @@
 // Notification settings screen 
 "notification_settings_disable_all" = "Изключване на всички известия";
 "notification_settings_enable_notifications" = "Включване на известия";
-"notification_settings_enable_notifications_warning" = "В момента всички известия на всички устройства са изключени.";
+"notification_settings_enable_notifications_warning" = "В момента всички известия към всички устройства са изключени.";
 "notification_settings_always_notify" = "Известяване винаги";
 "notification_settings_never_notify" = "Известяване никога";
 "notification_settings_word_to_match" = "дума, която да потърсим";
@@ -321,7 +321,7 @@
 "notification_settings_per_sender_notifications" = "Известия за конкретен подател";
 "notification_settings_sender_hint" = "@потребител:domain.com";
 "notification_settings_select_room" = "Избиране на стая";
-"notification_settings_other_alerts" = "Други сигнали,аларми,предупреждения";
+"notification_settings_other_alerts" = "Други известия";
 "notification_settings_contain_my_user_name" = "Известявай ме със звук за съобщения, съдържащи потребителското ми име";
 "notification_settings_contain_my_display_name" = "Известявай ме със звук за съобщения, съдържащи името ми";
 "notification_settings_just_sent_to_me" = "Известявай ме със звук за съобщения изпратени само до мен";
@@ -344,16 +344,16 @@
 "incoming_voice_call" = "Входящо гласово повикване";
 "call_invite_expired" = "Поканата за разговор изтече";
 // unrecognized SSL certificate
-"ssl_trust" = "Доверяване";
+"ssl_trust" = "Довери се";
 "ssl_logout_account" = "Излез";
 "ssl_remain_offline" = "Игнорирай";
 "ssl_fingerprint_hash" = "Отпечатък (%@):";
-"ssl_could_not_verify" = "Неуспешно потвърждаване на самоличността на отдалечен сървър.";
+"ssl_could_not_verify" = "Неуспешно потвърждаване на самоличността на отдалечения сървър.";
 "ssl_cert_not_trust" = "Това може да означава, че някой злонамерено прихваща Вашата връзка, или че телефонът Ви не се доверява на сертификата, предоставен от отдалечения сървър.";
-"ssl_cert_new_account_expl" = "Ако администраторът на сървъра е обявил, че той е изтекъл, уверете се, че отпечатъкът по-долу съвпада с този, предоставен от него.";
-"ssl_unexpected_existing_expl" = "Сертификатът е различен от този, който е доверен от телефона Ви. Това е МНОГО НЕОБИЧАЙНО. Препоръчваме ВИ да НЕ ПРИЕМАТЕ този нов серфитикат.";
+"ssl_cert_new_account_expl" = "Ако администраторът на сървъра е обявил, че това е нормално, уверете се, че отпечатъкът по-долу съвпада с този, предоставен от него.";
+"ssl_unexpected_existing_expl" = "Сертификатът е различен от този, на който телефонът Ви се доверява. Това е МНОГО НЕОБИЧАЙНО. Препоръчваме да НЕ ПРИЕМАТЕ този нов серфитикат.";
 "ssl_expected_existing_expl" = "Сертификатът се промени от такъв, който е бил доверен, на такъв който вече не е. Сървърът може да е подновил своя сертификат. Свържете се с администратора за правилния отпечатък.";
-"ssl_only_accept" = "Приемайте сертификата САМО ако администратора на сървъра е публикурал отпечатък, който съвпада с този по-горе.";
+"ssl_only_accept" = "Приемайте сертификата САМО ако администратора на сървъра е публикувал отпечатък, който съвпада с този по-горе.";
 "room_event_encryption_verify_message" = "За да потвърдите, че на това устройство може да се вярва, моля свържете се със собственика му по друг начин (напр. на живо или чрез телефонен разговор) и го попитайте дали ключът, който той вижда в неговите настройки на потребителя за това устройство, съвпада с ключа по-долу:\n\n\tИме на устройството: %@\n\tID на устройството: %@\n\tКлюч на устройството: %@\n\nАко съвпада, моля натиснете бутона за потвърждение по-долу. Ако не, то тогава някой друг имитира това устройство и вероятно искате вместо това да натиснете бутона за черен списък.\n\nВ бъдеще този процес на потвърждение ще бъде по-лесен.";
 "notification_settings_global_info" = "Настройки на известията се пазят в потребителския Ви профил и се споделят измежду всички клиенти, които ги поддържат (включително и известия на работния плот).\n\nПравилата се проверяват по ред; първото съвпадащо правило дефинира резултата за съобщението.\nТака че: Известията за конкретна дума са по-важни от известията за конкретна стая, които пък са по-важни от известията за конкретен потребител.\nАко има няколко еднотипни правила, с приоритет е първото съвпадащо.";
 "notification_settings_per_word_info" = "Съвпаденията за думите се правят без взимане под внимание на малка/главна буква. Могат да съдържат и * wildcard символ. Така че:\nfoo намира съвпадения за низа foo, ограден от разделители за дума (напр. пунктуация и празно място или начало/край на ред).\nfoo* намира съвпадения във всяка дума започваща с foo.\n*foo* намира съвпадения във всяка дума включваща някъде в себе си низа foo.";
