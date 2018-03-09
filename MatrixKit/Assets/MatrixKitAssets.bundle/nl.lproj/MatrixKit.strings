@@ -414,3 +414,7 @@
 "login_mobile_device" = "Mobiel";
 "login_tablet_device" = "Tablet";
 "login_desktop_device" = "Desktop";
+"notice_room_related_groups" = "De groepen die geassocieerd zijn met deze ruimte zijn: %@";
+// Groups
+"group_invite_section" = "Uitnodigingen";
+"group_section" = "Uitnodigingen";
