@@ -1,3 +1,10 @@
+Changes in MatrixKit in 0.7.8 (2018-03-12)
+==========================================
+
+Bug fix:
+ * Groups: Room summary should not display notices about groups (vector-im/riot-ios#1780).
+ * MXKEventFormatter: Emotes which contain a single emoji are expanded to be enormous (vector-im/riot-ios#1558).
+
 Changes in MatrixKit in 0.7.7 (2018-02-27)
 ==========================================
 
