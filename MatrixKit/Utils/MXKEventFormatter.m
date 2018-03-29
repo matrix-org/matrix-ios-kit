@@ -993,6 +993,24 @@
             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_ended_video_call"], senderDisplayName];
             break;
         }
+        case MXEventTypeSticker:
+        {
+            NSString *body;
+            if ([event.content[@"body"] isKindOfClass:[NSString class]])
+            {
+                body = event.content[@"body"];
+            }
+            // Check sticker validity
+            if (![self isSupportedAttachment:event])
+            {
+                NSLog(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
+                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                *error = MXKEventFormatterErrorUnsupported;
+            }
+            
+            displayText = body? body : [NSBundle mxk_localizedStringForKey:@"notice_sticker"];
+            break;
+        }
 
         default:
             *error = MXKEventFormatterErrorUnknownEventType;
@@ -1280,9 +1298,13 @@
                 if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
                 {
                     NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:roomState];
-
                     prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
                 }
+            }
+            else if (event.eventType == MXEventTypeSticker)
+            {
+                NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:roomState];
+                prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
             }
 
             // Compute the attribute text message

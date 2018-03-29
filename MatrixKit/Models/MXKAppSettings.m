@@ -127,7 +127,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                   kMXEventTypeStringRoomThirdPartyInvite,
                                                                   kMXEventTypeStringCallInvite,
                                                                   kMXEventTypeStringCallAnswer,
-                                                                  kMXEventTypeStringCallHangup
+                                                                  kMXEventTypeStringCallHangup,
+                                                                  kMXEventTypeStringSticker
                                                                   ]];
 
         // List all the event types, except kMXEventTypeStringPresence which are not related to a specific room.
@@ -149,7 +150,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                     kMXEventTypeStringRoomRelatedGroups,
                                                                     kMXEventTypeStringCallInvite,
                                                                     kMXEventTypeStringCallAnswer,
-                                                                    kMXEventTypeStringCallHangup
+                                                                    kMXEventTypeStringCallHangup,
+                                                                    kMXEventTypeStringSticker
                                                                    ]];
     }
     return self;
