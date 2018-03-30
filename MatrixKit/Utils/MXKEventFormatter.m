@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -178,6 +179,33 @@
         {
             isSupportedAttachment = hasUrl || hasFile;
         }
+    }
+    else if (event.eventType == MXEventTypeSticker)
+    {
+        NSString *urlField;
+        NSDictionary *fileField;
+        MXJSONModelSetString(urlField, event.content[@"url"]);
+        MXJSONModelSetDictionary(fileField, event.content[@"file"]);
+        
+        BOOL hasUrl = urlField.length;
+        BOOL hasFile = NO;
+        
+        // @TODO: Check whether the encrypted sticker uses the same `file dict than other media
+        if (fileField)
+        {
+            NSString *fileUrlField;
+            MXJSONModelSetString(fileUrlField, fileField[@"url"]);
+            NSString *fileIvField;
+            MXJSONModelSetString(fileIvField, fileField[@"iv"]);
+            NSDictionary *fileHashesField;
+            MXJSONModelSetDictionary(fileHashesField, fileField[@"hashes"]);
+            NSDictionary *fileKeyField;
+            MXJSONModelSetDictionary(fileKeyField, fileField[@"key"]);
+            
+            hasFile = fileUrlField.length && fileIvField.length && fileHashesField && fileKeyField;
+        }
+        
+        isSupportedAttachment = hasUrl || hasFile;
     }
     return isSupportedAttachment;
 }
