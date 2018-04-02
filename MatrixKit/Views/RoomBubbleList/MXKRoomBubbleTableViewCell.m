@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -291,16 +292,7 @@ static BOOL _disableLongPressGestureOnEvent;
 
 - (void)render:(MXKCellData *)cellData
 {
-    [self originalRender:cellData];
-}
-
-- (void)originalRender:(MXKCellData *)cellData
-{
-    // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
-    NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
-    
-    bubbleData = (MXKRoomBubbleCellData*)cellData;
-    mxkCellData = cellData;
+    [self prepareRender:cellData];
     
     if (bubbleData)
     {
@@ -642,6 +634,15 @@ static BOOL _disableLongPressGestureOnEvent;
     }
 }
 
+- (void)prepareRender:(MXKCellData *)cellData
+{
+    // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
+    NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
+    
+    bubbleData = (MXKRoomBubbleCellData*)cellData;
+    mxkCellData = cellData;
+}
+
 - (void)renderSenderFlair
 {
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  ", bubbleData.senderDisplayName]];
@@ -708,11 +709,6 @@ static BOOL _disableLongPressGestureOnEvent;
 }
 
 + (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth
-{
-    return [self originalHeightForCellData:cellData withMaximumWidth:maxWidth];
-}
-
-+ (CGFloat)originalHeightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
