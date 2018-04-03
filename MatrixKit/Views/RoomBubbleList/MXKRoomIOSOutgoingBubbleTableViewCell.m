@@ -48,7 +48,7 @@
 
 - (void)render:(MXKCellData *)cellData
 {
-    [super originalRender:cellData];
+    [super render:cellData];
     
     // Reset values
     self.bubbleImageView.hidden = NO;
@@ -98,7 +98,7 @@
 
 + (CGFloat)heightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
 {
-    CGFloat rowHeight = [super originalHeightForCellData:cellData withMaximumWidth:maxWidth];
+    CGFloat rowHeight = [super heightForCellData:cellData withMaximumWidth:maxWidth];
     
     CGFloat height = self.cellWithOriginalXib.frame.size.height;
     

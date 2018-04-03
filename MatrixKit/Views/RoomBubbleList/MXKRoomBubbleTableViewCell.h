@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -244,22 +245,18 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 + (void)disableLongPressGestureOnEvent:(BOOL)disable;
 
 /**
- The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering render:] not
- overidden by a class child.
+ Method used during [MXKCellRendering render:] to check the provided `cellData`
+ and prepare the protected `bubbleData`.
+ Do not override it.
 
  @param cellData the data object to render.
  */
-- (void)originalRender:(MXKCellData*)cellData;
+- (void)prepareRender:(MXKCellData*)cellData;
 
 /**
- The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering 
- originalHeightForCellData: withMaximumWidth:] not overidden by a class child.
-
- @param cellData the data object to render.
- @param maxWidth the maximum available width.
- @return the cell height
+ Refresh the flair information added to the sender display name.
  */
-+ (CGFloat)originalHeightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth;
+- (void)renderSenderFlair;
 
 /**
  Highlight text message related to a specific event in the displayed message.

@@ -104,6 +104,7 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ a rendu l'historique futur du salon visible à tous les membres, à partir de leur arrivée.";
 "notice_crypto_unable_to_decrypt" = "** Déchiffrement impossible : %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "L'appareil de l'expéditeur ne nous a pas envoyé les clés pour ce message.";
+"notice_sticker" = "sticker";
 // Settings
 "settings" = "Paramètres";
 "settings_enable_inapp_notifications" = "Activer les notifications dans l'application";
