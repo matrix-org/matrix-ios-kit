@@ -850,15 +850,14 @@
                 BOOL isHTML = NO;
 
                 // Use the HTML formatted string if provided
-                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
-                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
+                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML])
                 {
                     isHTML =YES;
-                    body = event.content[@"formatted_body"];
+                    MXJSONModelSetString(body, event.content[@"formatted_body"]);
                 }
-                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
+                else
                 {
-                    body = event.content[@"body"];
+                    MXJSONModelSetString(body, event.content[@"body"]);
                 }
 
                 if (body)
@@ -1024,10 +1023,8 @@
         case MXEventTypeSticker:
         {
             NSString *body;
-            if ([event.content[@"body"] isKindOfClass:[NSString class]])
-            {
-                body = event.content[@"body"];
-            }
+            MXJSONModelSetString(body, event.content[@"body"]);
+            
             // Check sticker validity
             if (![self isSupportedAttachment:event])
             {

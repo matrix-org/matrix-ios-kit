@@ -247,7 +247,7 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 /**
  Method used during [MXKCellRendering render:] to check the provided `cellData`
  and prepare the protected `bubbleData`.
- Do not be overridden by a class child.
+ Do not override it.
 
  @param cellData the data object to render.
  */
