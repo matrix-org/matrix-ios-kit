@@ -45,7 +45,7 @@
 "room_event_encryption_info_block" = "黑名單";
 "room_event_encryption_info_unblock" = "解除黑名單";
 "room_event_encryption_verify_title" = "驗證裝置\n\n";
-"room_event_encryption_verify_message" = "若要檢查這個裝置是可被信任的，請透過其他方法聯絡所有者（例如面對面或是在電話中），並詢問在其使用者設定中以下金鑰是否是一致的：\n\n\n\t裝置名稱：%@\n\t裝置 ID：%@\n\t裝置金鑰：%@\n\n若相同，請點選下面的「驗證確認」按鈕。如果不相同，表示有人從中攔截這個裝置，您可能要點選「黑名單」按鈕。\n\nIn future this verification process will be more sophisticated.";
+"room_event_encryption_verify_message" = "若要檢查這個裝置是可被信任的，請透過其他方法聯絡所有者（例如面對面或是在電話中），並詢問在其使用者設定中以下金鑰是否是一致的：\n\n\n\t裝置名稱：%@\n\t裝置 ID：%@\n\t裝置金鑰：%@\n\n若相同，請點選下面的「驗證確認」按鈕。如果不相同，表示有人從中攔截這個裝置，您可能要點選「黑名單」按鈕。\n\n未來驗證手續會更加簡單，若有不便敬請見諒。";
 "room_event_encryption_verify_ok" = "驗證確認";
 // Account
 "account_save_changes" = "儲存修改";
