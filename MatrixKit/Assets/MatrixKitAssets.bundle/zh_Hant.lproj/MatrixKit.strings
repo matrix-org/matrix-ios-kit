@@ -21,7 +21,7 @@
 "login_email_placeholder" = "電子郵件地址";
 "login_leave_fallback" = "取消";
 // Encryption information
-"room_event_encryption_info_title" = "點對點加密訊息\n\n";
+"room_event_encryption_info_title" = "點對點加密資訊\n\n";
 "room_event_encryption_info_event" = "事件資訊\n";
 "room_event_encryption_info_event_user_id" = "使用者 ID\n";
 "room_event_encryption_info_event_identity_key" = "Curve25519 身份認證金鑰\n";
@@ -141,3 +141,5 @@
 "ssl_unexpected_existing_expl" = "這個憑證有別於原本在您裝置所信任的憑證，這個狀況相當不常見。建議您不要信任新的憑證。";
 "ssl_expected_existing_expl" = "這個憑證從原本信任的憑證換成不信任的憑證，可能因為伺服器更新了它的憑證。請聯絡伺服器管理者確認新的指紋一致。";
 "ssl_only_accept" = "只有在伺服器管理者提供的指紋與以上指紋一致時，您才能信任這個憑證。";
+// Devices
+"device_details_title" = "裝置資訊\n";
