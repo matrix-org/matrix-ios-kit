@@ -963,7 +963,7 @@
         typeof(self) self = weakSelf;
         
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%zd", [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%ld", [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
