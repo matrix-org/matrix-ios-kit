@@ -2040,6 +2040,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         if (attachmentsViewer)
         {
             // Check whether some older attachments have been added.
+            // Note: the stickers are excluded from the attachments list returned by the room datasource.
             BOOL isDone = NO;
             NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
             if (attachmentsWithThumbnail.count)
@@ -3552,8 +3553,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
             if (bubbleData.isAttachmentWithThumbnail)
             {
-                if (selectedAttachment.eventSentState == MXEventSentStateSent)
+                // The attachments viewer is opened only on a valid attachment. It does not display the stickers.
+                if (selectedAttachment.eventSentState == MXEventSentStateSent && selectedAttachment.type != MXKAttachmentTypeSticker)
                 {
+                    // Note: the stickers are presently excluded from the attachments list returned by the room dataSource.
                     NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
                     
                     // Present an attachment viewer
