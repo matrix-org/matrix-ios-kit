@@ -600,7 +600,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         for (id<MXKRoomBubbleCellDataStoring> bubbleData in bubbles)
         {
-            if (bubbleData.isAttachmentWithThumbnail)
+            if (bubbleData.isAttachmentWithThumbnail && bubbleData.attachment.type != MXKAttachmentTypeSticker)
             {
                 [attachments addObject:bubbleData.attachment];
             }
@@ -994,7 +994,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     // Define a new listener for this pagination
-    paginationListener = [_timeline listenToEventsOfTypes:[MXKAppSettings standardAppSettings].allEventTypesForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+    paginationListener = [_timeline listenToEventsOfTypes:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages) onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
         
         if (direction2 == direction)
         {
