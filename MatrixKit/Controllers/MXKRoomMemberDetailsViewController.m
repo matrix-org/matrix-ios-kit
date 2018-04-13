@@ -931,7 +931,7 @@
                 NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed", strongSelf.mxRoomMember.userId);
 
                 // Notify MatrixKit user
-                NSString *myUserId = self.mainSession.myUser.userId;
+                NSString *myUserId = strongSelf.mainSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
