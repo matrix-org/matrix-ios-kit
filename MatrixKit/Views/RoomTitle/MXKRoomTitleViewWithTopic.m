@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -440,33 +441,40 @@
             __weak typeof(self) weakSelf = self;
             [self.mxRoom setTopic:topic success:^{
                 
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+                if (weakSelf)
                 {
-                    [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
+                    typeof(weakSelf)strongSelf = weakSelf;
+                    if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+                    {
+                        [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
+                    }
+                    
+                    // Hide topic field if empty
+                    strongSelf.hiddenTopic = !textField.text.length;
                 }
-                
-                // Hide topic field if empty
-                strongSelf.hiddenTopic = !textField.text.length;
                 
             } failure:^(NSError *error) {
                 
-                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+                if (weakSelf)
                 {
-                    [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
+                    typeof(weakSelf)strongSelf = weakSelf;
+                    if ([strongSelf.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
+                    {
+                        [strongSelf.delegate roomTitleView:strongSelf isSaving:NO];
+                    }
+                    
+                    // Revert change
+                    NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.state.topic];
+                    textField.text = (topic.length ? topic : nil);
+                    
+                    // Hide topic field if empty
+                    strongSelf.hiddenTopic = !textField.text.length;
+                    
+                    NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed");
+                    // Notify MatrixKit user
+                    NSString *myUserId = strongSelf.mxRoom.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 }
-                
-                // Revert change
-                NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.state.topic];
-                textField.text = (topic.length ? topic : nil);
-
-                // Hide topic field if empty
-                strongSelf.hiddenTopic = !textField.text.length;
-                
-                NSLog(@"[MXKRoomTitleViewWithTopic] Topic room change failed");
-                // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                 
             }];
         }

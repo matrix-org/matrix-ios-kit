@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -559,7 +560,8 @@
                                     NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private");
                                     
                                     // Notify MatrixKit user
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                    NSString *myUserId = selectedSession.myUser.userId;
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                                     
                                 }];
         }

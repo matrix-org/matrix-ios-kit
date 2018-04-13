@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -25,5 +26,14 @@ FOUNDATION_EXPORT NSString *const MatrixKitVersion;
  Posted when an error is observed at Matrix Kit level.
  This notification may be used to inform user by showing the error as an alert.
  The notification object is the NSError instance.
+ 
+ The passed userInfo dictionary may contain:
+ - `kMXKErrorUserIdKey` the matrix identifier of the account concerned by this error.
  */
 FOUNDATION_EXPORT NSString *const kMXKErrorNotification;
+
+/**
+ The key in notification userInfo dictionary representating the account userId.
+ */
+FOUNDATION_EXPORT NSString *const kMXKErrorUserIdKey;
+
