@@ -1340,7 +1340,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 NSLog(@"[MXKRoomVC] Set displayName failed");
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -1373,7 +1374,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed", roomAlias);
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -1430,7 +1432,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                 NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed", roomIdOrAlias, roomId);
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -1461,7 +1464,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                 NSLog(@"[MXKRoomVC] Set topic failed");
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
             }];
         }
@@ -1498,7 +1502,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                     NSLog(@"[MXKRoomVC] Invite user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                 }];
             }
@@ -1532,7 +1537,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Kick user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1566,7 +1572,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Ban user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1587,7 +1594,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Unban user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1622,7 +1630,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Set user power (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1643,7 +1652,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                 }];
             }

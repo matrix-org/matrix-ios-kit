@@ -1,6 +1,7 @@
 /*
  Copyright 2016 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -310,12 +311,13 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                
                                                            } failure:^(NSError *error) {
                                                                
-                                                               // Notify MatrixKit user
-                                                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                               
                                                                if (weakSelf)
                                                                {
                                                                    typeof(self) self = weakSelf;
+                                                                   
+                                                                   // Notify MatrixKit user
+                                                                   NSString *myUserId = self->mxSession.myUser.userId;
+                                                                   [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                                                                    
                                                                    self->mxCurrentOperation = nil;
                                                                    
@@ -428,13 +430,14 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                        }
                                                                        
                                                                    } failure:^(NSError *error) {
-                                                                       
-                                                                       // Notify MatrixKit user
-                                                                       [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                       
+                                                    
                                                                        if (weakSelf)
                                                                        {
                                                                            typeof(self) self = weakSelf;
+                                                                           
+                                                                           // Notify MatrixKit user
+                                                                           NSString *myUserId = self->mxSession.myUser.userId;
+                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                                                                            
                                                                            self->mxCurrentOperation = nil;
                                                                            
@@ -466,7 +469,8 @@ static NSAttributedString *verticalWhitespace = nil;
         [self.activityIndicator stopAnimating];
         
         // Notify MatrixKit user
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+        NSString *myUserId = mxSession.myUser.userId;
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
     }];
 }
 

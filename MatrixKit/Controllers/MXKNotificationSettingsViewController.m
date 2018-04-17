@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -148,7 +149,8 @@
             [self stopActivityIndicator];
             
             // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:note.userInfo[kMXNotificationCenterErrorKey]];
+            NSString *myUserId = self.mxAccount.mxCredentials.userId;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:note.userInfo[kMXNotificationCenterErrorKey] userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
         }];
     }
     
