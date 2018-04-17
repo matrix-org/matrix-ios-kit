@@ -62,7 +62,7 @@ static BOOL _disableLongPressGestureOnEvent;
     if ([[self class] nib])
     {
         @try {
-            instance = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+            instance = [[[[self class] nib] instantiateWithOwner:nil options:nil].firstObject init];
         }
         @catch (NSException *exception) {
         }
@@ -73,11 +73,19 @@ static BOOL _disableLongPressGestureOnEvent;
         instance = [[self alloc] init];
     }
     
-    instance.readReceiptsAlignment = ReadReceiptAlignmentLeft;
-    instance.allTextHighlighted = NO;
-    instance.isAutoAnimatedGif = NO;
-    
     return instance;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
+        self.allTextHighlighted = NO;
+        self.isAutoAnimatedGif = NO;
+    }
+    return self;
 }
 
 + (void)disableLongPressGestureOnEvent:(BOOL)disable
@@ -209,6 +217,11 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     _isAutoAnimatedGif = isAutoAnimatedGif;
     
+    [self renderGif];
+}
+
+- (void)renderGif
+{
     if (self.attachmentView && bubbleData.attachment)
     {
         NSString *mimetype = nil;
@@ -225,8 +238,13 @@ static BOOL _disableLongPressGestureOnEvent;
         {
             if (_isAutoAnimatedGif)
             {
+                // Hide the file type icon, and the progress UI
                 self.fileTypeIconView.hidden = YES;
                 [self stopProgressUI];
+                NSString* url = bubbleData.attachment.actualURL;
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
                 
                 // Animated gif is displayed in webview
                 self.animatedContentViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.attachmentView.frame.size.width, self.attachmentView.frame.size.height)];
@@ -268,12 +286,10 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             else
             {
-                // Restore the thumbnail
-                [self.attachmentView setAttachmentThumb:bubbleData.attachment];
-                
                 self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
                 self.fileTypeIconView.hidden = NO;
                 
+                // Check whether a download is in progress
                 [self startProgressUI];
             }
         }
@@ -431,35 +447,13 @@ static BOOL _disableLongPressGestureOnEvent;
             frame.size.height = contentSize.height;
             self.attachmentView.frame = frame;
             
-            NSString *mimetype = nil;
-            if (bubbleData.attachment.thumbnailInfo)
-            {
-                mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
-            }
-            else if (bubbleData.attachment.contentInfo)
-            {
-                mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
-            }
+            // Set play icon visibility
+            self.playIconView.hidden = (bubbleData.attachment.type != MXKAttachmentTypeVideo);
             
-            if (bubbleData.attachment.type == MXKAttachmentTypeVideo)
-            {
-                self.playIconView.hidden = NO;
-                self.fileTypeIconView.hidden = YES;
-            }
-            else
-            {
-                self.playIconView.hidden = YES;
-                if ([mimetype isEqualToString:@"image/gif"] && !_isAutoAnimatedGif)
-                {
-                    self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
-                    self.fileTypeIconView.hidden = NO;
-                }
-                else
-                {
-                    self.fileTypeIconView.hidden = YES;
-                }
-            }
+            // Hide by default file type icon
+            self.fileTypeIconView.hidden = YES;
             
+            // Display the attachment thumbnail
             self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setAttachmentThumb:bubbleData.attachment];
             
@@ -489,11 +483,8 @@ static BOOL _disableLongPressGestureOnEvent;
                 [self.attachmentView addGestureRecognizer:longPress];
             }
             
-            // Handle auto animation of the gif (if the option is turned on)
-            if (_isAutoAnimatedGif)
-            {
-                self.isAutoAnimatedGif = YES;
-            }
+            // Handle here the case of the attached gif
+            [self renderGif];
         }
         else if (self.messageTextView)
         {
