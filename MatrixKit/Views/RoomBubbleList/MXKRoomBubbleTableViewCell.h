@@ -133,7 +133,7 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
  Each inherited class should define only the actual displayed items.
  */
-@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate, UIWebViewDelegate>
 {
 @protected
     /**
@@ -229,9 +229,9 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (nonatomic) NSLayoutConstraint *readMarkerViewHeightConstraint;
 
 /**
- The potential webview used to render animated content.
+ The potential webview used to render an attachment (for example an animated gif).
  */
-@property (nonatomic) UIWebView *animatedContentViewer;
+@property (nonatomic) UIWebView *attachmentWebView;
 
 /**
  Handle progressView display.

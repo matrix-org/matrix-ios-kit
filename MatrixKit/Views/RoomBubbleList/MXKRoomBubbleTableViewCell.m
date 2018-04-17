@@ -220,82 +220,6 @@ static BOOL _disableLongPressGestureOnEvent;
     [self renderGif];
 }
 
-- (void)renderGif
-{
-    if (self.attachmentView && bubbleData.attachment)
-    {
-        NSString *mimetype = nil;
-        if (bubbleData.attachment.thumbnailInfo)
-        {
-            mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
-        }
-        else if (bubbleData.attachment.contentInfo)
-        {
-            mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
-        }
-        
-        if ([mimetype isEqualToString:@"image/gif"])
-        {
-            if (_isAutoAnimatedGif)
-            {
-                // Hide the file type icon, and the progress UI
-                self.fileTypeIconView.hidden = YES;
-                [self stopProgressUI];
-                NSString* url = bubbleData.attachment.actualURL;
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
-                
-                // Animated gif is displayed in webview
-                self.animatedContentViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.attachmentView.frame.size.width, self.attachmentView.frame.size.height)];
-                self.animatedContentViewer.opaque = NO;
-                self.animatedContentViewer.backgroundColor = [UIColor clearColor];
-                self.animatedContentViewer.contentMode = UIViewContentModeScaleAspectFit;
-                self.animatedContentViewer.scalesPageToFit = YES;
-                self.animatedContentViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
-                self.animatedContentViewer.userInteractionEnabled = NO;
-                self.animatedContentViewer.hidden = YES;
-                [self.attachmentView addSubview:self.animatedContentViewer];
-                
-                __weak UIWebView *weakAnimatedGifViewer = self.animatedContentViewer;
-                __weak typeof(self) weakSelf = self;
-                
-                void (^onDownloaded)(NSData *) = ^(NSData *data){
-                    
-                    if (weakAnimatedGifViewer && weakAnimatedGifViewer.superview)
-                    {
-                        UIWebView *strongAnimatedGifViewer = weakAnimatedGifViewer;
-                        [strongAnimatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
-                        strongAnimatedGifViewer.hidden = NO;
-                        weakSelf.attachmentView.image = nil;
-                    }
-                };
-                
-                void (^onFailure)(NSError *) = ^(NSError *error){
-                    
-                    NSLog(@"[MXKRoomBubbleTableViewCell] gif download failed");
-                    // Notify the end user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                };
-                
-                [bubbleData.attachment getAttachmentData:^(NSData *data) {
-                    onDownloaded(data);
-                } failure:^(NSError *error) {
-                    onFailure(error);
-                }];
-            }
-            else
-            {
-                self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
-                self.fileTypeIconView.hidden = NO;
-                
-                // Check whether a download is in progress
-                [self startProgressUI];
-            }
-        }
-    }
-}
-
 - (void)setAllTextHighlighted:(BOOL)allTextHighlighted
 {
     _allTextHighlighted = allTextHighlighted;
@@ -784,6 +708,81 @@ static BOOL _disableLongPressGestureOnEvent;
     self.userNameLabel.attributedText = attributedString;
 }
 
+- (void)renderGif
+{
+    if (self.attachmentView && bubbleData.attachment)
+    {
+        NSString *mimetype = nil;
+        if (bubbleData.attachment.thumbnailInfo)
+        {
+            mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
+        }
+        else if (bubbleData.attachment.contentInfo)
+        {
+            mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
+        }
+        
+        if ([mimetype isEqualToString:@"image/gif"])
+        {
+            if (_isAutoAnimatedGif)
+            {
+                // Hide the file type icon, and the progress UI
+                self.fileTypeIconView.hidden = YES;
+                [self stopProgressUI];
+                NSString* url = bubbleData.attachment.actualURL;
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
+                
+                // Animated gif is displayed in a webview added on the attachment view
+                self.attachmentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.attachmentView.frame.size.width, self.attachmentView.frame.size.height)];
+                self.attachmentWebView.opaque = NO;
+                self.attachmentWebView.backgroundColor = [UIColor clearColor];
+                self.attachmentWebView.contentMode = UIViewContentModeScaleAspectFit;
+                self.attachmentWebView.scalesPageToFit = YES;
+                self.attachmentWebView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+                self.attachmentWebView.userInteractionEnabled = NO;
+                self.attachmentWebView.hidden = YES;
+                [self.attachmentView addSubview:self.attachmentWebView];
+                
+                __weak UIWebView *weakAnimatedGifViewer = self.attachmentWebView;
+                __weak typeof(self) weakSelf = self;
+                
+                void (^onDownloaded)(NSData *) = ^(NSData *data){
+                    
+                    if (weakAnimatedGifViewer && weakAnimatedGifViewer.superview)
+                    {
+                        UIWebView *strongAnimatedGifViewer = weakAnimatedGifViewer;
+                        strongAnimatedGifViewer.delegate = self;
+                        [strongAnimatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
+                    }
+                };
+                
+                void (^onFailure)(NSError *) = ^(NSError *error){
+                    
+                    NSLog(@"[MXKRoomBubbleTableViewCell] gif download failed");
+                    // Notify the end user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                };
+                
+                [bubbleData.attachment getAttachmentData:^(NSData *data) {
+                    onDownloaded(data);
+                } failure:^(NSError *error) {
+                    onFailure(error);
+                }];
+            }
+            else
+            {
+                self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
+                self.fileTypeIconView.hidden = NO;
+                
+                // Check whether a download is in progress
+                [self startProgressUI];
+            }
+        }
+    }
+}
+
 + (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth
 {
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
@@ -839,10 +838,11 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     bubbleData = nil;
     
-    if (_animatedContentViewer)
+    if (_attachmentWebView)
     {
-        [_animatedContentViewer removeFromSuperview];
-        _animatedContentViewer = nil;
+        [_attachmentWebView removeFromSuperview];
+        _attachmentWebView.delegate = nil;
+        _attachmentWebView = nil;
     }
     
     if (_readMarkerView)
@@ -1277,6 +1277,18 @@ static NSMutableDictionary *childClasses;
         shouldInteractWithURL = [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:@{kMXKRoomBubbleCellUrl:URL} defaultValue:YES];
     }
     return shouldInteractWithURL;
+}
+
+#pragma mark - UIWebView delegate
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    if (webView == _attachmentWebView && self.attachmentView)
+    {
+        // The attachment webview is ready to replace the attachment view.
+        _attachmentWebView.hidden = NO;
+        self.attachmentView.image = nil;
+    }
 }
 
 @end
