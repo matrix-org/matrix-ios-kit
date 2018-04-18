@@ -62,7 +62,7 @@ static BOOL _disableLongPressGestureOnEvent;
     if ([[self class] nib])
     {
         @try {
-            instance = [[[[self class] nib] instantiateWithOwner:nil options:nil].firstObject init];
+            instance = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
         }
         @catch (NSException *exception) {
         }
@@ -76,21 +76,35 @@ static BOOL _disableLongPressGestureOnEvent;
     return instance;
 }
 
-- (instancetype)init
++ (void)disableLongPressGestureOnEvent:(BOOL)disable
 {
-    self = [super init];
+    _disableLongPressGestureOnEvent = disable;
+}
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self)
     {
-        self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
-        self.allTextHighlighted = NO;
-        self.isAutoAnimatedGif = NO;
+        [self finalizeInit];
+    }
+    return self;
+}
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        [self finalizeInit];
     }
     return self;
 }
 
-+ (void)disableLongPressGestureOnEvent:(BOOL)disable
+- (void)finalizeInit
 {
-    _disableLongPressGestureOnEvent = disable;
+    self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
+    _allTextHighlighted = NO;
+    _isAutoAnimatedGif = NO;
 }
 
 - (void)awakeFromNib
@@ -753,7 +767,7 @@ static BOOL _disableLongPressGestureOnEvent;
                     if (weakAnimatedGifViewer && weakAnimatedGifViewer.superview)
                     {
                         UIWebView *strongAnimatedGifViewer = weakAnimatedGifViewer;
-                        strongAnimatedGifViewer.delegate = self;
+                        strongAnimatedGifViewer.delegate = weakSelf;
                         [strongAnimatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
                     }
                 };

@@ -234,6 +234,16 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (nonatomic) UIWebView *attachmentWebView;
 
 /**
+ Called during the designated initializer of the UITableViewCell class to set the default
+ properties values.
+ 
+ You should not call this method directly.
+ 
+ Subclasses can override this method as needed to customize the initialization.
+ */
+- (void)finalizeInit;
+
+/**
  Handle progressView display.
  */
 - (void)startProgressUI;
