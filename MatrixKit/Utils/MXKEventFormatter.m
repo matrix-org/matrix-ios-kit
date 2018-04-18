@@ -1022,18 +1022,31 @@
         }
         case MXEventTypeSticker:
         {
-            NSString *body;
-            MXJSONModelSetString(body, event.content[@"body"]);
-            
-            // Check sticker validity
-            if (![self isSupportedAttachment:event])
+            // Is redacted?
+            if (isRedacted)
             {
-                NSLog(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
-                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
-                *error = MXKEventFormatterErrorUnsupported;
+                if (!redactedInfo)
+                {
+                    // Here the event is ignored (no display)
+                    return nil;
+                }
+                displayText = redactedInfo;
             }
-            
-            displayText = body? body : [NSBundle mxk_localizedStringForKey:@"notice_sticker"];
+            else
+            {
+                NSString *body;
+                MXJSONModelSetString(body, event.content[@"body"]);
+                
+                // Check sticker validity
+                if (![self isSupportedAttachment:event])
+                {
+                    NSLog(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
+                    body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                    *error = MXKEventFormatterErrorUnsupported;
+                }
+                
+                displayText = body? body : [NSBundle mxk_localizedStringForKey:@"notice_sticker"];
+            }
             break;
         }
 
