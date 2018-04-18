@@ -245,7 +245,7 @@
     [MXMediaManager clearCache];
     
     // Logout all matrix account
-    [[MXKAccountManager sharedManager] logout];
+    [[MXKAccountManager sharedManager] logoutWithCompletion:nil];
     
     // Reset
     NSArray *mxSessions = self.mxSessions;
