@@ -133,7 +133,7 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
  Each inherited class should define only the actual displayed items.
  */
-@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate, UIWebViewDelegate>
 {
 @protected
     /**
@@ -148,9 +148,15 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (strong, nonatomic, readonly) MXKRoomBubbleCellData *bubbleData;
 
 /**
- Option to highlight or not the content of message text view (May be used in case of text selection)
+ Option to highlight or not the content of message text view (May be used in case of text selection).
+ NO by default.
  */
 @property (nonatomic) BOOL allTextHighlighted;
+
+/**
+ Tell whether the animation should start automatically in case of animated gif (NO by default).
+ */
+@property (nonatomic) BOOL isAutoAnimatedGif;
 
 /**
  The default picture displayed when no picture is available.
@@ -221,6 +227,21 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (nonatomic) NSLayoutConstraint *readMarkerViewLeadingConstraint;
 @property (nonatomic) NSLayoutConstraint *readMarkerViewTrailingConstraint;
 @property (nonatomic) NSLayoutConstraint *readMarkerViewHeightConstraint;
+
+/**
+ The potential webview used to render an attachment (for example an animated gif).
+ */
+@property (nonatomic) UIWebView *attachmentWebView;
+
+/**
+ Called during the designated initializer of the UITableViewCell class to set the default
+ properties values.
+ 
+ You should not call this method directly.
+ 
+ Subclasses can override this method as needed to customize the initialization.
+ */
+- (void)finalizeInit;
 
 /**
  Handle progressView display.
