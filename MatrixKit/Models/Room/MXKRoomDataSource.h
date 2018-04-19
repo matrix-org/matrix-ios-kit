@@ -133,6 +133,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
 /**
  The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
+ Note: the stickers are excluded from the returned list.
  */
 @property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
 
@@ -209,7 +210,8 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic) NSUInteger paginationLimitAroundInitialEvent;
 
 /**
- Tell whether only the events with a url key in their content must be handled. NO by default.
+ Tell whether only the message events with an url key in their content must be handled. NO by default.
+ Note: The stickers are not retained by this filter.
  */
 @property (nonatomic) BOOL filterMessagesWithURL;
 

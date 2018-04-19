@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -190,7 +191,8 @@
                                [self removePendingActionMask];
                                NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed", _mxRoomMember.userId);
                                // Notify MatrixKit user
-                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                               NSString *myUserId = self.mainSession.myUser.userId;
+                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                                
                            }];
                 break;
@@ -208,7 +210,8 @@
                     [self removePendingActionMask];
                     NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.state.roomId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = self.mainSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
                 break;
@@ -232,7 +235,8 @@
                              [self removePendingActionMask];
                              NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed", _mxRoomMember.userId);
                              // Notify MatrixKit user
-                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                             NSString *myUserId = self.mainSession.myUser.userId;
+                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                              
                          }];
                 break;
@@ -251,7 +255,8 @@
                             [self removePendingActionMask];
                             NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed", _mxRoomMember.userId);
                             // Notify MatrixKit user
-                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                            NSString *myUserId = self.mainSession.myUser.userId;
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                             
                         }];
                 break;
@@ -269,7 +274,8 @@
                               [self removePendingActionMask];
                               NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed", _mxRoomMember.userId);
                               // Notify MatrixKit user
-                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                              NSString *myUserId = self.mainSession.myUser.userId;
+                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                               
                           }];
                 break;
@@ -307,7 +313,8 @@
                                                                                                  NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", self.mxRoomMember.userId);
                                                                                                  
                                                                                                  // Notify MatrixKit user
-                                                                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                                                 NSString *myUserId = self.mainSession.myUser.userId;
+                                                                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                                                                                                  
                                                                                              }];
                                                                    }
@@ -347,7 +354,8 @@
                                                 NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed", strongSelf.mxRoomMember.userId);
 
                                                 // Notify MatrixKit user
-                                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                NSString *myUserId = self.mainSession.myUser.userId;
+                                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                                             }];
                 break;
@@ -431,7 +439,8 @@
                                                  NSLog(@"[MXKRoomMemberDetailsVC] Create room failed");
                                                  [self removePendingActionMask];
                                                  // Notify MatrixKit user
-                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                 NSString *myUserId = self.mainSession.myUser.userId;
+                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                                                  
                                              }];
                     }
@@ -922,7 +931,8 @@
                 NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed", strongSelf.mxRoomMember.userId);
 
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = strongSelf.mainSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -963,7 +973,7 @@
         typeof(self) self = weakSelf;
         
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%zd", [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%ld", (long)[self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];

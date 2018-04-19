@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -156,6 +157,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         eventIdToBubbleMap = [NSMutableDictionary dictionary];
         
         externalRelatedGroups = [NSMutableDictionary dictionary];
+        
+        _filterMessagesWithURL = NO;
 
         // Set default data and view classes
         // Cell data
@@ -456,8 +459,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         
                     }];
 
-                    // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter).
-                    [self refreshEventListeners:[MXKAppSettings standardAppSettings].allEventTypesForMessages];
+                    // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter),
+                    // except if only the events with a url key in their content must be handled.
+                    [self refreshEventListeners:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages)];
 
                     // display typing notifications is optional
                     // the inherited class can manage them by its own.
@@ -596,7 +600,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         for (id<MXKRoomBubbleCellDataStoring> bubbleData in bubbles)
         {
-            if (bubbleData.isAttachmentWithThumbnail)
+            if (bubbleData.isAttachmentWithThumbnail && bubbleData.attachment.type != MXKAttachmentTypeSticker)
             {
                 [attachments addObject:bubbleData.attachment];
             }
@@ -632,12 +636,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (_isLive)
     {
         // Register a new one with the requested filter
+        __weak typeof(self) weakSelf = self;
         liveEventsListener = [_timeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-            if (MXTimelineDirectionForwards == direction)
+            if (MXTimelineDirectionForwards == direction && weakSelf)
             {
+                typeof(self) self = weakSelf;
+                
                 // Check for local echo suppression
                 MXEvent *localEcho;
-                if (_room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
+                if (self.room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
                 {
                     localEcho = [self.room pendingLocalEchoRelatedToEvent:event];
                     if (localEcho)
@@ -764,9 +771,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     _filterMessagesWithURL = filterMessagesWithURL;
     
-    if (filterMessagesWithURL)
+    if (_isLive && _room)
     {
-        [self refreshEventListeners:@[kMXEventTypeStringRoomMessage]];
+        // Update the event listeners by considering the right types for the live events.
+        [self refreshEventListeners:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages)];
     }
 }
 
@@ -831,14 +839,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     // Add typing notification listener
+    __weak typeof(self) weakSelf = self;
     typingNotifListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
         
         // Handle only live events
-        if (direction == MXTimelineDirectionForwards)
+        if (direction == MXTimelineDirectionForwards && weakSelf)
         {
+            typeof(self) self = weakSelf;
+            
             // Retrieve typing users list
-            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:_room.typingUsers];
+            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:self.room.typingUsers];
 
             // Remove typing info for the current user
             NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
@@ -847,9 +858,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 [typingUsers removeObjectAtIndex:index];
             }
             // Ignore this notification if both arrays are empty
-            if (currentTypingUsers.count || typingUsers.count)
+            if (self->currentTypingUsers.count || typingUsers.count)
             {
-                currentTypingUsers = typingUsers;
+                self->currentTypingUsers = typingUsers;
                 
                 if (self.delegate)
                 {
@@ -983,7 +994,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     // Define a new listener for this pagination
-    paginationListener = [_timeline listenToEventsOfTypes:[MXKAppSettings standardAppSettings].allEventTypesForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+    paginationListener = [_timeline listenToEventsOfTypes:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages) onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
         
         if (direction2 == direction)
         {
@@ -996,12 +1007,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     id localPaginationListenerRef = paginationListener;
     
     // Launch the pagination
+    __weak typeof(self) weakSelf = self;
     paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
+        typeof(self) self = weakSelf;
+        if (!self)
+        {
+            return;
+        }
+        
         // Everything went well, remove the listener
-        paginationRequest = nil;
-        [_timeline removeListener:paginationListener];
-        paginationListener = nil;
+        self->paginationRequest = nil;
+        [self.timeline removeListener:self->paginationListener];
+        self->paginationListener = nil;
         
         // Once done, process retrieved events
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
@@ -1018,13 +1036,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails");
         
+        typeof(self) self = weakSelf;
+        if (!self)
+        {
+            return;
+        }
+        
         // Something wrong happened or the request was cancelled.
         // Check whether the request is the actual one before removing listener and handling the retrieved events.
-        if (localPaginationListenerRef == paginationListener)
+        if (localPaginationListenerRef == self->paginationListener)
         {
-            paginationRequest = nil;
-            [_timeline removeListener:paginationListener];
-            paginationListener = nil;
+            self->paginationRequest = nil;
+            [self.timeline removeListener:self->paginationListener];
+            self->paginationListener = nil;
             
             // Process at least events retrieved from store
             [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
@@ -2024,20 +2048,28 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
  */
 - (void)processQueuedEvents:(void (^)(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb))onComplete
 {
+    __weak typeof(self) weakSelf = self;
+    
     // Do the processing on the processing queue
     dispatch_async(MXKRoomDataSource.processingQueue, ^{
+        
+        typeof(self) self = weakSelf;
+        if (!self)
+        {
+            return;
+        }
         
         // Note: As this block is always called from the same processing queue,
         // only one batch process is done at a time. Thus, an event cannot be
         // processed twice
         
         // Snapshot queued events to avoid too long lock.
-        @synchronized(eventsToProcess)
+        @synchronized(self->eventsToProcess)
         {
-            if (eventsToProcess.count)
+            if (self->eventsToProcess.count)
             {
-                eventsToProcessSnapshot = eventsToProcess;
-                eventsToProcess = [NSMutableArray array];
+                self->eventsToProcessSnapshot = self->eventsToProcess;
+                self->eventsToProcess = [NSMutableArray array];
             }
         }
 
@@ -2046,22 +2078,22 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         NSUInteger addedLiveCellCount = 0;
 
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
-        @synchronized(eventsToProcessSnapshot)
+        @synchronized(self->eventsToProcessSnapshot)
         {
             // Is there events to process?
             // The list can be empty because several calls of processQueuedEvents may be processed
             // in one pass in the processingQueue
-            if (eventsToProcessSnapshot.count)
+            if (self->eventsToProcessSnapshot.count)
             {
                 // Make a quick copy of changing data to avoid to lock it too long time
-                @synchronized(bubbles)
+                @synchronized(self->bubbles)
                 {
-                    bubblesSnapshot = [bubbles mutableCopy];
+                    self->bubblesSnapshot = [self->bubbles mutableCopy];
                 }
 
                 NSMutableSet<id<MXKRoomBubbleCellDataStoring>> *collapsingCellDataSeriess = [NSMutableSet set];
 
-                for (MXKQueuedEvent *queuedEvent in eventsToProcessSnapshot)
+                for (MXKQueuedEvent *queuedEvent in self->eventsToProcessSnapshot)
                 {
                     @autoreleasepool
                     {
@@ -2081,16 +2113,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         BOOL eventManaged = NO;
                         BOOL updatedBubbleDataHadNoDisplay = NO;
                         id<MXKRoomBubbleCellDataStoring> bubbleData;
-                        if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < bubblesSnapshot.count)
+                        if ([class instancesRespondToSelector:@selector(addEvent:andRoomState:)] && 0 < self->bubblesSnapshot.count)
                         {
                             // Try to concatenate the event to the last or the oldest bubble?
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
-                                bubbleData = bubblesSnapshot.firstObject;
+                                bubbleData = self->bubblesSnapshot.firstObject;
                             }
                             else
                             {
-                                bubbleData = bubblesSnapshot.lastObject;
+                                bubbleData = self->bubblesSnapshot.lastObject;
                             }
 
                             @synchronized (bubbleData)
@@ -2118,41 +2150,41 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     if (queuedEvent.direction == MXTimelineDirectionBackwards)
                                     {
                                         // Try to collapse it with the series at the start of self.bubbles
-                                        if (collapsableSeriesAtStart && [collapsableSeriesAtStart collapseWith:bubbleData])
+                                        if (self->collapsableSeriesAtStart && [self->collapsableSeriesAtStart collapseWith:bubbleData])
                                         {
                                             // bubbleData becomes the oldest cell data of the current series
-                                            collapsableSeriesAtStart.prevCollapsableCellData = bubbleData;
-                                            bubbleData.nextCollapsableCellData = collapsableSeriesAtStart;
+                                            self->collapsableSeriesAtStart.prevCollapsableCellData = bubbleData;
+                                            bubbleData.nextCollapsableCellData = self->collapsableSeriesAtStart;
 
                                             // The new cell must have the collapsed state as the series
-                                            bubbleData.collapsed = collapsableSeriesAtStart.collapsed;
+                                            bubbleData.collapsed = self->collapsableSeriesAtStart.collapsed;
 
                                             // Release data of the previous header
-                                            collapsableSeriesAtStart.collapseState = nil;
-                                            collapsableSeriesAtStart.collapsedAttributedTextMessage = nil;
-                                            [collapsingCellDataSeriess removeObject:collapsableSeriesAtStart];
+                                            self->collapsableSeriesAtStart.collapseState = nil;
+                                            self->collapsableSeriesAtStart.collapsedAttributedTextMessage = nil;
+                                            [collapsingCellDataSeriess removeObject:self->collapsableSeriesAtStart];
 
                                             // And keep a ref of data for the new start of the series
-                                            collapsableSeriesAtStart = bubbleData;
-                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
-                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
+                                            self->collapsableSeriesAtStart = bubbleData;
+                                            self->collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:self->collapsableSeriesAtStart];
                                         }
                                         else
                                         {
                                             // This is a ending point for a new collapsable series of cells
-                                            collapsableSeriesAtStart = bubbleData;
-                                            collapsableSeriesAtStart.collapseState = queuedEvent.state;
-                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtStart];
+                                            self->collapsableSeriesAtStart = bubbleData;
+                                            self->collapsableSeriesAtStart.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:self->collapsableSeriesAtStart];
                                         }
                                     }
                                     else
                                     {
                                         // Try to collapse it with the series at the end of self.bubbles
-                                        if (collapsableSeriesAtEnd && [collapsableSeriesAtEnd collapseWith:bubbleData])
+                                        if (self->collapsableSeriesAtEnd && [self->collapsableSeriesAtEnd collapseWith:bubbleData])
                                         {
                                             // Put bubbleData at the series tail
                                             // Find the tail
-                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtEnd;
+                                            id<MXKRoomBubbleCellDataStoring> tailBubbleData = self->collapsableSeriesAtEnd;
                                             while (tailBubbleData.nextCollapsableCellData)
                                             {
                                                 tailBubbleData = tailBubbleData.nextCollapsableCellData;
@@ -2167,9 +2199,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                         else
                                         {
                                             // This is a starting point for a new collapsable series of cells
-                                            collapsableSeriesAtEnd = bubbleData;
-                                            collapsableSeriesAtEnd.collapseState = queuedEvent.state;
-                                            [collapsingCellDataSeriess addObject:collapsableSeriesAtEnd];
+                                            self->collapsableSeriesAtEnd = bubbleData;
+                                            self->collapsableSeriesAtEnd.collapseState = queuedEvent.state;
+                                            [collapsingCellDataSeriess addObject:self->collapsableSeriesAtEnd];
                                         }
                                     }
                                 }
@@ -2177,15 +2209,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 {
                                     // The new bubble is not collapsable.
                                     // We can close one border of the current series being built (if any)
-                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && collapsableSeriesAtStart)
+                                    if (queuedEvent.direction == MXTimelineDirectionBackwards && self->collapsableSeriesAtStart)
                                     {
                                         // This is the begin border of the series
-                                        collapsableSeriesAtStart = nil;
+                                        self->collapsableSeriesAtStart = nil;
                                     }
-                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && collapsableSeriesAtEnd)
+                                    else if (queuedEvent.direction == MXTimelineDirectionForwards && self->collapsableSeriesAtEnd)
                                     {
                                         // This is the end border of the series
-                                        collapsableSeriesAtEnd = nil;
+                                        self->collapsableSeriesAtEnd = nil;
                                     }
                                 }
                             }
@@ -2202,14 +2234,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     bubbleData.isPaginationFirstBubble = YES;
 
                                     // Check whether the current first displayed pagination title is still relevant.
-                                    if (bubblesSnapshot.count)
+                                    if (self->bubblesSnapshot.count)
                                     {
                                         NSInteger index = 0;
                                         id<MXKRoomBubbleCellDataStoring> previousFirstBubbleDataWithDate;
                                         NSString *firstBubbleDateString;
-                                        while (index < bubblesSnapshot.count)
+                                        while (index < self->bubblesSnapshot.count)
                                         {
-                                            previousFirstBubbleDataWithDate = bubblesSnapshot[index++];
+                                            previousFirstBubbleDataWithDate = self->bubblesSnapshot[index++];
                                             firstBubbleDateString = [self.eventFormatter dateStringFromDate:previousFirstBubbleDataWithDate.date withTime:NO];
                                             
                                             if (firstBubbleDateString)
@@ -2235,9 +2267,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 bubbleData.shouldHideSenderInformation = bubbleData.hasNoDisplay;
 
                                 // Check whether this information is relevant for the current first bubble.
-                                if (!bubbleData.shouldHideSenderInformation && bubblesSnapshot.count)
+                                if (!bubbleData.shouldHideSenderInformation && self->bubblesSnapshot.count)
                                 {
-                                    id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = bubblesSnapshot.firstObject;
+                                    id<MXKRoomBubbleCellDataStoring> previousFirstBubbleData = self->bubblesSnapshot.firstObject;
 
                                     if (previousFirstBubbleData.isPaginationFirstBubble == NO)
                                     {
@@ -2247,7 +2279,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
 
                                 // Insert the new bubble data in first position
-                                [bubblesSnapshot insertObject:bubbleData atIndex:0];
+                                [self->bubblesSnapshot insertObject:bubbleData atIndex:0];
                                 
                                 addedHistoryCellCount++;
                             }
@@ -2263,11 +2295,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
                                     
                                     // Look for the current last bubble with date
-                                    NSInteger index = bubblesSnapshot.count;
+                                    NSInteger index = self->bubblesSnapshot.count;
                                     NSString *lastBubbleDateString;
                                     while (index--)
                                     {
-                                        id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot[index];
+                                        id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = self->bubblesSnapshot[index];
                                         lastBubbleDateString = [self.eventFormatter dateStringFromDate:previousLastBubbleData.date withTime:NO];
                                         
                                         if (lastBubbleDateString)
@@ -2292,15 +2324,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                                 // Check whether the sender information is relevant for this new bubble.
                                 bubbleData.shouldHideSenderInformation = bubbleData.hasNoDisplay;
-                                if (!bubbleData.shouldHideSenderInformation && bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
+                                if (!bubbleData.shouldHideSenderInformation && self->bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
                                 {
                                     // Check whether the previous bubble has been sent by the same user.
-                                    id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = bubblesSnapshot.lastObject;
+                                    id<MXKRoomBubbleCellDataStoring> previousLastBubbleData = self->bubblesSnapshot.lastObject;
                                     bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousLastBubbleData];
                                 }
 
                                 // Insert the new bubble in last position
-                                [bubblesSnapshot addObject:bubbleData];
+                                [self->bubblesSnapshot addObject:bubbleData];
                                 
                                 addedLiveCellCount++;
                             }
@@ -2320,14 +2352,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     bubbleData.isPaginationFirstBubble = YES;
                                     
                                     // Look for the first next bubble with date to check whether its pagination title is still relevant.
-                                    if (bubblesSnapshot.count)
+                                    if (self->bubblesSnapshot.count)
                                     {
                                         NSInteger index = 1;
                                         id<MXKRoomBubbleCellDataStoring> nextBubbleDataWithDate;
                                         NSString *firstNextBubbleDateString;
-                                        while (index < bubblesSnapshot.count)
+                                        while (index < self->bubblesSnapshot.count)
                                         {
-                                            nextBubbleDataWithDate = bubblesSnapshot[index++];
+                                            nextBubbleDataWithDate = self->bubblesSnapshot[index++];
                                             firstNextBubbleDateString = [self.eventFormatter dateStringFromDate:nextBubbleDataWithDate.date withTime:NO];
                                             
                                             if (firstNextBubbleDateString)
@@ -2352,9 +2384,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 bubbleData.shouldHideSenderInformation = NO;
                                 
                                 // Check whether this information is still relevant for the next bubble.
-                                if (bubblesSnapshot.count > 1)
+                                if (self->bubblesSnapshot.count > 1)
                                 {
-                                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = bubblesSnapshot[1];
+                                    id<MXKRoomBubbleCellDataStoring> nextBubbleData = self->bubblesSnapshot[1];
                                     
                                     if (nextBubbleData.isPaginationFirstBubble == NO)
                                     {
@@ -2374,11 +2406,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                     NSString *bubbleDateString = [self.eventFormatter dateStringFromDate:bubbleData.date withTime:NO];
                                     
                                     // Look for the first previous bubble with date
-                                    NSInteger index = bubblesSnapshot.count - 1;
+                                    NSInteger index = self->bubblesSnapshot.count - 1;
                                     NSString *firstPreviousBubbleDateString;
                                     while (index--)
                                     {
-                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = bubblesSnapshot[index];
+                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = self->bubblesSnapshot[index];
                                         firstPreviousBubbleDateString = [self.eventFormatter dateStringFromDate:previousBubbleData.date withTime:NO];
                                         
                                         if (firstPreviousBubbleDateString)
@@ -2403,13 +2435,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 
                                 // Check whether the sender information is relevant for this new bubble.
                                 bubbleData.shouldHideSenderInformation = NO;
-                                if (bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
+                                if (self->bubblesSnapshot.count && (bubbleData.isPaginationFirstBubble == NO))
                                 {
                                     // Check whether the previous bubble has been sent by the same user.
-                                    NSInteger index = bubblesSnapshot.count - 1;
+                                    NSInteger index = self->bubblesSnapshot.count - 1;
                                     if (index--)
                                     {
-                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = bubblesSnapshot[index];
+                                        id<MXKRoomBubbleCellDataStoring> previousBubbleData = self->bubblesSnapshot[index];
                                         bubbleData.shouldHideSenderInformation = [bubbleData hasSameSenderAsBubbleCellData:previousBubbleData];
                                     }
                                 }
@@ -2417,9 +2449,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         }
                         
                         // Store event-bubble link to the map
-                        @synchronized (eventIdToBubbleMap)
+                        @synchronized (self->eventIdToBubbleMap)
                         {
-                            eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
+                            self->eventIdToBubbleMap[queuedEvent.event.eventId] = bubbleData;
                         }
                         
                         if (queuedEvent.event.isLocalEvent)
@@ -2433,32 +2465,32 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 // Check if all cells of self.bubbles belongs to a single collapse series.
                 // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
                 // in order to handle next forward or backward pagination.
-                if (collapsableSeriesAtStart == bubbles.firstObject)
+                if (self->collapsableSeriesAtStart == self->bubbles.firstObject)
                 {
                     // Find the tail
-                    id<MXKRoomBubbleCellDataStoring> tailBubbleData = collapsableSeriesAtStart;
+                    id<MXKRoomBubbleCellDataStoring> tailBubbleData = self->collapsableSeriesAtStart;
                     while (tailBubbleData.nextCollapsableCellData)
                     {
                         tailBubbleData = tailBubbleData.nextCollapsableCellData;
                     }
 
-                    if (tailBubbleData == bubbles.lastObject)
+                    if (tailBubbleData == self->bubbles.lastObject)
                     {
-                        collapsableSeriesAtEnd = collapsableSeriesAtStart;
+                        self->collapsableSeriesAtEnd = self->collapsableSeriesAtStart;
                     }
                 }
-                else if (collapsableSeriesAtEnd)
+                else if (self->collapsableSeriesAtEnd)
                 {
                     // Find the start
-                    id<MXKRoomBubbleCellDataStoring> startBubbleData = collapsableSeriesAtEnd;
+                    id<MXKRoomBubbleCellDataStoring> startBubbleData = self->collapsableSeriesAtEnd;
                     while (startBubbleData.prevCollapsableCellData)
                     {
                         startBubbleData = startBubbleData.prevCollapsableCellData;
                     }
 
-                    if (startBubbleData == bubbles.firstObject)
+                    if (startBubbleData == self->bubbles.firstObject)
                     {
-                        collapsableSeriesAtStart = collapsableSeriesAtEnd;
+                        self->collapsableSeriesAtStart = self->collapsableSeriesAtEnd;
                     }
                 }
 
@@ -2480,37 +2512,37 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Release collapseState objects, even the one of collapsableSeriesAtStart.
                     // We do not need to keep its state because if an collapsable event comes before collapsableSeriesAtStart,
                     // we will take the room state of this event.
-                    if (bubbleData != collapsableSeriesAtEnd)
+                    if (bubbleData != self->collapsableSeriesAtEnd)
                     {
                         bubbleData.collapseState = nil;
                     }
                 }
             }
-            eventsToProcessSnapshot = nil;
+            self->eventsToProcessSnapshot = nil;
         }
         
         // Check whether some events have been processed
-        if (bubblesSnapshot)
+        if (self->bubblesSnapshot)
         {
             // Updated data can be displayed now
             // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
             dispatch_sync(dispatch_get_main_queue(), ^{
 
                 // Check whether self has not been reloaded or destroyed
-                if (self.state == MXKDataSourceStateReady && bubblesSnapshot)
+                if (self.state == MXKDataSourceStateReady && self->bubblesSnapshot)
                 {
-                    if (_serverSyncEventCount)
+                    if (self.serverSyncEventCount)
                     {
-                        _serverSyncEventCount -= serverSyncEventCount;
-                        if (!_serverSyncEventCount)
+                        self->_serverSyncEventCount -= serverSyncEventCount;
+                        if (!self.serverSyncEventCount)
                         {
                             // Notify that sync process ends
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
                         }
                     }
                     
-                    bubbles = bubblesSnapshot;
-                    bubblesSnapshot = nil;
+                    self->bubbles = self->bubblesSnapshot;
+                    self->bubblesSnapshot = nil;
                     
                     if (self.delegate)
                     {
@@ -2519,7 +2551,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     else
                     {
                         // Check the memory usage of the data source. Reload it if the cache is too huge.
-                        [self limitMemoryUsage:_maxBackgroundCachedBubblesCount];
+                        [self limitMemoryUsage:self.maxBackgroundCachedBubblesCount];
                     }
                 }
                 

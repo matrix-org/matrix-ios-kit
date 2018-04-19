@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -111,7 +112,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification object:account userInfo:nil];
 }
 
-- (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)(void))completion;
+- (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)(void))completion
 {
     NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
     
@@ -148,7 +149,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     }];
 }
 
-- (void)logout
+- (void)logoutWithCompletion:(void (^)(void))completion
 {
     // Logout one by one the existing accounts
     if (mxAccounts.count)
@@ -156,7 +157,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         [self removeAccount:mxAccounts.lastObject completion:^{
             
             // loop: logout the next existing account (if any)
-            [self logout];
+            [self logoutWithCompletion:completion];
             
         }];
         
@@ -179,6 +180,11 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     
     [[NSUserDefaults standardUserDefaults] synchronize];
     [sharedUserDefaults synchronize];
+    
+    if (completion)
+    {
+        completion();
+    }
 }
 
 - (MXKAccount *)accountForUserId:(NSString *)userId
