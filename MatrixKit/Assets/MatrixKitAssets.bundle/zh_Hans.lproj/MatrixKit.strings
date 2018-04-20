@@ -125,3 +125,154 @@
 "room_event_encryption_info_event" = "事件信息\n";
 "room_event_encryption_info_event_user_id" = "用户 ID\n";
 "room_event_encryption_info_event_identity_key" = "Curve25519 认证密钥\n";
+"login_mobile_device" = "移动设备";
+"login_tablet_device" = "平板电脑";
+"login_desktop_device" = "桌面设备";
+"notice_room_related_groups" = "和此聊天室关联的社区是：%@";
+"room_event_encryption_info_event_session_id" = "会话 ID\n";
+"room_event_encryption_info_event_decryption_error" = "解密错误\n";
+"room_event_encryption_info_event_unencrypted" = "未加密";
+"room_event_encryption_info_event_none" = "无";
+"room_event_encryption_info_device" = "\n发送者的设备信息\n";
+"room_event_encryption_info_device_unknown" = "未知设备\n";
+"room_event_encryption_info_device_name" = "名称\n";
+"room_event_encryption_info_device_id" = "设备 ID\n";
+"room_event_encryption_info_device_verification" = "验证\n";
+"room_event_encryption_info_device_verified" = "已验证";
+"room_event_encryption_info_device_not_verified" = "未验证";
+"room_event_encryption_info_device_blocked" = "已拉黑";
+"room_event_encryption_info_verify" = "验证…";
+"room_event_encryption_info_unverify" = "取消验证";
+"room_event_encryption_verify_title" = "验证设备\n\n";
+"account_error_display_name_change_failed" = "修改昵称失败";
+"account_error_email_wrong_title" = "邮箱地址无效";
+"account_error_msisdn_wrong_title" = "手机号码无效";
+// Room creation
+"room_creation_name_title" = "聊天室名称：";
+"room_creation_name_placeholder" = "（例如：今天中午吃啥）";
+// Room
+"room_please_select" = "请选择一个聊天室";
+"room_error_join_failed_title" = "加入聊天室失败";
+"room_error_cannot_load_timeline" = "加载时间线失败";
+"room_error_timeline_event_not_found_title" = "加载时间线位置失败";
+"room_left" = "你离开了此聊天室";
+"attachment_small" = "小：%@";
+"attachment_medium" = "中：%@";
+"attachment_large" = "大：%@";
+"attachment_cancel_download" = "取消下载？";
+"attachment_cancel_upload" = "取消上传？";
+"attachment_e2e_keys_import" = "导入…";
+// Search
+"search_no_results" = "没有结果";
+"search_searching" = "正在搜索…";
+// Time
+"format_time_s" = "秒";
+"format_time_m" = "分钟";
+"format_time_h" = "小时";
+"format_time_d" = "天";
+// E2E import
+"e2e_import_room_keys" = "导入聊天室密钥";
+"e2e_import" = "导入";
+"e2e_passphrase_enter" = "输入密码";
+// E2E export
+"e2e_export_room_keys" = "导出聊天室密钥";
+"e2e_export" = "导出";
+"e2e_passphrase_empty" = "密码不能为空";
+// Others
+"user_id_title" = "用户 ID：";
+"offline" = "离线";
+"unsent" = "取消发送";
+"error" = "出错";
+"default" = "默认";
+"private" = "私人";
+"public" = "公开";
+"power_level" = "权限级别";
+"network_error_not_reachable" = "请检查你的网络连接";
+"user_id_placeholder" = "例如：@bob:homeserver";
+"ssl_homeserver_url" = "主服务器 URL：%@";
+// Country picker
+"country_picker_title" = "请选择国家";
+// Language picker
+"language_picker_title" = "请选择语言";
+"language_picker_default_language" = "默认（%@）";
+"notice_room_invite" = "%@ 邀请了 %@";
+"notice_room_third_party_invite" = "%@ 邀请了 %@ 加入聊天室";
+"notice_room_third_party_registered_invite" = "%@ 同意了 %@ 的邀请";
+"notice_room_join" = "%@ 已加入";
+"notice_room_leave" = "%@ 已退出";
+"notice_room_reject" = "%@ 拒绝了邀请";
+"notice_room_kick" = "%@ 移除了 %@";
+"notice_room_unban" = "%@ 解除了 %@ 的封禁";
+"notice_room_ban" = "%@ 封禁了 %@";
+"notice_room_withdraw" = "%@ 撤回了 %@ 的邀请";
+"notice_room_reason" = "。理由：%@";
+"notice_avatar_url_changed" = "%@ 更换了头像";
+"notice_display_name_set" = "%@ 将自己的昵称设置为 %@";
+"notice_display_name_changed_from" = "%@ 将自己的昵称从 %@ 改成 %@";
+"notice_display_name_removed" = "%@ 删除了自己的昵称";
+"notice_room_name_changed" = "%@ 将聊天室名称修改为 %@";
+// button names 
+"ok" = "确定";
+"send" = "发送";
+"copy" = "复制";
+"resend" = "重新发送";
+"share" = "分享";
+"redact" = "撤回";
+"set_power_level" = "权限级别";
+"delete" = "删除";
+"create_room" = "创建聊天室";
+"login" = "登录";
+"create_account" = "创建账号";
+"membership_invite" = "邀请";
+"membership_leave" = "退出";
+"membership_ban" = "已被封禁";
+"num_members_one" = "%@ 位用户";
+"num_members_other" = "%@ 位用户";
+"kick" = "移除";
+"ban" = "封禁";
+"unban" = "解封";
+// Login Screen 
+"login_error_already_logged_in" = "已登录";
+"login_error_must_start_http" = "URL 必须以 http[s]://";
+// Settings screen 
+"settings_title_config" = "选项";
+"settings_title_notifications" = "通知";
+// contacts list screen 
+"invitation_message" = "我想用 Matrix 和你聊骚。请访问 https://martix.org 获取更多信息。";
+"account_error_matrix_session_is_not_opened" = "没有打开 Matrix 会话";
+"account_error_email_wrong_description" = "此邮箱地址似乎是无效的";
+"account_error_msisdn_wrong_description" = "此手机号码似乎是无效的";
+"room_creation_participants_placeholder" = "（例如：@bob:homeserver1; @john:homeserver2…）";
+"room_creation_participants_title" = "成员：";
+"room_creation_alias_placeholder_with_homeserver" = "（例如：）";
+"room_creation_alias_placeholder" = "（例如：）";
+"room_error_join_failed_empty_room" = "目前无法重新加入空聊天室。";
+"room_error_name_edition_not_authorized" = "你没有修改聊天室名称所需的权限";
+"room_error_topic_edition_not_authorized" = "你没有修改聊天室话题所需的权限";
+// Room members
+"room_member_ignore_prompt" = "你确定要隐藏所有此用户发送的消息吗？";
+// Contacts
+"contact_mx_users" = "Matrix 用户";
+"contact_local_contacts" = "本地联系人";
+// Groups
+"group_invite_section" = "邀请";
+"group_section" = "社区";
+"e2e_passphrase_confirm" = "确认密码";
+"notification_settings_enable_notifications" = "启用通知";
+// Notification settings screen 
+"notification_settings_disable_all" = "禁用通知";
+"notification_settings_highlight" = "高亮";
+"notification_settings_custom_sound" = "自定义铃声";
+"notification_settings_select_room" = "选择一个聊天室";
+"notification_settings_other_alerts" = "其他通知";
+// gcm section 
+"settings_config_home_server" = "主服务器：%@";
+"settings_config_identity_server" = "身份验证服务器：%@";
+"settings_config_user_id" = "用户 ID：%@";
+"call_ended" = "通话结束";
+// unrecognized SSL certificate
+"ssl_trust" = "信任";
+"ssl_logout_account" = "登出";
+// actions 
+"action_logout" = "登出";
+"ssl_remain_offline" = "忽略";

@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -132,7 +133,7 @@ extern NSString *const kMXKRoomBubbleCellUrl;
  To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
  Each inherited class should define only the actual displayed items.
  */
-@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate, UIWebViewDelegate>
 {
 @protected
     /**
@@ -147,9 +148,15 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (strong, nonatomic, readonly) MXKRoomBubbleCellData *bubbleData;
 
 /**
- Option to highlight or not the content of message text view (May be used in case of text selection)
+ Option to highlight or not the content of message text view (May be used in case of text selection).
+ NO by default.
  */
 @property (nonatomic) BOOL allTextHighlighted;
+
+/**
+ Tell whether the animation should start automatically in case of animated gif (NO by default).
+ */
+@property (nonatomic) BOOL isAutoAnimatedGif;
 
 /**
  The default picture displayed when no picture is available.
@@ -222,6 +229,21 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 @property (nonatomic) NSLayoutConstraint *readMarkerViewHeightConstraint;
 
 /**
+ The potential webview used to render an attachment (for example an animated gif).
+ */
+@property (nonatomic) UIWebView *attachmentWebView;
+
+/**
+ Called during the designated initializer of the UITableViewCell class to set the default
+ properties values.
+ 
+ You should not call this method directly.
+ 
+ Subclasses can override this method as needed to customize the initialization.
+ */
+- (void)finalizeInit;
+
+/**
  Handle progressView display.
  */
 - (void)startProgressUI;
@@ -244,22 +266,18 @@ extern NSString *const kMXKRoomBubbleCellUrl;
 + (void)disableLongPressGestureOnEvent:(BOOL)disable;
 
 /**
- The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering render:] not
- overidden by a class child.
+ Method used during [MXKCellRendering render:] to check the provided `cellData`
+ and prepare the protected `bubbleData`.
+ Do not override it.
 
  @param cellData the data object to render.
  */
-- (void)originalRender:(MXKCellData*)cellData;
+- (void)prepareRender:(MXKCellData*)cellData;
 
 /**
- The `MXKRoomBubbleTableViewCell` orignal implementation of [MXKCellRendering 
- originalHeightForCellData: withMaximumWidth:] not overidden by a class child.
-
- @param cellData the data object to render.
- @param maxWidth the maximum available width.
- @return the cell height
+ Refresh the flair information added to the sender display name.
  */
-+ (CGFloat)originalHeightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth;
+- (void)renderSenderFlair;
 
 /**
  Highlight text message related to a specific event in the displayed message.

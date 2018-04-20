@@ -39,7 +39,7 @@ static NSAttributedString *messageSeparator = nil;
     // We group together text messages from the same user (attachments are not merged).
     if ([event.sender isEqualToString:self.senderId] && (self.attachment == nil) && (self.bubbleComponents.count < self.maxComponentCount))
     {
-        // Attachments (image, video ...) cannot be added here
+        // Attachments (image, video, sticker ...) cannot be added here
         if ([roomDataSource.eventFormatter isSupportedAttachment:event])
         {
             return NO;

@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -80,54 +81,59 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         // Set default thumbnail orientation
         _thumbnailOrientation = UIImageOrientationUp;
         
-        NSString *msgtype =  eventContent[@"msgtype"];
-        if ([msgtype isEqualToString:kMXMessageTypeImage])
+        if (mxEvent.eventType == MXEventTypeSticker)
         {
-            _type = MXKAttachmentTypeImage;
-        }
-        else if ([msgtype isEqualToString:kMXMessageTypeAudio])
-        {
-            _type = MXKAttachmentTypeAudio;
-        }
-        else if ([msgtype isEqualToString:kMXMessageTypeVideo])
-        {
-            _type = MXKAttachmentTypeVideo;
-            
-            _thumbnailInfo = eventContent[@"info"][@"thumbnail_info"];
-        }
-        else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-        {
-            // Not supported yet
-            // _type = MXKAttachmentTypeLocation;
-            return nil;
-        }
-        else if ([msgtype isEqualToString:kMXMessageTypeFile])
-        {
-            _type = MXKAttachmentTypeFile;
+            _type = MXKAttachmentTypeSticker;
+            MXJSONModelSetDictionary(_thumbnailInfo, eventContent[@"info"][@"thumbnail_info"]);
         }
         else
         {
-            return nil;
+            // Note: mxEvent.eventType is supposed to be MXEventTypeRoomMessage here.
+            NSString *msgtype = eventContent[@"msgtype"];
+            if ([msgtype isEqualToString:kMXMessageTypeImage])
+            {
+                _type = MXKAttachmentTypeImage;
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeAudio])
+            {
+                _type = MXKAttachmentTypeAudio;
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeVideo])
+            {
+                _type = MXKAttachmentTypeVideo;
+                MXJSONModelSetDictionary(_thumbnailInfo, eventContent[@"info"][@"thumbnail_info"]);
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeLocation])
+            {
+                // Not supported yet
+                // _type = MXKAttachmentTypeLocation;
+                return nil;
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeFile])
+            {
+                _type = MXKAttachmentTypeFile;
+            }
+            else
+            {
+                return nil;
+            }
         }
         
-        _originalFileName = [eventContent[@"body"] isKindOfClass:[NSString class]] ? eventContent[@"body"] : nil;
-        
-        _contentInfo = eventContent[@"info"];
-        
-        thumbnailFile = _contentInfo[@"thumbnail_file"];
-        
-        contentFile = eventContent[@"file"];
+        MXJSONModelSetString(_originalFileName, eventContent[@"body"]);
+        MXJSONModelSetDictionary(_contentInfo, eventContent[@"info"]);
+        MXJSONModelSetDictionary(thumbnailFile, _contentInfo[@"thumbnail_file"]);
+        MXJSONModelSetDictionary(contentFile, eventContent[@"file"]);
         
         // Retrieve the content url by taking into account the potential encryption.
         if (contentFile)
         {
             _isEncrypted = YES;
-            _contentURL = contentFile[@"url"];
+            MXJSONModelSetString(_contentURL, contentFile[@"url"]);
         }
         else
         {
             _isEncrypted = NO;
-            _contentURL = eventContent[@"url"];
+            MXJSONModelSetString(_contentURL, eventContent[@"url"]);
         }
         
         // Note: When the attachment uploading is in progress, the upload id is stored in the content url (nasty trick).
@@ -146,7 +152,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         NSString *mimetype = nil;
         if (_contentInfo)
         {
-            mimetype = _contentInfo[@"mimetype"];
+            MXJSONModelSetString(mimetype, _contentInfo[@"mimetype"]);
         }
         
         _cacheFilePath = [MXMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:_eventRoomId];
@@ -204,21 +210,21 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         return thumbnailFile[@"url"];
     }
     
-    if (_type == MXKAttachmentTypeVideo)
+    if (_type == MXKAttachmentTypeVideo || _type == MXKAttachmentTypeSticker)
     {
         if (_contentInfo)
         {
             // Look for a clear video thumbnail url
-            NSString *unencrypted_video_thumb_url = _contentInfo[@"thumbnail_url"];
+            NSString *unencrypted_thumb_url = _contentInfo[@"thumbnail_url"];
             
             // Note: When the uploading is in progress, the upload id is stored in the content url (nasty trick).
             // Prepare the absolute URL from the mxc: content URL, only if the thumbnail is not currently uploading.
-            if (![unencrypted_video_thumb_url hasPrefix:kMXMediaUploadIdPrefix])
+            if (![unencrypted_thumb_url hasPrefix:kMXMediaUploadIdPrefix])
             {
-                unencrypted_video_thumb_url = [self.sess.matrixRestClient urlOfContent:unencrypted_video_thumb_url];
+                unencrypted_thumb_url = [self.sess.matrixRestClient urlOfContent:unencrypted_thumb_url];
             }
             
-            return unencrypted_video_thumb_url;
+            return unencrypted_thumb_url;
         }
     }
     

@@ -1,1 +1,145 @@
-
+"view" = "檢視";
+"back" = "上一步";
+"continue" = "繼續";
+"leave" = "離開";
+"invite" = "邀請";
+"retry" = "重試";
+"cancel" = "取消";
+"save" = "儲存";
+"matrix" = "Matrix";
+// Login Screen
+"login_create_account" = "建立帳號：";
+"login_server_url_placeholder" = "URL（如 https://matrix.org）";
+"login_home_server_title" = "家伺服器：";
+"login_home_server_info" = "您的家伺服器會儲存所有的對話紀錄跟帳號資料";
+"login_identity_server_title" = "身份認證伺服器：";
+"login_identity_server_info" = "Matrix 提供身份認證伺服器來追蹤電子郵件信箱與 Matrix ID 的關係。目前只有 https://matrix.org 提供這個服務。";
+"login_user_id_placeholder" = "Matrix ID（如 @bob:matrix.org 或 bob）";
+"login_password_placeholder" = "密碼";
+"login_optional_field" = "選擇性";
+"login_display_name_placeholder" = "顯示名稱（如 Bob Obson）";
+"login_email_placeholder" = "電子郵件地址";
+"login_leave_fallback" = "取消";
+// Encryption information
+"room_event_encryption_info_title" = "點對點加密資訊\n\n";
+"room_event_encryption_info_event" = "事件資訊\n";
+"room_event_encryption_info_event_user_id" = "使用者 ID\n";
+"room_event_encryption_info_event_identity_key" = "Curve25519 身份認證金鑰\n";
+"room_event_encryption_info_event_fingerprint_key" = "已聲請之 Ed25519 指紋金鑰\n";
+"room_event_encryption_info_event_algorithm" = "演算法\n";
+"room_event_encryption_info_event_session_id" = "會話 ID\n";
+"room_event_encryption_info_event_decryption_error" = "解密錯誤\n";
+"room_event_encryption_info_event_unencrypted" = "未加密";
+"room_event_encryption_info_event_none" = "無";
+"room_event_encryption_info_device" = "\n發送者的裝置訊息\n";
+"room_event_encryption_info_device_unknown" = "未知的裝置\n";
+"room_event_encryption_info_device_name" = "名稱\n";
+"room_event_encryption_info_device_id" = "裝置 ID\n";
+"room_event_encryption_info_device_verification" = "驗證\n";
+"room_event_encryption_info_device_fingerprint" = "Ed25519 指紋\n";
+"room_event_encryption_info_device_verified" = "已驗證";
+"room_event_encryption_info_device_not_verified" = "未驗證";
+"room_event_encryption_info_device_blocked" = "已列入黑名單";
+"room_event_encryption_info_verify" = "驗證...";
+"room_event_encryption_info_unverify" = "取消驗證";
+"room_event_encryption_info_block" = "黑名單";
+"room_event_encryption_info_unblock" = "解除黑名單";
+"room_event_encryption_verify_title" = "驗證裝置\n\n";
+"room_event_encryption_verify_message" = "若要檢查這個裝置是可被信任的，請透過其他方法聯絡所有者（例如面對面或是在電話中），並詢問在其使用者設定中以下金鑰是否是一致的：\n\n\n\t裝置名稱：%@\n\t裝置 ID：%@\n\t裝置金鑰：%@\n\n若相同，請點選下面的「驗證確認」按鈕。如果不相同，表示有人從中攔截這個裝置，您可能要點選「黑名單」按鈕。\n\n未來驗證手續會更加簡單，若有不便敬請見諒。";
+"room_event_encryption_verify_ok" = "驗證確認";
+// Account
+"account_save_changes" = "儲存修改";
+// Groups
+"group_invite_section" = "邀請";
+// E2E import
+"e2e_import_room_keys" = "匯入聊天室金鑰";
+"e2e_import" = "匯入";
+"e2e_passphrase_enter" = "輸入通關密語";
+// E2E export
+"e2e_export_room_keys" = "匯出房間金鑰";
+"e2e_export" = "匯出";
+"e2e_passphrase_empty" = "通關密語不能為空";
+"e2e_passphrase_not_match" = "通關密語必須符合";
+// Others
+"user_id_title" = "使用者 ID：";
+"offline" = "離線";
+"unsent" = "取消傳送";
+"error" = "錯誤";
+"not_supported_yet" = "尚未支援";
+"default" = "預設";
+"private" = "私密";
+"public" = "公開";
+"power_level" = "權限等級";
+"network_error_not_reachable" = "請檢查您的網路連線";
+"user_id_placeholder" = "例：@bob:homeserver";
+"ssl_homeserver_url" = "家伺服器 URL：%@";
+// Permissions
+"camera_access_not_granted_for_call" = "視訊電話需要使用相機權限，但是 %@ 沒有存取權限";
+"microphone_access_not_granted_for_call" = "電話需要使用麥克風權限，但是 %@ 沒有存取權限";
+"local_contacts_access_not_granted" = "從本機的聯絡資訊探索使用者，需要存取聯絡資訊的權限，但是 %@ 沒有存取權限";
+"local_contacts_access_discovery_warning_title" = "使用者探索";
+"local_contacts_access_discovery_warning" = "%@ 要從您的聯絡資訊上傳電子郵件位址跟電話號碼來探索使用者";
+// Country picker
+"country_picker_title" = "選擇國家";
+// Language picker
+"language_picker_title" = "選擇語言";
+"language_picker_default_language" = "預設 (%@)";
+"notice_room_invite" = "%@ 邀請了 %@";
+"notice_room_third_party_invite" = "%@ 已邀請 %@ 加入聊天室";
+"notice_room_third_party_registered_invite" = "%@ 同意了 %@ 的邀請";
+"notice_room_join" = "%@ 已進入";
+"notice_room_leave" = "%@ 已離開";
+"notice_room_reject" = "%@ 拒絕了邀請";
+"notice_room_kick" = "%@ 踢了 %@";
+"notice_room_unban" = "%@ 解除了 %@ 的封鎖";
+"notice_room_ban" = "%@ 封鎖了 %@";
+"notice_room_withdraw" = "%@ 撤回了 %@ 的邀請";
+"notice_room_reason" = "，原因：%@";
+"notice_avatar_url_changed" = "%@ 變更了頭像";
+"notice_display_name_set" = "%@ 設定了自己的顯示名稱為 %@";
+"notice_display_name_changed_from" = "%@ 將自己的顯示名稱從 %@ 改為 %@";
+"notice_display_name_removed" = "%@ 移除了自己的顯示名稱";
+"notice_topic_changed" = "%@ 已經變更主題為：%@";
+"notice_room_name_changed" = "%@ 將房間名稱變更為 %@";
+"notice_placed_voice_call" = "%@ 開始了語音通話";
+"notice_placed_video_call" = "%@ 開始了視訊通話";
+"notice_answered_video_call" = "%@ 接聽了通話";
+"notice_ended_video_call" = "%@ 結束了通話";
+"notice_conference_call_request" = "%@ 請求了 VoIP 會議";
+"notice_conference_call_started" = "VoIP 會議已開始";
+"notice_conference_call_finished" = "VoIP 會議已結束";
+// button names 
+"ok" = "好";
+"send" = "傳送";
+"copy" = "複製";
+"resend" = "重新傳送";
+"redact" = "撤除";
+"share" = "分享";
+"set_power_level" = "權限等級";
+"delete" = "刪除";
+// actions 
+"action_logout" = "登出";
+"create_room" = "建立聊天室";
+"login" = "登入";
+"create_account" = "建立帳號";
+"membership_invite" = "邀請";
+"membership_leave" = "離開";
+"membership_ban" = "已被封鎖";
+"num_members_one" = "%@ 位使用者";
+"num_members_other" = "%@ 位使用者";
+"kick" = "踢人";
+"ban" = "封鎖";
+"unban" = "解除封鎖";
+// unrecognized SSL certificate
+"ssl_trust" = "信任";
+"ssl_logout_account" = "登出";
+"ssl_remain_offline" = "忽略";
+"ssl_fingerprint_hash" = "指紋 (%@)：";
+"ssl_could_not_verify" = "無法驗證遠端伺服器的身份。";
+"ssl_cert_not_trust" = "這可能代表有人惡意攔截您的流量，或是裝置無法信任遠端伺服器所提供的憑證。";
+"ssl_cert_new_account_expl" = "如果伺服器管理者表示這是可預期的狀況，請確定以下指紋與管理者提供的一致。";
+"ssl_unexpected_existing_expl" = "這個憑證有別於原本在您裝置所信任的憑證，這個狀況相當不常見。建議您不要信任新的憑證。";
+"ssl_expected_existing_expl" = "這個憑證從原本信任的憑證換成不信任的憑證，可能因為伺服器更新了它的憑證。請聯絡伺服器管理者確認新的指紋一致。";
+"ssl_only_accept" = "只有在伺服器管理者提供的指紋與以上指紋一致時，您才能信任這個憑證。";
+// Devices
+"device_details_title" = "裝置資訊\n";

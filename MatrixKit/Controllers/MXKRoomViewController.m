@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -1339,7 +1340,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 NSLog(@"[MXKRoomVC] Set displayName failed");
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -1372,7 +1374,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 
                 NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed", roomAlias);
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -1429,7 +1432,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                 NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed", roomIdOrAlias, roomId);
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
         }
@@ -1460,7 +1464,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                 NSLog(@"[MXKRoomVC] Set topic failed");
                 // Notify MatrixKit user
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
             }];
         }
@@ -1497,7 +1502,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                     NSLog(@"[MXKRoomVC] Invite user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                 }];
             }
@@ -1531,7 +1537,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Kick user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1565,7 +1572,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Ban user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1586,7 +1594,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Unban user (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1621,7 +1630,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                     
                     NSLog(@"[MXKRoomVC] Set user power (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
             }
@@ -1642,7 +1652,8 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed", userId);
                     // Notify MatrixKit user
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                 }];
             }
@@ -2039,6 +2050,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         if (attachmentsViewer)
         {
             // Check whether some older attachments have been added.
+            // Note: the stickers are excluded from the attachments list returned by the room datasource.
             BOOL isDone = NO;
             NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
             if (attachmentsWithThumbnail.count)
@@ -2872,67 +2884,70 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                                                                    }]];
                 }
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
-                                                                   
-                                                                   typeof(self) self = weakSelf;
-                                                                   self->currentAlert = nil;
-                                                                   
-                                                                   [self startActivityIndicator];
-                                                                   
-                                                                   [attachment copy:^{
+                if (attachment.type != MXKAttachmentTypeSticker)
+                {
+                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
                                                                        
                                                                        typeof(self) self = weakSelf;
-                                                                       [self stopActivityIndicator];
+                                                                       self->currentAlert = nil;
                                                                        
-                                                                   } failure:^(NSError *error) {
+                                                                       [self startActivityIndicator];
+                                                                       
+                                                                       [attachment copy:^{
+                                                                           
+                                                                           typeof(self) self = weakSelf;
+                                                                           [self stopActivityIndicator];
+                                                                           
+                                                                       } failure:^(NSError *error) {
+                                                                           
+                                                                           typeof(self) self = weakSelf;
+                                                                           [self stopActivityIndicator];
+                                                                           
+                                                                           // Notify MatrixKit user
+                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                           
+                                                                       }];
+                                                                       
+                                                                       // Start animation in case of download during attachment preparing
+                                                                       [roomBubbleTableViewCell startProgressUI];
+                                                                       
+                                                                   }]];
+                    
+                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
                                                                        
                                                                        typeof(self) self = weakSelf;
-                                                                       [self stopActivityIndicator];
+                                                                       self->currentAlert = nil;
                                                                        
-                                                                       // Notify MatrixKit user
-                                                                       [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                       [attachment prepareShare:^(NSURL *fileURL) {
+                                                                           
+                                                                           typeof(self) self = weakSelf;
+                                                                           self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                                                                           [self->documentInteractionController setDelegate:self];
+                                                                           self->currentSharedAttachment = attachment;
+                                                                           
+                                                                           if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                                                                           {
+                                                                               self->documentInteractionController = nil;
+                                                                               [attachment onShareEnded];
+                                                                               self->currentSharedAttachment = nil;
+                                                                           }
+                                                                           
+                                                                       } failure:^(NSError *error) {
+                                                                           
+                                                                           // Notify MatrixKit user
+                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                                                           
+                                                                       }];
                                                                        
-                                                                   }];
-                                                                   
-                                                                   // Start animation in case of download during attachment preparing
-                                                                   [roomBubbleTableViewCell startProgressUI];
-                                                                   
-                                                               }]];
-                
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
-                                                                   
-                                                                   typeof(self) self = weakSelf;
-                                                                   self->currentAlert = nil;
-                                                                   
-                                                                   [attachment prepareShare:^(NSURL *fileURL) {
+                                                                       // Start animation in case of download during attachment preparing
+                                                                       [roomBubbleTableViewCell startProgressUI];
                                                                        
-                                                                       typeof(self) self = weakSelf;
-                                                                       self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                                                                       [self->documentInteractionController setDelegate:self];
-                                                                       self->currentSharedAttachment = attachment;
-                                                                       
-                                                                       if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
-                                                                       {
-                                                                           self->documentInteractionController = nil;
-                                                                           [attachment onShareEnded];
-                                                                           self->currentSharedAttachment = nil;
-                                                                       }
-                                                                       
-                                                                   } failure:^(NSError *error) {
-                                                                       
-                                                                       // Notify MatrixKit user
-                                                                       [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                       
-                                                                   }];
-                                                                   
-                                                                   // Start animation in case of download during attachment preparing
-                                                                   [roomBubbleTableViewCell startProgressUI];
-                                                                   
-                                                               }]];
+                                                                   }]];
+                }
                 
                 // Check status of the selected event
                 if (selectedEvent.sentState == MXEventSentStatePreparing ||
@@ -3548,8 +3563,10 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
             if (bubbleData.isAttachmentWithThumbnail)
             {
-                if (selectedAttachment.eventSentState == MXEventSentStateSent)
+                // The attachments viewer is opened only on a valid attachment. It does not display the stickers.
+                if (selectedAttachment.eventSentState == MXEventSentStateSent && selectedAttachment.type != MXKAttachmentTypeSticker)
                 {
+                    // Note: the stickers are presently excluded from the attachments list returned by the room dataSource.
                     NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
                     
                     // Present an attachment viewer

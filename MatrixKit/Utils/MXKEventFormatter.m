@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -178,6 +179,33 @@
         {
             isSupportedAttachment = hasUrl || hasFile;
         }
+    }
+    else if (event.eventType == MXEventTypeSticker)
+    {
+        NSString *urlField;
+        NSDictionary *fileField;
+        MXJSONModelSetString(urlField, event.content[@"url"]);
+        MXJSONModelSetDictionary(fileField, event.content[@"file"]);
+        
+        BOOL hasUrl = urlField.length;
+        BOOL hasFile = NO;
+        
+        // @TODO: Check whether the encrypted sticker uses the same `file dict than other media
+        if (fileField)
+        {
+            NSString *fileUrlField;
+            MXJSONModelSetString(fileUrlField, fileField[@"url"]);
+            NSString *fileIvField;
+            MXJSONModelSetString(fileIvField, fileField[@"iv"]);
+            NSDictionary *fileHashesField;
+            MXJSONModelSetDictionary(fileHashesField, fileField[@"hashes"]);
+            NSDictionary *fileKeyField;
+            MXJSONModelSetDictionary(fileKeyField, fileField[@"key"]);
+            
+            hasFile = fileUrlField.length && fileIvField.length && fileHashesField && fileKeyField;
+        }
+        
+        isSupportedAttachment = hasUrl || hasFile;
     }
     return isSupportedAttachment;
 }
@@ -822,15 +850,14 @@
                 BOOL isHTML = NO;
 
                 // Use the HTML formatted string if provided
-                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML]
-                    && [event.content[@"formatted_body"] isKindOfClass:[NSString class]])
+                if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML])
                 {
                     isHTML =YES;
-                    body = event.content[@"formatted_body"];
+                    MXJSONModelSetString(body, event.content[@"formatted_body"]);
                 }
-                else if ([event.content[@"body"] isKindOfClass:[NSString class]])
+                else
                 {
-                    body = event.content[@"body"];
+                    MXJSONModelSetString(body, event.content[@"body"]);
                 }
 
                 if (body)
@@ -991,6 +1018,35 @@
         case MXEventTypeCallHangup:
         {
             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_ended_video_call"], senderDisplayName];
+            break;
+        }
+        case MXEventTypeSticker:
+        {
+            // Is redacted?
+            if (isRedacted)
+            {
+                if (!redactedInfo)
+                {
+                    // Here the event is ignored (no display)
+                    return nil;
+                }
+                displayText = redactedInfo;
+            }
+            else
+            {
+                NSString *body;
+                MXJSONModelSetString(body, event.content[@"body"]);
+                
+                // Check sticker validity
+                if (![self isSupportedAttachment:event])
+                {
+                    NSLog(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
+                    body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                    *error = MXKEventFormatterErrorUnsupported;
+                }
+                
+                displayText = body? body : [NSBundle mxk_localizedStringForKey:@"notice_sticker"];
+            }
             break;
         }
 
@@ -1280,9 +1336,13 @@
                 if ([msgtype isEqualToString:kMXMessageTypeEmote] == NO)
                 {
                     NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:roomState];
-
                     prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
                 }
+            }
+            else if (event.eventType == MXEventTypeSticker)
+            {
+                NSString *senderDisplayName = [self senderDisplayNameForEvent:event withRoomState:roomState];
+                prefix = [NSString stringWithFormat:@"%@: ", senderDisplayName];
             }
 
             // Compute the attribute text message

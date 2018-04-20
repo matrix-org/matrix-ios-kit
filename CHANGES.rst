@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.7.10 (2018-04-20)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.8).
+ * Render stickers in the timeline (vector-im/riot-ios#1819).
+ * Improve Error Notifications (vector-im/riot-ios#1839).
+ 
+Bug fix:
+ * Crash on URL like https://riot.im/#/app/register?hs_url=... (vector-im/riot-ios#1838).
+ 
 Changes in MatrixKit in 0.7.9 (2018-03-30)
 ==========================================
 

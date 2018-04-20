@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,6 +22,8 @@
 #import "MXKPieChartView.h"
 #import "MXKRoomBubbleCellData.h"
 #import "MXKTools.h"
+
+#import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
 
@@ -53,7 +56,7 @@ static BOOL _disableLongPressGestureOnEvent;
 
 + (instancetype)roomBubbleTableViewCell
 {
-    id instance = nil;
+    MXKRoomBubbleTableViewCell *instance = nil;
     
     // Check whether a xib is defined
     if ([[self class] nib])
@@ -76,6 +79,32 @@ static BOOL _disableLongPressGestureOnEvent;
 + (void)disableLongPressGestureOnEvent:(BOOL)disable
 {
     _disableLongPressGestureOnEvent = disable;
+}
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self)
+    {
+        [self finalizeInit];
+    }
+    return self;
+}
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        [self finalizeInit];
+    }
+    return self;
+}
+
+- (void)finalizeInit
+{
+    self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
+    _allTextHighlighted = NO;
+    _isAutoAnimatedGif = NO;
 }
 
 - (void)awakeFromNib
@@ -163,8 +192,6 @@ static BOOL _disableLongPressGestureOnEvent;
     [tapGesture setNumberOfTapsRequired:1];
     [tapGesture setDelegate:self];
     [self.contentView addGestureRecognizer:tapGesture];
-    
-    self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
 }
 
 - (void)customizeTableViewCellRendering
@@ -200,13 +227,20 @@ static BOOL _disableLongPressGestureOnEvent;
     return [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"default-profile"];
 }
 
+- (void)setIsAutoAnimatedGif:(BOOL)isAutoAnimatedGif
+{
+    _isAutoAnimatedGif = isAutoAnimatedGif;
+    
+    [self renderGif];
+}
+
 - (void)setAllTextHighlighted:(BOOL)allTextHighlighted
 {
+    _allTextHighlighted = allTextHighlighted;
+    
     if (self.messageTextView && bubbleData.textMessage.length != 0)
     {
-        _allTextHighlighted = allTextHighlighted;
-        
-        if (allTextHighlighted)
+        if (_allTextHighlighted)
         {
             NSMutableAttributedString *highlightedString = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
             UIColor *color = self.tintColor ? self.tintColor : [UIColor lightGrayColor];
@@ -291,16 +325,7 @@ static BOOL _disableLongPressGestureOnEvent;
 
 - (void)render:(MXKCellData *)cellData
 {
-    [self originalRender:cellData];
-}
-
-- (void)originalRender:(MXKCellData *)cellData
-{
-    // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
-    NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
-    
-    bubbleData = (MXKRoomBubbleCellData*)cellData;
-    mxkCellData = cellData;
+    [self prepareRender:cellData];
     
     if (bubbleData)
     {
@@ -360,35 +385,13 @@ static BOOL _disableLongPressGestureOnEvent;
             frame.size.height = contentSize.height;
             self.attachmentView.frame = frame;
             
-            NSString *mimetype = nil;
-            if (bubbleData.attachment.thumbnailInfo)
-            {
-                mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
-            }
-            else if (bubbleData.attachment.contentInfo)
-            {
-                mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
-            }
+            // Set play icon visibility
+            self.playIconView.hidden = (bubbleData.attachment.type != MXKAttachmentTypeVideo);
             
-            if (bubbleData.attachment.type == MXKAttachmentTypeVideo)
-            {
-                self.playIconView.hidden = NO;
-                self.fileTypeIconView.hidden = YES;
-            }
-            else
-            {
-                self.playIconView.hidden = YES;
-                if ([mimetype isEqualToString:@"image/gif"])
-                {
-                    self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
-                    self.fileTypeIconView.hidden = NO;
-                }
-                else
-                {
-                    self.fileTypeIconView.hidden = YES;
-                }
-            }
+            // Hide by default file type icon
+            self.fileTypeIconView.hidden = YES;
             
+            // Display the attachment thumbnail
             self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setAttachmentThumb:bubbleData.attachment];
             
@@ -417,6 +420,9 @@ static BOOL _disableLongPressGestureOnEvent;
                 longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
                 [self.attachmentView addGestureRecognizer:longPress];
             }
+            
+            // Handle here the case of the attached gif
+            [self renderGif];
         }
         else if (self.messageTextView)
         {
@@ -642,6 +648,15 @@ static BOOL _disableLongPressGestureOnEvent;
     }
 }
 
+- (void)prepareRender:(MXKCellData *)cellData
+{
+    // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
+    NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
+    
+    bubbleData = (MXKRoomBubbleCellData*)cellData;
+    mxkCellData = cellData;
+}
+
 - (void)renderSenderFlair
 {
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  ", bubbleData.senderDisplayName]];
@@ -707,12 +722,82 @@ static BOOL _disableLongPressGestureOnEvent;
     self.userNameLabel.attributedText = attributedString;
 }
 
-+ (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth
+- (void)renderGif
 {
-    return [self originalHeightForCellData:cellData withMaximumWidth:maxWidth];
+    if (self.attachmentView && bubbleData.attachment)
+    {
+        NSString *mimetype = nil;
+        if (bubbleData.attachment.thumbnailInfo)
+        {
+            mimetype = bubbleData.attachment.thumbnailInfo[@"mimetype"];
+        }
+        else if (bubbleData.attachment.contentInfo)
+        {
+            mimetype = bubbleData.attachment.contentInfo[@"mimetype"];
+        }
+        
+        if ([mimetype isEqualToString:@"image/gif"])
+        {
+            if (_isAutoAnimatedGif)
+            {
+                // Hide the file type icon, and the progress UI
+                self.fileTypeIconView.hidden = YES;
+                [self stopProgressUI];
+                NSString* url = bubbleData.attachment.actualURL;
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
+                
+                // Animated gif is displayed in a webview added on the attachment view
+                self.attachmentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.attachmentView.frame.size.width, self.attachmentView.frame.size.height)];
+                self.attachmentWebView.opaque = NO;
+                self.attachmentWebView.backgroundColor = [UIColor clearColor];
+                self.attachmentWebView.contentMode = UIViewContentModeScaleAspectFit;
+                self.attachmentWebView.scalesPageToFit = YES;
+                self.attachmentWebView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+                self.attachmentWebView.userInteractionEnabled = NO;
+                self.attachmentWebView.hidden = YES;
+                [self.attachmentView addSubview:self.attachmentWebView];
+                
+                __weak UIWebView *weakAnimatedGifViewer = self.attachmentWebView;
+                __weak typeof(self) weakSelf = self;
+                
+                void (^onDownloaded)(NSData *) = ^(NSData *data){
+                    
+                    if (weakAnimatedGifViewer && weakAnimatedGifViewer.superview)
+                    {
+                        UIWebView *strongAnimatedGifViewer = weakAnimatedGifViewer;
+                        strongAnimatedGifViewer.delegate = weakSelf;
+                        [strongAnimatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
+                    }
+                };
+                
+                void (^onFailure)(NSError *) = ^(NSError *error){
+                    
+                    NSLog(@"[MXKRoomBubbleTableViewCell] gif download failed");
+                    // Notify the end user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                };
+                
+                [bubbleData.attachment getAttachmentData:^(NSData *data) {
+                    onDownloaded(data);
+                } failure:^(NSError *error) {
+                    onFailure(error);
+                }];
+            }
+            else
+            {
+                self.fileTypeIconView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"filetype-gif"];
+                self.fileTypeIconView.hidden = NO;
+                
+                // Check whether a download is in progress
+                [self startProgressUI];
+            }
+        }
+    }
 }
 
-+ (CGFloat)originalHeightForCellData:(MXKCellData *)cellData withMaximumWidth:(CGFloat)maxWidth
++ (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth
 {
     // Sanity check: accept only object of MXKRoomBubbleCellData classes or sub-classes
     NSParameterAssert([cellData isKindOfClass:[MXKRoomBubbleCellData class]]);
@@ -766,6 +851,13 @@ static BOOL _disableLongPressGestureOnEvent;
 - (void)didEndDisplay
 {
     bubbleData = nil;
+    
+    if (_attachmentWebView)
+    {
+        [_attachmentWebView removeFromSuperview];
+        _attachmentWebView.delegate = nil;
+        _attachmentWebView = nil;
+    }
     
     if (_readMarkerView)
     {
@@ -838,6 +930,10 @@ static BOOL _disableLongPressGestureOnEvent;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     delegate = nil;
+    
+    self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
+    _allTextHighlighted = NO;
+    _isAutoAnimatedGif = NO;
 }
 
 #pragma mark - Attachment progress handling
@@ -1195,6 +1291,18 @@ static NSMutableDictionary *childClasses;
         shouldInteractWithURL = [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:@{kMXKRoomBubbleCellUrl:URL} defaultValue:YES];
     }
     return shouldInteractWithURL;
+}
+
+#pragma mark - UIWebView delegate
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    if (webView == _attachmentWebView && self.attachmentView)
+    {
+        // The attachment webview is ready to replace the attachment view.
+        _attachmentWebView.hidden = NO;
+        self.attachmentView.image = nil;
+    }
 }
 
 @end
