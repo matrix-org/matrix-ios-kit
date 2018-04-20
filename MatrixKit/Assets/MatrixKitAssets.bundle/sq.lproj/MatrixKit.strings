@@ -127,7 +127,7 @@
 "account_msisdn_validation_title" = "Verifikim Në Pritje të Miratimit";
 "account_msisdn_validation_error" = "S’arrihet të verifikohet numër telefoni.";
 "account_error_display_name_change_failed" = "Ndryshimi i emrit të shfaqjes dështoi";
-"account_error_picture_change_failed" = "Ndryshimi i fotod dështoi";
+"account_error_picture_change_failed" = "Ndryshimi i fotos dështoi";
 "account_error_matrix_session_is_not_opened" = "Sesioni Matrix s’është hapur";
 "account_error_email_wrong_title" = "Adresë Email e Pavlefshme";
 "account_error_email_wrong_description" = "Kjo s’duket se është adresë email e vlefshme";
@@ -149,7 +149,7 @@
 "room_error_timeline_event_not_found_title" = "S’u arrit të ngarkohej pozicion rrjedhe kohore";
 "room_left" = "Dolët prej dhomës";
 // Attachment
-"attachment_size_prompt" = "Doni ta dërgoni si:";
+"attachment_size_prompt" = "Doni të dërgohet si:";
 "attachment_original" = "Madhësi Faktike: %@";
 "attachment_small" = "E vogël: %@";
 "attachment_medium" = "E mesme: %@";
@@ -292,3 +292,10 @@
 "ssl_remain_offline" = "Shpërfille";
 "ssl_fingerprint_hash" = "Shenja Gishtash (%@):";
 "ssl_could_not_verify" = "S’u verifikua dot identiteti i shërbyesit të largët.";
+"submit_code" = "Parashtroni kod";
+"notice_location_attachment" = "bashkëngjitje vendndodhjeje";
+"notice_redaction" = "%@ përpunoi një veprimtari (id: %@)";
+"notice_sticker" = "ngjitës";
+"unsent" = "Të padërguar";
+"network_error_not_reachable" = "Ju lutemi, kontrolloni aftësinë e lidhjes në rrjetin tuaj";
+"share" = "Ndajeni me të tjerët";
