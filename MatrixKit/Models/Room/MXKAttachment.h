@@ -81,7 +81,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString *cacheFilePath;
 
 /**
- The cache file path of the attachment thumbnail.
+ The cache file path of the attachment thumbnail (may be nil).
  */
 @property (nonatomic, readonly) NSString *cacheThumbnailPath;
 
