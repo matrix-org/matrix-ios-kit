@@ -195,9 +195,13 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (NSString*)cacheThumbnailPath
 {
-    return [MXMediaManager cachePathForMediaWithURL:self.thumbnailURL
-                                            andType:self.thumbnailMimeType
-                                           inFolder:_eventRoomId];
+    if (self.thumbnailURL)
+    {
+        return [MXMediaManager cachePathForMediaWithURL:self.thumbnailURL
+                                                andType:self.thumbnailMimeType
+                                               inFolder:_eventRoomId];
+    }
+    return nil;
 }
 
 - (NSString *)getThumbnailUrlForSize:(CGSize)size
@@ -252,13 +256,15 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 - (UIImage *)getCachedThumbnail
 {
     NSString *cacheFilePath = self.cacheThumbnailPath;
-    
-    UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
-    if (thumb) return thumb;
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+    if (cacheFilePath)
     {
-        return [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath];
+        UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
+        if (thumb) return thumb;
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+        {
+            return [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath];
+        }
     }
     return nil;
 }
@@ -276,11 +282,14 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     }
     
     NSString *thumbCachePath = self.cacheThumbnailPath;
-    UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:thumbCachePath];
-    if (thumb)
+    if (thumbCachePath)
     {
-        onSuccess(thumb);
-        return;
+        UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:thumbCachePath];
+        if (thumb)
+        {
+            onSuccess(thumb);
+            return;
+        }
     }
     
     if (thumbnailFile && thumbnailFile[@"url"])
