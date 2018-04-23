@@ -1,3 +1,12 @@
+Changes in MatrixKit in 0.7.11 (2018-04-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.9).
+ 
+Bug fix:
+ * Regression: Sending a photo from the photo library causes a crash.
+
 Changes in MatrixKit in 0.7.10 (2018-04-20)
 ==========================================
 

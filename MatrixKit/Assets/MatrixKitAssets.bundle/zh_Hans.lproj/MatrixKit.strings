@@ -1,7 +1,7 @@
 "view" = "视图";
 "back" = "上一个";
 "continue" = "继续";
-"leave" = "离开";
+"leave" = "退出";
 "invite" = "邀请";
 "retry" = "重试";
 "cancel" = "取消";
@@ -14,8 +14,8 @@
 "login_server_url_placeholder" = "URL（例如 https://matrix.org）";
 "login_home_server_title" = "主服务器：";
 "login_home_server_info" = "您的主服务器存储了您所有对话和账户数据";
-"login_identity_server_title" = "身份服务器：";
-"login_identity_server_info" = "Matrix 提供了身份服务器来追踪哪个电子邮件属于某个 Matrix ID。当前只支持 https://matrix.org。";
+"login_identity_server_title" = "身份认证服务器：";
+"login_identity_server_info" = "Matrix 提供了身份认证服务器以验证邮箱地址等是否属于某个 Matrix ID。目前只有 https://matrix.org 支持。";
 "login_user_id_placeholder" = "Matrix ID （例如 @bob:matrix.org 或 bob）";
 "login_password_placeholder" = "密码";
 "login_optional_field" = "可选";
@@ -155,7 +155,7 @@
 "room_error_join_failed_title" = "加入聊天室失败";
 "room_error_cannot_load_timeline" = "加载时间线失败";
 "room_error_timeline_event_not_found_title" = "加载时间线位置失败";
-"room_left" = "你离开了此聊天室";
+"room_left" = "你退出了此聊天室";
 "attachment_small" = "小：%@";
 "attachment_medium" = "中：%@";
 "attachment_large" = "大：%@";
@@ -238,7 +238,7 @@
 "settings_title_config" = "选项";
 "settings_title_notifications" = "通知";
 // contacts list screen 
-"invitation_message" = "我想用 Matrix 和你聊骚。请访问 https://martix.org 获取更多信息。";
+"invitation_message" = "我想使用 Matrix 和你聊天。请访问 https://martix.org 以了解更多信息。";
 "account_error_matrix_session_is_not_opened" = "没有打开 Matrix 会话";
 "account_error_email_wrong_description" = "此邮箱地址似乎是无效的";
 "account_error_msisdn_wrong_description" = "此手机号码似乎是无效的";
@@ -267,7 +267,7 @@
 "notification_settings_other_alerts" = "其他通知";
 // gcm section 
 "settings_config_home_server" = "主服务器：%@";
-"settings_config_identity_server" = "身份验证服务器：%@";
+"settings_config_identity_server" = "身份认证服务器：%@";
 "settings_config_user_id" = "用户 ID：%@";
 "call_ended" = "通话结束";
 // unrecognized SSL certificate
@@ -276,3 +276,29 @@
 // actions 
 "action_logout" = "登出";
 "ssl_remain_offline" = "忽略";
+"message_unsaved_changes" = "尚有未经保存的修改。现在退出将会取消这些修改。";
+"notice_sticker" = "贴纸";
+"ssl_could_not_verify" = "无法验证远程服务器的身份。";
+// Account
+"account_save_changes" = "保存修改";
+"account_link_email" = "邮箱地址";
+"account_linked_emails" = "邮箱地址";
+"account_email_validation_title" = "正在验证";
+"account_msisdn_validation_title" = "正在验证";
+"account_msisdn_validation_error" = "无法验证此手机号。";
+"account_error_picture_change_failed" = "头像修改失败";
+"e2e_passphrase_not_match" = "密码必须符合";
+"not_supported_yet" = "尚未支持";
+"local_contacts_access_discovery_warning_title" = "发现用户";
+"notice_topic_changed" = "%@ 已将主题修改为：%@";
+"notice_placed_voice_call" = "%@ 发起了语音通话";
+"notice_placed_video_call" = "%@ 发起了视频通话";
+"notice_answered_video_call" = "%@ 已接听通话";
+"notice_ended_video_call" = "%@ 已结束通话";
+"notification_settings_always_notify" = "总是通知";
+"notification_settings_never_notify" = "从不通知";
+"notification_settings_sender_hint" = "@user:domain.com";
+// call string
+"call_waiting" = "请等待…";
+"call_connecting" = "通话连接中…";
+"call_ring" = "正在通话…";
