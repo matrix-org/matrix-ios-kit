@@ -1271,7 +1271,7 @@
 - (void)setDefaultCSS:(NSString*)defaultCSS
 {
     // Make sure we mark HTML blockquote blocks for later computation
-    _defaultCSS = [NSString stringWithFormat:@"%@%@", [MXKTools cssToMarkBlockquotes], defaultCSS];
+    _defaultCSS = [NSString stringWithFormat:@"%@%@", [MXKTools cssToMarkBlockquotesWithColor:_htmlBlockquoteBorderColor], defaultCSS];
 
     dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }

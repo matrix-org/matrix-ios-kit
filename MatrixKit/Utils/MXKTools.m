@@ -27,10 +27,6 @@
 
 #import "DTCoreText.h"
 
-#pragma mark - Contants
-
-#define MXKTOOLS_HTML_BLOCKQUOTE_COLOR_MARK  0xFFFEFF
-
 #pragma mark - MXKTools static private members
 // The regex used to find matrix ids.
 static NSRegularExpression *userIdRegex;
@@ -1096,12 +1092,12 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
 
 #pragma mark - HTML processing - blockquote display handling
 
-+ (NSString*)cssToMarkBlockquotes
++ (NSString*)cssToMarkBlockquotesWithColor:(UIColor*)color
 {
-    return [NSString stringWithFormat:@"blockquote {background: #%X;}", MXKTOOLS_HTML_BLOCKQUOTE_COLOR_MARK];
+    return [NSString stringWithFormat:@"blockquote {background: #%lX;}", (unsigned long)[MXKTools rgbValueWithColor:color]];
 }
 
-+ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString usingBlock:(void (^)(NSRange range, BOOL *stop))block
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString withColor:(UIColor*)color usingBlock:(void (^)(NSRange range, BOOL *stop))block
 {
     // Enumerate all sections marked thanks to `cssToMarkBlockquotes`
     [attributedString enumerateAttribute:DTTextBlocksAttribute
@@ -1110,7 +1106,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                               usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop)
      {
          DTTextBlock *dtTextBlock = (DTTextBlock *)((NSArray *)value)[0];
-         if ([MXKTools rgbValueWithColor:dtTextBlock.backgroundColor] == MXKTOOLS_HTML_BLOCKQUOTE_COLOR_MARK)
+         if ([dtTextBlock.backgroundColor isEqual:color])
          {
              block(range, stop);
          }

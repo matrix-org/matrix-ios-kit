@@ -240,7 +240,9 @@ static BOOL _disableLongPressGestureOnEvent;
             if (weakSelf)
             {
                 typeof(self) self = weakSelf;
-                [MXKTools enumerateMarkedBlockquotesInAttributedString:self.messageTextView.attributedText usingBlock:^(NSRange range, BOOL *stop)
+                [MXKTools enumerateMarkedBlockquotesInAttributedString:self.messageTextView.attributedText
+                                                             withColor:self.bubbleData.eventFormatter.htmlBlockquoteBorderColor
+                                                            usingBlock:^(NSRange range, BOOL *stop)
                  {
                      // Compute the UITextRange of the blockquote
                      UITextPosition *beginning = self.messageTextView.beginningOfDocument;
