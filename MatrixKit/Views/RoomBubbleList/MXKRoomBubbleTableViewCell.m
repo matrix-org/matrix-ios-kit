@@ -50,6 +50,13 @@ NSString *const kMXKRoomBubbleCellUrl = @"kMXKRoomBubbleCellUrl";
 
 static BOOL _disableLongPressGestureOnEvent;
 
+@interface MXKRoomBubbleTableViewCell ()
+{
+    // The list of UIViews used to fix the display of side borders for HTML blockquotes
+    NSMutableArray<UIView*> *htmlBlockquoteSideBorderViews;
+}
+@end
+
 @implementation MXKRoomBubbleTableViewCell
 @synthesize delegate, bubbleData, readReceiptsAlignment;
 @synthesize mxkCellData;
@@ -211,6 +218,76 @@ static BOOL _disableLongPressGestureOnEvent;
         // Round image view
         [self.pictureView.layer setCornerRadius:self.pictureView.frame.size.width / 2];
         self.pictureView.clipsToBounds = YES;
+    }
+}
+
+/**
+ Manually add a side border for HTML blockquotes.
+
+ @discussion
+ `NSAttributedString` and `UITextView` classes do not support it natively. This
+ method add an `UIView` to the `UITextView` that implements this border.
+
+ @param canRetry YES if the method can retry later if the UI is not yet ready.
+ */
+- (void)fixHTMLBlockQuoteRendering:(BOOL)canRetry
+{
+    if (self.messageTextView && htmlBlockquoteSideBorderViews.count == 0)
+    {
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            if (weakSelf)
+            {
+                typeof(self) self = weakSelf;
+                [MXKTools enumerateMarkedBlockquotesInAttributedString:self.messageTextView.attributedText usingBlock:^(NSRange range, BOOL *stop)
+                 {
+                     // Compute the UITextRange of the blockquote
+                     UITextPosition *beginning = self.messageTextView.beginningOfDocument;
+                     UITextPosition *start = [self.messageTextView positionFromPosition:beginning offset:range.location];
+                     UITextPosition *end = [self.messageTextView positionFromPosition:start offset:range.length];
+                     UITextRange *textRange = [self.messageTextView textRangeFromPosition:start toPosition:end];
+
+                     // Get the rect area of this blockquote within the cell
+                     // There can be several rects in case of multilines. Hence, the merge
+                     NSArray<UITextSelectionRect*> *array = [self.messageTextView selectionRectsForRange:textRange];
+                     CGRect textRect = CGRectNull;
+                     for (UITextSelectionRect *rect in array)
+                     {
+                         if (rect.rect.size.width)
+                         {
+                             textRect = CGRectUnion(textRect, rect.rect);
+                         }
+                     }
+
+                     if (!CGRectIsNull(textRect))
+                     {
+                         // Add a left border with a height that covers all the blockquote block height
+                         // TODO: Manage RTL language
+                         UIView *sideBorderView = [[UIView alloc] initWithFrame:CGRectMake(5, textRect.origin.y, 4, textRect.size.height)];
+                         sideBorderView.backgroundColor = self.bubbleData.eventFormatter.htmlBlockquoteBorderColor;
+                         [sideBorderView setTranslatesAutoresizingMaskIntoConstraints:NO];
+                         
+                         [self.messageTextView addSubview:sideBorderView];
+
+                         if (!self->htmlBlockquoteSideBorderViews)
+                         {
+                             self->htmlBlockquoteSideBorderViews = [NSMutableArray array];
+                         }
+
+                         [self->htmlBlockquoteSideBorderViews addObject:sideBorderView];
+                     }
+                     else if (canRetry)
+                     {
+                         // Have not found rect area that corresponds to the blockquote
+                         // Try again later when the UI is more ready. Try it only once
+                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                             [self fixHTMLBlockQuoteRendering:NO];
+                         });
+                     }
+                 }];
+            }
+        });
     }
 }
 
@@ -451,6 +528,11 @@ static BOOL _disableLongPressGestureOnEvent;
             if (![self.messageTextView.attributedText isEqualToAttributedString:newText])
             {
                 self.messageTextView.attributedText = newText;
+
+                if (bubbleData.displayFix & MXKRoomBubbleComponentDisplayFixHtmlBlockquote)
+                {
+                    [self fixHTMLBlockQuoteRendering:YES];
+                }
             }
             
             // Update msgTextView width constraint to align correctly the text
@@ -851,7 +933,14 @@ static BOOL _disableLongPressGestureOnEvent;
 - (void)didEndDisplay
 {
     bubbleData = nil;
-    
+
+    for (UIView *sideBorder in htmlBlockquoteSideBorderViews)
+    {
+        [sideBorder removeFromSuperview];
+    }
+    [htmlBlockquoteSideBorderViews removeAllObjects];
+    htmlBlockquoteSideBorderViews = nil;
+
     if (_attachmentWebView)
     {
         [_attachmentWebView removeFromSuperview];

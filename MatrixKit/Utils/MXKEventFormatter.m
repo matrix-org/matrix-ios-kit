@@ -83,6 +83,7 @@
         _encryptingTextColor = [UIColor lightGrayColor];
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
+        _htmlBlockquoteBorderColor = [MXKTools colorWithRGBValue:0xDDDDDD];
         
         _defaultTextFont = [UIFont systemFontOfSize:14];
         _prefixTextFont = [UIFont systemFontOfSize:14];
@@ -1269,7 +1270,9 @@
 
 - (void)setDefaultCSS:(NSString*)defaultCSS
 {
-    _defaultCSS = defaultCSS;
+    // Make sure we mark HTML blockquote blocks for later computation
+    _defaultCSS = [NSString stringWithFormat:@"%@%@", [MXKTools cssToMarkBlockquotes], defaultCSS];
+
     dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }
 

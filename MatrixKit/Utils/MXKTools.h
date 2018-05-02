@@ -330,4 +330,26 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
  */
 + (NSAttributedString*)createLinksInAttributedString:(NSAttributedString*)attributedString forEnabledMatrixIds:(NSInteger)enabledMatrixIdsBitMask;
 
+#pragma mark - HTML processing - blockquote display handling
+
+/**
+ Return a CSS to make DTCoreText mark blockquote blocks in the `NSAttributedString` output.
+
+ These blocks  output will have a `DTTextBlocksAttribute` attribute in the `NSAttributedString`
+ that can be used for later computation.
+
+ @return a CSS string.
+ */
++ (NSString*)cssToMarkBlockquotes;
+
+/**
+ Enumarate all sections of the attributed string that refer to an HTML blockquote block.
+
+ Must be used with `cssToMarkBlockquotes`.
+
+ @param attributedString the attributed string.
+ @param block a block called for each HTML blockquote blocks.
+ */
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString usingBlock:(void (^)(NSRange range, BOOL *stop))block;
+
 @end

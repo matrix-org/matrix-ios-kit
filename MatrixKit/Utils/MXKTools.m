@@ -27,6 +27,10 @@
 
 #import "DTCoreText.h"
 
+#pragma mark - Contants
+
+#define MXKTOOLS_HTML_BLOCKQUOTE_COLOR_MARK  0xFFFEFF
+
 #pragma mark - MXKTools static private members
 // The regex used to find matrix ids.
 static NSRegularExpression *userIdRegex;
@@ -1088,6 +1092,29 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
             [*mutableAttributedString addAttribute:NSLinkAttributeName value:link range:match.range];
         }
     }];
+}
+
+#pragma mark - HTML processing - blockquote display handling
+
++ (NSString*)cssToMarkBlockquotes
+{
+    return [NSString stringWithFormat:@"blockquote {background: #%X;}", MXKTOOLS_HTML_BLOCKQUOTE_COLOR_MARK];
+}
+
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString usingBlock:(void (^)(NSRange range, BOOL *stop))block
+{
+    // Enumerate all sections marked thanks to `cssToMarkBlockquotes`
+    [attributedString enumerateAttribute:DTTextBlocksAttribute
+                                 inRange:NSMakeRange(0, attributedString.length)
+                                 options:0
+                              usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop)
+     {
+         DTTextBlock *dtTextBlock = (DTTextBlock *)((NSArray *)value)[0];
+         if ([MXKTools rgbValueWithColor:dtTextBlock.backgroundColor] == MXKTOOLS_HTML_BLOCKQUOTE_COLOR_MARK)
+         {
+             block(range, stop);
+         }
+     }];
 }
 
 @end
