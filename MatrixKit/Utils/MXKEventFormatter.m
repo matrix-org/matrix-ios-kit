@@ -41,6 +41,11 @@
      The default CSS converted in DTCoreText object.
      */
     DTCSSStylesheet *dtCSS;
+
+    /**
+     Links detector in strings.
+     */
+    NSDataDetector *linkDetector;
 }
 @end
 
@@ -100,6 +105,8 @@
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
+
+        linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
     }
     return self;
 }
@@ -1135,10 +1142,7 @@
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
           [[_settings httpsLinkScheme] isEqualToString: @"https"]))
     {
-        NSError *error = NULL;
-        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-
-        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
+        NSArray *matches = [linkDetector matchesInString:[str string] options:0 range:wholeString];
         for (NSTextCheckingResult *match in matches)
         {
             NSRange matchRange = [match range];
