@@ -1105,10 +1105,17 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                                  options:0
                               usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop)
      {
-         DTTextBlock *dtTextBlock = (DTTextBlock *)((NSArray *)value)[0];
-         if ([dtTextBlock.backgroundColor isEqual:color])
+         if ([value isKindOfClass:NSArray.class])
          {
-             block(range, stop);
+             NSArray *array = (NSArray*)value;
+             if (array.count > 0 && [array[0] isKindOfClass:DTTextBlock.class])
+             {
+                 DTTextBlock *dtTextBlock = (DTTextBlock *)array[0];
+                 if ([dtTextBlock.backgroundColor isEqual:color])
+                 {
+                     block(range, stop);
+                 }
+             }
          }
      }];
 }
