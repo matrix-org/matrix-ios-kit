@@ -567,6 +567,20 @@
     return hasAttributedTextMessage;
 }
 
+- (MXKRoomBubbleComponentDisplayFix)displayFix
+{
+    MXKRoomBubbleComponentDisplayFix displayFix = MXKRoomBubbleComponentDisplayFixNone;
+
+    @synchronized(bubbleComponents)
+    {
+        for (MXKRoomBubbleComponent *component in self.bubbleComponents)
+        {
+            displayFix |= component.displayFix;
+        }
+    }
+    return displayFix;
+}
+
 - (BOOL)shouldHideSenderName
 {
     BOOL res = NO;

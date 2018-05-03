@@ -48,6 +48,15 @@
         
         // Keep ref on event (used to handle the read marker, or a potential event redaction).
         _event = event;
+
+        _displayFix = MXKRoomBubbleComponentDisplayFixNone;
+        if ([event.content[@"format"] isEqualToString:kMXRoomMessageFormatHTML])
+        {
+            if ([((NSString*)event.content[@"formatted_body"]) containsString:@"<blockquote"])
+            {
+                _displayFix |= MXKRoomBubbleComponentDisplayFixHtmlBlockquote;
+            }
+        }
     }
     return self;
 }

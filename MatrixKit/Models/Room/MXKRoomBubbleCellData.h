@@ -83,6 +83,11 @@
 @property (nonatomic) CGSize contentSize;
 
 /**
+ Set of flags indicating fixes that need to be applied at display time.
+ */
+@property (nonatomic, readonly) MXKRoomBubbleComponentDisplayFix displayFix;
+
+/**
  Attachment upload
  */
 @property (nonatomic) NSString *uploadId;

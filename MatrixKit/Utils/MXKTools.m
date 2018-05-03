@@ -1090,4 +1090,34 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     }];
 }
 
+#pragma mark - HTML processing - blockquote display handling
+
++ (NSString*)cssToMarkBlockquotesWithColor:(UIColor*)color
+{
+    return [NSString stringWithFormat:@"blockquote {background: #%lX;}", (unsigned long)[MXKTools rgbValueWithColor:color]];
+}
+
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString withColor:(UIColor*)color usingBlock:(void (^)(NSRange range, BOOL *stop))block
+{
+    // Enumerate all sections marked thanks to `cssToMarkBlockquotes`
+    [attributedString enumerateAttribute:DTTextBlocksAttribute
+                                 inRange:NSMakeRange(0, attributedString.length)
+                                 options:0
+                              usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop)
+     {
+         if ([value isKindOfClass:NSArray.class])
+         {
+             NSArray *array = (NSArray*)value;
+             if (array.count > 0 && [array[0] isKindOfClass:DTTextBlock.class])
+             {
+                 DTTextBlock *dtTextBlock = (DTTextBlock *)array[0];
+                 if ([dtTextBlock.backgroundColor isEqual:color])
+                 {
+                     block(range, stop);
+                 }
+             }
+         }
+     }];
+}
+
 @end

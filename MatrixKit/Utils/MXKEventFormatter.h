@@ -311,6 +311,12 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIColor *errorTextColor;
 
 /**
+ Color used to display the side border of HTML blockquotes.
+ Default is a grey.
+ */
+@property (nonatomic) UIColor *htmlBlockquoteBorderColor;
+
+/**
  Default text font used to display text content of event.
  Default is SFUIText-Regular 14.
  */
