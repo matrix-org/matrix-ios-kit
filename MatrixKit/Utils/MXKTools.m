@@ -36,6 +36,8 @@ static NSRegularExpression *eventIdRegex;
 static NSRegularExpression *groupIdRegex;
 // A regex to find http URLs.
 static NSRegularExpression *httpLinksRegex;
+// A regex to find all HTML tags
+static NSRegularExpression *htmlTagsRegex;
 
 @implementation MXKTools
 
@@ -51,7 +53,7 @@ static NSRegularExpression *httpLinksRegex;
         groupIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixGroupIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
         
         httpLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"(?i)\\b(https?://.*)\\b" options:NSRegularExpressionCaseInsensitive error:nil];
-        
+        htmlTagsRegex  = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];        
     });
 }
 
@@ -821,8 +823,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     NSString *html = htmlString;
     
     // List all HTML tags used in htmlString
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];
-    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [regex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
+    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [htmlTagsRegex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
     
     // Find those that are not allowed
     NSMutableSet *tagsToRemoveSet = [NSMutableSet set];
