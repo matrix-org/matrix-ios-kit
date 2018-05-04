@@ -48,6 +48,11 @@
 - (id)initWithLocalHTMLFile:(NSString*)localHTMLFile;
 
 /**
+ Route javascript logs to NSLog.
+ */
+- (void)enableDebug;
+
+/**
  Define the web content url to open
  Don’t use this property to load local HTML files, instead use 'localHTMLFile'.
  */
