@@ -115,7 +115,7 @@
 "device_details_title" = "设备信息\n";
 "device_details_name" = "名字\n";
 "device_details_identifier" = "设备 ID\n";
-"device_details_last_seen" = "最后一次上线\n";
+"device_details_last_seen" = "最近一次上线\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
 "device_details_rename_prompt_message" = "设备名字：";
 "device_details_delete_prompt_title" = "认证";
@@ -302,3 +302,15 @@
 "call_waiting" = "请等待…";
 "call_connecting" = "通话连接中…";
 "call_ring" = "正在通话…";
+"room_event_encryption_info_event_algorithm" = "算法\n";
+"room_event_encryption_verify_message" = "为验证此设备是否可信，请通过其他方式（例如面对面交换或拨打电话）与其拥有者联系，并询问他们该设备的用户设置中的密钥是否与以下密钥匹配：\n\n\n\t设备名称：%@\n\t设备 ID：%@\n\t设备密钥：%@\n\n未来，这个验证过程将会更加精致、巧妙一些。";
+"room_event_encryption_info_event_fingerprint_key" = "声称的 Ed25519 指纹密钥\n";
+"room_event_encryption_info_device_fingerprint" = "Ed25519 指纹\n";
+"room_event_encryption_verify_ok" = "验证";
+"room_event_encryption_info_block" = "拉黑";
+"room_event_encryption_info_unblock" = "取消拉黑";
+"room_creation_alias_title" = "聊天室别称：";
+"notice_conference_call_started" = "VoIP 会议已开始";
+"notice_conference_call_request" = "%@ 已请求发起 VoIP 会议";
+"notice_conference_call_finished" = "VoIP 会议已结束";
+"notification_settings_enable_notifications_warning" = "所有设备上的通知都已被禁用。";
