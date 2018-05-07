@@ -1327,6 +1327,21 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+- (void)sendEventOfType:(MXEventTypeString)eventTypeString content:(NSDictionary<NSString*, id>*)msgContent success:(void (^)(NSString *eventId))success failure:(void (^)(NSError *error))failure
+{
+    __block MXEvent *localEchoEvent = nil;
+
+    // Make the request to the homeserver
+    [_room sendEventOfType:eventTypeString content:msgContent localEcho:&localEchoEvent success:success failure:failure];
+
+    if (localEchoEvent)
+    {
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:_room.state direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
+}
+
 - (void)resendEventWithEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     MXEvent *event = [self eventWithEventId:eventId];
