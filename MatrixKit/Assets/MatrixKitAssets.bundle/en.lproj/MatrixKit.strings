@@ -128,6 +128,7 @@
 "notice_crypto_unable_to_decrypt" = "** Unable to decrypt: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "The sender's device has not sent us the keys for this message.";
 "notice_sticker" = "sticker";
+"notice_in_reply_to" = "In reply to";
 
 // Settings
 "settings" = "Settings";
