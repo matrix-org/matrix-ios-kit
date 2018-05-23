@@ -575,6 +575,10 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 - (void)refreshLocalContacts
 {
+    NSLog(@"[MXKContactManager] refreshLocalContacts : Started");
+    
+    NSDate *startDate = [NSDate date];
+    
     __weak typeof(self) weakSelf = self;
     [MXKTools checkAccessForContacts:nil showPopUpInViewController:nil completionHandler:^(BOOL granted) {
 
@@ -595,6 +599,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
             [self cacheLocalContacts];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
+            
+            NSLog(@"[MXKContactManager] refreshLocalContacts : Complete");
+            NSLog(@"[MXKContactManager] refreshLocalContacts : Local contacts access denied");
         }
         else if (weakSelf)
         {
@@ -738,6 +745,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
                         [strongSelf updateMatrixIDsForAllLocalContacts];
                     }
                     
+                    NSLog(@"[MXKContactManager] refreshLocalContacts : Complete");
+                    NSLog(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
                 });
             });
         }

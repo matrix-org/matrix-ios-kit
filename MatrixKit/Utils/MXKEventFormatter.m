@@ -41,6 +41,11 @@
      The default CSS converted in DTCoreText object.
      */
     DTCSSStylesheet *dtCSS;
+
+    /**
+     Links detector in strings.
+     */
+    NSDataDetector *linkDetector;
 }
 @end
 
@@ -83,6 +88,7 @@
         _encryptingTextColor = [UIColor lightGrayColor];
         _sendingTextColor = [UIColor lightGrayColor];
         _errorTextColor = [UIColor redColor];
+        _htmlBlockquoteBorderColor = [MXKTools colorWithRGBValue:0xDDDDDD];
         
         _defaultTextFont = [UIFont systemFontOfSize:14];
         _prefixTextFont = [UIFont systemFontOfSize:14];
@@ -99,6 +105,8 @@
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
+
+        linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
     }
     return self;
 }
@@ -1134,10 +1142,7 @@
     if (!([[_settings httpLinkScheme] isEqualToString: @"http"] &&
           [[_settings httpsLinkScheme] isEqualToString: @"https"]))
     {
-        NSError *error = NULL;
-        NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-
-        NSArray *matches = [detector matchesInString:[str string] options:0 range:wholeString];
+        NSArray *matches = [linkDetector matchesInString:[str string] options:0 range:wholeString];
         for (NSTextCheckingResult *match in matches)
         {
             NSRange matchRange = [match range];
@@ -1169,8 +1174,16 @@
 
 - (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
 {
+    NSString *html = htmlString;
+
+    // Special treatment for "In reply to" message
+    if (event.content[@"m.relates_to"][@"m.in_reply_to"])
+    {
+        html = [self renderReplyTo:html];
+    }
+
     // Do some sanitisation before rendering the string
-    NSString *html = [MXKTools sanitiseHTML:htmlString withAllowedHTMLTags:_allowedHTMLTags imageHandler:nil];
+    html = [MXKTools sanitiseHTML:html withAllowedHTMLTags:_allowedHTMLTags imageHandler:nil];
 
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
@@ -1198,6 +1211,39 @@
 
     // Finalize the attributed string by removing DTCoreText artifacts (Trim trailing newlines).
     return [MXKTools removeDTCoreTextArtifacts:str];
+}
+
+/**
+ Special treatment for "In reply to" message.
+
+ According to https://docs.google.com/document/d/1BPd4lBrooZrWe_3s_lHw_e-Dydvc7bXbm02_sV2k6Sc/edit.
+
+ @param htmlString an html string containing a reply-to message.
+ @return a displayable internationalised html string.
+ */
+- (NSString*)renderReplyTo:(NSString*)htmlString
+{
+    NSString *html = htmlString;
+
+    // Replace <mx-reply><blockquote><a href=\"__permalink__\">In reply to</a>
+    // By <mx-reply><blockquote><a href=\"#\">['In reply to' from resources]</a>
+    // To disable the link and to localize the "In reply to" string
+    // This link is the first <a> HTML node of the html string
+    NSRange hyperlinkTagStart = [html rangeOfString:@"<a"];
+    NSRange hyperlinkTagEnd = [html rangeOfString:@"</a>"];
+    if (hyperlinkTagStart.location != NSNotFound && hyperlinkTagEnd.location != NSNotFound)
+    {
+        NSString *inReplyToATag = [NSString stringWithFormat:@"<a href=\"#\">%@", [NSBundle mxk_localizedStringForKey:@"notice_in_reply_to"]];
+        html = [html stringByReplacingCharactersInRange:NSMakeRange(hyperlinkTagStart.location, hyperlinkTagEnd.location - hyperlinkTagStart.location) withString:inReplyToATag];
+    }
+
+    // <blockquote> content in a reply-to message must be under a <p> child like
+    // other quoted messages. Else it breaks the workaround we use to display
+    // the vertical bar on blockquotes with DTCoreText
+    html = [html stringByReplacingOccurrencesOfString:@"<mx-reply><blockquote>" withString:@"<blockquote><p>"];
+    html = [html stringByReplacingOccurrencesOfString:@"</blockquote></mx-reply>" withString:@"</p></blockquote>"];
+
+    return html;
 }
 
 - (NSAttributedString*)postRenderAttributedString:(NSAttributedString*)attributedString
@@ -1269,7 +1315,9 @@
 
 - (void)setDefaultCSS:(NSString*)defaultCSS
 {
-    _defaultCSS = defaultCSS;
+    // Make sure we mark HTML blockquote blocks for later computation
+    _defaultCSS = [NSString stringWithFormat:@"%@%@", [MXKTools cssToMarkBlockquotesWithColor:_htmlBlockquoteBorderColor], defaultCSS];
+
     dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }
 

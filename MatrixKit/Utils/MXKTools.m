@@ -36,6 +36,8 @@ static NSRegularExpression *eventIdRegex;
 static NSRegularExpression *groupIdRegex;
 // A regex to find http URLs.
 static NSRegularExpression *httpLinksRegex;
+// A regex to find all HTML tags
+static NSRegularExpression *htmlTagsRegex;
 
 @implementation MXKTools
 
@@ -51,7 +53,7 @@ static NSRegularExpression *httpLinksRegex;
         groupIdRegex = [NSRegularExpression regularExpressionWithPattern:kMXToolsRegexStringForMatrixGroupIdentifier options:NSRegularExpressionCaseInsensitive error:nil];
         
         httpLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"(?i)\\b(https?://.*)\\b" options:NSRegularExpressionCaseInsensitive error:nil];
-        
+        htmlTagsRegex  = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];        
     });
 }
 
@@ -821,8 +823,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     NSString *html = htmlString;
     
     // List all HTML tags used in htmlString
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<(\\w+)[^>]*>" options:NSRegularExpressionCaseInsensitive error:nil];
-    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [regex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
+    NSArray<NSTextCheckingResult *> *tagsInTheHTML = [htmlTagsRegex matchesInString:htmlString options:0 range:NSMakeRange(0, htmlString.length)];
     
     // Find those that are not allowed
     NSMutableSet *tagsToRemoveSet = [NSMutableSet set];
@@ -1088,6 +1089,36 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
             [*mutableAttributedString addAttribute:NSLinkAttributeName value:link range:match.range];
         }
     }];
+}
+
+#pragma mark - HTML processing - blockquote display handling
+
++ (NSString*)cssToMarkBlockquotesWithColor:(UIColor*)color
+{
+    return [NSString stringWithFormat:@"blockquote {background: #%lX;}", (unsigned long)[MXKTools rgbValueWithColor:color]];
+}
+
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString withColor:(UIColor*)color usingBlock:(void (^)(NSRange range, BOOL *stop))block
+{
+    // Enumerate all sections marked thanks to `cssToMarkBlockquotes`
+    [attributedString enumerateAttribute:DTTextBlocksAttribute
+                                 inRange:NSMakeRange(0, attributedString.length)
+                                 options:0
+                              usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop)
+     {
+         if ([value isKindOfClass:NSArray.class])
+         {
+             NSArray *array = (NSArray*)value;
+             if (array.count > 0 && [array[0] isKindOfClass:DTTextBlock.class])
+             {
+                 DTTextBlock *dtTextBlock = (DTTextBlock *)array[0];
+                 if ([dtTextBlock.backgroundColor isEqual:color])
+                 {
+                     block(range, stop);
+                 }
+             }
+         }
+     }];
 }
 
 @end

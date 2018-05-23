@@ -1,18 +1,18 @@
 PODS:
-  - AFNetworking (3.2.0):
-    - AFNetworking/NSURLSession (= 3.2.0)
-    - AFNetworking/Reachability (= 3.2.0)
-    - AFNetworking/Security (= 3.2.0)
-    - AFNetworking/Serialization (= 3.2.0)
-    - AFNetworking/UIKit (= 3.2.0)
-  - AFNetworking/NSURLSession (3.2.0):
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.2.0)
-  - AFNetworking/Security (3.2.0)
-  - AFNetworking/Serialization (3.2.0)
-  - AFNetworking/UIKit (3.2.0):
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
   - cmark (0.24.1)
   - DTCoreText (1.6.21):
@@ -38,9 +38,9 @@ PODS:
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.9.13)
-  - MatrixSDK (0.10.9):
-    - MatrixSDK/Core (= 0.10.9)
-  - MatrixSDK/Core (0.10.9):
+  - MatrixSDK (0.10.10):
+    - MatrixSDK/Core (= 0.10.10)
+  - MatrixSDK/Core (0.10.10):
     - AFNetworking (~> 3.2.0)
     - GZIP (~> 1.2.1)
     - OLMKit (~> 2.2.2)
@@ -60,10 +60,25 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.10.9)
+  - MatrixSDK (= 0.10.10)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - AFNetworking
+    - cmark
+    - DTCoreText
+    - DTFoundation
+    - GZIP
+    - HPGrowingTextView
+    - JSQMessagesViewController
+    - JSQSystemSoundPlayer
+    - libPhoneNumber-iOS
+    - MatrixSDK
+    - OLMKit
+    - Realm
 
 SPEC CHECKSUMS:
-  AFNetworking: 8ac6017b94ea105479f7776e5288e48ae9c59bb4
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   cmark: ec0275215b504780287b6fca360224e384368af8
   DTCoreText: e5d688cffc9f6a61eddd1a4f94e2046851230de3
   DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
@@ -72,10 +87,10 @@ SPEC CHECKSUMS:
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
-  MatrixSDK: 5c3a0ddfa141775d88565e627f491a066dd1e87c
+  MatrixSDK: c74ed8b41e3e55b7510d7bddf612ed1985816e04
   OLMKit: b9d8c0ffee9ea8c45bc0aaa9afb47f93fba7efbd
   Realm: d927fbf66df5532cfafc08afb5f7e53ded37b894
 
-PODFILE CHECKSUM: 58d584fa6daf2c746dae3662a8a6b36877c3ec17
+PODFILE CHECKSUM: a47232ae0c10b0b17846d20e14c69207071fd120
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0
