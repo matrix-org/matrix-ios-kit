@@ -682,6 +682,8 @@
 
 - (void)onKeyboardWillShow:(NSNotification *)notif
 {
+    NSLog(@"[MXKViewController] %@ onKeyboardWillShow", self.class);
+    
     // Get the keyboard size
     NSValue *rectVal = notif.userInfo[UIKeyboardFrameEndUserInfoKey];
     CGRect endRect = rectVal.CGRectValue;
@@ -729,6 +731,8 @@
 
 - (void)onKeyboardWillHide:(NSNotification *)notif
 {
+    NSLog(@"[MXKViewController] %@ onKeyboardWillHide", self.class);
+    
     // Remove keyboard view
     self.keyboardView = nil;
     

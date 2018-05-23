@@ -19,6 +19,23 @@
 #import "MXKEventFormatter.h"
 
 /**
+ Flags to indicate if a fix is required at the display time.
+ */
+typedef enum : NSUInteger {
+
+    /**
+     No fix required.
+     */
+    MXKRoomBubbleComponentDisplayFixNone = 0,
+
+    /**
+     Borders for HTML blockquotes need to be fixed.
+     */
+    MXKRoomBubbleComponentDisplayFixHtmlBlockquote = 0x1
+
+} MXKRoomBubbleComponentDisplayFix;
+
+/**
  `MXKRoomBubbleComponent` class compose data related to one `MXEvent` instance.
  */
 @interface MXKRoomBubbleComponent : NSObject
@@ -52,6 +69,11 @@
 // They must be handled by the object which creates the MXKRoomBubbleComponent instance.
 //@property (nonatomic) CGFloat height;
 @property (nonatomic) CGPoint position;
+
+/**
+ Set of flags indicating fixes that need to be applied at display time.
+ */
+@property (nonatomic) MXKRoomBubbleComponentDisplayFix displayFix;
 
 /**
  Create a new `MXKRoomBubbleComponent` object based on a `MXEvent` instance.

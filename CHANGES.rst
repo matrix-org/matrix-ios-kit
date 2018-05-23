@@ -1,3 +1,26 @@
+Changes in MatrixKit in 0.7.12 (2018-05-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.10).
+ * Display quick replies in timeline (vector-im/riot-ios#1858).
+ * Send Stickers: Manage local echo for sticker (vector-im/riot-ios#1860).
+ * Regex optimisation: Cache regex to find all HTML tags.
+ * Regex optimisation: Cache NSDataDetector to find links.
+ * MXKWebViewViewController: add `enableDebug` to help to debug embedded javascript.
+ 
+Bug fix:
+ * HTML Rendering: Fix the display of side borders of HTML blockquotes (vector-im/riot-ios#1857).
+
+Changes in MatrixKit in 0.7.11 (2018-04-23)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.9).
+ 
+Bug fix:
+ * Regression: Sending a photo from the photo library causes a crash.
+
 Changes in MatrixKit in 0.7.10 (2018-04-20)
 ==========================================
 
