@@ -33,6 +33,12 @@
 
 #import "MXKTools.h"
 
+#import "MXKErrorPresentation.h"
+#import "MXKErrorPresentable.h"
+#import "MXKErrorViewModel.h"
+#import "MXKErrorPresentableBuilder.h"
+#import "MXKErrorAlertPresentation.h"
+
 #import "MXKViewController.h"
 #import "MXKRoomViewController.h"
 #import "MXKRecentListViewController.h"
