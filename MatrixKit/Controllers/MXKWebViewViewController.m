@@ -23,13 +23,31 @@
 
 NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
 
+@interface MXKWebViewViewController ()
+{
+    BOOL enableDebug;
+}
+
+@end
+
 @implementation MXKWebViewViewController
 
-- (id)initWithURL:(NSString*)URL
+- (instancetype)init
 {
     self = [super init];
     if (self)
     {
+        enableDebug = NO;
+    }
+    return self;
+}
+
+- (id)initWithURL:(NSString*)URL
+{
+    self = [self init];
+    if (self)
+    {
+        enableDebug = NO;
         _URL = URL;
     }
     return self;
@@ -37,7 +55,7 @@ NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
 
 - (id)initWithLocalHTMLFile:(NSString*)localHTMLFile
 {
-    self = [super init];
+    self = [self init];
     if (self)
     {
         _localHTMLFile = localHTMLFile;
@@ -47,6 +65,13 @@ NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
 
 - (void)enableDebug
 {
+    // We can only call addScriptMessageHandler on a given message only once
+    if (enableDebug)
+    {
+        return;
+    }
+    enableDebug = YES;
+
     // Redirect all console.* logging methods into a WebKit postMessage event with name "jsLog"
     [webView.configuration.userContentController addScriptMessageHandler:self name:kMXKWebViewViewControllerPostMessageJSLog];
 
