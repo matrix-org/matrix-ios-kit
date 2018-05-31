@@ -24,7 +24,7 @@
 
 #pragma mark - Private Properties
 
-@property (nonatomic, copy) dispatch_block_t actionBlock;
+@property (nonatomic, copy) MXKBarButtonItemAction actionBlock;
 
 @end
 
@@ -34,7 +34,7 @@
 
 #pragma mark - Public methods
 
-- (instancetype)initWithImage:(UIImage *)image style:(UIBarButtonItemStyle)style action:(dispatch_block_t)action
+- (instancetype)initWithImage:(UIImage *)image style:(UIBarButtonItemStyle)style action:(MXKBarButtonItemAction)action
 {
     self = [self initWithImage:image style:style target:self action:@selector(executeAction:)];
     if (self)
@@ -44,7 +44,7 @@
     return self;
 }
 
-- (instancetype)initWithTitle:(NSString *)title style:(UIBarButtonItemStyle)style action:(dispatch_block_t)action
+- (instancetype)initWithTitle:(NSString *)title style:(UIBarButtonItemStyle)style action:(MXKBarButtonItemAction)action
 {
     self = [self initWithTitle:title style:style target:self action:@selector(executeAction:)];
     if (self)

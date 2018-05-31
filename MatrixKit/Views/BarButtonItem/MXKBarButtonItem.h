@@ -19,6 +19,10 @@
 @import Foundation;
 @import UIKit;
 
+#pragma mark - Types
+
+typedef void (^MXKBarButtonItemAction)();
+
 #pragma mark - Interface
 
 /**
@@ -28,7 +32,7 @@
 
 #pragma mark - Instance Methods
 
-- (instancetype)initWithImage:(UIImage *)image style:(UIBarButtonItemStyle)style action:(dispatch_block_t)action;
-- (instancetype)initWithTitle:(NSString *)title style:(UIBarButtonItemStyle)style action:(dispatch_block_t)action;
+- (instancetype)initWithImage:(UIImage *)image style:(UIBarButtonItemStyle)style action:(MXKBarButtonItemAction)action;
+- (instancetype)initWithTitle:(NSString *)title style:(UIBarButtonItemStyle)style action:(MXKBarButtonItemAction)action;
 
 @end
