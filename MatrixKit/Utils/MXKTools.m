@@ -27,6 +27,14 @@
 
 #import "DTCoreText.h"
 
+#pragma mark - Constants definitions
+
+// Temparary background color used to identify blockquote blocks with DTCoreText.
+#define kMXKToolsBlockquoteMarkColor [UIColor magentaColor]
+
+// Attribute in an NSAttributeString that marks a blockquote block that was in the original HTML string.
+NSString *const kMXKToolsBlockquoteMarkAttribute = @"kMXKToolsBlockquoteMarkAttribute";
+
 #pragma mark - MXKTools static private members
 // The regex used to find matrix ids.
 static NSRegularExpression *userIdRegex;
@@ -1093,14 +1101,23 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
 
 #pragma mark - HTML processing - blockquote display handling
 
-+ (NSString*)cssToMarkBlockquotesWithColor:(UIColor*)color
++ (NSString*)cssToMarkBlockquotes
 {
-    return [NSString stringWithFormat:@"blockquote {background: #%lX;}", (unsigned long)[MXKTools rgbValueWithColor:color]];
+    return [NSString stringWithFormat:@"blockquote {background: #%lX;}", (unsigned long)[MXKTools rgbValueWithColor:kMXKToolsBlockquoteMarkColor]];
 }
 
-+ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString withColor:(UIColor*)color usingBlock:(void (^)(NSRange range, BOOL *stop))block
++ (NSAttributedString*)removeMarkedBlockquotesArtifacts:(NSAttributedString*)attributedString
 {
+    NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+
     // Enumerate all sections marked thanks to `cssToMarkBlockquotes`
+    // and apply our own attribute instead.
+
+    // According to blockquotes in the string, DTCoreText can apply 2 policies:
+    //     - define a `DTTextBlocksAttribute` attribute on a <blockquote> block
+    //     - or, just define a `NSBackgroundColorAttributeName` attribute
+
+    // `DTTextBlocksAttribute` case
     [attributedString enumerateAttribute:DTTextBlocksAttribute
                                  inRange:NSMakeRange(0, attributedString.length)
                                  options:0
@@ -1112,11 +1129,45 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
              if (array.count > 0 && [array[0] isKindOfClass:DTTextBlock.class])
              {
                  DTTextBlock *dtTextBlock = (DTTextBlock *)array[0];
-                 if ([dtTextBlock.backgroundColor isEqual:color])
+                 if ([dtTextBlock.backgroundColor isEqual:kMXKToolsBlockquoteMarkColor])
                  {
-                     block(range, stop);
+                     // apply our own attribute
+                     [mutableAttributedString addAttribute:kMXKToolsBlockquoteMarkAttribute value:@(YES) range:range];
                  }
              }
+         }
+     }];
+
+    // `NSBackgroundColorAttributeName` case
+    [mutableAttributedString enumerateAttribute:NSBackgroundColorAttributeName
+                                        inRange:NSMakeRange(0, mutableAttributedString.length)
+                                        options:0
+                                     usingBlock:^(id value, NSRange range, BOOL *stop)
+     {
+
+         if ([value isKindOfClass:UIColor.class] && [(UIColor*)value isEqual:[UIColor magentaColor]])
+         {
+             // Remove the marked background
+             [mutableAttributedString removeAttribute:NSBackgroundColorAttributeName range:range];
+
+             // And apply our own attribute
+             [mutableAttributedString addAttribute:kMXKToolsBlockquoteMarkAttribute value:@(YES) range:range];
+         }
+     }];
+
+    return mutableAttributedString;
+}
+
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString usingBlock:(void (^)(NSRange range, BOOL *stop))block
+{
+    [attributedString enumerateAttribute:kMXKToolsBlockquoteMarkAttribute
+                                 inRange:NSMakeRange(0, attributedString.length)
+                                 options:0
+                              usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop)
+     {
+         if ([value isKindOfClass:NSNumber.class] && ((NSNumber*)value).boolValue)
+         {
+             block(range, stop);
          }
      }];
 }

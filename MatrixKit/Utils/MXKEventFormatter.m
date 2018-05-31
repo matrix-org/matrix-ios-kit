@@ -1210,7 +1210,12 @@
     str = [self postRenderAttributedString:str];
 
     // Finalize the attributed string by removing DTCoreText artifacts (Trim trailing newlines).
-    return [MXKTools removeDTCoreTextArtifacts:str];
+    str = [MXKTools removeDTCoreTextArtifacts:str];
+
+    // Finalize HTML blockquote blocks marking
+    str = [MXKTools removeMarkedBlockquotesArtifacts:str];
+
+    return str;
 }
 
 /**
@@ -1316,7 +1321,7 @@
 - (void)setDefaultCSS:(NSString*)defaultCSS
 {
     // Make sure we mark HTML blockquote blocks for later computation
-    _defaultCSS = [NSString stringWithFormat:@"%@%@", [MXKTools cssToMarkBlockquotesWithColor:_htmlBlockquoteBorderColor], defaultCSS];
+    _defaultCSS = [NSString stringWithFormat:@"%@%@", [MXKTools cssToMarkBlockquotes], defaultCSS];
 
     dtCSS = [[DTCSSStylesheet alloc] initWithStyleBlock:_defaultCSS];
 }
