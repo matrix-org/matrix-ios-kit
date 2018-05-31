@@ -359,3 +359,4 @@
 "group_section" = "Группы";
 "notice_sticker" = "стикер";
 "notice_in_reply_to" = "В ответ на";
+"error_common_message" = "Произошла ошибка. Пожалуйста, повторите попытку позже.";
