@@ -336,22 +336,28 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
  Return a CSS to make DTCoreText mark blockquote blocks in the `NSAttributedString` output.
 
  These blocks  output will have a `DTTextBlocksAttribute` attribute in the `NSAttributedString`
- that can be used for later computation.
+ that can be used for later computation (in `removeMarkedBlockquotesArtifacts`).
 
- @param color the color to use to mark HTML blockquote blocks.
  @return a CSS string.
  */
-+ (NSString*)cssToMarkBlockquotesWithColor:(UIColor*)color;
++ (NSString*)cssToMarkBlockquotes;
 
 /**
- Enumarate all sections of the attributed string that refer to an HTML blockquote block.
+ Removing DTCoreText artifacts used to mark blockquote blocks.
 
- Must be used with `cssToMarkBlockquotes`.
+ @param attributedString an attributed string.
+ @return the resulting string.
+ */
++ (NSAttributedString*)removeMarkedBlockquotesArtifacts:(NSAttributedString*)attributedString;
+
+/**
+ Enumerate all sections of the attributed string that refer to an HTML blockquote block.
+
+ Must be used with `cssToMarkBlockquotes` and `removeMarkedBlockquotesArtifacts`.
 
  @param attributedString the attributed string.
- @param color the marker color used in `cssToMarkBlockquotes`.
  @param block a block called for each HTML blockquote blocks.
  */
-+ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString withColor:(UIColor*)color usingBlock:(void (^)(NSRange range, BOOL *stop))block;
++ (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString usingBlock:(void (^)(NSRange range, BOOL *stop))block;
 
 @end
