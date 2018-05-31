@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.7.13 (2018-05-31)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.11).
+ * MXKWebViewVC: Replace UIWebView by WKWebview.
+ * Add convenient error screen display.
+ 
+Bug fix:
+ * Quotes (by themselves) render as white blocks (vector-im/riot-ios#1877).
+
 Changes in MatrixKit in 0.7.12 (2018-05-23)
 ==========================================
 
