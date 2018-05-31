@@ -29,7 +29,7 @@
 
 #pragma mark - Constants definitions
 
-// Temparary background color used to identify blockquote blocks with DTCoreText.
+// Temporary background color used to identify blockquote blocks with DTCoreText.
 #define kMXKToolsBlockquoteMarkColor [UIColor magentaColor]
 
 // Attribute in an NSAttributeString that marks a blockquote block that was in the original HTML string.

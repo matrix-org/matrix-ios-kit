@@ -351,7 +351,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
 + (NSAttributedString*)removeMarkedBlockquotesArtifacts:(NSAttributedString*)attributedString;
 
 /**
- Enumarate all sections of the attributed string that refer to an HTML blockquote block.
+ Enumerate all sections of the attributed string that refer to an HTML blockquote block.
 
  Must be used with `cssToMarkBlockquotes` and `removeMarkedBlockquotesArtifacts`.
 
