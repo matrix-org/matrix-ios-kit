@@ -1131,8 +1131,32 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                  DTTextBlock *dtTextBlock = (DTTextBlock *)array[0];
                  if ([dtTextBlock.backgroundColor isEqual:kMXKToolsBlockquoteMarkColor])
                  {
-                     // apply our own attribute
+                     // Apply our own attribute
                      [mutableAttributedString addAttribute:kMXKToolsBlockquoteMarkAttribute value:@(YES) range:range];
+
+                     // Fix a boring behaviour where DTCoreText add a " " string before a string corresponding
+                     // to an HTML blockquote. This " " string has ParagraphStyle.headIndent = 0 which breaks
+                     // the blockquote block indentation
+                     if (range.location > 0)
+                     {
+                         NSRange prevRange = NSMakeRange(range.location - 1, 1);
+
+                         NSRange effectiveRange;
+                         NSParagraphStyle *paragraphStyle = [attributedString attribute:NSParagraphStyleAttributeName
+                                                                                atIndex:prevRange.location
+                                                                         effectiveRange:&effectiveRange];
+
+                         // Check if this is the " " string
+                         if (effectiveRange.length == 1 && paragraphStyle.firstLineHeadIndent != 25)
+                         {
+                             // Fix its paragraph style
+                             NSMutableParagraphStyle *newParagraphStyle = [paragraphStyle mutableCopy];
+                             newParagraphStyle.firstLineHeadIndent = 25.0;
+                             newParagraphStyle.headIndent = 25.0;
+
+                             [mutableAttributedString addAttribute:NSParagraphStyleAttributeName value:newParagraphStyle range:prevRange];
+                         }
+                     }
                  }
              }
          }
