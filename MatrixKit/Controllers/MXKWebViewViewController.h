@@ -1,5 +1,6 @@
 /*
  Copyright 2016 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,11 +16,12 @@
  */
 
 #import "MXKViewController.h"
+#import <WebKit/WebKit.h>
 
 /**
  'MXKWebViewViewController' instance is used to display a webview.
  */
-@interface MXKWebViewViewController : MXKViewController <UIWebViewDelegate>
+@interface MXKWebViewViewController : MXKViewController <WKNavigationDelegate, WKScriptMessageHandler>
 {
 @protected
     /**
@@ -30,7 +32,7 @@
     /**
      The content of this screen is fully displayed by this webview
      */
-    UIWebView *webView;
+    WKWebView *webView;
 }
 
 /**

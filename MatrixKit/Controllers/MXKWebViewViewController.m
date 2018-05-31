@@ -1,6 +1,7 @@
 /*
  Copyright 2016 OpenMarket Ltd
- 
+ Copyright 2018 New Vector Ltd
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -19,6 +20,8 @@
 #import "NSBundle+MatrixKit.h"
 
 #import <JavaScriptCore/JavaScriptCore.h>
+
+NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
 
 @implementation MXKWebViewViewController
 
@@ -44,14 +47,13 @@
 
 - (void)enableDebug
 {
-    // Setup console.log() -> NSLog() route
-    JSContext *ctx = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    ctx[@"console"][@"log"] = ^(JSValue * msg) {
-        NSLog(@"-- JavaScript: %@", msg);
-    };
+    // Redirect all console.* logging methods into a WebKit postMessage event with name "jsLog"
+    [webView.configuration.userContentController addScriptMessageHandler:self name:kMXKWebViewViewControllerPostMessageJSLog];
 
-    // Redirect all console.* logging methods to console.log
-    [webView stringByEvaluatingJavaScriptFromString:@"console.debug = console.log; console.info = console.log; console.warn = console.log; console.error = console.log;"];
+    NSString *javaScriptString = [NSString stringWithFormat:@"console.debug = console.log; console.info = console.log; console.warn = console.log; console.error = console.log = function(msg) {window.webkit.messageHandlers.%@.postMessage(msg);};",
+                                  kMXKWebViewViewControllerPostMessageJSLog];
+
+    [webView evaluateJavaScript:javaScriptString completionHandler:nil];
 }
 
 - (void)finalizeInit
@@ -64,11 +66,10 @@
     [super viewDidLoad];
     
     // Init the webview
-    webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+    webView = [[WKWebView alloc] initWithFrame:self.view.frame];
     webView.backgroundColor= [UIColor whiteColor];
-    webView.delegate = self;
-    webView.scalesPageToFit = YES;
-    
+    webView.navigationDelegate = self;
+
     [webView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.view addSubview:webView];
     
@@ -131,7 +132,7 @@
 {
     if (webView)
     {
-        webView.delegate = nil;
+        webView.navigationDelegate = nil;
         [webView stopLoading];
         [webView removeFromSuperview];
         webView = nil;
@@ -191,29 +192,36 @@
     }
 }
 
-#pragma mark - UIWebViewDelegate
+#pragma mark - WKNavigationDelegate
 
-- (void)webViewDidFinishLoad:(UIWebView *)theWebView
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-    if (theWebView == webView)
+    // Handle back button visibility here
+    BOOL canGoBack = webView.canGoBack;
+
+    if (_localHTMLFile.length && !canGoBack)
     {
-        // Handle back button visibility here
-        BOOL canGoBack = webView.canGoBack;
-        
-        if (_localHTMLFile.length && !canGoBack)
-        {
-            // Check whether the current content is not the local html file
-            canGoBack = (![webView.request.URL.absoluteString isEqualToString:@"about:blank"]);
-        }
-        
-        if (canGoBack)
-        {
-            self.navigationItem.rightBarButtonItem = backButton;
-        }
-        else
-        {
-            self.navigationItem.rightBarButtonItem = nil;
-        }
+        // Check whether the current content is not the local html file
+        canGoBack = (![webView.URL.absoluteString isEqualToString:@"about:blank"]);
+    }
+
+    if (canGoBack)
+    {
+        self.navigationItem.rightBarButtonItem = backButton;
+    }
+    else
+    {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+}
+
+#pragma mark - WKScriptMessageHandler
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
+{
+    if ([message.name isEqualToString:kMXKWebViewViewControllerPostMessageJSLog])
+    {
+        NSLog(@"-- JavaScript: %@", message.body);
     }
 }
 
