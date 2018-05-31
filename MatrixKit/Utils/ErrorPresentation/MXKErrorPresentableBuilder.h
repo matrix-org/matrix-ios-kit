@@ -23,7 +23,19 @@
  */
 @interface MXKErrorPresentableBuilder : NSObject
 
+/**
+ Build a displayable error from a NSError.
+ 
+ @param error an NSError.
+ @return Return nil in case of network request cancellation error otherwise return a presentable error from NSError informations.
+ */
 - (id <MXKErrorPresentable>)errorPresentableFromError:(NSError*)error;
+
+/**
+ Build a common displayable error. Generic error message to present as fallback when error explanation can't be user friendly.
+ 
+ @return Common default error.
+ */
 - (id <MXKErrorPresentable>)commonErrorPresentable;
 
 @end
