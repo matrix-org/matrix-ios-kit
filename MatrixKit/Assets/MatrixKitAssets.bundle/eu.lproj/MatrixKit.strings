@@ -295,7 +295,7 @@
 "notice_answered_video_call" = "%@ erabiltzaileak deia erantzun du";
 "notice_ended_video_call" = "%@ erabiltzaileak deia amaitu du";
 "notice_conference_call_request" = "%@ erabiltzaileak VoIP konferentzia bat eskatu du";
-"set_power_level" = "Botere maila";
+"set_power_level" = "Botere-maila";
 // actions 
 "action_logout" = "Amaitu saioa";
 "login" = "Hasi saioa";
@@ -358,3 +358,4 @@
 "group_invite_section" = "Gonbidapenak";
 "group_section" = "Taldeak";
 "notice_sticker" = "eranskailua";
+"notice_in_reply_to" = "Honi erantzunez";

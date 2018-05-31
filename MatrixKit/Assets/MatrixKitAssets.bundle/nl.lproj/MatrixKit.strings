@@ -418,3 +418,5 @@
 // Groups
 "group_invite_section" = "Uitnodigingen";
 "group_section" = "Uitnodigingen";
+"notice_sticker" = "sticker";
+"notice_in_reply_to" = "In antwoord op";
