@@ -241,7 +241,6 @@ static BOOL _disableLongPressGestureOnEvent;
             {
                 typeof(self) self = weakSelf;
                 [MXKTools enumerateMarkedBlockquotesInAttributedString:self.messageTextView.attributedText
-                                                             withColor:self.bubbleData.eventFormatter.htmlBlockquoteBorderColor
                                                             usingBlock:^(NSRange range, BOOL *stop)
                  {
                      // Compute the UITextRange of the blockquote

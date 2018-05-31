@@ -273,6 +273,7 @@
 "offline" = "offline";
 "unsent" = "Unsent";
 "error" = "Error";
+"error_common_message" = "An error occured. Please try again later.";
 "not_supported_yet" = "Not supported yet";
 "default" = "default";
 "private" = "Private";
