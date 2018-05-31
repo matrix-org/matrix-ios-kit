@@ -358,3 +358,5 @@
 "group_invite_section" = "Einladungen";
 "group_section" = "Gruppen";
 "notice_sticker" = "Sticker";
+"notice_in_reply_to" = "Als Antwort auf";
+"error_common_message" = "Ein Fehler trat auf. Bitte später erneut probieren.";
