@@ -1,3 +1,12 @@
+Changes in MatrixKit in 0.7.14 (2018-06-01)
+==========================================
+
+Improvements:
+ * MXKAccountManager: Add a removeAccount method with a sendLogoutRequest parameter.
+ 
+Bug fix:
+ * MXKWebViewVC: Fix crash with WKWebView and enableDebug
+
 Changes in MatrixKit in 0.7.13 (2018-05-31)
 ==========================================
 
@@ -8,6 +17,9 @@ Improvements:
  
 Bug fix:
  * Quotes (by themselves) render as white blocks (vector-im/riot-ios#1877).
+ 
+API break:
+ * MXKWebViewVC uses now a WKWebview.
 
 Changes in MatrixKit in 0.7.12 (2018-05-23)
 ==========================================

@@ -359,3 +359,4 @@
 "login_tablet_device" = "Tablette";
 "login_desktop_device" = "Ordinateur";
 "notice_in_reply_to" = "En réponse à";
+"error_common_message" = "Une erreur est survenue. Veuillez réessayer ultérieurement.";
