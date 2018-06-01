@@ -234,9 +234,20 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 /**
  Invalidate the access token, close the matrix session and delete all store data.
  
+ @note This method is equivalent to `logoutSendingServerRequest:completion:` with `sendLogoutServerRequest` parameter to YES
+ 
  @param completion the block to execute at the end of the operation (independently if it succeeded or not).
  */
 - (void)logout:(void (^)(void))completion;
+
+/**
+ Invalidate the access token, close the matrix session and delete all store data.
+ 
+ @param sendLogoutServerRequest indicate to send logout request to home server.
+ @param completion the block to execute at the end of the operation (independently if it succeeded or not).
+ */
+- (void)logoutSendingServerRequest:(BOOL)sendLogoutServerRequest
+                        completion:(void (^)(void))completion;
 
 /**
  Delete the potential APNS pusher, without changing 'enablePushNotifications' property.

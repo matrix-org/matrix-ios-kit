@@ -788,7 +788,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     notifyOpenSessionFailure = YES;
 }
 
-- (void)logout:(void (^)(void))completion
+- (void)logout:(void (^)(void))completion 
 {
     [self deletePusher];
     [self deletePushKitPusher];
@@ -814,6 +814,44 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     // Do not retry on failure.
     operation.maxNumberOfTries = 1;
+}
+
+// Logout locally, do not send server request
+- (void)logoutLocally:(void (^)(void))completion
+{
+    [self deletePusher];
+    [self deletePushKitPusher];
+    
+    [mxSession enableCrypto:NO success:^{
+        [self closeSession:YES];
+        if (completion)
+        {
+            completion();
+        }
+        
+    } failure:^(NSError *error) {
+        
+        // Close the session even if the logout request failed
+        [self closeSession:YES];
+        if (completion)
+        {
+            completion();
+        }
+        
+    }];
+}
+
+- (void)logoutSendingServerRequest:(BOOL)sendLogoutServerRequest
+                        completion:(void (^)(void))completion
+{
+    if (sendLogoutServerRequest)
+    {
+        [self logout:completion];
+    }
+    else
+    {
+        [self logoutLocally:completion];
+    }
 }
 
 - (void)deletePusher
