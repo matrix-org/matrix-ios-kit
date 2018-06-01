@@ -47,7 +47,6 @@ NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
     self = [self init];
     if (self)
     {
-        enableDebug = NO;
         _URL = URL;
     }
     return self;
