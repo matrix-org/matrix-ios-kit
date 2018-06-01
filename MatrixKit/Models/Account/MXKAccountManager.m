@@ -114,10 +114,17 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)(void))completion
 {
-    NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
+    [self removeAccount:theAccount sendLogoutRequest:YES completion:completion];
+}
+
+- (void)removeAccount:(MXKAccount*)theAccount
+    sendLogoutRequest:(BOOL)sendLogoutRequest
+           completion:(void (^)(void))completion
+{
+    NSLog(@"[MXKAccountManager] logout (%@), send logout request to home server: %d", theAccount.mxCredentials.userId, sendLogoutRequest);
     
     // Close session and clear associated store.
-    [theAccount logout:^{
+    [theAccount logoutSendingServerRequest:sendLogoutRequest completion:^{
         
         // Retrieve the corresponding account in the internal array
         MXKAccount* removedAccount = nil;
@@ -148,6 +155,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         
     }];
 }
+
 
 - (void)logoutWithCompletion:(void (^)(void))completion
 {
