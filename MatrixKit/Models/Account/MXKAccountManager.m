@@ -114,10 +114,17 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
 - (void)removeAccount:(MXKAccount*)theAccount completion:(void (^)(void))completion
 {
-    NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
+    [self removeAccount:theAccount sendLogoutRequest:YES completion:completion];
+}
+
+- (void)removeAccount:(MXKAccount*)theAccount
+    sendLogoutRequest:(BOOL)sendLogoutRequest
+           completion:(void (^)(void))completion
+{
+    NSLog(@"[MXKAccountManager] logout (%@), send logout request to home server: %d", theAccount.mxCredentials.userId, sendLogoutRequest);
     
     // Close session and clear associated store.
-    [theAccount logout:^{
+    [theAccount logoutSendingServerRequest:sendLogoutRequest completion:^{
         
         // Retrieve the corresponding account in the internal array
         MXKAccount* removedAccount = nil;
@@ -148,6 +155,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         
     }];
 }
+
 
 - (void)logoutWithCompletion:(void (^)(void))completion
 {
@@ -186,6 +194,85 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         completion();
     }
 }
+
+//////
+
+//- (void)removeAccountLocally:(MXKAccount*)theAccount completion:(void (^)(void))completion
+//{
+//    NSLog(@"[MXKAccountManager] logout (%@)", theAccount.mxCredentials.userId);
+//
+//    // Close session and clear associated store.
+//    [theAccount logoutLocally:^{
+//
+//        // Retrieve the corresponding account in the internal array
+//        MXKAccount* removedAccount = nil;
+//
+//        for (MXKAccount *account in mxAccounts)
+//        {
+//            if ([account.mxCredentials.userId isEqualToString:theAccount.mxCredentials.userId])
+//            {
+//                removedAccount = account;
+//                break;
+//            }
+//        }
+//
+//        if (removedAccount)
+//        {
+//            [mxAccounts removeObject:removedAccount];
+//
+//            [self saveAccounts];
+//
+//            // Post notification
+//            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidRemoveAccountNotification object:removedAccount userInfo:nil];
+//        }
+//
+//        if (completion)
+//        {
+//            completion();
+//        }
+//
+//    }];
+//}
+
+//- (void)logoutLocallyCompletion:(void (^)(void))completion
+//{
+//    // Logout one by one the existing accounts
+//    if (mxAccounts.count)
+//    {
+//        [self removeAccountLocally:mxAccounts.lastObject completion:^{
+//            
+//            // loop: logout the next existing account (if any)
+//            [self logoutWithCompletion:completion];
+//            
+//        }];
+//        
+//        return;
+//    }
+//    
+//    NSUserDefaults *sharedUserDefaults = [MXKAppSettings standardAppSettings].sharedUserDefaults;
+//    
+//    // Remove APNS device token
+//    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
+//    
+//    // Remove Push device token
+//    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
+//    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+//    
+//    // Be sure that no account survive in local storage
+//    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
+//    [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
+//    [[NSFileManager defaultManager] removeItemAtPath:[self accountFile] error:nil];
+//    
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+//    [sharedUserDefaults synchronize];
+//    
+//    if (completion)
+//    {
+//        completion();
+//    }
+//}
+
+//////
 
 - (MXKAccount *)accountForUserId:(NSString *)userId
 {
