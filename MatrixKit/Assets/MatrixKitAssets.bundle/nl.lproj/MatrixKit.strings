@@ -266,8 +266,8 @@
 "notice_room_invite" = "%@ heeft %@ uitgenodigd";
 "notice_room_third_party_invite" = "%@ stuurde een uitnodiging naar %@ om tot de ruimte toe te treden";
 "notice_room_third_party_registered_invite" = "%@ heeft de uitnodiging voor %@ geaccepteerd";
-"notice_room_join" = "%@ is toegetreden";
-"notice_room_leave" = "%@ is weggegaan";
+"notice_room_join" = "%@ is tot de ruimte toegetreden";
+"notice_room_leave" = "%@ heeft de ruimte verlaten";
 "notice_room_reject" = "%@ heeft de uitnodiging geweigerd";
 "notice_room_kick" = "%@ heeft %@ eruit gezet";
 "notice_room_unban" = "%@ heeft %@ ontbannen";
