@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.7.15 ()
+==========================================
+
+Improvements:
+ * MXKWebViewVC: enableDebug: support multiple parameters in console.* logs methods.
+ 
+Bug fix:
+
+API break:
+ 
 Changes in MatrixKit in 0.7.14 (2018-06-01)
 ==========================================
 

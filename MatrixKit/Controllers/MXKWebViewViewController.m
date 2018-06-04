@@ -23,6 +23,18 @@
 
 NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
 
+// Override console.* logs methods to send WebKit postMessage events to native code.
+// Note: this code has a minimal support of multiple parameters in console.log()
+NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
+@"console.debug = console.log; console.info = console.log; console.warn = console.log; console.error = console.log;" \
+@"console.log = function() {" \
+@"    var msg = arguments[0];" \
+@"    for (var i = 1; i < arguments.length; i++) {" \
+@"        msg += ' ' + arguments[i];" \
+@"    }" \
+@"    window.webkit.messageHandlers.%@.postMessage(msg);" \
+@"};";
+
 @interface MXKWebViewViewController ()
 {
     BOOL enableDebug;
@@ -74,8 +86,7 @@ NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
     // Redirect all console.* logging methods into a WebKit postMessage event with name "jsLog"
     [webView.configuration.userContentController addScriptMessageHandler:self name:kMXKWebViewViewControllerPostMessageJSLog];
 
-    NSString *javaScriptString = [NSString stringWithFormat:@"console.debug = console.log; console.info = console.log; console.warn = console.log; console.error = console.log = function(msg) {window.webkit.messageHandlers.%@.postMessage(msg);};",
-                                  kMXKWebViewViewControllerPostMessageJSLog];
+    NSString *javaScriptString = [NSString stringWithFormat:kMXKWebViewViewControllerJavaScriptEnableLog, kMXKWebViewViewControllerPostMessageJSLog];
 
     [webView evaluateJavaScript:javaScriptString completionHandler:nil];
 }
