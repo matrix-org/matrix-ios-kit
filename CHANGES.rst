@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.7.15 ()
 
 Improvements:
  * MXKWebViewVC: enableDebug: support multiple parameters in console.* logs methods.
+ * Add MXKBarButtonItem, UIBarButtonItem subclass with convenient action block.
  
 Bug fix:
 
