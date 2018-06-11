@@ -100,7 +100,7 @@
 "notice_room_power_level_event_requirement" = "De minimale machtsniveau's gerelateerd aan gebeurtenissen zijn:";
 "notice_room_aliases" = "De ruimte bijnamen zijn: %@";
 "notice_encrypted_message" = "Versleuteld bericht";
-"notice_encryption_enabled" = "%@ heeft eind-tot-eind versleuteling aangezet (algorithm %@)";
+"notice_encryption_enabled" = "%@ heeft end-to-endbeveiliging aangezet (algorithm %@)";
 "notice_image_attachment" = "afbeelding bijlage";
 "notice_audio_attachment" = "audio bijlage";
 "notice_video_attachment" = "video bijlage";
