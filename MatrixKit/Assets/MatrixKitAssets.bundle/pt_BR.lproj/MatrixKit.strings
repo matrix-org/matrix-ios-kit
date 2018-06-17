@@ -15,3 +15,4 @@
 "login_prompt_email_token" = "Por favor informe o token de validação enviado por email";
 "login_error_title" = "Erro de login";
 "login_error_no_login_flow" = "Falha ao receber informações de autenticação deste servidor local";
+"view" = "Ver";
