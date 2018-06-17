@@ -11,3 +11,7 @@
 "login_optional_field" = "opcional";
 "login_display_name_placeholder" = "Nome público (p.ex: Roberto Silva)";
 "login_email_info" = "Fornecer um endereço de e-mail  permite que outras/os usuárias/os possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
+"login_email_placeholder" = "Endereço de email";
+"login_prompt_email_token" = "Por favor informe o token de validação enviado por email";
+"login_error_title" = "Erro de login";
+"login_error_no_login_flow" = "Falha ao receber informações de autenticação deste servidor local";
