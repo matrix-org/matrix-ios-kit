@@ -21,3 +21,6 @@
 "continue" = "Continuar";
 "leave" = "Sair";
 "invite" = "Convidar";
+"retry" = "Tentar novamente";
+"cancel" = "Cancelar";
+"save" = "Salvar";
