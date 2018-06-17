@@ -16,3 +16,4 @@
 "login_error_title" = "Erro de login";
 "login_error_no_login_flow" = "Falha ao receber informações de autenticação deste servidor local";
 "view" = "Ver";
+"login_error_do_not_support_login_flows" = "Atualmente nós não suportamos nenhum procedimento de login definido por este servidor local";
