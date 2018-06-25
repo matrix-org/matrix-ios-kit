@@ -53,6 +53,8 @@
 		B12C470C20BECAF8004FBF96 /* MXKErrorViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470920BECAF7004FBF96 /* MXKErrorViewModel.m */; };
 		B12C470D20BECAF8004FBF96 /* MXKErrorAlertPresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470A20BECAF7004FBF96 /* MXKErrorAlertPresentation.m */; };
 		B12C471020BED312004FBF96 /* MXKErrorPresentableBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */; };
+		B1D818B820E112F900D5F36D /* StorePerformanceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1D818B720E112F900D5F36D /* StorePerformanceTests.m */; };
+		B1D818BB20E114AA00D5F36D /* read_receipts_sync.json in Resources */ = {isa = PBXBuildFile; fileRef = B1D818BA20E114A900D5F36D /* read_receipts_sync.json */; };
 		CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */; };
 		CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */; };
 		F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */; };
@@ -331,6 +333,8 @@
 		B12C470B20BECAF7004FBF96 /* MXKErrorPresentable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKErrorPresentable.h; sourceTree = "<group>"; };
 		B12C470E20BED312004FBF96 /* MXKErrorPresentableBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKErrorPresentableBuilder.h; sourceTree = "<group>"; };
 		B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKErrorPresentableBuilder.m; sourceTree = "<group>"; };
+		B1D818B720E112F900D5F36D /* StorePerformanceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StorePerformanceTests.m; sourceTree = "<group>"; };
+		B1D818BA20E114A900D5F36D /* read_receipts_sync.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = read_receipts_sync.json; sourceTree = "<group>"; };
 		BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		CE14CA621E80122600E329A3 /* MXKAttachmentAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentAnimator.h; sourceTree = "<group>"; };
@@ -643,8 +647,10 @@
 			isa = PBXGroup;
 			children = (
 				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
+				B1D818B720E112F900D5F36D /* StorePerformanceTests.m */,
 				3203F26C1D2E9CAE0021F170 /* Info.plist */,
 				550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */,
+				B1D818B920E114A900D5F36D /* Fixtures */,
 			);
 			path = MatrixKitTests;
 			sourceTree = "<group>";
@@ -1003,6 +1009,14 @@
 				B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */,
 			);
 			path = ErrorPresentation;
+			sourceTree = "<group>";
+		};
+		B1D818B920E114A900D5F36D /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				B1D818BA20E114A900D5F36D /* read_receipts_sync.json */,
+			);
+			path = Fixtures;
 			sourceTree = "<group>";
 		};
 		CC4E6F6D4101B9B731F29FB7 /* Frameworks */ = {
@@ -1470,6 +1484,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1D818BB20E114AA00D5F36D /* read_receipts_sync.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1629,6 +1644,7 @@
 				F07B9C2A1D3587B0000CB20E /* MXKEventFormatter.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
+				B1D818B820E112F900D5F36D /* StorePerformanceTests.m in Sources */,
 				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
