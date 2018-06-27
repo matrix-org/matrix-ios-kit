@@ -80,16 +80,15 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 @synthesize contactManagerMXRoomSource;
 
 #pragma mark Singleton Methods
-static MXKContactManager* sharedMXKContactManager = nil;
 
-+ (id)sharedManager
++ (instancetype)sharedManager
 {
-    @synchronized(self)
-    {
-        if(sharedMXKContactManager == nil)
-            sharedMXKContactManager = [[self alloc] init];
-    }
-    return sharedMXKContactManager;
+    static MXKContactManager *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[MXKContactManager alloc] init];
+    });
+    return sharedInstance;
 }
 
 #pragma mark -
@@ -165,9 +164,14 @@ static MXKContactManager* sharedMXKContactManager = nil;
     {
         [mxSessionArray addObject:mxSession];
         
+        MXWeakify(self);
+        
         // Register a listener on matrix presence and membership events
         id eventListener = [mxSession listenToEventsOfTypes:@[kMXEventTypeStringRoomMember, kMXEventTypeStringPresence]
                                                        onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
+                                                           
+                               MXStrongifyAndReturnIfNil(self);
+                                                           
                                // Consider only live event
                                if (direction == MXTimelineDirectionForwards)
                                {
@@ -175,10 +179,10 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                    if (event.eventType == MXEventTypePresence)
                                    {
                                        // Check whether the concerned matrix user belongs to at least one contact.
-                                       BOOL isMatched = ([matrixContactByMatrixID objectForKey:event.sender] != nil);
+                                       BOOL isMatched = ([self->matrixContactByMatrixID objectForKey:event.sender] != nil);
                                        if (!isMatched)
                                        {
-                                           NSArray *matrixIDs = [matrixIDBy3PID allValues];
+                                           NSArray *matrixIDs = [self->matrixIDBy3PID allValues];
                                            isMatched = ([matrixIDs indexOfObject:event.sender] != NSNotFound);
                                        }
                                        
@@ -203,6 +207,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
         if (!mxSessionNewSyncedRoomObserver)
         {
             mxSessionNewSyncedRoomObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomInitialSyncNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                MXStrongifyAndReturnIfNil(self);
                 
                 // create contact for room members
                 if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
@@ -232,9 +238,11 @@ static MXKContactManager* sharedMXKContactManager = nil;
         if (!mxSessionStateObserver) {
             mxSessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
+                MXStrongifyAndReturnIfNil(self);
+                
                 MXSession *mxSession = notif.object;
                 
-                if ([mxSessionArray indexOfObject:mxSession] != NSNotFound)
+                if ([self->mxSessionArray indexOfObject:mxSession] != NSNotFound)
                 {
                     if ((mxSession.state == MXSessionStateStoreDataReady) || (mxSession.state == MXSessionStateRunning)) {
                         [self refreshMatrixContacts];
@@ -579,9 +587,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
     
     NSDate *startDate = [NSDate date];
     
-    __weak typeof(self) weakSelf = self;
+    MXWeakify(self);
+    
     [MXKTools checkAccessForContacts:nil showPopUpInViewController:nil completionHandler:^(BOOL granted) {
 
+        MXStrongifyAndReturnIfNil(self);
+        
         if (!granted)
         {
             if ([MXKAppSettings standardAppSettings].syncLocalContacts)
@@ -593,9 +604,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
             }
             
             // Local contacts list is empty if the access is denied.
-            localContactByContactID = nil;
-            localContactsWithMethods = nil;
-            splitLocalContacts = nil;
+            self->localContactByContactID = nil;
+            self->localContactsWithMethods = nil;
+            self->splitLocalContacts = nil;
             [self cacheLocalContacts];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
@@ -603,55 +614,55 @@ static MXKContactManager* sharedMXKContactManager = nil;
             NSLog(@"[MXKContactManager] refreshLocalContacts : Complete");
             NSLog(@"[MXKContactManager] refreshLocalContacts : Local contacts access denied");
         }
-        else if (weakSelf)
+        else
         {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-
-            isLocalContactListRefreshing = YES;
+            self->isLocalContactListRefreshing = YES;
             
             BOOL isColdStart = NO;
             
             // Check whether the local contacts sync has been disabled.
-            if (matrixIDBy3PID && ![MXKAppSettings standardAppSettings].syncLocalContacts)
+            if (self->matrixIDBy3PID && ![MXKAppSettings standardAppSettings].syncLocalContacts)
             {
                 // The user changed his mind and disabled the local contact sync, remove the cached data.
-                matrixIDBy3PID = nil;
+                self->matrixIDBy3PID = nil;
                 [self cacheMatrixIDsDict];
                 
                 // Reload the local contacts from the system
-                localContactByContactID = nil;
-                localContactsWithMethods = nil;
-                splitLocalContacts = nil;
+                self->localContactByContactID = nil;
+                self->localContactsWithMethods = nil;
+                self->splitLocalContacts = nil;
                 [self cacheLocalContacts];
             }
             
             // Check whether this is a cold start.
-            if (!matrixIDBy3PID)
+            if (!self->matrixIDBy3PID)
             {
                 isColdStart = YES;
                 
                 // Load the dictionary from the file system. It is cached to improve UX.
-                [strongSelf loadCachedMatrixIDsDict];
+                [self loadCachedMatrixIDsDict];
             }
-
-            dispatch_async(processingQueue, ^{
+            
+            dispatch_async(self->processingQueue, ^{
+                
+                MXStrongifyAndReturnIfNil(self);
 
                 // In case of cold start, retrieve the data from the file system
                 if (isColdStart)
                 {
-                    [strongSelf loadCachedLocalContacts];
-                    [strongSelf loadCachedContactBookInfo];
+                    [self loadCachedLocalContacts];
+                    [self loadCachedContactBookInfo];
 
                     // no local contact -> assume that the last sync date is useless
-                    if (localContactByContactID.count == 0)
+                    if (self->localContactByContactID.count == 0)
                     {
-                        lastSyncDate = nil;
+                        self->lastSyncDate = nil;
                     }
                 }
 
                 BOOL didContactBookChange = NO;
 
-                NSMutableArray* deletedContactIDs = [NSMutableArray arrayWithArray:[localContactByContactID allKeys]];
+                NSMutableArray* deletedContactIDs = [NSMutableArray arrayWithArray:[self->localContactByContactID allKeys]];
 
                 // can list local contacts?
                 if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
@@ -676,11 +687,11 @@ static MXKContactManager* sharedMXKContactManager = nil;
                             // the contact still exists
                             [deletedContactIDs removeObject:contactID];
 
-                            if (lastSyncDate)
+                            if (self->lastSyncDate)
                             {
                                 // ignore unchanged contacts since the previous sync
                                 CFDateRef lastModifDate = ABRecordCopyValue(contactRecord, kABPersonModificationDateProperty);
-                                if (kCFCompareGreaterThan != CFDateCompare (lastModifDate, (__bridge CFDateRef)lastSyncDate, nil))
+                                if (kCFCompareGreaterThan != CFDateCompare (lastModifDate, (__bridge CFDateRef)self->lastSyncDate, nil))
 
                                 {
                                     CFRelease(lastModifDate);
@@ -699,7 +710,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
                             }
 
                             // update the local contacts list
-                            [localContactByContactID setValue:contact forKey:contactID];
+                            [self->localContactByContactID setValue:contact forKey:contactID];
                         }
 
                         CFRelease(people);
@@ -715,38 +726,38 @@ static MXKContactManager* sharedMXKContactManager = nil;
                 for (NSString* contactID in deletedContactIDs)
                 {
                     didContactBookChange = YES;
-                    [localContactByContactID removeObjectForKey:contactID];
+                    [self->localContactByContactID removeObjectForKey:contactID];
                 }
 
                 // something has been modified in the local contact book
                 if (didContactBookChange)
                 {
                     // Reset the internal contact lists (These arrays will be prepared only if need).
-                    localContactsWithMethods = splitLocalContacts = nil;
+                    self->localContactsWithMethods = self->splitLocalContacts = nil;
                     
-                    [strongSelf cacheLocalContacts];
+                    [self cacheLocalContacts];
                 }
                 
-                lastSyncDate = [NSDate date];
-                [strongSelf cacheContactBookInfo];
+                self->lastSyncDate = [NSDate date];
+                [self cacheContactBookInfo];
                 
                 // Update loaded contacts with the known dict 3PID -> matrix ID
-                [strongSelf updateAllLocalContactsMatrixIDs];
+                [self updateAllLocalContactsMatrixIDs];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
                     // Contacts are loaded, post a notification
-                    isLocalContactListRefreshing = NO;
+                    self->isLocalContactListRefreshing = NO;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
                     
                     // Check the conditions required before triggering a matrix users lookup.
                     if (isColdStart || didContactBookChange)
                     {
-                        [strongSelf updateMatrixIDsForAllLocalContacts];
+                        [self updateMatrixIDsForAllLocalContacts];
                     }
                     
                     NSLog(@"[MXKContactManager] refreshLocalContacts : Complete");
-                    NSLog(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+                    NSLog(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", self->localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
                 });
             });
         }
@@ -784,8 +795,12 @@ static MXKContactManager* sharedMXKContactManager = nil;
         
         if (lookup3pidsArray.count > 0)
         {
+            MXWeakify(self);
+            
             [self.identityRESTClient lookup3pids:lookup3pidsArray
                                          success:^(NSArray *discoveredUsers) {
+                                             
+                                             MXStrongifyAndReturnIfNil(self);
                                              
                                              // Look for updates
                                              BOOL isUpdated = NO;
@@ -802,11 +817,11 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                                      // Remove the 3pid from the requested list
                                                      [threepids removeObject:pid];
                                                      
-                                                     NSString *currentMatrixID = [matrixIDBy3PID objectForKey:pid];
+                                                     NSString *currentMatrixID = [self->matrixIDBy3PID objectForKey:pid];
                                                      
                                                      if (![currentMatrixID isEqualToString:matrixId])
                                                      {
-                                                         [matrixIDBy3PID setObject:matrixId forKey:pid];
+                                                         [self->matrixIDBy3PID setObject:matrixId forKey:pid];
                                                          isUpdated = YES;
                                                      }
                                                  }
@@ -815,9 +830,9 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                              // Remove existing information which is not valid anymore
                                              for (NSString *pid in threepids)
                                              {
-                                                 if ([matrixIDBy3PID objectForKey:pid])
+                                                 if ([self->matrixIDBy3PID objectForKey:pid])
                                                  {
-                                                     [matrixIDBy3PID removeObjectForKey:pid];
+                                                     [self->matrixIDBy3PID removeObjectForKey:pid];
                                                      isUpdated = YES;
                                                  }
                                              }
@@ -856,10 +871,14 @@ static MXKContactManager* sharedMXKContactManager = nil;
         return;
     }
     
+    MXWeakify(self);
+    
     // Refresh the 3PIDs -> Matrix ID mapping
     dispatch_async(processingQueue, ^{
         
-        NSArray* contactsSnapshot = [localContactByContactID allValues];
+        MXStrongifyAndReturnIfNil(self);
+        
+        NSArray* contactsSnapshot = [self->localContactByContactID allValues];
         
         // Retrieve all 3PIDs
         NSMutableArray* threepids = [[NSMutableArray alloc] init];
@@ -897,6 +916,8 @@ static MXKContactManager* sharedMXKContactManager = nil;
             [self.identityRESTClient lookup3pids:lookup3pidsArray
                                          success:^(NSArray *discoveredUsers) {
                                              
+                                             MXStrongifyAndReturnIfNil(self);
+                                             
                                              [threepids removeAllObjects];
                                              NSMutableArray* userIds = [[NSMutableArray alloc] init];
                                              
@@ -919,11 +940,11 @@ static MXKContactManager* sharedMXKContactManager = nil;
                                              
                                              if (userIds.count)
                                              {
-                                                 matrixIDBy3PID = [[NSMutableDictionary alloc] initWithObjects:userIds forKeys:threepids];
+                                                 self->matrixIDBy3PID = [[NSMutableDictionary alloc] initWithObjects:userIds forKeys:threepids];
                                              }
                                              else
                                              {
-                                                 matrixIDBy3PID = nil;
+                                                 self->matrixIDBy3PID = nil;
                                              }
                                              
                                              [self cacheMatrixIDsDict];
@@ -946,7 +967,7 @@ static MXKContactManager* sharedMXKContactManager = nil;
         }
         else
         {
-            matrixIDBy3PID = nil;
+            self->matrixIDBy3PID = nil;
             [self cacheMatrixIDsDict];
         }
     });
@@ -998,8 +1019,13 @@ static MXKContactManager* sharedMXKContactManager = nil;
 // refresh the international phonenumber of the contacts
 - (void)internationalizePhoneNumbers:(NSString*)countryCode
 {
+    MXWeakify(self);
+    
     dispatch_async(processingQueue, ^{
-        NSArray* contactsSnapshot = [localContactByContactID allValues];
+        
+        MXStrongifyAndReturnIfNil(self);
+        
+        NSArray* contactsSnapshot = [self->localContactByContactID allValues];
         
         for (MXKContact* contact in contactsSnapshot)
         {
@@ -1203,74 +1229,126 @@ static MXKContactManager* sharedMXKContactManager = nil;
 
 #pragma mark - Internals
 
+- (NSDictionary*)matrixContactsByMatrixIDFromMXSessions:(NSArray<MXSession*>*)mxSessions
+{
+    // The existing dictionary of contacts will be replaced by this one
+    NSMutableDictionary *matrixContactByMatrixID = [[NSMutableDictionary alloc] init];
+    for (MXSession *mxSession in mxSessions)
+    {
+        // Check all existing users
+        NSArray *mxUsers = [mxSession.users copy];
+        
+        for (MXUser *user in mxUsers)
+        {
+            // Check whether this user has already been added
+            if (!matrixContactByMatrixID[user.userId])
+            {
+                if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats) && mxSession.directRooms[user.userId]))
+                {
+                    // Check whether a contact is already defined for this id in previous dictionary
+                    // (avoid delete and create the same ones, it could save thumbnail downloads).
+                    MXKContact* contact = matrixContactByMatrixID[user.userId];
+                    if (contact)
+                    {
+                        contact.displayName = (user.displayname.length > 0) ? user.displayname : user.userId;
+                        
+                        // Check the avatar change
+                        if ((user.avatarUrl || contact.matrixAvatarURL) && ([user.avatarUrl isEqualToString:contact.matrixAvatarURL] == NO))
+                        {
+                            [contact resetMatrixThumbnail];
+                        }
+                    }
+                    else
+                    {
+                        contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) andMatrixID:user.userId];
+                    }
+                    
+                    matrixContactByMatrixID[user.userId] = contact;
+                }
+            }
+        }
+    }
+    
+    // Do not make an immutable copy to avoid performance penalty
+    return matrixContactByMatrixID;
+}
+
 - (void)refreshMatrixContacts
 {
     NSArray *mxSessions = self.mxSessions;
-    
+
     // Check whether at least one session is available
     if (!mxSessions.count)
     {
         matrixContactByMatrixID = nil;
         matrixContactByContactID = nil;
         [self cacheMatrixContacts];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
     }
     else if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
     {
-        if (!matrixContactByContactID)
-        {
-            [self loadCachedMatrixContacts];
-        }
-    
-        // The existing dictionary of contacts will be replaced by this one
-        NSMutableDictionary *updatedMatrixContactByMatrixID = [[NSMutableDictionary alloc] initWithCapacity:matrixContactByMatrixID.count];
-        for (MXSession *mxSession in mxSessions)
-        {
-            // Check all existing users
-            NSArray *mxUsers = mxSession.users;
+        MXWeakify(self);
 
-            for (MXUser *user in mxUsers)
+        BOOL shouldFetchLocalContacts = self->matrixContactByContactID == nil;
+        
+        dispatch_async(processingQueue, ^{
+
+            MXStrongifyAndReturnIfNil(self);
+            
+            NSArray *sessions = self.mxSessions;
+
+            NSMutableDictionary *matrixContactsByMatrixID = nil;
+            NSMutableDictionary *matrixContactsByContactID = nil;
+
+            if (shouldFetchLocalContacts)
             {
-                // Check whether this user has already been added
-                if (![updatedMatrixContactByMatrixID objectForKey:user.userId])
+                NSDictionary *cachedMatrixContacts = [self fetchCachedMatrixContacts];
+
+                if (!matrixContactsByContactID)
                 {
-                    if ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll) || ((self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats) && mxSession.directRooms[user.userId]))
-                    {
-                        // Check whether a contact is already defined for this id in previous dictionary
-                        // (avoid delete and create the same ones, it could save thumbnail downloads).
-                        MXKContact* contact = [matrixContactByMatrixID objectForKey:user.userId];
-                        if (contact)
-                        {
-                            contact.displayName = (user.displayname.length > 0) ? user.displayname : user.userId;
-                            
-                            // Check the avatar change
-                            if ((user.avatarUrl || contact.matrixAvatarURL) && ([user.avatarUrl isEqualToString:contact.matrixAvatarURL] == NO))
-                            {
-                                [contact resetMatrixThumbnail];
-                            }
-                        }
-                        else
-                        {
-                            contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((user.displayname.length > 0) ? user.displayname : user.userId) andMatrixID:user.userId];
-                        }
-                        
-                        [updatedMatrixContactByMatrixID setValue:contact forKey:user.userId];
-                    }
+                    matrixContactsByContactID = [NSMutableDictionary dictionary];
+                }
+                else
+                {
+                    matrixContactsByContactID = [cachedMatrixContacts mutableCopy];
                 }
             }
-        }
-        
-        // Update the matrix contacts list
-        matrixContactByMatrixID = updatedMatrixContactByMatrixID;
-        [matrixContactByContactID removeAllObjects];
-        for (MXKContact *contact in matrixContactByMatrixID.allValues)
-        {
-            [matrixContactByContactID setValue:contact forKey:contact.contactID];
-        }
-        
-        [self cacheMatrixContacts];
+
+            NSDictionary *matrixContacts = [self matrixContactsByMatrixIDFromMXSessions:sessions];
+
+            if (!matrixContacts)
+            {
+                matrixContactsByMatrixID = [NSMutableDictionary dictionary];
+                
+                for (MXKContact *contact in matrixContactsByContactID.allValues)
+                {
+                    matrixContactsByMatrixID[contact.matrixIdentifiers.firstObject] = contact;
+                }
+            }
+            else
+            {
+                matrixContactsByMatrixID = [matrixContacts mutableCopy];
+            }
+
+            for (MXKContact *contact in matrixContactsByMatrixID.allValues)
+            {
+                matrixContactsByContactID[contact.contactID] = contact;
+            }
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                MXStrongifyAndReturnIfNil(self);
+
+                // Update the matrix contacts list
+                self->matrixContactByMatrixID = matrixContactsByMatrixID;
+                self->matrixContactByContactID = matrixContactsByContactID;
+
+                [self cacheMatrixContacts];
+
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
+            });
+        });
     }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
 }
 
 - (void)updateMatrixContactWithID:(NSString*)matrixId
@@ -1480,7 +1558,7 @@ static NSString *contactsBookInfoFile = @"contacts";
     }
 }
 
-- (void)loadCachedMatrixContacts
+- (NSDictionary*)fetchCachedMatrixContacts
 {
     NSDate *startDate = [NSDate date];
     
@@ -1488,55 +1566,33 @@ static NSString *contactsBookInfoFile = @"contacts";
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     
-    __block NSDictionary *matrixContactByContactIDCpy = nil;
+    __block NSDictionary *matrixContactByContactID = nil;
     
     if ([fileManager fileExistsAtPath:dataFilePath])
     {
-        // Use here processing queue because this queue is used during encoding.
-        dispatch_sync(processingQueue, ^{
+        @try
+        {
+            NSData* filecontent = [NSData dataWithContentsOfFile:dataFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
             
-            // The file content could be corrupted
-            @try
+            NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
+            
+            id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
+            
+            if ([object isKindOfClass:[NSDictionary class]])
             {
-                NSData* filecontent = [NSData dataWithContentsOfFile:dataFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
-                
-                NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
-                
-                id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
-                
-                if ([object isKindOfClass:[NSDictionary class]])
-                {
-                    matrixContactByContactIDCpy = object;
-                }
-                
-                [decoder finishDecoding];
-            }
-            @catch (NSException *exception)
-            {
+                matrixContactByContactID = object;
             }
             
-        });
-        
+            [decoder finishDecoding];
+        }
+        @catch (NSException *exception)
+        {
+        }
     }
     
-    if (!matrixContactByContactIDCpy)
-    {
-        matrixContactByContactID = [[NSMutableDictionary alloc] init];
-    }
-    else
-    {
-        matrixContactByContactID = [matrixContactByContactIDCpy mutableCopy];
-    }
+    NSLog(@"[MXKContactManager] fetchCachedMatrixContacts : Loaded %tu contacts in %.0fms", matrixContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
     
-    matrixContactByMatrixID = [[NSMutableDictionary alloc] initWithCapacity:matrixContactByContactID.count];
-    
-    for (MXKContact *contact in matrixContactByContactID.allValues)
-    {
-        // One and only one matrix id is expected for each listed contact.
-        [matrixContactByMatrixID setObject:contact forKey:contact.matrixIdentifiers.firstObject];
-    }
-
-    NSLog(@"[MXKContactManager] loadCachedMatrixContacts : Loaded %tu contacts in %.0fms", matrixContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+    return matrixContactByContactID;
 }
 
 - (void)cacheMatrixIDsDict
