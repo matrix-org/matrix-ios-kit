@@ -1236,7 +1236,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     for (MXSession *mxSession in mxSessions)
     {
         // Check all existing users
-        NSArray *mxUsers = mxSession.users;
+        NSArray *mxUsers = [mxSession.users copy];
         
         for (MXUser *user in mxUsers)
         {
@@ -1269,7 +1269,8 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         }
     }
     
-    return [matrixContactByMatrixID copy];
+    // Do not make an immutable copy to avoid performance penalty
+    return matrixContactByMatrixID;
 }
 
 - (void)refreshMatrixContacts
@@ -1290,8 +1291,8 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         MXWeakify(self);
 
         BOOL shouldFetchLocalContacts = self->matrixContactByContactID == nil;
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        dispatch_async(processingQueue, ^{
 
             MXStrongifyAndReturnIfNil(self);
             
@@ -1569,28 +1570,24 @@ static NSString *contactsBookInfoFile = @"contacts";
     
     if ([fileManager fileExistsAtPath:dataFilePath])
     {
-        // Use here processing queue because this queue is used during encoding.
-        dispatch_sync(processingQueue, ^{
-            // The file content could be corrupted
-            @try
+        @try
+        {
+            NSData* filecontent = [NSData dataWithContentsOfFile:dataFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
+            
+            NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
+            
+            id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
+            
+            if ([object isKindOfClass:[NSDictionary class]])
             {
-                NSData* filecontent = [NSData dataWithContentsOfFile:dataFilePath options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:nil];
-                
-                NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
-                
-                id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
-                
-                if ([object isKindOfClass:[NSDictionary class]])
-                {
-                    matrixContactByContactID = object;
-                }
-                
-                [decoder finishDecoding];
+                matrixContactByContactID = object;
             }
-            @catch (NSException *exception)
-            {
-            }
-        });
+            
+            [decoder finishDecoding];
+        }
+        @catch (NSException *exception)
+        {
+        }
     }
     
     NSLog(@"[MXKContactManager] fetchCachedMatrixContacts : Loaded %tu contacts in %.0fms", matrixContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
