@@ -146,13 +146,13 @@
         // the image is already in the cache
         if (_avatarImage)
         {
-            __weak typeof(self) weakSelf = self;
+            MXWeakify(self);
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (weakSelf)
+                if (weakself)
                 {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakSelf.contactID userInfo:nil];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakself.contactID userInfo:nil];
                 }
             });
         }
@@ -189,12 +189,12 @@
             {
                 _avatarImage = image;
                 
-                __weak typeof(self) weakSelf = self;
+                MXWeakify(self);
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (weakSelf)
+                    if (weakself)
                     {
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakSelf.contactID userInfo:nil];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakself.contactID userInfo:nil];
                     }
                 });
             }
