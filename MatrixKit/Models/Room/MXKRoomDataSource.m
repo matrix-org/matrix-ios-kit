@@ -1965,11 +1965,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 
 #pragma mark - Asynchronous events processing
-/**
- The dispatch queue to process room messages.
- This processing can consume time. Handling it on a separated thread avoids to block the main thread.
- All MXKRoomDataSource instances share the same dispatch queue.
- */
  + (dispatch_queue_t)processingQueue
 {
     static dispatch_queue_t processingQueue;

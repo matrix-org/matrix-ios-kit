@@ -1,3 +1,17 @@
+Changes in MatrixKit in 0.7.15 (2018-07-03)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.10.12).
+ * MXKWebViewVC: enableDebug: support multiple parameters in console.* logs methods.
+ * Add MXKBarButtonItem, UIBarButtonItem subclass with convenient action block.
+ * MXKRoomDataSource: Make processingQueue public so that overidding class can use it.
+ * MXKRoomBubbleCellData: add a readReceipts member to cache read receipts data.
+ 
+Bug fix:
+
+API break:
+ 
 Changes in MatrixKit in 0.7.14 (2018-06-01)
 ==========================================
 

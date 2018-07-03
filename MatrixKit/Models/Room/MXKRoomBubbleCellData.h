@@ -64,6 +64,12 @@
 @property (nonatomic, readonly) NSArray<MXKRoomBubbleComponent*> *bubbleComponents;
 
 /**
+ Read receipts per event.
+ */
+@property(nonatomic) NSMutableDictionary<NSString* /* eventId */,
+                                         NSArray<MXReceiptData *> *> *readReceipts;
+
+/**
  Event formatter
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;

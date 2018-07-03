@@ -51,11 +51,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)resetMatrixAvatar
 {
     _avatarImage = nil;
@@ -113,12 +108,17 @@
                 if (!user)
                 {
                     MXSession *mxSession = mxSessions.firstObject;
+                    
+                    MXWeakify(self);
+                    
                     [mxSession.matrixRestClient avatarUrlForUser:_matrixID
                                                          success:^(NSString *mxAvatarUrl) {
                                                              
-                        _matrixAvatarURL = mxAvatarUrl;
+                        MXStrongifyAndReturnIfNil(self);
+                                                             
+                        self.matrixAvatarURL = mxAvatarUrl;
                         
-                        avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:_matrixAvatarURL toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+                        self->avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:self.matrixAvatarURL toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
                                                              
                         [self downloadAvatarImage];
                                                              
@@ -146,8 +146,14 @@
         // the image is already in the cache
         if (_avatarImage)
         {
+            MXWeakify(self);
+            
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:_contactID userInfo:nil];
+                
+                if (weakself)
+                {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakself.contactID userInfo:nil];
+                }
             });
         }
         else
@@ -183,8 +189,13 @@
             {
                 _avatarImage = image;
                 
+                MXWeakify(self);
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:_contactID userInfo:nil];
+                    if (weakself)
+                    {
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakself.contactID userInfo:nil];
+                    }
                 });
             }
         }
