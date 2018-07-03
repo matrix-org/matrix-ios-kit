@@ -458,8 +458,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         
         if (loader)
         {
+            MXWeakify(self);
+            
             // Add observers
             onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                MXStrongifyAndReturnIfNil(self);
                 
                 // Sanity check
                 if ([notif.object isKindOfClass:[NSString class]])
@@ -467,13 +471,13 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                     NSString* url = notif.object;
                     NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
                     
-                    if ([url isEqualToString:_actualURL] && cacheFilePath.length)
+                    if ([url isEqualToString:self.actualURL] && cacheFilePath.length)
                     {
                         // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-                        onAttachmentDownloadEndObs = nil;
-                        onAttachmentDownloadFailureObs = nil;
+                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadEndObs];
+                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadFailureObs];
+                        self->onAttachmentDownloadEndObs = nil;
+                        self->onAttachmentDownloadFailureObs = nil;
                         
                         if (onAttachmentReady)
                         {
@@ -485,19 +489,21 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             
             onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
+                MXStrongifyAndReturnIfNil(self);
+                
                 // Sanity check
                 if ([notif.object isKindOfClass:[NSString class]])
                 {
                     NSString* url = notif.object;
                     NSError* error = notif.userInfo[kMXMediaLoaderErrorKey];
                     
-                    if ([url isEqualToString:_actualURL])
+                    if ([url isEqualToString:self.actualURL])
                     {
                         // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-                        onAttachmentDownloadEndObs = nil;
-                        onAttachmentDownloadFailureObs = nil;
+                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadEndObs];
+                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadFailureObs];
+                        self->onAttachmentDownloadEndObs = nil;
+                        self->onAttachmentDownloadFailureObs = nil;
                         
                         if (onFailure)
                         {

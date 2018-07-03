@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -492,6 +493,15 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  By default, they are added to the end of the timeline.
  */
 - (void)handleUnsentMessages;
+
+#pragma mark - Asynchronous events processing
+/**
+ The dispatch queue to process room messages.
+ 
+ This processing can consume time. Handling it on a separated thread avoids to block the main thread.
+ All MXKRoomDataSource instances share the same dispatch queue.
+ */
++ (dispatch_queue_t)processingQueue;
 
 #pragma mark - Bubble collapsing
 
