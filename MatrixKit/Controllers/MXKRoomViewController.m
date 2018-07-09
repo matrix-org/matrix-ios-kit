@@ -734,7 +734,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
         else
         {
             // set default title
-            self.navigationItem.title = roomDataSource.room.state.displayname;
+            self.navigationItem.title = roomDataSource.room.summary.displayname;
         }
         
         // Show input tool bar
@@ -754,7 +754,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 }
                 else
                 {
-                    self.navigationItem.title = roomDataSource.room.state.displayname;
+                    self.navigationItem.title = roomDataSource.room.summary.displayname;
                 }
             }
             else
@@ -856,7 +856,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomDataSource.room.state.displayname);
+            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomDataSource.room.summary.displayname);
             
             joinRoomRequest = nil;
             [self stopActivityIndicator];
