@@ -379,7 +379,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     else if (mxCall.isConferenceCall)
     {
-        peerDisplayName = mxCall.room.state.displayname;
+        peerDisplayName = mxCall.room.summary.displayname;
         peerAvatarURL = mxCall.room.state.avatar;
     }
     
