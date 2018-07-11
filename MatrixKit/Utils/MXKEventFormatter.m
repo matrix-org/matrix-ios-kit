@@ -224,7 +224,7 @@
 - (NSString*)senderDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderDisplayName = [roomState memberName:event.sender];
+    NSString *senderDisplayName = [roomState.members memberName:event.sender];
     // Check whether this sender name is updated by the current event (This happens in case of new joined member)
     NSString* membership;
     MXJSONModelSetString(membership, event.content[@"membership"]);
@@ -242,7 +242,7 @@
 - (NSString*)senderAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
+    NSString *senderAvatarUrl = [roomState.members memberWithUserId:event.sender].avatarUrl;
     
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     NSString* membership;
@@ -315,7 +315,7 @@
             NSString *redactedBy = @"";
             // Consider live room state to resolve redactor name if no roomState is provided
             MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
-            redactedBy = [aRoomState memberName:redactorId];
+            redactedBy = [aRoomState.members memberName:redactorId];
             
             NSString *redactedReason = (event.redactedBecause[@"content"])[@"reason"];
             if (redactedReason.length)
@@ -625,7 +625,7 @@
             
             if (creatorId)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState memberName:creatorId] : creatorId)];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
                 // Append redacted info if any
                 if (redactedInfo)
                 {

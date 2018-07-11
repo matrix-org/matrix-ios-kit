@@ -2609,7 +2609,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 //        NSLog(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
         
         // Add the member display name in text input
-        MXRoomMember *selectedRoomMember = [roomDataSource.room.state memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
+        MXRoomMember *selectedRoomMember = [roomDataSource.room.state.members memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
         if (selectedRoomMember)
         {
             [self mention:selectedRoomMember];

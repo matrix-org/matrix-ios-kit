@@ -1768,7 +1768,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Check whether at least one listed user is a room member.
         for (NSString* userId in userIds)
         {
-            MXRoomMember * roomMember = [self.room.state memberWithUserId:userId];
+            MXRoomMember * roomMember = [self.room.state.members memberWithUserId:userId];
             if (roomMember)
             {
                 // Inform the delegate to refresh the bubble display
