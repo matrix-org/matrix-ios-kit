@@ -774,7 +774,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         MXUser *theMember = nil;
         if (!mxCall.isConferenceCall)
         {
-            NSArray *members = mxCall.room.state.joinedMembers;
+            NSArray *members = mxCall.room.state.members.joinedMembers;
             for (MXUser *member in members)
             {
                 if (![member.userId isEqualToString:mxCall.callerId])

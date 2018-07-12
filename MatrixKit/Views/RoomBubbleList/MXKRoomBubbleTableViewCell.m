@@ -653,7 +653,7 @@ static BOOL _disableLongPressGestureOnEvent;
 
                                     for (MXReceiptData* data in receipts)
                                     {
-                                        MXRoomMember * roomMember = [room.state memberWithUserId:data.userId];
+                                        MXRoomMember * roomMember = [room.state.members memberWithUserId:data.userId];
                                         if (roomMember)
                                         {
                                             [roomMembers addObject:roomMember];

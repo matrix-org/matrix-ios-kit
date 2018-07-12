@@ -194,7 +194,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)loadData
 {
-    NSArray* membersList = [mxRoom.state membersWithoutConferenceUser];
+    NSArray* membersList = [mxRoom.state.members membersWithoutConferenceUser];
     
     if (!_settings.showLeftMembersInRoomMemberList)
     {
@@ -295,7 +295,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 {
                     return NSOrderedDescending;
                 }
-                return [[mxRoom.state memberSortedName:member1.roomMember.userId] compare:[mxRoom.state memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             
             // Consider user's lastActive ago value
@@ -305,7 +305,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             }
             else if (user1.lastActiveAgo == user2.lastActiveAgo)
             {
-                return [[mxRoom.state memberSortedName:member1.roomMember.userId] compare:[mxRoom.state memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             return NSOrderedDescending;
         }
@@ -324,7 +324,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 return NSOrderedDescending;
             }
             
-            return [[mxRoom.state memberSortedName:member1.roomMember.userId] compare:[mxRoom.state memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+            return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
         }
     }];
     
