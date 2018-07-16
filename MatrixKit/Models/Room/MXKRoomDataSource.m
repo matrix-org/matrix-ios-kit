@@ -451,7 +451,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
                         MXRoom *room = notif.object;
-                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
                         {
                             // The existing room history has been flushed during server sync because a gap has been observed between local and server storage.
                             [self reload];
@@ -1238,7 +1238,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     // Shall we need to consider a thumbnail?
     UIImage *thumbnail = nil;
-    if (_room.state.isEncrypted)
+    if (_room.summary.isEncrypted)
     {
         // Thumbnail is useful only in case of encrypted room
         thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
@@ -1257,7 +1257,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     // Shall we need to consider a thumbnail?
     UIImage *thumbnail = nil;
-    if (_room.state.isEncrypted)
+    if (_room.summary.isEncrypted)
     {
         // Thumbnail is useful only in case of encrypted room
         thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
@@ -1749,7 +1749,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // Refresh the room data source when the room has been initialSync'ed
     MXRoom *room = notif.object;
-    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
     { 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
         

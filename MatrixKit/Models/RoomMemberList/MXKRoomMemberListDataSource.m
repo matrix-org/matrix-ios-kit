@@ -351,7 +351,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         if (direction == MXTimelineDirectionForwards)
         {
             // Check the room Id (if any)
-            if (event.roomId && [event.roomId isEqualToString:mxRoom.state.roomId] == NO)
+            if (event.roomId && [event.roomId isEqualToString:mxRoom.roomId] == NO)
             {
                 // This event does not concern the current room members
                 return;

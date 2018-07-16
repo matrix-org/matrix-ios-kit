@@ -68,7 +68,7 @@
     if (self.mxRoom)
     {
         // Remove new line characters
-        NSString *topic = [MXTools stripNewlineCharacters:self.mxRoom.state.topic];
+        NSString *topic = [MXTools stripNewlineCharacters:self.mxRoom.summary.topic];
         // replace empty string by nil: avoid having the placeholder when there is no topic
         self.topicTextField.text = (topic.length ? topic : nil);
     }
@@ -357,7 +357,7 @@
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
                 // Only the room name is edited here, update the text field with the room name
-                textField.text = self.mxRoom.state.name;
+                textField.text = self.mxRoom.summary.displayname;
                 textField.backgroundColor = [UIColor whiteColor];
             }
             else
@@ -432,7 +432,7 @@
         textField.backgroundColor = [UIColor clearColor];
         
         NSString *topic = textField.text;
-        if ((topic.length || self.mxRoom.state.topic.length) && [topic isEqualToString:self.mxRoom.state.topic] == NO)
+        if ((topic.length || self.mxRoom.summary.topic.length) && [topic isEqualToString:self.mxRoom.summary.topic] == NO)
         {
             if ([self.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
             {
@@ -464,7 +464,7 @@
                     }
                     
                     // Revert change
-                    NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.state.topic];
+                    NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.summary.topic];
                     textField.text = (topic.length ? topic : nil);
                     
                     // Hide topic field if empty
