@@ -95,7 +95,7 @@
 "notice_invalid_attachment" = "pièce-jointe non valide";
 "notice_unsupported_attachment" = "Pièce-jointe non prise en charge : %@";
 "notice_redaction" = "%@ a supprimé un événement (id : %@)";
-"notice_error_unsupported_event" = "Événement non prise en charge";
+"notice_error_unsupported_event" = "Évènement non pris en charge";
 "notice_error_unexpected_event" = "Événement inattendu";
 "notice_error_unknown_event_type" = "Type d'événement inconnu";
 "notice_room_history_visible_to_anyone" = "%@ a rendu l'historique futur du salon visible à tout le monde.";
