@@ -214,7 +214,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                 if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
                 {
                     MXRoom *room = notif.object;
-                    NSArray *roomMembers = room.state.members;
+                    NSArray *roomMembers = room.state.members.members;
                     
                     // Consider only 1:1 chat for MXKMemberContactCreationOneToOneRoom
                     // or adding all
@@ -505,7 +505,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     {
         if (!room.state.isJoinRulePublic && !room.state.isConferenceUserRoom)
         {
-            NSArray *members = room.state.members;
+            NSArray *members = room.state.members.members;
             
             for (MXRoomMember *member in members)
             {
