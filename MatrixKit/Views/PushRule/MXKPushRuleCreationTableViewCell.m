@@ -142,7 +142,7 @@
             
             if (room)
             {
-                [_mxSession.notificationCenter addRoomRule:room.state.roomId
+                [_mxSession.notificationCenter addRoomRule:room.roomId
                                                     notify:(_actionSegmentedControl.selectedSegmentIndex == 0)
                                                      sound:_soundSwitch.on
                                                  highlight:_highlightSwitch.on];

@@ -208,7 +208,7 @@
                 } failure:^(NSError *error) {
                     
                     [self removePendingActionMask];
-                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.state.roomId);
+                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.roomId);
                     // Notify MatrixKit user
                     NSString *myUserId = self.mainSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -498,7 +498,7 @@
             if (notif.object == self.mainSession)
             {
                 NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-                if (roomId && [roomId isEqualToString:mxRoom.state.roomId])
+                if (roomId && [roomId isEqualToString:mxRoom.roomId])
                 {
                     // We must remove the current view controller.
                     [self withdrawViewControllerAnimated:YES completion:nil];
@@ -510,7 +510,7 @@
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
-            if (self.mainSession == room.mxSession && [mxRoom.state.roomId isEqualToString:room.state.roomId])
+            if (self.mainSession == room.mxSession && [mxRoom.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room members list by updating the room member instance
@@ -557,7 +557,7 @@
     MXRoomMember* nextRoomMember = nil;
     
     // get the updated memmber
-    NSArray* membersList = [self.mxRoom.state members];
+    NSArray<MXRoomMember *> *membersList = self.mxRoom.state.members.members;
     for (MXRoomMember* member in membersList)
     {
         if ([member.userId isEqualToString:_mxRoomMember.userId])
@@ -711,7 +711,7 @@
         // offer to start a new chat only if the room is not the first direct chat with this user
         // it does not make sense : it would open the same room
         MXRoom* directRoom = [self.mainSession directJoinedRoomWithUserId:_mxRoomMember.userId];
-        if (!directRoom || (![directRoom.roomId isEqualToString:mxRoom.state.roomId]))
+        if (!directRoom || (![directRoom.roomId isEqualToString:mxRoom.roomId]))
         {
             [actionsArray addObject:@(MXKRoomMemberDetailsActionStartChat)];
         }

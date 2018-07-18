@@ -294,7 +294,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
-            if (mxCall && self.mainSession == room.mxSession && [mxCall.room.state.roomId isEqualToString:room.state.roomId])
+            if (mxCall && self.mainSession == room.mxSession && [mxCall.room.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room state
@@ -380,7 +380,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     else if (mxCall.isConferenceCall)
     {
         peerDisplayName = mxCall.room.summary.displayname;
-        peerAvatarURL = mxCall.room.state.avatar;
+        peerAvatarURL = mxCall.room.summary.avatar;
     }
     
     callerNameLabel.text = peerDisplayName;

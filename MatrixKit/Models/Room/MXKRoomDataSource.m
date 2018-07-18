@@ -451,7 +451,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
                         MXRoom *room = notif.object;
-                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
                         {
                             // The existing room history has been flushed during server sync because a gap has been observed between local and server storage.
                             [self reload];
@@ -478,7 +478,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     state = MXKDataSourceStateReady;
 
                     // Check user membership in this room
-                    MXMembership membership = self.room.state.membership;
+                    MXMembership membership = self.room.summary.membership;
                     if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
                     {
                         // Here the initial sync is not ended or the room is a pending invitation.
@@ -964,7 +964,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
     // Check the current data source state, and the actual user membership for this room.
-    if (state != MXKDataSourceStateReady || ((self.room.state.membership == MXMembershipUnknown || self.room.state.membership == MXMembershipInvite) && ![self.room.state.historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable]))
+    if (state != MXKDataSourceStateReady || ((self.room.summary.membership == MXMembershipUnknown || self.room.summary.membership == MXMembershipInvite) && ![self.room.state.historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable]))
     {
         // Back pagination is not available here.
         if (failure)
@@ -1238,7 +1238,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     // Shall we need to consider a thumbnail?
     UIImage *thumbnail = nil;
-    if (_room.state.isEncrypted)
+    if (_room.summary.isEncrypted)
     {
         // Thumbnail is useful only in case of encrypted room
         thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
@@ -1257,7 +1257,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     // Shall we need to consider a thumbnail?
     UIImage *thumbnail = nil;
-    if (_room.state.isEncrypted)
+    if (_room.summary.isEncrypted)
     {
         // Thumbnail is useful only in case of encrypted room
         thumbnail = [MXKTools reduceImage:image toFitInSize:CGSizeMake(800, 600)];
@@ -1749,7 +1749,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // Refresh the room data source when the room has been initialSync'ed
     MXRoom *room = notif.object;
-    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
     { 
         NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
         
@@ -2591,7 +2591,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // PATCH: Presently no bubble must be displayed until the user joins the room.
     // FIXME: Handle room data source in case of room preview
-    if (self.room.state.membership == MXMembershipInvite)
+    if (self.room.summary.membership == MXMembershipInvite)
     {
         return 0;
     }

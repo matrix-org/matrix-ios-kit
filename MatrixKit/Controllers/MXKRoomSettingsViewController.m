@@ -161,7 +161,7 @@
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
-            if (self.mainSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
+            if (self.mainSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync. Take into account the updated room state.
                 [self updateRoomState:room.state];

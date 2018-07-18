@@ -705,7 +705,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 - (void)onRoomDataSourceReady
 {
     // If the user is only invited, auto-join the room if this option is enabled
-    if (roomDataSource.room.state.membership == MXMembershipInvite)
+    if (roomDataSource.room.summary.membership == MXMembershipInvite)
     {
         if (_autoJoinInvitedRoom)
         {

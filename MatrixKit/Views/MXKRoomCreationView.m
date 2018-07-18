@@ -550,7 +550,7 @@
                                     if (self.delegate)
                                     {
                                         // Open created room
-                                        [self.delegate roomCreationView:self showRoom:room.state.roomId withMatrixSession:selectedSession];
+                                        [self.delegate roomCreationView:self showRoom:room.roomId withMatrixSession:selectedSession];
                                     }
                                     
                                 } failure:^(NSError *error) {
