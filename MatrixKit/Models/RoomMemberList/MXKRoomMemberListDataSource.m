@@ -78,8 +78,13 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     
     if (typingNotifListener)
     {
-        [mxRoom.liveTimeline removeListener:typingNotifListener];
-        typingNotifListener = nil;
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->typingNotifListener];
+            self->typingNotifListener = nil;
+        }];
     }
     
     [super destroy];
@@ -370,44 +375,48 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)listenTypingNotifications
 {
-    // Remove the previous live listener
-    if (typingNotifListener)
-    {
-        [mxRoom.liveTimeline removeListener:typingNotifListener];
-    }
-    
-    // Add typing notification listener
-    typingNotifListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
-    {
-        // Handle only live events
-        if (direction == MXTimelineDirectionForwards)
+    MXWeakify(self);
+    [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+        MXStrongifyAndReturnIfNil(self);
+
+        // Remove the previous live listener
+        if (self->typingNotifListener)
         {
-            // Retrieve typing users list
-            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:mxRoom.typingUsers];
-            // Remove typing info for the current user
-            NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
-            if (index != NSNotFound)
-            {
-                [typingUsers removeObjectAtIndex:index];
-            }
-            
-            for (id<MXKRoomMemberCellDataStoring> cellData in cellDataArray)
-            {
-                if ([typingUsers indexOfObject:cellData.roomMember.userId] == NSNotFound)
-                {
-                    cellData.isTyping = NO;
-                }
-                else
-                {
-                    cellData.isTyping = YES;
-                }
-            }
-            
-            if (self.delegate)
-            {
-                [self.delegate dataSource:self didCellChange:nil];
-            }
+            [liveTimeline removeListener:self->typingNotifListener];
         }
+
+        // Add typing notification listener
+        self->typingNotifListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            // Handle only live events
+            if (direction == MXTimelineDirectionForwards)
+            {
+                // Retrieve typing users list
+                NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:mxRoom.typingUsers];
+                // Remove typing info for the current user
+                NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
+                if (index != NSNotFound)
+                {
+                    [typingUsers removeObjectAtIndex:index];
+                }
+
+                for (id<MXKRoomMemberCellDataStoring> cellData in cellDataArray)
+                {
+                    if ([typingUsers indexOfObject:cellData.roomMember.userId] == NSNotFound)
+                    {
+                        cellData.isTyping = NO;
+                    }
+                    else
+                    {
+                        cellData.isTyping = YES;
+                    }
+                }
+
+                if (self.delegate)
+                {
+                    [self.delegate dataSource:self didCellChange:nil];
+                }
+            }
+        }];
     }];
 }
 

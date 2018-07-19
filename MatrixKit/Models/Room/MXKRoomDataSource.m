@@ -441,52 +441,54 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 if (_isLive)
                 {
                     // LIVE
-                    _timeline = _room.liveTimeline;
+                    [_room liveTimeline:^(MXEventTimeline *liveTimeline) {
+                        _timeline = liveTimeline;
 
-                    // Only one pagination process can be done at a time by an MXRoom object.
-                    // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
-                    [_timeline resetPagination];
-                    
-                    // Observe room history flush (sync with limited timeline, or state event redaction)
-                    roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                        
-                        MXRoom *room = notif.object;
-                        if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
+                        // Only one pagination process can be done at a time by an MXRoom object.
+                        // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
+                        [_timeline resetPagination];
+
+                        // Observe room history flush (sync with limited timeline, or state event redaction)
+                        roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+
+                            MXRoom *room = notif.object;
+                            if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
+                            {
+                                // The existing room history has been flushed during server sync because a gap has been observed between local and server storage.
+                                [self reload];
+                            }
+
+                        }];
+
+                        // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter),
+                        // except if only the events with a url key in their content must be handled.
+                        [self refreshEventListeners:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages)];
+
+                        // display typing notifications is optional
+                        // the inherited class can manage them by its own.
+                        if (_showTypingNotifications)
                         {
-                            // The existing room history has been flushed during server sync because a gap has been observed between local and server storage.
-                            [self reload];
+                            // Register on typing notif
+                            [self listenTypingNotifications];
                         }
-                        
+
+                        // Manage unsent messages
+                        [self handleUnsentMessages];
+
+                        // Update here data source state if it is not already ready
+                        state = MXKDataSourceStateReady;
+
+                        // Check user membership in this room
+                        MXMembership membership = self.room.summary.membership;
+                        if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
+                        {
+                            // Here the initial sync is not ended or the room is a pending invitation.
+                            // Note: In case of invitation, a full sync will be triggered if the user joins this room.
+
+                            // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
+                            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
+                        }
                     }];
-
-                    // Add the event listeners, by considering all the event types (the event filtering is applying by the event formatter),
-                    // except if only the events with a url key in their content must be handled.
-                    [self refreshEventListeners:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages)];
-
-                    // display typing notifications is optional
-                    // the inherited class can manage them by its own.
-                    if (_showTypingNotifications)
-                    {
-                        // Register on typing notif
-                        [self listenTypingNotifications];
-                    }
-
-                    // Manage unsent messages
-                    [self handleUnsentMessages];
-
-                    // Update here data source state if it is not already ready
-                    state = MXKDataSourceStateReady;
-
-                    // Check user membership in this room
-                    MXMembership membership = self.room.summary.membership;
-                    if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
-                    {
-                        // Here the initial sync is not ended or the room is a pending invitation.
-                        // Note: In case of invitation, a full sync will be triggered if the user joins this room.
-
-                        // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
-                        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
-                    }
                 }
                 else
                 {
@@ -694,76 +696,81 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 
     // Register a listener to handle redaction which can affect live and past timelines
-    redactionListener = [_room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
-        
-        // Consider only live redaction events
-        if (direction == MXTimelineDirectionForwards)
-        {
-            // Do the processing on the processing queue
-            dispatch_async(MXKRoomDataSource.processingQueue, ^{
-                
-                // Check whether a message contains the redacted event
-                id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
-                if (bubbleData)
-                {
-                    BOOL shouldRemoveBubbleData = NO;
-                    BOOL hasChanged = NO;
-                    MXEvent *redactedEvent = nil;
+    MXWeakify(self);
+    [_room liveTimeline:^(MXEventTimeline *liveTimeline) {
+        MXStrongifyAndReturnIfNil(self);
 
-                    @synchronized (bubbleData)
+        self->redactionListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
+
+            // Consider only live redaction events
+            if (direction == MXTimelineDirectionForwards)
+            {
+                // Do the processing on the processing queue
+                dispatch_async(MXKRoomDataSource.processingQueue, ^{
+
+                    // Check whether a message contains the redacted event
+                    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
+                    if (bubbleData)
                     {
-                        // Retrieve the original event to redact it
-                        NSArray *events = bubbleData.events;
+                        BOOL shouldRemoveBubbleData = NO;
+                        BOOL hasChanged = NO;
+                        MXEvent *redactedEvent = nil;
 
-                        for (MXEvent *event in events)
+                        @synchronized (bubbleData)
                         {
-                            if ([event.eventId isEqualToString:redactionEvent.redacts])
+                            // Retrieve the original event to redact it
+                            NSArray *events = bubbleData.events;
+
+                            for (MXEvent *event in events)
                             {
-                                // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
-                                if (!event.isRedactedEvent)
+                                if ([event.eventId isEqualToString:redactionEvent.redacts])
                                 {
-                                    redactedEvent = [event prune];
-                                    redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
-                                }
-                                
-                                break;
-                            }
-                        }
-                        
-                        if (redactedEvent)
-                        {
-                            // Update bubble data
-                            NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
-                            
-                            hasChanged = YES;
-                            
-                            // Remove the bubble if there is no more events
-                            shouldRemoveBubbleData = (remainingEvents == 0);
-                        }
-                    }
-                    
-                    // Check whether the bubble should be removed
-                    if (shouldRemoveBubbleData)
-                    {
-                        [self removeCellData:bubbleData];
-                    }
-                    
-                    if (hasChanged)
-                    {
-                        // Update the delegate on main thread
-                        dispatch_async(dispatch_get_main_queue(), ^{
+                                    // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
+                                    if (!event.isRedactedEvent)
+                                    {
+                                        redactedEvent = [event prune];
+                                        redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
+                                    }
 
-                            if (self.delegate)
-                            {
-                                [self.delegate dataSource:self didCellChange:nil];
+                                    break;
+                                }
                             }
-                            
-                        });
+
+                            if (redactedEvent)
+                            {
+                                // Update bubble data
+                                NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
+
+                                hasChanged = YES;
+
+                                // Remove the bubble if there is no more events
+                                shouldRemoveBubbleData = (remainingEvents == 0);
+                            }
+                        }
+
+                        // Check whether the bubble should be removed
+                        if (shouldRemoveBubbleData)
+                        {
+                            [self removeCellData:bubbleData];
+                        }
+
+                        if (hasChanged)
+                        {
+                            // Update the delegate on main thread
+                            dispatch_async(dispatch_get_main_queue(), ^{
+
+                                if (self.delegate)
+                                {
+                                    [self.delegate dataSource:self didCellChange:nil];
+                                }
+
+                            });
+                        }
                     }
-                }
-                
-            });
-        }
+
+                });
+            }
+        }];
     }];
 }
 

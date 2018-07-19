@@ -279,15 +279,19 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         [self addMatrixSession:mxCall.room.mxSession];
         
         // Register a listener to handle messages related to room name, members...
-        roomListener = [mxCall.room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-            
-            // Consider only live events
-            if (mxCall && direction == MXTimelineDirectionForwards)
-            {
-                // The room state has been changed
-                [self callRoomStateDidChange];
-            }
-            
+        MXWeakify(self);
+        [mxCall.room liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            self->roomListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+                // Consider only live events
+                if (self->mxCall && direction == MXTimelineDirectionForwards)
+                {
+                    // The room state has been changed
+                    [self callRoomStateDidChange];
+                }
+            }];
         }];
         
         // Observe room history flush (sync with limited timeline, or state event redaction)
@@ -755,8 +759,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     if (roomListener && mxCall.room)
     {
-        [mxCall.room.liveTimeline removeListener:roomListener];
-        roomListener = nil;
+        MXWeakify(self);
+        [mxCall.room liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->roomListener];
+            self->roomListener = nil;
+        }];
     }
 }
 

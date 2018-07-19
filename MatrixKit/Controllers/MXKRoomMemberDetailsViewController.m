@@ -480,17 +480,21 @@
     if (mxRoom)
     {
         // Observe room's members update
-        NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
-        membersListener = [mxRoom.liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
-            
-            // consider only live event
-            if (direction == MXTimelineDirectionForwards)
-            {
-                [self refreshRoomMember];
-            }
-            
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
+            self->membersListener = [liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
+
+                // consider only live event
+                if (direction == MXTimelineDirectionForwards)
+                {
+                    [self refreshRoomMember];
+                }
+            }];
         }];
-        
+
         // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
         leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
@@ -540,8 +544,13 @@
     
     if (membersListener && mxRoom)
     {
-        [mxRoom.liveTimeline removeListener:membersListener];
-        membersListener = nil;
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->membersListener];
+            self->membersListener = nil;
+        }];
     }
 }
 
