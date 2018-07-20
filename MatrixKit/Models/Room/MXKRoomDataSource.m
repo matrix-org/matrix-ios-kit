@@ -286,7 +286,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (MXRoomState *)roomState
 {
     // @TODO(async-state): Just here for dev
-    NSAssert(roomState, @"Room state must be preloaded before accessing to MXKRoomDataSource.roomState");
+    NSAssert(roomState, @"[MXKRoomDataSource] Room state must be preloaded before accessing to MXKRoomDataSource.roomState");
     return roomState;
 }
 

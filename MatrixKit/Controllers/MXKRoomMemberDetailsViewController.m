@@ -40,6 +40,9 @@
     
     // Observe kMXRoomDidFlushDataNotification to take into account the updated room members when the room history is flushed.
     id roomDidFlushDataNotificationObserver;
+
+    // Cache for the room live timeline
+    MXEventTimeline *mxRoomLiveTimeline;
 }
 
 @end
@@ -126,17 +129,31 @@
     [self removeObservers];
     
     mxRoom = room;
-    
-    // Update matrix session associated to the view controller
-    NSArray *mxSessions = self.mxSessions;
-    for (MXSession *mxSession in mxSessions) {
-        [self removeMatrixSession:mxSession];
-    }
-    [self addMatrixSession:room.mxSession];
-    
-    _mxRoomMember = roomMember;
-    
-    [self initObservers];
+
+    MXWeakify(self);
+    [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+        MXStrongifyAndReturnIfNil(self);
+
+        self->mxRoomLiveTimeline = liveTimeline;
+
+        // Update matrix session associated to the view controller
+        NSArray *mxSessions = self.mxSessions;
+        for (MXSession *mxSession in mxSessions) {
+            [self removeMatrixSession:mxSession];
+        }
+        [self addMatrixSession:room.mxSession];
+
+        self->_mxRoomMember = roomMember;
+
+        [self initObservers];
+    }];
+}
+
+- (MXEventTimeline *)mxRoomLiveTimeline
+{
+    // @TODO(async-state): Just here for dev
+    NSAssert(mxRoomLiveTimeline, @"[MXKRoomMemberDetailsViewController] Room live timeline must be preloaded before accessing to MXKRoomMemberDetailsViewController.mxRoomLiveTimeline");
+    return mxRoomLiveTimeline;
 }
 
 - (UIImage*)picturePlaceholder
@@ -566,7 +583,7 @@
     MXRoomMember* nextRoomMember = nil;
     
     // get the updated memmber
-    NSArray<MXRoomMember *> *membersList = self.mxRoom.state.members.members;
+    NSArray<MXRoomMember *> *membersList = self.mxRoomLiveTimeline.state.members.members;
     for (MXRoomMember* member in membersList)
     {
         if ([member.userId isEqualToString:_mxRoomMember.userId])
@@ -625,7 +642,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Check user's power level before allowing an action (kick, ban, ...)
-    MXRoomPowerLevels *powerLevels = [mxRoom.state powerLevels];
+    MXRoomPowerLevels *powerLevels = [self.mxRoomLiveTimeline.state powerLevels];
     NSInteger memberPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     NSInteger oneSelfPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
     
@@ -877,14 +894,14 @@
 
 - (void)setPowerLevel:(NSInteger)value promptUser:(BOOL)promptUser
 {
-    NSInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
+    NSInteger currentPowerLevel = [self.mxRoomLiveTimeline.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     
     // check if the power level has not yet been set to 0
     if (value != currentPowerLevel)
     {
         __weak typeof(self) weakSelf = self;
 
-        if (promptUser && value == [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId])
+        if (promptUser && value == [self.mxRoomLiveTimeline.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId])
         {
             // If the user is setting the same power level as his to another user, ask him for a confirmation
             if (currentAlert)
@@ -971,7 +988,7 @@
                                                                typeof(self) self = weakSelf;
                                                                self->currentAlert = nil;
                                                                
-                                                               [self setPowerLevel:self.mxRoom.state.powerLevels.usersDefault promptUser:YES];
+                                                               [self setPowerLevel:self.mxRoomLiveTimeline.state.powerLevels.usersDefault promptUser:YES];
                                                            }
                                                            
                                                        }]];
@@ -982,7 +999,7 @@
         typeof(self) self = weakSelf;
         
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%ld", (long)[self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%ld", (long)[self.mxRoomLiveTimeline.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
