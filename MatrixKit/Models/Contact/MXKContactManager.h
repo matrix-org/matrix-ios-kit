@@ -135,13 +135,6 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 @property (nonatomic, readonly) NSArray *directMatrixContacts;
 
 /**
- List the contacts who share at least a private room with the current user of the provided matrix session.
- 
- @param mxSession the concerned matrix session.
- */
-- (NSArray *)privateMatrixContacts:(MXSession*)mxSession;
-
-/**
  Add/remove matrix session. The matrix contact list is automatically updated (see kMXKContactManagerDidUpdateMatrixContactsNotification event).
  */
 - (void)addMatrixSession:(MXSession*)mxSession;

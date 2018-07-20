@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.8.0 ()
+==========================================
+
+Improvements:
+ 
+Bug fix:
+
+API break:
+ * MXKContactManager: Remove the privateMatrixContacts method.
+
 Changes in MatrixKit in 0.7.15 (2018-07-03)
 ==========================================
 
