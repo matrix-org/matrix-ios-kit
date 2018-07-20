@@ -21,6 +21,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXRoom+Sync.h"
 
 @interface MXKRoomTitleViewWithTopic ()
 {
@@ -364,7 +365,7 @@
         if (textField == self.displayNameTextField)
         {
             // Check whether the user has enough power to rename the room
-            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = self.mxRoom.dangerousSyncState.powerLevels;
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
@@ -394,7 +395,7 @@
         else if (textField == self.topicTextField)
         {
             // Check whether the user has enough power to edit room topic
-            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = self.mxRoom.dangerousSyncState.powerLevels;
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
             {

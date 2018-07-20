@@ -24,6 +24,7 @@
 #import "MXRoomSummaryUpdater.h"
 
 #import "MXKTools.h"
+#import "MXRoom+Sync.h"
 
 #import "DTCoreText.h"
 #import "cmark.h"
@@ -314,7 +315,7 @@
             NSString *redactorId = event.redactedBecause[@"sender"];
             NSString *redactedBy = @"";
             // Consider live room state to resolve redactor name if no roomState is provided
-            MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
+            MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].dangerousSyncState;
             redactedBy = [aRoomState.members memberName:redactorId];
             
             NSString *redactedReason = (event.redactedBecause[@"content"])[@"reason"];
@@ -1327,7 +1328,7 @@
 }
 
 #pragma mark - MXRoomSummaryUpdating
-- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents roomState:(MXRoomState *)roomState
 {
     // We build strings containing the sender displayname (ex: "Bob: Hello!")
     // If a sender changes his displayname, we need to update the lastMessage.
@@ -1351,7 +1352,7 @@
         }
     }
 
-    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents];
+    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents roomState:roomState];
 }
 
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState

@@ -150,7 +150,6 @@
             }];
         
             // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-            MXWeakify(self);
             self->leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
 
                 // Check whether the user will leave the room related to the displayed participants
@@ -163,7 +162,6 @@
                         [self withdrawViewControllerAnimated:YES completion:nil];
                     }
                 }
-
             }];
 
             // Observe room history flush (sync with limited timeline, or state event redaction)
