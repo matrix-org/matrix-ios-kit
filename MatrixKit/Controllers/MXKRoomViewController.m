@@ -913,15 +913,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
             // The room is now part of the user's room
             MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
-            MXKRoomDataSource *newRoomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES];
 
-            // And can be displayed
-            [self displayRoom:newRoomDataSource];
+            [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
+                // And can be displayed
+                [self displayRoom:newRoomDataSource];
 
-            if (completion)
-            {
-                completion(YES);
-            }
+                if (completion)
+                {
+                    completion(YES);
+                }
+            }];
         };
 
         void (^failure)(NSError *error) = ^(NSError *error) {
@@ -985,7 +986,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     if (event)
     {
         MXKEventFormatterError error;
-        reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.room.state error:&error];
+        reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.roomState error:&error];
         if (error != MXKEventFormatterErrorNone)
         {
             reason = nil;
@@ -2609,7 +2610,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 //        NSLog(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
         
         // Add the member display name in text input
-        MXRoomMember *selectedRoomMember = [roomDataSource.room.state.members memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
+        MXRoomMember *selectedRoomMember = [roomDataSource.roomState.members memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
         if (selectedRoomMember)
         {
             [self mention:selectedRoomMember];
