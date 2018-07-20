@@ -1350,6 +1350,10 @@
                 break;
             }
         }
+        else if (event.eventType == MXEventTypeRoomJoinRules)
+        {
+            summary.others[@"mxkEventFormatterisJoinRulePublic"] = @(roomState.isJoinRulePublic);
+        }
     }
 
     return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents roomState:roomState];
