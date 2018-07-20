@@ -107,7 +107,7 @@
             MXKRoomBubbleComponent *roomBubbleComponent = [bubbleComponents objectAtIndex:index];
             if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
             {
-                [roomBubbleComponent updateWithEvent:event andRoomState:roomDataSource.room.state];
+                [roomBubbleComponent updateWithEvent:event andRoomState:roomDataSource.roomState];
                 if (!roomBubbleComponent.textMessage.length)
                 {
                     [bubbleComponents removeObjectAtIndex:index];
@@ -370,7 +370,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
     
     // Check first whether the room enabled the flair for some groups
-    NSArray<NSString *> *roomRelatedGroups = roomDataSource.room.state.relatedGroups;
+    NSArray<NSString *> *roomRelatedGroups = roomDataSource.roomState.relatedGroups;
     if (roomRelatedGroups.count && senderId)
     {
         NSArray<NSString *> *senderPublicisedGroups;

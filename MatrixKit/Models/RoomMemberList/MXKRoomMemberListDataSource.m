@@ -30,6 +30,11 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
      The room in which members are listed.
      */
     MXRoom *mxRoom;
+
+    /**
+     Cache for loaded room state.
+     */
+    MXRoomState *mxRoomState;
     
     /**
      The members events listener.
@@ -100,26 +105,33 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             mxRoom = [self.mxSession roomWithRoomId:_roomId];
             if (mxRoom)
             {
-                [self loadData];
-                
-                // Register on typing notif
-                [self listenTypingNotifications];
-                
-                // Register on members events
-                [self listenMembersEvents];
-                
-                // Update here data source state
-                state = MXKDataSourceStateReady;
-                
-                // Notify delegate
-                if (self.delegate)
-                {
-                    if ([self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                MXWeakify(self);
+                [mxRoom state:^(MXRoomState *roomState) {
+                    MXStrongifyAndReturnIfNil(self);
+
+                    self->mxRoomState = roomState;
+
+                    [self loadData];
+
+                    // Register on typing notif
+                    [self listenTypingNotifications];
+
+                    // Register on members events
+                    [self listenMembersEvents];
+
+                    // Update here data source state
+                    self->state = MXKDataSourceStateReady;
+
+                    // Notify delegate
+                    if (self.delegate)
                     {
-                        [self.delegate dataSource:self didStateChange:state];
+                        if ([self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                        {
+                            [self.delegate dataSource:self didStateChange:self->state];
+                        }
+                        [self.delegate dataSource:self didCellChange:nil];
                     }
-                    [self.delegate dataSource:self didCellChange:nil];
-                }
+                }];
             }
             else
             {
@@ -199,7 +211,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)loadData
 {
-    NSArray* membersList = [mxRoom.state.members membersWithoutConferenceUser];
+    NSArray* membersList = [mxRoomState.members membersWithoutConferenceUser];
     
     if (!_settings.showLeftMembersInRoomMemberList)
     {
@@ -226,7 +238,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     for (MXRoomMember *member in membersList)
     {
         
-        id<MXKRoomMemberCellDataStoring> cellData = [[class alloc] initWithRoomMember:member roomState:mxRoom.state andRoomMemberListDataSource:self];
+        id<MXKRoomMemberCellDataStoring> cellData = [[class alloc] initWithRoomMember:member roomState:mxRoomState andRoomMemberListDataSource:self];
         if (cellData)
         {
             [cellDataArray addObject:cellData];
@@ -300,7 +312,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 {
                     return NSOrderedDescending;
                 }
-                return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             
             // Consider user's lastActive ago value
@@ -310,7 +322,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             }
             else if (user1.lastActiveAgo == user2.lastActiveAgo)
             {
-                return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             return NSOrderedDescending;
         }
@@ -329,7 +341,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 return NSOrderedDescending;
             }
             
-            return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+            return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
         }
     }];
     

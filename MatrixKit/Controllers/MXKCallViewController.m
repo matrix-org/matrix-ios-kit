@@ -171,10 +171,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (mxCall)
     {
         // Refresh call display according to the call room state.
-        [self callRoomStateDidChange];
-        
-        // Refresh call status
-        [self call:mxCall stateDidChange:mxCall.state reason:nil];
+        [self callRoomStateDidChange:^{
+            // Refresh call status
+            [self call:mxCall stateDidChange:mxCall.state reason:nil];
+        }];
+
     }
     
     if (_delegate)
@@ -289,7 +290,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 if (self->mxCall && direction == MXTimelineDirectionForwards)
                 {
                     // The room state has been changed
-                    [self callRoomStateDidChange];
+                    [self callRoomStateDidChange:nil];
                 }
             }];
         }];
@@ -302,7 +303,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room state
-                [self callRoomStateDidChange];
+                [self callRoomStateDidChange:nil];
             }
             
         }];
@@ -313,9 +314,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
         }];
         
-        // Display room call information
-        [self callRoomStateDidChange];
-        
         // Hide video mute on voice call
         self.videoMuteButton.hidden = !call.isVideoCall;
         
@@ -324,7 +322,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // Observe call state change
         call.delegate = self;
-        [self call:call stateDidChange:call.state reason:nil];
+
+        // Display room call information
+        [self callRoomStateDidChange:^{
+            [self call:call stateDidChange:call.state reason:nil];
+        }];
         
         if (call.isVideoCall && localPreviewContainerView)
         {
@@ -769,32 +771,42 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
-- (void)callRoomStateDidChange
+- (void)callRoomStateDidChange:(dispatch_block_t)onComplete
 {
     // Handle peer here
     if (mxCall.isIncoming)
     {
         self.peer = [mxCall.room.mxSession getOrCreateUser:mxCall.callerId];
+        onComplete();
     }
     else
     {
         // For 1:1 call, find the other peer
         // Else, the room information will be used to display information about the call
-        MXUser *theMember = nil;
         if (!mxCall.isConferenceCall)
         {
-            NSArray *members = mxCall.room.state.members.joinedMembers;
-            for (MXUser *member in members)
-            {
-                if (![member.userId isEqualToString:mxCall.callerId])
+            [mxCall.room state:^(MXRoomState *roomState) {
+            
+                MXUser *theMember = nil;
+                NSArray *members = roomState.members.joinedMembers;
+                for (MXUser *member in members)
                 {
-                    theMember = member;
-                    break;
+                    if (![member.userId isEqualToString:mxCall.callerId])
+                    {
+                        theMember = member;
+                        break;
+                    }
                 }
-            }
+
+                self.peer = theMember;
+                onComplete();
+            }];
         }
-        
-        self.peer = theMember;
+        else
+        {
+            self.peer = nil;
+            onComplete();
+        }
     }
 }
 

@@ -125,19 +125,24 @@
                 MXRoom *mxRoom = [mxSession roomWithRoomId:mxEvent.roomId];
                 if (mxRoom)
                 {
-                    MXRoomPowerLevels *powerLevels = [mxRoom.state powerLevels];
-                    NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:mxSession.myUser.userId];
-                    if (powerLevels.redact)
-                    {
-                        if (userPowerLevel >= powerLevels.redact)
+                    MXWeakify(self);
+                    [mxRoom state:^(MXRoomState *roomState) {
+                        MXStrongifyAndReturnIfNil(self);
+
+                        MXRoomPowerLevels *powerLevels = [roomState powerLevels];
+                        NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:mxSession.myUser.userId];
+                        if (powerLevels.redact)
                         {
-                            _redactButton.enabled = YES;
+                            if (userPowerLevel >= powerLevels.redact)
+                            {
+                                self.redactButton.enabled = YES;
+                            }
                         }
-                    }
-                    else if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsMessage:kMXEventTypeStringRoomRedaction])
-                    {
-                        _redactButton.enabled = YES;
-                    }
+                        else if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsMessage:kMXEventTypeStringRoomRedaction])
+                        {
+                            self.redactButton.enabled = YES;
+                        }
+                    }];
                 }
             }
         }
