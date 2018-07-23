@@ -397,6 +397,25 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
                 failure:(void (^)(NSError *error))failure;
 
 /**
+ Send a reply to an event with text message to the room.
+ 
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+ 
+ @param eventIdToReply the id of event to reply.
+ @param text the text to send.
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the home server
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendReplyToEventWithId:(NSString*)eventIdToReply
+               withTextMessage:(NSString *)text
+                       success:(void (^)(NSString *))success
+                       failure:(void (^)(NSError *))failure;
+
+- (BOOL)canReplyToEventWithId:(NSString*)eventIdToReply;
+
+/**
  Send an image to the room.
 
  While sending, a fake event will be echoed in the messages list.
