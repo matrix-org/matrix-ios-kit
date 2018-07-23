@@ -104,44 +104,48 @@
 
 - (void)setMxRoom:(MXRoom *)mxRoom
 {
-    // @TODO(async-state): Need to expose [MXSession preloadRoomsData] to avoid race
-    // between _mxRoom & mxRoom
+    // Make sure we can access synchronously to self.mxRoom and mxRoom data
+    // to avoid race conditions
+    MXWeakify(self);
+    [self.mxRoom.mxSession preloadRoomsData:@[self.mxRoom.roomId, mxRoom.roomId] onComplete:^{
+        MXStrongifyAndReturnIfNil(self);
 
-    // Check whether the room is actually changed
-    if (self.mxRoom != mxRoom)
-    {
-        // Remove potential listener
-        if (roomTopicListener && self.mxRoom)
+        // Check whether the room is actually changed
+        if (self.mxRoom != mxRoom)
         {
-            MXWeakify(self);
-            [self.mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
-                MXStrongifyAndReturnIfNil(self);
+            // Remove potential listener
+            if (self->roomTopicListener && self.mxRoom)
+            {
+                MXWeakify(self);
+                [self.mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+                    MXStrongifyAndReturnIfNil(self);
 
-                [liveTimeline removeListener:self->roomTopicListener];
-                self->roomTopicListener = nil;
-            }];
-        }
-    
-        if (mxRoom)
-        {
-            // Register a listener to handle messages related to room name
-            MXWeakify(self);
-            [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
-                MXStrongifyAndReturnIfNil(self);
-                
-                self->roomTopicListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-
-                    // Consider only live events
-                    if (direction == MXTimelineDirectionForwards)
-                    {
-                        [self refreshDisplay];
-                    }
+                    [liveTimeline removeListener:self->roomTopicListener];
+                    self->roomTopicListener = nil;
                 }];
-            }];
-        }
-    }
+            }
 
-    super.mxRoom = mxRoom;
+            if (mxRoom)
+            {
+                // Register a listener to handle messages related to room name
+                MXWeakify(self);
+                [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+                    MXStrongifyAndReturnIfNil(self);
+
+                    self->roomTopicListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+                        // Consider only live events
+                        if (direction == MXTimelineDirectionForwards)
+                        {
+                            [self refreshDisplay];
+                        }
+                    }];
+                }];
+            }
+        }
+
+        super.mxRoom = mxRoom;
+    }];
 }
 
 - (void)setEditable:(BOOL)editable
