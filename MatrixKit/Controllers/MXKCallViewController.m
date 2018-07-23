@@ -281,18 +281,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // Register a listener to handle messages related to room name, members...
         MXWeakify(self);
-        [mxCall.room liveTimeline:^(MXEventTimeline *liveTimeline) {
+        [mxCall.room listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
             MXStrongifyAndReturnIfNil(self);
 
-            self->roomListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-
-                // Consider only live events
-                if (self->mxCall && direction == MXTimelineDirectionForwards)
-                {
-                    // The room state has been changed
-                    [self callRoomStateDidChange:nil];
-                }
-            }];
+            // Consider only live events
+            if (self->mxCall && direction == MXTimelineDirectionForwards)
+            {
+                // The room state has been changed
+                [self callRoomStateDidChange:nil];
+            }
         }];
         
         // Observe room history flush (sync with limited timeline, or state event redaction)

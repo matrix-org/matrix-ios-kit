@@ -128,18 +128,13 @@
             if (mxRoom)
             {
                 // Register a listener to handle messages related to room name
-                MXWeakify(self);
-                [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
-                    MXStrongifyAndReturnIfNil(self);
+                [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
 
-                    self->roomTopicListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-
-                        // Consider only live events
-                        if (direction == MXTimelineDirectionForwards)
-                        {
-                            [self refreshDisplay];
-                        }
-                    }];
+                    // Consider only live events
+                    if (direction == MXTimelineDirectionForwards)
+                    {
+                        [self refreshDisplay];
+                    }
                 }];
             }
         }

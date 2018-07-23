@@ -758,81 +758,76 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 
     // Register a listener to handle redaction which can affect live and past timelines
-    MXWeakify(self);
-    [_room liveTimeline:^(MXEventTimeline *liveTimeline) {
-        MXStrongifyAndReturnIfNil(self);
+    [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
 
-        self->redactionListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
+        // Consider only live redaction events
+        if (direction == MXTimelineDirectionForwards)
+        {
+            // Do the processing on the processing queue
+            dispatch_async(MXKRoomDataSource.processingQueue, ^{
 
-            // Consider only live redaction events
-            if (direction == MXTimelineDirectionForwards)
-            {
-                // Do the processing on the processing queue
-                dispatch_async(MXKRoomDataSource.processingQueue, ^{
+                // Check whether a message contains the redacted event
+                id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
+                if (bubbleData)
+                {
+                    BOOL shouldRemoveBubbleData = NO;
+                    BOOL hasChanged = NO;
+                    MXEvent *redactedEvent = nil;
 
-                    // Check whether a message contains the redacted event
-                    id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
-                    if (bubbleData)
+                    @synchronized (bubbleData)
                     {
-                        BOOL shouldRemoveBubbleData = NO;
-                        BOOL hasChanged = NO;
-                        MXEvent *redactedEvent = nil;
+                        // Retrieve the original event to redact it
+                        NSArray *events = bubbleData.events;
 
-                        @synchronized (bubbleData)
+                        for (MXEvent *event in events)
                         {
-                            // Retrieve the original event to redact it
-                            NSArray *events = bubbleData.events;
-
-                            for (MXEvent *event in events)
+                            if ([event.eventId isEqualToString:redactionEvent.redacts])
                             {
-                                if ([event.eventId isEqualToString:redactionEvent.redacts])
+                                // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
+                                if (!event.isRedactedEvent)
                                 {
-                                    // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
-                                    if (!event.isRedactedEvent)
-                                    {
-                                        redactedEvent = [event prune];
-                                        redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
-                                    }
-
-                                    break;
+                                    redactedEvent = [event prune];
+                                    redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
                                 }
-                            }
 
-                            if (redactedEvent)
-                            {
-                                // Update bubble data
-                                NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
-
-                                hasChanged = YES;
-
-                                // Remove the bubble if there is no more events
-                                shouldRemoveBubbleData = (remainingEvents == 0);
+                                break;
                             }
                         }
 
-                        // Check whether the bubble should be removed
-                        if (shouldRemoveBubbleData)
+                        if (redactedEvent)
                         {
-                            [self removeCellData:bubbleData];
-                        }
+                            // Update bubble data
+                            NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
 
-                        if (hasChanged)
-                        {
-                            // Update the delegate on main thread
-                            dispatch_async(dispatch_get_main_queue(), ^{
+                            hasChanged = YES;
 
-                                if (self.delegate)
-                                {
-                                    [self.delegate dataSource:self didCellChange:nil];
-                                }
-
-                            });
+                            // Remove the bubble if there is no more events
+                            shouldRemoveBubbleData = (remainingEvents == 0);
                         }
                     }
 
-                });
-            }
-        }];
+                    // Check whether the bubble should be removed
+                    if (shouldRemoveBubbleData)
+                    {
+                        [self removeCellData:bubbleData];
+                    }
+
+                    if (hasChanged)
+                    {
+                        // Update the delegate on main thread
+                        dispatch_async(dispatch_get_main_queue(), ^{
+
+                            if (self.delegate)
+                            {
+                                [self.delegate dataSource:self didCellChange:nil];
+                            }
+
+                        });
+                    }
+                }
+
+            });
+        }
     }];
 }
 

@@ -497,19 +497,14 @@
     if (mxRoom)
     {
         // Observe room's members update
-        MXWeakify(self);
-        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
-            MXStrongifyAndReturnIfNil(self);
+        NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
+        self->membersListener = [mxRoom listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
 
-            NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
-            self->membersListener = [liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
-
-                // consider only live event
-                if (direction == MXTimelineDirectionForwards)
-                {
-                    [self refreshRoomMember];
-                }
-            }];
+            // consider only live event
+            if (direction == MXTimelineDirectionForwards)
+            {
+                [self refreshRoomMember];
+            }
         }];
 
         // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
