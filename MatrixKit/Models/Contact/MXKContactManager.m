@@ -214,16 +214,17 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                 if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
                 {
                     MXRoom *room = notif.object;
-                    [room state:^(MXRoomState *roomState) {
-                        NSArray *roomMembers = roomState.members.members;
+                    [room members:^(MXRoomMembers *roomMembers) {
+
+                        NSArray *members = roomMembers.members;
 
                         // Consider only 1:1 chat for MXKMemberContactCreationOneToOneRoom
                         // or adding all
-                        if (((roomMembers.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
+                        if (((members.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
                         {
                             NSString* myUserId = room.mxSession.myUser.userId;
 
-                            for (MXRoomMember* member in roomMembers)
+                            for (MXRoomMember* member in members)
                             {
                                 if ([member.userId isEqualToString:myUserId])
                                 {

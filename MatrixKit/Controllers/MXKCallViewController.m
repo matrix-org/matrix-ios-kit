@@ -785,13 +785,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Else, the room information will be used to display information about the call
         if (!mxCall.isConferenceCall)
         {
-            [mxCall.room state:^(MXRoomState *roomState) {
+            MXWeakify(self);
+            [mxCall.room members:^(MXRoomMembers *roomMembers) {
+                MXStrongifyAndReturnIfNil(self);
             
                 MXUser *theMember = nil;
-                NSArray *members = roomState.members.joinedMembers;
+                NSArray *members = roomMembers.joinedMembers;
                 for (MXUser *member in members)
                 {
-                    if (![member.userId isEqualToString:mxCall.callerId])
+                    if (![member.userId isEqualToString:self->mxCall.callerId])
                     {
                         theMember = member;
                         break;
