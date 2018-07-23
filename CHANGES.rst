@@ -2,6 +2,7 @@ Changes in MatrixKit in 0.8.0 ()
 ==========================================
 
 Improvements:
+ * MXKRoomDataSource: Add send reply with text message (vector-im/riot-ios#1911).
  
 Bug fix:
 
