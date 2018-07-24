@@ -24,6 +24,7 @@
 #import "MXKAppSettings.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "MXRoom+Sync.h"
 #import "NSBundle+MatrixKit.h"
 #import "NSBundle+MXKLanguage.h"
 #import "UIAlertController+MatrixKit.h"

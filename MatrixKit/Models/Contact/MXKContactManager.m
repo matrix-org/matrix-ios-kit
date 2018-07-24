@@ -214,22 +214,25 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                 if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
                 {
                     MXRoom *room = notif.object;
-                    NSArray *roomMembers = room.state.members.members;
-                    
-                    // Consider only 1:1 chat for MXKMemberContactCreationOneToOneRoom
-                    // or adding all
-                    if (((roomMembers.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
-                    {
-                        NSString* myUserId = room.mxSession.myUser.userId;
-                        
-                        for (MXRoomMember* member in roomMembers)
+                    [room members:^(MXRoomMembers *roomMembers) {
+
+                        NSArray *members = roomMembers.members;
+
+                        // Consider only 1:1 chat for MXKMemberContactCreationOneToOneRoom
+                        // or adding all
+                        if (((members.count == 2) && (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceDirectChats)) || (self.contactManagerMXRoomSource == MXKContactManagerMXRoomSourceAll))
                         {
-                            if ([member.userId isEqualToString:myUserId])
+                            NSString* myUserId = room.mxSession.myUser.userId;
+
+                            for (MXRoomMember* member in members)
                             {
-                                [self updateMatrixContactWithID:member.userId];
+                                if ([member.userId isEqualToString:myUserId])
+                                {
+                                    [self updateMatrixContactWithID:member.userId];
+                                }
                             }
                         }
-                    }
+                    }];
                 }
             }];
         }
@@ -485,60 +488,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     }
     
     return directContacts.allValues;
-}
-
-- (NSArray*)privateMatrixContacts:(MXSession *)mxSession
-{
-    NSParameterAssert([NSThread isMainThread]);
-    
-    // Sanity check
-    if (!mxSession)
-    {
-        return nil;
-    }
-    
-    NSMutableDictionary *privateContacts = [NSMutableDictionary dictionary];
-    
-    // List all the known matrix users from the private rooms
-    NSArray *rooms = mxSession.rooms;
-    for (MXRoom *room in rooms)
-    {
-        if (!room.state.isJoinRulePublic && !room.state.isConferenceUserRoom)
-        {
-            NSArray *members = room.state.members.members;
-            
-            for (MXRoomMember *member in members)
-            {
-                if ((member.membership == MXMembershipJoin || member.membership == MXMembershipInvite)
-                    && [MXCallManager isConferenceUser:member.userId] == NO)
-                {
-                    MXKContact* contact = [matrixContactByMatrixID objectForKey:member.userId];
-                    if (!contact)
-                    {
-                        MXUser *mxUser = [mxSession userWithUserId:member.userId];
-                        
-                        // Sanity check - mxUser should not be nil here
-                        if (mxUser)
-                        {
-                            contact = [[MXKContact alloc] initMatrixContactWithDisplayName:((mxUser.displayname.length > 0) ? mxUser.displayname : member.userId) andMatrixID:member.userId];
-                            [matrixContactByMatrixID setValue:contact forKey:member.userId];
-                        }
-                    }
-                    
-                    if (contact)
-                    {
-                        [privateContacts setValue:contact forKey:member.userId];
-                    }
-                }
-                
-            }
-        }
-    }
-    
-    // Remove the user himself
-    [privateContacts removeObjectForKey:mxSession.myUser.userId];
-    
-    return privateContacts.allValues;
 }
 
 - (void)setIdentityServer:(NSString *)identityServer

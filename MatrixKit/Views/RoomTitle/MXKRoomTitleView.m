@@ -21,6 +21,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXRoom+Sync.h"
 
 @interface MXKRoomTitleView ()
 {
@@ -158,7 +159,8 @@
         if (textField == self.displayNameTextField)
         {
             // Check whether the user has enough power to rename the room
-            MXRoomPowerLevels *powerLevels = [_mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = _mxRoom.dangerousSyncState.powerLevels;
+
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {

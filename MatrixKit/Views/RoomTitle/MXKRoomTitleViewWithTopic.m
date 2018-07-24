@@ -21,6 +21,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXRoom+Sync.h"
 
 @interface MXKRoomTitleViewWithTopic ()
 {
@@ -103,32 +104,43 @@
 
 - (void)setMxRoom:(MXRoom *)mxRoom
 {
-    // Check whether the room is actually changed
-    if (self.mxRoom != mxRoom)
-    {
-        // Remove potential listener
-        if (roomTopicListener && self.mxRoom)
+    // Make sure we can access synchronously to self.mxRoom and mxRoom data
+    // to avoid race conditions
+    MXWeakify(self);
+    [self.mxRoom.mxSession preloadRoomsData:@[self.mxRoom.roomId, mxRoom.roomId] onComplete:^{
+        MXStrongifyAndReturnIfNil(self);
+
+        // Check whether the room is actually changed
+        if (self.mxRoom != mxRoom)
         {
-            [self.mxRoom.liveTimeline removeListener:roomTopicListener];
-            roomTopicListener = nil;
-        }
-        
-        if (mxRoom)
-        {
-            // Register a listener to handle messages related to room name
-            roomTopicListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic]
-                                                      onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+            // Remove potential listener
+            if (self->roomTopicListener && self.mxRoom)
             {
-                // Consider only live events
-                if (direction == MXTimelineDirectionForwards)
-                {
-                    [self refreshDisplay];
-                }
-            }];
+                MXWeakify(self);
+                [self.mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+                    MXStrongifyAndReturnIfNil(self);
+
+                    [liveTimeline removeListener:self->roomTopicListener];
+                    self->roomTopicListener = nil;
+                }];
+            }
+
+            if (mxRoom)
+            {
+                // Register a listener to handle messages related to room name
+                [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+                    // Consider only live events
+                    if (direction == MXTimelineDirectionForwards)
+                    {
+                        [self refreshDisplay];
+                    }
+                }];
+            }
         }
-    }
-    
-    super.mxRoom = mxRoom;
+
+        super.mxRoom = mxRoom;
+    }];
 }
 
 - (void)setEditable:(BOOL)editable
@@ -352,7 +364,7 @@
         if (textField == self.displayNameTextField)
         {
             // Check whether the user has enough power to rename the room
-            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = self.mxRoom.dangerousSyncState.powerLevels;
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
@@ -382,7 +394,7 @@
         else if (textField == self.topicTextField)
         {
             // Check whether the user has enough power to edit room topic
-            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = self.mxRoom.dangerousSyncState.powerLevels;
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
             {
