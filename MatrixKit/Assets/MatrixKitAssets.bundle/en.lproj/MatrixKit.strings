@@ -219,6 +219,13 @@
 "room_no_power_to_create_conference_call" = "You need permission to invite to start a conference in this room";
 "room_no_conference_call_in_encrypted_rooms" = "Conference calls are not supported in encrypted rooms";
 
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "sent an image.";
+"message_reply_to_sender_sent_a_video" = "sent a video.";
+"message_reply_to_sender_sent_an_audio_file" = "sent an audio file.";
+"message_reply_to_sender_sent_a_file" = "sent a file.";
+"message_reply_to_message_to_reply_to_prefix" = "In reply to";
+
 // Room members
 "room_member_ignore_prompt" = "Are you sure you want to hide all messages from this user?";
 "room_member_power_level_prompt" = "You will not be able to undo this change as you are promoting the user to have the same power level as yourself.\nAre you sure?";
