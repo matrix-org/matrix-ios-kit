@@ -30,6 +30,7 @@
 #import "MXEncryptedAttachments.h"
 
 #import "MXKSendReplyEventStringLocalizations.h"
+#import "MXKSlashCommands.h"
 
 #pragma mark - Constant definitions
 
@@ -39,8 +40,6 @@ NSString *const kMXKRoomDataSourceSyncStatusChanged = @"kMXKRoomDataSourceSyncSt
 NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSourceFailToLoadTimelinePosition";
 NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
 NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTimelineErrorErrorKey";
-
-static NSString *const kEmoteCommandString = @"/me ";
 
 @interface MXKRoomDataSource ()
 {
@@ -146,6 +145,11 @@ static NSString *const kEmoteCommandString = @"/me ";
      Observe kMXRoomDidUpdateUnreadNotification to refresh unread counters.
      */
     id roomDidUpdateUnreadNotificationObserver;
+    
+    /**
+     Emote slash command prefix @"/me "
+     */
+    NSString *emoteMessageSlashCommandPrefix;
 }
 
 @end
@@ -213,6 +217,8 @@ static NSString *const kEmoteCommandString = @"/me ";
         externalRelatedGroups = [NSMutableDictionary dictionary];
         
         _filterMessagesWithURL = NO;
+        
+        emoteMessageSlashCommandPrefix = [NSString stringWithFormat:@"%@ ", kMXKSlashCmdEmote];
 
         // Set default data and view classes
         // Cell data
@@ -1293,7 +1299,7 @@ static NSString *const kEmoteCommandString = @"/me ";
 
 - (BOOL)isMessageAnEmote:(NSString*)text
 {
-    return [text hasPrefix:kEmoteCommandString];
+    return [text hasPrefix:emoteMessageSlashCommandPrefix];
 }
 
 - (NSString*)sanitizedMessageText:(NSString*)rawText
@@ -1318,7 +1324,7 @@ static NSString *const kEmoteCommandString = @"/me ";
     if ([self isMessageAnEmote:text])
     {
         // Remove "/me " string
-        text = [text substringFromIndex:kEmoteCommandString.length];
+        text = [text substringFromIndex:emoteMessageSlashCommandPrefix.length];
     }
     
     return text;
