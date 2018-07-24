@@ -132,7 +132,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     for (MXSearchResult *result in roomEventResults.results)
     {
         dispatch_group_enter(group);
-        [[class alloc] cellDataWithSearchResult:result andSearchDataSource:self onComplete:^(__autoreleasing id<MXKSearchCellDataStoring> cellData) {
+        [class cellDataWithSearchResult:result andSearchDataSource:self onComplete:^(__autoreleasing id<MXKSearchCellDataStoring> cellData) {
             dispatch_group_leave(group);
 
             if (cellData)
@@ -175,17 +175,22 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
     NSDate *startDate = [NSDate date];
 
+    MXWeakify(self);
     searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText roomEventFilter:_roomEventFilter beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
+        MXStrongifyAndReturnIfNil(self);
 
-        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", self.searchText, self.roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
-        searchRequest = nil;
-        _serverCount = roomEventResults.count;
-        nextBatch = roomEventResults.nextBatch;
-        _canPaginate = (nil != nextBatch);
+        self->searchRequest = nil;
+        self->_serverCount = roomEventResults.count;
+        self->nextBatch = roomEventResults.nextBatch;
+        self->_canPaginate = (nil != self->nextBatch);
 
         // Process HS response to cells data
+        MXWeakify(self);
         [self convertHomeserverResultsIntoCells:roomEventResults onComplete:^{
+            MXStrongifyAndReturnIfNil(self);
+
             self.state = MXKDataSourceStateReady;
 
             // Provide changes information to the delegate
@@ -199,7 +204,9 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         }];
 
     } failure:^(NSError *error) {
-        searchRequest = nil;
+        MXStrongifyAndReturnIfNil(self);
+
+        self->searchRequest = nil;
         self.state = MXKDataSourceStateFailed;
     }];
 }
