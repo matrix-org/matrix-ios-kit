@@ -29,6 +29,9 @@
 
 #import "MXEncryptedAttachments.h"
 
+#import "MXKSendReplyEventStringLocalizations.h"
+#import "MXKSlashCommands.h"
+
 #pragma mark - Constant definitions
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
@@ -142,6 +145,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
      Observe kMXRoomDidUpdateUnreadNotification to refresh unread counters.
      */
     id roomDidUpdateUnreadNotificationObserver;
+    
+    /**
+     Emote slash command prefix @"/me "
+     */
+    NSString *emoteMessageSlashCommandPrefix;
 }
 
 @end
@@ -209,6 +217,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         externalRelatedGroups = [NSMutableDictionary dictionary];
         
         _filterMessagesWithURL = NO;
+        
+        emoteMessageSlashCommandPrefix = [NSString stringWithFormat:@"%@ ", kMXKSlashCmdEmote];
 
         // Set default data and view classes
         // Cell data
@@ -1239,6 +1249,63 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 #pragma mark - Sending
 - (void)sendTextMessage:(NSString *)text success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
+    __block MXEvent *localEchoEvent = nil;
+    
+    BOOL isEmote = [self isMessageAnEmote:text];
+    NSString *sanitizedText = [self sanitizedMessageText:text];
+    NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
+    
+    // Make the request to the homeserver
+    if (isEmote)
+    {
+        [_room sendEmote:sanitizedText formattedText:html localEcho:&localEchoEvent success:success failure:failure];
+    }    
+    else
+    {
+        [_room sendTextMessage:sanitizedText formattedText:html localEcho:&localEchoEvent success:success failure:failure];
+    }
+    
+    if (localEchoEvent)
+    {
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
+}
+
+- (void)sendReplyToEventWithId:(NSString*)eventIdToReply
+               withTextMessage:(NSString *)text
+                       success:(void (^)(NSString *))success
+                       failure:(void (^)(NSError *))failure
+{
+    MXEvent *eventToReply = [self eventWithEventId:eventIdToReply];
+    
+    __block MXEvent *localEchoEvent = nil;
+    
+    NSString *sanitizedText = [self sanitizedMessageText:text];
+    NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
+    
+    id<MXSendReplyEventStringsLocalizable> stringLocalizations = [MXKSendReplyEventStringLocalizations new];
+    
+    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizations:stringLocalizations localEcho:&localEchoEvent success:success failure:failure];
+    
+    if (localEchoEvent)
+    {
+        // Make the data source digest this fake local echo message
+        [self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+        [self processQueuedEvents:nil];
+    }
+}
+
+- (BOOL)isMessageAnEmote:(NSString*)text
+{
+    return [text hasPrefix:emoteMessageSlashCommandPrefix];
+}
+
+- (NSString*)sanitizedMessageText:(NSString*)rawText
+{
+    NSString *text;
+    
     //Remove NULL bytes from the string, as they are likely to trip up many things later,
     //including our own C-based Markdown-to-HTML convertor.
     //
@@ -1251,44 +1318,36 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     //
     //Even if a future iOS update fixes this,
     //we'd better be defensive and always remove occurrences of NULL bytes from text messages.
-    text = [text stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%C", 0x00000000] withString:@""];
-
+    text = [rawText stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%C", 0x00000000] withString:@""];
+    
     // Check whether the message is an emote
-    BOOL isEmote = NO;
-    if ([text hasPrefix:@"/me "])
+    if ([self isMessageAnEmote:text])
     {
-        isEmote = YES;
-        
         // Remove "/me " string
-        text = [text substringFromIndex:4];
+        text = [text substringFromIndex:emoteMessageSlashCommandPrefix.length];
     }
     
+    return text;
+}
+
+- (NSString*)htmlMessageFromSanitizedText:(NSString*)sanitizedText
+{
+    NSString *html;
+    
     // Did user use Markdown text?
-    NSString *html = [_eventFormatter htmlStringFromMarkdownString:text];
-    if ([html isEqualToString:text])
+    NSString *htmlStringFromMarkdown = [_eventFormatter htmlStringFromMarkdownString:sanitizedText];
+    
+    if ([htmlStringFromMarkdown isEqualToString:sanitizedText])
     {
         // No formatted string
         html = nil;
     }
-    
-    __block MXEvent *localEchoEvent = nil;
-    
-    // Make the request to the homeserver
-    if (isEmote)
-    {
-        [_room sendEmote:text formattedText:html localEcho:&localEchoEvent success:success failure:failure];
-    }
     else
     {
-        [_room sendTextMessage:text formattedText:html localEcho:&localEchoEvent success:success failure:failure];
+        html = htmlStringFromMarkdown;
     }
     
-    if (localEchoEvent)
-    {
-        // Make the data source digest this fake local echo message
-        [self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-        [self processQueuedEvents:nil];
-    }
+    return html;
 }
 
 - (void)sendImage:(UIImage *)image success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
@@ -1313,6 +1372,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     [self sendImageData:imageData withImageSize:image.size mimeType:mimetype andThumbnail:thumbnail success:success failure:failure];
+}
+
+- (BOOL)canReplyToEventWithId:(NSString*)eventIdToReply
+{
+    MXEvent *eventToReply = [self eventWithEventId:eventIdToReply];
+    return [self.room canReplyToEvent:eventToReply];
 }
 
 - (void)sendImage:(NSData *)imageData mimeType:(NSString *)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
