@@ -107,7 +107,7 @@
     // Make sure we can access synchronously to self.mxRoom and mxRoom data
     // to avoid race conditions
     MXWeakify(self);
-    [self.mxRoom.mxSession preloadRoomsData:@[self.mxRoom.roomId, mxRoom.roomId] onComplete:^{
+    [mxRoom.mxSession preloadRoomsData:self.mxRoom ? @[self.mxRoom.roomId, mxRoom.roomId] : @[mxRoom.roomId] onComplete:^{
         MXStrongifyAndReturnIfNil(self);
 
         // Check whether the room is actually changed
