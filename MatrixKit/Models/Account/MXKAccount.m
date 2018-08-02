@@ -1311,9 +1311,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         NSLog(@"[MXKAccount] Initial server sync is applicable only when store data is ready to complete session initialisation");
         return;
     }
+
+    // Use /sync filter corresponding to current settings
+    MXFilterJSONModel *syncFilter = [MXKAppSettings standardAppSettings].syncFilter;
     
     // Launch mxSession
-    [mxSession start:^{
+    [mxSession startWithSyncFilter:syncFilter onServerSyncDone:^{
         
         NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
         
