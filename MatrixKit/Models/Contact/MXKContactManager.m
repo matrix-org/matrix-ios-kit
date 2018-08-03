@@ -210,11 +210,13 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                 
                 MXStrongifyAndReturnIfNil(self);
                 
-                // create contact for room members
+                // create contact for known room members
                 if (self.contactManagerMXRoomSource != MXKContactManagerMXRoomSourceNone)
                 {
                     MXRoom *room = notif.object;
-                    [room members:^(MXRoomMembers *roomMembers) {
+                    [room state:^(MXRoomState *roomState) {
+
+                        MXRoomMembers *roomMembers = roomState.members;
 
                         NSArray *members = roomMembers.members;
 

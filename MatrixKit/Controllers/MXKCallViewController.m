@@ -783,11 +783,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         if (!mxCall.isConferenceCall)
         {
             MXWeakify(self);
-            [mxCall.room members:^(MXRoomMembers *roomMembers) {
+            [mxCall.room state:^(MXRoomState *roomState) {
                 MXStrongifyAndReturnIfNil(self);
             
                 MXUser *theMember = nil;
-                NSArray *members = roomMembers.joinedMembers;
+                NSArray *members = roomState.members.joinedMembers;
                 for (MXUser *member in members)
                 {
                     if (![member.userId isEqualToString:self->mxCall.callerId])
