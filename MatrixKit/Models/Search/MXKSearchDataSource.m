@@ -139,6 +139,10 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
             {
                 ((id<MXKSearchCellDataStoring>)cellData).shouldShowRoomDisplayName = self.shouldShowRoomDisplayName;
 
+                // Use profile information as data to display
+                MXSearchUserProfile *userProfile = result.context.profileInfo[result.result.sender];
+                cellData.senderDisplayName = userProfile.displayName;
+
                 [self->cellDataArray insertObject:cellData atIndex:0];
             }
         }];
