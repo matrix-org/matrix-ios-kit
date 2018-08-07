@@ -115,6 +115,7 @@ typedef enum : NSUInteger
  */
 @property (nonatomic, readonly) MXRoomMember *mxRoomMember;
 @property (nonatomic, readonly) MXRoom *mxRoom;
+@property (nonatomic, readonly) MXEventTimeline *mxRoomLiveTimeline;
 
 /**
  Enable mention option. NO by default

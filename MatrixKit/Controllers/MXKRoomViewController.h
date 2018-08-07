@@ -26,18 +26,6 @@ limitations under the License.
 #import "MXKAttachmentsViewController.h"
 #import "MXKAttachmentAnimator.h"
 
-extern NSString *const kCmdChangeDisplayName;
-extern NSString *const kCmdEmote;
-extern NSString *const kCmdJoinRoom;
-extern NSString *const kCmdPartRoom;
-extern NSString *const kCmdInviteUser;
-extern NSString *const kCmdKickUser;
-extern NSString *const kCmdBanUser;
-extern NSString *const kCmdUnbanUser;
-extern NSString *const kCmdSetUserPowerLevel;
-extern NSString *const kCmdResetUserPowerLevel;
-extern NSString *const kCmdChangeRoomTopic;
-
 /**
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
  */

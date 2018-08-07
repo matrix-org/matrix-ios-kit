@@ -30,6 +30,11 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
      The room in which members are listed.
      */
     MXRoom *mxRoom;
+
+    /**
+     Cache for loaded room state.
+     */
+    MXRoomState *mxRoomState;
     
     /**
      The members events listener.
@@ -78,8 +83,13 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     
     if (typingNotifListener)
     {
-        [mxRoom.liveTimeline removeListener:typingNotifListener];
-        typingNotifListener = nil;
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->typingNotifListener];
+            self->typingNotifListener = nil;
+        }];
     }
     
     [super destroy];
@@ -95,26 +105,33 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             mxRoom = [self.mxSession roomWithRoomId:_roomId];
             if (mxRoom)
             {
-                [self loadData];
-                
-                // Register on typing notif
-                [self listenTypingNotifications];
-                
-                // Register on members events
-                [self listenMembersEvents];
-                
-                // Update here data source state
-                state = MXKDataSourceStateReady;
-                
-                // Notify delegate
-                if (self.delegate)
-                {
-                    if ([self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                MXWeakify(self);
+                [mxRoom state:^(MXRoomState *roomState) {
+                    MXStrongifyAndReturnIfNil(self);
+
+                    self->mxRoomState = roomState;
+
+                    [self loadData];
+
+                    // Register on typing notif
+                    [self listenTypingNotifications];
+
+                    // Register on members events
+                    [self listenMembersEvents];
+
+                    // Update here data source state
+                    self->state = MXKDataSourceStateReady;
+
+                    // Notify delegate
+                    if (self.delegate)
                     {
-                        [self.delegate dataSource:self didStateChange:state];
+                        if ([self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+                        {
+                            [self.delegate dataSource:self didStateChange:self->state];
+                        }
+                        [self.delegate dataSource:self didCellChange:nil];
                     }
-                    [self.delegate dataSource:self didCellChange:nil];
-                }
+                }];
             }
             else
             {
@@ -194,7 +211,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 
 - (void)loadData
 {
-    NSArray* membersList = [mxRoom.state.members membersWithoutConferenceUser];
+    NSArray* membersList = [mxRoomState.members membersWithoutConferenceUser];
     
     if (!_settings.showLeftMembersInRoomMemberList)
     {
@@ -221,7 +238,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
     for (MXRoomMember *member in membersList)
     {
         
-        id<MXKRoomMemberCellDataStoring> cellData = [[class alloc] initWithRoomMember:member roomState:mxRoom.state andRoomMemberListDataSource:self];
+        id<MXKRoomMemberCellDataStoring> cellData = [[class alloc] initWithRoomMember:member roomState:mxRoomState andRoomMemberListDataSource:self];
         if (cellData)
         {
             [cellDataArray addObject:cellData];
@@ -295,7 +312,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 {
                     return NSOrderedDescending;
                 }
-                return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             
             // Consider user's lastActive ago value
@@ -305,7 +322,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             }
             else if (user1.lastActiveAgo == user2.lastActiveAgo)
             {
-                return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             return NSOrderedDescending;
         }
@@ -324,7 +341,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 return NSOrderedDescending;
             }
             
-            return [[mxRoom.state.members memberSortedName:member1.roomMember.userId] compare:[mxRoom.state.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+            return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
         }
     }];
     
@@ -351,7 +368,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         if (direction == MXTimelineDirectionForwards)
         {
             // Check the room Id (if any)
-            if (event.roomId && [event.roomId isEqualToString:mxRoom.state.roomId] == NO)
+            if (event.roomId && [event.roomId isEqualToString:mxRoom.roomId] == NO)
             {
                 // This event does not concern the current room members
                 return;
@@ -371,14 +388,13 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
 - (void)listenTypingNotifications
 {
     // Remove the previous live listener
-    if (typingNotifListener)
+    if (self->typingNotifListener)
     {
-        [mxRoom.liveTimeline removeListener:typingNotifListener];
+        [mxRoom removeListener:self->typingNotifListener];
     }
-    
+
     // Add typing notification listener
-    typingNotifListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
-    {
+    self->typingNotifListener = [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
         // Handle only live events
         if (direction == MXTimelineDirectionForwards)
         {
@@ -390,7 +406,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             {
                 [typingUsers removeObjectAtIndex:index];
             }
-            
+
             for (id<MXKRoomMemberCellDataStoring> cellData in cellDataArray)
             {
                 if ([typingUsers indexOfObject:cellData.roomMember.userId] == NSNotFound)
@@ -402,7 +418,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                     cellData.isTyping = YES;
                 }
             }
-            
+
             if (self.delegate)
             {
                 [self.delegate dataSource:self didCellChange:nil];

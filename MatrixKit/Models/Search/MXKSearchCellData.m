@@ -61,4 +61,9 @@
     return self;
 }
 
++ (void)cellDataWithSearchResult:(MXSearchResult *)searchResult andSearchDataSource:(MXKSearchDataSource *)searchDataSource onComplete:(void (^)(id<MXKSearchCellDataStoring>))onComplete
+{
+    onComplete([[self alloc] initWithSearchResult:searchResult andSearchDataSource:searchDataSource]);
+}
+
 @end

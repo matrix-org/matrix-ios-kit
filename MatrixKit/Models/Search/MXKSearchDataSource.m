@@ -120,23 +120,37 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     return cellData;
 }
 
-- (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults
+- (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults onComplete:(dispatch_block_t)onComplete
 {
     // Retrieve the MXKCellData class to manage the data
     // Note: MXKSearchDataSource only manages MXKCellData that conforms to MXKSearchCellDataStoring protocol
     // see `[registerCellDataClass:forCellIdentifier:]`
     Class class = [self cellDataClassForCellIdentifier:kMXKSearchCellDataIdentifier];
 
+    dispatch_group_t group = dispatch_group_create();
+
     for (MXSearchResult *result in roomEventResults.results)
     {
-        MXKCellData  *cellData = [[class alloc] initWithSearchResult:result andSearchDataSource:self];
-        if (cellData)
-        {
-            ((id<MXKSearchCellDataStoring>)cellData).shouldShowRoomDisplayName = self.shouldShowRoomDisplayName;
-            
-            [cellDataArray insertObject:cellData atIndex:0];
-        }
+        dispatch_group_enter(group);
+        [class cellDataWithSearchResult:result andSearchDataSource:self onComplete:^(__autoreleasing id<MXKSearchCellDataStoring> cellData) {
+            dispatch_group_leave(group);
+
+            if (cellData)
+            {
+                ((id<MXKSearchCellDataStoring>)cellData).shouldShowRoomDisplayName = self.shouldShowRoomDisplayName;
+
+                // Use profile information as data to display
+                MXSearchUserProfile *userProfile = result.context.profileInfo[result.result.sender];
+                cellData.senderDisplayName = userProfile.displayName;
+
+                [self->cellDataArray insertObject:cellData atIndex:0];
+            }
+        }];
     }
+
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        onComplete();
+    });
 }
 
 #pragma mark - Private methods
@@ -165,31 +179,38 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
     NSDate *startDate = [NSDate date];
 
+    MXWeakify(self);
     searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText roomEventFilter:_roomEventFilter beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
+        MXStrongifyAndReturnIfNil(self);
 
-        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", _searchText, _roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", self.searchText, self.roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
-        searchRequest = nil;
-        _serverCount = roomEventResults.count;
-        nextBatch = roomEventResults.nextBatch;
-        _canPaginate = (nil != nextBatch);
+        self->searchRequest = nil;
+        self->_serverCount = roomEventResults.count;
+        self->nextBatch = roomEventResults.nextBatch;
+        self->_canPaginate = (nil != self->nextBatch);
 
         // Process HS response to cells data
-        [self convertHomeserverResultsIntoCells:roomEventResults];
+        MXWeakify(self);
+        [self convertHomeserverResultsIntoCells:roomEventResults onComplete:^{
+            MXStrongifyAndReturnIfNil(self);
 
-        self.state = MXKDataSourceStateReady;
+            self.state = MXKDataSourceStateReady;
 
-        // Provide changes information to the delegate
-        NSIndexSet *insertedIndexes;
-        if (roomEventResults.results.count)
-        {
-            insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, roomEventResults.results.count)];
-        }
+            // Provide changes information to the delegate
+            NSIndexSet *insertedIndexes;
+            if (roomEventResults.results.count)
+            {
+                insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, roomEventResults.results.count)];
+            }
 
-        [self.delegate dataSource:self didCellChange:insertedIndexes];
+            [self.delegate dataSource:self didCellChange:insertedIndexes];
+        }];
 
     } failure:^(NSError *error) {
-        searchRequest = nil;
+        MXStrongifyAndReturnIfNil(self);
+
+        self->searchRequest = nil;
         self.state = MXKDataSourceStateFailed;
     }];
 }

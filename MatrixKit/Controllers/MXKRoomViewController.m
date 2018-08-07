@@ -49,18 +49,7 @@
 
 #import "NSBundle+MatrixKit.h"
 #import "UIScrollView+MatrixKit.h"
-
-NSString *const kCmdChangeDisplayName = @"/nick";
-NSString *const kCmdEmote = @"/me";
-NSString *const kCmdJoinRoom = @"/join";
-NSString *const kCmdPartRoom = @"/part";
-NSString *const kCmdInviteUser = @"/invite";
-NSString *const kCmdKickUser = @"/kick";
-NSString *const kCmdBanUser = @"/ban";
-NSString *const kCmdUnbanUser = @"/unban";
-NSString *const kCmdSetUserPowerLevel = @"/op";
-NSString *const kCmdResetUserPowerLevel = @"/deop";
-NSString *const kCmdChangeRoomTopic = @"/topic";
+#import "MXKSlashCommands.h"
 
 @interface MXKRoomViewController ()
 {
@@ -705,7 +694,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 - (void)onRoomDataSourceReady
 {
     // If the user is only invited, auto-join the room if this option is enabled
-    if (roomDataSource.room.state.membership == MXMembershipInvite)
+    if (roomDataSource.room.summary.membership == MXMembershipInvite)
     {
         if (_autoJoinInvitedRoom)
         {
@@ -913,15 +902,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 
             // The room is now part of the user's room
             MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
-            MXKRoomDataSource *newRoomDataSource = [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES];
 
-            // And can be displayed
-            [self displayRoom:newRoomDataSource];
+            [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
+                // And can be displayed
+                [self displayRoom:newRoomDataSource];
 
-            if (completion)
-            {
-                completion(YES);
-            }
+                if (completion)
+                {
+                    completion(YES);
+                }
+            }];
         };
 
         void (^failure)(NSError *error) = ^(NSError *error) {
@@ -985,7 +975,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     if (event)
     {
         MXKEventFormatterError error;
-        reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.room.state error:&error];
+        reason = [roomDataSource.eventFormatter stringFromEvent:event withRoomState:roomDataSource.roomState error:&error];
         if (error != MXKEventFormatterErrorNone)
         {
             reason = nil;
@@ -1313,20 +1303,20 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
     // TODO: display an alert with the cmd usage in case of error or unrecognized cmd.
     NSString *cmdUsage;
     
-    if ([cmd isEqualToString:kCmdEmote])
+    if ([cmd isEqualToString:kMXKSlashCmdEmote])
     {
         // send message as an emote
         [self sendTextMessage:string];
     }
-    else if ([string hasPrefix:kCmdChangeDisplayName])
+    else if ([string hasPrefix:kMXKSlashCmdChangeDisplayName])
     {
         // Change display name
         NSString *displayName;
         
         // Sanity check
-        if (string.length > kCmdChangeDisplayName.length)
+        if (string.length > kMXKSlashCmdChangeDisplayName.length)
         {
-            displayName = [string substringFromIndex:kCmdChangeDisplayName.length + 1];
+            displayName = [string substringFromIndex:kMXKSlashCmdChangeDisplayName.length + 1];
             
             // Remove white space from both ends
             displayName = [displayName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -1351,15 +1341,15 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             cmdUsage = @"Usage: /nick <display_name>";
         }
     }
-    else if ([string hasPrefix:kCmdJoinRoom])
+    else if ([string hasPrefix:kMXKSlashCmdJoinRoom])
     {
         // Join a room
         NSString *roomAlias;
         
         // Sanity check
-        if (string.length > kCmdJoinRoom.length)
+        if (string.length > kMXKSlashCmdJoinRoom.length)
         {
-            roomAlias = [string substringFromIndex:kCmdJoinRoom.length + 1];
+            roomAlias = [string substringFromIndex:kMXKSlashCmdJoinRoom.length + 1];
             
             // Remove white space from both ends
             roomAlias = [roomAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -1385,16 +1375,16 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             cmdUsage = @"Usage: /join <room_alias>";
         }
     }
-    else if ([string hasPrefix:kCmdPartRoom])
+    else if ([string hasPrefix:kMXKSlashCmdPartRoom])
     {
         // Leave this room or another one
         NSString *roomId;
         NSString *roomIdOrAlias;
         
         // Sanity check
-        if (string.length > kCmdPartRoom.length)
+        if (string.length > kMXKSlashCmdPartRoom.length)
         {
-            roomIdOrAlias = [string substringFromIndex:kCmdPartRoom.length + 1];
+            roomIdOrAlias = [string substringFromIndex:kMXKSlashCmdPartRoom.length + 1];
             
             // Remove white space from both ends
             roomIdOrAlias = [roomIdOrAlias stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -1443,15 +1433,15 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             cmdUsage = @"Usage: /part [<room_alias>]";
         }
     }
-    else if ([string hasPrefix:kCmdChangeRoomTopic])
+    else if ([string hasPrefix:kMXKSlashCmdChangeRoomTopic])
     {
         // Change topic
         NSString *topic;
         
         // Sanity check
-        if (string.length > kCmdChangeRoomTopic.length)
+        if (string.length > kMXKSlashCmdChangeRoomTopic.length)
         {
-            topic = [string substringFromIndex:kCmdChangeRoomTopic.length + 1];
+            topic = [string substringFromIndex:kMXKSlashCmdChangeRoomTopic.length + 1];
             // Remove white space from both ends
             topic = [topic stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         }
@@ -1491,7 +1481,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
             userId = nil;
         }
         
-        if ([cmd isEqualToString:kCmdInviteUser])
+        if ([cmd isEqualToString:kMXKSlashCmdInviteUser])
         {
             if (userId)
             {
@@ -1513,7 +1503,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 cmdUsage = @"Usage: /invite <userId>";
             }
         }
-        else if ([cmd isEqualToString:kCmdKickUser])
+        else if ([cmd isEqualToString:kMXKSlashCmdKickUser])
         {
             if (userId)
             {
@@ -1548,7 +1538,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 cmdUsage = @"Usage: /kick <userId> [<reason>]";
             }
         }
-        else if ([cmd isEqualToString:kCmdBanUser])
+        else if ([cmd isEqualToString:kMXKSlashCmdBanUser])
         {
             if (userId)
             {
@@ -1583,7 +1573,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 cmdUsage = @"Usage: /ban <userId> [<reason>]";
             }
         }
-        else if ([cmd isEqualToString:kCmdUnbanUser])
+        else if ([cmd isEqualToString:kMXKSlashCmdUnbanUser])
         {
             if (userId)
             {
@@ -1605,7 +1595,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 cmdUsage = @"Usage: /unban <userId>";
             }
         }
-        else if ([cmd isEqualToString:kCmdSetUserPowerLevel])
+        else if ([cmd isEqualToString:kMXKSlashCmdSetUserPowerLevel])
         {
             // Retrieve power level
             NSString *powerLevel = nil;
@@ -1641,7 +1631,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
                 cmdUsage = @"Usage: /op <userId> <power level>";
             }
         }
-        else if ([cmd isEqualToString:kCmdResetUserPowerLevel])
+        else if ([cmd isEqualToString:kMXKSlashCmdResetUserPowerLevel])
         {
             if (userId)
             {
@@ -2609,7 +2599,7 @@ NSString *const kCmdChangeRoomTopic = @"/topic";
 //        NSLog(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
         
         // Add the member display name in text input
-        MXRoomMember *selectedRoomMember = [roomDataSource.room.state.members memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
+        MXRoomMember *selectedRoomMember = [roomDataSource.roomState.members memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
         if (selectedRoomMember)
         {
             [self mention:selectedRoomMember];

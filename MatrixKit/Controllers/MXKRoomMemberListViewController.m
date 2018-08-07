@@ -314,38 +314,44 @@
 
 - (void)refreshUIBarButtons
 {
-    BOOL showInvitationOption = _enableMemberInvitation;
-    
-    if (showInvitationOption && dataSource)
-    {
-        // Check conditions to be able to invite someone
-        MXRoom *mxRoom = [self.mainSession roomWithRoomId:dataSource.roomId];
-        NSInteger oneSelfPowerLevel = [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
-        if (oneSelfPowerLevel < [mxRoom.state.powerLevels invite])
+    MXRoom *mxRoom = [self.mainSession roomWithRoomId:dataSource.roomId];
+
+    MXWeakify(self);
+    [mxRoom state:^(MXRoomState *roomState) {
+        MXStrongifyAndReturnIfNil(self);
+
+        BOOL showInvitationOption = self.enableMemberInvitation;
+
+        if (showInvitationOption && self->dataSource)
         {
-            showInvitationOption = NO;
+            // Check conditions to be able to invite someone
+            NSInteger oneSelfPowerLevel = [roomState.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
+            if (oneSelfPowerLevel < [roomState.powerLevels invite])
+            {
+                showInvitationOption = NO;
+            }
         }
-    }
-    
-    if (showInvitationOption)
-    {
-        if (_enableMemberSearch)
+
+        if (showInvitationOption)
         {
-            self.navigationItem.rightBarButtonItems = @[searchBarButton, addBarButton];
+            if (self.enableMemberSearch)
+            {
+                self.navigationItem.rightBarButtonItems = @[self->searchBarButton, self->addBarButton];
+            }
+            else
+            {
+                self.navigationItem.rightBarButtonItems = @[self->addBarButton];
+            }
+        }
+        else if (self.enableMemberSearch)
+        {
+            self.navigationItem.rightBarButtonItems = @[self->searchBarButton];
         }
         else
         {
-            self.navigationItem.rightBarButtonItems = @[addBarButton];
+            self.navigationItem.rightBarButtonItems = nil;
         }
-    }
-    else if (_enableMemberSearch)
-    {
-        self.navigationItem.rightBarButtonItems = @[searchBarButton];
-    }
-    else
-    {
-        self.navigationItem.rightBarButtonItems = nil;
-    }
+    }];
 }
 
 #pragma mark -

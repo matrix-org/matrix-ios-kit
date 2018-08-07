@@ -76,8 +76,8 @@
 
  @param searchResult Bulk result returned by MatrixSDK.
  @param searchDataSource the `MXKSearchDataSource` object that will use this instance.
- @return the newly created instance.
+ @param onComplete a block providing the newly created instance.
  */
-- (instancetype)initWithSearchResult:(MXSearchResult*)searchResult andSearchDataSource:(MXKSearchDataSource*)searchDataSource;
++ (void)cellDataWithSearchResult:(MXSearchResult*)searchResult andSearchDataSource:(MXKSearchDataSource*)searchDataSource onComplete:(void (^)(id<MXKSearchCellDataStoring> cellData))onComplete;
 
 @end

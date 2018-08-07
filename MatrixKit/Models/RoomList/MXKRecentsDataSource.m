@@ -618,7 +618,7 @@
     {
         // cancel pending uploads/downloads
         // they are useless by now
-        [MXMediaManager cancelDownloadsInCacheFolder:room.state.roomId];
+        [MXMediaManager cancelDownloadsInCacheFolder:room.roomId];
         
         // TODO GFO cancel pending uploads related to this room
         
@@ -632,7 +632,7 @@
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed", room.state.roomId);
+            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed", room.roomId);
             
             // Notify MatrixKit user
             NSString *myUserId = room.mxSession.myUser.userId;

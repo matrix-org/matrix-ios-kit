@@ -171,10 +171,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (mxCall)
     {
         // Refresh call display according to the call room state.
-        [self callRoomStateDidChange];
-        
-        // Refresh call status
-        [self call:mxCall stateDidChange:mxCall.state reason:nil];
+        [self callRoomStateDidChange:^{
+            // Refresh call status
+            [self call:mxCall stateDidChange:mxCall.state reason:nil];
+        }];
+
     }
     
     if (_delegate)
@@ -279,26 +280,27 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         [self addMatrixSession:mxCall.room.mxSession];
         
         // Register a listener to handle messages related to room name, members...
-        roomListener = [mxCall.room.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-            
+        MXWeakify(self);
+        [mxCall.room listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            MXStrongifyAndReturnIfNil(self);
+
             // Consider only live events
-            if (mxCall && direction == MXTimelineDirectionForwards)
+            if (self->mxCall && direction == MXTimelineDirectionForwards)
             {
                 // The room state has been changed
-                [self callRoomStateDidChange];
+                [self callRoomStateDidChange:nil];
             }
-            
         }];
         
         // Observe room history flush (sync with limited timeline, or state event redaction)
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
-            if (mxCall && self.mainSession == room.mxSession && [mxCall.room.state.roomId isEqualToString:room.state.roomId])
+            if (mxCall && self.mainSession == room.mxSession && [mxCall.room.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room state
-                [self callRoomStateDidChange];
+                [self callRoomStateDidChange:nil];
             }
             
         }];
@@ -309,9 +311,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
         }];
         
-        // Display room call information
-        [self callRoomStateDidChange];
-        
         // Hide video mute on voice call
         self.videoMuteButton.hidden = !call.isVideoCall;
         
@@ -320,7 +319,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // Observe call state change
         call.delegate = self;
-        [self call:call stateDidChange:call.state reason:nil];
+
+        // Display room call information
+        [self callRoomStateDidChange:^{
+            [self call:call stateDidChange:call.state reason:nil];
+        }];
         
         if (call.isVideoCall && localPreviewContainerView)
         {
@@ -380,7 +383,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     else if (mxCall.isConferenceCall)
     {
         peerDisplayName = mxCall.room.summary.displayname;
-        peerAvatarURL = mxCall.room.state.avatar;
+        peerAvatarURL = mxCall.room.summary.avatar;
     }
     
     callerNameLabel.text = peerDisplayName;
@@ -755,37 +758,54 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     if (roomListener && mxCall.room)
     {
-        [mxCall.room.liveTimeline removeListener:roomListener];
-        roomListener = nil;
+        MXWeakify(self);
+        [mxCall.room liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->roomListener];
+            self->roomListener = nil;
+        }];
     }
 }
 
-- (void)callRoomStateDidChange
+- (void)callRoomStateDidChange:(dispatch_block_t)onComplete
 {
     // Handle peer here
     if (mxCall.isIncoming)
     {
         self.peer = [mxCall.room.mxSession getOrCreateUser:mxCall.callerId];
+        onComplete();
     }
     else
     {
         // For 1:1 call, find the other peer
         // Else, the room information will be used to display information about the call
-        MXUser *theMember = nil;
         if (!mxCall.isConferenceCall)
         {
-            NSArray *members = mxCall.room.state.members.joinedMembers;
-            for (MXUser *member in members)
-            {
-                if (![member.userId isEqualToString:mxCall.callerId])
+            MXWeakify(self);
+            [mxCall.room state:^(MXRoomState *roomState) {
+                MXStrongifyAndReturnIfNil(self);
+            
+                MXUser *theMember = nil;
+                NSArray *members = roomState.members.joinedMembers;
+                for (MXUser *member in members)
                 {
-                    theMember = member;
-                    break;
+                    if (![member.userId isEqualToString:self->mxCall.callerId])
+                    {
+                        theMember = member;
+                        break;
+                    }
                 }
-            }
+
+                self.peer = theMember;
+                onComplete();
+            }];
         }
-        
-        self.peer = theMember;
+        else
+        {
+            self.peer = nil;
+            onComplete();
+        }
     }
 }
 
