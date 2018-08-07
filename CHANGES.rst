@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.7.16 ()
 
 Improvements:
  * MXKRoomDataSource: Add send reply with text message (vector-im/riot-ios#1911).
+ * MXKRoomDataSource: Fix a multithreading issue that caused a crash (PR #456).
 
 
 Changes in MatrixKit in 0.7.15 (2018-07-03)
