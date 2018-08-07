@@ -192,7 +192,7 @@ static Class _roomDataSourceClass;
     }
 }
 
-- (MXKRoomDataSource *)roomDataSourceForRoom:(NSString *)roomId create:(BOOL)create
+- (void)roomDataSourceForRoom:(NSString *)roomId create:(BOOL)create onComplete:(void (^)(MXKRoomDataSource *roomDataSource))onComplete
 {
     NSParameterAssert(roomId);
 
@@ -201,11 +201,17 @@ static Class _roomDataSourceClass;
 
     if (!roomDataSource && create && roomId)
     {
-        roomDataSource = [[_roomDataSourceClass alloc] initWithRoomId:roomId andMatrixSession:mxSession];
-        [roomDataSource finalizeInitialization];
-        [self addRoomDataSource:roomDataSource];
+        [_roomDataSourceClass loadRoomDataSourceWithRoomId:roomId andMatrixSession:mxSession onComplete:^(id roomDataSource) {
+            [roomDataSource finalizeInitialization];
+            [self addRoomDataSource:roomDataSource];
+
+            onComplete(roomDataSource);
+        }];
     }
-    return roomDataSource;
+    else
+    {
+        onComplete(roomDataSource);
+    }
 }
 
 - (void)addRoomDataSource:(MXKRoomDataSource *)roomDataSource
@@ -259,11 +265,12 @@ static Class _roomDataSourceClass;
     if (mxSession == notif.object)
     {
         // The room is no more available, remove it from the manager
-        MXKRoomDataSource *roomDataSourceForRoom = [self roomDataSourceForRoom:notif.userInfo[kMXSessionNotificationRoomIdKey] create:NO];
-        if (roomDataSourceForRoom)
-        {
-            [self closeRoomDataSource:roomDataSourceForRoom forceClose:YES];
-        }
+        [self roomDataSourceForRoom:notif.userInfo[kMXSessionNotificationRoomIdKey] create:NO onComplete:^(MXKRoomDataSource *roomDataSource) {
+            if (roomDataSource)
+            {
+                [self closeRoomDataSource:roomDataSource forceClose:YES];
+            }
+        }];
     }
 }
 

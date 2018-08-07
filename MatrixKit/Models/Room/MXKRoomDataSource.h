@@ -116,6 +116,11 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic, readonly) MXRoom *room;
 
 /**
+ The preloaded room.state.
+ */
+@property (nonatomic, readonly) MXRoomState *roomState;
+
+/**
  The timeline being managed. It can be the live timeline of the room
  or a timeline from a past event, initialEventId.
  */
@@ -217,6 +222,50 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic) BOOL filterMessagesWithURL;
 
 #pragma mark - Life cycle
+
+/**
+ Asynchronously create a data source to serve data corresponding to the passed room.
+
+ This method preloads room data, like the room state, to make it available once
+ the room data source is created.
+
+ @param roomId the id of the room to get data from.
+ @param mxSession the Matrix session to get data from.
+ @param onComplete a block providing the newly created instance.
+ */
++ (void)loadRoomDataSourceWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete;
+
+/**
+ Asynchronously create adata source to serve data corresponding to an event in the
+ past of a room.
+
+ This method preloads room data, like the room state, to make it available once
+ the room data source is created.
+
+ @param roomId the id of the room to get data from.
+ @param initialEventId the id of the event where to start the timeline.
+ @param mxSession the Matrix session to get data from.
+ @param onComplete a block providing the newly created instance.
+ */
++ (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete;
+
+/**
+ Asynchronously create a data source to peek into a room.
+
+ The data source will close the `peekingRoom` instance on [self destroy].
+
+ This method preloads room data, like the room state, to make it available once
+ the room data source is created.
+
+ @param peekingRoom the room to peek.
+ @param initialEventId the id of the event where to start the timeline. nil means the live
+                       timeline.
+ @param onComplete a block providing the newly created instance.
+ */
++ (void)loadRoomDataSourceWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId onComplete:(void (^)(id roomDataSource))onComplete;
+
+#pragma mark - Constructors (Should not be called directly)
+
 /**
  Initialise the data source to serve data corresponding to the passed room.
  

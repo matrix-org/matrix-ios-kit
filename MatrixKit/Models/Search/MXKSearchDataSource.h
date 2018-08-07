@@ -101,7 +101,8 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  This methods is in charge of filling `cellDataArray`.
  
  @param roomEventResults the homeserver response as provided by MatrixSDK.
+ @param onComplete the block called once complete.
  */
-- (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults;
+- (void)convertHomeserverResultsIntoCells:(MXSearchRoomEventResults*)roomEventResults onComplete:(dispatch_block_t)onComplete;
 
 @end

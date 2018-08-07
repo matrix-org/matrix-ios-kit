@@ -1,10 +1,16 @@
-Changes in MatrixKit in 0.7.16 ()
+Changes in MatrixKit in 0.8.0 ()
 ==========================================
 
 Improvements:
  * MXKRoomDataSource: Add send reply with text message (vector-im/riot-ios#1911).
  * MXKSessionRecentsDataSource: Hide rooms that should not be displayed to user (linked to vector-im/riot-ios#1938).
  * MXKRoomDataSource: Fix a multithreading issue that caused a crash (PR #456).
+ 
+Bug fix:
+
+API break:
+ * MXKContactManager: Remove the privateMatrixContacts method.
+ * MXKSearchCellDataStoring: Replace initWithSearchResult by async cellDataWithSearchResult.
 
 Changes in MatrixKit in 0.7.15 (2018-07-03)
 ==========================================

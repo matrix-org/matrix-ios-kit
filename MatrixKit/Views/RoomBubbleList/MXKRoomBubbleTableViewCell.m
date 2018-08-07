@@ -26,6 +26,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXRoom+Sync.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
@@ -651,9 +652,10 @@ static BOOL _disableLongPressGestureOnEvent;
                                     roomMembers = [[NSMutableArray alloc] initWithCapacity:receipts.count];
                                     placeholders = [[NSMutableArray alloc] initWithCapacity:receipts.count];
 
+                                    MXRoomMembers *stateRoomMembers = room.dangerousSyncState.members;
                                     for (MXReceiptData* data in receipts)
                                     {
-                                        MXRoomMember * roomMember = [room.state.members memberWithUserId:data.userId];
+                                        MXRoomMember * roomMember = [stateRoomMembers memberWithUserId:data.userId];
                                         if (roomMember)
                                         {
                                             [roomMembers addObject:roomMember];

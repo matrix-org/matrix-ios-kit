@@ -86,9 +86,9 @@ typedef enum : NSUInteger {
  
  @param roomId the room id of the room.
  @param create if YES, the MXKRoomDataSourceManager will create the room data source if it does not exist yet.
- @return the room data source (instance of MXKRoomDataSource-inherited class)
+ @param onComplete blocked with the room data source (instance of MXKRoomDataSource-inherited class).
  */
-- (MXKRoomDataSource*)roomDataSourceForRoom:(NSString*)roomId create:(BOOL)create;
+- (void)roomDataSourceForRoom:(NSString*)roomId create:(BOOL)create onComplete:(void (^)(MXKRoomDataSource *roomDataSource))onComplete;
 
 /**
  Make a room data source be managed by the manager.

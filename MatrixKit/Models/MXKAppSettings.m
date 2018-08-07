@@ -41,6 +41,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @end
 
 @implementation MXKAppSettings
+@synthesize syncWithLazyLoadOfRoomMembers;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
@@ -100,6 +101,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self = [super init])
     {
+        syncWithLazyLoadOfRoomMembers = NO;
+
         // Use presence to sort room members by default
         if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"])
         {
@@ -167,6 +170,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         // Flush shared user defaults
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncWithLazyLoadOfRoomMembers"];
+
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showUnsupportedEventsInRoomHistory"];
@@ -191,6 +196,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     }
     else
     {
+        syncWithLazyLoadOfRoomMembers = NO;
+
         showAllEventsInRoomHistory = NO;
         showRedactionsInRoomHistory = NO;
         showUnsupportedEventsInRoomHistory = NO;
@@ -244,6 +251,56 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     
     return sharedUserDefaults;
 }
+
+#pragma mark - Calls
+
+- (BOOL)syncWithLazyLoadOfRoomMembers
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncWithLazyLoadOfRoomMembers"];
+        if (storedValue)
+        {
+            return [(NSNumber *)storedValue boolValue];
+        }
+        else
+        {
+            return NO;
+        }
+    }
+    else
+    {
+        return syncWithLazyLoadOfRoomMembers;
+    }
+}
+
+- (void)setSyncWithLazyLoadOfRoomMembers:(BOOL)syncWithLazyLoadOfRoomMembers
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:syncWithLazyLoadOfRoomMembers forKey:@"syncWithLazyLoadOfRoomMembers"];
+    }
+    else
+    {
+        syncWithLazyLoadOfRoomMembers = syncWithLazyLoadOfRoomMembers;
+    }
+}
+
+- (MXFilterJSONModel *)syncFilter
+{
+    MXFilterJSONModel *syncFilter;
+
+    if (self.syncWithLazyLoadOfRoomMembers)
+    {
+        syncFilter = [MXFilterJSONModel syncFilterForLazyLoading];
+    }
+
+    // TODO: We could extend the filter to match other settings (self.showAllEventsInRoomHistory,
+    // self.eventsFilterForMessages, etc).
+ 
+    return syncFilter;
+}
+
 
 #pragma mark - Room display
 
