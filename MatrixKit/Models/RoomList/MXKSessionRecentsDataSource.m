@@ -218,7 +218,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
         // Filter out private rooms with conference users
-        if (!roomSummary.room.state.isConferenceUserRoom)  // @TODO
+        if (!roomSummary.room.state.isConferenceUserRoom // @TODO Abstract this condition with roomSummary.hiddenFromUser
+            && !roomSummary.hiddenFromUser)
         {
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
