@@ -3,6 +3,8 @@ Changes in MatrixKit in 0.8.0 ()
 
 Improvements:
  * MXKRoomDataSource: Add send reply with text message (vector-im/riot-ios#1911).
+ * MXKSessionRecentsDataSource: Hide rooms that should not be displayed to user (linked to vector-im/riot-ios#1938).
+ * MXKRoomDataSource: Fix a multithreading issue that caused a crash (PR #456).
  
 Bug fix:
 

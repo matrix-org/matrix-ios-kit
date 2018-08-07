@@ -411,9 +411,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         eventsToProcessSnapshot = nil;
         bubblesSnapshot = nil;
         
-        [bubbles removeAllObjects];
-        [eventIdToBubbleMap removeAllObjects];
-
+        @synchronized(bubbles)
+        {
+            [bubbles removeAllObjects];
+        }
+        
+        @synchronized(eventIdToBubbleMap)
+        {
+            [eventIdToBubbleMap removeAllObjects];
+        }
+        
         _room = nil;
     }
     
