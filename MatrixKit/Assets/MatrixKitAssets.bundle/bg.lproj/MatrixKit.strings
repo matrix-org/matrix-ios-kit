@@ -360,3 +360,9 @@
 "notice_sticker" = "стикер";
 "notice_in_reply_to" = "В отговор на";
 "error_common_message" = "Възникна грешка. Моля опитайте пак по-късно.";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "изпрати снимка.";
+"message_reply_to_sender_sent_a_video" = "изпрати видео.";
+"message_reply_to_sender_sent_an_audio_file" = "изпрати аудио файл.";
+"message_reply_to_sender_sent_a_file" = "изпрати файл.";
+"message_reply_to_message_to_reply_to_prefix" = "В отговор на";

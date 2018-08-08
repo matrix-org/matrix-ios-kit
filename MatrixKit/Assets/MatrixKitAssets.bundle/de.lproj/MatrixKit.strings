@@ -360,3 +360,9 @@
 "notice_sticker" = "Sticker";
 "notice_in_reply_to" = "Als Antwort auf";
 "error_common_message" = "Ein Fehler trat auf. Bitte später erneut probieren.";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "sandte ein Bild.";
+"message_reply_to_sender_sent_a_video" = "sandte ein Video.";
+"message_reply_to_sender_sent_an_audio_file" = "sandte eine Audio-Datei.";
+"message_reply_to_sender_sent_a_file" = "sandte eine Datei.";
+"message_reply_to_message_to_reply_to_prefix" = "Als Antwort auf";
