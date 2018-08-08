@@ -360,3 +360,9 @@
 "login_desktop_device" = "Ordinateur";
 "notice_in_reply_to" = "En réponse à";
 "error_common_message" = "Une erreur est survenue. Veuillez réessayer ultérieurement.";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "a envoyé une image.";
+"message_reply_to_sender_sent_a_video" = "a envoyé une vidéo.";
+"message_reply_to_sender_sent_an_audio_file" = "a envoyé un fichier audio.";
+"message_reply_to_sender_sent_a_file" = "a envoyé un fichier.";
+"message_reply_to_message_to_reply_to_prefix" = "En réponse à";
