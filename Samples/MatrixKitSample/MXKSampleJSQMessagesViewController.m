@@ -123,9 +123,11 @@
     roomDataSource.delegate = self;
     
     self.senderId = roomDataSource.mxSession.matrixRestClient.credentials.userId;
-    if (roomDataSource.mxSession.myUser)
+    
+    NSString *displayName = roomDataSource.mxSession.myUser.displayname;
+    if (displayName)
     {
-        self.senderDisplayName = roomDataSource.mxSession.myUser.displayname;
+        self.senderDisplayName = displayName;
     }
     else
     {

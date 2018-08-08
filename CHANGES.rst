@@ -7,6 +7,7 @@ Improvements:
  * MXKRoomDataSource: Fix a multithreading issue that caused a crash (PR #456).
  
 Bug fix:
+ * MXKSampleJSQMessagesViewController: Fix room display assertion when user has no display name.
 
 API break:
  * MXKContactManager: Remove the privateMatrixContacts method.
