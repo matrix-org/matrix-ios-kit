@@ -33,6 +33,10 @@
 		328AC4931AA8B05C0044A6FB /* MXKCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4921AA8B05C0044A6FB /* MXKCellData.m */; };
 		329CF77B1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */; };
 		32B046722101EB5E002A24A1 /* MXRoom+Sync.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B046712101EB5E002A24A1 /* MXRoom+Sync.m */; };
+		32BDC985211AD6D20064AF51 /* AUTHORS.rst in Resources */ = {isa = PBXBuildFile; fileRef = 32BDC981211AD6D10064AF51 /* AUTHORS.rst */; };
+		32BDC986211AD6D20064AF51 /* CHANGES.rst in Resources */ = {isa = PBXBuildFile; fileRef = 32BDC982211AD6D10064AF51 /* CHANGES.rst */; };
+		32BDC987211AD6D20064AF51 /* README.rst in Resources */ = {isa = PBXBuildFile; fileRef = 32BDC983211AD6D10064AF51 /* README.rst */; };
+		32BDC988211AD6D20064AF51 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 32BDC984211AD6D10064AF51 /* Podfile */; };
 		32CEE21F1AB1A57E00F7C74D /* MXKEventFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */; };
 		32CEE2231AB1E37600F7C74D /* MXKRecentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */; };
 		32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2271AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m */; };
@@ -294,6 +298,10 @@
 		329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSBubbleTableViewCell.m; sourceTree = "<group>"; };
 		32B046702101EB5E002A24A1 /* MXRoom+Sync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXRoom+Sync.h"; sourceTree = "<group>"; };
 		32B046712101EB5E002A24A1 /* MXRoom+Sync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MXRoom+Sync.m"; sourceTree = "<group>"; };
+		32BDC981211AD6D10064AF51 /* AUTHORS.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS.rst; sourceTree = "<group>"; };
+		32BDC982211AD6D10064AF51 /* CHANGES.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGES.rst; sourceTree = "<group>"; };
+		32BDC983211AD6D10064AF51 /* README.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.rst; sourceTree = "<group>"; };
+		32BDC984211AD6D10064AF51 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		32CEE21D1AB1A57E00F7C74D /* MXKEventFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEventFormatter.h; sourceTree = "<group>"; };
 		32CEE21E1AB1A57E00F7C74D /* MXKEventFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventFormatter.m; sourceTree = "<group>"; };
 		32CEE2201AB1E37600F7C74D /* MXKRecentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentListViewController.h; sourceTree = "<group>"; };
@@ -681,6 +689,10 @@
 		3219CB5F1AA6F2780027D7E2 = {
 			isa = PBXGroup;
 			children = (
+				32BDC984211AD6D10064AF51 /* Podfile */,
+				32BDC981211AD6D10064AF51 /* AUTHORS.rst */,
+				32BDC982211AD6D10064AF51 /* CHANGES.rst */,
+				32BDC983211AD6D10064AF51 /* README.rst */,
 				3219CB941AA6F5ED0027D7E2 /* Samples */,
 				3219CB6A1AA6F2780027D7E2 /* MatrixKit */,
 				3203F2691D2E9CAE0021F170 /* MatrixKitTests */,
@@ -1516,12 +1528,14 @@
 				F0CF99041B0F1A0B00EAE373 /* MXKRecentListViewController.xib in Resources */,
 				327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */,
 				F095E4FF1B258750009606CE /* MXKContactListViewController.xib in Resources */,
+				32BDC985211AD6D20064AF51 /* AUTHORS.rst in Resources */,
 				F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */,
 				323593111E0D219100DB890E /* InfoPlist.strings in Resources */,
 				F04356371B2EF9D80096FA02 /* MXKTableViewCellWithLabelAndButton.xib in Resources */,
 				F0CF98E91B0B86ED00EAE373 /* MXKTableViewCellWithLabelAndSwitch.xib in Resources */,
 				F0CF98F91B0C6EA000EAE373 /* MXKAccountTableViewCell.xib in Resources */,
 				F00FA8781C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.xib in Resources */,
+				32BDC987211AD6D20064AF51 /* README.rst in Resources */,
 				F0036EF01AB98DC40008E432 /* MXKRoomInputToolbarView.xib in Resources */,
 				F0CF98F11B0B886000EAE373 /* MXKTableViewCellWithTextFieldAndButton.xib in Resources */,
 				F00FA8761C08A51B00E25826 /* MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.xib in Resources */,
@@ -1555,9 +1569,11 @@
 				F0868E131B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.xib in Resources */,
 				F00FA8661C089D2100E25826 /* MXKRoomIncomingTextMsgWithoutSenderInfoBubbleCell.xib in Resources */,
 				F0CF98EF1B0B882E00EAE373 /* MXKTableViewCellWithPicker.xib in Resources */,
+				32BDC986211AD6D20064AF51 /* CHANGES.rst in Resources */,
 				F0CE56E71AA8BB5E003BE77A /* Main.storyboard in Resources */,
 				F0CF98FE1B0CDF6100EAE373 /* MXKTableViewCellWithButton.xib in Resources */,
 				F05927AD1FD92E36009F2A68 /* MXKGroupTableViewCell.xib in Resources */,
+				32BDC988211AD6D20064AF51 /* Podfile in Resources */,
 				F095E5181B259C71009606CE /* MXKContactTableCell.xib in Resources */,
 				F043563E1B2F124F0096FA02 /* MXKContactDetailsViewController.xib in Resources */,
 				F0B14DDD1FF65C7C00F11630 /* MXKTableViewHeaderFooterWithLabel.xib in Resources */,
