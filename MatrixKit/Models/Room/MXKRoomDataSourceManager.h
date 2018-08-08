@@ -20,7 +20,7 @@
 
 /**
  `MXKRoomDataSourceManagerReleasePolicy` defines how a `MXKRoomDataSource` instance must be released
- when [MXKRoomDataSourceManager closeRoomDataSource:] is called.
+ when [MXKRoomDataSourceManager closeRoomDataSourceWithRoomId:] is called.
  
  Once released, the in-memory data (messages that are outgoing, failed sending, ...) of room data source
  is lost.
@@ -105,10 +105,10 @@ typedef enum : NSUInteger {
  
  The roomDataSource instance will be actually destroyed according to the current release policy.
 
- @param roomDataSource the data source to release.
- @param forceRelease if yes the roomDataSource instance will be destroyed whatever the policy is.
+ @param roomId the room if of the data source to release.
+ @param forceRelease if yes the room data source instance will be destroyed whatever the policy is.
  */
-- (void)closeRoomDataSource:(MXKRoomDataSource*)roomDataSource forceClose:(BOOL)forceRelease;
+- (void)closeRoomDataSourceWithRoomId:(NSString*)roomId forceClose:(BOOL)forceRelease;
 
 /**
  The release policy to apply when `MXKRoomDataSource` instances are closed.

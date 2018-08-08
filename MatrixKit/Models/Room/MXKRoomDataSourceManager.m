@@ -187,8 +187,7 @@ static Class _roomDataSourceClass;
     NSArray *roomIds =  roomDataSources.allKeys;
     for (NSString *roomId in roomIds)
     {
-        MXKRoomDataSource *roomDataSource = roomDataSources[roomId];
-        [self closeRoomDataSource:roomDataSource forceClose:YES];
+        [self closeRoomDataSourceWithRoomId:roomId forceClose:YES];
     }
 }
 
@@ -219,14 +218,16 @@ static Class _roomDataSourceClass;
     roomDataSources[roomDataSource.roomId] = roomDataSource;
 }
 
-- (void)closeRoomDataSource:(MXKRoomDataSource *)roomDataSource forceClose:(BOOL)forceRelease
+- (void)closeRoomDataSourceWithRoomId:(NSString*)roomId forceClose:(BOOL)forceRelease;
 {
     // Check first whether this roomDataSource is well handled by this manager
-    if (!roomDataSource.roomId || !roomDataSources[roomDataSource.roomId])
+    if (!roomId || !roomDataSources[roomId])
     {
-        NSLog(@"[MXKRoomDataSourceManager] Failed to close an unknown room id: %@", roomDataSource.roomId);
+        NSLog(@"[MXKRoomDataSourceManager] Failed to close an unknown room id: %@", roomId);
         return;
     }
+
+    MXKRoomDataSource *roomDataSource = roomDataSources[roomId];
 
     // According to the policy, it is interesting to keep the room data source in life: it can keep managing echo messages
     // in background for instance
@@ -265,12 +266,7 @@ static Class _roomDataSourceClass;
     if (mxSession == notif.object)
     {
         // The room is no more available, remove it from the manager
-        [self roomDataSourceForRoom:notif.userInfo[kMXSessionNotificationRoomIdKey] create:NO onComplete:^(MXKRoomDataSource *roomDataSource) {
-            if (roomDataSource)
-            {
-                [self closeRoomDataSource:roomDataSource forceClose:YES];
-            }
-        }];
+        [self closeRoomDataSourceWithRoomId:notif.userInfo[kMXSessionNotificationRoomIdKey] forceClose:YES];
     }
 }
 
