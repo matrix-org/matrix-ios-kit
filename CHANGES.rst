@@ -7,10 +7,13 @@ Improvements:
  * MXKRoomDataSource: Fix a multithreading issue that caused a crash (PR #456).
  
 Bug fix:
+ * MXKSampleJSQMessagesViewController: Fix room display assertion when user has no display name.
 
 API break:
  * MXKContactManager: Remove the privateMatrixContacts method.
  * MXKSearchCellDataStoring: Replace initWithSearchResult by async cellDataWithSearchResult.
+ * MXKRoomDataSourceManager: The roomDataSourceForRoom method is now asynchronous.
+ * MXKRoomDataSourceManager: closeRoomDataSource has been replaced by closeRoomDataSourceWithRoomId.
 
 Changes in MatrixKit in 0.7.15 (2018-07-03)
 ==========================================

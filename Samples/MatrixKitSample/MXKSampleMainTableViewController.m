@@ -219,11 +219,7 @@
     {
         // Let the manager release the previous room data source
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
-        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:NO];
-        if (roomDataSource)
-        {
-            [roomDataSourceManager closeRoomDataSource:roomDataSource forceClose:NO];
-        }
+        [roomDataSourceManager closeRoomDataSourceWithRoomId:selectedRoom.roomId forceClose:NO];
     }
 }
 
@@ -741,9 +737,9 @@
         [MXKRoomDataSourceManager registerRoomDataSourceClass:MXKRoomDataSource.class];
         
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
-        MXKRoomDataSource *roomDataSource = [roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
-        
-        [roomViewController displayRoom:roomDataSource];
+        [roomDataSourceManager roomDataSourceForRoom:selectedRoom.roomId create:YES onComplete:^(MXKRoomDataSource *roomDataSource) {
+            [roomViewController displayRoom:roomDataSource];
+        }];
     }
     else if ([segue.identifier isEqualToString:@"showSampleJSQMessagesViewController"])
     {
@@ -753,16 +749,19 @@
         [MXKRoomDataSourceManager registerRoomDataSourceClass:MXKSampleJSQRoomDataSource.class];
         
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:selectedRoom.mxSession];
-        MXKSampleJSQRoomDataSource *roomDataSource = (MXKSampleJSQRoomDataSource *)[roomDataSourceManager roomDataSourceForRoom:selectedRoom.state.roomId create:YES];
-        
-        [sampleRoomViewController displayRoom:roomDataSource];
+
+        [roomDataSourceManager roomDataSourceForRoom:selectedRoom.roomId create:YES onComplete:^(MXKRoomDataSource *roomDataSource) {
+
+            MXKSampleJSQRoomDataSource *JSQRoomDataSource = (MXKSampleJSQRoomDataSource *)roomDataSource;
+            [sampleRoomViewController displayRoom:JSQRoomDataSource];
+        }];
     }
     else if ([segue.identifier isEqualToString:@"showMXKRoomMemberListViewController"])
     {
         MXKRoomMemberListViewController *roomMemberListViewController = (MXKRoomMemberListViewController *)destinationViewController;
         roomMemberListViewController.delegate = self;
         
-        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
+        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.roomId andMatrixSession:selectedRoom.mxSession];
         
         [listDataSource finalizeInitialization];
         
@@ -773,7 +772,7 @@
         MXKSampleRoomMembersViewController *sampleRoomMemberListViewController = (MXKSampleRoomMembersViewController *)destinationViewController;
         sampleRoomMemberListViewController.delegate = self;
         
-        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.state.roomId andMatrixSession:selectedRoom.mxSession];
+        MXKRoomMemberListDataSource *listDataSource = [[MXKRoomMemberListDataSource alloc] initWithRoomId:selectedRoom.roomId andMatrixSession:selectedRoom.mxSession];
         
         [listDataSource finalizeInitialization];
         
@@ -790,7 +789,7 @@
     {
         MXKSearchViewController *searchViewController = (MXKSearchViewController*)destinationViewController;
         MXKSearchDataSource *searchDataSource = [[MXKSearchDataSource alloc] initWithMatrixSession:self.mainSession];
-        searchDataSource.roomEventFilter.rooms = @[selectedRoom.state.roomId];
+        searchDataSource.roomEventFilter.rooms = @[selectedRoom.roomId];
 
         [searchViewController displaySearch:searchDataSource];
     }
@@ -838,7 +837,9 @@
 {
     // Update the selected room and go back to the main page
     selectedRoom = [matrixSession roomWithRoomId:roomId];
-    _selectedRoomDisplayName.text = selectedRoom.state.displayname;
+
+    MXRoomSummary *roomSummary = [matrixSession roomSummaryWithRoomId:roomId];
+    _selectedRoomDisplayName.text = roomSummary.displayname;
     
     [self.tableView reloadData];
     
