@@ -21,6 +21,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXRoom+Sync.h"
 
 @interface MXKRoomTitleViewWithTopic ()
 {
@@ -68,7 +69,7 @@
     if (self.mxRoom)
     {
         // Remove new line characters
-        NSString *topic = [MXTools stripNewlineCharacters:self.mxRoom.state.topic];
+        NSString *topic = [MXTools stripNewlineCharacters:self.mxRoom.summary.topic];
         // replace empty string by nil: avoid having the placeholder when there is no topic
         self.topicTextField.text = (topic.length ? topic : nil);
     }
@@ -103,32 +104,43 @@
 
 - (void)setMxRoom:(MXRoom *)mxRoom
 {
-    // Check whether the room is actually changed
-    if (self.mxRoom != mxRoom)
-    {
-        // Remove potential listener
-        if (roomTopicListener && self.mxRoom)
+    // Make sure we can access synchronously to self.mxRoom and mxRoom data
+    // to avoid race conditions
+    MXWeakify(self);
+    [mxRoom.mxSession preloadRoomsData:self.mxRoom ? @[self.mxRoom.roomId, mxRoom.roomId] : @[mxRoom.roomId] onComplete:^{
+        MXStrongifyAndReturnIfNil(self);
+
+        // Check whether the room is actually changed
+        if (self.mxRoom != mxRoom)
         {
-            [self.mxRoom.liveTimeline removeListener:roomTopicListener];
-            roomTopicListener = nil;
-        }
-        
-        if (mxRoom)
-        {
-            // Register a listener to handle messages related to room name
-            roomTopicListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic]
-                                                      onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
+            // Remove potential listener
+            if (self->roomTopicListener && self.mxRoom)
             {
-                // Consider only live events
-                if (direction == MXTimelineDirectionForwards)
-                {
-                    [self refreshDisplay];
-                }
-            }];
+                MXWeakify(self);
+                [self.mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+                    MXStrongifyAndReturnIfNil(self);
+
+                    [liveTimeline removeListener:self->roomTopicListener];
+                    self->roomTopicListener = nil;
+                }];
+            }
+
+            if (mxRoom)
+            {
+                // Register a listener to handle messages related to room name
+                [mxRoom listenToEventsOfTypes:@[kMXEventTypeStringRoomTopic] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+                    // Consider only live events
+                    if (direction == MXTimelineDirectionForwards)
+                    {
+                        [self refreshDisplay];
+                    }
+                }];
+            }
         }
-    }
-    
-    super.mxRoom = mxRoom;
+
+        super.mxRoom = mxRoom;
+    }];
 }
 
 - (void)setEditable:(BOOL)editable
@@ -352,12 +364,12 @@
         if (textField == self.displayNameTextField)
         {
             // Check whether the user has enough power to rename the room
-            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = self.mxRoom.dangerousSyncState.powerLevels;
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
                 // Only the room name is edited here, update the text field with the room name
-                textField.text = self.mxRoom.state.name;
+                textField.text = self.mxRoom.summary.displayname;
                 textField.backgroundColor = [UIColor whiteColor];
             }
             else
@@ -382,7 +394,7 @@
         else if (textField == self.topicTextField)
         {
             // Check whether the user has enough power to edit room topic
-            MXRoomPowerLevels *powerLevels = [self.mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = self.mxRoom.dangerousSyncState.powerLevels;
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomTopic])
             {
@@ -432,7 +444,7 @@
         textField.backgroundColor = [UIColor clearColor];
         
         NSString *topic = textField.text;
-        if ((topic.length || self.mxRoom.state.topic.length) && [topic isEqualToString:self.mxRoom.state.topic] == NO)
+        if ((topic.length || self.mxRoom.summary.topic.length) && [topic isEqualToString:self.mxRoom.summary.topic] == NO)
         {
             if ([self.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
             {
@@ -464,7 +476,7 @@
                     }
                     
                     // Revert change
-                    NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.state.topic];
+                    NSString *topic = [MXTools stripNewlineCharacters:strongSelf.mxRoom.summary.topic];
                     textField.text = (topic.length ? topic : nil);
                     
                     // Hide topic field if empty

@@ -142,7 +142,7 @@
             
             if (room)
             {
-                [_mxSession.notificationCenter addRoomRule:room.state.roomId
+                [_mxSession.notificationCenter addRoomRule:room.roomId
                                                     notify:(_actionSegmentedControl.selectedSegmentIndex == 0)
                                                      sound:_soundSwitch.on
                                                  highlight:_highlightSwitch.on];
@@ -167,7 +167,7 @@
         if ((row >= 0) && (row < rooms.count))
         {
             MXRoom* room = [rooms objectAtIndex:row];
-            _inputTextField.text = room.state.displayname;
+            _inputTextField.text = room.summary.displayname;
             _addButton.enabled = YES;
         }
         
@@ -189,7 +189,7 @@
     rooms = [_mxSession.rooms sortedArrayUsingComparator:^NSComparisonResult(MXRoom* firstRoom, MXRoom* secondRoom) {
         
         // Alphabetic order
-        return [firstRoom.state.displayname compare:secondRoom.state.displayname options:NSCaseInsensitiveSearch];
+        return [firstRoom.summary.displayname compare:secondRoom.summary.displayname options:NSCaseInsensitiveSearch];
     }];
 
     return rooms.count;
@@ -200,7 +200,7 @@
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     MXRoom* room = [rooms objectAtIndex:row];
-    return room.state.displayname;
+    return room.summary.displayname;
 }
 
 @end

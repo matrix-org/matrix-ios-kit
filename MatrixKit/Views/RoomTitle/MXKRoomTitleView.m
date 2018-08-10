@@ -21,6 +21,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXRoom+Sync.h"
 
 @interface MXKRoomTitleView ()
 {
@@ -158,12 +159,13 @@
         if (textField == self.displayNameTextField)
         {
             // Check whether the user has enough power to rename the room
-            MXRoomPowerLevels *powerLevels = [_mxRoom.state powerLevels];
+            MXRoomPowerLevels *powerLevels = _mxRoom.dangerousSyncState.powerLevels;
+
             NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoom.mxSession.myUser.userId];
             if (userPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomName])
             {
                 // Only the room name is edited here, update the text field with the room name
-                textField.text = _mxRoom.state.name;
+                textField.text = _mxRoom.summary.displayname;
                 textField.backgroundColor = [UIColor whiteColor];
             }
             else
@@ -210,7 +212,7 @@
         textField.backgroundColor = [UIColor clearColor];
         
         NSString *roomName = textField.text;
-        if ((roomName.length || _mxRoom.state.name.length) && [roomName isEqualToString:_mxRoom.state.name] == NO)
+        if ((roomName.length || _mxRoom.summary.displayname.length) && [roomName isEqualToString:_mxRoom.summary.displayname] == NO)
         {
             if ([self.delegate respondsToSelector:@selector(roomTitleView:isSaving:)])
             {

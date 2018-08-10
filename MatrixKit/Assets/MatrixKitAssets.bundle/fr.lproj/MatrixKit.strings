@@ -95,7 +95,7 @@
 "notice_invalid_attachment" = "pièce-jointe non valide";
 "notice_unsupported_attachment" = "Pièce-jointe non prise en charge : %@";
 "notice_redaction" = "%@ a supprimé un événement (id : %@)";
-"notice_error_unsupported_event" = "Événement non prise en charge";
+"notice_error_unsupported_event" = "Évènement non pris en charge";
 "notice_error_unexpected_event" = "Événement inattendu";
 "notice_error_unknown_event_type" = "Type d'événement inconnu";
 "notice_room_history_visible_to_anyone" = "%@ a rendu l'historique futur du salon visible à tout le monde.";
@@ -360,3 +360,9 @@
 "login_desktop_device" = "Ordinateur";
 "notice_in_reply_to" = "En réponse à";
 "error_common_message" = "Une erreur est survenue. Veuillez réessayer ultérieurement.";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "a envoyé une image.";
+"message_reply_to_sender_sent_a_video" = "a envoyé une vidéo.";
+"message_reply_to_sender_sent_an_audio_file" = "a envoyé un fichier audio.";
+"message_reply_to_sender_sent_a_file" = "a envoyé un fichier.";
+"message_reply_to_message_to_reply_to_prefix" = "En réponse à";

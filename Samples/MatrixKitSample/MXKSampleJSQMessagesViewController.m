@@ -123,9 +123,11 @@
     roomDataSource.delegate = self;
     
     self.senderId = roomDataSource.mxSession.matrixRestClient.credentials.userId;
-    if (roomDataSource.mxSession.myUser)
+    
+    NSString *displayName = roomDataSource.mxSession.myUser.displayname;
+    if (displayName)
     {
-        self.senderDisplayName = roomDataSource.mxSession.myUser.displayname;
+        self.senderDisplayName = displayName;
     }
     else
     {
@@ -413,7 +415,7 @@
     }
     
     // Compute the member avatar URL
-    MXRoomMember *roomMember = [roomDataSource.room.state memberWithUserId:messageData.senderId];
+    MXRoomMember *roomMember = [roomDataSource.roomState.members memberWithUserId:messageData.senderId];
     
     NSString *avatarUrl = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:cell.avatarImageView.frame.size withMethod:MXThumbnailingMethodCrop];
     if (!avatarUrl)

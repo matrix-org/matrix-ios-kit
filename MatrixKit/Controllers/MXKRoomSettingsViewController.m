@@ -67,8 +67,13 @@
 {
     if (roomListener)
     {
-        [mxRoom.liveTimeline removeListener:roomListener];
-        roomListener = nil;
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->roomListener];
+            self->roomListener = nil;
+        }];
     }
     
     if (leaveRoomNotificationObserver)
@@ -131,45 +136,48 @@
     if (mxRoom)
     {
         // Register a listener to handle messages related to room name, topic...
-        roomListener = [mxRoom.liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomJoinRules, kMXEventTypeStringRoomGuestAccess, kMXEventTypeStringRoomHistoryVisibility] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
-            
-            // Consider only live events
-            if (direction == MXTimelineDirectionForwards)
-            {
-                [self updateRoomState:mxRoom.state];
-            }
-            
-        }];
-        
-        // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-        leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            // Check whether the user will leave the room related to the displayed participants
-            if (notif.object == self.mainSession)
-            {
-                NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-                if (roomId && [roomId isEqualToString:_roomId])
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            self->roomListener = [liveTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomPowerLevels, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomJoinRules, kMXEventTypeStringRoomGuestAccess, kMXEventTypeStringRoomHistoryVisibility] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+                // Consider only live events
+                if (direction == MXTimelineDirectionForwards)
                 {
-                    // We remove the current view controller.
-                    [self withdrawViewControllerAnimated:YES completion:nil];
+                    [self updateRoomState:liveTimeline.state];
                 }
-            }
-            
-        }];
+            }];
         
-        // Observe room history flush (sync with limited timeline, or state event redaction)
-        roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-            
-            MXRoom *room = notif.object;
-            if (self.mainSession == room.mxSession && [self.roomId isEqualToString:room.state.roomId])
-            {
-                // The existing room history has been flushed during server sync. Take into account the updated room state.
-                [self updateRoomState:room.state];
-            }
-            
+            // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+            self->leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+
+                // Check whether the user will leave the room related to the displayed participants
+                if (notif.object == self.mainSession)
+                {
+                    NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
+                    if (roomId && [roomId isEqualToString:self.roomId])
+                    {
+                        // We remove the current view controller.
+                        [self withdrawViewControllerAnimated:YES completion:nil];
+                    }
+                }
+            }];
+
+            // Observe room history flush (sync with limited timeline, or state event redaction)
+            self->roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+
+                MXRoom *room = notif.object;
+                if (self.mainSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
+                {
+                    // The existing room history has been flushed during server sync. Take into account the updated room state.
+                    [self updateRoomState:liveTimeline.state];
+                }
+
+            }];
+
+            [self updateRoomState:liveTimeline.state];
         }];
-        
-        [self updateRoomState:mxRoom.state];
     }
     
     self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];

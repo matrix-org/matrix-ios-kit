@@ -24,6 +24,7 @@
 #import "MXRoomSummaryUpdater.h"
 
 #import "MXKTools.h"
+#import "MXRoom+Sync.h"
 
 #import "DTCoreText.h"
 #import "cmark.h"
@@ -224,7 +225,7 @@
 - (NSString*)senderDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderDisplayName = [roomState memberName:event.sender];
+    NSString *senderDisplayName = [roomState.members memberName:event.sender];
     // Check whether this sender name is updated by the current event (This happens in case of new joined member)
     NSString* membership;
     MXJSONModelSetString(membership, event.content[@"membership"]);
@@ -242,7 +243,7 @@
 - (NSString*)senderAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderAvatarUrl = [roomState memberWithUserId:event.sender].avatarUrl;
+    NSString *senderAvatarUrl = [roomState.members memberWithUserId:event.sender].avatarUrl;
     
     // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
     NSString* membership;
@@ -314,8 +315,8 @@
             NSString *redactorId = event.redactedBecause[@"sender"];
             NSString *redactedBy = @"";
             // Consider live room state to resolve redactor name if no roomState is provided
-            MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].state;
-            redactedBy = [aRoomState memberName:redactorId];
+            MXRoomState *aRoomState = roomState ? roomState : [mxSession roomWithRoomId:event.roomId].dangerousSyncState;
+            redactedBy = [aRoomState.members memberName:redactorId];
             
             NSString *redactedReason = (event.redactedBecause[@"content"])[@"reason"];
             if (redactedReason.length)
@@ -625,7 +626,7 @@
             
             if (creatorId)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState memberName:creatorId] : creatorId)];
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -1327,7 +1328,7 @@
 }
 
 #pragma mark - MXRoomSummaryUpdating
-- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withStateEvents:(NSArray<MXEvent *> *)stateEvents roomState:(MXRoomState *)roomState
 {
     // We build strings containing the sender displayname (ex: "Bob: Hello!")
     // If a sender changes his displayname, we need to update the lastMessage.
@@ -1349,9 +1350,13 @@
                 break;
             }
         }
+        else if (event.eventType == MXEventTypeRoomJoinRules)
+        {
+            summary.others[@"mxkEventFormatterisJoinRulePublic"] = @(roomState.isJoinRulePublic);
+        }
     }
 
-    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents];
+    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withStateEvents:stateEvents roomState:roomState];
 }
 
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState
@@ -1404,6 +1409,11 @@
     }
     
     return updated;
+}
+
+- (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withServerRoomSummary:(MXRoomSyncSummary *)serverRoomSummary roomState:(MXRoomState *)roomState
+{
+    return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withServerRoomSummary:serverRoomSummary roomState:roomState];
 }
 
 

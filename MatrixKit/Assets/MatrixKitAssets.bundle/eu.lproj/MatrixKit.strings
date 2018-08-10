@@ -360,3 +360,9 @@
 "notice_sticker" = "eranskailua";
 "notice_in_reply_to" = "Honi erantzunez";
 "error_common_message" = "Errore bat gertatu da. Saiatu berriro geroago.";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "irudi bat bidali du.";
+"message_reply_to_sender_sent_a_video" = "bideo bat bidali du.";
+"message_reply_to_sender_sent_an_audio_file" = "audio fitxategi bat bidali du.";
+"message_reply_to_sender_sent_a_file" = "fitxategi bat bidali du.";
+"message_reply_to_message_to_reply_to_prefix" = "Honi erantzunez";

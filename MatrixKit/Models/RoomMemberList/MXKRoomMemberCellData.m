@@ -38,7 +38,7 @@
         roomMemberListDataSource = memberListDataSource;
         
         // Report member info from the current room state
-        memberDisplayName = [roomState memberName:roomMember.userId];
+        memberDisplayName = [roomState.members memberName:roomMember.userId];
         powerLevel = [roomState memberNormalizedPowerLevel:roomMember.userId];
         isTyping = NO;
     }
@@ -48,7 +48,7 @@
 
 - (void)updateWithRoomState:(MXRoomState*)roomState
 {
-    memberDisplayName = [roomState memberName:roomMember.userId];
+    memberDisplayName = [roomState.members memberName:roomMember.userId];
     powerLevel = [roomState memberNormalizedPowerLevel:roomMember.userId];
 }
 

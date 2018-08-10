@@ -40,6 +40,9 @@
     
     // Observe kMXRoomDidFlushDataNotification to take into account the updated room members when the room history is flushed.
     id roomDidFlushDataNotificationObserver;
+
+    // Cache for the room live timeline
+    MXEventTimeline *mxRoomLiveTimeline;
 }
 
 @end
@@ -126,17 +129,31 @@
     [self removeObservers];
     
     mxRoom = room;
-    
-    // Update matrix session associated to the view controller
-    NSArray *mxSessions = self.mxSessions;
-    for (MXSession *mxSession in mxSessions) {
-        [self removeMatrixSession:mxSession];
-    }
-    [self addMatrixSession:room.mxSession];
-    
-    _mxRoomMember = roomMember;
-    
-    [self initObservers];
+
+    MXWeakify(self);
+    [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+        MXStrongifyAndReturnIfNil(self);
+
+        self->mxRoomLiveTimeline = liveTimeline;
+
+        // Update matrix session associated to the view controller
+        NSArray *mxSessions = self.mxSessions;
+        for (MXSession *mxSession in mxSessions) {
+            [self removeMatrixSession:mxSession];
+        }
+        [self addMatrixSession:room.mxSession];
+
+        self->_mxRoomMember = roomMember;
+
+        [self initObservers];
+    }];
+}
+
+- (MXEventTimeline *)mxRoomLiveTimeline
+{
+    // @TODO(async-state): Just here for dev
+    NSAssert(mxRoomLiveTimeline, @"[MXKRoomMemberDetailsViewController] Room live timeline must be preloaded before accessing to MXKRoomMemberDetailsViewController.mxRoomLiveTimeline");
+    return mxRoomLiveTimeline;
 }
 
 - (UIImage*)picturePlaceholder
@@ -208,7 +225,7 @@
                 } failure:^(NSError *error) {
                     
                     [self removePendingActionMask];
-                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.state.roomId);
+                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.roomId);
                     // Notify MatrixKit user
                     NSString *myUserId = self.mainSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -481,16 +498,15 @@
     {
         // Observe room's members update
         NSArray *mxMembersEvents = @[kMXEventTypeStringRoomMember, kMXEventTypeStringRoomPowerLevels];
-        membersListener = [mxRoom.liveTimeline listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
-            
+        self->membersListener = [mxRoom listenToEventsOfTypes:mxMembersEvents onEvent:^(MXEvent *event, MXTimelineDirection direction, id customObject) {
+
             // consider only live event
             if (direction == MXTimelineDirectionForwards)
             {
                 [self refreshRoomMember];
             }
-            
         }];
-        
+
         // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
         leaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
@@ -498,7 +514,7 @@
             if (notif.object == self.mainSession)
             {
                 NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-                if (roomId && [roomId isEqualToString:mxRoom.state.roomId])
+                if (roomId && [roomId isEqualToString:mxRoom.roomId])
                 {
                     // We must remove the current view controller.
                     [self withdrawViewControllerAnimated:YES completion:nil];
@@ -510,7 +526,7 @@
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
-            if (self.mainSession == room.mxSession && [mxRoom.state.roomId isEqualToString:room.state.roomId])
+            if (self.mainSession == room.mxSession && [mxRoom.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room members list by updating the room member instance
@@ -540,8 +556,13 @@
     
     if (membersListener && mxRoom)
     {
-        [mxRoom.liveTimeline removeListener:membersListener];
-        membersListener = nil;
+        MXWeakify(self);
+        [mxRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+            MXStrongifyAndReturnIfNil(self);
+
+            [liveTimeline removeListener:self->membersListener];
+            self->membersListener = nil;
+        }];
     }
 }
 
@@ -557,7 +578,7 @@
     MXRoomMember* nextRoomMember = nil;
     
     // get the updated memmber
-    NSArray* membersList = [self.mxRoom.state members];
+    NSArray<MXRoomMember *> *membersList = self.mxRoomLiveTimeline.state.members.members;
     for (MXRoomMember* member in membersList)
     {
         if ([member.userId isEqualToString:_mxRoomMember.userId])
@@ -616,7 +637,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Check user's power level before allowing an action (kick, ban, ...)
-    MXRoomPowerLevels *powerLevels = [mxRoom.state powerLevels];
+    MXRoomPowerLevels *powerLevels = [self.mxRoomLiveTimeline.state powerLevels];
     NSInteger memberPowerLevel = [powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     NSInteger oneSelfPowerLevel = [powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId];
     
@@ -711,7 +732,7 @@
         // offer to start a new chat only if the room is not the first direct chat with this user
         // it does not make sense : it would open the same room
         MXRoom* directRoom = [self.mainSession directJoinedRoomWithUserId:_mxRoomMember.userId];
-        if (!directRoom || (![directRoom.roomId isEqualToString:mxRoom.state.roomId]))
+        if (!directRoom || (![directRoom.roomId isEqualToString:mxRoom.roomId]))
         {
             [actionsArray addObject:@(MXKRoomMemberDetailsActionStartChat)];
         }
@@ -868,14 +889,14 @@
 
 - (void)setPowerLevel:(NSInteger)value promptUser:(BOOL)promptUser
 {
-    NSInteger currentPowerLevel = [self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
+    NSInteger currentPowerLevel = [self.mxRoomLiveTimeline.state.powerLevels powerLevelOfUserWithUserID:_mxRoomMember.userId];
     
     // check if the power level has not yet been set to 0
     if (value != currentPowerLevel)
     {
         __weak typeof(self) weakSelf = self;
 
-        if (promptUser && value == [mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId])
+        if (promptUser && value == [self.mxRoomLiveTimeline.state.powerLevels powerLevelOfUserWithUserID:self.mainSession.myUser.userId])
         {
             // If the user is setting the same power level as his to another user, ask him for a confirmation
             if (currentAlert)
@@ -962,7 +983,7 @@
                                                                typeof(self) self = weakSelf;
                                                                self->currentAlert = nil;
                                                                
-                                                               [self setPowerLevel:self.mxRoom.state.powerLevels.usersDefault promptUser:YES];
+                                                               [self setPowerLevel:self.mxRoomLiveTimeline.state.powerLevels.usersDefault promptUser:YES];
                                                            }
                                                            
                                                        }]];
@@ -973,7 +994,7 @@
         typeof(self) self = weakSelf;
         
         textField.secureTextEntry = NO;
-        textField.text = [NSString stringWithFormat:@"%ld", (long)[self.mxRoom.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
+        textField.text = [NSString stringWithFormat:@"%ld", (long)[self.mxRoomLiveTimeline.state.powerLevels powerLevelOfUserWithUserID:self.mxRoomMember.userId]];
         textField.placeholder = nil;
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];

@@ -26,6 +26,18 @@
  */
 @interface MXKAppSettings : NSObject
 
+#pragma mark - /sync filter
+
+/**
+ Lazy load room members when /syncing with the homeserver.
+ */
+@property (nonatomic) BOOL syncWithLazyLoadOfRoomMembers;
+
+/**
+ The filter object to use in /sync requests according to current settings.
+ */
+@property (nonatomic, readonly) MXFilterJSONModel *syncFilter;
+
 #pragma mark - Room display
 
 /**

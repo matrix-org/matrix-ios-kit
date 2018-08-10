@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,23 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import "MXRoom+Sync.h"
 
-NSString *const MatrixKitVersion = @"0.8.0";
+@implementation MXRoom (Sync)
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+- (MXRoomState *)dangerousSyncState
+{
+    __block MXRoomState *syncState;
 
-NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
+    // If syncState is called from the right place, the following call will be
+    // synchronous and every thing will be fine
+    [self state:^(MXRoomState *roomState) {
+        syncState = roomState;
+    }];
+
+    NSAssert(syncState, @"[MXRoom+Sync] syncState failed. Are you sure the state of the room has been already loaded?");
+
+    return syncState;
+}
+
+@end

@@ -45,7 +45,7 @@
             MXRoom *room = [searchDataSource.mxSession roomWithRoomId:searchResult.result.roomId];
             if (room)
             {
-                title = room.state.displayname;
+                title = room.summary.displayname;
             }
             else
             {
@@ -59,6 +59,11 @@
         message = [searchResult.result.content[@"body"] isKindOfClass:[NSString class]] ? searchResult.result.content[@"body"] : nil;
     }
     return self;
+}
+
++ (void)cellDataWithSearchResult:(MXSearchResult *)searchResult andSearchDataSource:(MXKSearchDataSource *)searchDataSource onComplete:(void (^)(id<MXKSearchCellDataStoring>))onComplete
+{
+    onComplete([[self alloc] initWithSearchResult:searchResult andSearchDataSource:searchDataSource]);
 }
 
 @end

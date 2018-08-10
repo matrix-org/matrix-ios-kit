@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,21 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import <Foundation/Foundation.h>
 
-NSString *const MatrixKitVersion = @"0.8.0";
+#import <MatrixSDK/MatrixSDK.h>
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+/**
+ Temporary category to help in the transition from synchronous access to room.state
+ to asynchronous access.
+ */
+@interface MXRoom (Sync)
 
-NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
+/**
+ Get the room state if it has been already loaded else return nil.
+
+ Use this method only where you are sure the room state is already mounted.
+ */
+@property (nonatomic, readonly) MXRoomState *dangerousSyncState;
+
+@end
