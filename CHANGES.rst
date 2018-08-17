@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.8.1 (2018-08-17)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.11.1).
+
 Changes in MatrixKit in 0.8.0 (2018-08-10)
 ==========================================
 
