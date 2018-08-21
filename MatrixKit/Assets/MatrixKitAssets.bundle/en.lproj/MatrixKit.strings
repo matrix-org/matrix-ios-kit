@@ -54,6 +54,11 @@
 "login_mobile_device"="Mobile";
 "login_tablet_device"="Tablet";
 "login_desktop_device"="Desktop";
+"login_error_resource_limit_exceeded_title" = "Resource Limit Exceeded";
+"login_error_resource_limit_exceeded_message_default" = "This homeserver has exceeded one of its resource limits.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "This homeserver has hit its Monthly Active User limit.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nPlease contact your service administrator to continue using this service.";
+"login_error_resource_limit_exceeded_contact_button" = "Contact Administrator";
 
 // Action
 "no" = "No";

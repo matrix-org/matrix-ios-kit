@@ -779,6 +779,11 @@
     }];
 }
 
+- (void)testUserRegistration:(void (^)(MXError *mxError))callback
+{
+    mxCurrentOperation = [mxRestClient testUserRegistration:self.authInputsView.userId callback:callback];
+}
+
 - (IBAction)onButtonPressed:(id)sender
 {
     [self dismissKeyboard];
@@ -1122,6 +1127,11 @@
             {
                 message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
             }
+            else if ([errCode isEqualToString:kMXErrCodeStringResourceLimitExceeded])
+            {
+                [self showResourceLimitExceededError:dict onAdminContactTapped:nil];
+                return;
+            }
             else if (!message.length)
             {
                 message = errCode;
@@ -1148,6 +1158,78 @@
     
     [self presentViewController:alert animated:YES completion:nil];
     
+    // Update authentication inputs view to return in initial step
+    [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+}
+
+- (void)showResourceLimitExceededError:(NSDictionary *)errorDict onAdminContactTapped:(void (^)(NSURL *adminContact))onAdminContactTapped
+{
+    mxCurrentOperation = nil;
+    [_authenticationActivityIndicator stopAnimating];
+    self.userInteractionEnabled = YES;
+
+    // Alert user
+    if (alert)
+    {
+        [alert dismissViewControllerAnimated:NO completion:nil];
+    }
+
+    // Parse error data
+    NSString *limitType, *adminContactString;
+    NSURL *adminContact;
+
+    MXJSONModelSetString(limitType, errorDict[kMXErrorResourceLimitExceededLimitTypeKey]);
+    MXJSONModelSetString(adminContactString, errorDict[kMXErrorResourceLimitExceededAdminContactKey]);
+
+    if (adminContactString)
+    {
+        adminContact = [NSURL URLWithString:adminContactString];
+    }
+
+    NSString *title = [NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_title"];
+
+    // Build the message content
+    NSMutableString *message = [NSMutableString new];
+    if ([limitType isEqualToString:kMXErrorResourceLimitExceededLimitTypeMonthlyActiveUserValue])
+    {
+        [message appendString:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_message_monthly_active_user"]];
+    }
+    else
+    {
+        [message appendString:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_message_default"]];
+    }
+
+    [message appendString:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_message_contact"]];
+
+    // Build the alert
+    alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+
+    MXWeakify(self);
+    if (adminContact && onAdminContactTapped)
+    {
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_contact_button"]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action)
+                          {
+                              MXStrongifyAndReturnIfNil(self);
+                              self->alert = nil;
+
+                              // Let the system handle the URI
+                              // It could be something like "mailto: server.admin@example.com"
+                              onAdminContactTapped(adminContact);
+                          }]];
+    }
+
+    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * action)
+                      {
+                          MXStrongifyAndReturnIfNil(self);
+                          self->alert = nil;
+                      }]];
+
+    [self presentViewController:alert animated:YES completion:nil];
+
     // Update authentication inputs view to return in initial step
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
 }
