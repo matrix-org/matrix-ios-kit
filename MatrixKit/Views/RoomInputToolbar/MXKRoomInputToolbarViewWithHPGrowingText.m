@@ -107,14 +107,7 @@
 - (void)setTextMessage:(NSString *)textMessage
 {
     growingTextView.text = textMessage;
-    self.rightInputToolbarButton.enabled = textMessage.length;
-    
-    if (!textMessage.length && growingTextView.isFirstResponder)
-    {
-        // Trick: Toggle default keyboard from 123 mode to ABC mode when text input is reset
-        [growingTextView resignFirstResponder];
-        [growingTextView becomeFirstResponder];
-    }
+    self.rightInputToolbarButton.enabled = textMessage.length;    
 }
 
 - (void)pasteText:(NSString *)text

@@ -51,13 +51,6 @@
 {
     _messageComposerTextView.text = textMessage;
     self.rightInputToolbarButton.enabled = textMessage.length;
-    
-    if (!textMessage.length && _messageComposerTextView.isFirstResponder)
-    {
-        // Trick: Toggle default keyboard from 123 mode to ABC mode when text input is reset
-        [_messageComposerTextView resignFirstResponder];
-        [_messageComposerTextView becomeFirstResponder];
-    }
 }
 
 - (void)pasteText:(NSString *)text
