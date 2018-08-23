@@ -366,3 +366,8 @@
 "ssl_unexpected_existing_expl" = "A tanúsítvány amit eddig a telefon elfogadott megváltozott. Ez nagyon GYANÚS. Ajánlott az új tanúsítvány ELUTASÍTÁSA.";
 "ssl_expected_existing_expl" = "Az eddig elfogadott tanúsítvány egy nem elfogadottra módosult. A szerver lehet, hogy megújította a tanúsítványát. Vedd fel a kapcsolatot a szerver adminisztrátorával az új ujjlenyomat ellenőrzéséhez.";
 "ssl_only_accept" = "CSAK akkor fogadd el a tanúsítványt ha a szerver adminisztrátora közzétette az ujjlenyomatot és az megegyezik az alábbival.";
+"login_error_resource_limit_exceeded_title" = "Erőforrás korlát túllépés";
+"login_error_resource_limit_exceeded_message_default" = "Ez a Matrix szerver túllépte az egyik erőforrás korlátját.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Ez a Matrix szerver elérte a havi aktív felhasználói korlátját.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nKérlek vedd fel a kapcsolatot a szolgáltatás adminisztrátorával, hogy tovább használhasd.";
+"login_error_resource_limit_exceeded_contact_button" = "Adminisztrátor kapcsolatfelvétel";
