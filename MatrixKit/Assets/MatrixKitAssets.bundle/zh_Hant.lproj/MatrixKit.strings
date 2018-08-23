@@ -173,7 +173,7 @@
 "sign_up" = "註冊";
 "submit" = "送出";
 "submit_code" = "送出碼";
-"set_default_power_level" = "";
+"set_default_power_level" = "重設權限等級";
 "set_admin" = "設定管理員";
 "set_moderator" = "設定主持人";
 "start_chat" = "開始聊天";
@@ -208,3 +208,19 @@
 "notice_event_redacted" = "<撤回%@>";
 // room details dialog screen
 "room_details_title" = "聊天室詳細資料";
+"notice_encrypted_message" = "已加密的訊息";
+"notice_image_attachment" = "附加圖片";
+"notice_audio_attachment" = "附加音訊";
+"notice_video_attachment" = "附加視訊";
+"notice_location_attachment" = "附加位置資訊";
+"notice_file_attachment" = "附加檔案";
+"notice_invalid_attachment" = "無效的附加資訊";
+"notice_unsupported_attachment" = "未支援的附加資訊：%@";
+"notice_sticker" = "貼圖";
+// Settings
+"settings" = "設定";
+"settings_enable_push_notifications" = "啟用推播通知";
+"device_details_name" = "名稱\n";
+"device_details_identifier" = "裝置代碼\n";
+"device_details_last_seen" = "上次使用\n";
+"device_details_rename_prompt_message" = "裝置名稱：";
