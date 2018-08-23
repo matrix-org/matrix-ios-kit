@@ -1,7 +1,22 @@
-Changes in MatrixKit in 0.8.0 ()
+Changes in MatrixKit in 0.8.2 (2018-08-)
 ==========================================
 
 Improvements:
+ * Upgrade MatrixSDK version (v0.11.2).
+ * MXKAuthenticationVC: Show a "Resource Limit Exceeded" popup if it happens server side (vector-im/riot-ios/issues/1937).
+ * Remove keyboard type reset in MXKRoomInputToolbar... classes (vector-im/riot-ios/issues/1959).
+
+Changes in MatrixKit in 0.8.1 (2018-08-17)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.11.1).
+
+Changes in MatrixKit in 0.8.0 (2018-08-10)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.11.0).
  * MXKRoomDataSource: Add send reply with text message (vector-im/riot-ios#1911).
  * MXKSessionRecentsDataSource: Hide rooms that should not be displayed to user (linked to vector-im/riot-ios#1938).
  * MXKRoomDataSource: Fix a multithreading issue that caused a crash (PR #456).

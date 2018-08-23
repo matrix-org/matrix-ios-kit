@@ -196,6 +196,14 @@
 - (void)isUserNameInUse:(void (^)(BOOL isUserNameInUse))callback;
 
 /**
+ Make a ping to the registration endpoint to detect a possible registration problem earlier.
+
+ @param callback A block object called when the operation is completed.
+                 It provides a MXError to check to verify if the user can be registered.
+ */
+- (void)testUserRegistration:(void (^)(MXError *mxError))callback;
+
+/**
  Action registered on the following events:
  - 'UIControlEventTouchUpInside' for each UIButton instance.
  - 'UIControlEventValueChanged' for each UISwitch instance.
@@ -234,6 +242,16 @@
  @param error the received error.
  */
 - (void)onFailureDuringAuthRequest:(NSError *)error;
+
+
+/**
+ Display a kMXErrCodeStringResourceLimitExceeded error received during an authentication
+ request.
+
+ @param errorDict the error data.
+ @param onAdminContactTapped a callback indicating if the user wants to contact their admin.
+ */
+- (void)showResourceLimitExceededError:(NSDictionary *)errorDict onAdminContactTapped:(void (^)(NSURL *adminContact))onAdminContactTapped;
 
 /**
  Handle the successful authentication request.
