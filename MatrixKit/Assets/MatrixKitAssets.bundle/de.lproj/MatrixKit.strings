@@ -366,3 +366,8 @@
 "message_reply_to_sender_sent_an_audio_file" = "sandte eine Audio-Datei.";
 "message_reply_to_sender_sent_a_file" = "sandte eine Datei.";
 "message_reply_to_message_to_reply_to_prefix" = "Als Antwort auf";
+"login_error_resource_limit_exceeded_title" = "Ressourcen-Limit überschritten";
+"login_error_resource_limit_exceeded_message_default" = "Dieser Heimserver hat eine seiner Ressourcen-Limits überschritten.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Dieser Heimserver hat sein Limit an monatlich aktiven Nutzern erreicht.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nBitte kontaktiere deinen Dienst-Administrator um mit der Nutzung dieses Dienstes fortzufahren.";
+"login_error_resource_limit_exceeded_contact_button" = "Kontaktiere Administrator";
