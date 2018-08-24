@@ -366,3 +366,5 @@
 "message_reply_to_sender_sent_an_audio_file" = "отправил аудиофайл.";
 "message_reply_to_sender_sent_a_file" = "отправил файл.";
 "message_reply_to_message_to_reply_to_prefix" = "В ответ на";
+"login_error_resource_limit_exceeded_title" = "Превышен лимит ресурса";
+"login_error_resource_limit_exceeded_contact_button" = "Связаться с администратором";
