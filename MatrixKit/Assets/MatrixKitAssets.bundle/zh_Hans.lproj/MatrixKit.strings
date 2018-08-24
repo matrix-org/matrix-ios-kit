@@ -103,7 +103,7 @@
 "notice_room_history_visible_to_members" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见。";
 "notice_room_history_visible_to_members_from_invited_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们被邀请的时候开始。";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们加入的时候开始。";
-"notice_crypto_unable_to_decrypt" = "** 不能解密：%@ **";
+"notice_crypto_unable_to_decrypt" = "** 无法解密：%@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "发送者的设备没有发送给我们此消息的密钥。";
 // Settings
 "settings" = "设置";
@@ -314,3 +314,6 @@
 "notice_conference_call_request" = "%@ 已请求发起 VoIP 会议";
 "notice_conference_call_finished" = "VoIP 会议已结束";
 "notification_settings_enable_notifications_warning" = "所有设备上的通知都已被禁用。";
+"notice_in_reply_to" = "回复";
+"account_email_validation_message" = "请检查您的电子邮箱并点击邮件中的链接。完成此操作后，点击继续。";
+"account_email_validation_error" = "无法验证邮箱地址。请检查你的电子邮箱并点击邮件中的链接。完成后，请点击继续";

@@ -175,3 +175,194 @@
 "room_error_join_failed_title" = "A szobához való csatlakozás nem sikerült";
 "room_error_join_failed_empty_room" = "Üres szobába jelenleg nem lehet újra belépni.";
 "room_error_name_edition_not_authorized" = "A szoba nevének megváltoztatásához nincs jogosultságod";
+"room_event_encryption_verify_message" = "Ennek az eszköz hitelességének a vizsgálatához vedd fel a kapcsolatot a tulajdonossal egy másik csatornán (pl. személyes találkozó vagy telefonhívás) és kérdezd meg, hogy amit ő lát a személyes beállításoknál mint az eszközhöz tartozó kulcs az megegyezik az alábbi kulccsal:\n\n\tEszköz neve: %@\n\tEszköz azonosító: %@\n\tEszköz kulcs: %@\n\nHa egyezik akkor nyomd meg az ellenőrizve gombot alább. Ha nem egyezik, akkor valaki jogosulatlanul akarja használni az eszközt; talán a legjobb, ha a tiltólista gombot nyomod meg inkább.\n\nA jövőben ezen az ellenőrzési módon javítani fogunk.";
+"account_email_validation_message" = "Ellenőrizd a leveleidet és kattints a levélben lévő linkre. Ha az megvan akkor kattints itt a tovább gombra.";
+"account_email_validation_error" = "Az e-mail címet nem sikerült ellenőrizni. Ellenőrizd a leveleidet és kattints a levélben lévő linkre. Ha az megvan akkor kattints itt a tovább gombra";
+"account_msisdn_validation_message" = "SMS-t küldtünk az aktiváló kóddal. Add meg az aktiváló kódot alább.";
+"room_error_topic_edition_not_authorized" = "Nem vagy jogosult a szoba témájának szerkesztésére";
+"room_error_cannot_load_timeline" = "Az idővonalat nem sikerült betölteni";
+"room_error_timeline_event_not_found_title" = "Az idővonali pozíciót nem sikerült letölteni";
+"room_error_timeline_event_not_found" = "Az alkalmazás megpróbált az idővonalról betölteni egy időpillanatot de nem találja";
+"room_left" = "Elhagytad a szobát";
+"room_no_power_to_create_conference_call" = "Ebben a szobában nincs jogosultságod meghívni valakit konferenciát indítani";
+"room_no_conference_call_in_encrypted_rooms" = "Titkosított szobákban a konferenciahívások nem támogatottak";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "kép elküldve.";
+"message_reply_to_sender_sent_a_video" = "videó elküldve.";
+"message_reply_to_sender_sent_an_audio_file" = "hangfájl elküldve.";
+"message_reply_to_sender_sent_a_file" = "fájl elküldve.";
+"message_reply_to_message_to_reply_to_prefix" = "Válaszolva erre:";
+// Room members
+"room_member_ignore_prompt" = "Biztos, hogy eltakarod ennek a felhasználónak az összes üzenetét?";
+"room_member_power_level_prompt" = "Valószínűleg nem fogod tudni visszavonni ezt a műveletet, mivel ugyanarra a szintre emeled a felhasználót mint amin te magad vagy.\nBiztos vagy benne?";
+// Attachment
+"attachment_size_prompt" = "Hogy szeretnéd elküldeni:";
+"attachment_original" = "Jelenlegi méret: %@";
+"attachment_small" = "Kicsi: %@";
+"attachment_medium" = "Közepes: %@";
+"attachment_large" = "Nagy: %@";
+"attachment_cancel_download" = "Megszakítod a letöltést?";
+"attachment_cancel_upload" = "Megszakítod a feltöltést?";
+"attachment_multiselection_size_prompt" = "Hogy szeretnéd elküldeni a képet:";
+"attachment_multiselection_original" = "Jelenlegi méret";
+"attachment_e2e_keys_file_prompt" = "Ez a fájl a Matrix kliensből kimentett titkosító kulcsokat tartalmaz.\nSzeretnéd megjeleníteni a fájl tartalmát vagy betöltöd a kulcsokat amiket tartalmaz?";
+"attachment_e2e_keys_import" = "Betöltés...";
+// Contacts
+"contact_mx_users" = "Matrix felhasználók";
+"contact_local_contacts" = "Helyi névjegyek";
+// Groups
+"group_invite_section" = "Meghívók";
+"group_section" = "Csoportok";
+// Search
+"search_no_results" = "Nincs találat";
+"search_searching" = "Keresés folyamatban...";
+// Time
+"format_time_s" = "mp";
+"format_time_m" = "p";
+"format_time_h" = "ó";
+"format_time_d" = "n";
+// E2E import
+"e2e_import_room_keys" = "Szoba kulcsok betöltése";
+"e2e_import_prompt" = "Ez a folyamat betölti azokat a titkosítási kulcsokat amiket előzőleg egy másik Matrix kliensből mentettél ki. Ez után minden olyan üzenetet vissza tudsz fejteni amit a másik eszköz vissza tud.\nA kulcsokat tartalmazó fájl jelszóval védett. Add meg itt a jelszót a fájl visszafejtéséhez.";
+"e2e_import" = "Betöltés";
+"e2e_passphrase_enter" = "Jelszó megadása";
+// E2E export
+"e2e_export_room_keys" = "Szoba kulcsok kimentése";
+"e2e_export_prompt" = "Ezzel a folyamattal kimentheted azokat a kulcsokat amiket a titkosított szobákban az üzenetek visszafejtésére használtál. Így később ezt a fájlt egy másik Matrix kliensbe betöltve a kliens vissza tudja fejteni ezeket az üzeneteket.\nAki el tudja olvasni a kimentett kulcsokat tartalmazó fájlt vissza fogja tudni fejteni az üzeneteket amiket látsz, ezért tartsd a fájlt biztonságosan.";
+"e2e_export" = "Kiment";
+"e2e_passphrase_confirm" = "Jelszó megerősítése";
+"e2e_passphrase_empty" = "A jelszó nem lehet üres";
+"e2e_passphrase_not_match" = "A jelszavaknak egyezniük kell";
+// Others
+"user_id_title" = "Felhasználói azonosító:";
+"offline" = "kapcsolat nélkül";
+"unsent" = "Elküldetlen";
+"error" = "Hiba";
+"error_common_message" = "Hiba történt. Kérlek próbáld meg később.";
+"not_supported_yet" = "Jelenleg nem támogatott";
+"default" = "alapértelmezett";
+"private" = "Privát";
+"public" = "Nyilvános";
+"power_level" = "Hozzáférési szint";
+"network_error_not_reachable" = "Ellenőrizd a hálózati hozzáférésed";
+"user_id_placeholder" = "pl.: @bob:matrixszerver";
+"ssl_homeserver_url" = "Matrix szerver URL: %@";
+// Permissions
+"camera_access_not_granted_for_call" = "Videó hívásokhoz engedélyezni kell a hozzáférést a kamerához de %@ nem rendelkezik ilyen engedéllyel";
+"microphone_access_not_granted_for_call" = "Hívásokhoz engedélyezni kell a hozzáférést a mikrofonhoz, de %@ nem rendelkezik ilyen engedéllyel";
+"local_contacts_access_not_granted" = "Címjegyzékben található felhasználók feltérképezéséhez engedéllyel kell rendelkezni a címjegyzékhez, de %@ nem rendelkezik ilyen engedéllyel";
+"local_contacts_access_discovery_warning_title" = "Felhasználók keresése";
+"local_contacts_access_discovery_warning" = "%@ e-mail címeket és telefonszámokat szeretne feltölteni a címjegyzékből hogy felhasználókat keressen";
+// Country picker
+"country_picker_title" = "Válassz országot";
+// Language picker
+"language_picker_title" = "Válassz nyelvet";
+"language_picker_default_language" = "Alapértelmezett (%@)";
+"notice_room_invite" = "%@ meghívta %@ felhasználót";
+"notice_room_third_party_invite" = "%@ meghívót küldött %@ felhasználónak, hogy lépjen be a szobába";
+"notice_room_third_party_registered_invite" = "%@ elfogadta a meghívást ide: %@";
+"notice_room_join" = "%@ csatlakozott";
+"notice_room_leave" = "%@ távozott";
+"notice_room_reject" = "%@ elutasította a meghívást";
+"notice_room_kick" = "%@ kirúgta: %@";
+"notice_room_unban" = "%@ visszaengedte: %@";
+"notice_room_ban" = "%@ kitiltotta: %@";
+"notice_room_withdraw" = "%@ visszavonta %@ meghívóját";
+"notice_room_reason" = ". Ok: %@";
+"notice_avatar_url_changed" = "%@ megváltoztatta a profilképét";
+"notice_display_name_set" = "%@ a becenevét %@ névre állította be";
+"notice_display_name_changed_from" = "%@ megváltoztatta a becenevét %@ névről %@ névre";
+"notice_display_name_removed" = "%@ törölte a becenevét";
+"notice_topic_changed" = "%@ megváltoztatta a témát erre: %@";
+"notice_room_name_changed" = "%@ megváltoztatta a szoba nevét erre: %@";
+"notice_placed_voice_call" = "%@ hanghívást kezdeményezett";
+"notice_placed_video_call" = "%@ videóhívást kezdeményezett";
+"notice_answered_video_call" = "%@ fogadta a hívást";
+"notice_ended_video_call" = "%@ befejezte a hívást";
+"notice_conference_call_request" = "%@ VoIP konferenciát kezdeményezett";
+"notice_conference_call_started" = "VoIP konferencia indult";
+"notice_conference_call_finished" = "VoIP konferencia befejeződött";
+// button names 
+"ok" = "Rendben";
+"cancel" = "Mégse";
+"save" = "Ment";
+"send" = "Küld";
+"copy" = "Másol";
+"resend" = "Újraküld";
+"redact" = "Kitakar";
+"share" = "Megosztás";
+"set_power_level" = "Hozzáférési szint";
+"delete" = "Töröl";
+// actions 
+"action_logout" = "Kilép";
+"create_room" = "Szoba készítése";
+"login" = "Belép";
+"create_account" = "Felhasználói fiók készítés";
+"membership_invite" = "Meghívva";
+"membership_leave" = "Elhagyva";
+"membership_ban" = "Kitiltva";
+"num_members_one" = "%@ felhasználó";
+"num_members_other" = "%@ felhasználó";
+"kick" = "Kirúg";
+"ban" = "Kitilt";
+"unban" = "Visszaenged";
+"message_unsaved_changes" = "Mentetlen beállítások vannak. Ha kilépsz a beállítások elvesznek.";
+// Login Screen 
+"login_error_already_logged_in" = "Már bejelentkeztél";
+"login_error_must_start_http" = "Az URL-nek http[s]:// -sel kell kezdődnie";
+// room details dialog screen
+"room_details_title" = "Szoba adatai";
+// contacts list screen 
+"invitation_message" = "Szeretnék veled beszélgetni a matrix-szal. További információkért látogasd meg a http://matrix.org weboldalt.";
+// Settings screen 
+"settings_title_config" = "Beállítások";
+"settings_title_notifications" = "Értesítések";
+// Notification settings screen 
+"notification_settings_disable_all" = "Minden értesítés kikapcsolása";
+"notification_settings_enable_notifications" = "Értesítések engedélyezése";
+"notification_settings_enable_notifications_warning" = "Minden értesítés tiltva van minden eszközhöz.";
+"notification_settings_global_info" = "Az értesítések beállításai a felhasználói fiókhoz van elmentve és minden eszköz használhatja amelyik támogatja (beleértve az asztali értesítéseket is).\n\nA szabályok sorrendje számít; az első szabály ami illeszkedik határozza meg a viselkedést az üzenethez.\nÍgy a kulcsszó szintű értesítések fontosabbak mint a szoba szintűek amik fontosabbak mint a küldő szintű értesítések.\nHa több szabály van ugyanolyan kategóriából a listában az első szabály ami illeszkedik lesz a meghatározó.";
+"notification_settings_per_word_notifications" = "Kulcsszó alapú értesítések";
+"notification_settings_per_word_info" = "A szavaknál a kis-, és nagybetű nincs megkülönböztetve és tartalmazhat „wildcard” karaktert (*). Például:\nfoo illeszkedik minden szövegre ahol a foo szó elválasztó karakterrel van körülvéve (pl.: írásjel, szóköz, sor eleje, sor vége).\nfoo* illeszkedik minden szövegre ami foo-val kezdődik.\n*foo* illeszkedik minden szövegre ami a három betűt (foo) tartalmazza.";
+"notification_settings_always_notify" = "Mindig értesít";
+"notification_settings_never_notify" = "Soha ne értesítsen";
+"notification_settings_word_to_match" = "szó amire illeszkedjen";
+"notification_settings_highlight" = "Kiemel";
+"notification_settings_custom_sound" = "Egyedi hang";
+"notification_settings_per_room_notifications" = "Szoba szintű értesítések";
+"notification_settings_per_sender_notifications" = "Küldő szintű értesítések";
+"notification_settings_sender_hint" = "@felhasznalo:domain.com";
+"notification_settings_select_room" = "Válassz szobát";
+"notification_settings_other_alerts" = "További figyelmeztetések";
+"notification_settings_contain_my_user_name" = "Hangos értesítés ha az üzenet tartalmazza a nevemet";
+"notification_settings_contain_my_display_name" = "Hangos értesítés ha az üzenet a becenevemet tartalmazza";
+"notification_settings_just_sent_to_me" = "Hangos értesítés ha az üzenetet csak nekem küldték";
+"notification_settings_invite_to_a_new_room" = "Értesítés ha meghívnak egy új szobába";
+"notification_settings_people_join_leave_rooms" = "Értesítés, ha valaki belép vagy elhagy szobát";
+"notification_settings_receive_a_call" = "Értesítés, ha hívást kapok";
+"notification_settings_suppress_from_bots" = "Robotoktól való értesítések tiltása";
+"notification_settings_by_default" = "Alapértelmezetten...";
+"notification_settings_notify_all_other" = "Értesítés minden egyéb üzenethez/szobához";
+// gcm section 
+"settings_config_home_server" = "Matrix szerver: %@";
+"settings_config_identity_server" = "Azonosítási szerver: %@";
+"settings_config_user_id" = "Felhasználói azonosító: %@";
+// call string
+"call_waiting" = "Vár...";
+"call_connecting" = "Kapcsolás folyamatban...";
+"call_ended" = "Hívás vége";
+"call_ring" = "Hívás...";
+"incoming_video_call" = "Érkező videó hívás";
+"incoming_voice_call" = "Érkező hang hívás";
+"call_invite_expired" = "Hívás meghívás lejárt";
+// unrecognized SSL certificate
+"ssl_trust" = "Megbízhatóság";
+"ssl_logout_account" = "Kilép";
+"ssl_remain_offline" = "Figyelmen kívül hagy";
+"ssl_fingerprint_hash" = "Ujjlenyomat (%@):";
+"ssl_could_not_verify" = "A távoli szerver nem azonosítható.";
+"ssl_cert_not_trust" = "Ez azt jelentheti, hogy valaki lehallgatja a forgalmat vagy a telefon nem tekinti megbízhatónak a szerver tanúsítványát.";
+"ssl_cert_new_account_expl" = "Ha a szolgáltatás adminisztrátorának információi alapján ez várható, ellenőrizd az ujjlenyomatot azzal amit az adminisztrátor közölt.";
+"ssl_unexpected_existing_expl" = "A tanúsítvány amit eddig a telefon elfogadott megváltozott. Ez nagyon GYANÚS. Ajánlott az új tanúsítvány ELUTASÍTÁSA.";
+"ssl_expected_existing_expl" = "Az eddig elfogadott tanúsítvány egy nem elfogadottra módosult. A szerver lehet, hogy megújította a tanúsítványát. Vedd fel a kapcsolatot a szerver adminisztrátorával az új ujjlenyomat ellenőrzéséhez.";
+"ssl_only_accept" = "CSAK akkor fogadd el a tanúsítványt ha a szerver adminisztrátora közzétette az ujjlenyomatot és az megegyezik az alábbival.";
