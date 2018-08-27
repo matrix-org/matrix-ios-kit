@@ -1101,6 +1101,8 @@
     // Remove potential toolbar
     if (inputToolbarView)
     {
+        NSLog(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView with class %@ to nil", [self.inputToolbarView class]);
+        
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
         {
             [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
@@ -1126,6 +1128,8 @@
     {
         // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
         NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
+        
+        NSLog(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView to class %@", roomInputToolbarViewClass);
         
         inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
         
