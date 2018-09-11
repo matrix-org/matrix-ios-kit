@@ -278,10 +278,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         mxCall = call;
         
         [self addMatrixSession:mxCall.room.mxSession];
-        
-        // Register a listener to handle messages related to room name, members...
+
         MXWeakify(self);
-        [mxCall.room listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+
+        // Register a listener to handle messages related to room name, members...
+        roomListener = [mxCall.room listenToEventsOfTypes:@[kMXEventTypeStringRoomName, kMXEventTypeStringRoomTopic, kMXEventTypeStringRoomAliases, kMXEventTypeStringRoomAvatar, kMXEventTypeStringRoomCanonicalAlias, kMXEventTypeStringRoomMember] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
             MXStrongifyAndReturnIfNil(self);
 
             // Consider only live events
@@ -294,9 +295,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // Observe room history flush (sync with limited timeline, or state event redaction)
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            MXStrongifyAndReturnIfNil(self);
             
             MXRoom *room = notif.object;
-            if (mxCall && self.mainSession == room.mxSession && [mxCall.room.roomId isEqualToString:room.roomId])
+            if (self->mxCall && self.mainSession == room.mxSession && [self->mxCall.room.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room state
