@@ -158,6 +158,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXCallKitAdapterAudioSessionDidActive object:nil];
+
+    [self removeObservers];
 }
 
 - (void)viewWillAppear:(BOOL)animated
