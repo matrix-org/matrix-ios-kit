@@ -1173,23 +1173,26 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // Check whether data has been aldready loaded
     if (bubbles.count)
     {
+        NSUInteger eventsCount = 0;
         for (NSInteger i = bubbles.count - 1; i >= 0; i--)
         {
+            id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+            eventsCount += bubbleData.events.count;
+            
             CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
             // Sanity check
             if (bubbleHeight)
             {
                 bubblesTotalHeight += bubbleHeight;
-                
+
                 if (bubblesTotalHeight > rect.size.height)
                 {
                     // No need to compute more cells heights, there are enough to fill the rect
-                    NSLog(@"[MXKRoomDataSource] -> %tu already loaded bubbles are enough to fill the screen", bubbles.count - i);
+                    NSLog(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
                     break;
                 }
                 
                 // Compute the minimal height an event takes
-                id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
                 minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
             }
         }
