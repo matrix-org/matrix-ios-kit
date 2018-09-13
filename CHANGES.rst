@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.8.4 (2018-09)
 
 Improvements:
 * Upgrade MatrixSDK version (v0.11.4).
+* Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
 
 Bug fix:
 * Fix crash in [MXKCallViewController callRoomStateDidChange:] (vector-im/riot-ios/issues/2031).
