@@ -520,6 +520,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         MXStrongifyAndReturnIfNil(self);
 
                         self->_timeline = liveTimeline;
+                        self->roomState = liveTimeline.state;
 
                         // Only one pagination process can be done at a time by an MXRoom object.
                         // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
