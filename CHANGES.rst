@@ -6,6 +6,7 @@ Improvements:
 * Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
 
 Bug fix:
+* No automatic scroll down when posting a new message (vector-im/riot-ios/issues/2040).
 * Fix crash in [MXKCallViewController callRoomStateDidChange:] (vector-im/riot-ios/issues/2031).
 * Fix crash in [MXKContactManager refreshLocalContacts] (vector-im/riot-ios/issues/2032).
 

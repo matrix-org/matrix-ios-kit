@@ -1703,9 +1703,9 @@
         // Compute the max vertical position visible according to contentOffset
         CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
         // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
-        maxPositionY += 30;
+        maxPositionY += 44;
         BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
-        
+
         // Consider the table view at the bottom if a scrolling to bottom is in progress too
         return (isScrolledToBottom || isScrollingToBottom);
     }
