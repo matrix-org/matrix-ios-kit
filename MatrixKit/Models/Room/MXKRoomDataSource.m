@@ -159,36 +159,23 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId andMatrixSession:mxSession];
-    if (roomDataSource)
-    {
-        [roomDataSource finalizeInitialization];
-
-        [roomDataSource.room state:^(MXRoomState *roomState) {
-            roomDataSource->roomState = roomState;
-
-            onComplete(roomDataSource);
-        }];
-    }
+    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId initialEventId:initialEventId andMatrixSession:mxSession];
-    if (roomDataSource)
-    {
-        [roomDataSource finalizeInitialization];
-
-        [roomDataSource.room state:^(MXRoomState *roomState) {
-            roomDataSource->roomState = roomState;
-
-            onComplete(roomDataSource);
-        }];
-    }
+    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithPeekingRoom:peekingRoom andInitialEventId:initialEventId];
+    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+}
+
++ (void)finalizeRoomDataSource:(MXKRoomDataSource*)roomDataSource onComplete:(void (^)(id roomDataSource))onComplete
+{
     if (roomDataSource)
     {
         [roomDataSource finalizeInitialization];
