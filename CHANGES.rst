@@ -10,6 +10,7 @@ Bug fix:
 * No automatic scroll down when posting a new message (vector-im/riot-ios/issues/2040).
 * Fix crash in [MXKCallViewController callRoomStateDidChange:] (vector-im/riot-ios/issues/2031).
 * Fix crash in [MXKContactManager refreshLocalContacts] (vector-im/riot-ios/issues/2032).
+* Fix crash when opening a room with unsent message (vector-im/riot-ios/issues/2041).
 
 Changes in MatrixKit in 0.8.3 (2018-08-27)
 ==========================================
