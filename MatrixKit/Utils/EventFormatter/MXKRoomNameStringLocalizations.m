@@ -25,9 +25,9 @@
     self = [super init];
     if (self)
     {
-        _emptyRoom = [NSBundle mxk_localizedStringForKey:@"room_summary_name_empty_room"];
-        _aliceAndBob = [NSBundle mxk_localizedStringForKey:@"room_summary_name_alice_and_bob"];
-        _aliceAndOthers = [NSBundle mxk_localizedStringForKey:@"room_summary_name_alice_and_others"];
+        _emptyRoom = [NSBundle mxk_localizedStringForKey:@"room_displayname_empty_room"];
+        _aliceAndBob = [NSBundle mxk_localizedStringForKey:@"room_displayname_two_members"];
+        _aliceAndOthers = [NSBundle mxk_localizedStringForKey:@"room_displayname_more_than_two_members"];
     }
     return self;
 }
