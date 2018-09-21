@@ -135,6 +135,11 @@
 "notice_sticker" = "sticker";
 "notice_in_reply_to" = "In reply to";
 
+// room display name
+"room_displayname_empty_room" = "Empty room";
+"room_displayname_two_members" = "%@ and %@";
+"room_displayname_more_than_two_members" = "%@ and %@ others";
+
 // Settings
 "settings" = "Settings";
 "settings_enable_inapp_notifications" = "Enable In-App notifications";
