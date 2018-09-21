@@ -26,8 +26,8 @@
     if (self)
     {
         _emptyRoom = [NSBundle mxk_localizedStringForKey:@"room_displayname_empty_room"];
-        _aliceAndBob = [NSBundle mxk_localizedStringForKey:@"room_displayname_two_members"];
-        _aliceAndOthers = [NSBundle mxk_localizedStringForKey:@"room_displayname_more_than_two_members"];
+        _twoMembers = [NSBundle mxk_localizedStringForKey:@"room_displayname_two_members"];
+        _moreThanTwoMembers = [NSBundle mxk_localizedStringForKey:@"room_displayname_more_than_two_members"];
     }
     return self;
 }
