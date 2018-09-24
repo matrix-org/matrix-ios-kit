@@ -82,6 +82,9 @@
 "notice_error_unexpected_event" = "Akt i papritur";
 "notice_error_unknown_event_type" = "Lloj i panjohur akti";
 "notice_crypto_unable_to_decrypt" = "** S’arrihet të shfshehtëzohet: %@ **";
+// room display name
+"room_displayname_empty_room" = "Dhomë e zbrazët";
+"room_displayname_more_than_two_members" = "%@ dhe %u të tjerë";
 // Settings
 "settings" = "Rregullime";
 "settings_enable_inapp_notifications" = "Aktivizoni njoftime Aplikacioni";
