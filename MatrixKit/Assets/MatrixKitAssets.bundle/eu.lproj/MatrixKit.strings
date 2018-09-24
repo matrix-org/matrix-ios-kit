@@ -116,7 +116,7 @@
 "login_home_server_info" = "Zure hasiera zerbitzariak gordetzen ditu zure kontuaren datuak";
 "login_identity_server_info" = "Matrixek identitate zerbitzariak hornitzen ditu e-mailak eta abar zein Matrix ID-ri dagokien jakiteko, Orain https://matrix.org da dagoen bakarra.";
 "login_user_id_placeholder" = "Matrix ID-a (adib. @urko:matrix.org edo urko)";
-"login_optional_field" = "aukerazkoa";
+"login_optional_field" = "aukerakoa";
 "login_display_name_placeholder" = "Pantaila-izena (adib. Urko Etxeberria)";
 "login_error_title" = "Saio hasierak huts egin du";
 "login_email_info" = "Zehaztu e-mail helbide bat beste Matrix erabiltzaileek zu errazago aurkitzeko, e-mail helbidea izateak ere etorkizunean pasahitza aldatzea ahalbidetuko dizu.";
