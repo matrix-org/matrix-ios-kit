@@ -6,6 +6,10 @@
 "room_error_join_failed_empty_room" = "Ezin da oraingoz hutsik dagoen gela batetara berriro sartu.";
 "notice_encrypted_message" = "Zifratutako mezua";
 "login_email_placeholder" = "E-mail helbidea";
+// room display name
+"room_displayname_empty_room" = "Gela hutsa";
+"room_displayname_two_members" = "%@ eta %@";
+"room_displayname_more_than_two_members" = "%@ eta beste %u";
 // Settings
 "settings" = "Ezarpenak";
 // button names 

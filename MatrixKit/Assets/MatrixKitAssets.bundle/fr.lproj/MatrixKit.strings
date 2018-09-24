@@ -105,6 +105,10 @@
 "notice_crypto_unable_to_decrypt" = "** Déchiffrement impossible : %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "L'appareil de l'expéditeur ne nous a pas envoyé les clés pour ce message.";
 "notice_sticker" = "sticker";
+// room display name
+"room_displayname_empty_room" = "Salon vide";
+"room_displayname_two_members" = "%@ et %@";
+"room_displayname_more_than_two_members" = "%@ et %u autres";
 // Settings
 "settings" = "Paramètres";
 "settings_enable_inapp_notifications" = "Activer les notifications dans l'application";

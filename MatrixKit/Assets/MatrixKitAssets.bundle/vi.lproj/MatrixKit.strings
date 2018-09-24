@@ -101,6 +101,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ làm cho mọi người có thể thấy lịch sử phòng từ thời điểm họ tham gia.";
 "notice_crypto_unable_to_decrypt" = "** Không thể giải mã: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Thiết bị gửi đi đã không gửi cho chúng ta các khoá giải mã tin nhắn.";
+// room display name
+"room_displayname_empty_room" = "Phòng trống";
+"room_displayname_two_members" = "%@ và %@";
+"room_displayname_more_than_two_members" = "%@ và %u người khác";
 // Settings
 "settings" = "Cài đặt";
 "settings_enable_inapp_notifications" = "Bật thông báo bên trong ứng dụng";

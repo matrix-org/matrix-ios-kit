@@ -98,6 +98,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Teilnahme sichtbar gemacht.";
 "notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Das Gerät des Absenders hat keine Schlüssel für diese Nachricht gesendet.";
+// room display name
+"room_displayname_empty_room" = "Leerer Raum";
+"room_displayname_two_members" = "%@ und %@";
+"room_displayname_more_than_two_members" = "%@ und %u andere";
 // Settings
 "settings" = "Einstellungen";
 "settings_enable_inapp_notifications" = "Benachrichtigungen innerhalb der App aktivieren";

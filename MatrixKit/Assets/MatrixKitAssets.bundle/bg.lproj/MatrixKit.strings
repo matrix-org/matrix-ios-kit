@@ -109,6 +109,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ направи бъдещата история на стаята видима за всички членове, от момента на присъединяването им в нея.";
 "notice_crypto_unable_to_decrypt" = "** Неуспешно разшифроване: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Устройството на подателя не изпрати ключовете за това съобщение.";
+// room display name
+"room_displayname_empty_room" = "Празна стая";
+"room_displayname_two_members" = "%@ и %@";
+"room_displayname_more_than_two_members" = "%@ и %u други";
 // Settings
 "settings" = "Настройки";
 "settings_enable_inapp_notifications" = "Включване на известия в приложението";

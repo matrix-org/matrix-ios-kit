@@ -105,6 +105,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们加入的时候开始。";
 "notice_crypto_unable_to_decrypt" = "** 无法解密：%@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "发送者的设备没有发送给我们此消息的密钥。";
+// room display name
+"room_displayname_empty_room" = "空聊天室";
+"room_displayname_two_members" = "%@ 和 %@";
+"room_displayname_more_than_two_members" = "%@ 和 %u 个其他人";
 // Settings
 "settings" = "设置";
 "settings_enable_inapp_notifications" = "启用 APP 内部的通知";

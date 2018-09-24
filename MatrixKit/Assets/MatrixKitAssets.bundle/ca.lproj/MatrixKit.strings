@@ -109,6 +109,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ ha fet visible l'històric futur de la sala a tots els membres, des de que entren a la sala.";
 "notice_crypto_unable_to_decrypt" = "** No es pot desxifrar: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "El dispositiu del remitent no ha enviat les claus per aquest missatge.";
+// room display name
+"room_displayname_empty_room" = "Sala buida";
+"room_displayname_two_members" = "%@ i %@";
+"room_displayname_more_than_two_members" = "%@ i %u més";
 // Settings
 "settings" = "Configuració";
 "settings_enable_inapp_notifications" = "Habilitar les notificacions de les App integrades";

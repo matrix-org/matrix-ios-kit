@@ -111,6 +111,10 @@
 "notice_crypto_error_unknown_inbound_session_id" = "El dispositivo emisor no nos ha enviado las claves para este mensaje.";
 "notice_sticker" = "pegatina";
 "notice_in_reply_to" = "En respuesta a";
+// room display name
+"room_displayname_empty_room" = "Sala vacía";
+"room_displayname_two_members" = "%@ y %@";
+"room_displayname_more_than_two_members" = "%@ y otros %u";
 // Settings
 "settings" = "Ajustes";
 "settings_enable_inapp_notifications" = "Habilitar notificaciones dentro de la aplicación";
