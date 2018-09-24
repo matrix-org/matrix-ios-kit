@@ -22,6 +22,7 @@
 #import "NSBundle+MatrixKit.h"
 
 #import "MXRoomSummaryUpdater.h"
+#import "MXKRoomNameStringLocalizations.h"
 
 #import "MXKTools.h"
 #import "MXRoom+Sync.h"
@@ -106,6 +107,7 @@
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
+        defaultRoomSummaryUpdater.roomNameStringLocalizations = [MXKRoomNameStringLocalizations new];
 
         linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
     }

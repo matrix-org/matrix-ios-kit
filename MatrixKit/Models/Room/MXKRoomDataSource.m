@@ -159,36 +159,23 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId andMatrixSession:mxSession];
-    if (roomDataSource)
-    {
-        [roomDataSource finalizeInitialization];
-
-        [roomDataSource.room state:^(MXRoomState *roomState) {
-            roomDataSource->roomState = roomState;
-
-            onComplete(roomDataSource);
-        }];
-    }
+    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId initialEventId:initialEventId andMatrixSession:mxSession];
-    if (roomDataSource)
-    {
-        [roomDataSource finalizeInitialization];
-
-        [roomDataSource.room state:^(MXRoomState *roomState) {
-            roomDataSource->roomState = roomState;
-
-            onComplete(roomDataSource);
-        }];
-    }
+    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithPeekingRoom:peekingRoom andInitialEventId:initialEventId];
+    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+}
+
++ (void)finalizeRoomDataSource:(MXKRoomDataSource*)roomDataSource onComplete:(void (^)(id roomDataSource))onComplete
+{
     if (roomDataSource)
     {
         [roomDataSource finalizeInitialization];
@@ -520,6 +507,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         MXStrongifyAndReturnIfNil(self);
 
                         self->_timeline = liveTimeline;
+                        self->roomState = liveTimeline.state;
 
                         // Only one pagination process can be done at a time by an MXRoom object.
                         // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
@@ -775,7 +763,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 
     // Register a listener to handle redaction which can affect live and past timelines
-    [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
+    redactionListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
 
         // Consider only live redaction events
         if (direction == MXTimelineDirectionForwards)
@@ -1173,23 +1161,26 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // Check whether data has been aldready loaded
     if (bubbles.count)
     {
+        NSUInteger eventsCount = 0;
         for (NSInteger i = bubbles.count - 1; i >= 0; i--)
         {
+            id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+            eventsCount += bubbleData.events.count;
+            
             CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
             // Sanity check
             if (bubbleHeight)
             {
                 bubblesTotalHeight += bubbleHeight;
-                
+
                 if (bubblesTotalHeight > rect.size.height)
                 {
                     // No need to compute more cells heights, there are enough to fill the rect
-                    NSLog(@"[MXKRoomDataSource] -> %tu already loaded bubbles are enough to fill the screen", bubbles.count - i);
+                    NSLog(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
                     break;
                 }
                 
                 // Compute the minimal height an event takes
-                id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
                 minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
             }
         }
