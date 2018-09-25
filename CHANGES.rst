@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.8.4 (2018-09)
 
 Improvements:
 * Upgrade MatrixSDK version (v0.11.4).
+* Lazy loading: Enable it by default (if the homeserver supports it).
 * Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
 * MXKRoomViewController: Improve the display of the reason when the user is kicked.
 * MXKEventFormatter: Internationalise the room name computation for rooms with no name.

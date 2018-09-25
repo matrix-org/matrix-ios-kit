@@ -101,7 +101,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self = [super init])
     {
-        syncWithLazyLoadOfRoomMembers = NO;
+        syncWithLazyLoadOfRoomMembers = YES;
 
         // Use presence to sort room members by default
         if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"])
@@ -170,7 +170,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         // Flush shared user defaults
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncWithLazyLoadOfRoomMembers"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncWithLazyLoadOfRoomMembers2"];
 
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
@@ -196,7 +196,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     }
     else
     {
-        syncWithLazyLoadOfRoomMembers = NO;
+        syncWithLazyLoadOfRoomMembers = YES;
 
         showAllEventsInRoomHistory = NO;
         showRedactionsInRoomHistory = NO;
@@ -258,14 +258,15 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncWithLazyLoadOfRoomMembers"];
+        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncWithLazyLoadOfRoomMembers2"];
         if (storedValue)
         {
             return [(NSNumber *)storedValue boolValue];
         }
         else
         {
-            return NO;
+            // Enabled by default
+            return YES;
         }
     }
     else
@@ -278,53 +279,13 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        [[NSUserDefaults standardUserDefaults] setBool:syncWithLazyLoadOfRoomMembers forKey:@"syncWithLazyLoadOfRoomMembers"];
+        [[NSUserDefaults standardUserDefaults] setBool:syncWithLazyLoadOfRoomMembers forKey:@"syncWithLazyLoadOfRoomMembers2"];
     }
     else
     {
         syncWithLazyLoadOfRoomMembers = syncWithLazyLoadOfRoomMembers;
     }
 }
-
-- (MXFilterJSONModel *)syncFilter
-{
-    MXFilterJSONModel *syncFilter;
-
-    if (self.syncWithLazyLoadOfRoomMembers)
-    {
-        // Define a message limit for /sync requests that is high enough so that
-        // a full page of room messages can be displayed without an additional
-        // server request.
-
-        // This limit value depends on the device screen size. So, the rough rule is:
-        //    - use 10 for phones (5S/6/6S/7/8)
-        //    - use 20 for phablets (.Plus/X/XR/XS/XSMax)
-        //    - use 30 for iPads
-        NSUInteger limit = 10;
-        UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
-        if (userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        {
-            CGFloat screenHeight = [[UIScreen mainScreen] nativeBounds].size.height;
-            if (screenHeight > 1334)    // 6/6S/7/8 screen height
-            {
-                limit = 20;
-            }
-        }
-        else if (userInterfaceIdiom == UIUserInterfaceIdiomPad)
-        {
-            limit = 30;
-        }
-
-        // Set that limit in the filter
-        syncFilter = [MXFilterJSONModel syncFilterForLazyLoadingWithMessageLimit:limit];
-    }
-
-    // TODO: We could extend the filter to match other settings (self.showAllEventsInRoomHistory,
-    // self.eventsFilterForMessages, etc).
- 
-    return syncFilter;
-}
-
 
 #pragma mark - Room display
 
