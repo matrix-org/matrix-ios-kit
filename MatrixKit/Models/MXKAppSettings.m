@@ -101,7 +101,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self = [super init])
     {
-        syncWithLazyLoadOfRoomMembers = NO;
+        syncWithLazyLoadOfRoomMembers = YES;
 
         // Use presence to sort room members by default
         if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"])
@@ -170,7 +170,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         // Flush shared user defaults
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncWithLazyLoadOfRoomMembers"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"syncWithLazyLoadOfRoomMembers2"];
 
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllEventsInRoomHistory"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showRedactionsInRoomHistory"];
@@ -196,7 +196,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     }
     else
     {
-        syncWithLazyLoadOfRoomMembers = NO;
+        syncWithLazyLoadOfRoomMembers = YES;
 
         showAllEventsInRoomHistory = NO;
         showRedactionsInRoomHistory = NO;
@@ -258,14 +258,15 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncWithLazyLoadOfRoomMembers"];
+        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncWithLazyLoadOfRoomMembers2"];
         if (storedValue)
         {
             return [(NSNumber *)storedValue boolValue];
         }
         else
         {
-            return NO;
+            // Enabled by default
+            return YES;
         }
     }
     else
@@ -278,7 +279,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        [[NSUserDefaults standardUserDefaults] setBool:syncWithLazyLoadOfRoomMembers forKey:@"syncWithLazyLoadOfRoomMembers"];
+        [[NSUserDefaults standardUserDefaults] setBool:syncWithLazyLoadOfRoomMembers forKey:@"syncWithLazyLoadOfRoomMembers2"];
     }
     else
     {
