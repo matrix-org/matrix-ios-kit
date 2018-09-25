@@ -1313,55 +1313,75 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 
     // Use /sync filter corresponding to current settings and homeserver capabilities
+    MXWeakify(self);
     [self buildSyncFilter:^(MXFilterJSONModel *syncFilter) {
+        MXStrongifyAndReturnIfNil(self);
 
-        // Launch mxSession
-        [mxSession startWithSyncFilter:syncFilter onServerSyncDone:^{
+        // Make sure the filter is compatible with the previously used one
+        MXWeakify(self);
+        [self checkSyncFilterCompatibility:syncFilter completion:^(BOOL compatible) {
+            MXStrongifyAndReturnIfNil(self);
 
-            NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
-
-            [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-
-        } failure:^(NSError *error) {
-
-            NSLog(@"[MXKAccount] Initial Sync failed");
-            if (notifyOpenSessionFailure && error)
+            if (!compatible)
             {
-                // Notify MatrixKit user only once
-                notifyOpenSessionFailure = NO;
-                NSString *myUserId = mxSession.myUser.userId;
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
+                // Else clear the cache
+                NSLog(@"[MXKAccount] New /sync filter not compatible with previous one. Clear cache");
+
+                [self reload:YES];
+                return;
             }
 
-            // Check if it is a network connectivity issue
-            AFNetworkReachabilityManager *networkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
-            NSLog(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
+            // Launch mxSession
+            MXWeakify(self);
+            [self.mxSession startWithSyncFilter:syncFilter onServerSyncDone:^{
+                MXStrongifyAndReturnIfNil(self);
 
-            if (networkReachabilityManager.isReachable)
-            {
-                // The problem is not the network
-                // Postpone a new attempt in 10 sec
-                initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
-            }
-            else
-            {
-                // The device is not connected to the internet, wait for the connection to be up again before retrying
-                // Add observer to launch a new attempt according to reachability.
-                reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+                NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", self->mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:self->openSessionStartDate] * 1000);
 
-                    NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
-                    if (statusItem)
-                    {
-                        AFNetworkReachabilityStatus reachabilityStatus = statusItem.integerValue;
-                        if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN)
+                [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
+
+            } failure:^(NSError *error) {
+                MXStrongifyAndReturnIfNil(self);
+
+                NSLog(@"[MXKAccount] Initial Sync failed");
+                if (self->notifyOpenSessionFailure && error)
+                {
+                    // Notify MatrixKit user only once
+                    self->notifyOpenSessionFailure = NO;
+                    NSString *myUserId = self.mxSession.myUser.userId;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
+                }
+
+                // Check if it is a network connectivity issue
+                AFNetworkReachabilityManager *networkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
+                NSLog(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
+
+                if (networkReachabilityManager.isReachable)
+                {
+                    // The problem is not the network
+                    // Postpone a new attempt in 10 sec
+                    self->initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
+                }
+                else
+                {
+                    // The device is not connected to the internet, wait for the connection to be up again before retrying
+                    // Add observer to launch a new attempt according to reachability.
+                    self->reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+
+                        NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
+                        if (statusItem)
                         {
-                            // New attempt
-                            [self launchInitialServerSync];
+                            AFNetworkReachabilityStatus reachabilityStatus = statusItem.integerValue;
+                            if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN)
+                            {
+                                // New attempt
+                                [self launchInitialServerSync];
+                            }
                         }
-                    }
 
-                }];
-            }
+                    }];
+                }
+            }];
         }];
     }];
 }
@@ -1726,6 +1746,52 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     // self.eventsFilterForMessages, etc).
 
     return syncFilter;
+}
+
+
+/**
+ Check the sync filter we want to use is compatible with the one previously used.
+
+ @param syncFilter the sync filter to use.
+ @param completion the block called to indicated the compatibility.
+ */
+- (void)checkSyncFilterCompatibility:(MXFilterJSONModel*)syncFilter completion:(void (^)(BOOL compatible))completion
+{
+    // There is no compatibility issue if no /sync was done before
+    if (!mxSession.store.eventStreamToken)
+    {
+        completion(YES);
+    }
+
+    // Check the filter we want to use is compatible with the one previously used
+    else if (!syncFilter && !mxSession.syncFilterId)
+    {
+        // A nil filter implies a nil mxSession.syncFilterId. So, there is no filter change
+        completion(YES);
+    }
+    else if (!syncFilter || !mxSession.syncFilterId)
+    {
+        // Change from no filter with using a filter or vice-versa. So, there is a filter change
+        completion(NO);
+    }
+    else
+    {
+        // Check the filter is the one previously set
+        // It must be already in the store
+        MXWeakify(self);
+        [mxSession.store filterIdForFilter:syncFilter success:^(NSString * _Nullable filterId) {
+            MXStrongifyAndReturnIfNil(self);
+
+            // Note: We could be more tolerant here
+            // We could accept filter hot change if the change is limited to the `limit` filter value
+            // But we do not have this requirement yet
+            completion([filterId isEqualToString:self.mxSession.syncFilterId]);
+
+        } failure:^(NSError * _Nullable error) {
+            // Should never happen
+            completion(NO);
+        }];
+    }
 }
 
 @end
