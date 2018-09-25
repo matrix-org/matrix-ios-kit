@@ -1312,56 +1312,57 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         return;
     }
 
-    // Use /sync filter corresponding to current settings
-    MXFilterJSONModel *syncFilter = [MXKAppSettings standardAppSettings].syncFilter;
-    
-    // Launch mxSession
-    [mxSession startWithSyncFilter:syncFilter onServerSyncDone:^{
-        
-        NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
-        
-        [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
-        
-    } failure:^(NSError *error) {
-        
-        NSLog(@"[MXKAccount] Initial Sync failed");
-        if (notifyOpenSessionFailure && error)
-        {
-            // Notify MatrixKit user only once
-            notifyOpenSessionFailure = NO;
-            NSString *myUserId = mxSession.myUser.userId;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
-        }
-        
-        // Check if it is a network connectivity issue
-        AFNetworkReachabilityManager *networkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
-        NSLog(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
-        
-        if (networkReachabilityManager.isReachable)
-        {
-            // The problem is not the network
-            // Postpone a new attempt in 10 sec
-            initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
-        }
-        else
-        {
-            // The device is not connected to the internet, wait for the connection to be up again before retrying
-            // Add observer to launch a new attempt according to reachability.
-            reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-                
-                NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
-                if (statusItem)
-                {
-                    AFNetworkReachabilityStatus reachabilityStatus = statusItem.integerValue;
-                    if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN)
+    // Use /sync filter corresponding to current settings and homeserver capabilities
+    [self buildSyncFilter:^(MXFilterJSONModel *syncFilter) {
+
+        // Launch mxSession
+        [mxSession startWithSyncFilter:syncFilter onServerSyncDone:^{
+
+            NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:openSessionStartDate] * 1000);
+
+            [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
+
+        } failure:^(NSError *error) {
+
+            NSLog(@"[MXKAccount] Initial Sync failed");
+            if (notifyOpenSessionFailure && error)
+            {
+                // Notify MatrixKit user only once
+                notifyOpenSessionFailure = NO;
+                NSString *myUserId = mxSession.myUser.userId;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
+            }
+
+            // Check if it is a network connectivity issue
+            AFNetworkReachabilityManager *networkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
+            NSLog(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
+
+            if (networkReachabilityManager.isReachable)
+            {
+                // The problem is not the network
+                // Postpone a new attempt in 10 sec
+                initialServerSyncTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(launchInitialServerSync) userInfo:self repeats:NO];
+            }
+            else
+            {
+                // The device is not connected to the internet, wait for the connection to be up again before retrying
+                // Add observer to launch a new attempt according to reachability.
+                reachabilityObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AFNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+
+                    NSNumber *statusItem = note.userInfo[AFNetworkingReachabilityNotificationStatusItem];
+                    if (statusItem)
                     {
-                        // New attempt
-                        [self launchInitialServerSync];
+                        AFNetworkReachabilityStatus reachabilityStatus = statusItem.integerValue;
+                        if (reachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi || reachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN)
+                        {
+                            // New attempt
+                            [self launchInitialServerSync];
+                        }
                     }
-                }
-                
-            }];
-        }
+
+                }];
+            }
+        }];
     }];
 }
 
@@ -1611,5 +1612,120 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
+#pragma mark - Sync filter
+
+- (void)supportLazyLoadOfRoomMembers:(void (^)(BOOL supportLazyLoadOfRoomMembers))completion
+{
+    void(^onUnsupportedLazyLoadOfRoomMembers)(NSError *) = ^(NSError *error) {
+        completion(NO);
+    };
+
+    // Check if the server supports LL sync filter
+    MXFilterJSONModel *filter = [self syncFilterWithLazyLoadOfRoomMembers:YES];
+    [mxSession.store filterIdForFilter:filter success:^(NSString * _Nullable filterId) {
+
+        if (filterId)
+        {
+            // The LL filter is already in the store. The HS supports LL
+            completion(YES);
+        }
+        else
+        {
+            // Check the Matrix versions supported by the HS
+            [self.mxSession supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
+
+                if (matrixVersions.supportLazyLoadMembers)
+                {
+                    // The HS supports LL
+                    completion(YES);
+                }
+                else
+                {
+                    onUnsupportedLazyLoadOfRoomMembers(nil);
+                }
+
+            } failure:onUnsupportedLazyLoadOfRoomMembers];
+        }
+    } failure:onUnsupportedLazyLoadOfRoomMembers];
+}
+
+/**
+ Build the sync filter according to application settings and HS capability.
+
+ @param completion the block providing the sync filter to use.
+ */
+- (void)buildSyncFilter:(void (^)(MXFilterJSONModel *syncFilter))completion
+{
+    // Check settings
+    BOOL syncWithLazyLoadOfRoomMembersSetting = [MXKAppSettings standardAppSettings].syncWithLazyLoadOfRoomMembers;
+
+    if (syncWithLazyLoadOfRoomMembersSetting)
+    {
+        // Check if the server supports LL sync filter before enabling it
+        [self supportLazyLoadOfRoomMembers:^(BOOL supportLazyLoadOfRoomMembers) {
+
+            if (supportLazyLoadOfRoomMembers)
+            {
+                completion([self syncFilterWithLazyLoadOfRoomMembers:YES]);
+            }
+            else
+            {
+                // No support from the HS
+                // Disable the setting. That will avoid to make a request at every startup
+                [MXKAppSettings standardAppSettings].syncWithLazyLoadOfRoomMembers = NO;
+                completion([self syncFilterWithLazyLoadOfRoomMembers:NO]);
+            }
+        }];
+    }
+    else
+    {
+        completion([self syncFilterWithLazyLoadOfRoomMembers:NO]);
+    }
+}
+
+/**
+ Compute the sync filter to use according to the device screen size.
+
+ @param syncWithLazyLoadOfRoomMembers enable LL support.
+ @return the sync filter to use.
+ */
+- (MXFilterJSONModel *)syncFilterWithLazyLoadOfRoomMembers:(BOOL)syncWithLazyLoadOfRoomMembers
+{
+    MXFilterJSONModel *syncFilter;
+
+    if (syncWithLazyLoadOfRoomMembers)
+    {
+        // Define a message limit for /sync requests that is high enough so that
+        // a full page of room messages can be displayed without an additional
+        // server request.
+
+        // This limit value depends on the device screen size. So, the rough rule is:
+        //    - use 10 for phones (5S/6/6S/7/8)
+        //    - use 20 for phablets (.Plus/X/XR/XS/XSMax)
+        //    - use 30 for iPads
+        NSUInteger limit = 10;
+        UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        if (userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        {
+            CGFloat screenHeight = [[UIScreen mainScreen] nativeBounds].size.height;
+            if (screenHeight > 1334)    // 6/6S/7/8 screen height
+            {
+                limit = 20;
+            }
+        }
+        else if (userInterfaceIdiom == UIUserInterfaceIdiomPad)
+        {
+            limit = 30;
+        }
+
+        // Set that limit in the filter
+        syncFilter = [MXFilterJSONModel syncFilterForLazyLoadingWithMessageLimit:limit];
+    }
+
+    // TODO: We could extend the filter to match other settings (self.showAllEventsInRoomHistory,
+    // self.eventsFilterForMessages, etc).
+
+    return syncFilter;
+}
 
 @end
