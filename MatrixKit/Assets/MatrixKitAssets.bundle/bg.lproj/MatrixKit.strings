@@ -109,6 +109,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ направи бъдещата история на стаята видима за всички членове, от момента на присъединяването им в нея.";
 "notice_crypto_unable_to_decrypt" = "** Неуспешно разшифроване: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Устройството на подателя не изпрати ключовете за това съобщение.";
+// room display name
+"room_displayname_empty_room" = "Празна стая";
+"room_displayname_two_members" = "%@ и %@";
+"room_displayname_more_than_two_members" = "%@ и %u други";
 // Settings
 "settings" = "Настройки";
 "settings_enable_inapp_notifications" = "Включване на известия в приложението";
@@ -366,3 +370,8 @@
 "message_reply_to_sender_sent_an_audio_file" = "изпрати аудио файл.";
 "message_reply_to_sender_sent_a_file" = "изпрати файл.";
 "message_reply_to_message_to_reply_to_prefix" = "В отговор на";
+"login_error_resource_limit_exceeded_title" = "Надхвърлен лимит за ресурс";
+"login_error_resource_limit_exceeded_message_default" = "Този сървър е надхвърлил някой свой лимит.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Този сървър е достигнал своя лимит за потребители на месец.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nМоля, свържете се с администратора на услугата за да продължите да я използвате.";
+"login_error_resource_limit_exceeded_contact_button" = "Свържи се с администратора";

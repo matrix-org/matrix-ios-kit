@@ -376,4 +376,11 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  */
 - (void)resetDeviceId;
 
+#pragma mark - Sync filter
+/**
+ Check if the homeserver supports room members lazy loading.
+ @param completion the check result.
+ */
+- (void)supportLazyLoadOfRoomMembers:(void (^)(BOOL supportLazyLoadOfRoomMembers))completion;
+
 @end

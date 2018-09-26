@@ -1,3 +1,19 @@
+Changes in MatrixKit in 0.8.4 (2018-09-26)
+==========================================
+
+Improvements:
+* Upgrade MatrixSDK version (v0.11.4).
+* Lazy loading: Enable it by default (if the homeserver supports it).
+* Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
+* MXKRoomViewController: Improve the display of the reason when the user is kicked.
+* MXKEventFormatter: Internationalise the room name computation for rooms with no name.
+
+Bug fix:
+* No automatic scroll down when posting a new message (vector-im/riot-ios/issues/2040).
+* Fix crash in [MXKCallViewController callRoomStateDidChange:] (vector-im/riot-ios/issues/2031).
+* Fix crash in [MXKContactManager refreshLocalContacts] (vector-im/riot-ios/issues/2032).
+* Fix crash when opening a room with unsent message (vector-im/riot-ios/issues/2041).
+
 Changes in MatrixKit in 0.8.3 (2018-08-27)
 ==========================================
 

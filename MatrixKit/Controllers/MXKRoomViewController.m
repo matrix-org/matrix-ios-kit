@@ -1001,10 +1001,11 @@
     roomDataSource = nil;
     
     // Add reason label
-    _leftRoomReasonLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 4, self.view.frame.size.width - 16, 44)];
+    _leftRoomReasonLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, self.view.frame.size.width - 20, 70)];
+    _leftRoomReasonLabel.numberOfLines = 0;
     _leftRoomReasonLabel.text = reason;
     _leftRoomReasonLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    _bubblesTableView.tableHeaderView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 36)];
+    _bubblesTableView.tableHeaderView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 80)];
     [_bubblesTableView.tableHeaderView addSubview:_leftRoomReasonLabel];
     [_bubblesTableView reloadData];
     
@@ -1703,9 +1704,9 @@
         // Compute the max vertical position visible according to contentOffset
         CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
         // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
-        maxPositionY += 30;
+        maxPositionY += 44;
         BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
-        
+
         // Consider the table view at the bottom if a scrolling to bottom is in progress too
         return (isScrolledToBottom || isScrollingToBottom);
     }

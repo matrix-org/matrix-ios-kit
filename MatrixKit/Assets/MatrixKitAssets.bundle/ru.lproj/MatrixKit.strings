@@ -90,6 +90,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ сделал(а) будущую историю комнаты видимой всем членам комнаты с момента их входа.";
 "notice_crypto_unable_to_decrypt" = "** Не удалось расшифровать: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Устройство отправителя не отправило нам ключи для этого сообщения.";
+// room display name
+"room_displayname_empty_room" = "Пустая комната";
+"room_displayname_two_members" = "%@ и %@";
+"room_displayname_more_than_two_members" = "%@ и %u другие";
 // Settings
 "settings" = "Настройки";
 "settings_enable_inapp_notifications" = "Включить уведомления в приложении";
@@ -366,3 +370,5 @@
 "message_reply_to_sender_sent_an_audio_file" = "отправил аудиофайл.";
 "message_reply_to_sender_sent_a_file" = "отправил файл.";
 "message_reply_to_message_to_reply_to_prefix" = "В ответ на";
+"login_error_resource_limit_exceeded_title" = "Превышен лимит ресурса";
+"login_error_resource_limit_exceeded_contact_button" = "Связаться с администратором";

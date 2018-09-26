@@ -91,7 +91,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
     /**
      The data for the cells served by `MXKRoomDataSource`.
      */
-    NSMutableArray *bubbles;
+    NSMutableArray<id<MXKRoomBubbleCellDataStoring>> *bubbles;
 
     /**
      The queue of events that need to be processed in order to compute their display.

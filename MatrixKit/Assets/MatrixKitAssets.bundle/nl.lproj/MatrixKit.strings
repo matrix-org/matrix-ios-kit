@@ -119,6 +119,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ heeft toekomstige ruimte geschiedenis zichtbaar gemaakt voor alle ruimteleden, vanaf het punt dat ze toetreden.";
 "notice_crypto_unable_to_decrypt" = "** Niet mogelijk om te ontsleutelen: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Het apparaat van de verstuurder heeft ons niet de sleutels voor dit bericht gestuurd.";
+// room display name
+"room_displayname_empty_room" = "Lege ruimte";
+"room_displayname_two_members" = "%@ en %@";
+"room_displayname_more_than_two_members" = "%@ en %u anderen";
 // Settings
 "settings" = "Instellingen";
 "settings_enable_inapp_notifications" = "In-App notificaties aanzetten";

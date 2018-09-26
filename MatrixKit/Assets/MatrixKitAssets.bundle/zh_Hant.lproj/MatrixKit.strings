@@ -217,6 +217,10 @@
 "notice_invalid_attachment" = "無效的附加資訊";
 "notice_unsupported_attachment" = "未支援的附加資訊：%@";
 "notice_sticker" = "貼圖";
+// room display name
+"room_displayname_empty_room" = "空的聊天室";
+"room_displayname_two_members" = "%@ 和 %@";
+"room_displayname_more_than_two_members" = "%@ 和 %u 個其他人";
 // Settings
 "settings" = "設定";
 "settings_enable_push_notifications" = "啟用推播通知";

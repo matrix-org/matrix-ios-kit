@@ -25,8 +25,6 @@
 
 @interface MXKRoomTitleView ()
 {
-    id roomListener;
-    
     // Observer kMXRoomSummaryDidChangeNotification to keep updated the room name.
     id mxRoomSummaryDidChangeObserver;
 }

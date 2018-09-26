@@ -6,6 +6,10 @@
 "room_error_join_failed_empty_room" = "Ezin da oraingoz hutsik dagoen gela batetara berriro sartu.";
 "notice_encrypted_message" = "Zifratutako mezua";
 "login_email_placeholder" = "E-mail helbidea";
+// room display name
+"room_displayname_empty_room" = "Gela hutsa";
+"room_displayname_two_members" = "%@ eta %@";
+"room_displayname_more_than_two_members" = "%@ eta beste %u";
 // Settings
 "settings" = "Ezarpenak";
 // button names 
@@ -116,7 +120,7 @@
 "login_home_server_info" = "Zure hasiera zerbitzariak gordetzen ditu zure kontuaren datuak";
 "login_identity_server_info" = "Matrixek identitate zerbitzariak hornitzen ditu e-mailak eta abar zein Matrix ID-ri dagokien jakiteko, Orain https://matrix.org da dagoen bakarra.";
 "login_user_id_placeholder" = "Matrix ID-a (adib. @urko:matrix.org edo urko)";
-"login_optional_field" = "aukerazkoa";
+"login_optional_field" = "aukerakoa";
 "login_display_name_placeholder" = "Pantaila-izena (adib. Urko Etxeberria)";
 "login_error_title" = "Saio hasierak huts egin du";
 "login_email_info" = "Zehaztu e-mail helbide bat beste Matrix erabiltzaileek zu errazago aurkitzeko, e-mail helbidea izateak ere etorkizunean pasahitza aldatzea ahalbidetuko dizu.";
@@ -366,3 +370,8 @@
 "message_reply_to_sender_sent_an_audio_file" = "audio fitxategi bat bidali du.";
 "message_reply_to_sender_sent_a_file" = "fitxategi bat bidali du.";
 "message_reply_to_message_to_reply_to_prefix" = "Honi erantzunez";
+"login_error_resource_limit_exceeded_title" = "Baliabide muga gaindituta";
+"login_error_resource_limit_exceeded_message_default" = "Hasiera zerbitzari honek bere baliabide mugetako bat gainditu du.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Hasiera zerbitzari honek bere hilabeteko erabiltzaile aktiboen muga gainditu du.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nJarri kontaktuan zerbitzuaren administratzailearekin zerbitzu hau erabiltzen jarraitzeko.";
+"login_error_resource_limit_exceeded_contact_button" = "Kontaktatu administratzailea";

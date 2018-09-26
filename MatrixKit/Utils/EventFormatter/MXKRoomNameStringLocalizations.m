@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,22 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import "MXKRoomNameStringLocalizations.h"
 
-NSString *const MatrixKitVersion = @"0.8.4";
+#import "NSBundle+MatrixKit.h"
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+@implementation MXKRoomNameStringLocalizations
 
-NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
+- (instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        _emptyRoom = [NSBundle mxk_localizedStringForKey:@"room_displayname_empty_room"];
+        _twoMembers = [NSBundle mxk_localizedStringForKey:@"room_displayname_two_members"];
+        _moreThanTwoMembers = [NSBundle mxk_localizedStringForKey:@"room_displayname_more_than_two_members"];
+    }
+    return self;
+}
+
+@end

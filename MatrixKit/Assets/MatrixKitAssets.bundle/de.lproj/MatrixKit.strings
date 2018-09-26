@@ -13,7 +13,7 @@
 "login_email_placeholder" = "E-Mail-Adresse";
 "login_error_title" = "Anmeldung fehlgeschlagen";
 "login_email_info" = "Die Eingabe einer E-Mail-Adresse erleichtert es anderen Benutzern, dich auf Matrix zu finden. Außerdem kannst du mit der hinterlegten E-Mail-Adresse dein Passwort zurücksetzen.";
-"login_prompt_email_token" = "Gebe das Email-Validierungs-Token ein:";
+"login_prompt_email_token" = "Gib das E-Mail-Validierungs-Token ein:";
 "login_error_no_login_flow" = "Die Authentifizierungs-Information von diesem Home-Server konnte nicht abgerufen werden";
 "login_error_do_not_support_login_flows" = "Momentan werden einige oder alle der von diesem Home-Server definierten Login-Flows nicht unterstützt";
 "login_error_registration_is_not_supported" = "Registrierung wird momentan nicht unterstützt";
@@ -98,6 +98,10 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Teilnahme sichtbar gemacht.";
 "notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Das Gerät des Absenders hat keine Schlüssel für diese Nachricht gesendet.";
+// room display name
+"room_displayname_empty_room" = "Leerer Raum";
+"room_displayname_two_members" = "%@ und %@";
+"room_displayname_more_than_two_members" = "%@ und %u andere";
 // Settings
 "settings" = "Einstellungen";
 "settings_enable_inapp_notifications" = "Benachrichtigungen innerhalb der App aktivieren";
@@ -366,3 +370,8 @@
 "message_reply_to_sender_sent_an_audio_file" = "sandte eine Audio-Datei.";
 "message_reply_to_sender_sent_a_file" = "sandte eine Datei.";
 "message_reply_to_message_to_reply_to_prefix" = "Als Antwort auf";
+"login_error_resource_limit_exceeded_title" = "Ressourcen-Limit überschritten";
+"login_error_resource_limit_exceeded_message_default" = "Dieser Heimserver hat eine seiner Ressourcen-Limits überschritten.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Dieser Heimserver hat sein Limit an monatlich aktiven Nutzern erreicht.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nBitte kontaktiere deinen Dienst-Administrator um mit der Nutzung dieses Dienstes fortzufahren.";
+"login_error_resource_limit_exceeded_contact_button" = "Kontaktiere Administrator";

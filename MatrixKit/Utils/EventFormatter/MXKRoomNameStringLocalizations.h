@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,17 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+@import Foundation;
 
-NSString *const MatrixKitVersion = @"0.8.4";
+#import <MatrixSDK/MXRoomNameStringsLocalizable.h>
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+/**
+ The `MXKRoomNameStringLocalizations` implements localization strings for `MXRoomNameStringsLocalizable`.
+ */
+@interface MXKRoomNameStringLocalizations : NSObject<MXRoomNameStringsLocalizable>
 
-NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
+@property (copy, readonly, nonnull) NSString *emptyRoom;
+@property (copy, readonly, nonnull) NSString *twoMembers;
+@property (copy, readonly, nonnull) NSString *moreThanTwoMembers;
+
+@end
