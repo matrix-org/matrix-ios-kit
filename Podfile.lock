@@ -32,27 +32,27 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.13):
     - DTFoundation/Core
-  - GZIP (1.2.1)
+  - GZIP (1.2.2)
   - HPGrowingTextView (1.1)
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.9.13)
-  - MatrixSDK (0.11.3):
-    - MatrixSDK/Core (= 0.11.3)
-  - MatrixSDK/Core (0.11.3):
+  - MatrixSDK (0.11.4):
+    - MatrixSDK/Core (= 0.11.4)
+  - MatrixSDK/Core (0.11.4):
     - AFNetworking (~> 3.2.0)
     - GZIP (~> 1.2.1)
     - OLMKit (~> 2.3.0)
-    - Realm (~> 3.7.4)
+    - Realm (~> 3.9.0)
   - OLMKit (2.3.0):
     - OLMKit/olmc (= 2.3.0)
     - OLMKit/olmcpp (= 2.3.0)
   - OLMKit/olmc (2.3.0)
   - OLMKit/olmcpp (2.3.0)
-  - Realm (3.7.6):
-    - Realm/Headers (= 3.7.6)
-  - Realm/Headers (3.7.6)
+  - Realm (3.9.0):
+    - Realm/Headers (= 3.9.0)
+  - Realm/Headers (3.9.0)
 
 DEPENDENCIES:
   - cmark (~> 0.24.1)
@@ -60,7 +60,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.11.3)
+  - MatrixSDK (= 0.11.4)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -82,15 +82,15 @@ SPEC CHECKSUMS:
   cmark: ec0275215b504780287b6fca360224e384368af8
   DTCoreText: e5d688cffc9f6a61eddd1a4f94e2046851230de3
   DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
-  GZIP: 7ee835f989fb3c6ea79005fc90b8fa6af710a70d
+  GZIP: 12374d285e3b5d46cfcd480700fcfc7e16caf4f1
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
-  MatrixSDK: 599c356af3e2aa573849adfcd4dbd1dc370ef68e
+  MatrixSDK: 9d9f5e9b1fa19f8a84ebfce846d87b138af9999b
   OLMKit: dd79cdc5fab9ec04c940a901e025195b7801f306
-  Realm: 9eaecad54712d6246d08ba34c10f354e4715d7d3
+  Realm: 3d36f208bf3aff8335dc3298742140182bde4edb
 
-PODFILE CHECKSUM: 8cbee1416ee2d0b1393e413acea4c3157f7749a8
+PODFILE CHECKSUM: 9b0c391c14b7ae3eab1191932baa89cb933517f9
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0.beta.1
