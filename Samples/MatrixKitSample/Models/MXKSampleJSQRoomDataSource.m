@@ -36,7 +36,8 @@
     id<JSQMessageData> messageData;
     @synchronized(bubbles)
     {
-        messageData = bubbles[indexPath.item];
+        // TODO: Fix it
+        //messageData = bubbles[indexPath.item];
     }
     return messageData;
 }
