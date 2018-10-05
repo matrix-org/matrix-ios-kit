@@ -371,3 +371,7 @@
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Ez a Matrix szerver elérte a havi aktív felhasználói korlátját.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nKérlek vedd fel a kapcsolatot a szolgáltatás adminisztrátorával, hogy tovább használhasd.";
 "login_error_resource_limit_exceeded_contact_button" = "Adminisztrátor kapcsolatfelvétel";
+// room display name
+"room_displayname_empty_room" = "Üres szoba";
+"room_displayname_two_members" = "%@ és %@";
+"room_displayname_more_than_two_members" = "%@ és %@ mások";
