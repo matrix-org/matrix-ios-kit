@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.8.5 (2018-10-05)
+==========================================
+
+Improvements:
+* Upgrade MatrixSDK version (v0.11.5).
+* Sync Filter: Refine limit value. Use 15 messages for iPhone 6 & similar screen size.
+
+Bug fix:
+* MXKRoomDataSource: roomState was not updated (vector-im/riot-ios/issues/2058).
+
 Changes in MatrixKit in 0.8.4 (2018-09-26)
 ==========================================
 

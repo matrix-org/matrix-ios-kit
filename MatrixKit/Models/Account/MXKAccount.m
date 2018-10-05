@@ -1720,7 +1720,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // server request.
 
         // This limit value depends on the device screen size. So, the rough rule is:
-        //    - use 10 for phones (5S/6/6S/7/8)
+        //    - use 10 for small phones (5S/SE)
+        //    - use 15 for phones (6/6S/7/8)
         //    - use 20 for phablets (.Plus/X/XR/XS/XSMax)
         //    - use 30 for iPads
         NSUInteger limit = 10;
@@ -1728,7 +1729,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         if (userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         {
             CGFloat screenHeight = [[UIScreen mainScreen] nativeBounds].size.height;
-            if (screenHeight > 1334)    // 6/6S/7/8 screen height
+            if (screenHeight == 1334)   // 6/6S/7/8 screen height
+            {
+                limit = 15;
+            }
+            else if (screenHeight > 1334)
             {
                 limit = 20;
             }
