@@ -1,8 +1,19 @@
-Changes in MatrixKit in 0.8.4 (2018-09)
+Changes in MatrixKit in 0.8.5 (2018-10-05)
+==========================================
+
+Improvements:
+* Upgrade MatrixSDK version (v0.11.5).
+* Sync Filter: Refine limit value. Use 15 messages for iPhone 6 & similar screen size.
+
+Bug fix:
+* MXKRoomDataSource: roomState was not updated (vector-im/riot-ios/issues/2058).
+
+Changes in MatrixKit in 0.8.4 (2018-09-26)
 ==========================================
 
 Improvements:
 * Upgrade MatrixSDK version (v0.11.4).
+* Lazy loading: Enable it by default (if the homeserver supports it).
 * Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
 * MXKRoomViewController: Improve the display of the reason when the user is kicked.
 * MXKEventFormatter: Internationalise the room name computation for rooms with no name.

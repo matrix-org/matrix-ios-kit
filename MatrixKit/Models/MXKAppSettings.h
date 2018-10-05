@@ -33,11 +33,6 @@
  */
 @property (nonatomic) BOOL syncWithLazyLoadOfRoomMembers;
 
-/**
- The filter object to use in /sync requests according to current settings.
- */
-@property (nonatomic, readonly) MXFilterJSONModel *syncFilter;
-
 #pragma mark - Room display
 
 /**
