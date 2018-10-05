@@ -50,11 +50,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSString *initialEventId;
 
     /**
-     Cache for the room state
-     */
-    MXRoomState *roomState;
-
-    /**
      Current pagination request (if any)
      */
     MXHTTPOperation *paginationRequest;
@@ -180,8 +175,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [roomDataSource finalizeInitialization];
 
-        [roomDataSource.room state:^(MXRoomState *roomState) {
-            roomDataSource->roomState = roomState;
+        // Asynchronously preload data here so that the data will be ready later
+        // to synchronously respond to that request
+        [roomDataSource.room liveTimeline:^(MXEventTimeline *liveTimeline) {
 
             onComplete(roomDataSource);
         }];
@@ -283,8 +279,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (MXRoomState *)roomState
 {
     // @TODO(async-state): Just here for dev
-    NSAssert(roomState, @"[MXKRoomDataSource] Room state must be preloaded before accessing to MXKRoomDataSource.roomState");
-    return roomState;
+    NSAssert(_timeline.state, @"[MXKRoomDataSource] Room state must be preloaded before accessing to MXKRoomDataSource.roomState");
+    return _timeline.state;
 }
 
 - (void)onDateTimeFormatUpdate
@@ -507,7 +503,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         MXStrongifyAndReturnIfNil(self);
 
                         self->_timeline = liveTimeline;
-                        self->roomState = liveTimeline.state;
 
                         // Only one pagination process can be done at a time by an MXRoom object.
                         // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
