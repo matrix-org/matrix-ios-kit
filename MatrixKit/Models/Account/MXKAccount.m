@@ -1343,7 +1343,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             } failure:^(NSError *error) {
                 MXStrongifyAndReturnIfNil(self);
 
-                NSLog(@"[MXKAccount] Initial Sync failed");
+                NSLog(@"[MXKAccount] Initial Sync failed. Error: %@", error);
                 if (self->notifyOpenSessionFailure && error)
                 {
                     // Notify MatrixKit user only once
