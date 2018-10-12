@@ -7,4 +7,4 @@ rm -rf ~/Library/Developer/Xcode/DerivedData/*
 rm -rf Podfile.lock Pods MatrixKit.xcworkspace/
 pod install
 
-xcodebuild -workspace MatrixKit.xcworkspace -scheme MatrixKitSample -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+xcodebuild -workspace MatrixKit.xcworkspace -scheme MatrixKitSample -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
