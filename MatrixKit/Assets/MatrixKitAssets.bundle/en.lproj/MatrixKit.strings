@@ -284,6 +284,7 @@
 "e2e_passphrase_confirm" = "Confirm passphrase";
 "e2e_passphrase_empty" = "Passphrase must not be empty";
 "e2e_passphrase_not_match" = "Passphrases must match";
+"e2e_passphrase_create" = "Create passphrase";
 
 // Others
 "user_id_title" = "User ID:";
