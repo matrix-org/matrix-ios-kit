@@ -185,10 +185,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
     [sharedUserDefaults removeObjectForKey:kMXKAccountsKey];
     [[NSFileManager defaultManager] removeItemAtPath:[self accountFile] error:nil];
-    
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    [sharedUserDefaults synchronize];
-    
+
     if (completion)
     {
         completion();
@@ -286,7 +283,6 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     if (!token.length)
     {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
         token = nil;
     }
     return token;
@@ -309,7 +305,6 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         }
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"apnsDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -320,8 +315,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             NSLog(@"[MXKAccountManager] set APNS device token");
             
             [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
+
             // turn on the Apns flag for all accounts, when the Apns registration succeeds for the first time
             for (MXKAccount *account in activeAccounts)
             {
@@ -340,8 +334,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             
             // Update the token
             [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
+
             // Refresh pushers with the new token.
             for (MXKAccount *account in activeAccounts)
             {
@@ -385,7 +378,6 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
         token = nil;
     }
     return token;
@@ -414,7 +406,6 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -433,8 +424,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             {
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
             }
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
+
             // turn on the Push flag for all accounts
             for (MXKAccount *account in activeAccounts)
             {
@@ -461,8 +451,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             {
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
             }
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
+
             // Refresh pushers with the new token.
             for (MXKAccount *account in activeAccounts)
             {
@@ -540,10 +529,8 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
 
             // Now that data has been migrated, erase old location of accountData
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
 
             [sharedDefaults removeObjectForKey:kMXKAccountsKey];
-            [sharedDefaults synchronize];
         }
     }
 
