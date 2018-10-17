@@ -1180,7 +1180,9 @@
     NSString *html = htmlString;
 
     // Special treatment for "In reply to" message
-    if (event.content[@"m.relates_to"][@"m.in_reply_to"])
+    NSDictionary *relatesTo;
+    MXJSONModelSetDictionary(relatesTo, event.content[@"m.relates_to"]);
+    if ([relatesTo[@"m.in_reply_to"] isKindOfClass:NSDictionary.class])
     {
         html = [self renderReplyTo:html];
     }
