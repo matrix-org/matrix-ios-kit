@@ -43,7 +43,7 @@
 "close" = "关闭";
 "discard" = "放弃";
 "dismiss" = "无视";
-"sign_up" = "登录";
+"sign_up" = "注册";
 "submit" = "提交";
 "submit_code" = "提交码";
 "set_default_power_level" = "能量值";
@@ -321,3 +321,24 @@
 "notice_in_reply_to" = "回复";
 "account_email_validation_message" = "请检查您的电子邮箱并点击邮件中的链接。完成此操作后，点击继续。";
 "account_email_validation_error" = "无法验证邮箱地址。请检查你的电子邮箱并点击邮件中的链接。完成后，请点击继续";
+"login_error_resource_limit_exceeded_title" = "超出资源使用限制";
+"login_error_resource_limit_exceeded_contact_button" = "联系管理员";
+"login_error_resource_limit_exceeded_message_default" = "此主服务器已超出某一资源使用限制。";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "此主服务器已达到月活跃用户限制。";
+"login_error_resource_limit_exceeded_message_contact" = "\n\n请联系管理员以继续使用本服务。";
+"account_msisdn_validation_message" = "已发送短信激活码。请键入此码。";
+"room_error_timeline_event_not_found" = "应用未能加载本房间此时间点状态";
+"room_no_power_to_create_conference_call" = "你需要更高权限来在本聊天室发起会议";
+"room_no_conference_call_in_encrypted_rooms" = "加密聊天室暂不支持通话会议";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "发送了一张图片。";
+"message_reply_to_sender_sent_an_audio_file" = "发送了一个音频文件。";
+"message_reply_to_sender_sent_a_file" = "发送了一份文件。";
+"message_reply_to_message_to_reply_to_prefix" = "回复";
+"room_member_power_level_prompt" = "此操作无法取消，此用户将被提升至你的权限级别。\n你确定吗？";
+// Attachment
+"attachment_size_prompt" = "发送为：";
+"attachment_original" = "实际大小：%@";
+"attachment_multiselection_size_prompt" = "发送图片为：";
+"attachment_multiselection_original" = "实际大小";
+"attachment_e2e_keys_file_prompt" = "此文件含有Matrix客户端导出的密钥。\n你想要查看文件内容或者导入密钥？";
