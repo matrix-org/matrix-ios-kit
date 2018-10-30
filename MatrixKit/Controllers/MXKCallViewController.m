@@ -778,7 +778,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (mxCall.isIncoming)
     {
         self.peer = [mxCall.room.mxSession getOrCreateUser:mxCall.callerId];
-        onComplete();
+        if (onComplete)
+        {
+            onComplete();
+        }
     }
     else
     {
@@ -802,13 +805,19 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 }
 
                 self.peer = theMember;
-                onComplete();
+                if (onComplete)
+                {
+                    onComplete();
+                }
             }];
         }
         else
         {
             self.peer = nil;
-            onComplete();
+            if (onComplete)
+            {
+                onComplete();
+            }
         }
     }
 }
