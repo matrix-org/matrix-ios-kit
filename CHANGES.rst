@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.8.6 (2018-10-)
+==========================================
+
+Improvements:
+* Upgrade MatrixSDK version (v0.11.6).
+
+Bug fix:
+* MXKCallViewController: Fix crash in callRoomStateDidChange (vector-im/riot-ios#2079).
+* MXKEventFormatter: Be robust on malformatted m.relates_to data content (vector-im/riot-ios/issues/2080).
+
 Changes in MatrixKit in 0.8.5 (2018-10-05)
 ==========================================
 
