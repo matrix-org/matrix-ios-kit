@@ -375,3 +375,4 @@
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Този сървър е достигнал своя лимит за потребители на месец.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nМоля, свържете се с администратора на услугата за да продължите да я използвате.";
 "login_error_resource_limit_exceeded_contact_button" = "Свържи се с администратора";
+"e2e_passphrase_create" = "Създай парола";

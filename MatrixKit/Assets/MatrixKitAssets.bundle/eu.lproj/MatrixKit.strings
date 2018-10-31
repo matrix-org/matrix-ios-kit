@@ -375,3 +375,4 @@
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Hasiera zerbitzari honek bere hilabeteko erabiltzaile aktiboen muga gainditu du.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nJarri kontaktuan zerbitzuaren administratzailearekin zerbitzu hau erabiltzen jarraitzeko.";
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktatu administratzailea";
+"e2e_passphrase_create" = "Sortu pasaesaldia";
