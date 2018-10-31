@@ -372,3 +372,7 @@
 "message_reply_to_message_to_reply_to_prefix" = "В ответ на";
 "login_error_resource_limit_exceeded_title" = "Превышен лимит ресурса";
 "login_error_resource_limit_exceeded_contact_button" = "Связаться с администратором";
+"login_error_resource_limit_exceeded_message_default" = "Этот сервер превысил один из лимитов ресурсов.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Этот сервер  достиг ежемесячного лимита активных пользователей.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nПожалуста свяжитесь с вашим администратором что бы продолжить пользоваться этим сервисом.";
+"e2e_passphrase_create" = "Создать парольную фразу";

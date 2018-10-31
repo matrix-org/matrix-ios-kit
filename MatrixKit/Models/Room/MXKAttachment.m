@@ -38,12 +38,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     /**
      The information on the encrypted content.
      */
-    NSDictionary *contentFile;
+    MXEncryptedContentFile *contentFile;
     
     /**
      The information on the encrypted thumbnail.
      */
-    NSDictionary *thumbnailFile;
+    MXEncryptedContentFile *thumbnailFile;
     
     /**
      Observe Attachment download
@@ -121,14 +121,14 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         
         MXJSONModelSetString(_originalFileName, eventContent[@"body"]);
         MXJSONModelSetDictionary(_contentInfo, eventContent[@"info"]);
-        MXJSONModelSetDictionary(thumbnailFile, _contentInfo[@"thumbnail_file"]);
-        MXJSONModelSetDictionary(contentFile, eventContent[@"file"]);
+        MXJSONModelSetMXJSONModel(thumbnailFile, MXEncryptedContentFile, _contentInfo[@"thumbnail_file"]);
+        MXJSONModelSetMXJSONModel(contentFile, MXEncryptedContentFile, eventContent[@"file"]);
         
         // Retrieve the content url by taking into account the potential encryption.
         if (contentFile)
         {
             _isEncrypted = YES;
-            MXJSONModelSetString(_contentURL, contentFile[@"url"]);
+            _contentURL = contentFile.url;
         }
         else
         {
@@ -206,12 +206,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (NSString *)getThumbnailUrlForSize:(CGSize)size
 {
-    if (thumbnailFile && thumbnailFile[@"url"])
+    if (thumbnailFile && thumbnailFile.url)
     {
         // there's an encrypted thumbnail: we just return the mxc url
         // since it will have to be decrypted before downloading anyway,
         // so the URL is really just a key into the cache.
-        return thumbnailFile[@"url"];
+        return thumbnailFile.url;
     }
     
     if (_type == MXKAttachmentTypeVideo || _type == MXKAttachmentTypeSticker)
@@ -245,9 +245,9 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (NSString *)getThumbnailMimeType
 {
-    if (thumbnailFile && thumbnailFile[@"mimetype"])
+    if (thumbnailFile && thumbnailFile.mimetype)
     {
-        return thumbnailFile[@"mimetype"];
+        return thumbnailFile.mimetype;
     }
     
     return _thumbnailInfo[@"mimetype"];
@@ -292,12 +292,15 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
     }
     
-    if (thumbnailFile && thumbnailFile[@"url"])
+    if (thumbnailFile && thumbnailFile.url)
     {
+        MXWeakify(self);
+        
         void (^decryptAndCache)(void) = ^{
+            MXStrongifyAndReturnIfNil(self);
             NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:thumbCachePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
-            NSError *err = [MXEncryptedAttachments decryptAttachment:thumbnailFile inputStream:instream outputStream:outstream];
+            NSError *err = [MXEncryptedAttachments decryptAttachment:self->thumbnailFile inputStream:instream outputStream:outstream];
             if (err) {
                 NSLog(@"Error decrypting attachment! %@", err.userInfo);
                 if (onFailure) onFailure(err);
@@ -315,7 +318,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
         else
         {
-            NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnailFile[@"url"]];
+            NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnailFile.url];
             [MXMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
                 
                 decryptAndCache();
@@ -362,14 +365,15 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)getAttachmentData:(void (^)(NSData *))onSuccess failure:(void (^)(NSError *error))onFailure
 {
+    MXWeakify(self);
     [self prepare:^{
-        
-        if (contentFile)
+        MXStrongifyAndReturnIfNil(self);
+        if (self->contentFile)
         {
             // decrypt the encrypted file
-            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:_cacheFilePath];
+            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:self.cacheFilePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
-            NSError *err = [MXEncryptedAttachments decryptAttachment:contentFile inputStream:instream outputStream:outstream];
+            NSError *err = [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:instream outputStream:outstream];
             if (err)
             {
                 NSLog(@"Error decrypting attachment! %@", err.userInfo);
@@ -379,7 +383,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
         else
         {
-            onSuccess([NSData dataWithContentsOfFile:_cacheFilePath]);
+            onSuccess([NSData dataWithContentsOfFile:self.cacheFilePath]);
         }
     } failure:^(NSError *error) {
         
@@ -390,7 +394,9 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)decryptToTempFile:(void (^)(NSString *))onSuccess failure:(void (^)(NSError *error))onFailure
 {
+    MXWeakify(self);
     [self prepare:^{
+        MXStrongifyAndReturnIfNil(self);
         NSString *tempPath = [self getTempFile];
         if (!tempPath)
         {
@@ -398,10 +404,10 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             return;
         }
         
-        NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:_cacheFilePath];
+        NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:self.cacheFilePath];
         NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:tempPath append:NO];
         
-        NSError *err = [MXEncryptedAttachments decryptAttachment:contentFile inputStream:inStream outputStream:outStream];
+        NSError *err = [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:inStream outputStream:outStream];
         if (err) {
             if (onFailure) onFailure(err);
             return;
@@ -524,13 +530,14 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 {
     if (_type == MXKAttachmentTypeImage || _type == MXKAttachmentTypeVideo)
     {
+        MXWeakify(self);
         if (self.isEncrypted) {
             [self decryptToTempFile:^(NSString *path) {
-                
+                MXStrongifyAndReturnIfNil(self);
                 NSURL* url = [NSURL fileURLWithPath:path];
                 
                 [MXMediaManager saveMediaToPhotosLibrary:url
-                                                  isImage:(_type == MXKAttachmentTypeImage)
+                                                  isImage:(self.type == MXKAttachmentTypeImage)
                                                   success:^(NSURL *assetURL){
                                                       if (onSuccess)
                                                       {
@@ -544,11 +551,11 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         else
         {
             [self prepare:^{
-                
-                NSURL* url = [NSURL fileURLWithPath:_cacheFilePath];
+                MXStrongifyAndReturnIfNil(self);
+                NSURL* url = [NSURL fileURLWithPath:self.cacheFilePath];
                 
                 [MXMediaManager saveMediaToPhotosLibrary:url
-                                                  isImage:(_type == MXKAttachmentTypeImage)
+                                                  isImage:(self.type == MXKAttachmentTypeImage)
                                                   success:^(NSURL *assetURL){
                                                       if (onSuccess)
                                                       {
@@ -571,9 +578,10 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)copy:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure
 {
+    MXWeakify(self);
     [self prepare:^{
-        
-        if (_type == MXKAttachmentTypeImage)
+        MXStrongifyAndReturnIfNil(self);
+        if (self.type == MXKAttachmentTypeImage)
         {
             [self getImage:^(UIImage *img) {
                 [[UIPasteboard generalPasteboard] setImage:img];
@@ -587,10 +595,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
         else
         {
+            MXWeakify(self);
             [self getAttachmentData:^(NSData *data) {
                 if (data)
                 {
-                    NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[_cacheFilePath pathExtension] , NULL);
+                    MXStrongifyAndReturnIfNil(self);
+                    NSString* UTI = (__bridge_transfer NSString *) UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[self.cacheFilePath pathExtension] , NULL);
                     
                     if (UTI)
                     {
@@ -617,21 +627,22 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)prepareShare:(void (^)(NSURL *fileURL))onReadyToShare failure:(void (^)(NSError *error))onFailure
 {
+    MXWeakify(self);
     void (^haveFile)(NSString *) = ^(NSString *path) {
         // Prepare the file URL by considering the original file name (if any)
         NSURL *fileUrl;
-        
+        MXStrongifyAndReturnIfNil(self);
         // Check whether the original name retrieved from event body has extension
-        if (_originalFileName && [_originalFileName pathExtension].length)
+        if (self.originalFileName && [self.originalFileName pathExtension].length)
         {
             // Copy the cached file to restore its original name
             // Note:  We used previously symbolic link (instead of copy) but UIDocumentInteractionController failed to open Office documents (.docx, .pptx...).
-            documentCopyPath = [[MXMediaManager getCachePath] stringByAppendingPathComponent:_originalFileName];
+            self->documentCopyPath = [[MXMediaManager getCachePath] stringByAppendingPathComponent:self.originalFileName];
             
-            [[NSFileManager defaultManager] removeItemAtPath:documentCopyPath error:nil];
-            if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:documentCopyPath error:nil])
+            [[NSFileManager defaultManager] removeItemAtPath:self->documentCopyPath error:nil];
+            if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:self->documentCopyPath error:nil])
             {
-                fileUrl = [NSURL fileURLWithPath:documentCopyPath];
+                fileUrl = [NSURL fileURLWithPath:self->documentCopyPath];
             }
         }
         
@@ -655,7 +666,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     {
         // First download data if it is not already done
         [self prepare:^{
-            haveFile(_cacheFilePath);
+            haveFile(self.cacheFilePath);
         } failure:onFailure];
     }
 }

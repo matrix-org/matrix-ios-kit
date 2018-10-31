@@ -107,7 +107,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         if (![[NSUserDefaults standardUserDefaults] objectForKey:@"sortRoomMembersUsingLastSeenTime"])
         {
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"sortRoomMembersUsingLastSeenTime"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
         }
         sortRoomMembersUsingLastSeenTime = YES;
         
@@ -191,9 +190,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
-        
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+	}
     else
     {
         syncWithLazyLoadOfRoomMembers = YES;
@@ -306,7 +303,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showAllEventsInRoomHistory"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -362,7 +358,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showRedactionsInRoomHistory"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -387,7 +382,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showUnsupportedEventsInRoomHistory"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -416,7 +410,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"httpLinkScheme"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -445,7 +438,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"httpsLinkScheme"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -472,7 +464,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"sortRoomMembersUsingLastSeenTime"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -497,7 +488,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"showLeftMembersInRoomMemberList"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -524,7 +514,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:boolValue forKey:@"syncLocalContacts"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -549,7 +538,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setBool:theSyncLocalContactsPermissionRequested forKey:@"syncLocalContactsPermissionRequested"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -592,7 +580,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     if (self == [MXKAppSettings standardAppSettings])
     {
         [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"phonebookCountryCode"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -635,7 +622,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         {
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOnlineUser"];
         }
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -676,7 +662,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         {
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForUnavailableUser"];
         }
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {
@@ -717,7 +702,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         {
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"presenceColorForOfflineUser"];
         }
-        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else
     {

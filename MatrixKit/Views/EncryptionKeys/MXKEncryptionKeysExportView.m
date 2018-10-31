@@ -52,7 +52,7 @@
     [_alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
          textField.secureTextEntry = YES;
-         textField.placeholder = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_enter"];
+         textField.placeholder = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_create"];
          [textField resignFirstResponder];
      }];
 
