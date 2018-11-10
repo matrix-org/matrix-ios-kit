@@ -40,6 +40,11 @@ typedef enum : NSUInteger {
 @interface MXKAttachment : NSObject
 
 /**
+ The media manager instance used to download the attachment data.
+ */
+@property (nonatomic, readonly) MXMediaManager *mediaManager;
+
+/**
  The attachment type.
  */
 @property (nonatomic, readonly) MXKAttachmentType type;
@@ -53,11 +58,25 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString *contentURL;
 @property (nonatomic, readonly) NSDictionary *contentInfo;
 
-// The URL of a 'standard size' thumbnail
-@property (nonatomic, readonly) NSString *thumbnailURL;
-@property (nonatomic, readonly) NSString *thumbnailMimeType;
+/**
+ The URL of a 'standard size' thumbnail.
+ */
+@property (nonatomic, readonly, nullable) NSString *mxcThumbnailURI;
+@property (nonatomic, readonly, nullable) NSString *thumbnailMimeType;
+@property (nonatomic, readonly) NSString *thumbnailURL __attribute__((deprecated("Use [mxcThumbnailURI] instead")));
 
-// The attached video thumbnail information
+/**
+ The download identifier of the attachment content (related to contentURL).
+ */
+@property (nonatomic, readonly, nullable) NSString *downloadId;
+/**
+ The download identifier of the attachment thumbnail.
+ */
+@property (nonatomic, readonly, nullable) NSString *thumbnailDownloadId;
+
+/**
+ The attached video thumbnail information.
+ */
 @property (nonatomic, readonly) NSDictionary *thumbnailInfo;
 
 /**
@@ -68,7 +87,7 @@ typedef enum : NSUInteger {
 /**
  The actual attachment url
  */
-@property (nonatomic, readonly) NSString *actualURL;
+@property (nonatomic, readonly) NSString *actualURL __attribute__((deprecated("Use [contentURL] instead")));
 
 /**
  The thumbnail orientation (relevant in case of image).
@@ -83,7 +102,8 @@ typedef enum : NSUInteger {
 /**
  The cache file path of the attachment thumbnail (may be nil).
  */
-@property (nonatomic, readonly) NSString *cacheThumbnailPath;
+@property (nonatomic, readonly) NSString *thumbnailCachePath;
+@property (nonatomic, readonly) NSString *cacheThumbnailPath __attribute__((deprecated("Use [thumbnailCachePath] instead")));
 
 /**
  The preview of the attachment (nil by default).
@@ -103,11 +123,22 @@ typedef enum : NSUInteger {
  The created instance copies the current data of the event (content, event id, sent state...).
  It will ignore any future changes of these data.
  
+ @param event a matrix event.
+ @param mediaManager the media manager instance used to download the attachment data.
+ @return `MXKAttachment` instance.
+ */
+- (instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager;
+
+/**
+ Create a `MXKAttachment` instance for the passed event.
+ The created instance copies the current data of the event (content, event id, sent state...).
+ It will ignore any future changes of these data.
+ 
  @param mxEvent the matrix event.
  @param mxSession the matrix session.
  @return `MXKAttachment` instance.
  */
-- (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
+- (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession __attribute__((deprecated("Use [initWithEvent:andMediaManager:] instead")));
 - (void)destroy;
 
 /**

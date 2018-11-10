@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,7 +25,9 @@
 
 @interface MXKImageView ()
 {
-    NSString *imageURL;
+    NSString *imageURL; // TODO: MEDIA: remove this parameter
+    
+    NSString *mxcURI;
     NSString *mimeType;
     UIImageOrientation imageOrientation;
     
@@ -489,10 +492,10 @@
     {
         [self stopActivityIndicator];
     }
-    else
+    else if (mxcURI)
     {
-        NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
-        if ([MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
+        NSString *downloadId = [MXMediaManager downloadIdForMatrixContentURI:mxcURI inFolder:mediaFolder];
+        if ([MXMediaManager existingDownloaderWithIdentifier:downloadId])
         {
             // Loading is in progress, start activity indicator
             [self startActivityIndicator];
@@ -500,6 +503,125 @@
     }
 }
 
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager
+{
+    // Remove any pending observers
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    mxcURI = mxContentURI;
+    if (!mxcURI)
+    {
+        // Set preview by default
+        self.image = previewImage;
+        return;
+    }
+    
+    // Store image orientation
+    imageOrientation = orientation;
+    
+    // Store the mime type used to define the cache path of the image.
+    mimeType = mimeType;
+    if (!mimeType.length)
+    {
+        // Set default mime type if no information is available
+        mimeType = @"image/jpeg";
+    }
+    
+    // Check whether the image download is in progress
+    NSString *downloadId = [MXMediaManager downloadIdForMatrixContentURI:mxcURI inFolder:mediaFolder];
+    MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
+    if (loader)
+    {
+        // Set preview until the image is loaded
+        self.image = previewImage;
+        // update the progress UI with the current info
+        if (!_hideActivityIndicator)
+        {
+            [self startActivityIndicator];
+        }
+        [self updateProgressUI:loader.statisticsDict];
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaLoaderStateChange:) name:kMXMediaLoaderStateDidChangeNotification object:loader];
+    }
+    else
+    {
+        // Retrieve the image from cache
+        NSString *cacheFilePath = [MXMediaManager cachePathForMatrixContentURI:mxcURI andType:mimeType inFolder:mediaFolder];
+        UIImage* image = _enableInMemoryCache ? [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXMediaManager loadPictureFromFilePath:cacheFilePath];
+        if (image)
+        {
+            if (imageOrientation != UIImageOrientationUp)
+            {
+                self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
+            }
+            else
+            {
+                self.image = image;
+            }
+            
+            [self stopActivityIndicator];
+        }
+        else
+        {
+            // Set preview until the image is loaded
+            self.image = previewImage;
+            
+            if (mediaManager)
+            {
+                // Trigger image downloading
+                if (!_hideActivityIndicator)
+                {
+                    [self startActivityIndicator];
+                }
+                
+                MXWeakify(self);
+                loader = [mediaManager downloadMediaFromMatrixContentURI:mxcURI
+                                                                withType:mimeType
+                                                                inFolder:mediaFolder
+                                                                 success:^(NSString *outputFilePath) {
+                                                                     MXStrongifyAndReturnIfNil(self);
+                                                                     // update the image
+                                                                     UIImage* image = [MXMediaManager loadPictureFromFilePath:outputFilePath];
+                                                                     if (image)
+                                                                     {
+                                                                         if (self->imageOrientation != UIImageOrientationUp)
+                                                                         {
+                                                                             self.image = [UIImage imageWithCGImage:image.CGImage
+                                                                                                              scale:1.0
+                                                                                                        orientation:self->imageOrientation];
+                                                                         }
+                                                                         else
+                                                                         {
+                                                                             self.image = image;
+                                                                         }
+                                                                     }
+                                                                     [self stopActivityIndicator];
+                                                                     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
+                                                                 }
+                                                                 failure:^(NSError *error) {
+                                                                     MXStrongifyAndReturnIfNil(self);
+                                                                     [self stopActivityIndicator];
+                                                                     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
+                                                                 }];
+                if (loader)
+                {
+                    // Observer this loader to display progress
+                    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                             selector:@selector(checkProgressOnMediaLoaderStateChange:)
+                                                                 name:kMXMediaLoaderStateDidChangeNotification
+                                                               object:loader];
+                }
+            }
+        }
+    }
+}
+
+// TODO: MEDIA: Remove this deprecated method
 - (void)setImageURL:(NSString *)anImageURL withType:(NSString *)type andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage
 {
     // Remove any pending observers
@@ -588,34 +710,49 @@
     // Remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    // Store image orientation
-    imageOrientation = attachment.thumbnailOrientation;
+    // Set default orientation
+    imageOrientation = UIImageOrientationUp;
     
-    imageURL = attachment.actualURL;
+    mxcURI = attachment.contentURL;
     mimeType = attachment.contentInfo[@"mimetype"];
     if (!mimeType.length)
     {
-        // Check if the extension could not be deduced from url
-        if (![imageURL pathExtension].length)
-        {
-            // Set default mime type if no information is available
-            mimeType = @"image/jpeg";
-        }
+        // Set default mime type if no information is available
+        mimeType = @"image/jpeg";
     }
     
     // while we wait for the content to download
     self.image = [attachment getCachedThumbnail];
     
-    // Add observers
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
+    if (!_hideActivityIndicator)
+    {
+        [self startActivityIndicator];
+    }
     
+    MXWeakify(self);
     [attachment getImage:^(UIImage *img) {
+        MXStrongifyAndReturnIfNil(self);
         self.image = img;
+        [self stopActivityIndicator];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     } failure:^(NSError *error) {
         NSLog(@"Unable to fetch image attachment! %@", error);
+        MXStrongifyAndReturnIfNil(self);
+        [self stopActivityIndicator];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     }];
+    
+    // Check whether the image download is in progress
+    NSString *downloadId = attachment.downloadId;
+    MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
+    if (loader)
+    {
+        // Observer this loader to display progress
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(checkProgressOnMediaLoaderStateChange:)
+                                                     name:kMXMediaLoaderStateDidChangeNotification
+                                                   object:loader];
+    }
 }
 
 - (void)setAttachmentThumb:(MXKAttachment *)attachment
@@ -626,17 +763,24 @@
     // Store image orientation
     imageOrientation = attachment.thumbnailOrientation;
     
-    mimeType = attachment.thumbnailMimeType;
-    imageURL = attachment.thumbnailURL;
-    
     // Remove the existing image (if any) by using the potential preview.
     self.image = attachment.previewImage;
     
+    MXWeakify(self);
     [attachment getThumbnail:^(UIImage *img) {
-        self.image = img;
+        MXStrongifyAndReturnIfNil(self);
+        if (img && self->imageOrientation != UIImageOrientationUp)
+        {
+            self.image = [UIImage imageWithCGImage:img.CGImage scale:1.0 orientation:self->imageOrientation];
+        }
+        else
+        {
+            self.image = img;
+        }
     } failure:nil];
 }
 
+// TODO: MEDIA: Remove this method when deprecated methods will be removed
 - (void)onMediaDownloadEnd:(NSNotification *)notif
 {
     // sanity check
@@ -732,6 +876,7 @@
     }
 }
 
+// TODO: MEDIA: Remove this method when deprecated methods will be removed
 - (void)onMediaDownloadProgress:(NSNotification *)notif
 {
     // sanity check
@@ -743,6 +888,53 @@
         {
             [self updateProgressUI:notif.userInfo];
         }
+    }
+}
+
+- (void)onMediaLoaderStateChange:(NSNotification *)notif
+{
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    switch (loader.state) {
+        case MXMediaLoaderStateDownloadInProgress:
+            [self updateProgressUI:loader.statisticsDict];
+            break;
+        case MXMediaLoaderStateDownloadCompleted:
+        {
+            [self stopActivityIndicator];
+            // update the image
+            UIImage* image = [MXMediaManager loadPictureFromFilePath:loader.downloadOutputFilePath];
+            if (image)
+            {
+                if (imageOrientation != UIImageOrientationUp)
+                {
+                    self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
+                }
+                else
+                {
+                    self.image = image;
+                }
+            }
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
+        }
+        case MXMediaLoaderStateDownloadFailed:
+            [self stopActivityIndicator];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)checkProgressOnMediaLoaderStateChange:(NSNotification *)notif
+{
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    switch (loader.state) {
+        case MXMediaLoaderStateDownloadInProgress:
+            [self updateProgressUI:loader.statisticsDict];
+            break;
+        default:
+            break;
     }
 }
 

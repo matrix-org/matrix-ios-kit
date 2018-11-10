@@ -48,22 +48,117 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     /**
      Observe Attachment download
      */
-    id onAttachmentDownloadEndObs;
-    id onAttachmentDownloadFailureObs;
+    id onAttachmentDownloadObs;
     
     /**
      The local path used to store the attachment with its original name
      */
-    NSString* documentCopyPath;
+    NSString *documentCopyPath;
+    
+    /**
+     The attachment mimetype.
+     */
+    NSString *mimetype;
 }
 
 @end
 
 @interface MXKAttachment ()
-@property (nonatomic) MXSession *sess;
+@property (nonatomic) MXSession *sess __attribute__((deprecated("Use [contentURL] instead")));
 @end
 
 @implementation MXKAttachment
+
+- (instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager
+{
+    self = [super init];
+    if (self)
+    {
+        _mediaManager = mediaManager;
+        
+        // Make a copy as the data can be read at anytime later
+        _eventId = event.eventId;
+        _eventRoomId = event.roomId;
+        _eventSentState = event.sentState;
+        
+        NSDictionary *eventContent = event.content;
+        
+        // Set default thumbnail orientation
+        _thumbnailOrientation = UIImageOrientationUp;
+        
+        if (event.eventType == MXEventTypeSticker)
+        {
+            _type = MXKAttachmentTypeSticker;
+            MXJSONModelSetDictionary(_thumbnailInfo, eventContent[@"info"][@"thumbnail_info"]);
+        }
+        else
+        {
+            // Note: mxEvent.eventType is supposed to be MXEventTypeRoomMessage here.
+            NSString *msgtype = eventContent[@"msgtype"];
+            if ([msgtype isEqualToString:kMXMessageTypeImage])
+            {
+                _type = MXKAttachmentTypeImage;
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeAudio])
+            {
+                _type = MXKAttachmentTypeAudio;
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeVideo])
+            {
+                _type = MXKAttachmentTypeVideo;
+                MXJSONModelSetDictionary(_thumbnailInfo, eventContent[@"info"][@"thumbnail_info"]);
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeLocation])
+            {
+                // Not supported yet
+                // _type = MXKAttachmentTypeLocation;
+                return nil;
+            }
+            else if ([msgtype isEqualToString:kMXMessageTypeFile])
+            {
+                _type = MXKAttachmentTypeFile;
+            }
+            else
+            {
+                return nil;
+            }
+        }
+        
+        MXJSONModelSetString(_originalFileName, eventContent[@"body"]);
+        MXJSONModelSetDictionary(_contentInfo, eventContent[@"info"]);
+        MXJSONModelSetMXJSONModel(contentFile, MXEncryptedContentFile, eventContent[@"file"]);
+        
+        // Retrieve the content url by taking into account the potential encryption.
+        if (contentFile)
+        {
+            _isEncrypted = YES;
+            _contentURL = contentFile.url;
+            
+            MXJSONModelSetMXJSONModel(thumbnailFile, MXEncryptedContentFile, _contentInfo[@"thumbnail_file"]);
+        }
+        else
+        {
+            _isEncrypted = NO;
+            MXJSONModelSetString(_contentURL, eventContent[@"url"]);
+        }
+        
+        mimetype = nil;
+        if (_contentInfo)
+        {
+            MXJSONModelSetString(mimetype, _contentInfo[@"mimetype"]);
+        }
+        
+        _cacheFilePath = [MXMediaManager cachePathForMatrixContentURI:_contentURL andType:mimetype inFolder:_eventRoomId];
+        _downloadId = [MXMediaManager downloadIdForMatrixContentURI:_contentURL inFolder:_eventRoomId];
+        
+        // Deduce the thumbnail information from the retrieved data.
+        _mxcThumbnailURI = [self getThumbnailURI];
+        _thumbnailMimeType = [self getThumbnailMimeType];
+        _thumbnailCachePath = [self getThumbnailCachePath];
+        _thumbnailDownloadId = [self getThumbnailDownloadId];
+    }
+    return self;
+}
 
 - (instancetype)initWithEvent:(MXEvent *)mxEvent andMatrixSession:(MXSession*)mxSession
 {
@@ -71,6 +166,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     self.sess = mxSession;
     if (self)
     {
+        _mediaManager = mxSession.mediaManager;
         // Make a copy as the data can be read at anytime later
         _eventId = mxEvent.eventId;
         _eventRoomId = mxEvent.roomId;
@@ -149,17 +245,21 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
         }
         
-        NSString *mimetype = nil;
+        mimetype = nil;
         if (_contentInfo)
         {
             MXJSONModelSetString(mimetype, _contentInfo[@"mimetype"]);
         }
         
-        _cacheFilePath = [MXMediaManager cachePathForMediaWithURL:_actualURL andType:mimetype inFolder:_eventRoomId];
+        _cacheFilePath = [MXMediaManager cachePathForMatrixContentURI:_contentURL andType:mimetype inFolder:_eventRoomId];
+        _downloadId = [MXMediaManager downloadIdForMatrixContentURI:_contentURL inFolder:_eventRoomId];
         
         // Deduce the thumbnail information from the retrieved data.
         _thumbnailURL = [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
         _thumbnailMimeType = [self getThumbnailMimeType];
+        _thumbnailCachePath = [self getThumbnailCachePath];
+        _cacheThumbnailPath = _thumbnailCachePath;
+        _thumbnailDownloadId = [self getThumbnailDownloadId];
     }
     return self;
 }
@@ -171,16 +271,10 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)destroy
 {
-    if (onAttachmentDownloadEndObs)
+    if (onAttachmentDownloadObs)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadEndObs];
-        onAttachmentDownloadEndObs = nil;
-    }
-
-    if (onAttachmentDownloadFailureObs)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadFailureObs];
-        onAttachmentDownloadFailureObs = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:onAttachmentDownloadObs];
+        onAttachmentDownloadObs = nil;
     }
     
     // Remove the temporary file created to prepare attachment sharing
@@ -193,17 +287,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     _previewImage = nil;
 }
 
-- (NSString*)cacheThumbnailPath
-{
-    if (self.thumbnailURL)
-    {
-        return [MXMediaManager cachePathForMediaWithURL:self.thumbnailURL
-                                                andType:self.thumbnailMimeType
-                                               inFolder:_eventRoomId];
-    }
-    return nil;
-}
-
+// TODO: MEDIA: Remove this deprecated method "getThumbnailUrlForSize:"
 - (NSString *)getThumbnailUrlForSize:(CGSize)size
 {
     if (thumbnailFile && thumbnailFile.url)
@@ -243,9 +327,21 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return nil;
 }
 
+- (NSString *)getThumbnailURI
+{
+    if (thumbnailFile)
+    {
+        // there's an encrypted thumbnail: we return the mxc url
+        return thumbnailFile.url;
+    }
+    
+    // Look for a clear thumbnail url
+    return _contentInfo[@"thumbnail_url"];
+}
+
 - (NSString *)getThumbnailMimeType
 {
-    if (thumbnailFile && thumbnailFile.mimetype)
+    if (thumbnailFile)
     {
         return thumbnailFile.mimetype;
     }
@@ -253,17 +349,57 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return _thumbnailInfo[@"mimetype"];
 }
 
+- (NSString*)getThumbnailCachePath
+{
+    if (_mxcThumbnailURI)
+    {
+        return [MXMediaManager cachePathForMatrixContentURI:_mxcThumbnailURI andType:_thumbnailMimeType inFolder:_eventRoomId];
+    }
+    // In case of an unencrypted image, consider the thumbnail URI deduced from the content URL, except if
+    // the attachment is currently uploading.
+    // Note: When the uploading is in progress, the upload id is stored in the content url (nasty trick).
+    else if (_type == MXKAttachmentTypeImage && !_isEncrypted && _contentURL && ![_contentURL hasPrefix:kMXMediaUploadIdPrefix])
+    {
+        return [MXMediaManager thumbnailCachePathForMatrixContentURI:_contentURL
+                                                             andType:@"image/jpeg"
+                                                            inFolder:_eventRoomId
+                                                       toFitViewSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)
+                                                          withMethod:MXThumbnailingMethodScale];
+        
+        
+    }
+    return nil;
+}
+
+- (NSString *)getThumbnailDownloadId
+{
+    if (_mxcThumbnailURI)
+    {
+        return [MXMediaManager downloadIdForMatrixContentURI:_mxcThumbnailURI inFolder:_eventRoomId];
+    }
+    // In case of an unencrypted image, consider the thumbnail URI deduced from the content URL, except if
+    // the attachment is currently uploading.
+    // Note: When the uploading is in progress, the upload id is stored in the content url (nasty trick).
+    else if (_type == MXKAttachmentTypeImage && !_isEncrypted && _contentURL && ![_contentURL hasPrefix:kMXMediaUploadIdPrefix])
+    {
+        return [MXMediaManager thumbnailDownloadIdForMatrixContentURI:_contentURL
+                                                             inFolder:_eventRoomId
+                                                        toFitViewSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)
+                                                           withMethod:MXThumbnailingMethodScale];
+    }
+    return nil;
+}
+
 - (UIImage *)getCachedThumbnail
 {
-    NSString *cacheFilePath = self.cacheThumbnailPath;
-    if (cacheFilePath)
+    if (_thumbnailCachePath)
     {
-        UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:cacheFilePath];
+        UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:_thumbnailCachePath];
         if (thumb) return thumb;
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:_thumbnailCachePath])
         {
-            return [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath];
+            return [MXMediaManager loadThroughCacheWithFilePath:_thumbnailCachePath];
         }
     }
     return nil;
@@ -271,7 +407,8 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
 {
-    if (!self.thumbnailURL)
+    // Check whether a thumbnail is defined.
+    if (!_thumbnailCachePath)
     {
         // there is no thumbnail: if we're an image, return the full size image. Otherwise, nothing we can do.
         if (_type == MXKAttachmentTypeImage)
@@ -281,24 +418,21 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         return;
     }
     
-    NSString *thumbCachePath = self.cacheThumbnailPath;
-    if (thumbCachePath)
+    // Check the current memory cache.
+    UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:_thumbnailCachePath];
+    if (thumb)
     {
-        UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:thumbCachePath];
-        if (thumb)
-        {
-            onSuccess(thumb);
-            return;
-        }
+        onSuccess(thumb);
+        return;
     }
     
-    if (thumbnailFile && thumbnailFile.url)
+    if (thumbnailFile)
     {
         MXWeakify(self);
         
         void (^decryptAndCache)(void) = ^{
             MXStrongifyAndReturnIfNil(self);
-            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:thumbCachePath];
+            NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:self.thumbnailCachePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
             NSError *err = [MXEncryptedAttachments decryptAttachment:self->thumbnailFile inputStream:instream outputStream:outstream];
             if (err) {
@@ -308,44 +442,63 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             }
             
             UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
-            [MXMediaManager cacheImage:img withCachePath:thumbCachePath];
+            // Save this image to in-memory cache.
+            [MXMediaManager cacheImage:img withCachePath:self.thumbnailCachePath];
             onSuccess(img);
         };
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:_thumbnailCachePath])
         {
             decryptAndCache();
         }
         else
         {
-            NSString *actualUrl = [self.sess.matrixRestClient urlOfContent:thumbnailFile.url];
-            [MXMediaManager downloadMediaFromURL:actualUrl andSaveAtFilePath:thumbCachePath success:^() {
-                
-                decryptAndCache();
-                
-            } failure:^(NSError *error) {
-                
-                if (onFailure) onFailure(error);
-                
-            }];
+            [_mediaManager downloadMediaFromMatrixContentURI:_mxcThumbnailURI
+                                                    withType:_thumbnailMimeType
+                                                    inFolder:_eventRoomId
+                                                     success:^(NSString *outputFilePath) {
+                                                         decryptAndCache();
+                                                     }
+                                                     failure:^(NSError *error) {
+                                                         if (onFailure) onFailure(error);
+                                                     }];
         }
-        return;
-    }
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbCachePath])
-    {
-        onSuccess([MXMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
     }
     else
     {
-        [MXMediaManager downloadMediaFromURL:self.thumbnailURL andSaveAtFilePath:thumbCachePath success:^{
-            onSuccess([MXMediaManager loadThroughCacheWithFilePath:thumbCachePath]);
-            
-        } failure:^(NSError *error) {
-            
-            if (onFailure) onFailure(error);
-            
-        }];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:_thumbnailCachePath])
+        {
+            onSuccess([MXMediaManager loadThroughCacheWithFilePath:_thumbnailCachePath]);
+        }
+        else if (_mxcThumbnailURI)
+        {
+            [_mediaManager downloadMediaFromMatrixContentURI:_mxcThumbnailURI
+                                                    withType:_thumbnailMimeType
+                                                    inFolder:_eventRoomId
+                                                     success:^(NSString *outputFilePath) {
+                                                         // Here outputFilePath = thumbnailCachePath
+                                                         onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
+                                                     }
+                                                     failure:^(NSError *error) {
+                                                         if (onFailure) onFailure(error);
+                                                     }];
+        }
+        else
+        {
+            // Here _thumbnailCachePath is defined, so a thumbnail is available.
+            // Because _mxcThumbnailURI is null, this means we have to consider the content uri (see getThumbnailCachePath).
+            [_mediaManager downloadThumbnailFromMatrixContentURI:_contentURL
+                                                         withType:@"image/jpeg"
+                                                        inFolder:_eventRoomId
+                                                   toFitViewSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)
+                                                      withMethod:MXThumbnailingMethodScale
+                                                         success:^(NSString *outputFilePath) {
+                                                             // Here outputFilePath = thumbnailCachePath
+                                                             onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
+                                                         } failure:^(NSError *error) {
+                                                             if (onFailure) onFailure(error);
+                                                         }];
+        }
     }
 }
 
@@ -368,7 +521,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     MXWeakify(self);
     [self prepare:^{
         MXStrongifyAndReturnIfNil(self);
-        if (self->contentFile)
+        if (self.isEncrypted)
         {
             // decrypt the encrypted file
             NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:self.cacheFilePath];
@@ -422,7 +575,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 {
     // create a file with an appropriate extension because iOS detects based on file extension
     // all over the place
-    NSString *ext = [MXTools fileExtensionFromContentType:_contentInfo[@"mimetype"]];
+    NSString *ext = [MXTools fileExtensionFromContentType:mimetype];
     NSString *filenameTemplate = [NSString stringWithFormat:@"attatchment.XXXXXX%@", ext];
     NSString *template = [NSTemporaryDirectory() stringByAppendingPathComponent:filenameTemplate];
     
@@ -456,10 +609,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     else
     {
         // Trigger download if it is not already in progress
-        MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:_cacheFilePath];
+        MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:_downloadId];
         if (!loader)
         {
-            loader = [MXMediaManager downloadMediaFromURL:_actualURL andSaveAtFilePath:_cacheFilePath];
+            loader = [_mediaManager downloadMediaFromMatrixContentURI:_contentURL
+                                                             withType:mimetype
+                                                             inFolder:_eventRoomId];
         }
         
         if (loader)
@@ -467,55 +622,29 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             MXWeakify(self);
             
             // Add observers
-            onAttachmentDownloadEndObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadDidFinishNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            onAttachmentDownloadObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaLoaderStateDidChangeNotification object:loader queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
                 MXStrongifyAndReturnIfNil(self);
-                
-                // Sanity check
-                if ([notif.object isKindOfClass:[NSString class]])
-                {
-                    NSString* url = notif.object;
-                    NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
-                    
-                    if ([url isEqualToString:self.actualURL] && cacheFilePath.length)
-                    {
-                        // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadFailureObs];
-                        self->onAttachmentDownloadEndObs = nil;
-                        self->onAttachmentDownloadFailureObs = nil;
-                        
+                MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+                switch (loader.state) {
+                    case MXMediaLoaderStateDownloadCompleted:
+                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadObs];
+                        self->onAttachmentDownloadObs = nil;
                         if (onAttachmentReady)
                         {
                             onAttachmentReady ();
                         }
-                    }
-                }
-            }];
-            
-            onAttachmentDownloadFailureObs = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadDidFailNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
-                
-                MXStrongifyAndReturnIfNil(self);
-                
-                // Sanity check
-                if ([notif.object isKindOfClass:[NSString class]])
-                {
-                    NSString* url = notif.object;
-                    NSError* error = notif.userInfo[kMXMediaLoaderErrorKey];
-                    
-                    if ([url isEqualToString:self.actualURL])
-                    {
-                        // Remove the observers
-                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadEndObs];
-                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadFailureObs];
-                        self->onAttachmentDownloadEndObs = nil;
-                        self->onAttachmentDownloadFailureObs = nil;
-                        
+                        break;
+                    case MXMediaLoaderStateDownloadFailed:
+                        [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadObs];
+                        self->onAttachmentDownloadObs = nil;
                         if (onFailure)
                         {
-                            onFailure (error);
+                            onFailure (loader.error);
                         }
-                    }
+                        break;
+                    default:
+                        break;
                 }
             }];
         }

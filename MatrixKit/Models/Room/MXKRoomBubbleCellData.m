@@ -153,9 +153,9 @@
                             {
                                 [[NSFileManager defaultManager] removeItemAtPath:attachment.cacheFilePath error:nil];
                             }
-                            if (![updatedAttachment.cacheThumbnailPath isEqualToString:attachment.cacheThumbnailPath])
+                            if (![updatedAttachment.thumbnailCachePath isEqualToString:attachment.thumbnailCachePath])
                             {
-                                [[NSFileManager defaultManager] removeItemAtPath:attachment.cacheThumbnailPath error:nil];
+                                [[NSFileManager defaultManager] removeItemAtPath:attachment.thumbnailCachePath error:nil];
                             }
                             
                             // Update the current attachmnet description

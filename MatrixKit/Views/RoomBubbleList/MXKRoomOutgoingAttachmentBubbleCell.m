@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -79,21 +80,25 @@
 
 -(void)startUploadAnimating
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaUploadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUploadProgress:) name:kMXMediaUploadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     
     [self.activityIndicator startAnimating];
     
     MXMediaLoader *uploader = [MXMediaManager existingUploaderWithId:bubbleData.uploadId];
-    if (uploader && uploader.statisticsDict)
+    if (uploader)
     {
-        [self.activityIndicator stopAnimating];
-        [self updateProgressUI:uploader.statisticsDict];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaLoaderStateDidChange:) name:kMXMediaLoaderStateDidChangeNotification object:uploader];
         
-        // Check whether the upload is ended
-        if (self.progressChartView.progress == 1.0)
+        if (uploader.statisticsDict)
         {
-            self.progressView.hidden = YES;
+            [self.activityIndicator stopAnimating];
+            [self updateProgressUI:uploader.statisticsDict];
+            
+            // Check whether the upload is ended
+            if (self.progressChartView.progress == 1.0)
+            {
+                [self stopAnimating];
+            }
         }
     }
     else
@@ -102,29 +107,36 @@
     }
 }
 
-
 -(void)stopAnimating
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaUploadProgressNotification object:nil];
+    self.progressView.hidden = YES;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     [self.activityIndicator stopAnimating];
 }
 
-- (void)onUploadProgress:(NSNotification *)notif
+- (void)onMediaLoaderStateDidChange:(NSNotification *)notif
 {
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    
+    // Consider only the progress of the current upload.
+    if ([loader.uploadId isEqualToString:bubbleData.uploadId])
     {
-        NSString *uploadId = notif.object;
-        if ([uploadId isEqualToString:bubbleData.uploadId])
-        {
-            [self.activityIndicator stopAnimating];
-            [self updateProgressUI:notif.userInfo];
-            
-            // the upload is ended
-            if (self.progressChartView.progress == 1.0)
+        switch (loader.state) {
+            case MXMediaLoaderStateUploadInProgress:
             {
-                self.progressView.hidden = YES;
+                [self.activityIndicator stopAnimating];
+                [self updateProgressUI:loader.statisticsDict];
+                
+                // the upload is ended
+                if (self.progressChartView.progress == 1.0)
+                {
+                    [self stopAnimating];
+                }
+                break;
             }
+            default:
+                break;
         }
     }
 }
