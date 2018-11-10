@@ -17,11 +17,11 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKView.h"
 
 @class MXKAttachment;
-@class MXMediaManager;
 
 /**
  Customize UIView in order to display image defined with remote url. Zooming inside the image (Stretching) is supported.
@@ -46,6 +46,29 @@ typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* tit
 - (void)setImageURI:(NSString *)mxContentURI
            withType:(NSString *)mimeType
 andImageOrientation:(UIImageOrientation)orientation
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager;
+
+/**
+ Load an image by its Matrix Content URI to fit a specific view size.
+ 
+ CAUTION: this method is available only for the unencrypted content.
+ 
+ The image is loaded from the media cache (if any). If the image is not available yet,
+ it is downloaded from the Matrix media repository only if a media manager instance is provided.
+ The image extension is extracted from the provided mime type (if any). By default 'image/jpeg' is considered.
+ 
+ @param mxContentURI the Matrix Content URI
+ @param mimeType the media mime type, it is used to define the file extension (may be nil).
+ @param orientation the actual orientation of the encoded image (used UIImageOrientationUp by default).
+ @param previewImage image displayed until the actual image is available.
+ @param mediaManager the media manager instance used to download the image if it is not already in cache.
+ */
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+      toFitViewSize:(CGSize)viewSize
+         withMethod:(MXThumbnailingMethod)thumbnailingMethod
        previewImage:(UIImage*)previewImage
        mediaManager:(MXMediaManager*)mediaManager;
 
