@@ -64,7 +64,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 @end
 
 @interface MXKAttachment ()
-@property (nonatomic) MXSession *sess __attribute__((deprecated("Use [contentURL] instead")));
+@property (nonatomic) MXSession *sess __attribute__((deprecated("No longer defined")));
 @end
 
 @implementation MXKAttachment
@@ -160,6 +160,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return self;
 }
 
+// TODO: MEDIA: Remove this deprecated method
 - (instancetype)initWithEvent:(MXEvent *)mxEvent andMatrixSession:(MXSession*)mxSession
 {
     self = [super init];

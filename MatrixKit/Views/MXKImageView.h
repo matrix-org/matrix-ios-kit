@@ -83,7 +83,7 @@ andImageOrientation:(UIImageOrientation)orientation
  @param orientation the actual orientation of the encoded image (used UIImageOrientationUp by default).
  @param previewImage image displayed until the actual image is available.
  */
-- (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage __attribute__((deprecated("Use [setImageURI:withType:andImageOrientation:previewImage:mediaManager] instead")));
+- (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage __attribute__((deprecated("Use [setImageURI:withType:andImageOrientation:previewImage:mediaManager] or [setImageURI:withType:andImageOrientation:toFitViewSize:withMethod:previewImage:mediaManager] instead")));
 
 /**
  * Load an image attachment into the image viewer and display the full res image.

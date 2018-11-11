@@ -63,7 +63,7 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic, readonly, nullable) NSString *mxcThumbnailURI;
 @property (nonatomic, readonly, nullable) NSString *thumbnailMimeType;
-@property (nonatomic, readonly) NSString *thumbnailURL __attribute__((deprecated("Use [mxcThumbnailURI] instead")));
+@property (nonatomic, readonly) NSString *thumbnailURL __attribute__((deprecated("Use mxcThumbnailURI instead")));
 
 /**
  The download identifier of the attachment content (related to contentURL).
@@ -87,7 +87,7 @@ typedef enum : NSUInteger {
 /**
  The actual attachment url
  */
-@property (nonatomic, readonly) NSString *actualURL __attribute__((deprecated("Use [contentURL] instead")));
+@property (nonatomic, readonly) NSString *actualURL __attribute__((deprecated("Use contentURL instead")));
 
 /**
  The thumbnail orientation (relevant in case of image).
@@ -103,7 +103,7 @@ typedef enum : NSUInteger {
  The cache file path of the attachment thumbnail (may be nil).
  */
 @property (nonatomic, readonly) NSString *thumbnailCachePath;
-@property (nonatomic, readonly) NSString *cacheThumbnailPath __attribute__((deprecated("Use [thumbnailCachePath] instead")));
+@property (nonatomic, readonly) NSString *cacheThumbnailPath __attribute__((deprecated("Use thumbnailCachePath instead")));
 
 /**
  The preview of the attachment (nil by default).
