@@ -437,15 +437,15 @@ static BOOL _disableLongPressGestureOnEvent;
         // Check whether the sender's picture is actually displayed before loading it.
         if (self.pictureView)
         {
-            // Handle user's picture
-            NSString *avatarThumbURL = nil;
-            if (bubbleData.senderAvatarUrl)
-            {
-                // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
-            }
             self.pictureView.enableInMemoryCache = YES;
-            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];
+            // Consider here the sender avatar is stored unencrypted on Matrix media repo
+            [self.pictureView setImageURI:bubbleData.senderAvatarUrl
+                                 withType:nil
+                      andImageOrientation:UIImageOrientationUp
+                            toFitViewSize:self.pictureView.frame.size
+                               withMethod:MXThumbnailingMethodCrop
+                             previewImage:bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder
+                             mediaManager:bubbleData.mxSession.mediaManager];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)
@@ -471,10 +471,9 @@ static BOOL _disableLongPressGestureOnEvent;
             self.fileTypeIconView.hidden = YES;
             
             // Display the attachment thumbnail
-            self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setAttachmentThumb:bubbleData.attachment];
             
-            if (bubbleData.attachment.actualURL)
+            if (bubbleData.attachment.contentURL)
             {
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -513,7 +512,7 @@ static BOOL _disableLongPressGestureOnEvent;
             NSAttributedString* newText = nil;
             
             // Underline attached file name
-            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.contentURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
@@ -667,7 +666,7 @@ static BOOL _disableLongPressGestureOnEvent;
                             
                             if (roomMembers.count)
                             {
-                                MXKReceiptSendersContainer* avatarsContainer = [[MXKReceiptSendersContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15) andRestClient:bubbleData.mxSession.matrixRestClient];
+                                MXKReceiptSendersContainer* avatarsContainer = [[MXKReceiptSendersContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15) andMediaManager:bubbleData.mxSession.mediaManager];
                                 
                                 [avatarsContainer refreshReceiptSenders:roomMembers withPlaceHolders:placeholders andAlignment:self.readReceiptsAlignment];
                                 
@@ -1172,7 +1171,7 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         // Check whether the current displayed text corresponds to an attached file
-        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.contentURL && bubbleData.attachment.contentInfo)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
         }

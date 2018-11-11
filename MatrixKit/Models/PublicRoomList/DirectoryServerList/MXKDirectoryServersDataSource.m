@@ -1,5 +1,6 @@
 /*
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -94,46 +95,38 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
         }
     }
 
-    __weak typeof(self) weakSelf = self;
+    MXWeakify(self);
     request = [self.mxSession.matrixRestClient thirdpartyProtocols:^(MXThirdpartyProtocolsResponse *thirdpartyProtocolsResponse) {
 
-        if (weakSelf)
+        MXStrongifyAndReturnIfNil(self);
+        for (NSString *protocolName in thirdpartyProtocolsResponse.protocols)
         {
-            typeof(self) self = weakSelf;
-
-            for (NSString *protocolName in thirdpartyProtocolsResponse.protocols)
+            MXThirdPartyProtocol *protocol = thirdpartyProtocolsResponse.protocols[protocolName];
+            
+            for (MXThirdPartyProtocolInstance *instance in protocol.instances)
             {
-                MXThirdPartyProtocol *protocol = thirdpartyProtocolsResponse.protocols[protocolName];
-
-                for (MXThirdPartyProtocolInstance *instance in protocol.instances)
-                {
-                    id<MXKDirectoryServerCellDataStoring> cellData = [[class alloc] initWithProtocolInstance:instance protocol:protocol];
-
-                    [cellDataArray addObject:cellData];
-                }
+                id<MXKDirectoryServerCellDataStoring> cellData = [[class alloc] initWithProtocolInstance:instance protocol:protocol];
+                cellData.mediaManager = self.mxSession.mediaManager;
+                [self->cellDataArray addObject:cellData];
             }
-
-            [self setState:MXKDataSourceStateReady];
         }
+        
+        [self setState:MXKDataSourceStateReady];
 
     } failure:^(NSError *error) {
 
-        if (weakSelf)
+        MXStrongifyAndReturnIfNil(self);
+        if (!self->request || self->request.isCancelled)
         {
-            typeof(self) self = weakSelf;
-
-            if (!request || request.isCancelled)
-            {
-                // Do not take into account error coming from a cancellation
-                return;
-            }
-
-            self->request = nil;
-
-            NSLog(@"[MXKDirectoryServersDataSource] Failed to fecth third-party protocols. The HS may be too old to support third party networks");
-
-            [self setState:MXKDataSourceStateReady];
+            // Do not take into account error coming from a cancellation
+            return;
         }
+        
+        self->request = nil;
+        
+        NSLog(@"[MXKDirectoryServersDataSource] Failed to fecth third-party protocols. The HS may be too old to support third party networks");
+        
+        [self setState:MXKDataSourceStateReady];
     }];
 }
 

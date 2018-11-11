@@ -415,6 +415,11 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         {
             [self getImage:onSuccess failure:onFailure];
         }
+        else if (onFailure)
+        {
+            onFailure(nil);
+        }
+        
         return;
     }
     

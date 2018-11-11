@@ -748,6 +748,7 @@ andImageOrientation:(UIImageOrientation)orientation
     // Set default orientation
     imageOrientation = UIImageOrientationUp;
     
+    mediaFolder = attachment.eventRoomId;
     mxcURI = attachment.contentURL;
     mimeType = attachment.contentInfo[@"mimetype"];
     if (!mimeType.length)
@@ -798,8 +799,15 @@ andImageOrientation:(UIImageOrientation)orientation
     // Store image orientation
     imageOrientation = attachment.thumbnailOrientation;
     
+    mediaFolder = attachment.eventRoomId;
+    
     // Remove the existing image (if any) by using the potential preview.
     self.image = attachment.previewImage;
+    
+    if (!_hideActivityIndicator)
+    {
+        [self startActivityIndicator];
+    }
     
     MXWeakify(self);
     [attachment getThumbnail:^(UIImage *img) {
@@ -812,7 +820,11 @@ andImageOrientation:(UIImageOrientation)orientation
         {
             self.image = img;
         }
-    } failure:nil];
+        [self stopActivityIndicator];
+    } failure:^(NSError *error) {
+        MXStrongifyAndReturnIfNil(self);
+        [self stopActivityIndicator];
+    }];
 }
 
 // TODO: MEDIA: Remove this method when deprecated methods will be removed

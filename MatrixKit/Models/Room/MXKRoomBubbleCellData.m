@@ -60,7 +60,7 @@
             if ([roomDataSource.eventFormatter isSupportedAttachment:event])
             {
                 // Note: event.eventType is equal here to MXEventTypeRoomMessage or MXEventTypeSticker
-                attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                attachment = [[MXKAttachment alloc] initWithEvent:event andMediaManager:roomDataSource.mxSession.mediaManager];
                 if (attachment && attachment.type == MXKAttachmentTypeImage)
                 {
                     // Check the current thumbnail orientation. Rotate the current content size (if need)
@@ -136,7 +136,7 @@
                     }
                     else if (![attachment.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:eventContentURL])
                     {
-                        MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                        MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMediaManager:roomDataSource.mxSession.mediaManager];
                         
                         // Sanity check on attachment type
                         if (updatedAttachment && attachment.type == updatedAttachment.type)
@@ -182,7 +182,7 @@
                 else if ([roomDataSource.eventFormatter isSupportedAttachment:event])
                 {
                     // The event is updated to an event with attachement
-                    attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                    attachment = [[MXKAttachment alloc] initWithEvent:event andMediaManager:roomDataSource.mxSession.mediaManager];
                     if (attachment && attachment.type == MXKAttachmentTypeImage)
                     {
                         // Check the current thumbnail orientation. Rotate the current content size (if need)

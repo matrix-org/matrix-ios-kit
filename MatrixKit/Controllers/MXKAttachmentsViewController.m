@@ -774,19 +774,13 @@
             else if (indexPath.item == currentVisibleItemIndex)
             {
                 // Load high res image
-                cell.mxkImageView.mediaFolder = attachment.eventRoomId;
                 cell.mxkImageView.stretchable = YES;
-                cell.mxkImageView.enableInMemoryCache = NO;
-                
                 [cell.mxkImageView setAttachment:attachment];
             }
             else
             {
                 // Use the thumbnail here - Full res images should only be downloaded explicitly when requested (see [self refreshCurrentVisibleItemIndex])
-                cell.mxkImageView.mediaFolder = attachment.eventRoomId;
                 cell.mxkImageView.stretchable = YES;
-                cell.mxkImageView.enableInMemoryCache = YES;
-                
                 [cell.mxkImageView setAttachmentThumb:attachment];
             }
         }

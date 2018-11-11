@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -38,16 +39,15 @@
     
     if (mxAccount.mxSession)
     {
-        // User thumbnail
-        NSString *thumbnailURL = nil;
-        if (mxAccount.userAvatarUrl)
-        {
-            // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            thumbnailURL = [mxAccount.mxSession.matrixRestClient urlOfContentThumbnail:mxAccount.userAvatarUrl toFitViewSize:_accountPicture.frame.size withMethod:MXThumbnailingMethodCrop];
-        }
         _accountPicture.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         _accountPicture.enableInMemoryCache = YES;
-        [_accountPicture setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+        [_accountPicture setImageURI:mxAccount.userAvatarUrl
+                            withType:nil
+                 andImageOrientation:UIImageOrientationUp
+                       toFitViewSize:_accountPicture.frame.size
+                          withMethod:MXThumbnailingMethodCrop
+                        previewImage:self.picturePlaceholder
+                        mediaManager:mxAccount.mxSession.mediaManager];
         
         presenceColor = [MXKAccount presenceColor:mxAccount.userPresence];
     }
