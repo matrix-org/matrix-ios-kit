@@ -63,7 +63,6 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic, readonly, nullable) NSString *mxcThumbnailURI;
 @property (nonatomic, readonly, nullable) NSString *thumbnailMimeType;
-@property (nonatomic, readonly) NSString *thumbnailURL __attribute__((deprecated("Use mxcThumbnailURI instead")));
 
 /**
  The download identifier of the attachment content (related to contentURL).
@@ -85,11 +84,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString *originalFileName;
 
 /**
- The actual attachment url
- */
-@property (nonatomic, readonly) NSString *actualURL __attribute__((deprecated("Use contentURL instead")));
-
-/**
  The thumbnail orientation (relevant in case of image).
  */
 @property (nonatomic, readonly) UIImageOrientation thumbnailOrientation;
@@ -103,7 +97,6 @@ typedef enum : NSUInteger {
  The cache file path of the attachment thumbnail (may be nil).
  */
 @property (nonatomic, readonly) NSString *thumbnailCachePath;
-@property (nonatomic, readonly) NSString *cacheThumbnailPath __attribute__((deprecated("Use thumbnailCachePath instead")));
 
 /**
  The preview of the attachment (nil by default).
@@ -129,16 +122,6 @@ typedef enum : NSUInteger {
  */
 - (instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager;
 
-/**
- Create a `MXKAttachment` instance for the passed event.
- The created instance copies the current data of the event (content, event id, sent state...).
- It will ignore any future changes of these data.
- 
- @param mxEvent the matrix event.
- @param mxSession the matrix session.
- @return `MXKAttachment` instance.
- */
-- (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession __attribute__((deprecated("Use [initWithEvent:andMediaManager:] instead")));
 - (void)destroy;
 
 /**

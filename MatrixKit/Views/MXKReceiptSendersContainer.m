@@ -44,19 +44,6 @@
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame andRestClient:(MXRestClient*)restclient
-{
-    self = [super initWithFrame:frame];
-    if (self)
-    {
-        _restClient = restclient;
-        _maxDisplayedAvatars = 3;
-        _avatarMargin = 2.0;
-        _moreLabel = nil;
-    }
-    return self;
-}
-
 - (void)refreshReceiptSenders:(NSArray<MXRoomMember*>*)roomMembers withPlaceHolders:(NSArray<UIImage*>*)placeHolders andAlignment:(ReadReceiptsAlignment)alignment
 {
     // Store the room members and placeholders for showing in the details view controller
@@ -171,8 +158,6 @@
         [_moreLabel removeFromSuperview];
         _moreLabel = nil;
     }
-    
-    _restClient = nil;
 }
 
 @end

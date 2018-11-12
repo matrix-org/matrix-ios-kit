@@ -63,10 +63,6 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 @end
 
-@interface MXKAttachment ()
-@property (nonatomic) MXSession *sess __attribute__((deprecated("No longer defined")));
-@end
-
 @implementation MXKAttachment
 
 - (instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager
@@ -160,111 +156,6 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return self;
 }
 
-// TODO: MEDIA: Remove this deprecated method
-- (instancetype)initWithEvent:(MXEvent *)mxEvent andMatrixSession:(MXSession*)mxSession
-{
-    self = [super init];
-    self.sess = mxSession;
-    if (self)
-    {
-        _mediaManager = mxSession.mediaManager;
-        // Make a copy as the data can be read at anytime later
-        _eventId = mxEvent.eventId;
-        _eventRoomId = mxEvent.roomId;
-        _eventSentState = mxEvent.sentState;
-        
-        NSDictionary *eventContent = mxEvent.content;
-        
-        // Set default thumbnail orientation
-        _thumbnailOrientation = UIImageOrientationUp;
-        
-        if (mxEvent.eventType == MXEventTypeSticker)
-        {
-            _type = MXKAttachmentTypeSticker;
-            MXJSONModelSetDictionary(_thumbnailInfo, eventContent[@"info"][@"thumbnail_info"]);
-        }
-        else
-        {
-            // Note: mxEvent.eventType is supposed to be MXEventTypeRoomMessage here.
-            NSString *msgtype = eventContent[@"msgtype"];
-            if ([msgtype isEqualToString:kMXMessageTypeImage])
-            {
-                _type = MXKAttachmentTypeImage;
-            }
-            else if ([msgtype isEqualToString:kMXMessageTypeAudio])
-            {
-                _type = MXKAttachmentTypeAudio;
-            }
-            else if ([msgtype isEqualToString:kMXMessageTypeVideo])
-            {
-                _type = MXKAttachmentTypeVideo;
-                MXJSONModelSetDictionary(_thumbnailInfo, eventContent[@"info"][@"thumbnail_info"]);
-            }
-            else if ([msgtype isEqualToString:kMXMessageTypeLocation])
-            {
-                // Not supported yet
-                // _type = MXKAttachmentTypeLocation;
-                return nil;
-            }
-            else if ([msgtype isEqualToString:kMXMessageTypeFile])
-            {
-                _type = MXKAttachmentTypeFile;
-            }
-            else
-            {
-                return nil;
-            }
-        }
-        
-        MXJSONModelSetString(_originalFileName, eventContent[@"body"]);
-        MXJSONModelSetDictionary(_contentInfo, eventContent[@"info"]);
-        MXJSONModelSetMXJSONModel(thumbnailFile, MXEncryptedContentFile, _contentInfo[@"thumbnail_file"]);
-        MXJSONModelSetMXJSONModel(contentFile, MXEncryptedContentFile, eventContent[@"file"]);
-        
-        // Retrieve the content url by taking into account the potential encryption.
-        if (contentFile)
-        {
-            _isEncrypted = YES;
-            _contentURL = contentFile.url;
-        }
-        else
-        {
-            _isEncrypted = NO;
-            MXJSONModelSetString(_contentURL, eventContent[@"url"]);
-        }
-        
-        // Note: When the attachment uploading is in progress, the upload id is stored in the content url (nasty trick).
-        // Check whether the attachment is currently uploading.
-        if ([_contentURL hasPrefix:kMXMediaUploadIdPrefix])
-        {
-            // In this case we consider the upload id as the absolute url.
-            _actualURL = _contentURL;
-        }
-        else
-        {
-            // Prepare the absolute URL from the mxc: content URL
-            _actualURL = [mxSession.matrixRestClient urlOfContent:_contentURL];
-        }
-        
-        mimetype = nil;
-        if (_contentInfo)
-        {
-            MXJSONModelSetString(mimetype, _contentInfo[@"mimetype"]);
-        }
-        
-        _cacheFilePath = [MXMediaManager cachePathForMatrixContentURI:_contentURL andType:mimetype inFolder:_eventRoomId];
-        _downloadId = [MXMediaManager downloadIdForMatrixContentURI:_contentURL inFolder:_eventRoomId];
-        
-        // Deduce the thumbnail information from the retrieved data.
-        _thumbnailURL = [self getThumbnailUrlForSize:CGSizeMake(kThumbnailWidth, kThumbnailHeight)];
-        _thumbnailMimeType = [self getThumbnailMimeType];
-        _thumbnailCachePath = [self getThumbnailCachePath];
-        _cacheThumbnailPath = _thumbnailCachePath;
-        _thumbnailDownloadId = [self getThumbnailDownloadId];
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     [self destroy];
@@ -286,46 +177,6 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     }
     
     _previewImage = nil;
-}
-
-// TODO: MEDIA: Remove this deprecated method "getThumbnailUrlForSize:"
-- (NSString *)getThumbnailUrlForSize:(CGSize)size
-{
-    if (thumbnailFile && thumbnailFile.url)
-    {
-        // there's an encrypted thumbnail: we just return the mxc url
-        // since it will have to be decrypted before downloading anyway,
-        // so the URL is really just a key into the cache.
-        return thumbnailFile.url;
-    }
-    
-    if (_type == MXKAttachmentTypeVideo || _type == MXKAttachmentTypeSticker)
-    {
-        if (_contentInfo)
-        {
-            // Look for a clear video thumbnail url
-            NSString *unencrypted_thumb_url = _contentInfo[@"thumbnail_url"];
-            
-            // Note: When the uploading is in progress, the upload id is stored in the content url (nasty trick).
-            // Prepare the absolute URL from the mxc: content URL, only if the thumbnail is not currently uploading.
-            if (![unencrypted_thumb_url hasPrefix:kMXMediaUploadIdPrefix])
-            {
-                unencrypted_thumb_url = [self.sess.matrixRestClient urlOfContent:unencrypted_thumb_url];
-            }
-            
-            return unencrypted_thumb_url;
-        }
-    }
-    
-    // Consider the case of the unencrypted url
-    if (!_isEncrypted && _contentURL && ![_contentURL hasPrefix:kMXMediaUploadIdPrefix])
-    {
-        return [self.sess.matrixRestClient urlOfContentThumbnail:_contentURL
-                                                   toFitViewSize:size
-                                                      withMethod:MXThumbnailingMethodScale];
-    }
-    
-    return nil;
 }
 
 - (NSString *)getThumbnailURI

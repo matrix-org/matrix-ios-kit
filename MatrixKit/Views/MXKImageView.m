@@ -24,8 +24,6 @@
 
 @interface MXKImageView ()
 {
-    NSString *imageURL; // TODO: MEDIA: remove this parameter
-    
     NSString *mxcURI;
     NSString *mimeType;
     UIImageOrientation imageOrientation;
@@ -656,90 +654,6 @@ andImageOrientation:(UIImageOrientation)orientation
     }
 }
 
-// TODO: MEDIA: Remove this deprecated method
-- (void)setImageURL:(NSString *)anImageURL withType:(NSString *)type andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage
-{
-    // Remove any pending observers
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    imageURL = anImageURL;
-    if (!imageURL)
-    {
-        // Set preview by default
-        self.image = previewImage;
-        return;
-    }
-    
-    // Store image orientation
-    imageOrientation = orientation;
-    
-    // Store the mime type used to define the cache path of the image.
-    mimeType = type;
-    if (!mimeType.length)
-    {
-        // Check if the extension could not be deduced from url
-        if (![anImageURL pathExtension].length)
-        {
-            // Set default mime type if no information is available
-            mimeType = @"image/jpeg";
-        }
-    }
-    
-    // Check whether the image download is in progress
-    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
-    MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-    if (loader)
-    {
-        // Set preview until the image is loaded
-        self.image = previewImage;
-        // update the progress UI with the current info
-        if (!_hideActivityIndicator)
-        {
-            [self startActivityIndicator];
-        }
-        [self updateProgressUI:loader.statisticsDict];
-        
-        // Add observers
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
-    }
-    else
-    {
-        // Retrieve the image from cache
-        UIImage* image = _enableInMemoryCache ? [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-        
-        if (image)
-        {
-            if (imageOrientation != UIImageOrientationUp)
-            {
-                self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
-            }
-            else
-            {
-                self.image = image;
-            }
-            
-            [self stopActivityIndicator];
-        }
-        else
-        {
-            // Set preview until the image is loaded
-            self.image = previewImage;
-            // Trigger image downloading
-            if (!_hideActivityIndicator)
-            {
-                [self startActivityIndicator];
-            }
-            // Add observers
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
-            [MXMediaManager downloadMediaFromURL:imageURL andSaveAtFilePath:cacheFilePath];
-        }
-    }
-}
-
 - (void)setAttachment:(MXKAttachment *)attachment
 {
     // Remove any pending observers
@@ -827,42 +741,6 @@ andImageOrientation:(UIImageOrientation)orientation
     }];
 }
 
-// TODO: MEDIA: Remove this method when deprecated methods will be removed
-- (void)onMediaDownloadEnd:(NSNotification *)notif
-{
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
-
-        if ([url isEqualToString:imageURL])
-        {
-            [self stopActivityIndicator];
-
-            if (cacheFilePath.length)
-            {
-                // update the image
-                UIImage* image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-                if (image)
-                {
-                    if (imageOrientation != UIImageOrientationUp)
-                    {
-                        self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
-                    }
-                    else
-                    {
-                        self.image = image;
-                    }
-                }
-            }
-
-            // remove the observers
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
-        }
-    }
-}
-
 - (void)updateProgressUI:(NSDictionary*)downloadStatsDict
 {
     // Sanity check: updateProgressUI may be called while there is no stats available
@@ -920,21 +798,6 @@ andImageOrientation:(UIImageOrientation)orientation
         progressInfoLabelFrame.origin.x = self.center.x - (progressInfoLabelFrame.size.width / 2);
         progressInfoLabelFrame.origin.y = 10 + loadingView.frame.origin.y + loadingView.frame.size.height;
         progressInfoLabel.frame = progressInfoLabelFrame;
-    }
-}
-
-// TODO: MEDIA: Remove this method when deprecated methods will be removed
-- (void)onMediaDownloadProgress:(NSNotification *)notif
-{
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        
-        if ([url isEqualToString:imageURL])
-        {
-            [self updateProgressUI:notif.userInfo];
-        }
     }
 }
 

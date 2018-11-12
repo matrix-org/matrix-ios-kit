@@ -73,19 +73,6 @@ andImageOrientation:(UIImageOrientation)orientation
        mediaManager:(MXMediaManager*)mediaManager;
 
 /**
- Load an image by its url.
- 
- The image extension is extracted from the provided mime type (if any). If no type is available, we look for a potential extension
- in the url. By default 'image/jpeg' is considered.
- 
- @param imageURL the remote image url
- @param mimeType the media mime type, it is used to define the file extension (may be nil).
- @param orientation the actual orientation of the encoded image (used UIImageOrientationUp by default).
- @param previewImage image displayed until the actual image is available.
- */
-- (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage __attribute__((deprecated("Use [setImageURI:withType:andImageOrientation:previewImage:mediaManager] or [setImageURI:withType:andImageOrientation:toFitViewSize:withMethod:previewImage:mediaManager] instead")));
-
-/**
  * Load an image attachment into the image viewer and display the full res image.
  * This method must be used to display encrypted attachments
  * @param attachment The attachment
