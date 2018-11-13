@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -40,11 +41,6 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
 @interface MXKReceiptSendersContainer : MXKView
 
 /**
- The REST client used to resize matrix user's avatar.
- */
-@property (nonatomic) MXRestClient* restClient;
-
-/**
  The maximum number of avatars displayed in the container. 3 by default.
  */
 @property (nonatomic) NSInteger maxDisplayedAvatars;
@@ -75,15 +71,15 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
 @property (nonatomic, readonly) NSArray <UIImage *> *placeholders;
 
 /**
- Initializes an `MXKReceiptSendersContainer` object with a frame and a REST client.
+ Initializes an `MXKReceiptSendersContainer` object with a frame and a media manager.
  
  This is the designated initializer.
  
  @param frame the container frame. Note that avatar will be displayed in full height in this container.
- @param restclient the REST client used to resize matrix user's avatar.
+ @param mediaManager the media manager used to download the matrix user's avatar.
  @return The newly-initialized MXKReceiptSendersContainer instance
  */
-- (instancetype)initWithFrame:(CGRect)frame andRestClient:(MXRestClient*)restclient;
+- (instancetype)initWithFrame:(CGRect)frame andMediaManager:(MXMediaManager*)mediaManager;
 
 /**
  Refresh the container content by using the provided room members.

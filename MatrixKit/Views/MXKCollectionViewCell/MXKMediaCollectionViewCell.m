@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -30,7 +31,11 @@
     self.mxkImageView.stretchable = NO;
     // Cancel potential image download
     self.mxkImageView.enableInMemoryCache = NO;
-    [self.mxkImageView setImageURL:nil withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
+    [self.mxkImageView setImageURI:nil
+                          withType:nil
+               andImageOrientation:UIImageOrientationUp
+                      previewImage:nil
+                      mediaManager:nil];
     
     self.customView.hidden = YES;
     self.centerIcon.hidden = YES;

@@ -437,15 +437,15 @@ static BOOL _disableLongPressGestureOnEvent;
         // Check whether the sender's picture is actually displayed before loading it.
         if (self.pictureView)
         {
-            // Handle user's picture
-            NSString *avatarThumbURL = nil;
-            if (bubbleData.senderAvatarUrl)
-            {
-                // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-                avatarThumbURL = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:bubbleData.senderAvatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
-            }
             self.pictureView.enableInMemoryCache = YES;
-            [self.pictureView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage: bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder];
+            // Consider here the sender avatar is stored unencrypted on Matrix media repo
+            [self.pictureView setImageURI:bubbleData.senderAvatarUrl
+                                 withType:nil
+                      andImageOrientation:UIImageOrientationUp
+                            toFitViewSize:self.pictureView.frame.size
+                               withMethod:MXThumbnailingMethodCrop
+                             previewImage:bubbleData.senderAvatarPlaceholder ? bubbleData.senderAvatarPlaceholder : self.picturePlaceholder
+                             mediaManager:bubbleData.mxSession.mediaManager];
         }
         
         if (self.attachmentView && bubbleData.isAttachmentWithThumbnail)
@@ -471,10 +471,9 @@ static BOOL _disableLongPressGestureOnEvent;
             self.fileTypeIconView.hidden = YES;
             
             // Display the attachment thumbnail
-            self.attachmentView.enableInMemoryCache = YES;
             [self.attachmentView setAttachmentThumb:bubbleData.attachment];
             
-            if (bubbleData.attachment.actualURL)
+            if (bubbleData.attachment.contentURL)
             {
                 // Add tap recognizer to open attachment
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAttachmentTap:)];
@@ -513,7 +512,7 @@ static BOOL _disableLongPressGestureOnEvent;
             NSAttributedString* newText = nil;
             
             // Underline attached file name
-            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.contentURL && bubbleData.attachment.contentInfo)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
@@ -667,7 +666,7 @@ static BOOL _disableLongPressGestureOnEvent;
                             
                             if (roomMembers.count)
                             {
-                                MXKReceiptSendersContainer* avatarsContainer = [[MXKReceiptSendersContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15) andRestClient:bubbleData.mxSession.matrixRestClient];
+                                MXKReceiptSendersContainer* avatarsContainer = [[MXKReceiptSendersContainer alloc] initWithFrame:CGRectMake(0, component.position.y + timeLabelOffset, self.bubbleInfoContainer.frame.size.width , 15) andMediaManager:bubbleData.mxSession.mediaManager];
                                 
                                 [avatarsContainer refreshReceiptSenders:roomMembers withPlaceHolders:placeholders andAlignment:self.readReceiptsAlignment];
                                 
@@ -743,29 +742,15 @@ static BOOL _disableLongPressGestureOnEvent;
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  ", bubbleData.senderDisplayName]];
     
     NSUInteger index = 0;
-    NSString *mimeType;
     
     for (MXGroup *group in bubbleData.senderFlair)
     {
-        // Compute the group avatar URL
-        NSString *avatarUrl = group.profile.avatarUrl;
+        NSString *mxcAvatarURI = group.profile.avatarUrl;
+        NSString *cacheFilePath = [MXMediaManager thumbnailCachePathForMatrixContentURI:mxcAvatarURI andType:@"image/jpeg" inFolder:kMXMediaManagerDefaultCacheFolder toFitViewSize:CGSizeMake(12, 12) withMethod:MXThumbnailingMethodCrop];
         
-        if (avatarUrl.length)
+        // Check whether the avatar url is valid
+        if (cacheFilePath)
         {
-            avatarUrl = [bubbleData.mxSession.matrixRestClient urlOfContentThumbnail:avatarUrl toFitViewSize:CGSizeMake(12, 12) withMethod:MXThumbnailingMethodCrop];
-            
-            // Check if the extension could not be deduced from url
-            if (![avatarUrl pathExtension].length)
-            {
-                // Set default mime type if no information is available
-                mimeType = @"image/jpeg";
-            }
-            else
-            {
-                mimeType = nil;
-            }
-            
-            NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:avatarUrl andType:mimeType inFolder:kMXMediaManagerDefaultCacheFolder];
             UIImage *image = [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath];
             if (image)
             {
@@ -777,13 +762,31 @@ static BOOL _disableLongPressGestureOnEvent;
             }
             else
             {
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:avatarUrl];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:avatarUrl];
-                
-                MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-                if (!loader)
+                NSString *downloadId = [MXMediaManager thumbnailDownloadIdForMatrixContentURI:mxcAvatarURI
+                                                                                     inFolder:kMXMediaManagerDefaultCacheFolder
+                                                                                toFitViewSize:CGSizeMake(12, 12)
+                                                                                   withMethod:MXThumbnailingMethodCrop];
+                // Check whether the download is in progress.
+                MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
+                if (loader)
                 {
-                    [MXMediaManager downloadMediaFromURL:avatarUrl andSaveAtFilePath:cacheFilePath];
+                    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onFlairDownloadStateChange:) name:kMXMediaLoaderStateDidChangeNotification object:loader];
+                }
+                else
+                {
+                    MXWeakify(self);
+                    [bubbleData.mxSession.mediaManager downloadThumbnailFromMatrixContentURI:mxcAvatarURI
+                                                                                    withType:@"image/jpeg"
+                                                                                    inFolder:kMXMediaManagerDefaultCacheFolder
+                                                                               toFitViewSize:CGSizeMake(12, 12)
+                                                                                  withMethod:MXThumbnailingMethodCrop
+                                                                                     success:^(NSString *outputFilePath) {
+                                                                                         // Refresh sender flair
+                                                                                         MXStrongifyAndReturnIfNil(self);
+                                                                                         [self renderSenderFlair];
+                                                                                     }
+                                                                                     failure:nil];
                 }
             }
             
@@ -824,10 +827,7 @@ static BOOL _disableLongPressGestureOnEvent;
                 // Hide the file type icon, and the progress UI
                 self.fileTypeIconView.hidden = YES;
                 [self stopProgressUI];
-                NSString* url = bubbleData.attachment.actualURL;
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
                 
                 // Animated gif is displayed in a webview added on the attachment view
                 self.attachmentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.attachmentView.frame.size.width, self.attachmentView.frame.size.height)];
@@ -1065,79 +1065,64 @@ static BOOL _disableLongPressGestureOnEvent;
     }
 }
 
-- (void)onMediaDownloadProgress:(NSNotification *)notif
+- (void)onAttachmentLoaderStateChange:(NSNotification *)notif
 {
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        
-        if ([url isEqualToString:bubbleData.attachment.actualURL])
-        {
-            [self updateProgressUI:notif.userInfo];
-        }
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    switch (loader.state) {
+        case MXMediaLoaderStateDownloadInProgress:
+            [self updateProgressUI:loader.statisticsDict];
+            break;
+        case MXMediaLoaderStateDownloadCompleted:
+        case MXMediaLoaderStateDownloadFailed:
+            [self stopProgressUI];
+            // remove the observer
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
+        default:
+            break;
     }
 }
 
-- (void)onMediaDownloadEnd:(NSNotification *)notif
+- (void)onFlairDownloadStateChange:(NSNotification *)notif
 {
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        
-        if ([url isEqualToString:bubbleData.attachment.actualURL])
-        {
-            [self stopProgressUI];
-        }
-        else
-        {
-            // Refresh sender flair
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    switch (loader.state) {
+        case MXMediaLoaderStateDownloadCompleted:
             [self renderSenderFlair];
-        }
-        
-        // remove any pending observers
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
+        case MXMediaLoaderStateDownloadFailed:
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
+        default:
+            break;
     }
 }
 
 - (void)startProgressUI
 {
-    BOOL isHidden = YES;
+    self.progressView.hidden = YES;
     
     // there is an attachment URL
-    if (bubbleData.attachment.actualURL)
+    if (bubbleData.attachment.contentURL)
     {
-        NSString* url = bubbleData.attachment.actualURL;
-        
         // remove any pending observers
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:url];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFailNotification object:url];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadProgressNotification object:url];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
         
         // check if there is a download in progress
-        MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:bubbleData.attachment.cacheFilePath];
+        MXMediaLoader *loader = [MXMediaManager existingDownloaderWithIdentifier:bubbleData.attachment.downloadId];
         if (loader)
         {
-            NSDictionary *dict = loader.statisticsDict;
-            if (dict)
-            {
-                isHidden = NO;
-                
-                // defines the text to display
-                [self updateProgressUI:dict];
-            }
+            // defines the text to display
+            [self updateProgressUI:loader.statisticsDict];
             
             // anyway listen to the progress event
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:url];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:url];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:url];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(onAttachmentLoaderStateChange:)
+                                                         name:kMXMediaLoaderStateDidChangeNotification
+                                                       object:loader];
         }
     }
-    
-    self.progressView.hidden = isHidden;
 }
 
 - (void)stopProgressUI
@@ -1186,7 +1171,7 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         // Check whether the current displayed text corresponds to an attached file
-        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.actualURL && bubbleData.attachment.contentInfo)
+        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.contentURL && bubbleData.attachment.contentInfo)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
         }
