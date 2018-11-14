@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -43,29 +44,8 @@
             
             if (searchCellData.isAttachmentWithThumbnail)
             {
-                // Set attached media folders
-                self.attachmentImageView.mediaFolder = searchCellData.roomId;
-                
-                NSString *mimetype = nil;
-                if (searchCellData.attachment.thumbnailInfo)
-                {
-                    mimetype = searchCellData.attachment.thumbnailInfo[@"mimetype"];
-                }
-                else if (searchCellData.attachment.contentInfo)
-                {
-                    mimetype = searchCellData.attachment.contentInfo[@"mimetype"];
-                }
-                
-                NSString *url = searchCellData.attachment.thumbnailURL;
-                
-                UIImage *preview = searchCellData.attachment.previewImage;
-                
-                if (url.length || preview)
-                {
-                    self.attachmentImageView.enableInMemoryCache = YES;
-                    [self.attachmentImageView setImageURL:url withType:mimetype andImageOrientation:searchCellData.attachment.thumbnailOrientation previewImage:preview];
-                    self.attachmentImageView.defaultBackgroundColor = [UIColor whiteColor];
-                }
+                [self.attachmentImageView setAttachmentThumb:searchCellData.attachment];
+                self.attachmentImageView.defaultBackgroundColor = [UIColor whiteColor];
             }
         }
         

@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,18 +24,19 @@
 
 @property (nonatomic, readwrite) NSArray <MXRoomMember *> *roomMembers;
 @property (nonatomic, readwrite) NSArray <UIImage *> *placeholders;
+@property (nonatomic) MXMediaManager *mediaManager;
 
 @end
 
 
 @implementation MXKReceiptSendersContainer
 
-- (instancetype)initWithFrame:(CGRect)frame andRestClient:(MXRestClient*)restclient
+- (instancetype)initWithFrame:(CGRect)frame andMediaManager:(MXMediaManager*)mediaManager
 {
     self = [super initWithFrame:frame];
     if (self)
     {
-        _restClient = restclient;
+        _mediaManager = mediaManager;
         _maxDisplayedAvatars = 3;
         _avatarMargin = 2.0;
         _moreLabel = nil;
@@ -82,13 +84,6 @@
         MXRoomMember *roomMember = [roomMembers objectAtIndex:index];
         UIImage *preview = index < placeHolders.count ? placeHolders[index] : nil;
         
-        // Compute the member avatar URL
-        NSString *avatarUrl = roomMember.avatarUrl;
-        if (_restClient && avatarUrl)
-        {
-            avatarUrl = [_restClient urlOfContentThumbnail:avatarUrl toFitViewSize:CGSizeMake(side, side) withMethod:MXThumbnailingMethodCrop];
-        }
-        
         MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
         imageView.defaultBackgroundColor = [UIColor clearColor];
         
@@ -104,7 +99,13 @@
         [self addSubview:imageView];
         imageView.enableInMemoryCache = YES;
         
-        [imageView setImageURL:avatarUrl withType:nil andImageOrientation:UIImageOrientationUp previewImage:preview];
+        [imageView setImageURI:roomMember.avatarUrl
+                      withType:nil
+           andImageOrientation:UIImageOrientationUp
+                 toFitViewSize:CGSizeMake(side, side)
+                    withMethod:MXThumbnailingMethodCrop
+                  previewImage:preview
+                  mediaManager:_mediaManager];
         
         [imageView.layer setCornerRadius:imageView.frame.size.width / 2];
         imageView.clipsToBounds = YES;
@@ -157,8 +158,6 @@
         [_moreLabel removeFromSuperview];
         _moreLabel = nil;
     }
-    
-    _restClient = nil;
 }
 
 @end

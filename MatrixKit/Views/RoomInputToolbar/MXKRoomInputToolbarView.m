@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -29,8 +30,6 @@
 
 #import "NSBundle+MatrixKit.h"
 #import "MXKConstants.h"
-
-NSString *const kPasteboardItemPrefix = @"pasteboard-";
 
 @interface MXKRoomInputToolbarView()
 {
@@ -1201,8 +1200,8 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 else if ([MIMEType hasPrefix:@"video/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
                 {
                     NSData *pasteboardVideoData = [dict objectForKey:key];
-                    NSString *fakePasteboardURL = [NSString stringWithFormat:@"%@%@", kPasteboardItemPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
-                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
+                    // Get a unique cache path to store this video
+                    NSString *cacheFilePath = [MXMediaManager temporaryCachePathInFolder:nil withType:MIMEType];
                     
                     if ([MXMediaManager writeMediaData:pasteboardVideoData toFilePath:cacheFilePath])
                     {
@@ -1260,8 +1259,8 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 else if ([MIMEType hasPrefix:@"application/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendFile:withMimeType:)])
                 {
                     NSData *pasteboardDocumentData = [dict objectForKey:key];
-                    NSString *fakePasteboardURL = [NSString stringWithFormat:@"%@%@", kPasteboardItemPrefix, [[NSProcessInfo processInfo] globallyUniqueString]];
-                    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:fakePasteboardURL andType:MIMEType inFolder:nil];
+                    // Get a unique cache path to store this data
+                    NSString *cacheFilePath = [MXMediaManager temporaryCachePathInFolder:nil withType:MIMEType];
                     
                     if ([MXMediaManager writeMediaData:pasteboardDocumentData toFilePath:cacheFilePath])
                     {
