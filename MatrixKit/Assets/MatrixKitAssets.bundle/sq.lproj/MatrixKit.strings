@@ -361,3 +361,16 @@
 "ssl_unexpected_existing_expl" = "Dëshmia ka ndryshuar nga ajo që qe besuar nga telefoni juaj. Kjo është SHUMË E PAZAKONTË. Këshillohet që TË MOS E PRANONI këtë dëshmi të re.";
 "ssl_expected_existing_expl" = "Dëshmia ka ndryshuar nga një e besueshme dikur në një që nuk besohet. Shërbyesi mund të ketë rinovuar dëshminë e tij. Lidhuni me përgjegjësin e shërbyesit për shenjat e pritshme të gishtave.";
 "ssl_only_accept" = "Pranojeni dëshminë vetëm nëse përgjegjësi i i shërbyesit ka publikuar shenja gishtash që përputhen me ato më sipër.";
+"login_error_resource_limit_exceeded_title" = "U tejkalua Kufi Burimesh";
+"login_error_resource_limit_exceeded_message_default" = "Ky shërbyes home ka tejkaluar një nga kufijtë mbi burimet.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Ky shërbyes home ka tejkaluar kufirin Përdorues Aktivë Mujorë.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nJu lutemi, që të vazhdoni të përdorni këtë shërbim, lidhuni me përgjegjësin e shërbimit tuaj.";
+"login_error_resource_limit_exceeded_contact_button" = "Lidhuni Me Përgjegjësin";
+"room_displayname_two_members" = "%@ dhe %@";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "dërgoi një figurë.";
+"message_reply_to_sender_sent_a_video" = "dërgoi një video.";
+"message_reply_to_sender_sent_an_audio_file" = "dërgoi një kartelë audio.";
+"message_reply_to_sender_sent_a_file" = "dërgoi një kartelë.";
+"message_reply_to_message_to_reply_to_prefix" = "Në përgjigje të";
+"e2e_passphrase_create" = "Krijoni frazëkalim";
