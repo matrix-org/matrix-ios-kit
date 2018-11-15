@@ -72,10 +72,12 @@
         // User thumbnail
         self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         [self.pictureView setImageURI:memberCellData.roomMember.avatarUrl
-                         withType:nil
-              andImageOrientation:UIImageOrientationUp
-                     previewImage:nil
-                     mediaManager:mxSession.mediaManager];
+                             withType:nil
+                  andImageOrientation:UIImageOrientationUp
+                        toFitViewSize:self.pictureView.frame.size
+                           withMethod:MXThumbnailingMethodCrop
+                         previewImage:nil
+                         mediaManager:mxSession.mediaManager];
         
         // Shade invited users
         if (memberCellData.roomMember.membership == MXMembershipInvite)
