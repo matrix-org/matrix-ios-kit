@@ -79,7 +79,7 @@
                                                                
                                                                // Start the import process
                                                                [mxkViewController startActivityIndicator];
-                                                               [self->mxSession.crypto importRoomKeys:[NSData dataWithContentsOfURL:fileURL] withPassword:password success:^{
+                                                               [self->mxSession.crypto importRoomKeys:[NSData dataWithContentsOfURL:fileURL] withPassword:password success:^(NSUInteger total, NSUInteger imported) {
                                                                    
                                                                    if (weakSelf)
                                                                    {
