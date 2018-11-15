@@ -70,14 +70,12 @@
         self.userLabel.text = memberCellData.memberDisplayName;
         
         // User thumbnail
-        NSString *thumbnailURL = nil;
-        if (memberCellData.roomMember.avatarUrl)
-        {
-            // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
-        }
         self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
-        [self.pictureView setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:nil];
+        [self.pictureView setImageURI:memberCellData.roomMember.avatarUrl
+                         withType:nil
+              andImageOrientation:UIImageOrientationUp
+                     previewImage:nil
+                     mediaManager:mxSession.mediaManager];
         
         // Shade invited users
         if (memberCellData.roomMember.membership == MXMembershipInvite)

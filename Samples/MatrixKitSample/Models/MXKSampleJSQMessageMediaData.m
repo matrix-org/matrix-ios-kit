@@ -54,7 +54,8 @@
     
     // MXKImageView will automatically download and cache the media thumbnail
     MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(0, 0, cellData.contentSize.width, cellData.contentSize.height)];
-    [imageView setImageURL:cellData.attachment.thumbnailURL withType:mimetype andImageOrientation:cellData.attachment.thumbnailOrientation previewImage:nil];
+    [imageView setImageURI:cellData.attachment.mxcThumbnailURI withType:mimetype andImageOrientation:cellData.attachment.thumbnailOrientation previewImage:nil mediaManager:cellData.mxSession.mediaManager];
+
     
     // Use transparent color while downloading the media
     imageView.backgroundColor = [UIColor clearColor];
