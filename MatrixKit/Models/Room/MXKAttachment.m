@@ -315,9 +315,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                                success:^(NSString *outputFilePath) {
                                                                    decryptAndCache();
                                                                }
-                                                               failure:^(NSError *error) {
-                                                                   if (onFailure) onFailure(error);
-                                                               }];
+                                                               failure:onFailure];
         }
     }
     else
@@ -335,9 +333,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                          // Here outputFilePath = thumbnailCachePath
                                                          onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
                                                      }
-                                                     failure:^(NSError *error) {
-                                                         if (onFailure) onFailure(error);
-                                                     }];
+                                                     failure:onFailure];
         }
         else
         {
@@ -351,9 +347,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                          success:^(NSString *outputFilePath) {
                                                              // Here outputFilePath = thumbnailCachePath
                                                              onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
-                                                         } failure:^(NSError *error) {
-                                                             if (onFailure) onFailure(error);
-                                                         }];
+                                                         } failure:onFailure];
         }
     }
 }
@@ -394,11 +388,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         {
             onSuccess([NSData dataWithContentsOfFile:self.cacheFilePath]);
         }
-    } failure:^(NSError *error) {
-        
-        if (onFailure) onFailure(error);
-        
-    }];
+    } failure:onFailure];
 }
 
 - (void)decryptToTempFile:(void (^)(NSString *))onSuccess failure:(void (^)(NSError *error))onFailure
@@ -422,9 +412,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             return;
         }
         onSuccess(tempPath);
-    } failure:^(NSError *error) {
-        if (onFailure) onFailure(error);
-    }];
+    } failure:onFailure];
 }
 
 - (NSString *)getTempFile
@@ -582,9 +570,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                 {
                     onSuccess();
                 }
-            } failure:^(NSError *error) {
-                if (onFailure) onFailure(error);
-            }];
+            } failure:onFailure];
         }
         else
         {
@@ -604,9 +590,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                         }
                     }
                 }
-            } failure:^(NSError *error) {
-                if (onFailure) onFailure(error);
-            }];
+            } failure:onFailure];
         }
         
         // Unexpected error
