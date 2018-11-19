@@ -310,15 +310,12 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
         else
         {
-            [_mediaManager downloadMediaFromMatrixContentURI:_mxcThumbnailURI
-                                                    withType:_thumbnailMimeType
-                                                    inFolder:_eventRoomId
-                                                     success:^(NSString *outputFilePath) {
-                                                         decryptAndCache();
-                                                     }
-                                                     failure:^(NSError *error) {
-                                                         if (onFailure) onFailure(error);
-                                                     }];
+            [_mediaManager downloadEncryptedMediaFromMatrixContentFile:thumbnailFile
+                                                              inFolder:_eventRoomId
+                                                               success:^(NSString *outputFilePath) {
+                                                                   decryptAndCache();
+                                                               }
+                                                               failure:onFailure];
         }
     }
     else
@@ -336,9 +333,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                          // Here outputFilePath = thumbnailCachePath
                                                          onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
                                                      }
-                                                     failure:^(NSError *error) {
-                                                         if (onFailure) onFailure(error);
-                                                     }];
+                                                     failure:onFailure];
         }
         else
         {
@@ -352,9 +347,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                          success:^(NSString *outputFilePath) {
                                                              // Here outputFilePath = thumbnailCachePath
                                                              onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
-                                                         } failure:^(NSError *error) {
-                                                             if (onFailure) onFailure(error);
-                                                         }];
+                                                         } failure:onFailure];
         }
     }
 }
@@ -395,11 +388,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         {
             onSuccess([NSData dataWithContentsOfFile:self.cacheFilePath]);
         }
-    } failure:^(NSError *error) {
-        
-        if (onFailure) onFailure(error);
-        
-    }];
+    } failure:onFailure];
 }
 
 - (void)decryptToTempFile:(void (^)(NSString *))onSuccess failure:(void (^)(NSError *error))onFailure
@@ -423,9 +412,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             return;
         }
         onSuccess(tempPath);
-    } failure:^(NSError *error) {
-        if (onFailure) onFailure(error);
-    }];
+    } failure:onFailure];
 }
 
 - (NSString *)getTempFile
@@ -469,9 +456,17 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:_downloadId];
         if (!loader)
         {
-            loader = [_mediaManager downloadMediaFromMatrixContentURI:_contentURL
-                                                             withType:mimetype
-                                                             inFolder:_eventRoomId];
+            if (_isEncrypted)
+            {
+                loader = [_mediaManager downloadEncryptedMediaFromMatrixContentFile:contentFile
+                                                                           inFolder:_eventRoomId];
+            }
+            else
+            {
+                loader = [_mediaManager downloadMediaFromMatrixContentURI:_contentURL
+                                                                 withType:mimetype
+                                                                 inFolder:_eventRoomId];
+            }
         }
         
         if (loader)
@@ -575,9 +570,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                 {
                     onSuccess();
                 }
-            } failure:^(NSError *error) {
-                if (onFailure) onFailure(error);
-            }];
+            } failure:onFailure];
         }
         else
         {
@@ -597,9 +590,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                         }
                     }
                 }
-            } failure:^(NSError *error) {
-                if (onFailure) onFailure(error);
-            }];
+            } failure:onFailure];
         }
         
         // Unexpected error
