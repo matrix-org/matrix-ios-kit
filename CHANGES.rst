@@ -2,6 +2,7 @@ Changes in MatrixKit in 0.8.x (2018-xx-xx)
 ==========================================
 
 Improvements:
+ * MXKAccount: Add "antivirusServerURL" property. Set a non-null url to configure the antivirus scanner use.
  * Replace the deprecated MXMediaManager and MXMediaLoader interfaces use (see matrix-ios-sdk/pull/593).
  
 Deprecated API:
