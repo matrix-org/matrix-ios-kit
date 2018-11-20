@@ -1505,7 +1505,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     mimetype = event.content[@"info"][@"mimetype"];
                 }
                 
-                NSString *localImagePath = [MXMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
+                NSString *localImagePath = [MXMediaManager cachePathForMatrixContentURI:contentURL andType:mimetype inFolder:_roomId];
                 UIImage* image = [MXMediaManager loadPictureFromFilePath:localImagePath];
                 if (image)
                 {
@@ -1571,7 +1571,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Remove the local echo
                     [self removeEventWithEventId:eventId];
                     
-                    NSString *localFilePath = [MXMediaManager cachePathForMediaWithURL:contentURL andType:mimetype inFolder:_roomId];
+                    NSString *localFilePath = [MXMediaManager cachePathForMatrixContentURI:contentURL andType:mimetype inFolder:_roomId];
                     
                     [self sendFile:[NSURL fileURLWithPath:localFilePath isDirectory:NO] mimeType:mimetype success:success failure:failure];
                 }

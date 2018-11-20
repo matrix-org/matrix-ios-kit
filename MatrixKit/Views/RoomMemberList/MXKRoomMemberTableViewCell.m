@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -76,15 +77,16 @@
         shouldUpdateActivityInfo = NO;
         
         // User thumbnail
-        NSString *thumbnailURL = nil;
-        if (memberCellData.roomMember.avatarUrl)
-        {
-            // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            thumbnailURL = [mxSession.matrixRestClient urlOfContentThumbnail:memberCellData.roomMember.avatarUrl toFitViewSize:self.pictureView.frame.size withMethod:MXThumbnailingMethodCrop];
-        }
         self.pictureView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         self.pictureView.enableInMemoryCache = YES;
-        [self.pictureView setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+        // Consider here the member avatar is stored unencrypted on Matrix media repo
+        [self.pictureView setImageURI:memberCellData.roomMember.avatarUrl
+                             withType:nil
+                  andImageOrientation:UIImageOrientationUp
+                        toFitViewSize:self.pictureView.frame.size
+                           withMethod:MXThumbnailingMethodCrop
+                         previewImage:self.picturePlaceholder
+                         mediaManager:mxSession.mediaManager];
         
         // Shade invited users
         if (memberCellData.roomMember.membership == MXMembershipInvite)

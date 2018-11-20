@@ -517,7 +517,6 @@
         if (item < attachments.count)
         {
             MXKAttachment *attachment = attachments[item];
-            NSString *attachmentURL = attachment.actualURL;
             NSString *mimeType = attachment.contentInfo[@"mimetype"];
             
             // Tell the delegate which attachment has been shown using its eventId
@@ -527,11 +526,10 @@
             }
             
             // Check attachment type
-            if (attachment.type == MXKAttachmentTypeImage && attachmentURL.length && ![mimeType isEqualToString:@"image/gif"])
+            if (attachment.type == MXKAttachmentTypeImage && attachment.contentURL && ![mimeType isEqualToString:@"image/gif"])
             {
                 // Retrieve the related cell
                 UICollectionViewCell *cell = [_attachmentsCollection cellForItemAtIndexPath:[NSIndexPath indexPathForItem:currentVisibleItemIndex inSection:0]];
-                
                 if ([cell isKindOfClass:[MXKMediaCollectionViewCell class]])
                 {
                     MXKMediaCollectionViewCell *mediaCollectionViewCell = (MXKMediaCollectionViewCell*)cell;
@@ -540,18 +538,7 @@
                     mediaCollectionViewCell.mxkImageView.stretchable = YES;
                     mediaCollectionViewCell.mxkImageView.enableInMemoryCache = NO;
                     
-                    // Use the current image as preview
-                    UIImage *preview = mediaCollectionViewCell.mxkImageView.image;
-                    if (!preview)
-                    {
-                        // Check whether the thumbnail has just been downloaded and cached
-                        NSString *previewCacheFilePath = [MXMediaManager cachePathForMediaWithURL:attachment.thumbnailURL
-                                                                                           andType:mimeType
-                                                                                          inFolder:attachment.eventRoomId];
-                        preview = [MXMediaManager loadPictureFromFilePath:previewCacheFilePath];
-                    }
-                    
-                    [mediaCollectionViewCell.mxkImageView setImageURL:attachmentURL withType:mimeType andImageOrientation:UIImageOrientationUp previewImage:preview];
+                    [mediaCollectionViewCell.mxkImageView setAttachment:attachment];
                 }
             }
         }
@@ -649,14 +636,13 @@
     if (item < attachments.count)
     {
         MXKAttachment *attachment = attachments[item];
-        NSString *attachmentURL = attachment.actualURL;
         NSString *mimeType = attachment.contentInfo[@"mimetype"];
         
         // Use the cached thumbnail (if any) as preview
         UIImage* preview = [attachment getCachedThumbnail];
         
         // Check attachment type
-        if ((attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeSticker) && attachmentURL.length)
+        if ((attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeSticker) && attachment.contentURL)
         {
             if ([mimeType isEqualToString:@"image/gif"])
             {
@@ -726,23 +712,29 @@
                 [cell.customView addSubview:pieChartView];
                 
                 // Add download progress observer
-                cell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                NSString *downloadId = attachment.downloadId;
+                cell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaLoaderStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                     
-                    if ([notif.object isEqualToString:attachmentURL])
+                    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+                    if ([loader.downloadId isEqualToString:downloadId])
                     {
-                        if (notif.userInfo)
-                        {
-                            NSNumber* progressNumber = [notif.userInfo valueForKey:kMXMediaLoaderProgressValueKey];
-                            
-                            if (progressNumber)
+                        // update the image
+                        switch (loader.state) {
+                            case MXMediaLoaderStateDownloadInProgress:
                             {
-                                pieChartView.progress = progressNumber.floatValue;
+                                NSNumber* progressNumber = [loader.statisticsDict valueForKey:kMXMediaLoaderProgressValueKey];
+                                if (progressNumber)
+                                {
+                                    pieChartView.progress = progressNumber.floatValue;
+                                }
+                                break;
                             }
+                            default:
+                                break;
                         }
                     }
                     
                 }];
-                
                 
                 void (^onDownloaded)(NSData *) = ^(NSData *data){
                     if (cell.notificationObserver)
@@ -782,30 +774,23 @@
             else if (indexPath.item == currentVisibleItemIndex)
             {
                 // Load high res image
-                cell.mxkImageView.mediaFolder = attachment.eventRoomId;
                 cell.mxkImageView.stretchable = YES;
-                cell.mxkImageView.enableInMemoryCache = NO;
-                
                 [cell.mxkImageView setAttachment:attachment];
             }
             else
             {
                 // Use the thumbnail here - Full res images should only be downloaded explicitly when requested (see [self refreshCurrentVisibleItemIndex])
-                cell.mxkImageView.mediaFolder = attachment.eventRoomId;
                 cell.mxkImageView.stretchable = YES;
-                cell.mxkImageView.enableInMemoryCache = YES;
-                
                 [cell.mxkImageView setAttachmentThumb:attachment];
             }
         }
-        else if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
+        else if (attachment.type == MXKAttachmentTypeVideo && attachment.contentURL)
         {
             cell.mxkImageView.mediaFolder = attachment.eventRoomId;
             cell.mxkImageView.stretchable = NO;
             cell.mxkImageView.enableInMemoryCache = YES;
             // Display video thumbnail, the video is played only when user selects this cell
             [cell.mxkImageView setAttachmentThumb:attachment];
-            //[cell.mxkImageView setImageURL:attachment.thumbnailURL withType:mimeType andImageOrientation:attachment.thumbnailOrientation previewImage:nil];
             
             cell.centerIcon.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"play"];
             cell.centerIcon.hidden = NO;
@@ -849,9 +834,8 @@
     if (item < attachments.count)
     {
         MXKAttachment *attachment = attachments[item];
-        NSString *attachmentURL = attachment.actualURL;
         
-        if (attachment.type == MXKAttachmentTypeVideo && attachmentURL.length)
+        if (attachment.type == MXKAttachmentTypeVideo && attachment.contentURL)
         {
             MXKMediaCollectionViewCell *selectedCell = (MXKMediaCollectionViewCell*)[collectionView cellForItemAtIndexPath:indexPath];
             
@@ -986,18 +970,25 @@
                     [selectedCell.customView addSubview:pieChartView];
                     
                     // Add download progress observer
-                    selectedCell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaDownloadProgressNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                    NSString *downloadId = attachment.downloadId;
+                    selectedCell.notificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXMediaLoaderStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                         
-                        if ([notif.object isEqualToString:attachmentURL])
+                        MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+                        if ([loader.downloadId isEqualToString:downloadId])
                         {
-                            if (notif.userInfo)
-                            {
-                                NSNumber* progressNumber = [notif.userInfo valueForKey:kMXMediaLoaderProgressValueKey];
-                                
-                                if (progressNumber)
+                            // update progress
+                            switch (loader.state) {
+                                case MXMediaLoaderStateDownloadInProgress:
                                 {
-                                    pieChartView.progress = progressNumber.floatValue;
+                                    NSNumber* progressNumber = [loader.statisticsDict valueForKey:kMXMediaLoaderProgressValueKey];
+                                    if (progressNumber)
+                                    {
+                                        pieChartView.progress = progressNumber.floatValue;
+                                    }
+                                    break;
                                 }
+                                default:
+                                    break;
                             }
                         }
                         
@@ -1270,13 +1261,13 @@
                                                                
                                                                self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                                                                [self->documentInteractionController setDelegate:self];
-                                                               currentSharedAttachment = attachment;
+                                                               self->currentSharedAttachment = attachment;
                                                                
                                                                if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
                                                                {
                                                                    self->documentInteractionController = nil;
                                                                    [attachment onShareEnded];
-                                                                   currentSharedAttachment = nil;
+                                                                   self->currentSharedAttachment = nil;
                                                                }
                                                                
                                                            } failure:^(NSError *error) {
@@ -1291,7 +1282,7 @@
                                                            
                                                        }]];
         
-        if ([MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath])
+        if ([MXMediaManager existingDownloaderWithIdentifier:attachment.downloadId])
         {
             [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"]
                                                              style:UIAlertActionStyleDefault
@@ -1301,7 +1292,7 @@
                                                                self->currentAlert = nil;
                                                                
                                                                // Get again the loader
-                                                               MXMediaLoader *loader = [MXMediaManager existingDownloaderWithOutputFilePath:attachment.cacheFilePath];
+                                                               MXMediaLoader *loader = [MXMediaManager existingDownloaderWithIdentifier:attachment.downloadId];
                                                                if (loader)
                                                                {
                                                                    [loader cancel];

@@ -68,6 +68,12 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic) NSString *identityServerURL;
 
 /**
+ The antivirus server URL, if any (nil by default).
+ Set a non-null url to configure the antivirus scanner use.
+ */
+@property (nonatomic) NSString *antivirusServerURL;
+
+/**
  The Push Gateway URL used to send event notifications to (nil by default).
  This URL should be over HTTPS and never over HTTP.
  */

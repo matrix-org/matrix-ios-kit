@@ -40,6 +40,11 @@ typedef enum : NSUInteger {
 @interface MXKAttachment : NSObject
 
 /**
+ The media manager instance used to download the attachment data.
+ */
+@property (nonatomic, readonly) MXMediaManager *mediaManager;
+
+/**
  The attachment type.
  */
 @property (nonatomic, readonly) MXKAttachmentType type;
@@ -53,22 +58,30 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString *contentURL;
 @property (nonatomic, readonly) NSDictionary *contentInfo;
 
-// The URL of a 'standard size' thumbnail
-@property (nonatomic, readonly) NSString *thumbnailURL;
-@property (nonatomic, readonly) NSString *thumbnailMimeType;
+/**
+ The URL of a 'standard size' thumbnail.
+ */
+@property (nonatomic, readonly, nullable) NSString *mxcThumbnailURI;
+@property (nonatomic, readonly, nullable) NSString *thumbnailMimeType;
 
-// The attached video thumbnail information
+/**
+ The download identifier of the attachment content (related to contentURL).
+ */
+@property (nonatomic, readonly, nullable) NSString *downloadId;
+/**
+ The download identifier of the attachment thumbnail.
+ */
+@property (nonatomic, readonly, nullable) NSString *thumbnailDownloadId;
+
+/**
+ The attached video thumbnail information.
+ */
 @property (nonatomic, readonly) NSDictionary *thumbnailInfo;
 
 /**
  The original file name retrieved from the event body (if any).
  */
 @property (nonatomic, readonly) NSString *originalFileName;
-
-/**
- The actual attachment url
- */
-@property (nonatomic, readonly) NSString *actualURL;
 
 /**
  The thumbnail orientation (relevant in case of image).
@@ -83,7 +96,7 @@ typedef enum : NSUInteger {
 /**
  The cache file path of the attachment thumbnail (may be nil).
  */
-@property (nonatomic, readonly) NSString *cacheThumbnailPath;
+@property (nonatomic, readonly) NSString *thumbnailCachePath;
 
 /**
  The preview of the attachment (nil by default).
@@ -103,11 +116,12 @@ typedef enum : NSUInteger {
  The created instance copies the current data of the event (content, event id, sent state...).
  It will ignore any future changes of these data.
  
- @param mxEvent the matrix event.
- @param mxSession the matrix session.
+ @param event a matrix event.
+ @param mediaManager the media manager instance used to download the attachment data.
  @return `MXKAttachment` instance.
  */
-- (instancetype)initWithEvent:(MXEvent*)mxEvent andMatrixSession:(MXSession*)mxSession;
+- (instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager;
+
 - (void)destroy;
 
 /**

@@ -417,7 +417,7 @@
     // Compute the member avatar URL
     MXRoomMember *roomMember = [roomDataSource.roomState.members memberWithUserId:messageData.senderId];
     
-    NSString *avatarUrl = [roomDataSource.mxSession.matrixRestClient urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:cell.avatarImageView.frame.size withMethod:MXThumbnailingMethodCrop];
+    NSString *avatarUrl = [roomDataSource.mxSession.mediaManager urlOfContentThumbnail:roomMember.avatarUrl toFitViewSize:cell.avatarImageView.frame.size withMethod:MXThumbnailingMethodCrop];
     if (!avatarUrl)
     {
         avatarUrl = roomMember.avatarUrl ;

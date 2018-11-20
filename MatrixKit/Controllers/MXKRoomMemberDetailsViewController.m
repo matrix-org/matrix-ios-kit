@@ -611,16 +611,15 @@
     [self.memberThumbnail.layer setCornerRadius:self.memberThumbnail.frame.size.width / 2];
     [self.memberThumbnail setClipsToBounds:YES];
     
-    NSString *thumbnailURL = nil;
-    if (_mxRoomMember.avatarUrl)
-    {
-        // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        thumbnailURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:_mxRoomMember.avatarUrl toFitViewSize:self.memberThumbnail.frame.size withMethod:MXThumbnailingMethodCrop];
-    }
-    
     self.memberThumbnail.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
     self.memberThumbnail.enableInMemoryCache = YES;
-    [self.memberThumbnail setImageURL:thumbnailURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+    [self.memberThumbnail setImageURI:_mxRoomMember.avatarUrl
+                             withType:nil
+                  andImageOrientation:UIImageOrientationUp
+                        toFitViewSize:self.memberThumbnail.frame.size
+                           withMethod:MXThumbnailingMethodCrop
+                         previewImage:self.picturePlaceholder
+                           mediaManager:self.mainSession.mediaManager];
     
     self.roomMemberMatrixInfo.text = _mxRoomMember.userId;
     

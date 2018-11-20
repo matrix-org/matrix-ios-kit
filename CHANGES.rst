@@ -1,44 +1,59 @@
-Changes in MatrixKit in 0.8.6 (2018-10-)
+Changes in MatrixKit in 0.8.x (2018-xx-xx)
 ==========================================
 
 Improvements:
-* Upgrade MatrixSDK version (v0.11.6).
+ * MXKAccount: Add "antivirusServerURL" property. Set a non-null url to configure the antivirus scanner use.
+ * Replace the deprecated MXMediaManager and MXMediaLoader interfaces use (see matrix-ios-sdk/pull/593).
+ 
+Deprecated API:
+ * MXKAttachment: the properties "actualURL" and "thumbnailURL" are deprecated because only Matrix Content URI should be considered now.
+ * MXKAttachment: the property "cacheThumbnailPath" is deprecated, use "thumbnailCachePath" instead.
+ * MXKAttachment: [initWithEvent:andMatrixSession:] is deprecated, use [initWithEvent:andMediaManager:] instead.
+ * MXKImageView: [setImageURL:withType:andImageOrientation:previewImage:] is deprecated, use [setImageURI:withType:andImageOrientation:previewImage:mediaManager] or [setImageURI:withType:andImageOrientation:toFitViewSize:withMethod:previewImage:mediaManager] instead.
+ * MXKReceiptSendersContainer: the property "restClient" is deprecated.
+ * MXKReceiptSendersContainer: [initWithFrame:andRestClient:] is deprecated, use [initWithFrame:andMediaManager:] instead.
+
+Changes in MatrixKit in 0.8.6 (2018-10-31)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.11.6).
 
 Bug fix:
-* MXKCallViewController: Fix crash in callRoomStateDidChange (vector-im/riot-ios#2079).
-* MXKEventFormatter: Be robust on malformatted m.relates_to data content (vector-im/riot-ios/issues/2080).
+ * MXKCallViewController: Fix crash in callRoomStateDidChange (vector-im/riot-ios#2079).
+ * MXKEventFormatter: Be robust on malformatted m.relates_to data content (vector-im/riot-ios/issues/2080).
 
 Changes in MatrixKit in 0.8.5 (2018-10-05)
 ==========================================
 
 Improvements:
-* Upgrade MatrixSDK version (v0.11.5).
-* Sync Filter: Refine limit value. Use 15 messages for iPhone 6 & similar screen size.
+ * Upgrade MatrixSDK version (v0.11.5).
+ * Sync Filter: Refine limit value. Use 15 messages for iPhone 6 & similar screen size.
 
 Bug fix:
-* MXKRoomDataSource: roomState was not updated (vector-im/riot-ios/issues/2058).
+ * MXKRoomDataSource: roomState was not updated (vector-im/riot-ios/issues/2058).
 
 Changes in MatrixKit in 0.8.4 (2018-09-26)
 ==========================================
 
 Improvements:
-* Upgrade MatrixSDK version (v0.11.4).
-* Lazy loading: Enable it by default (if the homeserver supports it).
-* Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
-* MXKRoomViewController: Improve the display of the reason when the user is kicked.
-* MXKEventFormatter: Internationalise the room name computation for rooms with no name.
+ * Upgrade MatrixSDK version (v0.11.4).
+ * Lazy loading: Enable it by default (if the homeserver supports it).
+ * Sync Filter: Get enough messages from /sync requests to display a full page without additional homeserver request.
+ * MXKRoomViewController: Improve the display of the reason when the user is kicked.
+ * MXKEventFormatter: Internationalise the room name computation for rooms with no name.
 
 Bug fix:
-* No automatic scroll down when posting a new message (vector-im/riot-ios/issues/2040).
-* Fix crash in [MXKCallViewController callRoomStateDidChange:] (vector-im/riot-ios/issues/2031).
-* Fix crash in [MXKContactManager refreshLocalContacts] (vector-im/riot-ios/issues/2032).
-* Fix crash when opening a room with unsent message (vector-im/riot-ios/issues/2041).
+ * No automatic scroll down when posting a new message (vector-im/riot-ios/issues/2040).
+ * Fix crash in [MXKCallViewController callRoomStateDidChange:] (vector-im/riot-ios/issues/2031).
+ * Fix crash in [MXKContactManager refreshLocalContacts] (vector-im/riot-ios/issues/2032).
+ * Fix crash when opening a room with unsent message (vector-im/riot-ios/issues/2041).
 
 Changes in MatrixKit in 0.8.3 (2018-08-27)
 ==========================================
 
 Improvements:
-* Upgrade MatrixSDK version (v0.11.3).
+ * Upgrade MatrixSDK version (v0.11.3).
 
 Changes in MatrixKit in 0.8.2 (2018-08-24)
 ==========================================
