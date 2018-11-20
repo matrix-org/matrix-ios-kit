@@ -9,7 +9,7 @@
 "login_email_placeholder" = "Adresë email";
 "login_prompt_email_token" = "Ju lutemi, jepni token-in tuaj të vleftësimit të email-it:";
 "login_error_title" = "Dështoi Hyrja";
-"login_error_registration_is_not_supported" = "Hëpërhë regjistrime nuk mbulohen";
+"login_error_registration_is_not_supported" = "Hëpërhë regjistrimet nuk mbulohen";
 "login_error_forbidden" = "Emër përdoruesi/fjalëkalim i pavlefshëm";
 "login_error_unknown_token" = "Token-i i hyrjeve i dhënë nuk u njoh";
 "login_error_bad_json" = "JSON e keqformuar";
@@ -35,7 +35,7 @@
 "retry" = "Riprovo";
 "sign_up" = "Regjistrohuni";
 "submit" = "Parashtroje";
-"set_default_power_level" = "Rikthe Te Parazgjedhja Shkallët e Pushtetit";
+"set_default_power_level" = "Rikthe Shkallët e Pushtetit Te Parazgjedhja";
 "set_moderator" = "Caktojeni Moderator";
 "set_admin" = "Caktojeni Përgjegjës";
 "start_chat" = "Filloni Fjalosje";
@@ -56,7 +56,7 @@
 "reject_call" = "Hidhe poshtë Thirrjen";
 "end_call" = "Përfundoje Thirrjen";
 "ignore" = "Shpërfille";
-"unignore" = "Shpërfille";
+"unignore" = "Hiqja shpërfilljen";
 // Events formatter
 "notice_avatar_changed_too" = "(u ndryshua edhe avatari)";
 "notice_room_name_removed" = "%@ hoqi emrin e dhomës";
@@ -101,7 +101,7 @@
 "device_details_delete_prompt_title" = "Mirëfilltësim";
 // Encryption information
 "room_event_encryption_info_title" = "Të dhëna fshehtëzimi skaj-më-skaj\n\n";
-"room_event_encryption_info_event" = "Të dhëna Akti\n";
+"room_event_encryption_info_event" = "Të dhëna akti\n";
 "room_event_encryption_info_event_user_id" = "ID Përdoruesi\n";
 "room_event_encryption_info_event_identity_key" = "Kyç identiteti Curve25519\n";
 "room_event_encryption_info_event_algorithm" = "Algoritëm\n";
@@ -116,7 +116,7 @@
 "room_event_encryption_info_device_verification" = "Verifikim\n";
 "room_event_encryption_info_device_fingerprint" = "Shenja gishtash Ed25519\n";
 "room_event_encryption_info_device_verified" = "E verifikuar";
-"room_event_encryption_info_device_not_verified" = "JO e verifikua";
+"room_event_encryption_info_device_not_verified" = "JO e verifikuar";
 "room_event_encryption_info_device_blocked" = "Në Listë të Zezë";
 "room_event_encryption_info_verify" = "Verifikoni…";
 "room_event_encryption_info_block" = "Listë e zezë";
@@ -213,7 +213,7 @@
 "notice_room_ban" = "%@ dëboi %@";
 "notice_room_withdraw" = "%@ e tërhoqi ftesën për %@";
 "notice_room_reason" = ". Arsye: %@";
-"notice_avatar_url_changed" = "%@ ndryshoi avatarine vet";
+"notice_avatar_url_changed" = "%@ ndryshoi avatarin e vet";
 "notice_display_name_set" = "%@ caktoi emrin e vet të ekranit si %@";
 "notice_display_name_changed_from" = "%@ ndryshoi emrin e vet të ekranit nga %@ në %@";
 "notice_display_name_removed" = "%@ hoqi emrin e vet të ekranit";
@@ -224,7 +224,7 @@
 "notice_answered_video_call" = "%@ iu përgjigj thirrjes";
 "notice_ended_video_call" = "%@ e përfundoi thirrjen";
 "notice_conference_call_request" = "%@ kërkoi një konferencë VoIP";
-"notice_conference_call_started" = "KonferencëKonferenca VoIP filloi";
+"notice_conference_call_started" = "Konferenca VoIP filloi";
 "notice_conference_call_finished" = "Konferenca VoIP përfundoi";
 // button names 
 "ok" = "OK";
@@ -302,3 +302,76 @@
 "unsent" = "Të padërguar";
 "network_error_not_reachable" = "Ju lutemi, kontrolloni aftësinë e lidhjes në rrjetin tuaj";
 "share" = "Ndajeni me të tjerët";
+"login_home_server_info" = "Shërbyesi juaj home depoziton krejt të dhënat tuaja të bisedave dhe llogarive";
+"login_identity_server_info" = "Matrix ofron shërbyes identiteti për të ndjekur se cilat email-e, etj, u përkasin ID-ve Matrix IDs. Hëpërhë ekziston vetëm https://matrix.org.";
+"login_user_id_placeholder" = "ID Matrix (p.sh. @poku:matrix.org ose poku)";
+"login_display_name_placeholder" = "Emër në ekran (p.sh. Mane Trimi)";
+"login_email_info" = "Përcaktimi i një adrese email i lejon përdoruesit e tjerë t’ju gjejnë më lehtë në Matrix, dhe do t’ju japë një rrugë për ricaktimin e fjalëkalimit tuaj në të ardhmen.";
+"login_error_no_login_flow" = "Dështuam në marrje të dhënash mirëfilltësimi nga ky Shërbyes Home";
+"login_error_do_not_support_login_flows" = "Hëpërhë nuk mbulojmë ndonjë ose krejt rrjedhat e hyrjeve të përkufizuara nga ky Shërbyes Home";
+"login_error_limit_exceeded" = "Janë dërguar shumë kërkesa";
+"login_error_login_email_not_yet" = "Lidhja email që s’është klikuar ende";
+"notice_room_power_level_acting_requirement" = "Shkallët minimum të pushtetit që duhet të ketë një përdorues përpara se të veprojë, janë:";
+"notice_room_power_level_event_requirement" = "Shkallët minimum të pushtetit që lidhen me aktet janë:";
+"notice_room_history_visible_to_anyone" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për këdo.";
+"notice_room_history_visible_to_members" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës, prej çastit kur janë ftuar.";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës, prej çastit kur morën pjesë.";
+"notice_crypto_error_unknown_inbound_session_id" = "Pajisja e dërguesit nuk na ka dërguar kyçet për këtë mesazh.";
+"notice_in_reply_to" = "Në përgjigje të";
+"device_details_delete_prompt_message" = "Ky veprim lyp mirëfilltësim shtesë.\nQë të vazhdohet, ju lutemi, jepni fjalëkalimin tuaj.";
+"room_event_encryption_info_unverify" = "Hiqi verifikimin";
+"room_event_encryption_info_unblock" = "Hiqe nga listë e zezë";
+"room_event_encryption_verify_message" = "Që të verifikohet se kjo pajisje mund të besohet, ju lutemi, lidhuni me të zotin e saj duke përdorur ndonjë rrugë tjetër (p.sh. personalisht apo përmes një thirrjeje telefonike) dhe kërkojini nëse kyçi që sheh te Rregullimet e veta të Përdoruesit për këtë pajisje përputhet me kyçin më poshtë\n\n\tEmër pajisjeje: %@\n\tID pajisjeje: %@\n\tKyç pajisjeje: %@\n\nNëse përputhet, shtypni më poshtë butonin e verifikimit. Nëse jo, atëherë dikush tjetër është duke përgjuar këtë pajisje dhe do të donit më mirë të shtypnit butonin e kalimit në listë të zezë.\n\nNë të ardhmen ky proces verifikimi do të jetë më i sofistikuar.";
+"account_email_validation_message" = "Ju lutemi, kontrolloni email-in tuaj dhe klikoni mbi lidhjen që përmban. Pasi të jetë bërë kjo, klikoni që të vazhdohet.";
+"account_email_validation_error" = "S’arrihet të verifikohet adresë email. Ju lutemi, kontrolloni email-in tuaj dhe klikoni mbi lidhjen që përmban. Pasi të jetë bërë kjo, klikoni që të vazhdohet";
+"account_msisdn_validation_message" = "Kemi dërguar një SMS me një kod aktivizimi. Ju lutemi, jepeni këtë kod më poshtë.";
+"room_creation_participants_placeholder" = "(p.sh. @mane:homeserver1; @taku:homeserver2...)";
+"room_error_join_failed_empty_room" = "Hëpërhë s’është e mundur të rihyhet në një dhomë të zbrazët.";
+"room_error_timeline_event_not_found" = "Aplikacioni u rrek të ngarkonte një pikë të dhënë prej rrjedhës kohore në këtë dhomë, por s’qe në gjendje ta gjente";
+"room_no_power_to_create_conference_call" = "Ju duhen leje për ftesa, që të nisni një konferencë në këtë dhomë";
+"room_no_conference_call_in_encrypted_rooms" = "Thirrjet konferencë nuk mbulohen në dhoma të fshehtëzuara";
+// Room members
+"room_member_ignore_prompt" = "Doni të fshihen krejt mesazhet nga ky përdorues?";
+"room_member_power_level_prompt" = "S’do të jeni në gjendje ta zhbëni këtë ndryshim, ngaqë po e promovoni përdoruesin të ketë të njëjtën shkallë pushteti si ju vetë.\nJeni i sigurt?";
+"attachment_e2e_keys_file_prompt" = "Kjo kartelë përmban kyçe fshehtëzimi të eksportur nga një klient Matrix.\nDoni të shihni lëndën e kartelës apo të importoni kyçet që ajo përmban?";
+"e2e_import_prompt" = "Ky proces ju lejon të importoni kyçe fshehtëzimi që keni eksportuar më parë nga një tjetër klient Matrix. Mandej do të jeni në gjendje të shfshehtëzoni çfarëdo mesazhesh që mund të shfshehtëzojë ai klient tjetër.\nKartela e eksportit është e mbrojtur me një frazëkalim. Që të shfshehtëzoni kartelën, duhet ta jepni frazëkalimin këtu.";
+"e2e_export_prompt" = "Ky proces ju lejon të eksportoni te një kartelë vendore kyçet për mesazhe që keni marrë në dhoma të fshehtëzuara. Mandej do të jeni në gjendje ta importoni kartelën te një tjetër klient Matrix në të ardhmen, që kështu ai klient të jetë në gjendje t’i fshehtëzojë këto mesazhe.\nKartela e eksportuar do t’i lejojë, cilitdo që mund ta lexojë, të shfshehtëzojë çfarëdo mesazhesh të fshehtëzuar që mund të shihni ju, ndaj duhet të bëni kujdes ta mbani të parrezikuar.";
+"error_common_message" = "Ndodhi një gabim. Ju lutemi, riprovoni më vonë.";
+// Permissions
+"camera_access_not_granted_for_call" = "Thirrjet video lypin përdorim të Kamerës, por %@ s’ka leje për ta përdorur";
+"microphone_access_not_granted_for_call" = "Thirrjet lypin përdorim të Mikrofonit, por %@ s’ka leje ta përdorë atë";
+"local_contacts_access_not_granted" = "Zbulimi i përdoruesve nga kontaktet vendore lyp hyrje te kontaktet tuaja, por %@ s’ka leje t’i përdorë ato";
+"local_contacts_access_discovery_warning" = "Që të mund të zbulojë përdorues, %@ dëshiron të ngarkojë email-e dhe numra telefonash nga Kontaktet tuaja";
+"notice_room_unban" = "%@ i hoqi dëbimin %@";
+"redact" = "Redaktojeni";
+// contacts list screen 
+"invitation_message" = "Do të doja të bisedoja me ju me Matrix. Për të pasur më tepër itë dhëna, ju lutem, vizitoni sajtin http://matrix.org.";
+"notification_settings_global_info" = "Rregullimet mbi njoftimet ruhen te llogaria juaj e përdoruesit dhe ndahen me krejt klientët që i mbulojnë ato (përfshi njoftimet në desktop).\n\nRregullat zbatohen sipas një radhe; rregulli i parë që ka përputhje përcakton lëndën për mesazhin.\nKështu: njoftimet sipas fjalësh janë më të rëndësishme se njoftimet sipas dhomash të cilat janë më të rëndësishme se njoftimet sipas dërguesish.\nFor multiple rules of the same kind, the first one in the list that matches takes priority.";
+"notification_settings_per_word_notifications" = "Njoftime sipas fjale";
+"notification_settings_per_word_info" = "Për fjalët përputhjet gjenden pa marrë parasysh shkrimin me të madhe apo të vogël, dhe mund të përfshijnë një shenjë të gjithëpushtetshme *. Kështu:\nkot përputhet me vargun kot të rrethuar nga përkufizues fjalësh (p.sh. shenja pikësimi apo hapësira, ose fillim/fund rreshti).\nkot* përputhet me çfarëdo fjale që fillon me kot.\n*foo* përputhet me çfarëdo fjale që përfshin vargun kot.";
+"notification_settings_per_room_notifications" = "Njoftime sipas dhome";
+"notification_settings_per_sender_notifications" = "Njoftime sipas dërguesi";
+"notification_settings_invite_to_a_new_room" = "Njoftomë kur ftohem në një dhomë të re";
+"notification_settings_people_join_leave_rooms" = "Njoftomë kur vijnë ose ikin persona nga dhoma";
+"notification_settings_receive_a_call" = "Njoftomë kur marr një thirrje";
+"call_connecting" = "Po bëhet lidhja e thirrjes…";
+"ssl_cert_not_trust" = "Kjo mund të ishte shenjë se dikush po përgjon me dashakeqësi trafikun tuaj, ose se telefoni juaj nuk i beson dëshmisë së furnizuar nga shërbyesi i largët.";
+"ssl_cert_new_account_expl" = "Nëse përgjegjësi i shërbyesit ka thënë se kjo është e pritshme, sigurohuni që shenjat e gishtave më poshtë përputhen me shenjat e gishtave të furnizuara prej tyre.";
+"ssl_unexpected_existing_expl" = "Dëshmia ka ndryshuar nga ajo që qe besuar nga telefoni juaj. Kjo është SHUMË E PAZAKONTË. Këshillohet që TË MOS E PRANONI këtë dëshmi të re.";
+"ssl_expected_existing_expl" = "Dëshmia ka ndryshuar nga një e besueshme dikur në një që nuk besohet. Shërbyesi mund të ketë rinovuar dëshminë e tij. Lidhuni me përgjegjësin e shërbyesit për shenjat e pritshme të gishtave.";
+"ssl_only_accept" = "Pranojeni dëshminë vetëm nëse përgjegjësi i i shërbyesit ka publikuar shenja gishtash që përputhen me ato më sipër.";
+"login_error_resource_limit_exceeded_title" = "U tejkalua Kufi Burimesh";
+"login_error_resource_limit_exceeded_message_default" = "Ky shërbyes home ka tejkaluar një nga kufijtë mbi burimet.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Ky shërbyes home ka tejkaluar kufirin Përdorues Aktivë Mujorë.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nJu lutemi, që të vazhdoni të përdorni këtë shërbim, lidhuni me përgjegjësin e shërbimit tuaj.";
+"login_error_resource_limit_exceeded_contact_button" = "Lidhuni Me Përgjegjësin";
+"room_displayname_two_members" = "%@ dhe %@";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "dërgoi një figurë.";
+"message_reply_to_sender_sent_a_video" = "dërgoi një video.";
+"message_reply_to_sender_sent_an_audio_file" = "dërgoi një kartelë audio.";
+"message_reply_to_sender_sent_a_file" = "dërgoi një kartelë.";
+"message_reply_to_message_to_reply_to_prefix" = "Në përgjigje të";
+"e2e_passphrase_create" = "Krijoni frazëkalim";
+"room_event_encryption_info_event_fingerprint_key" = "U pretendua për kyç Ed25519 shenjash gishtash\n";

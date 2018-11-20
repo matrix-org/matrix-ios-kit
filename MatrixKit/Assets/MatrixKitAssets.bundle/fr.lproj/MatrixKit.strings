@@ -256,7 +256,7 @@
 "notice_room_join" = "%@ est arrivé(e)";
 "notice_room_leave" = "%@ est parti(e)";
 "notice_room_reject" = "%@ a rejeté l'invitation";
-"notice_room_kick" = "%@ a exclu %@";
+"notice_room_kick" = "%@ a expulsé %@";
 "notice_room_unban" = "%@ a révoqué le bannissement de %@";
 "notice_room_ban" = "%@ a banni %@";
 "notice_room_withdraw" = "%@ a annulé l'invitation de %@";
@@ -293,7 +293,7 @@
 "membership_ban" = "Banni";
 "num_members_one" = "%@ utilisateur";
 "num_members_other" = "%@ utilisateurs";
-"kick" = "Exclure";
+"kick" = "Expulser";
 "ban" = "Bannir";
 "unban" = "Révoquer le bannissement";
 "message_unsaved_changes" = "Il y a des modifications non enregistrées. Quitter les annulera.";
