@@ -32,6 +32,8 @@
 #import "MXKSendReplyEventStringLocalizations.h"
 #import "MXKSlashCommands.h"
 
+#import "MXEventScan.h"
+
 #pragma mark - Constant definitions
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
@@ -951,6 +953,21 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     [super cancelAllRequests];
+}
+
+- (void)setDelegate:(id<MXKDataSourceDelegate>)delegate
+{
+    super.delegate = delegate;
+    
+    // Register to MXScanManager notification only when a delegate is set
+    if (delegate && self.mxSession.scanManager)
+    {
+        [self registerScanManagerNotifications];
+    }
+    else
+    {
+        [self unregisterScanManagerNotifications];
+    }
 }
 
 #pragma mark - KVO
@@ -2726,11 +2743,64 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return count;
 }
 
+- (void)scanBubbleDataIfNeeded:(id<MXKRoomBubbleCellDataStoring>)bubbleData
+{
+    MXScanManager *scanManager = self.mxSession.scanManager;
+    
+    if (!scanManager && ![bubbleData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        return;
+    }
+
+    MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)bubbleData;
+    
+    NSString *uploadContentURL = roomBubbleCellData.attachment.contentURL;
+
+    // If the content url corresponds to an upload id, the upload is in progress or not complete.
+    // Create a fake event scan with in progress status when uploading media.
+    // Since there is no event scan in database it will be overriden by MXScanManager on media upload complete.
+    if (uploadContentURL && [uploadContentURL hasPrefix:kMXMediaUploadIdPrefix])
+    {
+        MXKRoomBubbleComponent *firstBubbleComponent = roomBubbleCellData.bubbleComponents.firstObject;
+        MXEvent *firstBubbleComponentEvent = firstBubbleComponent.event;
+        
+        if (firstBubbleComponent && firstBubbleComponent.eventScan.antivirusScanStatus != MXAntivirusScanStatusInProgress && firstBubbleComponentEvent)
+        {
+            MXEventScan *uploadEventScan = [MXEventScan new];
+            uploadEventScan.eventId = firstBubbleComponentEvent.eventId;
+            uploadEventScan.antivirusScanStatus = MXAntivirusScanStatusInProgress;
+            uploadEventScan.antivirusScanDate = nil;
+            uploadEventScan.mediaScans = @[];
+            
+            firstBubbleComponent.eventScan = uploadEventScan;
+        }
+    }
+    else
+    {
+        for (MXKRoomBubbleComponent *bubbleComponent in roomBubbleCellData.bubbleComponents)
+        {
+            MXEvent *event = bubbleComponent.event;
+            
+            if ([event isContentScannable])
+            {
+                [scanManager scanEventIfNeeded:event];
+                // NOTE: - [MXScanManager scanEventIfNeeded:] perform modification in background, so - [MXScanManager eventScanWithId:] do not retrieve the last state of event scan.
+                // It is noticeable when eventScan should be created for the first time. It would be better to return an eventScan with an in progress scan status instead of nil.
+                MXEventScan *eventScan = [scanManager eventScanWithId:event.eventId];
+                bubbleComponent.eventScan = eventScan;
+            }
+        }
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell<MXKCellRendering> *cell;
     
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataAtIndex:indexPath.row];
+    
+    // Launch an antivirus scan on events contained in bubble data if needed
+    [self scanBubbleDataIfNeeded:bubbleData];
     
     if (bubbleData && self.delegate)
     {
@@ -2797,6 +2867,24 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     return group;
+}
+
+#pragma mark - MXScanManager notifications
+
+- (void)registerScanManagerNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventScansDidChange:) name:MXScanManagerEventScanDidChangeNotification object:nil];
+}
+
+- (void)unregisterScanManagerNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXScanManagerEventScanDidChangeNotification object:nil];
+}
+     
+- (void)eventScansDidChange:(NSNotification*)notification
+{
+    // TODO: Avoid to call the delegate to often. Set a minimum time interval to avoid table view flickering.
+    [self.delegate dataSource:self didCellChange:nil];
 }
 
 @end
