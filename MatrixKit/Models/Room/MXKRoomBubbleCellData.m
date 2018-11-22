@@ -24,6 +24,7 @@
 
 #import "MXKTools.h"
 #import "MXMediaManager.h"
+#import "MXEventScan.h"
 
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isEncryptedRoom, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment, senderFlair;
@@ -774,6 +775,20 @@
     }
     
     return nil;
+}
+
+- (BOOL)showAntivirusScanStatus
+{
+    MXKRoomBubbleComponent *firstBubbleComponent = self.bubbleComponents.firstObject;
+    
+    if (self.attachment == nil || firstBubbleComponent == nil)
+    {
+        return NO;
+    }
+    
+    MXEventScan *eventScan = firstBubbleComponent.eventScan;
+    
+    return eventScan != nil && eventScan.antivirusScanStatus != MXAntivirusScanStatusTrusted;
 }
 
 #pragma mark - Bubble collapsing
