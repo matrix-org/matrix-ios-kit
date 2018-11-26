@@ -2754,12 +2754,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)bubbleData;
     
-    NSString *uploadContentURL = roomBubbleCellData.attachment.contentURL;
+    NSString *contentURL = roomBubbleCellData.attachment.contentURL;
 
     // If the content url corresponds to an upload id, the upload is in progress or not complete.
     // Create a fake event scan with in progress status when uploading media.
     // Since there is no event scan in database it will be overriden by MXScanManager on media upload complete.
-    if (uploadContentURL && [uploadContentURL hasPrefix:kMXMediaUploadIdPrefix])
+    if (contentURL && [contentURL hasPrefix:kMXMediaUploadIdPrefix])
     {
         MXKRoomBubbleComponent *firstBubbleComponent = roomBubbleCellData.bubbleComponents.firstObject;
         MXEvent *firstBubbleComponentEvent = firstBubbleComponent.event;
