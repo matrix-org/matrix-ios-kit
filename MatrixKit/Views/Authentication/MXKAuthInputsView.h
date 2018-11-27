@@ -75,8 +75,9 @@ typedef enum {
  
  @param authInputsView the authentication inputs view.
  @param viewControllerToPresent the view controller to present.
+ @param animated YES to animate the presentation.
  */
-- (void)authInputsView:(MXKAuthInputsView *)authInputsView presentViewController:(UIViewController*)viewControllerToPresent;
+- (void)authInputsView:(MXKAuthInputsView *)authInputsView presentViewController:(UIViewController*)viewControllerToPresent animated:(BOOL)animated;
 
 /**
  Tell the delegate to cancel the current operation.
