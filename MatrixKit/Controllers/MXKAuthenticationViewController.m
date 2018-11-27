@@ -211,9 +211,6 @@
 {
     [super viewWillAppear:animated];
     
-    // Force UI update and check the supported authentication flows for the current authentication type.
-    self.authType = _authType;
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTextFieldChange:) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
