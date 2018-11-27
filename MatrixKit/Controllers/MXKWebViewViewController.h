@@ -21,7 +21,7 @@
 /**
  'MXKWebViewViewController' instance is used to display a webview.
  */
-@interface MXKWebViewViewController : MXKViewController <WKNavigationDelegate, WKScriptMessageHandler>
+@interface MXKWebViewViewController : MXKViewController <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
 {
 @protected
     /**
