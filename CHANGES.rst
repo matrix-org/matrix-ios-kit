@@ -12,6 +12,7 @@ Deprecated API:
  * MXKImageView: [setImageURL:withType:andImageOrientation:previewImage:] is deprecated, use [setImageURI:withType:andImageOrientation:previewImage:mediaManager] or [setImageURI:withType:andImageOrientation:toFitViewSize:withMethod:previewImage:mediaManager] instead.
  * MXKReceiptSendersContainer: the property "restClient" is deprecated.
  * MXKReceiptSendersContainer: [initWithFrame:andRestClient:] is deprecated, use [initWithFrame:andMediaManager:] instead.
+ * Add media antivirus scan support.
 
 Changes in MatrixKit in 0.8.6 (2018-10-31)
 ==========================================
