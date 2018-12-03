@@ -7,6 +7,9 @@ Improvements:
  * MXKWebViewController: Improve back navigation by resetting initial right buttons.
  * Replace the deprecated MXMediaManager and MXMediaLoader interfaces use (see matrix-ios-sdk/pull/593).
  
+Bug fix:
+ * Unexpected empty local contacts list.
+ 
 Deprecated API:
  * MXKAttachment: the properties "actualURL" and "thumbnailURL" are deprecated because only Matrix Content URI should be considered now.
  * MXKAttachment: the property "cacheThumbnailPath" is deprecated, use "thumbnailCachePath" instead.
