@@ -569,6 +569,9 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         {
             self->isLocalContactListRefreshing = YES;
             
+            // Reset the internal contact lists (These arrays will be prepared only if need).
+            self->localContactsWithMethods = self->splitLocalContacts = nil;
+            
             BOOL isColdStart = NO;
             
             // Check whether the local contacts sync has been disabled.
@@ -580,8 +583,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                 
                 // Reload the local contacts from the system
                 self->localContactByContactID = nil;
-                self->localContactsWithMethods = nil;
-                self->splitLocalContacts = nil;
                 [self cacheLocalContacts];
             }
             
@@ -686,9 +687,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                 // something has been modified in the local contact book
                 if (didContactBookChange)
                 {
-                    // Reset the internal contact lists (These arrays will be prepared only if need).
-                    self->localContactsWithMethods = self->splitLocalContacts = nil;
-                    
                     [self cacheLocalContacts];
                 }
                 
