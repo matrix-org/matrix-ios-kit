@@ -1,7 +1,8 @@
-Changes in MatrixKit in 0.8.x (2018-xx-xx)
+Changes in MatrixKit in 0.9.0 (2018-12-06)
 ==========================================
 
 Improvements:
+ * Upgrade MatrixSDK version (v0.12.0).
  * MXKAccount: Add "antivirusServerURL" property. Set a non-null url to configure the antivirus scanner use.
  * MXKWebViewController: Make it open links with `target="_blank"` within the webview.
  * MXKWebViewController: Improve back navigation by resetting initial right buttons.
