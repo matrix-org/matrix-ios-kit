@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKView.h"
 
@@ -29,17 +31,46 @@
 typedef void (^blockMXKImageView_onClick)(MXKImageView *imageView, NSString* title);
 
 /**
- Load an image by its url.
+ Load an image by its Matrix Content URI.
+ The image is loaded from the media cache (if any). If the image is not available yet,
+ it is downloaded from the Matrix media repository only if a media manager instance is provided.
  
- The image extension is extracted from the provided mime type (if any). If no type is available, we look for a potential extension
- in the url. By default 'image/jpeg' is considered.
+ The image extension is extracted from the provided mime type (if any). By default 'image/jpeg' is considered.
  
- @param imageURL the remote image url
+ @param mxContentURI the Matrix Content URI
  @param mimeType the media mime type, it is used to define the file extension (may be nil).
  @param orientation the actual orientation of the encoded image (used UIImageOrientationUp by default).
  @param previewImage image displayed until the actual image is available.
+ @param mediaManager the media manager instance used to download the image if it is not already in cache.
  */
-- (void)setImageURL:(NSString *)imageURL withType:(NSString *)mimeType andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage;
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager;
+
+/**
+ Load an image by its Matrix Content URI to fit a specific view size.
+ 
+ CAUTION: this method is available only for the unencrypted content.
+ 
+ The image is loaded from the media cache (if any). If the image is not available yet,
+ it is downloaded from the Matrix media repository only if a media manager instance is provided.
+ The image extension is extracted from the provided mime type (if any). By default 'image/jpeg' is considered.
+ 
+ @param mxContentURI the Matrix Content URI
+ @param mimeType the media mime type, it is used to define the file extension (may be nil).
+ @param orientation the actual orientation of the encoded image (used UIImageOrientationUp by default).
+ @param previewImage image displayed until the actual image is available.
+ @param mediaManager the media manager instance used to download the image if it is not already in cache.
+ */
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+      toFitViewSize:(CGSize)viewSize
+         withMethod:(MXThumbnailingMethod)thumbnailingMethod
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager;
 
 /**
  * Load an image attachment into the image viewer and display the full res image.

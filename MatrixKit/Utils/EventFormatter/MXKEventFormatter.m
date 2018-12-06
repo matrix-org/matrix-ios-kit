@@ -270,7 +270,7 @@
     // Handle here the case where no avatar is defined (Check SDK options before using identicon).
     if (!senderAvatarUrl && ![MXSDKOptions sharedInstance].disableIdenticonUseForUserAvatar)
     {
-        senderAvatarUrl = [mxSession.matrixRestClient urlOfIdenticon:event.sender];
+        senderAvatarUrl = [mxSession.mediaManager urlOfIdenticon:event.sender];
     }
     
     return senderAvatarUrl;

@@ -24,6 +24,7 @@
 
 #import "MXKTools.h"
 #import "MXMediaManager.h"
+#import "MXEventScan.h"
 
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isEncryptedRoom, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment, senderFlair;
@@ -60,7 +61,7 @@
             if ([roomDataSource.eventFormatter isSupportedAttachment:event])
             {
                 // Note: event.eventType is equal here to MXEventTypeRoomMessage or MXEventTypeSticker
-                attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                attachment = [[MXKAttachment alloc] initWithEvent:event andMediaManager:roomDataSource.mxSession.mediaManager];
                 if (attachment && attachment.type == MXKAttachmentTypeImage)
                 {
                     // Check the current thumbnail orientation. Rotate the current content size (if need)
@@ -136,7 +137,7 @@
                     }
                     else if (![attachment.eventId isEqualToString:event.eventId] || ![attachment.contentURL isEqualToString:eventContentURL])
                     {
-                        MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                        MXKAttachment *updatedAttachment = [[MXKAttachment alloc] initWithEvent:event andMediaManager:roomDataSource.mxSession.mediaManager];
                         
                         // Sanity check on attachment type
                         if (updatedAttachment && attachment.type == updatedAttachment.type)
@@ -153,9 +154,9 @@
                             {
                                 [[NSFileManager defaultManager] removeItemAtPath:attachment.cacheFilePath error:nil];
                             }
-                            if (![updatedAttachment.cacheThumbnailPath isEqualToString:attachment.cacheThumbnailPath])
+                            if (![updatedAttachment.thumbnailCachePath isEqualToString:attachment.thumbnailCachePath])
                             {
-                                [[NSFileManager defaultManager] removeItemAtPath:attachment.cacheThumbnailPath error:nil];
+                                [[NSFileManager defaultManager] removeItemAtPath:attachment.thumbnailCachePath error:nil];
                             }
                             
                             // Update the current attachmnet description
@@ -182,7 +183,7 @@
                 else if ([roomDataSource.eventFormatter isSupportedAttachment:event])
                 {
                     // The event is updated to an event with attachement
-                    attachment = [[MXKAttachment alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
+                    attachment = [[MXKAttachment alloc] initWithEvent:event andMediaManager:roomDataSource.mxSession.mediaManager];
                     if (attachment && attachment.type == MXKAttachmentTypeImage)
                     {
                         // Check the current thumbnail orientation. Rotate the current content size (if need)
@@ -774,6 +775,20 @@
     }
     
     return nil;
+}
+
+- (BOOL)showAntivirusScanStatus
+{
+    MXKRoomBubbleComponent *firstBubbleComponent = self.bubbleComponents.firstObject;
+    
+    if (self.attachment == nil || firstBubbleComponent == nil)
+    {
+        return NO;
+    }
+    
+    MXEventScan *eventScan = firstBubbleComponent.eventScan;
+    
+    return eventScan != nil && eventScan.antivirusScanStatus != MXAntivirusScanStatusTrusted;
 }
 
 #pragma mark - Bubble collapsing

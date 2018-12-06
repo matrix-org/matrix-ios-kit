@@ -44,7 +44,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     MXMediaLoader *imageLoader;
     NSString *currentDisplayName;
     NSString *currentPictureURL;
-    NSString *currentPictureThumbURL;
+    NSString *currentDownloadId;
     NSString *uploadedPictureURL;
     // Local changes
     BOOL isAvatarUpdated;
@@ -353,7 +353,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     
     currentPictureURL = nil;
-    currentPictureThumbURL = nil;
+    currentDownloadId = nil;
     uploadedPictureURL = nil;
     isAvatarUpdated = NO;
     [self updateUserPictureButton:self.picturePlaceholder];
@@ -583,23 +583,36 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         uploadedPictureURL = nil;
         
         currentPictureURL = [avatar_url isEqual:[NSNull null]] ? nil : avatar_url;
-        if (currentPictureURL)
+        
+        // Check whether this url is valid
+        currentDownloadId = [MXMediaManager thumbnailDownloadIdForMatrixContentURI:currentPictureURL
+                                                                          inFolder:kMXMediaManagerAvatarThumbnailFolder
+                                                                     toFitViewSize:self.userPictureButton.frame.size
+                                                                        withMethod:MXThumbnailingMethodCrop];
+        if (!currentDownloadId)
         {
-            // Suppose this url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-            currentPictureThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:currentPictureURL toFitViewSize:self.userPictureButton.frame.size withMethod:MXThumbnailingMethodCrop];
-            
-            NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:currentPictureThumbURL andType:nil inFolder:kMXMediaManagerAvatarThumbnailFolder];
-            
+            // Set the placeholder in case of invalid Matrix Content URI.
+            [self updateUserPictureButton:self.picturePlaceholder];
+        }
+        else
+        {
             // Check whether the image download is in progress
-            id loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
+            id loader = [MXMediaManager existingDownloaderWithIdentifier:currentDownloadId];
             if (loader)
             {
-                // Add observers
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
+                // Observe this loader
+                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                         selector:@selector(onMediaLoaderStateChange:)
+                                                             name:kMXMediaLoaderStateDidChangeNotification
+                                                           object:loader];
             }
             else
             {
+                NSString *cacheFilePath = [MXMediaManager thumbnailCachePathForMatrixContentURI:currentPictureURL
+                                                                                        andType:nil
+                                                                                       inFolder:kMXMediaManagerAvatarThumbnailFolder
+                                                                                  toFitViewSize:self.userPictureButton.frame.size
+                                                                                     withMethod:MXThumbnailingMethodCrop];
                 // Retrieve the image from cache
                 UIImage* image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
                 if (image)
@@ -608,22 +621,20 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 }
                 else
                 {
-                    // Cancel potential download in progress
-                    if (imageLoader)
-                    {
-                        [imageLoader cancel];
-                    }
-                    // Add observers
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
-                    imageLoader = [MXMediaManager downloadMediaFromURL:currentPictureThumbURL andSaveAtFilePath:cacheFilePath];
+                    // Download the image, by adding download observer
+                    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                             selector:@selector(onMediaLoaderStateChange:)
+                                                                 name:kMXMediaLoaderStateDidChangeNotification
+                                                               object:nil];
+                    imageLoader = [self.mainSession.mediaManager downloadThumbnailFromMatrixContentURI:currentPictureURL
+                                                                                              withType:nil
+                                                                                              inFolder:kMXMediaManagerAvatarThumbnailFolder
+                                                                                         toFitViewSize:self.userPictureButton.frame.size
+                                                                                            withMethod:MXThumbnailingMethodCrop
+                                                                                               success:nil
+                                                                                               failure:nil];
                 }
             }
-        }
-        else
-        {
-            // Set placeholder
-            [self updateUserPictureButton:self.picturePlaceholder];
         }
     }
 }
@@ -644,38 +655,36 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     saveUserInfoButton.enabled = (isDisplayNameUpdated || isAvatarUpdated) && !isSavingInProgress;
 }
 
-- (void)onMediaDownloadEnd:(NSNotification *)notif
+- (void)onMediaLoaderStateChange:(NSNotification *)notif
 {
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    if ([loader.downloadId isEqualToString:currentDownloadId])
     {
-        NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
-        
-        if ([url isEqualToString:currentPictureThumbURL])
-        {
-            // update the image
-            UIImage* image = nil;
-            
-            if (cacheFilePath.length)
+        // update the image
+        switch (loader.state) {
+            case MXMediaLoaderStateDownloadCompleted:
             {
-                image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
+                UIImage *image = [MXMediaManager loadPictureFromFilePath:loader.downloadOutputFilePath];
+                if (image == nil)
+                {
+                    image = self.picturePlaceholder;
+                }
+                [self updateUserPictureButton:image];
+                // remove the observers
+                [[NSNotificationCenter defaultCenter] removeObserver:self];
+                imageLoader = nil;
+                break;
             }
-            if (image == nil)
-            {
-                image = self.picturePlaceholder;
-            }
-            [self updateUserPictureButton:image];
-            
-            // remove the observers
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
-            imageLoader = nil;
-            
-            if ([notif.name isEqualToString:kMXMediaDownloadDidFailNotification])
-            {
+            case MXMediaLoaderStateDownloadFailed:
+                [self updateUserPictureButton:self.picturePlaceholder];
+                // remove the observers
+                [[NSNotificationCenter defaultCenter] removeObserver:self];
+                imageLoader = nil;
                 // Reset picture URL in order to try next time
                 currentPictureURL = nil;
-            }
+                break;
+            default:
+                break;
         }
     }
 }

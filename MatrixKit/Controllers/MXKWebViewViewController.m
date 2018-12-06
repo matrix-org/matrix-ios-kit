@@ -38,6 +38,9 @@ NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
 @interface MXKWebViewViewController ()
 {
     BOOL enableDebug;
+
+    //  Right buttons bar state before loading the webview
+    NSArray<UIBarButtonItem *> *originalRightBarButtonItems;
 }
 
 @end
@@ -99,11 +102,14 @@ NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    originalRightBarButtonItems = self.navigationItem.rightBarButtonItems;
     
     // Init the webview
     webView = [[WKWebView alloc] initWithFrame:self.view.frame];
     webView.backgroundColor= [UIColor whiteColor];
     webView.navigationDelegate = self;
+    webView.UIDelegate = self;
 
     [webView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.view addSubview:webView];
@@ -246,8 +252,22 @@ NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
     }
     else
     {
-        self.navigationItem.rightBarButtonItem = nil;
+        // Reset the original state
+        self.navigationItem.rightBarButtonItems = originalRightBarButtonItems;
     }
+}
+
+#pragma mark - WKUIDelegate
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(nonnull WKWebViewConfiguration *)configuration forNavigationAction:(nonnull WKNavigationAction *)navigationAction windowFeatures:(nonnull WKWindowFeatures *)windowFeatures
+{
+    // Make sure we open links with `target="_blank"` within this webview
+    if (!navigationAction.targetFrame.isMainFrame)
+    {
+        [webView loadRequest:navigationAction.request];
+    }
+
+    return nil;
 }
 
 #pragma mark - WKScriptMessageHandler

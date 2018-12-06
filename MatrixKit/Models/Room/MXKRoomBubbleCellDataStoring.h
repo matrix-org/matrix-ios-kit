@@ -174,6 +174,11 @@
  */
 @property (nonatomic) NSInteger tag;
 
+/**
+ Indicate if antivirus scan status should be shown.
+ */
+@property (nonatomic, readonly) BOOL showAntivirusScanStatus;
+
 #pragma mark - Public methods
 /**
  Create a new `MXKRoomBubbleCellDataStoring` object for a new bubble cell.

@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,7 +23,13 @@
 
 @interface MXKContactField()
 {
-    NSString* avatarURL;
+    // Tell whether we already check the contact avatar definition.
+    BOOL shouldCheckAvatarURL;
+    // The media manager of the session used to retrieve the contect avatar url
+    // This manager is used to download this avatar if need
+    MXMediaManager *mediaManager;
+    // The current download id
+    NSString *downloadId;
 }
 @end
 
@@ -55,7 +62,9 @@
 {
     _avatarImage = nil;
     _matrixAvatarURL = nil;
-    avatarURL = @"";
+    shouldCheckAvatarURL = YES;
+    mediaManager = nil;
+    downloadId = nil;
 }
 
 - (void)loadAvatarWithSize:(CGSize)avatarSize
@@ -69,18 +78,7 @@
     // Sanity check
     if (_matrixID)
     {
-        // nil -> there is no avatar
-        if (!avatarURL)
-        {
-            return;
-        }
-        
-        // Empty string means not yet initialized
-        if (avatarURL.length > 0)
-        {
-            [self downloadAvatarImage];
-        }
-        else
+        if (shouldCheckAvatarURL)
         {
             // Consider here all sessions reported into contact manager
             NSArray* mxSessions = [MXKContactManager sharedManager].mxSessions;
@@ -89,47 +87,50 @@
             {
                 // Check whether a matrix user is already known
                 MXUser* user;
+                MXSession *mxSession;
                 
-                for (MXSession *mxSession in mxSessions)
+                for (mxSession in mxSessions)
                 {
                     user = [mxSession userWithUserId:_matrixID];
                     if (user)
                     {
                         _matrixAvatarURL = user.avatarUrl;
-                        
-                        avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:_matrixAvatarURL toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
-                        
-                        [self downloadAvatarImage];
+                        if (_matrixAvatarURL)
+                        {
+                            shouldCheckAvatarURL = NO;
+                            mediaManager = mxSession.mediaManager;
+                            [self downloadAvatarImage:avatarSize];
+                        }
                         break;
                     }
                 }
                 
-                
-                if (!user)
+                // Trigger a server request if this url has not been found.
+                if (shouldCheckAvatarURL)
                 {
-                    MXSession *mxSession = mxSessions.firstObject;
-                    
                     MXWeakify(self);
-                    
                     [mxSession.matrixRestClient avatarUrlForUser:_matrixID
                                                          success:^(NSString *mxAvatarUrl) {
                                                              
-                        MXStrongifyAndReturnIfNil(self);
+                                                             MXStrongifyAndReturnIfNil(self);
+                                                             self.matrixAvatarURL = mxAvatarUrl;
+                                                             self->shouldCheckAvatarURL = NO;
+                                                             self->mediaManager = mxSession.mediaManager;
+                                                             [self downloadAvatarImage:avatarSize];
                                                              
-                        self.matrixAvatarURL = mxAvatarUrl;
-                        
-                        self->avatarURL = [mxSession.matrixRestClient urlOfContentThumbnail:self.matrixAvatarURL toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
-                                                             
-                        [self downloadAvatarImage];
-                                                             
-                    } failure:nil];
+                                                         } failure:nil];
                 }
             }
         }
+        else if (_matrixAvatarURL)
+        {
+            [self downloadAvatarImage:avatarSize];
+        }
+        // Do nothing if the avatar url has been checked, and it is null.
     }
 }
 
-- (void)downloadAvatarImage
+- (void)downloadAvatarImage:(CGSize)avatarSize
 {
     // the avatar image is already done
     if (_avatarImage)
@@ -137,67 +138,74 @@
         return;
     }
     
-    if (avatarURL.length > 0)
+    if (_matrixAvatarURL)
     {
-        NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:avatarURL andType:nil inFolder:kMXMediaManagerAvatarThumbnailFolder];
-        
+        NSString *cacheFilePath = [MXMediaManager thumbnailCachePathForMatrixContentURI:_matrixAvatarURL
+                                                                                andType:nil
+                                                                               inFolder:kMXMediaManagerAvatarThumbnailFolder
+                                                                          toFitViewSize:avatarSize
+                                                                             withMethod:MXThumbnailingMethodCrop];
         _avatarImage = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
         
         // the image is already in the cache
         if (_avatarImage)
         {
             MXWeakify(self);
-            
             dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if (weakself)
-                {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakself.contactID userInfo:nil];
-                }
+                MXStrongifyAndReturnIfNil(self);
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:self.contactID userInfo:nil];
             });
         }
         else
         {
-            
-            MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-            
-            if (!loader)
+            NSString *downloadId = [MXMediaManager thumbnailDownloadIdForMatrixContentURI:_matrixAvatarURL inFolder:kMXMediaManagerAvatarThumbnailFolder toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+            MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            if (!loader && mediaManager)
             {
-                [MXMediaManager downloadMediaFromURL:avatarURL andSaveAtFilePath:cacheFilePath];
+                [mediaManager downloadThumbnailFromMatrixContentURI:_matrixAvatarURL
+                                                                     withType:nil
+                                                                     inFolder:kMXMediaManagerAvatarThumbnailFolder
+                                                                toFitViewSize:avatarSize
+                                                                   withMethod:MXThumbnailingMethodCrop
+                                                                      success:nil
+                                                                      failure:nil];
             }
-            
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
         }
     }
 }
 
 - (void)onMediaDownloadEnd:(NSNotification *)notif
 {
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    if ([loader.downloadId isEqualToString:downloadId])
     {
-        NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
-        
-        if ([url isEqualToString:avatarURL] && cacheFilePath.length)
-        {
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaDownloadDidFinishNotification object:nil];
-            
-            // update the image
-            UIImage* image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-            if (image)
+        // update the image
+        switch (loader.state) {
+            case MXMediaLoaderStateDownloadCompleted:
             {
-                _avatarImage = image;
-                
-                MXWeakify(self);
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (weakself)
-                    {
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:weakself.contactID userInfo:nil];
-                    }
-                });
+                UIImage *image = [MXMediaManager loadPictureFromFilePath:loader.downloadOutputFilePath];
+                if (image)
+                {
+                    _avatarImage = image;
+                    
+                    MXWeakify(self);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        MXStrongifyAndReturnIfNil(self);
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactThumbnailUpdateNotification object:self.contactID userInfo:nil];
+                    });
+                }
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
+                downloadId = nil;
+                break;
             }
+            case MXMediaLoaderStateDownloadFailed:
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
+                downloadId = nil;
+                break;
+            default:
+                break;
         }
     }
 }

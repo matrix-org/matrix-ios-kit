@@ -1,5 +1,6 @@
 /*
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
 
 /**
  `MXKDirectoryServerCellDataStoring` defines a protocol a class must conform in order to
- store room member cell data managed by `MXKDirectoryServersDataSource`.
+ store directory cell data managed by `MXKDirectoryServersDataSource`.
  */
 @protocol MXKDirectoryServerCellDataStoring <NSObject>
 
@@ -36,6 +37,11 @@
  The icon of the server.
  */
 @property (nonatomic) UIImage *icon;
+
+/**
+ The optional media manager used to download the icon of the server.
+ */
+@property (nonatomic) MXMediaManager *mediaManager;
 
 /**
  In case the cell data represents a homeserver, its description.

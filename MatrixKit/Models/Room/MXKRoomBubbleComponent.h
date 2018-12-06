@@ -76,6 +76,11 @@ typedef enum : NSUInteger {
 @property (nonatomic) MXKRoomBubbleComponentDisplayFix displayFix;
 
 /**
+ Event antivirus scan. Present only if antivirus is enabled and event contains media.
+ */
+@property (nonatomic) MXEventScan *eventScan;
+
+/**
  Create a new `MXKRoomBubbleComponent` object based on a `MXEvent` instance.
  
  @param event the event used to compose the bubble component.

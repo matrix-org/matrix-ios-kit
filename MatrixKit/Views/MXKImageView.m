@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,7 +17,6 @@
  */
 
 #import "MXKImageView.h"
-#import "MXMediaManager.h"
 #import "MXKPieChartView.h"
 #import "MXKAttachment.h"
 
@@ -24,9 +24,13 @@
 
 @interface MXKImageView ()
 {
-    NSString *imageURL;
+    NSString *mxcURI;
     NSString *mimeType;
     UIImageOrientation imageOrientation;
+    
+    // additional settings used in case of thumbnail.
+    CGSize thumbnailViewSize;
+    MXThumbnailingMethod thumbnailMethod;
     
     UIImage *currentImage;
     
@@ -489,10 +493,10 @@
     {
         [self stopActivityIndicator];
     }
-    else
+    else if (mxcURI)
     {
-        NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
-        if ([MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath])
+        NSString *downloadId = [MXMediaManager downloadIdForMatrixContentURI:mxcURI inFolder:mediaFolder];
+        if ([MXMediaManager existingDownloaderWithIdentifier:downloadId])
         {
             // Loading is in progress, start activity indicator
             [self startActivityIndicator];
@@ -500,13 +504,52 @@
     }
 }
 
-- (void)setImageURL:(NSString *)anImageURL withType:(NSString *)type andImageOrientation:(UIImageOrientation)orientation previewImage:(UIImage*)previewImage
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager
+{
+    [self setImageURI:mxContentURI
+             withType:mimeType
+  andImageOrientation:orientation
+          isThumbnail:NO
+         previewImage:previewImage
+         mediaManager:mediaManager];
+}
+
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+      toFitViewSize:(CGSize)viewSize
+         withMethod:(MXThumbnailingMethod)thumbnailingMethod
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager
+{
+    // Store the thumbnail settings
+    thumbnailViewSize = viewSize;
+    thumbnailMethod = thumbnailingMethod;
+    
+    [self setImageURI:mxContentURI
+             withType:mimeType
+  andImageOrientation:orientation
+          isThumbnail:YES
+         previewImage:previewImage
+         mediaManager:mediaManager];
+}
+
+- (void)setImageURI:(NSString *)mxContentURI
+           withType:(NSString *)mimeType
+andImageOrientation:(UIImageOrientation)orientation
+        isThumbnail:(BOOL)isThumbnail
+       previewImage:(UIImage*)previewImage
+       mediaManager:(MXMediaManager*)mediaManager
 {
     // Remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    imageURL = anImageURL;
-    if (!imageURL)
+    mxcURI = mxContentURI;
+    if (!mxcURI)
     {
         // Set preview by default
         self.image = previewImage;
@@ -517,68 +560,96 @@
     imageOrientation = orientation;
     
     // Store the mime type used to define the cache path of the image.
-    mimeType = type;
+    mimeType = mimeType;
     if (!mimeType.length)
     {
-        // Check if the extension could not be deduced from url
-        if (![anImageURL pathExtension].length)
-        {
-            // Set default mime type if no information is available
-            mimeType = @"image/jpeg";
-        }
+        // Set default mime type if no information is available
+        mimeType = @"image/jpeg";
     }
     
-    // Check whether the image download is in progress
-    NSString *cacheFilePath = [MXMediaManager cachePathForMediaWithURL:imageURL andType:mimeType inFolder:mediaFolder];
-    MXMediaLoader* loader = [MXMediaManager existingDownloaderWithOutputFilePath:cacheFilePath];
-    if (loader)
+    // Retrieve the image from cache if any
+    NSString *cacheFilePath;
+    if (isThumbnail)
     {
-        // Set preview until the image is loaded
-        self.image = previewImage;
-        // update the progress UI with the current info
-        if (!_hideActivityIndicator)
-        {
-            [self startActivityIndicator];
-        }
-        [self updateProgressUI:loader.statisticsDict];
-        
-        // Add observers
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
+        cacheFilePath = [MXMediaManager thumbnailCachePathForMatrixContentURI:mxcURI
+                                                                      andType:mimeType
+                                                                     inFolder:mediaFolder
+                                                                toFitViewSize:thumbnailViewSize
+                                                                   withMethod:thumbnailMethod];
     }
     else
     {
-        // Retrieve the image from cache
-        UIImage* image = _enableInMemoryCache ? [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath]: [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-        
-        if (image)
+        cacheFilePath = [MXMediaManager cachePathForMatrixContentURI:mxcURI
+                                                             andType:mimeType
+                                                            inFolder:mediaFolder];
+    }
+    
+    UIImage* image = _enableInMemoryCache ? [MXMediaManager loadThroughCacheWithFilePath:cacheFilePath] : [MXMediaManager loadPictureFromFilePath:cacheFilePath];
+    if (image)
+    {
+        if (imageOrientation != UIImageOrientationUp)
         {
-            if (imageOrientation != UIImageOrientationUp)
-            {
-                self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
-            }
-            else
-            {
-                self.image = image;
-            }
-            
-            [self stopActivityIndicator];
+            self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
         }
         else
         {
-            // Set preview until the image is loaded
-            self.image = previewImage;
-            // Trigger image downloading
+            self.image = image;
+        }
+        
+        [self stopActivityIndicator];
+    }
+    else
+    {
+        // Set preview until the image is loaded
+        self.image = previewImage;
+        
+        // Check whether the image download is in progress
+        NSString *downloadId;
+        if (isThumbnail)
+        {
+            downloadId = [MXMediaManager thumbnailDownloadIdForMatrixContentURI:mxcURI
+                                                                       inFolder:mediaFolder
+                                                                  toFitViewSize:thumbnailViewSize
+                                                                     withMethod:thumbnailMethod];
+        }
+        else
+        {
+            downloadId = [MXMediaManager downloadIdForMatrixContentURI:mxcURI inFolder:mediaFolder];
+        }
+        
+        MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
+        if (!loader && mediaManager)
+        {
+            // Trigger the download
+            if (isThumbnail)
+            {
+                loader = [mediaManager downloadThumbnailFromMatrixContentURI:mxcURI
+                                                                    withType:mimeType
+                                                                    inFolder:mediaFolder
+                                                               toFitViewSize:thumbnailViewSize
+                                                                  withMethod:thumbnailMethod
+                                                                     success:nil
+                                                                     failure:nil];
+            }
+            else
+            {
+                loader = [mediaManager downloadMediaFromMatrixContentURI:mxcURI
+                                                                withType:mimeType
+                                                                inFolder:mediaFolder];
+            }
+        }
+        
+        if (loader)
+        {
+            // update the progress UI with the current info
             if (!_hideActivityIndicator)
             {
                 [self startActivityIndicator];
             }
-            // Add observers
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
-            [MXMediaManager downloadMediaFromURL:imageURL andSaveAtFilePath:cacheFilePath];
+            [self updateProgressUI:loader.statisticsDict];
+            
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaLoaderStateDidChange:) name:kMXMediaLoaderStateDidChangeNotification object:loader];
         }
     }
 }
@@ -588,34 +659,50 @@
     // Remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    // Store image orientation
-    imageOrientation = attachment.thumbnailOrientation;
+    // Set default orientation
+    imageOrientation = UIImageOrientationUp;
     
-    imageURL = attachment.actualURL;
+    mediaFolder = attachment.eventRoomId;
+    mxcURI = attachment.contentURL;
     mimeType = attachment.contentInfo[@"mimetype"];
     if (!mimeType.length)
     {
-        // Check if the extension could not be deduced from url
-        if (![imageURL pathExtension].length)
-        {
-            // Set default mime type if no information is available
-            mimeType = @"image/jpeg";
-        }
+        // Set default mime type if no information is available
+        mimeType = @"image/jpeg";
     }
     
     // while we wait for the content to download
     self.image = [attachment getCachedThumbnail];
     
-    // Add observers
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadProgress:) name:kMXMediaDownloadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFinishNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaDownloadDidFailNotification object:nil];
+    if (!_hideActivityIndicator)
+    {
+        [self startActivityIndicator];
+    }
     
+    MXWeakify(self);
     [attachment getImage:^(UIImage *img) {
+        MXStrongifyAndReturnIfNil(self);
         self.image = img;
+        [self stopActivityIndicator];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     } failure:^(NSError *error) {
         NSLog(@"Unable to fetch image attachment! %@", error);
+        MXStrongifyAndReturnIfNil(self);
+        [self stopActivityIndicator];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     }];
+    
+    // Check whether the image download is in progress
+    NSString *downloadId = attachment.downloadId;
+    MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
+    if (loader)
+    {
+        // Observer this loader to display progress
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(checkProgressOnMediaLoaderStateChange:)
+                                                     name:kMXMediaLoaderStateDidChangeNotification
+                                                   object:loader];
+    }
 }
 
 - (void)setAttachmentThumb:(MXKAttachment *)attachment
@@ -626,50 +713,32 @@
     // Store image orientation
     imageOrientation = attachment.thumbnailOrientation;
     
-    mimeType = attachment.thumbnailMimeType;
-    imageURL = attachment.thumbnailURL;
+    mediaFolder = attachment.eventRoomId;
     
     // Remove the existing image (if any) by using the potential preview.
     self.image = attachment.previewImage;
     
-    [attachment getThumbnail:^(UIImage *img) {
-        self.image = img;
-    } failure:nil];
-}
-
-- (void)onMediaDownloadEnd:(NSNotification *)notif
-{
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
+    if (!_hideActivityIndicator)
     {
-        NSString* url = notif.object;
-        NSString* cacheFilePath = notif.userInfo[kMXMediaLoaderFilePathKey];
-
-        if ([url isEqualToString:imageURL])
-        {
-            [self stopActivityIndicator];
-
-            if (cacheFilePath.length)
-            {
-                // update the image
-                UIImage* image = [MXMediaManager loadPictureFromFilePath:cacheFilePath];
-                if (image)
-                {
-                    if (imageOrientation != UIImageOrientationUp)
-                    {
-                        self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
-                    }
-                    else
-                    {
-                        self.image = image;
-                    }
-                }
-            }
-
-            // remove the observers
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
-        }
+        [self startActivityIndicator];
     }
+    
+    MXWeakify(self);
+    [attachment getThumbnail:^(UIImage *img) {
+        MXStrongifyAndReturnIfNil(self);
+        if (img && self->imageOrientation != UIImageOrientationUp)
+        {
+            self.image = [UIImage imageWithCGImage:img.CGImage scale:1.0 orientation:self->imageOrientation];
+        }
+        else
+        {
+            self.image = img;
+        }
+        [self stopActivityIndicator];
+    } failure:^(NSError *error) {
+        MXStrongifyAndReturnIfNil(self);
+        [self stopActivityIndicator];
+    }];
 }
 
 - (void)updateProgressUI:(NSDictionary*)downloadStatsDict
@@ -732,17 +801,50 @@
     }
 }
 
-- (void)onMediaDownloadProgress:(NSNotification *)notif
+- (void)onMediaLoaderStateDidChange:(NSNotification *)notif
 {
-    // sanity check
-    if ([notif.object isKindOfClass:[NSString class]])
-    {
-        NSString* url = notif.object;
-        
-        if ([url isEqualToString:imageURL])
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    switch (loader.state) {
+        case MXMediaLoaderStateDownloadInProgress:
+            [self updateProgressUI:loader.statisticsDict];
+            break;
+        case MXMediaLoaderStateDownloadCompleted:
         {
-            [self updateProgressUI:notif.userInfo];
+            [self stopActivityIndicator];
+            // update the image
+            UIImage* image = [MXMediaManager loadPictureFromFilePath:loader.downloadOutputFilePath];
+            if (image)
+            {
+                if (imageOrientation != UIImageOrientationUp)
+                {
+                    self.image = [UIImage imageWithCGImage:image.CGImage scale:1.0 orientation:imageOrientation];
+                }
+                else
+                {
+                    self.image = image;
+                }
+            }
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
         }
+        case MXMediaLoaderStateDownloadFailed:
+            [self stopActivityIndicator];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)checkProgressOnMediaLoaderStateChange:(NSNotification *)notif
+{
+    MXMediaLoader *loader = (MXMediaLoader*)notif.object;
+    switch (loader.state) {
+        case MXMediaLoaderStateDownloadInProgress:
+            [self updateProgressUI:loader.statisticsDict];
+            break;
+        default:
+            break;
     }
 }
 

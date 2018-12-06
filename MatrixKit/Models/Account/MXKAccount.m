@@ -186,6 +186,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }
         
+        if ([coder decodeObjectForKey:@"antivirusserverurl"])
+        {
+            _antivirusServerURL = [coder decodeObjectForKey:@"antivirusserverurl"];
+        }
+        
         if ([coder decodeObjectForKey:@"pushgatewayurl"])
         {
             _pushGatewayURL = [coder decodeObjectForKey:@"pushgatewayurl"];
@@ -239,6 +244,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [coder encodeObject:_identityServerURL forKey:@"identityserverurl"];
     }
     
+    if (self.antivirusServerURL)
+    {
+        [coder encodeObject:_antivirusServerURL forKey:@"antivirusserverurl"];
+    }
+    
     if (self.pushGatewayURL)
     {
         [coder encodeObject:_pushGatewayURL forKey:@"pushgatewayurl"];
@@ -271,6 +281,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // By default, use the same address for the identity server
         [mxRestClient setIdentityServer:mxCredentials.homeServer];
     }
+    
+    // Archive updated field
+    [[MXKAccountManager sharedManager] saveAccounts];
+}
+
+- (void)setAntivirusServerURL:(NSString *)antivirusServerURL
+{
+    _antivirusServerURL = antivirusServerURL;
+    // Update the current session if any
+    [mxSession setAntivirusServerURL:antivirusServerURL];
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
@@ -652,6 +672,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     // Instantiate new session
     mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
+    
+    // Check whether an antivirus url is defined.
+    if (_antivirusServerURL)
+    {
+        // Enable the antivirus scanner in the current session.
+        [mxSession setAntivirusServerURL:_antivirusServerURL];
+    }
 
     // Set default MXEvent -> NSString formatter
     MXKEventFormatter *eventFormatter = [[MXKEventFormatter alloc] initWithMatrixSession:self.mxSession];

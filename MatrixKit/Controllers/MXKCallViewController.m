@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -394,10 +395,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if (peerAvatarURL)
     {
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
-        NSString *avatarThumbURL = [self.mainSession.matrixRestClient urlOfContentThumbnail:peerAvatarURL toFitViewSize:callerImageView.frame.size withMethod:MXThumbnailingMethodCrop];
         callerImageView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
         callerImageView.enableInMemoryCache = YES;
-        [callerImageView setImageURL:avatarThumbURL withType:nil andImageOrientation:UIImageOrientationUp previewImage:self.picturePlaceholder];
+        [callerImageView setImageURI:peerAvatarURL
+                            withType:nil
+                 andImageOrientation:UIImageOrientationUp
+                       toFitViewSize:callerImageView.frame.size
+                          withMethod:MXThumbnailingMethodCrop
+                        previewImage:self.picturePlaceholder
+                        mediaManager:self.mainSession.mediaManager];
     }
     else
     {
