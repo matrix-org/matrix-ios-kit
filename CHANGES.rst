@@ -3,7 +3,12 @@ Changes in MatrixKit in 0.8.x (2018-xx-xx)
 
 Improvements:
  * MXKAccount: Add "antivirusServerURL" property. Set a non-null url to configure the antivirus scanner use.
+ * MXKWebViewController: Make it open links with `target="_blank"` within the webview.
+ * MXKWebViewController: Improve back navigation by resetting initial right buttons.
  * Replace the deprecated MXMediaManager and MXMediaLoader interfaces use (see matrix-ios-sdk/pull/593).
+ 
+Bug fix:
+ * Unexpected empty local contacts list.
  
 Deprecated API:
  * MXKAttachment: the properties "actualURL" and "thumbnailURL" are deprecated because only Matrix Content URI should be considered now.
@@ -12,6 +17,7 @@ Deprecated API:
  * MXKImageView: [setImageURL:withType:andImageOrientation:previewImage:] is deprecated, use [setImageURI:withType:andImageOrientation:previewImage:mediaManager] or [setImageURI:withType:andImageOrientation:toFitViewSize:withMethod:previewImage:mediaManager] instead.
  * MXKReceiptSendersContainer: the property "restClient" is deprecated.
  * MXKReceiptSendersContainer: [initWithFrame:andRestClient:] is deprecated, use [initWithFrame:andMediaManager:] instead.
+ * Add media antivirus scan support.
 
 Changes in MatrixKit in 0.8.6 (2018-10-31)
 ==========================================
