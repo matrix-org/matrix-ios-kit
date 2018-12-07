@@ -1074,6 +1074,7 @@ static BOOL _disableLongPressGestureOnEvent;
             break;
         case MXMediaLoaderStateDownloadCompleted:
         case MXMediaLoaderStateDownloadFailed:
+        case MXMediaLoaderStateCancelled:
             [self stopProgressUI];
             // remove the observer
             [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
@@ -1092,6 +1093,7 @@ static BOOL _disableLongPressGestureOnEvent;
             [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
             break;
         case MXMediaLoaderStateDownloadFailed:
+        case MXMediaLoaderStateCancelled:
             [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
             break;
         default:
