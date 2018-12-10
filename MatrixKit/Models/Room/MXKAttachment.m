@@ -488,6 +488,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                         }
                         break;
                     case MXMediaLoaderStateDownloadFailed:
+                    case MXMediaLoaderStateCancelled:
                         [[NSNotificationCenter defaultCenter] removeObserver:self->onAttachmentDownloadObs];
                         self->onAttachmentDownloadObs = nil;
                         if (onFailure)

@@ -828,6 +828,7 @@ andImageOrientation:(UIImageOrientation)orientation
             break;
         }
         case MXMediaLoaderStateDownloadFailed:
+        case MXMediaLoaderStateCancelled:
             [self stopActivityIndicator];
             [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:loader];
             break;

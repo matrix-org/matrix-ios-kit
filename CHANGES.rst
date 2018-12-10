@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.9.x (20xx-xx-xx)
+==========================================
+
+Bug fix:
+ * Handle correctly media loader cancellation.
+
 Changes in MatrixKit in 0.9.0 (2018-12-06)
 ==========================================
 
