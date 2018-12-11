@@ -1,7 +1,8 @@
-Changes in MatrixKit in 0.9.x (20xx-xx-xx)
+Changes in MatrixKit in 0.9.1 (2018-12-12)
 ==========================================
 
 Bug fix:
+ * MXKAuthenticationRecaptchaWebView: Use WKWebView so that it can work on iOS 10 (vector-im/riot-ios/issues/2119).
  * Handle correctly media loader cancellation.
 
 Changes in MatrixKit in 0.9.0 (2018-12-06)
