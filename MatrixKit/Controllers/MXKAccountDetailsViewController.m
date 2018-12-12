@@ -676,6 +676,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 break;
             }
             case MXMediaLoaderStateDownloadFailed:
+            case MXMediaLoaderStateCancelled:
                 [self updateUserPictureButton:self.picturePlaceholder];
                 // remove the observers
                 [[NSNotificationCenter defaultCenter] removeObserver:self];

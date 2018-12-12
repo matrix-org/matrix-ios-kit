@@ -201,6 +201,7 @@
                 break;
             }
             case MXMediaLoaderStateDownloadFailed:
+            case MXMediaLoaderStateCancelled:
                 [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
                 downloadId = nil;
                 break;
