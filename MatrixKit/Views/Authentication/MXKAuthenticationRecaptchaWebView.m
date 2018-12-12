@@ -1,5 +1,6 @@
 /*
  Copyright 2016 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@
 
 NSString *kMXKRecaptchaHTMLString = @"<html> \
 <head> \
+<meta name='viewport' content='initial-scale=1.0' /> \
 <script type=\"text/javascript\"> \
 var verifyCallback = function(response) { \
     /* Generic method to make a bridge between JS and the UIWebView*/ \
@@ -43,7 +45,7 @@ var onloadCallback = function() { \
 </body> \
 </html>";
 
-@interface MXKAuthenticationRecaptchaWebView ()
+@interface MXKAuthenticationRecaptchaWebView () <WKNavigationDelegate>
 {
     // The block called when the reCAPTCHA response is received
     void (^onResponse)(NSString *);
@@ -66,7 +68,7 @@ var onloadCallback = function() { \
 
 - (void)openRecaptchaWidgetWithSiteKey:(NSString*)siteKey fromHomeServer:(NSString*)homeServer callback:(void (^)(NSString *response))callback
 {
-    self.delegate = self;
+    self.navigationDelegate = self;
     
     onResponse = callback;
     
@@ -81,7 +83,9 @@ var onloadCallback = function() { \
     [self loadHTMLString:htmlString baseURL:[NSURL URLWithString:homeServer]];
 }
 
--(void)webViewDidFinishLoad:(UIWebView *)webView
+#pragma mark - WKNavigationDelegate
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     if (activityIndicator)
     {
@@ -91,20 +95,20 @@ var onloadCallback = function() { \
     }
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    NSString *urlString = [[request URL] absoluteString];
-    
+    NSString *urlString = navigationAction.request.URL.absoluteString;
+
     if ([urlString hasPrefix:@"js:"])
     {
         // Listen only to scheme of the JS-UIWebView bridge
         NSString *jsonString = [[[urlString componentsSeparatedByString:@"js:"] lastObject]  stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
         NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-        
+
         NSError *error;
         NSDictionary *parameters = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers
                                                                      error:&error];
-        
+
         if (!error)
         {
             if ([@"verifyCallback" isEqualToString:parameters[@"action"]])
@@ -113,9 +117,10 @@ var onloadCallback = function() { \
                 onResponse(parameters[@"response"]);
             }
         }
-        return NO;
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end
