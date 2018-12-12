@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "MatrixKit"
-  s.version      = "0.9.0"
+  s.version      = "0.9.1"
   s.summary      = "The Matrix reusable UI library for iOS based on MatrixSDK."
 
   s.description  = <<-DESC
