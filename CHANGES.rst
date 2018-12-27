@@ -1,6 +1,12 @@
-Changes in MatrixKit in 0.9.1 (2018-12-12)
+Changes in MatrixKit in 0.9.x (20xx-xx-xx)
 ==========================================
 
+Improvements:
+ * MXKAccount: clear the scan manager database when the session is closed by clearing the cache.
+
+Changes in MatrixKit in 0.9.1 (2018-12-12)
+==========================================
+ 
 Bug fix:
  * MXKAuthenticationRecaptchaWebView: Use WKWebView so that it can work on iOS 10 (vector-im/riot-ios/issues/2119).
  * Handle correctly media loader cancellation.
