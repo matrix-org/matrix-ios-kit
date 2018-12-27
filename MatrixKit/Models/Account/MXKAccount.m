@@ -794,6 +794,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             // Force a reload of device keys at the next session start.
             // This will fix potential UISIs other peoples receive for our messages.
             [mxSession.crypto resetDeviceKeys];
+            
+            // Clean the scan manager database.
+            [mxSession.scanManager deleteAllAntivirusScans];
         }
         else
         {
