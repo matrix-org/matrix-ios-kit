@@ -94,10 +94,6 @@
     
     activityIndicator.center = self.view.center;
     [self.view addSubview:activityIndicator];
-    
-    // Apply the navigation bar tint color.
-    self.defaultBarTintColor = defaultBarTintColor;
-    self.barTitleColor = barTitleColor;
 }
 
 - (void)dealloc
