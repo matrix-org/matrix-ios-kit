@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 
 #import "MXKTableViewController.h"
 
+#import "UIViewController+MatrixKit.h"
 #import "UIScrollView+MatrixKit.h"
 
 @interface MXKTableViewController ()
@@ -196,32 +198,9 @@
     }
     else
     {
-        // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
-        UINavigationController *mainNavigationController = nil;
-        if (self.splitViewController)
-        {
-            mainNavigationController = self.navigationController;
-            UIViewController *parentViewController = self.parentViewController;
-            while (parentViewController)
-            {
-                if (parentViewController.navigationController)
-                {
-                    mainNavigationController = parentViewController.navigationController;
-                    parentViewController = parentViewController.parentViewController;
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-        
         // Set default tintColor
         self.navigationController.navigationBar.barTintColor = defaultBarTintColor;
-        if (mainNavigationController)
-        {
-            mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
-        }
+        self.mxk_mainNavigationController.navigationBar.barTintColor = defaultBarTintColor;
     }
 }
 
@@ -230,24 +209,7 @@
     barTitleColor = titleColor;
     
     // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
-    UINavigationController *mainNavigationController = nil;
-    if (self.splitViewController)
-    {
-        mainNavigationController = self.navigationController;
-        UIViewController *parentViewController = self.parentViewController;
-        while (parentViewController)
-        {
-            if (parentViewController.navigationController)
-            {
-                mainNavigationController = parentViewController.navigationController;
-                parentViewController = parentViewController.parentViewController;
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
+    UINavigationController *mainNavigationController = self.mxk_mainNavigationController;
     
     // Set navigation bar title color
     NSDictionary<NSString *,id> *titleTextAttributes = self.navigationController.navigationBar.titleTextAttributes;
@@ -452,24 +414,7 @@
     // Indeed 'kMXSessionStateDidChangeNotification' are observed only when the view controller is visible.
     
     // Retrieve the main navigation controller if the current view controller is embedded inside a split view controller.
-    UINavigationController *mainNavigationController = nil;
-    if (self.splitViewController)
-    {
-        mainNavigationController = self.navigationController;
-        UIViewController *parentViewController = self.parentViewController;
-        while (parentViewController)
-        {
-            if (parentViewController.navigationController)
-            {
-                mainNavigationController = parentViewController.navigationController;
-                parentViewController = parentViewController.parentViewController;
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
+    UINavigationController *mainNavigationController = self.mxk_mainNavigationController;
     
     if (mxSessionArray.count)
     {
