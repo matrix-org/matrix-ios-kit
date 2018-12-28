@@ -1,7 +1,9 @@
-Changes in MatrixKit in 0.9.x (20xx-xx-xx)
+Changes in MatrixKit in 0.9.2 (2018-12-)
 ==========================================
 
 Improvements:
+ * Upgrade MatrixSDK version (v0.12.1).
+ * Create UIViewController+MatrixKit category.
  * MXKAccount: clear the scan manager database when the session is closed by clearing the cache.
 
 Changes in MatrixKit in 0.9.1 (2018-12-12)
