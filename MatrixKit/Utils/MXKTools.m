@@ -1147,7 +1147,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                                                                          effectiveRange:&effectiveRange];
 
                          // Check if this is the " " string
-                         if (effectiveRange.length == 1 && paragraphStyle.firstLineHeadIndent != 25)
+                         if (paragraphStyle && effectiveRange.length == 1 && paragraphStyle.firstLineHeadIndent != 25)
                          {
                              // Fix its paragraph style
                              NSMutableParagraphStyle *newParagraphStyle = [paragraphStyle mutableCopy];

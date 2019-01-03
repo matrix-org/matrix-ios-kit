@@ -5,6 +5,9 @@ Improvements:
  * Upgrade MatrixSDK version (v0.12.1).
  * Create UIViewController+MatrixKit category.
  * MXKAccount: clear the scan manager database when the session is closed by clearing the cache.
+ 
+Bug fix:
+ * Crash in [MXKTools removeMarkedBlockquotesArtifacts:] (vector-im/riot-ios/issues/2147).
 
 Changes in MatrixKit in 0.9.1 (2018-12-12)
 ==========================================
