@@ -303,7 +303,7 @@
 "membership_ban" = "Kitiltva";
 "num_members_one" = "%@ felhasználó";
 "num_members_other" = "%@ felhasználó";
-"kick" = "Kirúg";
+"kick" = "Elküld";
 "ban" = "Kitilt";
 "unban" = "Visszaenged";
 "message_unsaved_changes" = "Mentetlen beállítások vannak. Ha kilépsz a beállítások elvesznek.";
