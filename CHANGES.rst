@@ -1,6 +1,18 @@
-Changes in MatrixKit in 0.9.1 (2018-12-12)
+Changes in MatrixKit in 0.9.2 (2019-01-04)
 ==========================================
 
+Improvements:
+ * Upgrade MatrixSDK version (v0.12.1).
+ * Create UIViewController+MatrixKit category.
+ * MXKAccount: clear the scan manager database when the session is closed by clearing the cache.
+ * MXKTools: Improve image resizing. Add a memory efficient method to reduce image dimensions.
+ 
+Bug fix:
+ * Crash in [MXKTools removeMarkedBlockquotesArtifacts:] (vector-im/riot-ios/issues/2147).
+
+Changes in MatrixKit in 0.9.1 (2018-12-12)
+==========================================
+ 
 Bug fix:
  * MXKAuthenticationRecaptchaWebView: Use WKWebView so that it can work on iOS 10 (vector-im/riot-ios/issues/2119).
  * Handle correctly media loader cancellation.

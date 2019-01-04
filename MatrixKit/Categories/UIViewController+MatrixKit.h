@@ -1,5 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,17 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import <UIKit/UIKit.h>
 
-NSString *const MatrixKitVersion = @"0.9.2";
+NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+@interface UIViewController (MatrixKit)
 
-NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
+/**
+ The main navigation controller if the view controller is embedded inside a split view controller.
+ */
+@property (nullable, nonatomic, readonly) UINavigationController *mxk_mainNavigationController;
+
+@end
+
+NS_ASSUME_NONNULL_END

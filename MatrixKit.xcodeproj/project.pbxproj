@@ -43,6 +43,7 @@
 		32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2271AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m */; };
 		32CEE22C1AB1EC9B00F7C74D /* MXKRecentCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2291AB1EC9B00F7C74D /* MXKRecentCellData.m */; };
 		32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */; };
+		32D9F4E221D54A08008007F2 /* UIViewController+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9F4E121D54A08008007F2 /* UIViewController+MatrixKit.m */; };
 		32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */; };
 		32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */; };
 		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
@@ -315,6 +316,8 @@
 		32CEE22A1AB1EC9B00F7C74D /* MXKRecentCellDataStoring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentCellDataStoring.h; sourceTree = "<group>"; };
 		32CEE22E1AB1EE0900F7C74D /* MXKRecentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentTableViewCell.h; sourceTree = "<group>"; };
 		32CEE22F1AB1EE0900F7C74D /* MXKRecentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRecentTableViewCell.m; sourceTree = "<group>"; };
+		32D9F4E021D54A08008007F2 /* UIViewController+MatrixKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+MatrixKit.h"; sourceTree = "<group>"; };
+		32D9F4E121D54A08008007F2 /* UIViewController+MatrixKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MatrixKit.m"; sourceTree = "<group>"; };
 		32FBDAF61E4484C40033C519 /* MXKEncryptionKeysImportView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEncryptionKeysImportView.h; sourceTree = "<group>"; };
 		32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionKeysImportView.m; sourceTree = "<group>"; };
 		32FBDAF91E44B0FC0033C519 /* MXKEncryptionKeysExportView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEncryptionKeysExportView.h; sourceTree = "<group>"; };
@@ -1196,6 +1199,8 @@
 				F0A8955D1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m */,
 				F04F78331F17A1B60039485E /* UIAlertController+MatrixKit.h */,
 				F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */,
+				32D9F4E021D54A08008007F2 /* UIViewController+MatrixKit.h */,
+				32D9F4E121D54A08008007F2 /* UIViewController+MatrixKit.m */,
 				F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */,
 				F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */,
 				323F9AF41F1E53730013AFDE /* NSBundle+MXKLanguage.h */,
@@ -1747,6 +1752,7 @@
 				F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */,
 				32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */,
 				F06CDD5F1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m in Sources */,
+				32D9F4E221D54A08008007F2 /* UIViewController+MatrixKit.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
 				3235CD771C32DC8A0084EA40 /* MXKSearchDataSource.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
