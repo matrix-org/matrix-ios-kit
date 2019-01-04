@@ -207,6 +207,18 @@ typedef struct
 + (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size useMainScreenScale:(BOOL)useMainScreenScale;
 
 /**
+ Reduce image to fit in the provided size.
+ The aspect ratio is kept.
+ 
+ @discussion This method use less memory than `+ [reduceImage:toFitInSize:useMainScreenScale:]`.
+
+ @param imageData The image data.
+ @param size Size to fit in.
+ @return Resized image or nil if the data is not interpreted.
+ */
++ (UIImage*)resizeImageWithData:(NSData*)imageData toFitInSize:(CGSize)size;
+
+/**
  Resize image to a provided size.
  
  @param image the image to modify.

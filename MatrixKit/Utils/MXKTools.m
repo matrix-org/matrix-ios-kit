@@ -343,7 +343,7 @@ static NSRegularExpression *htmlTagsRegex;
     compressionSizes.original.imageSize = image.size;
     compressionSizes.original.fileSize = originalFileSize ? originalFileSize : UIImageJPEGRepresentation(image, 0.9).length;
     
-    NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
+    NSLog(@"[MXKTools] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
     
     compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
     
@@ -504,6 +504,32 @@ static NSRegularExpression *htmlTagsRegex;
         resizedImage = image;
     }
     
+    return resizedImage;
+}
+
++ (UIImage*)resizeImageWithData:(NSData*)imageData toFitInSize:(CGSize)size
+{
+    // Create the image source
+    CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+
+    // Take the max dimension of size to fit in
+    CGFloat maxPixelSize = fmax(size.width, size.height);
+
+    //Create thumbnail options
+    CFDictionaryRef options = (__bridge CFDictionaryRef) @{
+                                                           (id) kCGImageSourceCreateThumbnailWithTransform : (id)kCFBooleanTrue,
+                                                           (id) kCGImageSourceCreateThumbnailFromImageAlways : (id)kCFBooleanTrue,
+                                                           (id) kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize)
+                                                           };
+
+    // Generate the thumbnail
+    CGImageRef resizedImageRef = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options);
+
+    UIImage *resizedImage = [[UIImage alloc] initWithCGImage:resizedImageRef];
+
+    CGImageRelease(resizedImageRef);
+    CFRelease(imageSource);
+
     return resizedImage;
 }
 
