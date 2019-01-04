@@ -447,7 +447,12 @@ static NSRegularExpression *htmlTagsRegex;
 
 + (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size
 {
-    UIImage *resizedImage = image;
+    return [self reduceImage:image toFitInSize:size useMainScreenScale:NO];
+}
+
++ (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size useMainScreenScale:(BOOL)useMainScreenScale
+{
+    UIImage *resizedImage;
     
     // Check whether resize is required
     if (size.width && size.height)
@@ -474,11 +479,10 @@ static NSRegularExpression *htmlTagsRegex;
             CGSize imageSize = CGSizeMake(width, height);
             
             // Convert first the provided size in pixels
-#if TARGET_OS_IPHONE
-            CGFloat scale = [[UIScreen mainScreen] scale];
-#elif TARGET_OS_OSX
-            CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
+            
+            // The scale factor is set to 0.0 to use the scale factor of the device’s main screen.
+            CGFloat scale = useMainScreenScale ? 0.0 : 1.0;
+            
             UIGraphicsBeginImageContextWithOptions(imageSize, NO, scale);
             
             //            // set to the top quality
@@ -495,6 +499,10 @@ static NSRegularExpression *htmlTagsRegex;
             UIGraphicsEndImageContext();
         }
     }
+    else
+    {
+        resizedImage = image;
+    }
     
     return resizedImage;
 }
@@ -507,12 +515,8 @@ static NSRegularExpression *htmlTagsRegex;
     if (size.width && size.height)
     {
         // Convert first the provided size in pixels
-#if TARGET_OS_IPHONE
-        CGFloat scale = [[UIScreen mainScreen] scale];
-#elif TARGET_OS_OSX
-        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
-        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        // The scale factor is set to 0.0 to use the scale factor of the device’s main screen.
+        UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
         
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
@@ -534,12 +538,8 @@ static NSRegularExpression *htmlTagsRegex;
     if (size.width && size.height)
     {
         // Convert first the provided size in pixels
-#if TARGET_OS_IPHONE
-        CGFloat scale = [[UIScreen mainScreen] scale];
-#elif TARGET_OS_OSX
-        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
-        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        // The scale factor is set to 0.0 to use the scale factor of the device’s main screen.
+        UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
         
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);

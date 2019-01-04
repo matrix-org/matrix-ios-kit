@@ -184,11 +184,27 @@ typedef struct
  The aspect ratio is kept.
  If the image is smaller than the provided size, the image is not recomputed.
  
+ @discussion This method call `+ [reduceImage:toFitInSize:useMainScreenScale:]` with `useMainScreenScale` value to `NO`.
+ 
  @param image the image to modify.
  @param size to fit in.
  @return resized image.
+ 
+ @see reduceImage:toFitInSize:useMainScreenScale:
  */
 + (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size;
+
+/**
+ Reduce image to fit in the provided size.
+ The aspect ratio is kept.
+ If the image is smaller than the provided size, the image is not recomputed.
+ 
+ @param image the image to modify.
+ @param size to fit in.
+ @param useMainScreenScale Indicate true to use main screen scale.
+ @return resized image.
+ */
++ (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size useMainScreenScale:(BOOL)useMainScreenScale;
 
 /**
  Resize image to a provided size.
