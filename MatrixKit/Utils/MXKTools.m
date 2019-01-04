@@ -343,7 +343,7 @@ static NSRegularExpression *htmlTagsRegex;
     compressionSizes.original.imageSize = image.size;
     compressionSizes.original.fileSize = originalFileSize ? originalFileSize : UIImageJPEGRepresentation(image, 0.9).length;
     
-    NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
+    NSLog(@"[MXKTools] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
     
     compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
     
@@ -447,7 +447,12 @@ static NSRegularExpression *htmlTagsRegex;
 
 + (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size
 {
-    UIImage *resizedImage = image;
+    return [self reduceImage:image toFitInSize:size useMainScreenScale:NO];
+}
+
++ (UIImage *)reduceImage:(UIImage *)image toFitInSize:(CGSize)size useMainScreenScale:(BOOL)useMainScreenScale
+{
+    UIImage *resizedImage;
     
     // Check whether resize is required
     if (size.width && size.height)
@@ -474,11 +479,10 @@ static NSRegularExpression *htmlTagsRegex;
             CGSize imageSize = CGSizeMake(width, height);
             
             // Convert first the provided size in pixels
-#if TARGET_OS_IPHONE
-            CGFloat scale = [[UIScreen mainScreen] scale];
-#elif TARGET_OS_OSX
-            CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
+            
+            // The scale factor is set to 0.0 to use the scale factor of the device’s main screen.
+            CGFloat scale = useMainScreenScale ? 0.0 : 1.0;
+            
             UIGraphicsBeginImageContextWithOptions(imageSize, NO, scale);
             
             //            // set to the top quality
@@ -495,7 +499,37 @@ static NSRegularExpression *htmlTagsRegex;
             UIGraphicsEndImageContext();
         }
     }
+    else
+    {
+        resizedImage = image;
+    }
     
+    return resizedImage;
+}
+
++ (UIImage*)resizeImageWithData:(NSData*)imageData toFitInSize:(CGSize)size
+{
+    // Create the image source
+    CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+
+    // Take the max dimension of size to fit in
+    CGFloat maxPixelSize = fmax(size.width, size.height);
+
+    //Create thumbnail options
+    CFDictionaryRef options = (__bridge CFDictionaryRef) @{
+                                                           (id) kCGImageSourceCreateThumbnailWithTransform : (id)kCFBooleanTrue,
+                                                           (id) kCGImageSourceCreateThumbnailFromImageAlways : (id)kCFBooleanTrue,
+                                                           (id) kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize)
+                                                           };
+
+    // Generate the thumbnail
+    CGImageRef resizedImageRef = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options);
+
+    UIImage *resizedImage = [[UIImage alloc] initWithCGImage:resizedImageRef];
+
+    CGImageRelease(resizedImageRef);
+    CFRelease(imageSource);
+
     return resizedImage;
 }
 
@@ -507,12 +541,8 @@ static NSRegularExpression *htmlTagsRegex;
     if (size.width && size.height)
     {
         // Convert first the provided size in pixels
-#if TARGET_OS_IPHONE
-        CGFloat scale = [[UIScreen mainScreen] scale];
-#elif TARGET_OS_OSX
-        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
-        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        // The scale factor is set to 0.0 to use the scale factor of the device’s main screen.
+        UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
         
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
@@ -534,12 +564,8 @@ static NSRegularExpression *htmlTagsRegex;
     if (size.width && size.height)
     {
         // Convert first the provided size in pixels
-#if TARGET_OS_IPHONE
-        CGFloat scale = [[UIScreen mainScreen] scale];
-#elif TARGET_OS_OSX
-        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
-        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        // The scale factor is set to 0.0 to use the scale factor of the device’s main screen.
+        UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
         
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);

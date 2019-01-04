@@ -5,6 +5,7 @@ Improvements:
  * Upgrade MatrixSDK version (v0.12.1).
  * Create UIViewController+MatrixKit category.
  * MXKAccount: clear the scan manager database when the session is closed by clearing the cache.
+ * MXKTools: Improve image resizing. Add a memory efficient method to reduce image dimensions.
  
 Bug fix:
  * Crash in [MXKTools removeMarkedBlockquotesArtifacts:] (vector-im/riot-ios/issues/2147).
