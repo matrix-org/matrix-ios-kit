@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.9.3 (2019-01-)
+==========================================
+
+Bug fix:
+ * Chat screen: wrong thumbnail observed during scrollback (vector-im/riot-ios/issues/1122).
+
 Changes in MatrixKit in 0.9.2 (2019-01-04)
 ==========================================
 

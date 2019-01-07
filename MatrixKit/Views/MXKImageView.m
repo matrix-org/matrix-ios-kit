@@ -55,6 +55,9 @@
     
     // Subviews
     UIScrollView *scrollView;
+
+    // Current attachment being displayed in the MXKImageView
+    MXKAttachment *currentAttachment;
 }
 @end
 
@@ -678,16 +681,30 @@ andImageOrientation:(UIImageOrientation)orientation
     {
         [self startActivityIndicator];
     }
+
+    currentAttachment = attachment;
     
     MXWeakify(self);
-    [attachment getImage:^(UIImage *img) {
+    [attachment getImage:^(MXKAttachment *attachment2, UIImage *img) {
         MXStrongifyAndReturnIfNil(self);
+
+        if (self->currentAttachment != attachment2)
+        {
+            return;
+        }
+
         self.image = img;
         [self stopActivityIndicator];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
-    } failure:^(NSError *error) {
+    } failure:^(MXKAttachment *attachment2, NSError *error) {
         NSLog(@"Unable to fetch image attachment! %@", error);
         MXStrongifyAndReturnIfNil(self);
+        
+        if (self->currentAttachment != attachment2)
+        {
+            return;
+        }
+
         [self stopActivityIndicator];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     }];
@@ -722,10 +739,18 @@ andImageOrientation:(UIImageOrientation)orientation
     {
         [self startActivityIndicator];
     }
+
+    currentAttachment = attachment;
     
     MXWeakify(self);
-    [attachment getThumbnail:^(UIImage *img) {
+    [attachment getThumbnail:^(MXKAttachment *attachment2, UIImage *img) {
         MXStrongifyAndReturnIfNil(self);
+
+        if (self->currentAttachment != attachment2)
+        {
+            return;
+        }
+
         if (img && self->imageOrientation != UIImageOrientationUp)
         {
             self.image = [UIImage imageWithCGImage:img.CGImage scale:1.0 orientation:self->imageOrientation];
@@ -735,8 +760,14 @@ andImageOrientation:(UIImageOrientation)orientation
             self.image = img;
         }
         [self stopActivityIndicator];
-    } failure:^(NSError *error) {
+    } failure:^(MXKAttachment *attachment2, NSError *error) {
         MXStrongifyAndReturnIfNil(self);
+
+        if (self->currentAttachment != attachment2)
+        {
+            return;
+        }
+
         [self stopActivityIndicator];
     }];
 }
