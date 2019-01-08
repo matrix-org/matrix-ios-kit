@@ -133,7 +133,7 @@ typedef enum : NSUInteger {
 /**
  For image attachments, gets a UIImage for the full-res image
  */
-- (void)getImage:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)getImage:(void (^)(MXKAttachment *, UIImage *))onSuccess failure:(void (^)(MXKAttachment *, NSError *error))onFailure;
 
 /**
  Decrypt the attachment data into memory and provide it as an NSData
@@ -154,7 +154,7 @@ typedef enum : NSUInteger {
  Gets the thumbnails for this attachment, downloading it or loading it from disk cache
  if necessary
  */
-- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)getThumbnail:(void (^)(MXKAttachment *, UIImage *))onSuccess failure:(void (^)(MXKAttachment *, NSError *error))onFailure;
 
 /**
  Download the attachment data if it is not already cached.

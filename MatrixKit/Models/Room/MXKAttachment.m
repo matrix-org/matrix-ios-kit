@@ -257,7 +257,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return nil;
 }
 
-- (void)getThumbnail:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
+- (void)getThumbnail:(void (^)(MXKAttachment *, UIImage *))onSuccess failure:(void (^)(MXKAttachment *, NSError *error))onFailure
 {
     // Check whether a thumbnail is defined.
     if (!_thumbnailCachePath)
@@ -269,7 +269,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         }
         else if (onFailure)
         {
-            onFailure(nil);
+            onFailure(self, nil);
         }
         
         return;
@@ -279,7 +279,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     UIImage *thumb = [MXMediaManager getFromMemoryCacheWithFilePath:_thumbnailCachePath];
     if (thumb)
     {
-        onSuccess(thumb);
+        onSuccess(self, thumb);
         return;
     }
     
@@ -294,14 +294,14 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             NSError *err = [MXEncryptedAttachments decryptAttachment:self->thumbnailFile inputStream:instream outputStream:outstream];
             if (err) {
                 NSLog(@"Error decrypting attachment! %@", err.userInfo);
-                if (onFailure) onFailure(err);
+                if (onFailure) onFailure(self, err);
                 return;
             }
             
             UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
             // Save this image to in-memory cache.
             [MXMediaManager cacheImage:img withCachePath:self.thumbnailCachePath];
-            onSuccess(img);
+            onSuccess(self, img);
         };
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:_thumbnailCachePath])
@@ -315,14 +315,16 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                                success:^(NSString *outputFilePath) {
                                                                    decryptAndCache();
                                                                }
-                                                               failure:onFailure];
+                                                               failure:^(NSError *error) {
+                                                                   if (onFailure) onFailure(self, error);
+                                                               }];
         }
     }
     else
     {
         if ([[NSFileManager defaultManager] fileExistsAtPath:_thumbnailCachePath])
         {
-            onSuccess([MXMediaManager loadThroughCacheWithFilePath:_thumbnailCachePath]);
+            onSuccess(self, [MXMediaManager loadThroughCacheWithFilePath:_thumbnailCachePath]);
         }
         else if (_mxcThumbnailURI)
         {
@@ -331,9 +333,11 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                     inFolder:_eventRoomId
                                                      success:^(NSString *outputFilePath) {
                                                          // Here outputFilePath = thumbnailCachePath
-                                                         onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
+                                                         onSuccess(self, [MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
                                                      }
-                                                     failure:onFailure];
+                                                     failure:^(NSError *error) {
+                                                         if (onFailure) onFailure(self, error);
+                                                     }];
         }
         else
         {
@@ -346,22 +350,25 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                                                       withMethod:MXThumbnailingMethodScale
                                                          success:^(NSString *outputFilePath) {
                                                              // Here outputFilePath = thumbnailCachePath
-                                                             onSuccess([MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
-                                                         } failure:onFailure];
+                                                             onSuccess(self, [MXMediaManager loadThroughCacheWithFilePath:outputFilePath]);
+                                                         }
+                                                         failure:^(NSError *error) {
+                                                             if (onFailure) onFailure(self, error);
+                                                         }];
         }
     }
 }
 
-- (void)getImage:(void (^)(UIImage *))onSuccess failure:(void (^)(NSError *error))onFailure
+- (void)getImage:(void (^)(MXKAttachment *, UIImage *))onSuccess failure:(void (^)(MXKAttachment *, NSError *error))onFailure
 {
     [self getAttachmentData:^(NSData *data) {
         
         UIImage *img = [UIImage imageWithData:data];
-        if (onSuccess) onSuccess(img);
+        if (onSuccess) onSuccess(self, img);
         
     } failure:^(NSError *error) {
         
-        if (onFailure) onFailure(error);
+        if (onFailure) onFailure(self, error);
         
     }];
 }
@@ -565,13 +572,15 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         MXStrongifyAndReturnIfNil(self);
         if (self.type == MXKAttachmentTypeImage)
         {
-            [self getImage:^(UIImage *img) {
+            [self getImage:^(MXKAttachment *attachment, UIImage *img) {
                 [[UIPasteboard generalPasteboard] setImage:img];
                 if (onSuccess)
                 {
                     onSuccess();
                 }
-            } failure:onFailure];
+            } failure:^(MXKAttachment *attachment, NSError *error) {
+                if (onFailure) onFailure(error);
+            }];
         }
         else
         {
