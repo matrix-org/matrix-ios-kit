@@ -550,6 +550,9 @@ andImageOrientation:(UIImageOrientation)orientation
 {
     // Remove any pending observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    // Reset other data
+    currentAttachment = nil;
     
     mxcURI = mxContentURI;
     if (!mxcURI)
