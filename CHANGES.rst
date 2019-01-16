@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.9.4 (2019-01-05)
+==========================================
+
+Improvements:
+ * Chat screen: `Redact` has been renamed to `Remove` to match riot/web (vector-im/riot-ios/issues/2134).
+
 Changes in MatrixKit in 0.9.3 (2019-01-08)
 ==========================================
 

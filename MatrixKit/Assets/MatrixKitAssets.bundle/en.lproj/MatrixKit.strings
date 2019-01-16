@@ -376,7 +376,7 @@
 "send" = "Send";
 "copy" = "Copy";
 "resend" = "Resend";
-"redact" = "Redact";
+"redact" = "Remove";
 "share" = "Share";
 "set_power_level" = "Power level";
 "delete" = "Delete";
