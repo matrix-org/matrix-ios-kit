@@ -292,12 +292,12 @@ static NSAttributedString *verticalWhitespace = nil;
                                                        if (weakSelf)
                                                        {
                                                            typeof(self) self = weakSelf;
-                                                           UITextField *textField = [self->currentAlert textFields].firstObject;
+                                                           NSString *text = [self->currentAlert textFields].firstObject.text;
                                                            self->currentAlert = nil;
                                                            
                                                            [self.activityIndicator startAnimating];
                                                            
-                                                           self->mxCurrentOperation = [self->mxSession.matrixRestClient setDeviceName:textField.text forDeviceId:self->mxDevice.deviceId success:^{
+                                                           self->mxCurrentOperation = [self->mxSession.matrixRestClient setDeviceName:text forDeviceId:self->mxDevice.deviceId success:^{
                                                                
                                                                if (weakSelf)
                                                                {
