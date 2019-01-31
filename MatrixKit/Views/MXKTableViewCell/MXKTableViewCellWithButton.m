@@ -26,6 +26,9 @@
     // This line was a fix for https://github.com/vector-im/riot-ios/issues/1354
     // but it creates a regression that is worse than the bug it fixes.
     // self.mxkButton.titleLabel.text = nil;
+
+    [self.mxkButton removeTarget:nil action:nil forControlEvents:UIControlEventAllEvents];
+    self.mxkButton.accessibilityIdentifier = nil;
 }
 
 @end
