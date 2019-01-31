@@ -1,3 +1,10 @@
+Changes in MatrixKit in 0.9.3 (2019-01-)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.12.2).
+ * MXKTableViewCellWithButton: Remove all controls events on the button in [self prepareForReuse].
+
 Changes in MatrixKit in 0.9.4 (2019-01-05)
 ==========================================
 
