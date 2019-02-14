@@ -289,7 +289,7 @@
 "send" = "Küld";
 "copy" = "Másol";
 "resend" = "Újraküld";
-"redact" = "Kitakar";
+"redact" = "Töröl";
 "share" = "Megosztás";
 "set_power_level" = "Hozzáférési szint";
 "delete" = "Töröl";
