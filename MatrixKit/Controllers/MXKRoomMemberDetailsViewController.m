@@ -1005,12 +1005,12 @@
                                                        if (weakSelf)
                                                        {
                                                            typeof(self) self = weakSelf;
-                                                           UITextField *textField = [self->currentAlert textFields].firstObject;
+                                                           NSString *text = [self->currentAlert textFields].firstObject.text;
                                                            self->currentAlert = nil;
                                                            
-                                                           if (textField.text.length > 0)
+                                                           if (text.length > 0)
                                                            {
-                                                               [self setPowerLevel:[textField.text integerValue] promptUser:YES];
+                                                               [self setPowerLevel:[text integerValue] promptUser:YES];
                                                            }
                                                        }
                                                        

@@ -1,3 +1,16 @@
+Changes in MatrixKit in 0.9.5 (2019-02-15)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version (v0.12.2).
+ * MXKTableViewCellWithButton: Remove all controls events on the button in [self prepareForReuse].
+
+Changes in MatrixKit in 0.9.4 (2019-01-05)
+==========================================
+
+Improvements:
+ * Chat screen: `Redact` has been renamed to `Remove` to match riot/web (vector-im/riot-ios/issues/2134).
+
 Changes in MatrixKit in 0.9.3 (2019-01-08)
 ==========================================
 

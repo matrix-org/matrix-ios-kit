@@ -375,3 +375,4 @@
 "message_reply_to_message_to_reply_to_prefix" = "Në përgjigje të";
 "e2e_passphrase_create" = "Krijoni frazëkalim";
 "room_event_encryption_info_event_fingerprint_key" = "U pretendua për kyç Ed25519 shenjash gishtash\n";
+"notice_feedback" = "Akt dhënieje përshtypjesh (id: %@): %@";

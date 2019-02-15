@@ -331,9 +331,9 @@
 "room_no_power_to_create_conference_call" = "你需要更高权限来在本聊天室发起会议";
 "room_no_conference_call_in_encrypted_rooms" = "加密聊天室暂不支持通话会议";
 // Reply to message
-"message_reply_to_sender_sent_an_image" = "发送了一张图片。";
-"message_reply_to_sender_sent_an_audio_file" = "发送了一个音频文件。";
-"message_reply_to_sender_sent_a_file" = "发送了一份文件。";
+"message_reply_to_sender_sent_an_image" = "发送了图片。";
+"message_reply_to_sender_sent_an_audio_file" = "发送了音频文件。";
+"message_reply_to_sender_sent_a_file" = "发送了文件。";
 "message_reply_to_message_to_reply_to_prefix" = "回复";
 "room_member_power_level_prompt" = "此操作无法取消，此用户将被提升至你的权限级别。\n你确定吗？";
 // Attachment
@@ -342,3 +342,6 @@
 "attachment_multiselection_size_prompt" = "发送图片为：";
 "attachment_multiselection_original" = "实际大小";
 "attachment_e2e_keys_file_prompt" = "此文件含有Matrix客户端导出的密钥。\n你想要查看文件内容或者导入密钥？";
+"message_reply_to_sender_sent_a_video" = "发送了视频。";
+"call_invite_expired" = "通话邀请已过期";
+"ssl_fingerprint_hash" = "指纹（%@）：";

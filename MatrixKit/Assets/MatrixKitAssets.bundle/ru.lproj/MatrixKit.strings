@@ -194,7 +194,7 @@
 "room_event_encryption_info_event_none" = "никого нет";
 "room_event_encryption_info_device_id" = "Идентификатор устройства\n";
 "room_event_encryption_info_device_verification" = "Верификация\n";
-"room_event_encryption_info_device_fingerprint" = "Ed25519 отпечаток\n";
+"room_event_encryption_info_device_fingerprint" = "Отпечаток Ed25519\n";
 "room_event_encryption_info_device_verified" = "Подтверждено";
 "room_event_encryption_info_device_not_verified" = "НЕ подтверждено";
 "room_event_encryption_info_device_blocked" = "В черном списке";

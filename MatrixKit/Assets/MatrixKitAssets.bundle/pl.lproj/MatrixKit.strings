@@ -91,3 +91,81 @@
 "abort" = "Przerwij";
 "sign_up" = "Zarejestruj się";
 "submit_code" = "Prześlij kod";
+"attach_media" = "Dołącz zawartość multimedialną z Biblioteki";
+"reset_to_default" = "Przywróć ustawienia domyślne";
+"notice_room_created" = "%@ stworzył(a) pokój";
+"notice_audio_attachment" = "załącznik audio";
+"notice_video_attachment" = "załącznik wideo";
+"notice_invalid_attachment" = "nieprawidłowy załącznik";
+"notice_unsupported_attachment" = "Niewspierany załącznik: %@";
+"notice_room_history_visible_to_members" = "%@ uczynił(a) przyszłą historię pokoju widoczną dla wszyscy członkowie pokoju.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ uczynił(a) przyszłą historię pokoju widoczną dla wszyscy członkowie pokoju, od momentu ich zaproszenia.";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ uczynił(a) przyszłą historię pokoju widoczną dla wszyscy członkowie pokoju, od momentu ich dołączenia.";
+"notice_crypto_error_unknown_inbound_session_id" = "Urządzenie nadawcy nie wysłało nam kluczy do tej wiadomości.";
+"notice_sticker" = "naklejka";
+"notice_in_reply_to" = "W odpowiedzi do";
+// room display name
+"room_displayname_empty_room" = "Pusty pokój";
+"room_displayname_two_members" = "%@ i %@";
+"room_displayname_more_than_two_members" = "%@ i %@ innych";
+// Settings
+"settings" = "Ustawienia";
+"notification_settings_room_rule_title" = "Pokój: '%@'";
+// Devices
+"device_details_title" = "Informacje o urządzeniu\n";
+"device_details_name" = "Nazwa\n";
+"device_details_identifier" = "Identyfikator urządzenia\n";
+"device_details_last_seen" = "Ostatnio widziany(-a)\n";
+"device_details_last_seen_format" = "%@ @ %@\n";
+"device_details_rename_prompt_message" = "Nazwa urządzenia:";
+"device_details_delete_prompt_title" = "Uwierzytelnienie";
+"device_details_delete_prompt_message" = "To działanie wymaga dodatkowego uwierzytelnienia.\nWprowadź hasło, aby kontynuować.";
+// Encryption information
+"room_event_encryption_info_title" = "Informacje o szyfrowaniu end-to-end\n\n";
+"room_event_encryption_info_event" = "Informacje zdarzenia\n";
+"room_event_encryption_info_event_user_id" = "ID użytkownika\n";
+"room_event_encryption_info_event_identity_key" = "Klucz tożsamości Curve25519\n";
+"room_event_encryption_info_event_algorithm" = "Algorytm\n";
+"room_event_encryption_info_event_decryption_error" = "Błąd odszyfrowywania\n";
+"room_event_encryption_info_device" = "\nInformacja o urządzeniu nadawcy\n";
+"room_event_encryption_info_device_unknown" = "nieznane urządzenie\n";
+"room_event_encryption_info_device_name" = "Nazwa\n";
+"room_event_encryption_info_device_id" = "Identyfikator urządzenia\n";
+"notification_settings_never_notify" = "Nigdy powiadamiaj";
+"notification_settings_always_notify" = "Zawsze powiadamiaj";
+// Settings screen 
+"settings_title_config" = "Konfiguracja";
+"ban" = "Zbanuj";
+"unban" = "Odbanuj";
+"kick" = "Wyrzuć";
+"invite" = "Zaproś";
+"num_members_other" = "%@ użytkowników";
+"num_members_one" = "%@ użytkownik";
+"create_account" = "Stwórz konto";
+"create_room" = "Utwórz pokój";
+// actions 
+"action_logout" = "Wyloguj";
+"view" = "Widok";
+"delete" = "Usuń";
+"set_power_level" = "Poziom uprawnień";
+"share" = "Udostępnij";
+"redact" = "Usuń";
+"resend" = "Wyślij ponownie";
+"copy" = "Kopiuj";
+"send" = "Wyślij";
+"leave" = "Opuść";
+"save" = "Zapisz";
+"cancel" = "Anuluj";
+// button names 
+"ok" = "OK";
+"notice_conference_call_finished" = "Zakończono grupowe połączenie głosowe VoIP";
+"notice_conference_call_started" = "Rozpoczęto grupowe połączenie głosowe VoIP";
+"notice_conference_call_request" = "%1$s zażądał(a) grupowego połączenia VoIP";
+"set_default_power_level" = "Resetuj Poziom Uprawnień";
+"notice_file_attachment" = "załącznik pliku";
+"notice_room_history_visible_to_anyone" = "%@ uczynił(a) przyszłą historię pokoju widoczną dla kazdego.";
+"notice_crypto_unable_to_decrypt" = "** Nie można odszyfrować: %@ **";
+"ssl_cert_new_account_expl" = "Jeśli administrator serwera oświadczył, że jest to oczekiwane, upewnij się, że poniższy odcisk palca odpowiada odciskowi palca dostarczonemu przez niego.";
+"notification_settings_by_default" = "Domyślnie…";
+"notification_settings_suppress_from_bots" = "Ogranicz powiadomienia od botów";
+"notification_settings_custom_sound" = "Dźwięk niestandardowy";
