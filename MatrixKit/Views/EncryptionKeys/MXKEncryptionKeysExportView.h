@@ -46,5 +46,19 @@
  */
 - (void)showInViewController:(MXKViewController*)mxkViewController toExportKeysToFile:(NSURL*)keyFile onComplete:(void(^)(BOOL success))onComplete;
 
+
+/**
+ Show the dialog in a given view controller.
+
+ @param viewController the UIViewController where to show the dialog.
+ @param keyFile the path where to export keys to.
+ @param onLoading a block called when to show a spinner.
+ @param onComplete a block called when the operation is done.
+ */
+- (void)showInUIViewController:(UIViewController*)viewController
+            toExportKeysToFile:(NSURL*)keyFile
+                     onLoading:(void(^)(BOOL onLoading))onLoading
+                    onComplete:(void(^)(BOOL success))onComplete;
+
 @end
 
