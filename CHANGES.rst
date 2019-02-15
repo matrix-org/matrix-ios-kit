@@ -1,4 +1,4 @@
-Changes in MatrixKit in 0.9.3 (2019-01-)
+Changes in MatrixKit in 0.9.5 (2019-02-15)
 ==========================================
 
 Improvements:
