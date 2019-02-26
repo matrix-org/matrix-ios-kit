@@ -130,9 +130,9 @@
 "settings_enter_validation_token_for" = "Validatiebewijs voor %@ invoeren:";
 "notification_settings_room_rule_title" = "Ruimte: '%@'";
 // Devices
-"device_details_title" = "Apparaat informatie\n";
+"device_details_title" = "Apparaatinformatie\n";
 "device_details_name" = "Naam\n";
-"device_details_identifier" = "Apparaat ID\n";
+"device_details_identifier" = "Apparaat-ID\n";
 "device_details_last_seen" = "Laatst gezien\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
 "device_details_rename_prompt_message" = "Apparaatnaam:";
@@ -143,18 +143,18 @@
 "room_event_encryption_info_event" = "Gebeurtenis informatie\n";
 "room_event_encryption_info_event_user_id" = "Gebruiker ID\n";
 "room_event_encryption_info_event_identity_key" = "Curve25519 identiteitssleutel\n";
-"room_event_encryption_info_event_fingerprint_key" = "Claimde Ed25519 vingerafdruk sleutel\n";
+"room_event_encryption_info_event_fingerprint_key" = "Geclaimde Ed25519-sleutelvingerafdruk\n";
 "room_event_encryption_info_event_algorithm" = "Algoritme\n";
 "room_event_encryption_info_event_session_id" = "Sessie ID\n";
 "room_event_encryption_info_event_decryption_error" = "Ontsleutelingserror\n";
 "room_event_encryption_info_event_unencrypted" = "ontsleuteld";
 "room_event_encryption_info_event_none" = "geen";
-"room_event_encryption_info_device" = "\nAfzender apparaat informatie\n";
+"room_event_encryption_info_device" = "\nAfzenderapparaatinformatie\n";
 "room_event_encryption_info_device_unknown" = "onbekend apparaat\n";
 "room_event_encryption_info_device_name" = "Naam\n";
-"room_event_encryption_info_device_id" = "Apparaat ID\n";
+"room_event_encryption_info_device_id" = "Apparaat-ID\n";
 "room_event_encryption_info_device_verification" = "Verificatie\n";
-"room_event_encryption_info_device_fingerprint" = "Ed25519 vingerafdruk\n";
+"room_event_encryption_info_device_fingerprint" = "Ed25519-vingerafdruk\n";
 "room_event_encryption_info_device_verified" = "Geverifieerd";
 "room_event_encryption_info_device_not_verified" = "NIET geverifieerd";
 "room_event_encryption_info_device_blocked" = "Geblokkeerd";
@@ -163,7 +163,7 @@
 "room_event_encryption_info_block" = "Blokkeer";
 "room_event_encryption_info_unblock" = "Deblokkeer";
 "room_event_encryption_verify_title" = "Apparaat verifiëren\n\n";
-"room_event_encryption_verify_message" = "Om te verifiëren dat dit apparaat vertrouwd kan worden, neem contact op met de eigenaar van het apparaat via iets anders dan Matrix (bijv. persoonlijk of door te bellen) en vraag aan diegene of de sleutel die ze in de Gebruiker Instellingen zien overeenkomt met de onderstaande sleutel:\n\n\t Apparaatnaam: %@\n\tApparaat ID: %@\n\tApparaat sleutel: %@\n\nAls het overeenkomt, klik op de verifiëren knop hieronder. Als het niet overeenkomt, dan onderschept iemand anders dit apparaat en wil je waarschijnlijk in plaats daarvan op de 'blokkeer' knop drukken.\n\nIn de toekomst zal dit verificatie proces meer geraffineerd zijn.";
+"room_event_encryption_verify_message" = "Om te verifiëren dat dit apparaat vertrouwd kan worden, neem contact op met de eigenaar van het apparaat via iets anders dan Matrix (bijv. persoonlijk of door te bellen) en vraag aan diegene of de sleutel die ze in de Gebruiker Instellingen zien overeenkomt met de onderstaande sleutel:\n\n\tApparaatnaam: %@\n\tApparaat-ID: %@\n\tApparaatsleutel: %@\n\nAls het overeenkomt, klik op de verifiëren knop hieronder. Als het niet overeenkomt, dan onderschept iemand anders dit apparaat en wil je waarschijnlijk in plaats daarvan op de 'blokkeer' knop drukken.\n\nIn de toekomst zal dit verificatieproces meer geraffineerd zijn.";
 "room_event_encryption_verify_ok" = "Verifiëren";
 // Account
 "account_save_changes" = "Wijzigingen opslaan";
