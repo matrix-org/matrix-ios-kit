@@ -668,7 +668,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         for (id<MXKRoomBubbleCellDataStoring> bubbleData in bubbles)
         {
-            if (bubbleData.isAttachmentWithThumbnail && bubbleData.attachment.type != MXKAttachmentTypeSticker)
+            if (bubbleData.isAttachmentWithThumbnail && bubbleData.attachment.type != MXKAttachmentTypeSticker && !bubbleData.showAntivirusScanStatus)
             {
                 [attachments addObject:bubbleData.attachment];
             }
