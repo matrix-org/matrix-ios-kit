@@ -130,10 +130,15 @@ sendObjectMessage({  \
             else if ([@"onLogin" isEqualToString:parameters[@"action"]])
             {
                 // Translate the JS login event to MXCredentials
-                MXCredentials *credentials = [MXCredentials modelFromJSON:parameters[@"response"]];
+                MXCredentials *credentials;
+                MXJSONModelSetMXJSONModel(credentials, MXCredentials, parameters[@"response"]);
 
-                // And inform the client
-                onSuccess(credentials);
+                // Sanity check
+                if (credentials.homeServer.length && credentials.userId.length && credentials.accessToken.length)
+                {
+                    // And inform the client
+                    onSuccess(credentials);
+                }
             }
         }
         return NO;
