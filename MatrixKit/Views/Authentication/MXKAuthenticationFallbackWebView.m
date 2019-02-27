@@ -126,17 +126,10 @@ sendObjectMessage({  \
             else if ([@"onLogin" isEqualToString:parameters[@"action"]])
             {
                 // Translate the JS login event to MXCredentials
-                NSString *homeServer = parameters[@"response"][@"home_server"];
-                NSString *userId = parameters[@"response"][@"user_id"];
-                NSString *accessToken = parameters[@"response"][@"access_token"];
-                
-                // Sanity check
-                if (homeServer.length && userId.length && accessToken.length)
-                {
-                    MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:homeServer userId:userId accessToken:accessToken];
-                    // And inform the client
-                    onSuccess(credentials);
-                }                
+                MXCredentials *credentials = [MXCredentials modelFromJSON:parameters[@"response"]];
+
+                // And inform the client
+                onSuccess(credentials);
             }
         }
         return NO;
