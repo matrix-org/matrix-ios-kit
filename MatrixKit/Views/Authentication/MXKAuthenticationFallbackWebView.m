@@ -119,7 +119,11 @@ sendObjectMessage({  \
             if ([@"onRegistered" isEqualToString:parameters[@"action"]])
             {
                 // Translate the JS registration event to MXCredentials
+                // We cannot use [MXCredentials modelFromJSON:] because of https://github.com/matrix-org/synapse/issues/4756
+                // Because of this, we cannot get the device_id allocated by the homeserver
+                // TODO: Fix it once the homeserver issue is fixed
                 MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:parameters[@"homeServer"] userId:parameters[@"userId"] accessToken:parameters[@"accessToken"]];
+
                 // And inform the client
                 onSuccess(credentials);
             }
