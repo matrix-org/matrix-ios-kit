@@ -6,6 +6,7 @@ Improvements:
 
 Bug fix:
  * Handle device_id returned from the fallback login page (vector-im/riot-ios/issues/2301).
+ * Room details: the attachments list is empty (or almost) for the encrypted rooms. 
 
 Changes in MatrixKit in 0.9.5 (2019-02-15)
 ==========================================
