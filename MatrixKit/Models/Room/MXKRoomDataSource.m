@@ -2129,7 +2129,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (self.filterMessagesWithURL)
     {
         // Check whether the event has a value for the 'url' key in its content.
-        if (!event.content[@"url"])
+        if (!event.getMediaURLs.count)
         {
             // Ignore the event
             return;
