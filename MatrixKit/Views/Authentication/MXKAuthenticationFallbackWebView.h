@@ -24,6 +24,6 @@
  @param fallbackPage the fallback page hosted by a home server.
  @param success the block called when the user has been successfully logged in or registered.
  */
-- (void)openFallbackPage:(NSString*)fallbackPage success:(void (^)(MXCredentials *credentials))success;
+- (void)openFallbackPage:(NSString*)fallbackPage success:(void (^)(MXLoginResponse *loginResponse))success;
 
 @end
