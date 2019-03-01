@@ -1851,10 +1851,9 @@
         self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:cancelFallbackBarButton] : @[cancelFallbackBarButton];
     }
     
-    [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
+    [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXLoginResponse *loginResponse) {
         
-        // Workaround: HS does not return the right URL. Use the one we used to make the request
-        credentials.homeServer = mxRestClient.homeserver;
+        MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse andDefaultCredentials:mxRestClient.credentials];
         
         // TODO handle unrecognized certificate (if any) during registration through fallback webview.
         
