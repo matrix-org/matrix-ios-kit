@@ -154,11 +154,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         NSString *homeServerURL = [coder decodeObjectForKey:@"homeserverurl"];
         NSString *userId = [coder decodeObjectForKey:@"userid"];
         NSString *accessToken = [coder decodeObjectForKey:@"accesstoken"];
+        _identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
         
         mxCredentials = [[MXCredentials alloc] initWithHomeServer:homeServerURL
                                                            userId:userId
                                                       accessToken:accessToken];
 
+        mxCredentials.identityServer = _identityServerURL;
         mxCredentials.deviceId = [coder decodeObjectForKey:@"deviceId"];  
         mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
         
@@ -175,16 +177,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         }
 
         userPresence = MXPresenceUnknown;
-        
-        if ([coder decodeObjectForKey:@"identityserverurl"])
-        {
-            _identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
-            if (_identityServerURL.length)
-            {
-                // Update the current restClient
-                [mxRestClient setIdentityServer:_identityServerURL];
-            }
-        }
         
         if ([coder decodeObjectForKey:@"antivirusserverurl"])
         {

@@ -498,8 +498,10 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     
     if (identityServer)
     {
-        _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
-        _identityRESTClient.identityServer = identityServer;
+        MXCredentials *credentials = [MXCredentials new];
+        credentials.identityServer = identityServer;
+
+        _identityRESTClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:nil];
         
         // Lookup the matrix users in all the local contacts.
         [self updateMatrixIDsForAllLocalContacts];
@@ -516,14 +518,19 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     {
         if (self.identityServer)
         {
-            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
-            _identityRESTClient.identityServer = self.identityServer;
+            MXCredentials *credentials = [MXCredentials new];
+            credentials.identityServer = self.identityServer;
+
+            _identityRESTClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:nil];
         }
         else if (mxSessionArray.count)
         {
             MXSession *mxSession = [mxSessionArray firstObject];
-            _identityRESTClient = [[MXRestClient alloc] initWithHomeServer:nil andOnUnrecognizedCertificateBlock:nil];
-            _identityRESTClient.identityServer = mxSession.matrixRestClient.identityServer;
+
+            MXCredentials *credentials = [MXCredentials new];
+            credentials.identityServer = mxSession.matrixRestClient.identityServer;
+
+            _identityRESTClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:nil];
         }
     }
     

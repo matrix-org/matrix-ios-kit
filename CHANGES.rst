@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.9.6 (2019-02-)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.12.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.12.3)).
+ * Use new MXLoginResponse class.
 
 Bug fix:
  * Handle device_id returned from the fallback login page (vector-im/riot-ios/issues/2301).
