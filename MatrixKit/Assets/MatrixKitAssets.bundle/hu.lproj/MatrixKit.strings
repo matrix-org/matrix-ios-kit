@@ -313,7 +313,7 @@
 // room details dialog screen
 "room_details_title" = "Szoba adatai";
 // contacts list screen 
-"invitation_message" = "Szeretnék veled beszélgetni a matrix-szal. További információkért látogasd meg a http://matrix.org weboldalt.";
+"invitation_message" = "Szeretnék veled beszélgetni a Matrix-szal. További információkért látogasd meg a http://matrix.org weboldalt.";
 // Settings screen 
 "settings_title_config" = "Beállítások";
 "settings_title_notifications" = "Értesítések";
