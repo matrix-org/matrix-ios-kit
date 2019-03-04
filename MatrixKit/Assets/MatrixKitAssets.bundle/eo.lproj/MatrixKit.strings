@@ -1,1 +1,10 @@
-
+"notice_crypto_unable_to_decrypt" = "** Ne eblas malĉifri: %@ **";
+"notice_crypto_error_unknown_inbound_session_id" = "La aparato de la sendanto ne sendis al ni la ŝlosilojn por tiu mesaĝo.";
+"notice_in_reply_to" = "Respondanta al";
+// room display name
+"room_displayname_empty_room" = "Malplena babilejo";
+"room_displayname_two_members" = "%@ kaj %@";
+"room_displayname_more_than_two_members" = "%@ kaj %@ aliaj";
+// Settings
+"settings" = "Agordoj";
+"message_reply_to_message_to_reply_to_prefix" = "Respondanta al";
