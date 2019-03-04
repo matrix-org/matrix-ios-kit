@@ -4,10 +4,12 @@ Changes in MatrixKit in 0.9.6 (2019-02-)
 Improvements:
  * Upgrade MatrixSDK version ([v0.12.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.12.3)).
  * Use new MXLoginResponse class.
+ * Add `MXKMessageTextView` an UITextView with link detection without text selection.
 
 Bug fix:
  * Handle device_id returned from the fallback login page (vector-im/riot-ios/issues/2301).
- * Room details: the attachments list is empty (or almost) for the encrypted rooms. 
+ * Room details: the attachments list is empty (or almost) for the encrypted rooms.
+ * Quickly tapping on a URL in a message highlights the message rather than opening the URL (vector-im/riot-ios/issues/728).
 
 Changes in MatrixKit in 0.9.5 (2019-02-15)
 ==========================================

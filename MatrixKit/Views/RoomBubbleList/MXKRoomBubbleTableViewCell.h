@@ -107,7 +107,7 @@ extern NSString *const kMXKRoomBubbleCellLongPressOnAvatarView;
 
  This action is sent via the MXKCellRenderingDelegate `shouldDoAction` operation.
 
- The `userInfo` dictionary contains a `NSURL` object under the `kMXKRoomBubbleCellUrl` key, representing the url the user wants to open.
+ The `userInfo` dictionary contains a `NSURL` object under the `kMXKRoomBubbleCellUrl` key, representing the url the user wants to open. And a NSNumber wrapping `UITextItemInteraction` raw value, representing the type of interaction expected with the URL, under the `kMXKRoomBubbleCellUrlItemInteraction` key.
 
  The shouldDoAction implementation must return NO to prevent the system (safari) from opening the link.
  
@@ -123,6 +123,7 @@ extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
 extern NSString *const kMXKRoomBubbleCellReceiptsContainerKey;
 extern NSString *const kMXKRoomBubbleCellUrl;
+extern NSString *const kMXKRoomBubbleCellUrlItemInteraction;
 
 #pragma mark - MXKRoomBubbleTableViewCell
 
