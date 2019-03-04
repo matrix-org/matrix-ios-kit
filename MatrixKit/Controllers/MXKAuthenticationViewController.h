@@ -260,5 +260,13 @@
  */
 - (void)onSuccessfulLogin:(MXCredentials*)credentials;
 
+
+#pragma mark - Authentication Fallback
+
+/**
+ Display the fallback URL within a webview.
+ */
+- (void)showAuthenticationFallBackView;
+
 @end
 

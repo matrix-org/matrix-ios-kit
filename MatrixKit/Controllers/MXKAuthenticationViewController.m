@@ -1833,6 +1833,11 @@
 
 #pragma mark - Authentication Fallback
 
+- (void)showAuthenticationFallBackView
+{
+    [self showAuthenticationFallBackView:authenticationFallback];
+}
+
 - (void)showAuthenticationFallBackView:(NSString*)fallbackPage
 {
     _authenticationScrollView.hidden = YES;
