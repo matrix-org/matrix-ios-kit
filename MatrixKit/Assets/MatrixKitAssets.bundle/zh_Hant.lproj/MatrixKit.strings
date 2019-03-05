@@ -184,7 +184,7 @@
 "capture_media" = "拍攝照片/影片";
 "invite_user" = "邀請 Matrix 用戶";
 "reset_to_default" = "重置為預設值";
-"attach_media" = "";
+"attach_media" = "從庫中附加媒體";
 "resend_message" = "重新傳送該訊息";
 "select_all" = "全選";
 "cancel_upload" = "取消上傳";
@@ -204,7 +204,7 @@
 "notice_profile_change_redacted" = "%@ 已更新他的個人檔案 %@";
 "notice_room_created" = "%@ 創建了該聊天室";
 "notice_room_join_rule" = "加入規則: %@";
-"notice_room_power_level_intro" = "";
+"notice_room_power_level_intro" = "聊天室成員們的權限级别是：";
 "notice_event_redacted" = "<撤回%@>";
 // room details dialog screen
 "room_details_title" = "聊天室詳細資料";
@@ -228,3 +228,14 @@
 "device_details_identifier" = "裝置代碼\n";
 "device_details_last_seen" = "上次使用\n";
 "device_details_rename_prompt_message" = "裝置名稱：";
+"login_error_resource_limit_exceeded_title" = "超過資源限制";
+"login_error_resource_limit_exceeded_message_default" = "此家伺服器已經超過其中一項資源限制。";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "此家伺服器已經達到其每月活躍使用者限制。";
+"login_error_resource_limit_exceeded_message_contact" = "\n\n請聯絡您的伺服器管理員以繼續使用其服務。";
+"login_error_resource_limit_exceeded_contact_button" = "聯絡管理員";
+"notice_room_power_level_acting_requirement" = "完成此操作之前使用者必須具有的最小權限級別是：";
+"notice_room_power_level_event_requirement" = "事件相關的最小權限級別是：";
+"notice_room_aliases" = "此聊天室別名是：%@";
+"notice_room_related_groups" = "此聊天室關聯的群組是：%@";
+"notice_encryption_enabled" = "%@ 開啓了端對端加密 （演算法 %@）";
+"notice_feedback" = "回報事件 （id：%@）：%@";
