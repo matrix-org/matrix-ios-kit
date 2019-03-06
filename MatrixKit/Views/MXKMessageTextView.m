@@ -32,6 +32,11 @@
 // Otherwise it means that the touch event will pass through and could be received by a view below.
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
+    if (![super pointInside:point withEvent:event])
+    {
+        return NO;
+    }
+    
     UITextPosition *textPosition = [self closestPositionToPoint:point];
 
     if (!textPosition)

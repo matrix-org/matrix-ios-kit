@@ -1206,7 +1206,21 @@ static NSMutableDictionary *childClasses;
                 CGPoint tapLocation = [sender locationInView:textView];
                 UITextPosition *textPosition = [textView closestPositionToPoint:tapLocation];
                 NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
-                tappedUrl = attributes[NSLinkAttributeName];
+                
+                // The value of `NSLinkAttributeName` attribute could be an NSURL or an NSString object.
+                id tappedURLObject = attributes[NSLinkAttributeName];
+                
+                if (tappedURLObject)
+                {
+                    if ([tappedURLObject isKindOfClass:[NSURL class]])
+                    {
+                        tappedUrl = (NSURL*)tappedURLObject;
+                    }
+                    else if ([tappedURLObject isKindOfClass:[NSString class]])
+                    {
+                        tappedUrl = [NSURL URLWithString:(NSString*)tappedURLObject];
+                    }
+                }
             }
             
             // If a link has been touched warn delegate immediately.
