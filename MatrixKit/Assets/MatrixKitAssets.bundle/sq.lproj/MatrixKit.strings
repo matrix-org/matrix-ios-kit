@@ -344,7 +344,7 @@
 "local_contacts_access_not_granted" = "Zbulimi i përdoruesve nga kontaktet vendore lyp hyrje te kontaktet tuaja, por %@ s’ka leje t’i përdorë ato";
 "local_contacts_access_discovery_warning" = "Që të mund të zbulojë përdorues, %@ dëshiron të ngarkojë email-e dhe numra telefonash nga Kontaktet tuaja";
 "notice_room_unban" = "%@ i hoqi dëbimin %@";
-"redact" = "Redaktojeni";
+"redact" = "Hiqe";
 // contacts list screen 
 "invitation_message" = "Do të doja të bisedoja me ju me Matrix. Për të pasur më tepër itë dhëna, ju lutem, vizitoni sajtin http://matrix.org.";
 "notification_settings_global_info" = "Rregullimet mbi njoftimet ruhen te llogaria juaj e përdoruesit dhe ndahen me krejt klientët që i mbulojnë ato (përfshi njoftimet në desktop).\n\nRregullat zbatohen sipas një radhe; rregulli i parë që ka përputhje përcakton lëndën për mesazhin.\nKështu: njoftimet sipas fjalësh janë më të rëndësishme se njoftimet sipas dhomash të cilat janë më të rëndësishme se njoftimet sipas dërguesish.\nFor multiple rules of the same kind, the first one in the list that matches takes priority.";
