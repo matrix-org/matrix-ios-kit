@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -14,7 +15,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="50"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WmY-Jw-mqv" id="ef1-Tq-U3Z">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="49"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="49.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view clipsSubviews="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="hgp-Z5-rAj" userLabel="Picture View" customClass="MXKImageView">
@@ -42,8 +43,8 @@
                         <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="text message" translatesAutoresizingMaskIntoConstraints="NO" id="HTH-5n-MSU">
-                        <rect key="frame" x="51" y="10" width="97" height="39"/>
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="text message" translatesAutoresizingMaskIntoConstraints="NO" id="HTH-5n-MSU" customClass="MXKMessageTextView">
+                        <rect key="frame" x="51" y="10" width="97" height="39.5"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="97" id="9EQ-AP-La0"/>
@@ -54,7 +55,7 @@
                         <dataDetectorType key="dataDetectorTypes" link="YES"/>
                     </textView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kwd-hP-feC" userLabel="showHideDateTime">
-                        <rect key="frame" x="531" y="0.0" width="69" height="49"/>
+                        <rect key="frame" x="531" y="0.0" width="69" height="49.5"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="69" id="9vA-4g-EE5"/>
                         </constraints>
@@ -66,7 +67,7 @@
                         </connections>
                     </button>
                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IOg-Kt-8vW" userLabel="bubbleInfoContainer">
-                        <rect key="frame" x="531" y="10" width="61" height="39"/>
+                        <rect key="frame" x="531" y="10" width="61" height="39.5"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="61" id="tLr-6k-ArA"/>

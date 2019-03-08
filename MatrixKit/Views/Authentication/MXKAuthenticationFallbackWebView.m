@@ -47,7 +47,7 @@ sendObjectMessage({  \
 @interface MXKAuthenticationFallbackWebView ()
 {
     // The block called when the login or the registration is successful
-    void (^onSuccess)(MXCredentials *);
+    void (^onSuccess)(MXLoginResponse *);
     
     // Activity indicator
     UIActivityIndicatorView *activityIndicator;
@@ -65,7 +65,7 @@ sendObjectMessage({  \
     }
 }
 
-- (void)openFallbackPage:(NSString *)fallbackPage success:(void (^)(MXCredentials *))success
+- (void)openFallbackPage:(NSString *)fallbackPage success:(void (^)(MXLoginResponse *))success
 {
     self.delegate = self;
     
@@ -118,25 +118,34 @@ sendObjectMessage({  \
         {
             if ([@"onRegistered" isEqualToString:parameters[@"action"]])
             {
-                // Translate the JS registration event to MXCredentials
-                MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:parameters[@"homeServer"] userId:parameters[@"userId"] accessToken:parameters[@"accessToken"]];
-                // And inform the client
-                onSuccess(credentials);
+                // Translate the JS registration event to MXLoginResponse
+                // We cannot use [MXLoginResponse modelFromJSON:] because of https://github.com/matrix-org/synapse/issues/4756
+                // Because of this issue, we cannot get the device_id allocated by the homeserver
+                // TODO: Fix it once the homeserver issue is fixed (filed at https://github.com/vector-im/riot-meta/issues/273).
+                MXLoginResponse *loginResponse = [MXLoginResponse new];
+                loginResponse.homeserver = parameters[@"homeServer"];
+                loginResponse.userId = parameters[@"userId"];
+                loginResponse.accessToken = parameters[@"accessToken"];
+
+                // Sanity check
+                if (loginResponse.homeserver.length && loginResponse.userId.length && loginResponse.accessToken.length)
+                {
+                    // And inform the client
+                    onSuccess(loginResponse);
+                }
             }
             else if ([@"onLogin" isEqualToString:parameters[@"action"]])
             {
-                // Translate the JS login event to MXCredentials
-                NSString *homeServer = parameters[@"response"][@"home_server"];
-                NSString *userId = parameters[@"response"][@"user_id"];
-                NSString *accessToken = parameters[@"response"][@"access_token"];
-                
+                // Translate the JS login event to MXLoginResponse
+                MXLoginResponse *loginResponse;
+                MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, parameters[@"response"]);
+
                 // Sanity check
-                if (homeServer.length && userId.length && accessToken.length)
+                if (loginResponse.homeserver.length && loginResponse.userId.length && loginResponse.accessToken.length)
                 {
-                    MXCredentials *credentials = [[MXCredentials alloc] initWithHomeServer:homeServer userId:userId accessToken:accessToken];
                     // And inform the client
-                    onSuccess(credentials);
-                }                
+                    onSuccess(loginResponse);
+                }
             }
         }
         return NO;

@@ -83,6 +83,12 @@ typedef enum {
  Tell the delegate to cancel the current operation.
  */
 - (void)authInputsViewDidCancelOperation:(MXKAuthInputsView *)authInputsView;
+
+/**
+ Tell the delegate to autodiscover the server configuration.
+ */
+- (void)authInputsView:(MXKAuthInputsView *)authInputsView autoDiscoverServerWithDomain:(NSString*)domain;
+
 @end
 
 /**

@@ -840,7 +840,11 @@
                         mxCurrentOperation = [mxRestClient registerWithParameters:parameters success:^(NSDictionary *JSONResponse) {
                             
                             // Unexpected case where the registration succeeds without any other stages
-                            MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
+                            MXLoginResponse *loginResponse;
+                            MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, JSONResponse);
+
+                            MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse
+                                                                      andDefaultCredentials:mxRestClient.credentials];
                             
                             // Sanity check
                             if (!credentials.userId || !credentials.accessToken)
@@ -850,8 +854,7 @@
                             else
                             {
                                 NSLog(@"[MXKAuthenticationVC] Registration succeeded");
-                                // Workaround: HS does not return the right URL. Use the one we used to make the request
-                                credentials.homeServer = mxRestClient.homeserver;
+
                                 // Report the certificate trusted by user (if any)
                                 credentials.allowedCertificate = mxRestClient.allowedCertificate;
                                 
@@ -1438,8 +1441,12 @@
     theParameters[@"initial_device_display_name"] = self.deviceDisplayName;
     
     mxCurrentOperation = [mxRestClient login:theParameters success:^(NSDictionary *JSONResponse) {
-        
-        MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
+
+        MXLoginResponse *loginResponse;
+        MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, JSONResponse);
+
+        MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse
+                                                            andDefaultCredentials:mxRestClient.credentials];
         
         // Sanity check
         if (!credentials.userId || !credentials.accessToken)
@@ -1449,9 +1456,7 @@
         else
         {
             NSLog(@"[MXKAuthenticationVC] Login process succeeded");
-            
-            // Workaround: HS does not return the right URL. Use the one we used to make the request
-            credentials.homeServer = mxRestClient.homeserver;
+
             // Report the certificate trusted by user (if any)
             credentials.allowedCertificate = mxRestClient.allowedCertificate;
             
@@ -1479,7 +1484,11 @@
     
     mxCurrentOperation = [mxRestClient registerWithParameters:theParameters success:^(NSDictionary *JSONResponse) {
         
-        MXCredentials *credentials = [MXCredentials modelFromJSON:JSONResponse];
+        MXLoginResponse *loginResponse;
+        MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, JSONResponse);
+
+        MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse
+                                                            andDefaultCredentials:mxRestClient.credentials];
         
         // Sanity check
         if (!credentials.userId || !credentials.accessToken)
@@ -1489,8 +1498,7 @@
         else
         {
             NSLog(@"[MXKAuthenticationVC] Registration succeeded");
-            // Workaround: HS does not return the right URL. Use the one we used to make the request
-            credentials.homeServer = mxRestClient.homeserver;
+
             // Report the certificate trusted by user (if any)
             credentials.allowedCertificate = mxRestClient.allowedCertificate;
             
@@ -1825,6 +1833,11 @@
 
 #pragma mark - Authentication Fallback
 
+- (void)showAuthenticationFallBackView
+{
+    [self showAuthenticationFallBackView:authenticationFallback];
+}
+
 - (void)showAuthenticationFallBackView:(NSString*)fallbackPage
 {
     _authenticationScrollView.hidden = YES;
@@ -1843,10 +1856,9 @@
         self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:cancelFallbackBarButton] : @[cancelFallbackBarButton];
     }
     
-    [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXCredentials *credentials) {
+    [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXLoginResponse *loginResponse) {
         
-        // Workaround: HS does not return the right URL. Use the one we used to make the request
-        credentials.homeServer = mxRestClient.homeserver;
+        MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse andDefaultCredentials:mxRestClient.credentials];
         
         // TODO handle unrecognized certificate (if any) during registration through fallback webview.
         

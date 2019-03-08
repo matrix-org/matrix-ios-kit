@@ -140,6 +140,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 /**
  The list of the attachments with thumbnail in the current available bubbles (MXKAttachment instances).
  Note: the stickers are excluded from the returned list.
+ Note2: the attachments for which the antivirus scan status is not available are excluded too.
  */
 @property (nonatomic, readonly) NSArray *attachmentsWithThumbnail;
 

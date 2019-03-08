@@ -300,7 +300,7 @@
 "send" = "Enviar";
 "copy" = "Copiar";
 "resend" = "Reenviar";
-"redact" = "Redigir";
+"redact" = "Remover";
 "share" = "Compartilhar";
 "delete" = "Excluir";
 // actions 

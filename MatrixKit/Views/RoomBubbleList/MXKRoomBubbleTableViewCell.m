@@ -48,6 +48,7 @@ NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
 NSString *const kMXKRoomBubbleCellReceiptsContainerKey = @"kMXKRoomBubbleCellReceiptsContainerKey";
 NSString *const kMXKRoomBubbleCellUrl = @"kMXKRoomBubbleCellUrl";
+NSString *const kMXKRoomBubbleCellUrlItemInteraction = @"kMXKRoomBubbleCellUrlItemInteraction";
 
 static BOOL _disableLongPressGestureOnEvent;
 
@@ -1024,6 +1025,21 @@ static BOOL _disableLongPressGestureOnEvent;
     _isAutoAnimatedGif = NO;
 }
 
+- (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteraction:(UITextItemInteraction)urlItemInteraction
+API_AVAILABLE(ios(10.0)) {
+    return [self shouldInteractWithURL:URL urlItemInteractionValue:@(urlItemInteraction)];
+}
+
+- (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteractionValue:(NSNumber*)urlItemInteractionValue
+{
+    NSDictionary *userInfo = @{
+                               kMXKRoomBubbleCellUrl:URL,
+                               kMXKRoomBubbleCellUrlItemInteraction:urlItemInteractionValue
+                               };
+    
+    return [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:userInfo defaultValue:YES];
+}
+
 #pragma mark - Attachment progress handling
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict
@@ -1179,36 +1195,82 @@ static NSMutableDictionary *childClasses;
         }
         else
         {
-            MXEvent *tappedEvent = nil;
-            NSArray *bubbleComponents = bubbleData.bubbleComponents;
-            if (bubbleComponents.count == 1)
+            NSURL *tappedUrl;
+            
+            // Hyperlinks in UITextView does not respond instantly to touch.
+            // To overcome this, check manually if a link has been touched in UITextView when performing a quick tap.
+            // Otherwise UITextViewDelegate method `- (BOOL)textView:shouldInteractWithURL:inRange:interaction:` is still called for long press and force touch.
+            if ([sender.view isEqual:self.messageTextView])
             {
-                MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-                tappedEvent = component.event;
-            }
-            else if (bubbleComponents.count)
-            {
-                // Look for the tapped component
-                UIView* view = sender.view;
-                CGPoint tapPoint = [sender locationInView:view];
+                UITextView *textView = self.messageTextView;
+                CGPoint tapLocation = [sender locationInView:textView];
+                UITextPosition *textPosition = [textView closestPositionToPoint:tapLocation];
+                NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
                 
-                for (MXKRoomBubbleComponent *component in bubbleComponents)
+                // The value of `NSLinkAttributeName` attribute could be an NSURL or an NSString object.
+                id tappedURLObject = attributes[NSLinkAttributeName];
+                
+                if (tappedURLObject)
                 {
-                    // Ignore components without display.
-                    if (!component.attributedTextMessage)
+                    if ([tappedURLObject isKindOfClass:[NSURL class]])
                     {
-                        continue;
+                        tappedUrl = (NSURL*)tappedURLObject;
                     }
-                        
-                    if (tapPoint.y < component.position.y)
+                    else if ([tappedURLObject isKindOfClass:[NSString class]])
                     {
-                        break;
+                        tappedUrl = [NSURL URLWithString:(NSString*)tappedURLObject];
                     }
-                    tappedEvent = component.event;
                 }
             }
             
-            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
+            // If a link has been touched warn delegate immediately.
+            if (tappedUrl)
+            {
+                // Send default URL interaction `UITextItemInteractionInvokeDefaultAction` for a quick tap as received by UITextViewDelegate method `- (BOOL)textView:shouldInteractWithURL:inRange:interaction:` for a tap.
+                if (@available(iOS 10.0, *))
+                {
+                    [self shouldInteractWithURL:tappedUrl urlItemInteraction:UITextItemInteractionInvokeDefaultAction];
+                }
+                else
+                {
+                    // Use UITextItemInteractionInvokeDefaultAction raw value for iOS 9
+                    [self shouldInteractWithURL:tappedUrl urlItemInteractionValue:@(0)];
+                }
+            }
+            else
+            {
+                MXEvent *tappedEvent = nil;
+                NSArray *bubbleComponents = bubbleData.bubbleComponents;
+                if (bubbleComponents.count == 1)
+                {
+                    MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
+                    tappedEvent = component.event;
+                }
+                else if (bubbleComponents.count)
+                {
+                    
+                    // Look for the tapped component
+                    UIView* view = sender.view;
+                    CGPoint tapPoint = [sender locationInView:view];
+                    
+                    for (MXKRoomBubbleComponent *component in bubbleComponents)
+                    {
+                        // Ignore components without display.
+                        if (!component.attributedTextMessage)
+                        {
+                            continue;
+                        }
+                        
+                        if (tapPoint.y < component.position.y)
+                        {
+                            break;
+                        }
+                        tappedEvent = component.event;
+                    }
+                }
+                
+                [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
+            }
         }
     }
 }
@@ -1357,14 +1419,31 @@ static NSMutableDictionary *childClasses;
 
 #pragma mark - UITextView delegate
 
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
+// Hyperlink quick tap in `messageTextView` are intercepted by `-(void)onMessageTap:` method. Otherwise longer tap, long press and force touch on a link are still catched here.
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction API_AVAILABLE(ios(10.0))
 {
     BOOL shouldInteractWithURL = YES;
+    
     if (delegate && URL)
     {
         // Ask the delegate if iOS can open the link
-        shouldInteractWithURL = [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:@{kMXKRoomBubbleCellUrl:URL} defaultValue:YES];
+        shouldInteractWithURL = [self shouldInteractWithURL:URL urlItemInteraction:interaction];
     }
+    
+    return shouldInteractWithURL;
+}
+
+// Delegate method only called on iOS 9. iOS 10+ use method above.
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
+{
+    BOOL shouldInteractWithURL = YES;
+    
+    if (delegate && URL)
+    {
+        // Ask the delegate if iOS can open the link
+        shouldInteractWithURL = [self shouldInteractWithURL:URL urlItemInteractionValue:@(0)];
+    }
+    
     return shouldInteractWithURL;
 }
 
