@@ -342,7 +342,7 @@
 "attachment_multiselection_size_prompt" = "发送图片为：";
 "attachment_multiselection_original" = "实际大小";
 "attachment_e2e_keys_file_prompt" = "此文件含有 Matrix 客户端导出的密钥。\n您想要查看文件内容还是导入密钥？";
-"message_reply_to_sender_sent_a_video" = "发送了视频。";
+"message_reply_to_sender_sent_a_video" = "发送了一段视频。";
 "call_invite_expired" = "通话邀请已过期";
 "ssl_fingerprint_hash" = "指纹（%@）：";
 "e2e_import_prompt" = "此操作允许您导入此前从其他 Matrix 客户端上导出的加密密钥。您将能够解密任何该客户端能解密的消息。\n该导出文件受密码保护。您应在此处输入密码以解密该文件。";
