@@ -404,7 +404,14 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 - (id<MXKRecentCellDataStoring>)cellDataWithRoomId:(NSString*)roomId
 {
     id<MXKRecentCellDataStoring> theRoomData;
-    for (id<MXKRecentCellDataStoring> roomData in cellDataArray)
+    
+    NSMutableArray *dataArray = internalCellDataArray;
+    if (!roomDataSourceManager.isServerSyncInProgress)
+    {
+        dataArray = cellDataArray;
+    }
+    
+    for (id<MXKRecentCellDataStoring> roomData in dataArray)
     {
         if ([roomData.roomSummary.roomId isEqualToString:roomId])
         {
