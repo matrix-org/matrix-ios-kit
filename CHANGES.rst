@@ -1,8 +1,15 @@
-Changes in MatrixKit in 0.9.x (2019-03-13)
+Changes in MatrixKit in 0.9.8 (2019-03-xx)
+==========================================
+
+Improvements:
+
+Bug fix:
+
+Changes in MatrixKit in 0.9.7 (2019-03-13)
 ==========================================
 
 Bug fix:
- * A left room is stuck in my joined room (vector-im/riot-ios/issues/2318)
+ * A left room is stuck in my joined room (vector-im/riot-ios/issues/2318).
 
 Changes in MatrixKit in 0.9.6 (2019-03-08)
 ==========================================
