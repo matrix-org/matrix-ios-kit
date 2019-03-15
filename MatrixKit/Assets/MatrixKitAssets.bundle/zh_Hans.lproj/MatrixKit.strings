@@ -95,7 +95,7 @@
 "login_error_no_login_flow" = "从此主服务器获取认证信息失败";
 "login_error_do_not_support_login_flows" = "当前我们不支持任何或者所有此主服务器定义的登录流";
 "notice_feedback" = "反馈事件 (id: %@)：%@";
-"notice_redaction" = "%@ 编辑了一个事件 (id: %@)";
+"notice_redaction" = "%@ 取消了一个事件 (id: %@)";
 "notice_error_unsupported_event" = "不支持的事件";
 "notice_error_unexpected_event" = "意外的事件";
 "notice_error_unknown_event_type" = "未知的事件类型";
