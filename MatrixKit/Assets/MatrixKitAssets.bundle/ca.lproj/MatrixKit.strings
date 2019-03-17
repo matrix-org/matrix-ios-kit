@@ -286,7 +286,7 @@
 "send" = "Envia";
 "copy" = "Copia";
 "resend" = "Reenvia";
-"redact" = "Redacta";
+"redact" = "Elimina";
 "share" = "Comparteix";
 "set_power_level" = "Nivell de potència";
 "delete" = "Esborra";
