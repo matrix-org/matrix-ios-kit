@@ -513,7 +513,7 @@ static BOOL _disableLongPressGestureOnEvent;
             NSAttributedString* newText = nil;
             
             // Underline attached file name
-            if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.contentURL && bubbleData.attachment.contentInfo)
+            if (self.isBubbleDataContainsFileAttachment)
             {
                 NSMutableAttributedString *updatedText = [[NSMutableAttributedString alloc] initWithAttributedString:bubbleData.attributedTextMessage];
                 [updatedText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(0, updatedText.length)];
@@ -1040,6 +1040,14 @@ API_AVAILABLE(ios(10.0)) {
     return [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:userInfo defaultValue:YES];
 }
 
+- (BOOL)isBubbleDataContainsFileAttachment
+{
+    return bubbleData.attachment
+    && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio)
+    && bubbleData.attachment.contentURL
+    && bubbleData.attachment.contentInfo;
+}
+
 #pragma mark - Attachment progress handling
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict
@@ -1189,7 +1197,8 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         // Check whether the current displayed text corresponds to an attached file
-        if (bubbleData.attachment && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio) && bubbleData.attachment.contentURL && bubbleData.attachment.contentInfo)
+        // NOTE: This assume that the cell has only one `MXKRoomBubbleComponent`
+        if (self.isBubbleDataContainsFileAttachment)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
         }
@@ -1337,23 +1346,36 @@ static NSMutableDictionary *childClasses;
         }
         else if (self.messageTextView)
         {
-            // Check whether the user tapped in front of a text component.
-            tapPoint = [sender locationInView:self.messageTextView];
+            // NOTE: A tap on messageTextView using `MXKMessageTextView` class fallback here if the user does not tap on a link.
             
-            if (tapPoint.y > 0 && tapPoint.y < self.messageTextView.frame.size.height)
+            // Use the same hack as `onMessageTap:`, check whether the current displayed text corresponds to an attached file
+            // NOTE: This assume that the cell has only one `MXKRoomBubbleComponent`
+            if (self.isBubbleDataContainsFileAttachment)
             {
-                // Consider by default the first component
-                tappedComponent = [bubbleComponents firstObject];
+                // This assume that an attachment use one cell in the application using MatrixKit
+                // This condition is a fix to handle
+                [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
+            }
+            else
+            {
+                // Check whether the user tapped in front of a text component.
+                tapPoint = [sender locationInView:self.messageTextView];
                 
-                for (NSInteger index = 1; index < bubbleComponents.count; index++)
+                if (tapPoint.y > 0 && tapPoint.y < self.messageTextView.frame.size.height)
                 {
-                    // Here the bubble is composed by multiple text messages
-                    MXKRoomBubbleComponent *component = bubbleComponents[index];
-                    if (tapPoint.y < component.position.y)
+                    // Consider by default the first component
+                    tappedComponent = [bubbleComponents firstObject];
+                    
+                    for (NSInteger index = 1; index < bubbleComponents.count; index++)
                     {
-                        break;
+                        // Here the bubble is composed by multiple text messages
+                        MXKRoomBubbleComponent *component = bubbleComponents[index];
+                        if (tapPoint.y < component.position.y)
+                        {
+                            break;
+                        }
+                        tappedComponent = component;
                     }
-                    tappedComponent = component;
                 }
             }
         }
