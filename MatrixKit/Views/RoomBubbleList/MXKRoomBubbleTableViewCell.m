@@ -1197,7 +1197,7 @@ static NSMutableDictionary *childClasses;
     if (delegate)
     {
         // Check whether the current displayed text corresponds to an attached file
-        // NOTE: This assume that the cell has only one `MXKRoomBubbleComponent`
+        // NOTE: This assumes that a cell with attachment has only one `MXKRoomBubbleComponent`
         if (self.isBubbleDataContainsFileAttachment)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnAttachmentView userInfo:nil];
@@ -1349,7 +1349,7 @@ static NSMutableDictionary *childClasses;
             // NOTE: A tap on messageTextView using `MXKMessageTextView` class fallback here if the user does not tap on a link.
             
             // Use the same hack as `onMessageTap:`, check whether the current displayed text corresponds to an attached file
-            // NOTE: This assume that the cell has only one `MXKRoomBubbleComponent`
+            // NOTE: This assumes that a cell with attachment has only one `MXKRoomBubbleComponent`
             if (self.isBubbleDataContainsFileAttachment)
             {
                 // This assume that an attachment use one cell in the application using MatrixKit
