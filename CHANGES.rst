@@ -4,6 +4,7 @@ Changes in MatrixKit in 0.9.8 (2019-03-xx)
 Improvements:
 
 Bug fix:
+ * MXKRoomBubbleTableViewCell: Fix tap on file attachment when using a messageTextView of class `MXKMessageTextView`.
 
 Changes in MatrixKit in 0.9.7 (2019-03-13)
 ==========================================
