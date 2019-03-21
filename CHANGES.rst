@@ -1,8 +1,17 @@
-Changes in MatrixKit in 0.9.x (2019-03-13)
+Changes in MatrixKit in 0.9.8 (2019-03-21)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.12.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.12.4)).
+
+Bug fix:
+ * MXKRoomBubbleTableViewCell: Fix tap on file attachment when using a messageTextView of class `MXKMessageTextView` (PR #532).
+
+Changes in MatrixKit in 0.9.7 (2019-03-13)
 ==========================================
 
 Bug fix:
- * A left room is stuck in my joined room (vector-im/riot-ios/issues/2318)
+ * A left room is stuck in my joined room (vector-im/riot-ios/issues/2318).
 
 Changes in MatrixKit in 0.9.6 (2019-03-08)
 ==========================================
