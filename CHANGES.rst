@@ -6,6 +6,7 @@ Improvements:
 
 Bug fix:
  * MXKRoomBubbleTableViewCell: Fix tap on file attachment when using a messageTextView of class `MXKMessageTextView` (PR #532).
+ * MXKContactManager: some matrix contacts are missing in the search result (offline mode).
 
 Changes in MatrixKit in 0.9.7 (2019-03-13)
 ==========================================

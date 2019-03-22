@@ -1273,6 +1273,10 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
                     matrixContactsByContactID = [cachedMatrixContacts mutableCopy];
                 }
             }
+            else
+            {
+                matrixContactsByContactID = [NSMutableDictionary dictionary];
+            }
 
             NSDictionary *matrixContacts = [self matrixContactsByMatrixIDFromMXSessions:sessions];
 
