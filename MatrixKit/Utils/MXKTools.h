@@ -388,4 +388,14 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
  */
 + (void)enumerateMarkedBlockquotesInAttributedString:(NSAttributedString*)attributedString usingBlock:(void (^)(NSRange range, BOOL *stop))block;
 
+#pragma mark - Push
+
+/**
+ Trim push token in order to log it.
+
+ @param pushToken the token to trim.
+ @return a trimmed description.
+ */
++ (NSString*)logForPushToken:(NSData*)pushToken;
+
 @end

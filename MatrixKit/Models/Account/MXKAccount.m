@@ -291,6 +291,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)setPushGatewayURL:(NSString *)pushGatewayURL
 {
     _pushGatewayURL = pushGatewayURL.length ? pushGatewayURL : nil;
+
+    NSLog(@"[MXKAccount][Push] setPushGatewayURL: %@", _pushGatewayURL);
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
@@ -373,11 +375,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (BOOL)pushNotificationServiceIsActive
 {
-    return ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications && mxSession);
+    BOOL pushNotificationServiceIsActive = ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications && mxSession);
+    NSLog(@"[MXKAccount][Push] pushNotificationServiceIsActive: %@", @(pushNotificationServiceIsActive));
+
+    return pushNotificationServiceIsActive;
 }
 
 - (void)setEnablePushNotifications:(BOOL)enablePushNotifications
 {
+    NSLog(@"[MXKAccount][Push] setEnablePushNotifications: %@", @(enablePushNotifications));
+
     if (enablePushNotifications)
     {
         _enablePushNotifications = YES;
@@ -407,11 +414,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (BOOL)isPushKitNotificationActive
 {
-    return ([[MXKAccountManager sharedManager] isPushAvailable] && _enablePushKitNotifications && mxSession);
+    BOOL isPushKitNotificationActive = ([[MXKAccountManager sharedManager] isPushAvailable] && _enablePushKitNotifications && mxSession);
+    NSLog(@"[MXKAccount][Push] isPushKitNotificationActive: %@", @(isPushKitNotificationActive));
+
+    return isPushKitNotificationActive;
 }
 
 - (void)setEnablePushKitNotifications:(BOOL)enablePushKitNotifications
 {
+    NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: %@", @(enablePushKitNotifications));
+
     if (enablePushKitNotifications)
     {
         _enablePushKitNotifications = YES;
@@ -423,7 +435,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     else if (_enablePushKitNotifications)
     {
-        NSLog(@"[MXKAccount] Disable Push for %@ account", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
         
         // Delete the pusher, report the new value only on success.
         [self enablePushKitPusher:NO
@@ -440,6 +452,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)setEnableInAppNotifications:(BOOL)enableInAppNotifications
 {
+    NSLog(@"[MXKAccount] setEnableInAppNotifications: %@", @(enableInAppNotifications));
+
     _enableInAppNotifications = enableInAppNotifications;
     
     // Archive updated field
@@ -1015,10 +1029,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 // Refresh the APNS pusher state for this account on this device.
 - (void)refreshAPNSPusher
 {
+    NSLog(@"[MXKAccount][Push] refreshAPNSPusher");
+
     // Check the conditions required to run the pusher
     if (self.pushNotificationServiceIsActive)
     {
-        NSLog(@"[MXKAccount] Refresh APNS pusher for %@ account", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Refresh APNS pusher for %@ account", self.mxCredentials.userId);
         
         // Create/restore the pusher
         [self enableAPNSPusher:YES
@@ -1034,7 +1050,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else if (_enablePushNotifications && mxSession)
     {
         // Turn off pusher if user denied remote notification.
-        NSLog(@"[MXKAccount] Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
         [self enableAPNSPusher:NO success:nil failure:nil];
     }
 }
@@ -1042,6 +1058,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 // Enable/Disable the APNS pusher for this account on this device on the Home Server.
 - (void)enableAPNSPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
+    NSLog(@"[MXKAccount][Push] enableAPNSPusher: %@", @(enabled));
+
 #ifdef DEBUG
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdDev"];
 #else
@@ -1052,7 +1070,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     
     [self enablePusher:enabled appId:appId token:[MXKAccountManager sharedManager].apnsDeviceToken pushData:pushData success:^{
         
-        NSLog(@"[MXKAccount] Succeeded to update APNS pusher for %@ (%d)", self.mxCredentials.userId, enabled);
+        NSLog(@"[MXKAccount][Push] enableAPNSPusher: Succeeded to update APNS pusher for %@ (%d)", self.mxCredentials.userId, enabled);
         
         if (success)
         {
@@ -1070,7 +1088,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
             {
-                NSLog(@"[MXKAccount] APNS was already disabled for %@!", self.mxCredentials.userId);
+                NSLog(@"[MXKAccount][Push] enableAPNSPusher: APNS was already disabled for %@!", self.mxCredentials.userId);
                 
                 // Ignore the error
                 if (success)
@@ -1083,11 +1101,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 return;
             }
             
-            NSLog(@"[MXKAccount] Failed to disable APNS %@! (%@)", self.mxCredentials.userId, error);
+            NSLog(@"[MXKAccount][Push] enableAPNSPusher: Failed to disable APNS %@! (%@)", self.mxCredentials.userId, error);
         }
         else
         {
-            NSLog(@"[MXKAccount] Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+            NSLog(@"[MXKAccount][Push] enableAPNSPusher: Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
         }
         
         if (failure)
@@ -1102,10 +1120,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 // Refresh the PushKit pusher state for this account on this device.
 - (void)refreshPushKitPusher
 {
+    NSLog(@"[MXKAccount][Push] refreshPushKitPusher");
+
     // Check the conditions required to run the pusher
     if (self.isPushKitNotificationActive)
     {
-        NSLog(@"[MXKAccount] Refresh PushKit pusher for %@ account", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Refresh PushKit pusher for %@ account", self.mxCredentials.userId);
         
         // Create/restore the pusher
         [self enablePushKitPusher:YES
@@ -1121,7 +1141,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else if (_enablePushKitNotifications && mxSession)
     {
         // Turn off pusher if user denied remote notification.
-        NSLog(@"[MXKAccount] Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
         [self enablePushKitPusher:NO success:nil failure:nil];
     }
 }
@@ -1129,6 +1149,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 // Enable/Disable the pusher based on PushKit for this account on this device on the Home Server.
 - (void)enablePushKitPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
+    NSLog(@"[MXKAccount][Push] enablePushKitPusher: %@", @(enabled));
+
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pushKitAppIdProd"];
     
     NSMutableDictionary *pushData = [NSMutableDictionary dictionaryWithDictionary:@{@"url": self.pushGatewayURL}];
@@ -1138,10 +1160,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         [pushData addEntriesFromDictionary:options];
     }
-    
-    [self enablePusher:enabled appId:appId token:[MXKAccountManager sharedManager].pushDeviceToken pushData:pushData success:^{
+
+    NSData *token = [MXKAccountManager sharedManager].pushDeviceToken;
+    [self enablePusher:enabled appId:appId token:token pushData:pushData success:^{
         
-        NSLog(@"[MXKAccount] Succeeded to update PushKit pusher for %@ (%d)", self.mxCredentials.userId, enabled);
+        NSLog(@"[MXKAccount][Push] enablePushKitPusher: Succeeded to update PushKit pusher for %@. Enabled: %@. Token: %@", self.mxCredentials.userId, @(enabled), [MXKTools logForPushToken:token]);
         
         if (success)
         {
@@ -1159,7 +1182,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
             {
-                NSLog(@"[MXKAccount] Push was already disabled for %@!", self.mxCredentials.userId);
+                NSLog(@"[MXKAccount][Push] enablePushKitPusher: Push was already disabled for %@!", self.mxCredentials.userId);
                 
                 // Ignore the error
                 if (success)
@@ -1172,11 +1195,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 return;
             }
             
-            NSLog(@"[MXKAccount] Failed to disable Push %@! (%@)", self.mxCredentials.userId, error);
+            NSLog(@"[MXKAccount][Push] enablePushKitPusher: Failed to disable Push %@! (%@)", self.mxCredentials.userId, error);
         }
         else
         {
-            NSLog(@"[MXKAccount] Failed to send Push token for %@! (%@)", self.mxCredentials.userId, error);
+            NSLog(@"[MXKAccount][Push] enablePushKitPusher: Failed to send Push token for %@! (%@)", self.mxCredentials.userId, error);
         }
         
         if (failure)
@@ -1190,23 +1213,25 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)enablePusher:(BOOL)enabled appId:(NSString*)appId token:(NSData*)token pushData:(NSDictionary*)pushData success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
+    NSLog(@"[MXKAccount][Push] enablePusher: %@", @(enabled));
+
     // Refuse to try & turn push on if we're not logged in, it's nonsensical.
     if (!mxCredentials)
     {
-        NSLog(@"[MXKAccount] Not setting push token because we're not logged in");
+        NSLog(@"[MXKAccount][Push] enablePusher: Not setting push token because we're not logged in");
         return;
     }
     
     // Check whether the Push Gateway URL has been configured.
     if (!self.pushGatewayURL)
     {
-        NSLog(@"[MXKAccount] Not setting pusher because the Push Gateway URL is undefined");
+        NSLog(@"[MXKAccount][Push] enablePusher: Not setting pusher because the Push Gateway URL is undefined");
         return;
     }
     
     if (!appId)
     {
-        NSLog(@"[MXKAccount] Not setting pusher because pusher app id is undefined");
+        NSLog(@"[MXKAccount][Push] enablePusher: Not setting pusher because pusher app id is undefined");
         return;
     }
     
@@ -1226,12 +1251,12 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             unsigned char c = [alphabet characterAtIndex:arc4random() % alphabet.length];
             profileTag = [profileTag stringByAppendingFormat:@"%c", c];
         }
-        NSLog(@"[MXKAccount] Generated fresh profile tag: %@", profileTag);
+        NSLog(@"[MXKAccount][Push] enablePusher: Generated fresh profile tag: %@", profileTag);
         [[NSUserDefaults standardUserDefaults] setValue:profileTag forKey:@"pusherProfileTag"];
     }
     else
     {
-        NSLog(@"[MXKAccount] Using existing profile tag: %@", profileTag);
+        NSLog(@"[MXKAccount][Push] enablePusher: Using existing profile tag: %@", profileTag);
     }
     
     NSObject *kind = enabled ? @"http" : [NSNull null];
@@ -1248,7 +1273,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             break;
         }
     }
-    NSLog(@"[MXKAccount] append flag: %d", append);
+    NSLog(@"[MXKAccount][Push] enablePusher: append flag: %d", append);
     
     MXRestClient *restCli = self.mxRestClient;
     
