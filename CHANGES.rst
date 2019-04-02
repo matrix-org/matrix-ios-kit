@@ -1,3 +1,6 @@
+Improvements:
+ * Upgraded to Xcode 10.2, fixed most of the compiler warnings.
+
 Changes in MatrixKit in 0.9.8 (2019-03-21)
 ==========================================
 
