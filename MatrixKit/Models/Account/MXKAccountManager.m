@@ -131,7 +131,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         // Retrieve the corresponding account in the internal array
         MXKAccount* removedAccount = nil;
         
-        for (MXKAccount *account in mxAccounts)
+        for (MXKAccount *account in self->mxAccounts)
         {
             if ([account.mxCredentials.userId isEqualToString:theAccount.mxCredentials.userId])
             {
@@ -142,7 +142,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
         
         if (removedAccount)
         {
-            [mxAccounts removeObject:removedAccount];
+            [self->mxAccounts removeObject:removedAccount];
             
             [self saveAccounts];
             

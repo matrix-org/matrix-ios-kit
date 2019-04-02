@@ -249,13 +249,13 @@
     if (sender == leftButton)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            leftHandler(self, leftButtonTitle);
+            self->leftHandler(self, self->leftButtonTitle);
         });
     }
     else if (sender == rightButton)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            rightHandler(self, rightButtonTitle);
+            self->rightHandler(self, self->rightButtonTitle);
         });
     }
 }

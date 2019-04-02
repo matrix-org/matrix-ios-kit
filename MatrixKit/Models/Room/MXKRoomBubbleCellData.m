@@ -686,7 +686,7 @@
             if ([NSThread currentThread] != [NSThread mainThread])
             {
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
+                    self->_contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
                 });
             }
             else
@@ -748,7 +748,7 @@
             if ([NSThread currentThread] != [NSThread mainThread])
             {
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
+                    self->_contentSize = [self textContentSize:self.attributedTextMessage removeVerticalInset:NO];
                 });
             }
             else

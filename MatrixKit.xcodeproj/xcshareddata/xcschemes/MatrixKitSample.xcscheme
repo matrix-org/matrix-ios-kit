@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0630"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3219CB831AA6F2780027D7E2"
+               BlueprintIdentifier = "3203F2671D2E9CAE0021F170"
                BuildableName = "MatrixKitTests.xctest"
                BlueprintName = "MatrixKitTests"
                ReferencedContainer = "container:MatrixKit.xcodeproj">
@@ -46,7 +46,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3219CB831AA6F2780027D7E2"
+               BlueprintIdentifier = "3203F2671D2E9CAE0021F170"
                BuildableName = "MatrixKitTests.xctest"
                BlueprintName = "MatrixKitTests"
                ReferencedContainer = "container:MatrixKit.xcodeproj">

@@ -1134,7 +1134,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissViewControllerAnimated:completion:)])
         {
             [self.delegate roomInputToolbarView:self dismissViewControllerAnimated:NO completion:^{
-                mediaPicker = nil;
+                self->mediaPicker = nil;
             }];
         }
     }

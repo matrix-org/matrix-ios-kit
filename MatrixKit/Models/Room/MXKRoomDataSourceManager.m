@@ -129,7 +129,7 @@ static Class _roomDataSourceClass;
             NSLog(@"[MXKRoomDataSourceManager] %@: Received memory warning.", self);
             
             // Reload all data sources (except the current used ones) to reduce memory usage.
-            for (MXKRoomDataSource *roomDataSource in roomDataSources.allValues)
+            for (MXKRoomDataSource *roomDataSource in self->roomDataSources.allValues)
             {
                 if (!roomDataSource.delegate)
                 {

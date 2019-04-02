@@ -21,7 +21,7 @@
 
 #pragma mark - Types
 
-typedef void (^MXKBarButtonItemAction)();
+typedef void (^MXKBarButtonItemAction)(void);
 
 #pragma mark - Interface
 
