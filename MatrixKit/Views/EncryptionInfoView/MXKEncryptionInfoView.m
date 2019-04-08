@@ -170,23 +170,23 @@ static NSAttributedString *verticalWhitespace = nil;
                 // Trigger a server request to get the device information for the event sender
                 mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] forceDownload:NO success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
                     
-                    mxCurrentOperation = nil;
+                    self->mxCurrentOperation = nil;
                     
                     // Sanity check: check whether some device information has been retrieved.
-                    mxDeviceInfo = [mxSession.crypto eventDeviceInfo:mxEvent];
-                    if (mxDeviceInfo)
+                    self->mxDeviceInfo = [self->mxSession.crypto eventDeviceInfo:self->mxEvent];
+                    if (self->mxDeviceInfo)
                     {
                         [self updateTextViewText];
                     }
                     
                 } failure:^(NSError *error) {
                     
-                    mxCurrentOperation = nil;
+                    self->mxCurrentOperation = nil;
                     
-                    NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", mxEvent.sender);
+                    NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", self->mxEvent.sender);
                     
                     // Notify MatrixKit user
-                    NSString *myUserId = mxSession.myUser.userId;
+                    NSString *myUserId = self->mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
@@ -428,10 +428,10 @@ static NSAttributedString *verticalWhitespace = nil;
     {
         [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
 
-            mxDeviceInfo.verified = MXDeviceVerified;
-            if (_delegate)
+            self->mxDeviceInfo.verified = MXDeviceVerified;
+            if (self->_delegate)
             {
-                [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+                [self->_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:self->mxDeviceInfo];
             }
             [self removeFromSuperview];
 
@@ -483,10 +483,10 @@ static NSAttributedString *verticalWhitespace = nil;
         {
             [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
 
-                mxDeviceInfo.verified = verificationStatus;
-                if (_delegate)
+                self->mxDeviceInfo.verified = verificationStatus;
+                if (self->_delegate)
                 {
-                    [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+                    [self->_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:self->mxDeviceInfo];
                 }
 
                 [self removeFromSuperview];

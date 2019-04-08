@@ -267,7 +267,7 @@
     // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
     UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
-        if (roomDataSource.state == MXKDataSourceStateReady && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+        if (self->roomDataSource.state == MXKDataSourceStateReady && [self->roomDataSource tableView:self->_bubblesTableView numberOfRowsInSection:0])
         {
             // Reload the full table
             self.bubbleTableViewDisplayInTransition = YES;
@@ -322,7 +322,7 @@
             // Patch: We need to delay this operation to wait for the end of scrolling.
             dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 
-                _bubblesTableView.hidden = NO;
+                self->_bubblesTableView.hidden = NO;
                 self.bubbleTableViewDisplayInTransition = NO;
                 
             });
@@ -394,8 +394,8 @@
         [self reloadBubblesTable:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
-        shouldScrollToBottomOnTableRefresh = NO;
-        isSizeTransitionInProgress = NO;
+        self->shouldScrollToBottomOnTableRefresh = NO;
+        self->isSizeTransitionInProgress = NO;
     });
 }
 
@@ -422,8 +422,8 @@
         [self reloadBubblesTable:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
-        shouldScrollToBottomOnTableRefresh = NO;
-        isSizeTransitionInProgress = NO;
+        self->shouldScrollToBottomOnTableRefresh = NO;
+        self->isSizeTransitionInProgress = NO;
     });
 }
 
@@ -616,7 +616,7 @@
         if (notif.object == self.mainSession)
         {
             NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-            if (roomId && [roomId isEqualToString:roomDataSource.roomId])
+            if (roomId && [roomId isEqualToString:self->roomDataSource.roomId])
             {
                 // Update view controller appearance
                 [self leaveRoomOnEvent:notif.userInfo[kMXSessionNotificationEventKey]];
@@ -833,7 +833,7 @@
         
         joinRoomRequest = [roomDataSource.room join:^{
             
-            joinRoomRequest = nil;
+            self->joinRoomRequest = nil;
             [self stopActivityIndicator];
             
             [self triggerInitialBackPagination];
@@ -845,9 +845,9 @@
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomDataSource.room.summary.displayname);
+            NSLog(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
             
-            joinRoomRequest = nil;
+            self->joinRoomRequest = nil;
             [self stopActivityIndicator];
             
             // Show the error to the end user
@@ -860,11 +860,11 @@
                 msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
             }
             
-            [currentAlert dismissViewControllerAnimated:NO completion:nil];
+            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
             
-            currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
+            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -873,7 +873,7 @@
                                                                
                                                            }]];
             
-            [self presentViewController:currentAlert animated:YES completion:nil];
+            [self presentViewController:self->currentAlert animated:YES completion:nil];
             
             if (completion)
             {
@@ -897,7 +897,7 @@
 
         void (^success)(MXRoom *room) = ^(MXRoom *room) {
 
-            joinRoomRequest = nil;
+            self->joinRoomRequest = nil;
             [self stopActivityIndicator];
 
             // The room is now part of the user's room
@@ -918,7 +918,7 @@
 
             NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
 
-            joinRoomRequest = nil;
+            self->joinRoomRequest = nil;
             [self stopActivityIndicator];
 
             // Show the error to the end user
@@ -930,11 +930,11 @@
                 msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
             }
             __weak typeof(self) weakSelf = self;
-            [currentAlert dismissViewControllerAnimated:NO completion:nil];
+            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
             
-            currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
+            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -943,7 +943,7 @@
                                                                
                                                            }]];
             
-            [self presentViewController:currentAlert animated:YES completion:nil];
+            [self presentViewController:self->currentAlert animated:YES completion:nil];
             
             if (completion)
             {
@@ -1335,7 +1335,7 @@
                 
                 NSLog(@"[MXKRoomVC] Set displayName failed");
                 // Notify MatrixKit user
-                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
@@ -1369,7 +1369,7 @@
                 
                 NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed", roomAlias);
                 // Notify MatrixKit user
-                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
@@ -1427,7 +1427,7 @@
 
                 NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed", roomIdOrAlias, roomId);
                 // Notify MatrixKit user
-                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
             }];
@@ -1459,7 +1459,7 @@
 
                 NSLog(@"[MXKRoomVC] Set topic failed");
                 // Notify MatrixKit user
-                NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
             }];
@@ -1497,7 +1497,7 @@
 
                     NSLog(@"[MXKRoomVC] Invite user (%@) failed", userId);
                     // Notify MatrixKit user
-                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                 }];
@@ -1532,7 +1532,7 @@
                     
                     NSLog(@"[MXKRoomVC] Kick user (%@) failed", userId);
                     // Notify MatrixKit user
-                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
@@ -1567,7 +1567,7 @@
                     
                     NSLog(@"[MXKRoomVC] Ban user (%@) failed", userId);
                     // Notify MatrixKit user
-                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
@@ -1589,7 +1589,7 @@
                     
                     NSLog(@"[MXKRoomVC] Unban user (%@) failed", userId);
                     // Notify MatrixKit user
-                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
@@ -1625,7 +1625,7 @@
                     
                     NSLog(@"[MXKRoomVC] Set user power (%@) failed", userId);
                     // Notify MatrixKit user
-                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
@@ -1647,7 +1647,7 @@
 
                     NSLog(@"[MXKRoomVC] Reset user power (%@) failed", userId);
                     // Notify MatrixKit user
-                    NSString *myUserId = roomDataSource.mxSession.myUser.userId;
+                    NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
 
                 }];
@@ -1843,7 +1843,7 @@
                                success:^{
 
                                    // Stop spinner
-                                   isPaginationInProgress = NO;
+                                   self->isPaginationInProgress = NO;
                                    [self stopActivityIndicator];
                                    
                                    self.bubbleTableViewDisplayInTransition = YES;
@@ -1851,21 +1851,21 @@
                                    // Reload table
                                    [self reloadBubblesTable:YES];
 
-                                   if (roomDataSource.timeline.initialEventId)
+                                   if (self->roomDataSource.timeline.initialEventId)
                                    {
                                        // Center the table view to the cell that contains this event
-                                       NSInteger index = [roomDataSource indexOfCellDataWithEventId:roomDataSource.timeline.initialEventId];
+                                       NSInteger index = [self->roomDataSource indexOfCellDataWithEventId:self->roomDataSource.timeline.initialEventId];
                                        if (index != NSNotFound)
                                        {
                                            // Let iOS put the cell at the top of the table view
                                            [self.bubblesTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
                                            
                                            // Apply an offset to move the targeted component at the center of the screen.
-                                           UITableViewCell *cell = [_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+                                           UITableViewCell *cell = [self->_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
                                            
-                                           CGPoint contentOffset = _bubblesTableView.contentOffset;
-                                           CGFloat firstVisibleContentRowOffset = _bubblesTableView.contentOffset.y + _bubblesTableView.mxk_adjustedContentInset.top;
-                                           CGFloat lastVisibleContentRowOffset = _bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom;
+                                           CGPoint contentOffset = self->_bubblesTableView.contentOffset;
+                                           CGFloat firstVisibleContentRowOffset = self->_bubblesTableView.contentOffset.y + self->_bubblesTableView.mxk_adjustedContentInset.top;
+                                           CGFloat lastVisibleContentRowOffset = self->_bubblesTableView.frame.size.height - self->_bubblesTableView.mxk_adjustedContentInset.bottom;
                                            
                                            CGFloat localPositionOfEvent = 0.0;
                                            
@@ -1873,25 +1873,25 @@
                                            {
                                                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
                                                
-                                               if (_centerBubblesTableViewContentOnTheInitialEventBottom)
+                                               if (self->_centerBubblesTableViewContentOnTheInitialEventBottom)
                                                {
-                                                   localPositionOfEvent = [roomBubbleTableViewCell bottomPositionOfEvent:roomDataSource.timeline.initialEventId];
+                                                   localPositionOfEvent = [roomBubbleTableViewCell bottomPositionOfEvent:self->roomDataSource.timeline.initialEventId];
                                                }
                                                else
                                                {
-                                                   localPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:roomDataSource.timeline.initialEventId];
+                                                   localPositionOfEvent = [roomBubbleTableViewCell topPositionOfEvent:self->roomDataSource.timeline.initialEventId];
                                                }
                                            }
                                            
                                            contentOffset.y += localPositionOfEvent - (lastVisibleContentRowOffset / 2 - (cell.frame.origin.y - firstVisibleContentRowOffset));
                                            
                                            // Sanity check
-                                           if (contentOffset.y + lastVisibleContentRowOffset > _bubblesTableView.contentSize.height)
+                                           if (contentOffset.y + lastVisibleContentRowOffset > self->_bubblesTableView.contentSize.height)
                                            {
-                                               contentOffset.y = _bubblesTableView.contentSize.height - lastVisibleContentRowOffset;
+                                               contentOffset.y = self->_bubblesTableView.contentSize.height - lastVisibleContentRowOffset;
                                            }
                                            
-                                           [_bubblesTableView setContentOffset:contentOffset animated:NO];
+                                           [self->_bubblesTableView setContentOffset:contentOffset animated:NO];
                                            
                                            
                                            // Update the read receipt and potentially the read marker.
@@ -1904,7 +1904,7 @@
                                failure:^(NSError *error) {
 
                                    // Stop spinner
-                                   isPaginationInProgress = NO;
+                                   self->isPaginationInProgress = NO;
                                    [self stopActivityIndicator];
                                    
                                    self.bubbleTableViewDisplayInTransition = YES;
@@ -1954,21 +1954,21 @@
             for (NSUInteger index = 0; index < addedCellNumber; index++)
             {
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                verticalOffset += [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
+                verticalOffset += [self tableView:self->_bubblesTableView heightForRowAtIndexPath:indexPath];
             }
 
             // Add delta of the height of the previous first cell (if any)
-            if (addedCellNumber < [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
+            if (addedCellNumber < [self->roomDataSource tableView:self->_bubblesTableView numberOfRowsInSection:0])
             {
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
-                verticalOffset += ([self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath] - backPaginationSavedFirstBubbleHeight);
+                verticalOffset += ([self tableView:self->_bubblesTableView heightForRowAtIndexPath:indexPath] - self->backPaginationSavedFirstBubbleHeight);
             }
 
-            _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+            self->_bubblesTableView.tableHeaderView = self->backPaginationActivityView = nil;
         }
         else
         {
-            _bubblesTableView.tableFooterView = reconnectingView = nil;
+            self->_bubblesTableView.tableFooterView = self->reconnectingView = nil;
         }
 
         // Trigger a full table reload. We could not only insert new cells related to pagination,
@@ -2004,7 +2004,7 @@
         [self.bubblesTableView setScrollEnabled:YES];
 
         self.bubbleTableViewDisplayInTransition = NO;
-        isPaginationInProgress = NO;
+        self->isPaginationInProgress = NO;
 
         // Force the update of the current visual position
         // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
@@ -2018,8 +2018,8 @@
         self.bubbleTableViewDisplayInTransition = YES;
         
         // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
-        isPaginationInProgress = NO;
-        _bubblesTableView.tableHeaderView = backPaginationActivityView = nil;
+        self->isPaginationInProgress = NO;
+        self->_bubblesTableView.tableHeaderView = self->backPaginationActivityView = nil;
         
         [self reloadBubblesTable:NO];
         
@@ -2042,7 +2042,7 @@
     [roomDataSource paginate:_paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
-        if (attachmentsViewer)
+        if (self->attachmentsViewer)
         {
             // Check whether some older attachments have been added.
             // Note: the stickers are excluded from the attachments list returned by the room datasource.
@@ -2055,17 +2055,17 @@
             }
             
             // Check whether pagination is still available
-            attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
+            self->attachmentsViewer.complete = ([self->roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
             
-            if (isDone || attachmentsViewer.complete)
+            if (isDone || self->attachmentsViewer.complete)
             {
                 // Refresh the current attachments list.
-                [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+                [self->attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
                 
                 // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
                 // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
                 self.bubbleTableViewDisplayInTransition = YES;
-                isPaginationInProgress = NO;
+                self->isPaginationInProgress = NO;
                 [self reloadBubblesTable:YES];
                 self.bubbleTableViewDisplayInTransition = NO;
                 
@@ -2081,7 +2081,7 @@
             // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
             // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
             self.bubbleTableViewDisplayInTransition = YES;
-            isPaginationInProgress = NO;
+            self->isPaginationInProgress = NO;
             [self reloadBubblesTable:YES];
             self.bubbleTableViewDisplayInTransition = NO;
         }
@@ -2090,14 +2090,14 @@
         
         // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
         self.bubbleTableViewDisplayInTransition = YES;
-        isPaginationInProgress = NO;
+        self->isPaginationInProgress = NO;
         [self reloadBubblesTable:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
-        if (attachmentsViewer)
+        if (self->attachmentsViewer)
         {
             // Force attachments update to cancel potential loading wheel
-            [attachmentsViewer displayAttachments:attachmentsViewer.attachments focusOn:nil];
+            [self->attachmentsViewer displayAttachments:self->attachmentsViewer.attachments focusOn:nil];
         }
         
     }];
@@ -3082,16 +3082,16 @@
         
         // Display Menu (dispatch is required here, else the attributed text change hides the menu)
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            self->UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
                 // Deselect text
                 roomBubbleTableViewCell.allTextHighlighted = NO;
-                selectedText = nil;
+                self->selectedText = nil;
                 
                 [UIMenuController sharedMenuController].menuItems = nil;
                 
-                [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
-                UIMenuControllerDidHideMenuNotificationObserver = nil;
+                [[NSNotificationCenter defaultCenter] removeObserver:self->UIMenuControllerDidHideMenuNotificationObserver];
+                self->UIMenuControllerDidHideMenuNotificationObserver = nil;
             }];
             
             [self becomeFirstResponder];
@@ -3349,11 +3349,11 @@
                          // We will scroll to bottom if the bottom of the table is currently visible
                          BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
                          
-                         CGFloat bubblesTableViewBottomConst = _roomInputToolbarContainerBottomConstraint.constant + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
+                         CGFloat bubblesTableViewBottomConst = self->_roomInputToolbarContainerBottomConstraint.constant + self->_roomInputToolbarContainerHeightConstraint.constant + self->_roomActivitiesContainerHeightConstraint.constant;
                          
-                         if (_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
+                         if (self->_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
                          {
-                             _bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
+                             self->_bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
                              
                              // Force to render the view
                              [self.view layoutIfNeeded];
@@ -3515,14 +3515,14 @@
                                         timeout:notificationTimeoutMS
                                         success:^{
                                             // Reset last typing date
-                                            lastTypingDate = nil;
+                                            self->lastTypingDate = nil;
                                         } failure:^(NSError *error)
     {
         NSLog(@"[MXKRoomVC] Failed to send typing notification (%d)", typing);
         
         // Cancel timer (if any)
-        [typingTimer invalidate];
-        typingTimer = nil;
+        [self->typingTimer invalidate];
+        self->typingTimer = nil;
     }];
 }
 
@@ -3617,34 +3617,34 @@
 
                     void(^viewAttachment)(void) = ^() {
 
-                        documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                        [documentInteractionController setDelegate:self];
-                        currentSharedAttachment = selectedAttachment;
+                        self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                        [self->documentInteractionController setDelegate:self];
+                        self->currentSharedAttachment = selectedAttachment;
 
-                        if (![documentInteractionController presentPreviewAnimated:YES])
+                        if (![self->documentInteractionController presentPreviewAnimated:YES])
                         {
-                            if (![documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                            if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
                             {
-                                documentInteractionController = nil;
+                                self->documentInteractionController = nil;
                                 [selectedAttachment onShareEnded];
-                                currentSharedAttachment = nil;
+                                self->currentSharedAttachment = nil;
                             }
                         }
                     };
 
-                    if (roomDataSource.mxSession.crypto
+                    if (self->roomDataSource.mxSession.crypto
                         && [selectedAttachment.contentInfo[@"mimetype"] isEqualToString:@"text/plain"]
                         && [MXMegolmExportEncryption isMegolmKeyFile:fileURL])
                     {
                         // The file is a megolm key file
                         // Ask the user if they wants to view the file as a classic file attachment
                         // or open an import process
-                        [currentAlert dismissViewControllerAnimated:NO completion:nil];
+                        [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
 
                         __weak typeof(self) weakSelf = self;
-                        currentAlert = [UIAlertController alertControllerWithTitle:@"" message:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_file_prompt"] preferredStyle:UIAlertControllerStyleAlert];
+                        self->currentAlert = [UIAlertController alertControllerWithTitle:@"" message:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_file_prompt"] preferredStyle:UIAlertControllerStyleAlert];
                         
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"view"]
+                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"view"]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                                                                            
@@ -3659,7 +3659,7 @@
                                                                            
                                                                        }]];
                         
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_import"]
+                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_import"]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                                                                            
@@ -3669,9 +3669,9 @@
                                                                                self->currentAlert = nil;
                                                                                
                                                                                // Show the keys import dialog
-                                                                               importView = [[MXKEncryptionKeysImportView alloc] initWithMatrixSession:self->roomDataSource.mxSession];
-                                                                               currentAlert = importView.alertController;
-                                                                               [importView showInViewController:self toImportKeys:fileURL onComplete:^{
+                                                                               self->importView = [[MXKEncryptionKeysImportView alloc] initWithMatrixSession:self->roomDataSource.mxSession];
+                                                                               self->currentAlert = self->importView.alertController;
+                                                                               [self->importView showInViewController:self toImportKeys:fileURL onComplete:^{
                                                                                    
                                                                                    if (weakSelf)
                                                                                    {
@@ -3685,7 +3685,7 @@
                                                                            
                                                                        }]];
                         
-                        [self presentViewController:currentAlert animated:YES completion:nil];                        
+                        [self presentViewController:self->currentAlert animated:YES completion:nil];                        
                     }
                     else
                     {
@@ -3863,7 +3863,7 @@
         // display at least 0.3s the spinner to show to the user that something is pending
         // else the UI is flickering
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            restartConnection = NO;
+            self->restartConnection = NO;
             
             if (![self canReconnect])
             {

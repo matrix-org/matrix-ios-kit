@@ -240,7 +240,7 @@
     
     // animate the topic once to display its full content
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionAutoreverse | UIViewAnimationOptionCurveLinear animations:^{
-        [scrollView setContentOffset:offset animated:NO];
+        [self->scrollView setContentOffset:offset animated:NO];
     } completion:^(BOOL finished)
     {
         [self stopTopicAnimation];

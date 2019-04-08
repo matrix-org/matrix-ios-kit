@@ -402,7 +402,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self enableAPNSPusher:NO
                        success:^{
                            
-                           _enablePushNotifications = NO;
+                           self->_enablePushNotifications = NO;
                            
                            // Archive updated field
                            [[MXKAccountManager sharedManager] saveAccounts];
@@ -441,7 +441,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self enablePushKitPusher:NO
                    success:^{
                        
-                       _enablePushKitNotifications = NO;
+                       self->_enablePushKitNotifications = NO;
                        
                        // Archive updated field
                        [[MXKAccountManager sharedManager] saveAccounts];
@@ -515,7 +515,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                                          success();
                                      }
                                      
-                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:self->mxCredentials.userId];
                                  }
                                  failure:failure];
     }
@@ -535,7 +535,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                                        success();
                                    }
                                    
-                                   [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                                   [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:self->mxCredentials.userId];
                                }
                                failure:failure];
     }
@@ -570,7 +570,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     [mxRestClient threePIDs:^(NSArray<MXThirdPartyIdentifier *> *threePIDs2) {
 
-        threePIDs = threePIDs2;
+        self->threePIDs = threePIDs2;
 
         // Archive updated field
         [[MXKAccountManager sharedManager] saveAccounts];
@@ -594,7 +594,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         [mxRestClient deviceByDeviceId:mxCredentials.deviceId success:^(MXDevice *device) {
             
-            _device = device;
+            self->_device = device;
             
             // Archive updated field
             [[MXKAccountManager sharedManager] saveAccounts];
@@ -633,16 +633,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [mxSession.myUser setPresence:userPresence
                      andStatusMessage:statusMessage
                               success:^{
-                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) succeeded", mxCredentials.userId, (unsigned long)userPresence);
+                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) succeeded", self->mxCredentials.userId, (unsigned long)self->userPresence);
                                   if (completion)
                                   {
                                       completion();
                                   }
                                   
-                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                                  [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:self->mxCredentials.userId];
                               }
                               failure:^(NSError *error) {
-                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) failed", mxCredentials.userId, (unsigned long)userPresence);
+                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) failed", self->mxCredentials.userId, (unsigned long)self->userPresence);
                               }];
     }
     else if (hideUserPresence)
@@ -715,7 +715,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         // Check whether the concerned session is the associated one
-        if (notif.object == mxSession)
+        if (notif.object == self->mxSession)
         {
             [self onMatrixSessionStateChange];
         }
@@ -920,9 +920,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             {
                 _bgTask = [handler startBackgroundTaskWithName:@"MXKAccountBackgroundTask" completion:^{
                     
-                    NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)_bgTask);
-                    [handler endBackgrounTaskWithIdentifier:_bgTask];
-                    _bgTask = [handler invalidIdentifier];
+                    NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)self->_bgTask);
+                    [handler endBackgrounTaskWithIdentifier:self->_bgTask];
+                    self->_bgTask = [handler invalidIdentifier];
                     
                 }];
             }
@@ -1041,7 +1041,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                        success:nil
                        failure:^(NSError *error) {
                            
-                           _enablePushNotifications = NO;
+                           self->_enablePushNotifications = NO;
                            
                            // Archive updated field
                            [[MXKAccountManager sharedManager] saveAccounts];
@@ -1077,7 +1077,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             success();
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:self->mxCredentials.userId];
         
     } failure:^(NSError *error) {
         
@@ -1096,7 +1096,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                     success();
                 }
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:self->mxCredentials.userId];
                 
                 return;
             }
@@ -1113,7 +1113,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             failure(error);
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:mxCredentials.userId];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountAPNSActivityDidChangeNotification object:self->mxCredentials.userId];
     }];
 }
 
@@ -1132,7 +1132,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                           success:nil
                           failure:^(NSError *error) {
                               
-                              _enablePushKitNotifications = NO;
+                              self->_enablePushKitNotifications = NO;
                               
                               // Archive updated field
                               [[MXKAccountManager sharedManager] saveAccounts];
@@ -1171,7 +1171,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             success();
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountPushKitActivityDidChangeNotification object:mxCredentials.userId];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountPushKitActivityDidChangeNotification object:self->mxCredentials.userId];
         
     } failure:^(NSError *error) {
         
@@ -1190,7 +1190,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                     success();
                 }
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountPushKitActivityDidChangeNotification object:mxCredentials.userId];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountPushKitActivityDidChangeNotification object:self->mxCredentials.userId];
                 
                 return;
             }
@@ -1207,7 +1207,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             failure(error);
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountPushKitActivityDidChangeNotification object:mxCredentials.userId];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountPushKitActivityDidChangeNotification object:self->mxCredentials.userId];
     }];
 }
 
@@ -1297,14 +1297,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     notificationCenterListener = [self.mxSession.notificationCenter listenToNotifications:^(MXEvent *event, MXRoomState *roomState, MXPushRule *rule)
     {
         // Apply first the event filter defined in the related room data source
-        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:mxSession];
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self->mxSession];
         [roomDataSourceManager roomDataSourceForRoom:event.roomId create:NO onComplete:^(MXKRoomDataSource *roomDataSource) {
             if (roomDataSource)
             {
                 if (!roomDataSource.eventFormatter.eventTypesFilterForMessages || [roomDataSource.eventFormatter.eventTypesFilterForMessages indexOfObject:event.type] != NSNotFound)
                 {
                     // Check conditions to report this notification
-                    if (nil == ignoredRooms || [ignoredRooms indexOfObject:event.roomId] == NSNotFound)
+                    if (nil == self->ignoredRooms || [self->ignoredRooms indexOfObject:event.roomId] == NSNotFound)
                     {
                         onNotification(event, roomState, rule);
                     }
@@ -1453,11 +1453,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 // Consider events related to user's presence
                 if (event.eventType == MXEventTypePresence)
                 {
-                    userPresence = [MXTools presence:event.content[@"presence"]];
+                    self->userPresence = [MXTools presence:event.content[@"presence"]];
                 }
                 
                 // Here displayname or other information have been updated, post update notification.
-                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:mxCredentials.userId];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:self->mxCredentials.userId];
             }];
             
             // User information are just up-to-date (`mxSession` is running), post update notification.
@@ -1504,7 +1504,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             if (_onCertificateChangeBlock (self, certificate))
             {
                 // Update the certificate in credentials
-                mxCredentials.allowedCertificate = certificate;
+                self->mxCredentials.allowedCertificate = certificate;
                 
                 // Archive updated field
                 [[MXKAccountManager sharedManager] saveAccounts];
@@ -1512,7 +1512,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 return YES;
             }
             
-            mxCredentials.ignoredCertificate = certificate;
+            self->mxCredentials.ignoredCertificate = certificate;
             
             // Archive updated field
             [[MXKAccountManager sharedManager] saveAccounts];

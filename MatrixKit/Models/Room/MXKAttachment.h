@@ -18,7 +18,7 @@
 #import <Foundation/Foundation.h>
 #import <MatrixSDK/MatrixSDK.h>
 
-extern NSString *const kMXKAttachmentErrorDomain;
+extern NSString * _Nonnull const kMXKAttachmentErrorDomain;
 
 /**
  List attachment types
@@ -42,7 +42,7 @@ typedef enum : NSUInteger {
 /**
  The media manager instance used to download the attachment data.
  */
-@property (nonatomic, readonly) MXMediaManager *mediaManager;
+@property (nonatomic, readonly) MXMediaManager * _Nullable mediaManager;
 
 /**
  The attachment type.
@@ -52,11 +52,11 @@ typedef enum : NSUInteger {
 /**
  The attachment information retrieved from the event content during the initialisation.
  */
-@property (nonatomic, readonly) NSString *eventId;
-@property (nonatomic, readonly) NSString *eventRoomId;
+@property (nonatomic, readonly) NSString * _Nullable eventId;
+@property (nonatomic, readonly) NSString * _Nullable eventRoomId;
 @property (nonatomic, readonly) MXEventSentState eventSentState;
-@property (nonatomic, readonly) NSString *contentURL;
-@property (nonatomic, readonly) NSDictionary *contentInfo;
+@property (nonatomic, readonly) NSString * _Nullable contentURL;
+@property (nonatomic, readonly) NSDictionary * _Nullable contentInfo;
 
 /**
  The URL of a 'standard size' thumbnail.
@@ -76,12 +76,12 @@ typedef enum : NSUInteger {
 /**
  The attached video thumbnail information.
  */
-@property (nonatomic, readonly) NSDictionary *thumbnailInfo;
+@property (nonatomic, readonly) NSDictionary * _Nullable thumbnailInfo;
 
 /**
  The original file name retrieved from the event body (if any).
  */
-@property (nonatomic, readonly) NSString *originalFileName;
+@property (nonatomic, readonly) NSString * _Nullable originalFileName;
 
 /**
  The thumbnail orientation (relevant in case of image).
@@ -91,17 +91,17 @@ typedef enum : NSUInteger {
 /**
  The cache file path of the attachment.
  */
-@property (nonatomic, readonly) NSString *cacheFilePath;
+@property (nonatomic, readonly) NSString * _Nullable cacheFilePath;
 
 /**
  The cache file path of the attachment thumbnail (may be nil).
  */
-@property (nonatomic, readonly) NSString *thumbnailCachePath;
+@property (nonatomic, readonly) NSString * _Nullable thumbnailCachePath;
 
 /**
  The preview of the attachment (nil by default).
  */
-@property (nonatomic) UIImage *previewImage;
+@property (nonatomic) UIImage * _Nullable previewImage;
 
 /**
  True if the attachment is encrypted
@@ -120,7 +120,7 @@ typedef enum : NSUInteger {
  @param mediaManager the media manager instance used to download the attachment data.
  @return `MXKAttachment` instance.
  */
-- (instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager;
+- (instancetype _Nullable )initWithEvent:(MXEvent*_Nullable)event andMediaManager:(MXMediaManager*_Nullable)mediaManager;
 
 - (void)destroy;
 
@@ -128,17 +128,17 @@ typedef enum : NSUInteger {
  Gets the thumbnail for this attachment if it is in the memory or disk cache,
  otherwise return nil
  */
-- (UIImage *)getCachedThumbnail;
+- (UIImage *_Nullable)getCachedThumbnail;
 
 /**
  For image attachments, gets a UIImage for the full-res image
  */
-- (void)getImage:(void (^)(MXKAttachment *, UIImage *))onSuccess failure:(void (^)(MXKAttachment *, NSError *error))onFailure;
+- (void)getImage:(void (^_Nullable)(MXKAttachment *_Nullable, UIImage *_Nullable))onSuccess failure:(void (^_Nullable)(MXKAttachment *_Nullable, NSError * _Nullable error))onFailure;
 
 /**
  Decrypt the attachment data into memory and provide it as an NSData
  */
-- (void)getAttachmentData:(void (^)(NSData *))onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)getAttachmentData:(void (^_Nullable)(NSData *_Nullable))onSuccess failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 
 /**
  Decrypts the attachment to a newly created temporary file.
@@ -148,13 +148,13 @@ typedef enum : NSUInteger {
  It is the caller's responsibility to delete the temporary file once it is no longer
  needed.
  */
-- (void)decryptToTempFile:(void (^)(NSString *))onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)decryptToTempFile:(void (^_Nullable)(NSString *_Nullable))onSuccess failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 
 /**
  Gets the thumbnails for this attachment, downloading it or loading it from disk cache
  if necessary
  */
-- (void)getThumbnail:(void (^)(MXKAttachment *, UIImage *))onSuccess failure:(void (^)(MXKAttachment *, NSError *error))onFailure;
+- (void)getThumbnail:(void (^_Nullable)(MXKAttachment *_Nullable, UIImage *_Nullable))onSuccess failure:(void (^_Nullable)(MXKAttachment *_Nullable, NSError * _Nullable error))onFailure;
 
 /**
  Download the attachment data if it is not already cached.
@@ -162,7 +162,7 @@ typedef enum : NSUInteger {
  @param onAttachmentReady block called when attachment is available at 'cacheFilePath'.
  @param onFailure the block called on failure.
  */
-- (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure;
+- (void)prepare:(void (^_Nullable)(void))onAttachmentReady failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 
 /**
  Save the attachment in user's photo library. This operation is available only for images and video.
@@ -170,7 +170,7 @@ typedef enum : NSUInteger {
  @param onSuccess the block called on success.
  @param onFailure the block called on failure.
  */
-- (void)save:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)save:(void (^_Nullable)(void))onSuccess failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 
 /**
  Copy the attachment data in general pasteboard.
@@ -178,7 +178,7 @@ typedef enum : NSUInteger {
  @param onSuccess the block called on success.
  @param onFailure the block called on failure.
  */
-- (void)copy:(void (^)(void))onSuccess failure:(void (^)(NSError *error))onFailure;
+- (void)copy:(void (^_Nullable)(void))onSuccess failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 
 /**
  Prepare the attachment data to share it. The original name of the attachment (if any) is used
@@ -190,7 +190,7 @@ typedef enum : NSUInteger {
  @param onReadyToShare the block called when attachment is ready to share at the provided file URL.
  @param onFailure the block called on failure.
  */
-- (void)prepareShare:(void (^)(NSURL *fileURL))onReadyToShare failure:(void (^)(NSError *error))onFailure;
+- (void)prepareShare:(void (^_Nullable)(NSURL * _Nullable fileURL))onReadyToShare failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 - (void)onShareEnded;
 
 @end

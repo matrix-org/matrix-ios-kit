@@ -500,12 +500,12 @@
     // Handle multi-sessions here
     [self selectMatrixSession:^(MXSession *selectedSession)
     {
-        if (sender == _createRoomBtn)
+        if (sender == self->_createRoomBtn)
         {
             // Disable button to prevent multiple request
-            _createRoomBtn.enabled = NO;
+            self->_createRoomBtn.enabled = NO;
             
-            NSString *roomName = _roomNameTextField.text;
+            NSString *roomName = self->_roomNameTextField.text;
             if (! roomName.length)
             {
                 roomName = nil;
@@ -518,7 +518,7 @@
             MXRoomDirectoryVisibility visibility;
             BOOL isDirect = NO;
             
-            if (_roomVisibilityControl.selectedSegmentIndex == 0)
+            if (self->_roomVisibilityControl.selectedSegmentIndex == 0)
             {
                 visibility = kMXRoomDirectoryVisibilityPublic;
             }
@@ -543,9 +543,9 @@
                                 success:^(MXRoom *room) {
                                     
                                     // Reset text fields
-                                    _roomNameTextField.text = nil;
-                                    _roomAliasTextField.text = nil;
-                                    _participantsTextField.text = nil;
+                                    self->_roomNameTextField.text = nil;
+                                    self->_roomAliasTextField.text = nil;
+                                    self->_participantsTextField.text = nil;
                                     
                                     if (self.delegate)
                                     {
@@ -555,9 +555,9 @@
                                     
                                 } failure:^(NSError *error) {
                                     
-                                    _createRoomBtn.enabled = YES;
+                                    self->_createRoomBtn.enabled = YES;
                                     
-                                    NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed", _roomNameTextField.text, self.alias, (_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private");
+                                    NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed", self->_roomNameTextField.text, self.alias, (self->_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private");
                                     
                                     // Notify MatrixKit user
                                     NSString *myUserId = selectedSession.myUser.userId;

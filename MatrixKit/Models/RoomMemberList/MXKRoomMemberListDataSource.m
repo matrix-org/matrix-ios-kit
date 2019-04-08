@@ -279,7 +279,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             return NSOrderedAscending;
         }
         
-        if (_settings.sortRoomMembersUsingLastSeenTime)
+        if (self->_settings.sortRoomMembersUsingLastSeenTime)
         {
             // Get the users that correspond to these members
             MXUser *user1 = [self.mxSession userWithUserId:member1.roomMember.userId];
@@ -312,7 +312,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 {
                     return NSOrderedDescending;
                 }
-                return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[self->mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[self->mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             
             // Consider user's lastActive ago value
@@ -322,7 +322,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             }
             else if (user1.lastActiveAgo == user2.lastActiveAgo)
             {
-                return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+                return [[self->mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[self->mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
             }
             return NSOrderedDescending;
         }
@@ -341,7 +341,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 return NSOrderedDescending;
             }
             
-            return [[mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
+            return [[self->mxRoomState.members memberSortedName:member1.roomMember.userId] compare:[self->mxRoomState.members memberSortedName:member2.roomMember.userId] options:NSCaseInsensitiveSearch];
         }
     }];
     
@@ -368,7 +368,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         if (direction == MXTimelineDirectionForwards)
         {
             // Check the room Id (if any)
-            if (event.roomId && [event.roomId isEqualToString:mxRoom.roomId] == NO)
+            if (event.roomId && [event.roomId isEqualToString:self->mxRoom.roomId] == NO)
             {
                 // This event does not concern the current room members
                 return;
@@ -399,7 +399,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
         if (direction == MXTimelineDirectionForwards)
         {
             // Retrieve typing users list
-            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:mxRoom.typingUsers];
+            NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:self->mxRoom.typingUsers];
             // Remove typing info for the current user
             NSUInteger index = [typingUsers indexOfObject:self.mxSession.myUser.userId];
             if (index != NSNotFound)
@@ -407,7 +407,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
                 [typingUsers removeObjectAtIndex:index];
             }
 
-            for (id<MXKRoomMemberCellDataStoring> cellData in cellDataArray)
+            for (id<MXKRoomMemberCellDataStoring> cellData in self->cellDataArray)
             {
                 if ([typingUsers indexOfObject:cellData.roomMember.userId] == NSNotFound)
                 {

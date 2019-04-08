@@ -766,7 +766,7 @@
 {
     mxCurrentOperation = [mxRestClient isUserNameInUse:self.authInputsView.userId callback:^(BOOL isUserNameInUse) {
         
-        mxCurrentOperation = nil;
+        self->mxCurrentOperation = nil;
         
         if (callback)
         {
@@ -806,9 +806,9 @@
                 // Prepare the parameters dict
                 [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                     
-                    if (parameters && mxRestClient)
+                    if (parameters && self->mxRestClient)
                     {
-                        [_authenticationActivityIndicator startAnimating];
+                        [self->_authenticationActivityIndicator startAnimating];
                         [self loginWithParameters:parameters];
                     }
                     else
@@ -844,7 +844,7 @@
                             MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, JSONResponse);
 
                             MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse
-                                                                      andDefaultCredentials:mxRestClient.credentials];
+                                                                                andDefaultCredentials:self->mxRestClient.credentials];
                             
                             // Sanity check
                             if (!credentials.userId || !credentials.accessToken)
@@ -856,14 +856,14 @@
                                 NSLog(@"[MXKAuthenticationVC] Registration succeeded");
 
                                 // Report the certificate trusted by user (if any)
-                                credentials.allowedCertificate = mxRestClient.allowedCertificate;
+                                credentials.allowedCertificate = self->mxRestClient.allowedCertificate;
                                 
                                 [self onSuccessfulLogin:credentials];
                             }
                             
                         } failure:^(NSError *error) {
                             
-                            mxCurrentOperation = nil;
+                            self->mxCurrentOperation = nil;
                             
                             // An updated authentication session should be available in response data in case of unauthorized request.
                             NSDictionary *JSONResponse = nil;
@@ -876,7 +876,7 @@
                             {
                                 MXAuthenticationSession *authSession = [MXAuthenticationSession modelFromJSON:JSONResponse];
                                 
-                                [_authenticationActivityIndicator stopAnimating];
+                                [self->_authenticationActivityIndicator stopAnimating];
                                 
                                 // Update session identifier
                                 self.authInputsView.authSession.session = authSession.session;
@@ -884,9 +884,9 @@
                                 // Launch registration by preparing parameters dict
                                 [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                                     
-                                    if (parameters && mxRestClient)
+                                    if (parameters && self->mxRestClient)
                                     {
-                                        [_authenticationActivityIndicator startAnimating];
+                                        [self->_authenticationActivityIndicator startAnimating];
                                         [self registerWithParameters:parameters];
                                     }
                                     else
@@ -914,14 +914,14 @@
                             }
                             else
                             {
-                                [_authenticationActivityIndicator stopAnimating];
+                                [self->_authenticationActivityIndicator stopAnimating];
                                
                                 // Launch registration by preparing parameters dict
                                 [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                                     
-                                    if (parameters && mxRestClient)
+                                    if (parameters && self->mxRestClient)
                                     {
-                                        [_authenticationActivityIndicator startAnimating];
+                                        [self->_authenticationActivityIndicator startAnimating];
                                         [self registerWithParameters:parameters];
                                     }
                                     else
@@ -941,9 +941,9 @@
                     // Launch registration by preparing parameters dict
                     [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                         
-                        if (parameters && mxRestClient)
+                        if (parameters && self->mxRestClient)
                         {
-                            [_authenticationActivityIndicator startAnimating];
+                            [self->_authenticationActivityIndicator startAnimating];
                             [self registerWithParameters:parameters];
                         }
                         else
@@ -973,9 +973,9 @@
                     // Prepare the parameters dict
                     [self.authInputsView prepareParameters:^(NSDictionary *parameters, NSError *error) {
                         
-                        if (parameters && mxRestClient)
+                        if (parameters && self->mxRestClient)
                         {
-                            [_authenticationActivityIndicator startAnimating];
+                            [self->_authenticationActivityIndicator startAnimating];
                             [self resetPasswordWithParameters:parameters];
                         }
                         else
@@ -1151,7 +1151,7 @@
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
-                                                alert = nil;
+                                                self->alert = nil;
                                                 
                                             }]];
     
@@ -1359,9 +1359,9 @@
             mxRestClient = [[MXRestClient alloc] initWithHomeServer:homeserverURL andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
                 
                 // Check first if the app developer provided its own certificate handler.
-                if (onUnrecognizedCertificateCustomBlock)
+                if (self->onUnrecognizedCertificateCustomBlock)
                 {
-                    return onUnrecognizedCertificateCustomBlock (certificate);
+                    return self->onUnrecognizedCertificateCustomBlock (certificate);
                 }
                 
                 // Else prompt the user by displaying a fingerprint (SHA256) of the certificate.
@@ -1375,35 +1375,35 @@
                 
                 NSString *msg = [NSString stringWithFormat:@"%@\n\n%@\n\n%@\n\n%@\n\n%@\n\n%@", [NSBundle mxk_localizedStringForKey:@"ssl_cert_not_trust"], [NSBundle mxk_localizedStringForKey:@"ssl_cert_new_account_expl"], homeserverURLStr, fingerprint, certFingerprint, [NSBundle mxk_localizedStringForKey:@"ssl_only_accept"]];
                 
-                if (alert)
+                if (self->alert)
                 {
-                    [alert dismissViewControllerAnimated:NO completion:nil];
+                    [self->alert dismissViewControllerAnimated:NO completion:nil];
                 }
                 
-                alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+                self->alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
                 
-                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                [self->alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
-                                                            alert = nil;
+                                                            self->alert = nil;
                                                             isTrusted = NO;
                                                             dispatch_semaphore_signal(semaphore);
                                                             
                                                         }]];
                 
-                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ssl_trust"]
+                [self->alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ssl_trust"]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
-                                                            alert = nil;
+                                                            self->alert = nil;
                                                             isTrusted = YES;
                                                             dispatch_semaphore_signal(semaphore);
                                                             
                                                         }]];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self presentViewController:alert animated:YES completion:nil];
+                    [self presentViewController:self->alert animated:YES completion:nil];
                 });
                 
                 dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
@@ -1411,11 +1411,11 @@
                 if (!isTrusted)
                 {
                     // Cancel request in progress
-                    [mxCurrentOperation cancel];
-                    mxCurrentOperation = nil;
+                    [self->mxCurrentOperation cancel];
+                    self->mxCurrentOperation = nil;
                     [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
 
-                    [_authenticationActivityIndicator stopAnimating];
+                    [self->_authenticationActivityIndicator stopAnimating];
                 }
                 
                 return isTrusted;
@@ -1446,7 +1446,7 @@
         MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, JSONResponse);
 
         MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse
-                                                            andDefaultCredentials:mxRestClient.credentials];
+                                                            andDefaultCredentials:self->mxRestClient.credentials];
         
         // Sanity check
         if (!credentials.userId || !credentials.accessToken)
@@ -1458,7 +1458,7 @@
             NSLog(@"[MXKAuthenticationVC] Login process succeeded");
 
             // Report the certificate trusted by user (if any)
-            credentials.allowedCertificate = mxRestClient.allowedCertificate;
+            credentials.allowedCertificate = self->mxRestClient.allowedCertificate;
             
             [self onSuccessfulLogin:credentials];
         }
@@ -1488,7 +1488,7 @@
         MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, JSONResponse);
 
         MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse
-                                                            andDefaultCredentials:mxRestClient.credentials];
+                                                            andDefaultCredentials:self->mxRestClient.credentials];
         
         // Sanity check
         if (!credentials.userId || !credentials.accessToken)
@@ -1500,14 +1500,14 @@
             NSLog(@"[MXKAuthenticationVC] Registration succeeded");
 
             // Report the certificate trusted by user (if any)
-            credentials.allowedCertificate = mxRestClient.allowedCertificate;
+            credentials.allowedCertificate = self->mxRestClient.allowedCertificate;
             
             [self onSuccessfulLogin:credentials];
         }
         
     } failure:^(NSError *error) {
         
-        mxCurrentOperation = nil;
+        self->mxCurrentOperation = nil;
         
         // Check whether the authentication is pending (for example waiting for email validation)
         MXError *mxError = [[MXError alloc] initWithNSError:error];
@@ -1516,7 +1516,7 @@
             NSLog(@"[MXKAuthenticationVC] Wait for email validation");
             
             // Postpone a new attempt in 10 sec
-            registrationTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(registrationTimerFireMethod:) userInfo:parameters repeats:NO];
+            self->registrationTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(registrationTimerFireMethod:) userInfo:parameters repeats:NO];
         }
         else
         {
@@ -1533,7 +1533,7 @@
                 
                 if (authSession.completed)
                 {
-                    [_authenticationActivityIndicator stopAnimating];
+                    [self->_authenticationActivityIndicator stopAnimating];
                     
                     // Update session identifier in case of change
                     self.authInputsView.authSession.session = authSession.session;
@@ -1544,7 +1544,7 @@
                         {
                             NSLog(@"[MXKAuthenticationVC] Pursue registration");
                             
-                            [_authenticationActivityIndicator startAnimating];
+                            [self->_authenticationActivityIndicator startAnimating];
                             [self registerWithParameters:parameters];
                         }
                         else
@@ -1584,13 +1584,13 @@
         
         NSLog(@"[MXKAuthenticationVC] Reset password succeeded");
         
-        mxCurrentOperation = nil;
-        [_authenticationActivityIndicator stopAnimating];
+        self->mxCurrentOperation = nil;
+        [self->_authenticationActivityIndicator stopAnimating];
         
-        isPasswordReseted = YES;
+        self->isPasswordReseted = YES;
         
         // Force UI update to refresh submit button title.
-        self.authType = _authType;
+        self.authType = self->_authType;
         
         // Refresh the authentication inputs view on success.
         [self.authInputsView nextStep];
@@ -1602,26 +1602,26 @@
         {
             NSLog(@"[MXKAuthenticationVC] Forgot Password: wait for email validation");
             
-            mxCurrentOperation = nil;
-            [_authenticationActivityIndicator stopAnimating];
+            self->mxCurrentOperation = nil;
+            [self->_authenticationActivityIndicator stopAnimating];
             
-            if (alert)
+            if (self->alert)
             {
-                [alert dismissViewControllerAnimated:NO completion:nil];
+                [self->alert dismissViewControllerAnimated:NO completion:nil];
             }
             
-            alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] preferredStyle:UIAlertControllerStyleAlert];
+            self->alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] preferredStyle:UIAlertControllerStyleAlert];
             
-            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+            [self->alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
-                                                        alert = nil;
+                                                        self->alert = nil;
                                                         
                                                     }]];
             
             
-            [self presentViewController:alert animated:YES completion:nil];
+            [self presentViewController:self->alert animated:YES completion:nil];
         }
         else if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
         {
@@ -1685,7 +1685,7 @@
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
-                                                alert = nil;
+                                                self->alert = nil;
                                                 
                                             }]];
     
@@ -1858,7 +1858,7 @@
     
     [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXLoginResponse *loginResponse) {
         
-        MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse andDefaultCredentials:mxRestClient.credentials];
+        MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse andDefaultCredentials:self->mxRestClient.credentials];
         
         // TODO handle unrecognized certificate (if any) during registration through fallback webview.
         

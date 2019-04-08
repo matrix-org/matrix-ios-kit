@@ -206,7 +206,7 @@
                            } failure:^(NSError *error) {
                                
                                [self removePendingActionMask];
-                               NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed", _mxRoomMember.userId);
+                               NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed", self->_mxRoomMember.userId);
                                // Notify MatrixKit user
                                NSString *myUserId = self.mainSession.myUser.userId;
                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -225,7 +225,7 @@
                 } failure:^(NSError *error) {
                     
                     [self removePendingActionMask];
-                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", mxRoom.roomId);
+                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", self->mxRoom.roomId);
                     // Notify MatrixKit user
                     NSString *myUserId = self.mainSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -250,7 +250,7 @@
                          } failure:^(NSError *error) {
                              
                              [self removePendingActionMask];
-                             NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed", _mxRoomMember.userId);
+                             NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed", self->_mxRoomMember.userId);
                              // Notify MatrixKit user
                              NSString *myUserId = self.mainSession.myUser.userId;
                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -270,7 +270,7 @@
                         } failure:^(NSError *error) {
                             
                             [self removePendingActionMask];
-                            NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed", _mxRoomMember.userId);
+                            NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed", self->_mxRoomMember.userId);
                             // Notify MatrixKit user
                             NSString *myUserId = self.mainSession.myUser.userId;
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -289,7 +289,7 @@
                           } failure:^(NSError *error) {
                               
                               [self removePendingActionMask];
-                              NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed", _mxRoomMember.userId);
+                              NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed", self->_mxRoomMember.userId);
                               // Notify MatrixKit user
                               NSString *myUserId = self.mainSession.myUser.userId;
                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -514,7 +514,7 @@
             if (notif.object == self.mainSession)
             {
                 NSString *roomId = notif.userInfo[kMXSessionNotificationRoomIdKey];
-                if (roomId && [roomId isEqualToString:mxRoom.roomId])
+                if (roomId && [roomId isEqualToString:self->mxRoom.roomId])
                 {
                     // We must remove the current view controller.
                     [self withdrawViewControllerAnimated:YES completion:nil];
@@ -526,7 +526,7 @@
         roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
             MXRoom *room = notif.object;
-            if (self.mainSession == room.mxSession && [mxRoom.roomId isEqualToString:room.roomId])
+            if (self.mainSession == room.mxSession && [self->mxRoom.roomId isEqualToString:room.roomId])
             {
                 // The existing room history has been flushed during server sync.
                 // Take into account the updated room members list by updating the room member instance
