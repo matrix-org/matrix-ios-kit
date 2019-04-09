@@ -18,7 +18,9 @@
 #import <Foundation/Foundation.h>
 #import <MatrixSDK/MatrixSDK.h>
 
-extern NSString * _Nonnull const kMXKAttachmentErrorDomain;
+NS_ASSUME_NONNULL_BEGIN
+
+extern NSString * const kMXKAttachmentErrorDomain;
 
 /**
  List attachment types
@@ -42,7 +44,7 @@ typedef enum : NSUInteger {
 /**
  The media manager instance used to download the attachment data.
  */
-@property (nonatomic, readonly) MXMediaManager * _Nullable mediaManager;
+@property (nonatomic, readonly) MXMediaManager *mediaManager;
 
 /**
  The attachment type.
@@ -52,11 +54,11 @@ typedef enum : NSUInteger {
 /**
  The attachment information retrieved from the event content during the initialisation.
  */
-@property (nonatomic, readonly) NSString * _Nullable eventId;
-@property (nonatomic, readonly) NSString * _Nullable eventRoomId;
+@property (nonatomic, readonly, nullable) NSString *eventId;
+@property (nonatomic, readonly, nullable) NSString *eventRoomId;
 @property (nonatomic, readonly) MXEventSentState eventSentState;
-@property (nonatomic, readonly) NSString * _Nullable contentURL;
-@property (nonatomic, readonly) NSDictionary * _Nullable contentInfo;
+@property (nonatomic, readonly, nullable) NSString *contentURL;
+@property (nonatomic, readonly, nullable) NSDictionary *contentInfo;
 
 /**
  The URL of a 'standard size' thumbnail.
@@ -76,12 +78,12 @@ typedef enum : NSUInteger {
 /**
  The attached video thumbnail information.
  */
-@property (nonatomic, readonly) NSDictionary * _Nullable thumbnailInfo;
+@property (nonatomic, readonly, nullable) NSDictionary *thumbnailInfo;
 
 /**
  The original file name retrieved from the event body (if any).
  */
-@property (nonatomic, readonly) NSString * _Nullable originalFileName;
+@property (nonatomic, readonly, nullable) NSString *originalFileName;
 
 /**
  The thumbnail orientation (relevant in case of image).
@@ -91,17 +93,17 @@ typedef enum : NSUInteger {
 /**
  The cache file path of the attachment.
  */
-@property (nonatomic, readonly) NSString * _Nullable cacheFilePath;
+@property (nonatomic, readonly, nullable) NSString *cacheFilePath;
 
 /**
  The cache file path of the attachment thumbnail (may be nil).
  */
-@property (nonatomic, readonly) NSString * _Nullable thumbnailCachePath;
+@property (nonatomic, readonly, nullable) NSString *thumbnailCachePath;
 
 /**
  The preview of the attachment (nil by default).
  */
-@property (nonatomic) UIImage * _Nullable previewImage;
+@property (nonatomic, nullable) UIImage *previewImage;
 
 /**
  True if the attachment is encrypted
@@ -120,7 +122,7 @@ typedef enum : NSUInteger {
  @param mediaManager the media manager instance used to download the attachment data.
  @return `MXKAttachment` instance.
  */
-- (instancetype _Nullable )initWithEvent:(MXEvent*_Nullable)event andMediaManager:(MXMediaManager*_Nullable)mediaManager;
+- (nullable instancetype)initWithEvent:(MXEvent*)event andMediaManager:(MXMediaManager*)mediaManager;
 
 - (void)destroy;
 
@@ -128,7 +130,7 @@ typedef enum : NSUInteger {
  Gets the thumbnail for this attachment if it is in the memory or disk cache,
  otherwise return nil
  */
-- (UIImage *_Nullable)getCachedThumbnail;
+- (nullable UIImage *)getCachedThumbnail;
 
 /**
  For image attachments, gets a UIImage for the full-res image
@@ -194,3 +196,5 @@ typedef enum : NSUInteger {
 - (void)onShareEnded;
 
 @end
+
+NS_ASSUME_NONNULL_END
