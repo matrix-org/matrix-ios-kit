@@ -17,6 +17,7 @@
 #import <XCTest/XCTest.h>
 
 #import "MXEncryptedAttachments.h"
+#import "MXEncryptedContentFile.h"
 
 @interface EncryptedAttachmentsTest : XCTestCase
 
@@ -90,7 +91,7 @@
     
     for (NSArray *vector in testVectors) {
         NSString *inputCiphertext = vector[0];
-        NSDictionary *inputInfo = vector[1];
+        MXEncryptedContentFile *inputInfo = [MXEncryptedContentFile modelFromJSON:vector[1]];
         NSString *want = vector[2];
         
         NSData *ctData = [[NSData alloc] initWithBase64EncodedString:[MXEncryptedAttachments padBase64:inputCiphertext] options:0];

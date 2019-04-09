@@ -300,7 +300,8 @@
             case MXKRoomMemberDetailsActionIgnore:
             {
                 // Prompt user to ignore content from this user
-                __weak __typeof(self) weakSelf = self;
+                MXWeakify(self);
+                
                 if (currentAlert)
                 {
                     [currentAlert dismissViewControllerAnimated:NO completion:nil];
@@ -312,29 +313,34 @@
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
-                                                                   if (weakSelf)
-                                                                   {
-                                                                       typeof(self) self = weakSelf;
-                                                                       self->currentAlert = nil;
-                                                                       
-                                                                       // Add the user to the blacklist: ignored users
-                                                                       [self addPendingActionMask];
-                                                                       [self.mainSession ignoreUsers:@[self.mxRoomMember.userId]
-                                                                                             success:^{
-                                                                                                 
-                                                                                                 [self removePendingActionMask];
-                                                                                                 
-                                                                                             } failure:^(NSError *error) {
-                                                                                                 
-                                                                                                 [self removePendingActionMask];
-                                                                                                 NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", self.mxRoomMember.userId);
-                                                                                                 
-                                                                                                 // Notify MatrixKit user
-                                                                                                 NSString *myUserId = self.mainSession.myUser.userId;
-                                                                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
-                                                                                                 
-                                                                                             }];
-                                                                   }
+                                                                   MXStrongifyAndReturnIfNil(self);
+                                                                   
+                                                                   self->currentAlert = nil;
+                                                                   
+                                                                   // Add the user to the blacklist: ignored users
+                                                                   [self addPendingActionMask];
+                                                                   
+                                                                   MXWeakify(self);
+                                                                   
+                                                                   [self.mainSession ignoreUsers:@[self.mxRoomMember.userId]
+                                                                                         success:^{
+                                                                                             
+                                                                                             MXStrongifyAndReturnIfNil(self);
+                                                                                             
+                                                                                             [self removePendingActionMask];
+                                                                                             
+                                                                                         } failure:^(NSError *error) {
+                                                                                             
+                                                                                             MXStrongifyAndReturnIfNil(self);
+                                                                                             
+                                                                                             [self removePendingActionMask];
+                                                                                             NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", self.mxRoomMember.userId);
+                                                                                             
+                                                                                             // Notify MatrixKit user
+                                                                                             NSString *myUserId = self.mainSession.myUser.userId;
+                                                                                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
+                                                                                             
+                                                                                         }];
                                                                    
                                                                }]];
                 
@@ -342,12 +348,9 @@
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
-                                                                   if (weakSelf)
-                                                                   {
-                                                                       typeof(self) self = weakSelf;
-                                                                       self->currentAlert = nil;
-                                                                   }
+                                                                   MXStrongifyAndReturnIfNil(self);
                                                                    
+                                                                   self->currentAlert = nil;
                                                                }]];
                 
                 [self presentViewController:currentAlert animated:YES completion:nil];
@@ -357,18 +360,21 @@
             {
                 // Remove the member from the ignored user list.
                 [self addPendingActionMask];
-                __weak __typeof(self) weakSelf = self;
+                
+                MXWeakify(self);
+                
                 [self.mainSession unIgnoreUsers:@[self.mxRoomMember.userId]
                                             success:^{
-
-                                                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                [strongSelf removePendingActionMask];
+                                                
+                                                MXStrongifyAndReturnIfNil(self);
+                                                [self removePendingActionMask];
 
                                             } failure:^(NSError *error) {
 
-                                                __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                                [strongSelf removePendingActionMask];
-                                                NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed", strongSelf.mxRoomMember.userId);
+                                                MXStrongifyAndReturnIfNil(self);
+                                                
+                                                [self removePendingActionMask];
+                                                NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed", self.mxRoomMember.userId);
 
                                                 // Notify MatrixKit user
                                                 NSString *myUserId = self.mainSession.myUser.userId;

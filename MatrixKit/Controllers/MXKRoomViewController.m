@@ -851,7 +851,7 @@
             [self stopActivityIndicator];
             
             // Show the error to the end user
-            __weak typeof(self) weakSelf = self;
+            MXWeakify(self);
             NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
             if ([msg isEqualToString:@"No known servers"])
             {
@@ -868,7 +868,7 @@
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
-                                                               typeof(self) self = weakSelf;
+                                                               MXStrongifyAndReturnIfNil(self);
                                                                self->currentAlert = nil;
                                                                
                                                            }]];
@@ -929,7 +929,7 @@
                 // 'Error when trying to join an empty room should be more explicit'
                 msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
             }
-            __weak typeof(self) weakSelf = self;
+            MXWeakify(self);
             [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
             
             self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
@@ -938,7 +938,7 @@
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
-                                                               typeof(self) self = weakSelf;
+                                                               MXStrongifyAndReturnIfNil(self);
                                                                self->currentAlert = nil;
                                                                
                                                            }]];
