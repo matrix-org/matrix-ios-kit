@@ -6,6 +6,7 @@ Improvements:
 
 Bug fix:
  * Fix some potential crashes with ivar using a weak self (PR #537).
+ * MXKSessionRecentsDataSource: Hide a room if needed on room summary change (vector-im/riot-ios/issues/2148).
 
 Changes in MatrixKit in 0.9.8 (2019-03-21)
 ==========================================
