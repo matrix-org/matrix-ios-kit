@@ -1249,14 +1249,16 @@
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
-                                                           typeof(self) self = weakSelf;
+                                                           MXWeakify(self);
+                                                           
                                                            self->currentAlert = nil;
                                                            
                                                            [self startActivityIndicator];
                                                            
                                                            [attachment prepareShare:^(NSURL *fileURL) {
                                                                
-                                                               typeof(self) self = weakSelf;
+                                                               MXStrongifyAndReturnIfNil(self);
+                                                               
                                                                [self stopActivityIndicator];
                                                                
                                                                self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
@@ -1272,7 +1274,8 @@
                                                                
                                                            } failure:^(NSError *error) {
                                                                
-                                                               typeof(self) self = weakSelf;
+                                                               MXStrongifyAndReturnIfNil(self);
+                                                               
                                                                [self stopActivityIndicator];
                                                                
                                                                // Notify MatrixKit user

@@ -390,6 +390,19 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         // Reset account to dispose all resources (Discard here potentials changes)
         self.mxAccount = nil;
         
+        if (imageLoader)
+        {
+            [imageLoader cancel];
+            imageLoader = nil;
+        }
+        
+        // Remove listener
+        if (accountUserInfoObserver)
+        {
+            [[NSNotificationCenter defaultCenter] removeObserver:accountUserInfoObserver];
+            accountUserInfoObserver = nil;
+        }
+        
         [super destroy];
     }
 }
@@ -477,37 +490,44 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             // Retrieve the current picture and make sure its orientation is up
             UIImage *updatedPicture = [MXKTools forceImageOrientationUp:[self.userPictureButton imageForState:UIControlStateNormal]];
             
+            MXWeakify(self);
+            
             // Upload picture
             MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mainSession initialRange:0 andRange:1.0];
             [uploader uploadData:UIImageJPEGRepresentation(updatedPicture, 0.5) filename:nil mimeType:@"image/jpeg" success:^(NSString *url)
              {
+                 MXStrongifyAndReturnIfNil(self);
+                 
                  // Store uploaded picture url and trigger picture saving
                  self->uploadedPictureURL = url;
                  [self saveUserInfo];
              } failure:^(NSError *error)
              {
                  NSLog(@"[MXKAccountDetailsVC] Failed to upload image");
+                 MXStrongifyAndReturnIfNil(self);
                  [self handleErrorDuringPictureSaving:error];
              }];
             
         }
         else
         {
-            __weak typeof(self) weakSelf = self;
+            MXWeakify(self);
+            
             [_mxAccount setUserAvatarUrl:uploadedPictureURL
                                  success:^{
                                      
                                      // uploadedPictureURL becomes the user's picture
-                                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                     [strongSelf updateUserPicture:strongSelf->uploadedPictureURL force:YES];
+                                     MXStrongifyAndReturnIfNil(self);
+                                     
+                                     [self updateUserPicture:self->uploadedPictureURL force:YES];
                                      // Loop to end saving
-                                     [strongSelf saveUserInfo];
+                                     [self saveUserInfo];
                                      
                                  }
                                  failure:^(NSError *error) {
                                      NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url");
-                                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                     [strongSelf handleErrorDuringPictureSaving:error];
+                                     MXStrongifyAndReturnIfNil(self);
+                                     [self handleErrorDuringPictureSaving:error];
                                  }];
         }
         

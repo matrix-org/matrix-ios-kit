@@ -191,13 +191,14 @@
 {
     if ([self.medium isEqualToString:kMX3PIDMediumEmail] || [self.medium isEqualToString:kMX3PIDMediumMSISDN])
     {
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
+        
         currentRequest = [mxRestClient add3PID:self.sid clientSecret:self.clientSecret bind:bind success:^{
 
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            MXStrongifyAndReturnIfNil(self);
 
             // Update linked userId in 3PID
-            strongSelf.userId = strongSelf->mxRestClient.credentials.userId;
+            self.userId = self->mxRestClient.credentials.userId;
             self->currentRequest = nil;
 
             if (success)
@@ -206,6 +207,8 @@
             }
             
         } failure:^(NSError *error) {
+            
+            MXStrongifyAndReturnIfNil(self);
             
             self->currentRequest = nil;
 

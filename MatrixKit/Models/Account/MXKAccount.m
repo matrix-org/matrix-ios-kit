@@ -721,27 +721,28 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         }
     }];
     
-    __weak typeof(self) weakSelf = self;
+    MXWeakify(self);
+    
     [mxSession setStore:store success:^{
         
         // Complete session registration by launching live stream
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        MXStrongifyAndReturnIfNil(self);
         
         // Refresh pusher state
-        [strongSelf refreshAPNSPusher];
-        [strongSelf refreshPushKitPusher];
+        [self refreshAPNSPusher];
+        [self refreshPushKitPusher];
         
         // Launch server sync
-        [strongSelf launchInitialServerSync];
+        [self launchInitialServerSync];
         
     } failure:^(NSError *error) {
         
         // This cannot happen. Loading of MXFileStore cannot fail.
-        __strong __typeof(weakSelf)strongSelf = weakSelf;
-        strongSelf->mxSession = nil;
+        MXStrongifyAndReturnIfNil(self);
+        self->mxSession = nil;
         
-        [[NSNotificationCenter defaultCenter] removeObserver:strongSelf->sessionStateObserver];
-        strongSelf->sessionStateObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:self->sessionStateObserver];
+        self->sessionStateObserver = nil;
         
     }];
 }
