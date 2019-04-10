@@ -19,6 +19,7 @@
 
 #import "MXKImageView.h"
 
+static UIColor* kMoreLabelDefaultcolor;
 
 @interface MXKReceiptSendersContainer ()
 
@@ -31,6 +32,14 @@
 
 @implementation MXKReceiptSendersContainer
 
++ (void)initialize
+{
+    if (self == [MXKReceiptSendersContainer class])
+    {
+        kMoreLabelDefaultcolor = [UIColor blackColor];
+    }
+}
+
 - (instancetype)initWithFrame:(CGRect)frame andMediaManager:(MXMediaManager*)mediaManager
 {
     self = [super initWithFrame:frame];
@@ -40,6 +49,7 @@
         _maxDisplayedAvatars = 3;
         _avatarMargin = 2.0;
         _moreLabel = nil;
+        _moreLabelTextColor = kMoreLabelDefaultcolor;
     }
     return self;
 }
@@ -140,7 +150,7 @@
             }
         }
         
-        _moreLabel.textColor = [UIColor blackColor];
+        _moreLabel.textColor = self.moreLabelTextColor ?: kMoreLabelDefaultcolor;
         [self addSubview:_moreLabel];
     }
 }
