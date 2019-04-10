@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.9.9 (2019-xx-xx)
 
 Improvements:
  * Upgraded to Xcode 10.2, fixed most of the compiler warnings, thanks to @tladesignz (PR #536).
+ * MXKReceiptSendersContainer: Add possibility to customize `more label` text color (PR #539).
 
 Bug fix:
  * Fix some potential crashes with ivar using a weak self (PR #537).
