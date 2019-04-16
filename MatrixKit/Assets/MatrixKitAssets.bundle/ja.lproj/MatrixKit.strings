@@ -73,50 +73,50 @@
 "ignore" = "無視";
 // Events formatter
 "notice_avatar_changed_too" = "(アバターも変わった)";
-"notice_room_name_removed" = "％@は部屋名を削除しました";
-"notice_room_topic_removed" = "％@はトピックを削除しました";
-"notice_event_redacted" = "<編集された％@>";
+"notice_room_name_removed" = "%@は部屋名を削除しました";
+"notice_room_topic_removed" = "%@はトピックを削除しました";
+"notice_event_redacted" = "<編集された%@>";
 "notice_event_redacted_by" = " %@により";
-"notice_event_redacted_reason" = " [理由: ％@]";
-"notice_profile_change_redacted" = "％@は彼らのプロフィール ％@を更新しました";
-"notice_room_created" = "％@は部屋を作成しました";
-"notice_room_join_rule" = "結合ルールは次のとおり: ％@";
+"notice_event_redacted_reason" = " [理由: %@]";
+"notice_profile_change_redacted" = "%@は彼らのプロフィール %@を更新しました";
+"notice_room_created" = "%@は部屋を作成しました";
+"notice_room_join_rule" = "結合ルールは次のとおり: %@";
 "notice_room_power_level_intro" = "ルームメンバーの権限レベル:";
 "notice_room_power_level_acting_requirement" = "アクション前にユーザーの必要な最小権限レベル:";
 "notice_room_power_level_event_requirement" = "イベントに関連する最小権限レベル:";
-"notice_room_aliases" = "ルームエイリアス: ％@";
-"notice_room_related_groups" = "この部屋に関連付けられたグループ: ％@";
+"notice_room_aliases" = "ルームエイリアス: %@";
+"notice_room_related_groups" = "この部屋に関連付けられたグループ: %@";
 "notice_encrypted_message" = "暗号化されたメッセージ";
-"notice_encryption_enabled" = "％@はエンドツーエンド暗号化を有効にする (アルゴリズム ％@)";
+"notice_encryption_enabled" = "%@はエンドツーエンド暗号化を有効にする (アルゴリズム %@)";
 "notice_image_attachment" = "画像添付";
 "notice_audio_attachment" = "音声添付";
 "notice_video_attachment" = "動画添付";
 "notice_location_attachment" = "位置情報添付";
 "notice_file_attachment" = "ファイル添付";
 "notice_invalid_attachment" = "無効な添付";
-"notice_unsupported_attachment" = "サポートされていない添付: ％@";
+"notice_unsupported_attachment" = "サポートされていない添付: %@";
 "notice_feedback" = "フィードバックイベント (id: %@): %@";
-"notice_redaction" = "％@はイベントを編集しました (id: ％@)";
+"notice_redaction" = "%@はイベントを編集しました (id: %@)";
 "notice_error_unsupported_event" = "サポートされていないイベント";
 "notice_error_unexpected_event" = "予期しないイベント";
 "notice_error_unknown_event_type" = "不明なイベントタイプ";
-"notice_room_history_visible_to_anyone" = "％@ 誰でも将来の部屋履歴を表示されます。";
-"notice_room_history_visible_to_members" = "％@ ルームメンバー全員に将来の部屋履歴を表示されます。";
-"notice_room_history_visible_to_members_from_invited_point" = "％@ ルームメンバー全員に招待した時点からの部屋履歴を表示されます。";
-"notice_room_history_visible_to_members_from_joined_point" = "％@ ルームメンバー全員に参加した時点からの部屋履歴を表示されます。";
-"notice_crypto_unable_to_decrypt" = "** 復号化できません: ％@ **";
+"notice_room_history_visible_to_anyone" = "%@ 誰でも将来の部屋履歴を表示されます。";
+"notice_room_history_visible_to_members" = "%@ ルームメンバー全員に将来の部屋履歴を表示されます。";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ ルームメンバー全員に招待した時点からの部屋履歴を表示されます。";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ ルームメンバー全員に参加した時点からの部屋履歴を表示されます。";
+"notice_crypto_unable_to_decrypt" = "** 復号化できません: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "送信者の端末からこのメッセージのキーが送信されていません。";
 "notice_sticker" = "ステッカー";
 "notice_in_reply_to" = "に返信";
 // room display name
 "room_displayname_empty_room" = "空の部屋";
 "room_displayname_two_members" = "%@ と %@";
-"room_displayname_more_than_two_members" = "％@ と %@ 他";
+"room_displayname_more_than_two_members" = "%@ と %@ 他";
 // Settings
 "settings" = "設定";
 "settings_enable_inapp_notifications" = "アプリ内通知を有効にする";
 "settings_enable_push_notifications" = "プッシュ通知を有効にする";
-"settings_enter_validation_token_for" = "％@の検証トークンを入力:";
+"settings_enter_validation_token_for" = "%@の検証トークンを入力:";
 "notification_settings_room_rule_title" = "部屋: '%@'";
 // Devices
 "device_details_title" = "端末情報\n";
@@ -202,7 +202,7 @@
 "room_member_power_level_prompt" = "この変更を元に戻すことはできません。ユーザーが自分と同じレベルの権限を持つように促しますが、よろしいですか?";
 // Attachment
 "attachment_size_prompt" = "次のように送信しますか:";
-"attachment_original" = "実際のサイズ: ％@";
+"attachment_original" = "実際のサイズ: %@";
 "attachment_small" = "小: %@";
 "attachment_medium" = "中: %@";
 "attachment_large" = "大: %@";
@@ -252,40 +252,40 @@
 "power_level" = "権限レベル";
 "network_error_not_reachable" = "ネットワーク接続を確認してください";
 "user_id_placeholder" = "例: @bob:homeserver";
-"ssl_homeserver_url" = "ホームサーバーのURL: ％@";
+"ssl_homeserver_url" = "ホームサーバーのURL: %@";
 // Permissions
-"camera_access_not_granted_for_call" = "ビデオ通話はカメラにアクセスする必要がありますが、％@にはそのカメラを使用する権限がありません";
-"microphone_access_not_granted_for_call" = "通話にはマイクへのアクセスが必要ですが、％@には使用許可がありません";
-"local_contacts_access_not_granted" = "ローカルの連絡先からユーザーを探すには連絡先にアクセスする必要がありますが、％@にはそのアクセス権限がありません";
+"camera_access_not_granted_for_call" = "ビデオ通話はカメラにアクセスする必要がありますが、%@にはそのカメラを使用する権限がありません";
+"microphone_access_not_granted_for_call" = "通話にはマイクへのアクセスが必要ですが、%@には使用許可がありません";
+"local_contacts_access_not_granted" = "ローカルの連絡先からユーザーを探すには連絡先にアクセスする必要がありますが、%@にはそのアクセス権限がありません";
 "local_contacts_access_discovery_warning_title" = "ユーザーの探索";
-"local_contacts_access_discovery_warning" = "％@は、ユーザーを検索するためにあなたの連絡先から電子メールと電話番号をアップロードしたい";
+"local_contacts_access_discovery_warning" = "%@は、ユーザーを検索するためにあなたの連絡先から電子メールと電話番号をアップロードしたい";
 // Country picker
 "country_picker_title" = "国を選択する";
 // Language picker
 "language_picker_title" = "言語を選択する";
-"language_picker_default_language" = "既定値 (％@)";
-"notice_room_invite" = "％@は％@を招待しました";
-"notice_room_third_party_invite" = "％@は、部屋に参加するよう％@へ招待状を送った";
-"notice_room_third_party_registered_invite" = "％@は％@の招待を受け入れました";
-"notice_room_join" = "％@ は参加しました";
+"language_picker_default_language" = "既定値 (%@)";
+"notice_room_invite" = "%@は%@を招待しました";
+"notice_room_third_party_invite" = "%@は、部屋に参加するよう%@へ招待状を送った";
+"notice_room_third_party_registered_invite" = "%@は%@の招待を受け入れました";
+"notice_room_join" = "%@ は参加しました";
 "notice_room_leave" = "%@ は退出しました";
-"notice_room_reject" = "％@は招待を拒否しました";
-"notice_room_kick" = "％@は％@を追い出しました";
+"notice_room_reject" = "%@は招待を拒否しました";
+"notice_room_kick" = "%@は%@を追い出しました";
 "notice_room_unban" = "%@は%@を追放解除した";
 "notice_room_ban" = "%@は%@を追放した";
 "notice_room_withdraw" = "%@は%@の招待を辞退しました";
 "notice_room_reason" = ". 理由: %@";
-"notice_avatar_url_changed" = "％@はアバターを変更しました";
-"notice_display_name_set" = "％@は表示名を％@に設定しました";
-"notice_display_name_changed_from" = "％@は表示名を％@から％@に変更しました";
-"notice_display_name_removed" = "％@は表示名を削除しました";
-"notice_topic_changed" = "％@はトピックを次のように変更しました: ％@";
-"notice_room_name_changed" = "％@は部屋名を次のように変更しました: ％@";
-"notice_placed_voice_call" = "％@は電話をかけました";
-"notice_placed_video_call" = "％@はビデオ電話をかけました";
-"notice_answered_video_call" = "％@は通話に応答しました";
-"notice_ended_video_call" = "％@は通話を終了しました";
-"notice_conference_call_request" = "％@はVoIP会議をリクエストしました";
+"notice_avatar_url_changed" = "%@はアバターを変更しました";
+"notice_display_name_set" = "%@は表示名を%@に設定しました";
+"notice_display_name_changed_from" = "%@は表示名を%@から%@に変更しました";
+"notice_display_name_removed" = "%@は表示名を削除しました";
+"notice_topic_changed" = "%@はトピックを次のように変更しました: %@";
+"notice_room_name_changed" = "%@は部屋名を次のように変更しました: %@";
+"notice_placed_voice_call" = "%@は電話をかけました";
+"notice_placed_video_call" = "%@はビデオ電話をかけました";
+"notice_answered_video_call" = "%@は通話に応答しました";
+"notice_ended_video_call" = "%@は通話を終了しました";
+"notice_conference_call_request" = "%@はVoIP会議をリクエストしました";
 "notice_conference_call_started" = "VoIP会議が開始されました";
 "notice_conference_call_finished" = "VoIP会議が終了しました";
 // button names 
@@ -353,9 +353,9 @@
 "notification_settings_by_default" = "既定値では...";
 "notification_settings_notify_all_other" = "他のすべてのメッセージ/部屋について通知する";
 // gcm section 
-"settings_config_home_server" = "ホームサーバー: ％@";
-"settings_config_identity_server" = "IDサーバー: ％@";
-"settings_config_user_id" = "ユーザーID: ％@";
+"settings_config_home_server" = "ホームサーバー: %@";
+"settings_config_identity_server" = "IDサーバー: %@";
+"settings_config_user_id" = "ユーザーID: %@";
 // call string
 "call_waiting" = "待機中...";
 "call_connecting" = "通話接続中...";
