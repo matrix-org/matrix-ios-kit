@@ -1056,7 +1056,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
-// Enable/Disable the APNS pusher for this account on this device on the Home Server.
+// Enable/Disable the APNS pusher for this account on this device on the homeserver.
 - (void)enableAPNSPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     NSLog(@"[MXKAccount][Push] enableAPNSPusher: %@", @(enabled));
@@ -1147,7 +1147,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
-// Enable/Disable the pusher based on PushKit for this account on this device on the Home Server.
+// Enable/Disable the pusher based on PushKit for this account on this device on the homeserver.
 - (void)enablePushKitPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     NSLog(@"[MXKAccount][Push] enablePushKitPusher: %@", @(enabled));

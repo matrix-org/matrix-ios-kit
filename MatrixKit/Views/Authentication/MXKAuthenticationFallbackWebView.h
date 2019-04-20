@@ -21,7 +21,7 @@
 /**
  Open authentication fallback page into the webview.
  
- @param fallbackPage the fallback page hosted by a home server.
+ @param fallbackPage the fallback page hosted by a homeserver.
  @param success the block called when the user has been successfully logged in or registered.
  */
 - (void)openFallbackPage:(NSString*)fallbackPage success:(void (^)(MXLoginResponse *loginResponse))success;

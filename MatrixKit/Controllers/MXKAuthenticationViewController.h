@@ -40,7 +40,7 @@
 @end
 
 /**
- This view controller should be used to manage registration or login flows with matrix home server.
+ This view controller should be used to manage registration or login flows with matrix homeserver.
  
  Only the flow based on password is presently supported. Other flows should be added later.
  
@@ -105,7 +105,7 @@
 @property (nonatomic) MXKAuthInputsView *authInputsView;
 
 /**
- The default home server url (nil by default).
+ The default homeserver url (nil by default).
  */
 @property (nonatomic) NSString *defaultHomeServerUrl;
 
@@ -176,7 +176,7 @@
 - (void)refreshAuthenticationSession;
 
 /**
- Handle supported flows and associated information returned by the home server.
+ Handle supported flows and associated information returned by the homeserver.
  */
 - (void)handleAuthenticationSession:(MXAuthenticationSession *)authSession;
 
@@ -211,10 +211,10 @@
 - (IBAction)onButtonPressed:(id)sender;
 
 /**
- Set the home server url and force a new authentication session.
- The default home server url is used when the provided url is nil.
+ Set the homeserver url and force a new authentication session.
+ The default homeserver url is used when the provided url is nil.
  
- @param homeServerUrl the home server url to use
+ @param homeServerUrl the homeserver url to use
  */
 - (void)setHomeServerTextFieldText:(NSString *)homeServerUrl;
 

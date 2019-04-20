@@ -25,7 +25,7 @@
 "login_create_account" = "Create account:";
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
 "login_home_server_title" = "Home Server:";
-"login_home_server_info" = "Your home server stores all your conservation and account data";
+"login_home_server_info" = "Your homeserver stores all your conversations and account data";
 "login_identity_server_title" = "Identity Server:";
 "login_identity_server_info" = "Matrix provides identity servers to track which emails etc. belong to which Matrix IDs. Only https://matrix.org currently exists.";
 "login_user_id_placeholder" = "Matrix ID (e.g. @bob:matrix.org or bob)";
