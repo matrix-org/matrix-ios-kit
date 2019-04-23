@@ -5,6 +5,7 @@ Improvements:
  * Upgraded to Xcode 10.2, fixed most of the compiler warnings, thanks to @tladesignz (PR #536).
  * MXKReceiptSendersContainer: Add possibility to customize `more label` text color (PR #539).
  * MXKEncryptionInfoView: Make it easier to customise.
+ * MXKRoomViewController: remove the implicit retains of "self".
 
 Bug fix:
  * Fix some potential crashes with ivar using a weak self (PR #537).

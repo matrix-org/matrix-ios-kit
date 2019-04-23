@@ -89,19 +89,8 @@
     MXHTTPOperation *joinRoomRequest;
     
     /**
-     Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+     Text selection
      */
-    id kMXSessionWillLeaveRoomNotificationObserver;
-    
-    /**
-     Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
-     */
-    id UIApplicationWillEnterForegroundNotificationObserver;
-    
-    /**
-     Observe UIMenuControllerDidHideMenuNotification to cancel text selection
-     */
-    id UIMenuControllerDidHideMenuNotificationObserver;
     NSString *selectedText;
     
     /**
@@ -151,6 +140,21 @@
 @property (nonatomic) NSString *closedAttachmentEventId;
 
 @property (nonatomic) UIImageView *openedAttachmentImageView;
+
+/**
+ Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
+ */
+@property (nonatomic, weak) id kMXSessionWillLeaveRoomNotificationObserver;
+
+/**
+ Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+ */
+@property (nonatomic, weak) id UIApplicationWillEnterForegroundNotificationObserver;
+
+/**
+ Observe UIMenuControllerDidHideMenuNotification to cancel text selection
+ */
+@property (nonatomic, weak) id UIMenuControllerDidHideMenuNotificationObserver;
 
 @end
 
@@ -265,8 +269,10 @@
     [self configureBubblesTableView];
     
     // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
-    UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    MXWeakify(self);
+    _UIApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
+        MXStrongifyAndReturnIfNil(self);
         if (self->roomDataSource.state == MXKDataSourceStateReady && [self->roomDataSource tableView:self->_bubblesTableView numberOfRowsInSection:0])
         {
             // Reload the full table
@@ -366,6 +372,22 @@
 
 - (void)dealloc
 {
+    if (_kMXSessionWillLeaveRoomNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:_kMXSessionWillLeaveRoomNotificationObserver];
+    }
+    
+    if (_UIApplicationWillEnterForegroundNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:_UIApplicationWillEnterForegroundNotificationObserver];
+    }
+    
+    if (_UIMenuControllerDidHideMenuNotificationObserver)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:_UIMenuControllerDidHideMenuNotificationObserver];
+    }
+    
+    [self destroy];
 }
 
 - (void)didReceiveMemoryWarning
@@ -504,24 +526,6 @@
 
 - (void)destroy
 {
-    if (UIApplicationWillEnterForegroundNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:UIApplicationWillEnterForegroundNotificationObserver];
-        UIApplicationWillEnterForegroundNotificationObserver = nil;
-    }
-    
-    if (kMXSessionWillLeaveRoomNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:kMXSessionWillLeaveRoomNotificationObserver];
-        kMXSessionWillLeaveRoomNotificationObserver = nil;
-    }
-    
-    if (UIMenuControllerDidHideMenuNotificationObserver)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:UIMenuControllerDidHideMenuNotificationObserver];
-        UIMenuControllerDidHideMenuNotificationObserver = nil;
-    }
-    
     if (documentInteractionController)
     {
         [documentInteractionController dismissPreviewAnimated:NO];
@@ -610,8 +614,10 @@
     [_bubblesTableView registerClass:MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.class forCellReuseIdentifier:MXKRoomOutgoingAttachmentWithoutSenderInfoBubbleCell.defaultReuseIdentifier];
     
     // Observe kMXSessionWillLeaveRoomNotification to be notified if the user leaves the current room.
-    kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    MXWeakify(self);
+    _kMXSessionWillLeaveRoomNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionWillLeaveRoomNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
+        MXStrongifyAndReturnIfNil(self);
         // Check whether the user will leave the current room
         if (notif.object == self.mainSession)
         {
@@ -3082,16 +3088,17 @@
         
         // Display Menu (dispatch is required here, else the attributed text change hides the menu)
         dispatch_async(dispatch_get_main_queue(), ^{
-            self->UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+            MXWeakify(self);
+            self.UIMenuControllerDidHideMenuNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIMenuControllerDidHideMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
+                MXStrongifyAndReturnIfNil(self);
                 // Deselect text
                 roomBubbleTableViewCell.allTextHighlighted = NO;
                 self->selectedText = nil;
                 
                 [UIMenuController sharedMenuController].menuItems = nil;
                 
-                [[NSNotificationCenter defaultCenter] removeObserver:self->UIMenuControllerDidHideMenuNotificationObserver];
-                self->UIMenuControllerDidHideMenuNotificationObserver = nil;
+                [[NSNotificationCenter defaultCenter] removeObserver:self.UIMenuControllerDidHideMenuNotificationObserver];
             }];
             
             [self becomeFirstResponder];

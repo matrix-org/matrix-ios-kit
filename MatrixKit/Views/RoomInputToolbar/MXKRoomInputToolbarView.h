@@ -218,7 +218,7 @@ typedef enum : NSUInteger
 /**
  The delegate notified when inputs are ready.
  */
-@property (nonatomic) id<MXKRoomInputToolbarViewDelegate> delegate;
+@property (weak, nonatomic) id<MXKRoomInputToolbarViewDelegate> delegate;
 
 /**
   A custom button displayed on the left of the toolbar view.

@@ -74,7 +74,7 @@ typedef enum : NSUInteger {
 /**
  The delegate notified when the data has been updated.
  */
-@property (nonatomic) id<MXKDataSourceDelegate> delegate;
+@property (weak, nonatomic) id<MXKDataSourceDelegate> delegate;
 
 
 #pragma mark - Life cycle
