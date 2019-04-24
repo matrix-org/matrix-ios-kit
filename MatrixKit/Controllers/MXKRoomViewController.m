@@ -94,11 +94,6 @@
     NSString *selectedText;
     
     /**
-     The attachments viewer for image and video.
-     */
-    MXKAttachmentsViewController *attachmentsViewer;
-    
-    /**
      The class used to instantiate attachments viewer for image and video..
      */
     Class attachmentsViewerClass;
@@ -155,6 +150,11 @@
  Observe UIMenuControllerDidHideMenuNotification to cancel text selection
  */
 @property (nonatomic, weak) id uiMenuControllerDidHideMenuNotificationObserver;
+
+/**
+ The attachments viewer for image and video.
+ */
+@property (nonatomic, weak) MXKAttachmentsViewController *attachmentsViewer;
 
 @end
 
@@ -537,13 +537,6 @@
     {
         [currentSharedAttachment onShareEnded];
         currentSharedAttachment = nil;
-    }
-    
-    // Remove potential attachments viewer
-    if (attachmentsViewer)
-    {
-        [attachmentsViewer destroy];
-        attachmentsViewer = nil;
     }
     
     [self dismissTemporarySubViews];
@@ -2037,7 +2030,7 @@
 - (void)triggerAttachmentBackPagination:(NSString*)eventId
 {
     // Paginate only if possible
-    if (NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] && attachmentsViewer)
+    if (NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] && self.attachmentsViewer)
     {
         return;
     }
@@ -2048,7 +2041,7 @@
     [roomDataSource paginate:_paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
         
         // Check whether attachments viewer is still visible
-        if (self->attachmentsViewer)
+        if (self.attachmentsViewer)
         {
             // Check whether some older attachments have been added.
             // Note: the stickers are excluded from the attachments list returned by the room datasource.
@@ -2061,12 +2054,12 @@
             }
             
             // Check whether pagination is still available
-            self->attachmentsViewer.complete = ([self->roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
+            self.attachmentsViewer.complete = ([self->roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
             
-            if (isDone || self->attachmentsViewer.complete)
+            if (isDone || self.attachmentsViewer.complete)
             {
                 // Refresh the current attachments list.
-                [self->attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+                [self.attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
                 
                 // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
                 // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
@@ -2100,10 +2093,10 @@
         [self reloadBubblesTable:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
-        if (self->attachmentsViewer)
+        if (self.attachmentsViewer)
         {
             // Force attachments update to cancel potential loading wheel
-            [self->attachmentsViewer displayAttachments:self->attachmentsViewer.attachments focusOn:nil];
+            [self.attachmentsViewer displayAttachments:self.attachmentsViewer.attachments focusOn:nil];
         }
         
     }];
@@ -2563,11 +2556,11 @@
         return;
     }
     
-    if (attachmentsViewer)
+    if (self.attachmentsViewer)
     {
         // Refresh the current attachments list without changing the current displayed attachment (see focus = nil).
         NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
-        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+        [self.attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
     }
     
     self.bubbleTableViewDisplayInTransition = YES;
@@ -3571,6 +3564,8 @@
                     // Note: the stickers are presently excluded from the attachments list returned by the room dataSource.
                     NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
                     
+                    MXKAttachmentsViewController *attachmentsViewer;
+                    
                     // Present an attachment viewer
                     if (attachmentsViewerClass)
                     {
@@ -3603,6 +3598,8 @@
                     self.closedAttachmentEventId = self.openedAttachmentEventId;
                     
                     [self presentViewController:attachmentsViewer animated:YES completion:nil];
+                    
+                    self.attachmentsViewer = attachmentsViewer;
                 }
                 else
                 {
