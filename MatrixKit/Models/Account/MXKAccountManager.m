@@ -123,7 +123,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     sendLogoutRequest:(BOOL)sendLogoutRequest
            completion:(void (^)(void))completion
 {
-    NSLog(@"[MXKAccountManager] logout (%@), send logout request to home server: %d", theAccount.mxCredentials.userId, sendLogoutRequest);
+    NSLog(@"[MXKAccountManager] logout (%@), send logout request to homeserver: %d", theAccount.mxCredentials.userId, sendLogoutRequest);
     
     // Close session and clear associated store.
     [theAccount logoutSendingServerRequest:sendLogoutRequest completion:^{
