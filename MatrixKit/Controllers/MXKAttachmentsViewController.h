@@ -45,7 +45,7 @@ limitations under the License.
 /**
  The delegate notified when inputs are ready.
  */
-@property (nonatomic) id<MXKAttachmentsViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKAttachmentsViewControllerDelegate> delegate;
 
 #pragma mark - Class methods
 

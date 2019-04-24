@@ -94,7 +94,7 @@
 //animations
 @property (nonatomic) MXKAttachmentInteractionController *interactionController;
 
-@property (nonatomic) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+@property (nonatomic, weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
 @property (nonatomic) UIImageView *originalImageView;
 @property (nonatomic) CGRect convertedFrame;
