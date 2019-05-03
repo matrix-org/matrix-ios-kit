@@ -533,7 +533,7 @@
             [self.tableView reloadData];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [contactsSearchBar becomeFirstResponder];
+                [self->contactsSearchBar becomeFirstResponder];
             });
         }
     }

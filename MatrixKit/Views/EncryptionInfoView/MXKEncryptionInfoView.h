@@ -27,6 +27,21 @@
  */
 @interface MXKEncryptionInfoView : MXKView
 
+/**
+ The displayed event
+ */
+@property (nonatomic, readonly) MXEvent *mxEvent;
+
+/**
+ The matrix session.
+ */
+@property (nonatomic, readonly) MXSession *mxSession;
+
+/**
+ The event device info
+ */
+@property (nonatomic, readonly) MXDeviceInfo *mxDeviceInfo;
+
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property (weak, nonatomic) IBOutlet UIButton *verifyButton;

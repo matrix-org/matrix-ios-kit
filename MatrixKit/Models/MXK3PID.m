@@ -79,8 +79,8 @@
             
             currentRequest = [mxRestClient requestTokenForEmail:self.address isDuringRegistration:isDuringRegistration clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid) {
                 
-                _validationState = MXK3PIDAuthStateTokenReceived;
-                currentRequest = nil;
+                self->_validationState = MXK3PIDAuthStateTokenReceived;
+                self->currentRequest = nil;
                 self.sid = sid;
                 
                 if (success)
@@ -91,8 +91,8 @@
             } failure:^(NSError *error) {
                 
                 // Return in unknown state
-                _validationState = MXK3PIDAuthStateUnknown;
-                currentRequest = nil;
+                self->_validationState = MXK3PIDAuthStateUnknown;
+                self->currentRequest = nil;
                 // Increment attempt counter
                 self.sendAttempt++;
                 
@@ -112,8 +112,8 @@
             
             currentRequest = [mxRestClient requestTokenForPhoneNumber:phoneNumber isDuringRegistration:isDuringRegistration countryCode:nil clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid, NSString *msisdn) {
                 
-                _validationState = MXK3PIDAuthStateTokenReceived;
-                currentRequest = nil;
+                self->_validationState = MXK3PIDAuthStateTokenReceived;
+                self->currentRequest = nil;
                 self.sid = sid;
                 
                 if (success)
@@ -124,8 +124,8 @@
             } failure:^(NSError *error) {
                 
                 // Return in unknown state
-                _validationState = MXK3PIDAuthStateUnknown;
-                currentRequest = nil;
+                self->_validationState = MXK3PIDAuthStateUnknown;
+                self->currentRequest = nil;
                 // Increment attempt counter
                 self.sendAttempt++;
                 
@@ -158,8 +158,8 @@
         
         currentRequest = [mxRestClient submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
             
-            _validationState = MXK3PIDAuthStateAuthenticated;
-            currentRequest = nil;
+            self->_validationState = MXK3PIDAuthStateAuthenticated;
+            self->currentRequest = nil;
             
             if (success)
             {
@@ -169,8 +169,8 @@
         } failure:^(NSError *error) {
             
             // Return in previous state
-            _validationState = MXK3PIDAuthStateTokenReceived;
-            currentRequest = nil;
+            self->_validationState = MXK3PIDAuthStateTokenReceived;
+            self->currentRequest = nil;
             
             if (failure)
             {
@@ -191,14 +191,15 @@
 {
     if ([self.medium isEqualToString:kMX3PIDMediumEmail] || [self.medium isEqualToString:kMX3PIDMediumMSISDN])
     {
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
+        
         currentRequest = [mxRestClient add3PID:self.sid clientSecret:self.clientSecret bind:bind success:^{
 
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            MXStrongifyAndReturnIfNil(self);
 
             // Update linked userId in 3PID
-            strongSelf.userId = strongSelf->mxRestClient.credentials.userId;
-            currentRequest = nil;
+            self.userId = self->mxRestClient.credentials.userId;
+            self->currentRequest = nil;
 
             if (success)
             {
@@ -207,7 +208,9 @@
             
         } failure:^(NSError *error) {
             
-            currentRequest = nil;
+            MXStrongifyAndReturnIfNil(self);
+            
+            self->currentRequest = nil;
 
             if (failure)
             {

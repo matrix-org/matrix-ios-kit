@@ -249,7 +249,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 /**
  Invalidate the access token, close the matrix session and delete all store data.
  
- @param sendLogoutServerRequest indicate to send logout request to home server.
+ @param sendLogoutServerRequest indicate to send logout request to homeserver.
  @param completion the block to execute at the end of the operation (independently if it succeeded or not).
  */
 - (void)logoutSendingServerRequest:(BOOL)sendLogoutServerRequest

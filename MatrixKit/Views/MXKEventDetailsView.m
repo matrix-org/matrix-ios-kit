@@ -130,7 +130,7 @@
                         MXStrongifyAndReturnIfNil(self);
 
                         MXRoomPowerLevels *powerLevels = [roomState powerLevels];
-                        NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:mxSession.myUser.userId];
+                        NSInteger userPowerLevel = [powerLevels powerLevelOfUserWithUserID:self->mxSession.myUser.userId];
                         if (powerLevels.redact)
                         {
                             if (userPowerLevel >= powerLevels.redact)
@@ -176,18 +176,18 @@
             [_activityIndicator startAnimating];
             [mxRoom redactEvent:mxEvent.eventId reason:nil success:^{
                 
-                [_activityIndicator stopAnimating];
+                [self->_activityIndicator stopAnimating];
                 [self removeFromSuperview];
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKEventDetailsView] Redact event (%@) failed", mxEvent.eventId);
+                NSLog(@"[MXKEventDetailsView] Redact event (%@) failed", self->mxEvent.eventId);
                 
                 // Notify MatrixKit user
                 NSString *myUserId = mxRoom.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                 
-                [_activityIndicator stopAnimating];
+                [self->_activityIndicator stopAnimating];
                 
             }];
         }

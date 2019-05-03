@@ -93,7 +93,7 @@
 /**
  The delegate notified when inputs are ready.
  */
-@property (nonatomic) id<MXKRoomTitleViewDelegate> delegate;
+@property (weak, nonatomic) id<MXKRoomTitleViewDelegate> delegate;
 
 /**
  The custom accessory view associated to all text field of this 'MXKRoomTitleView' instance.

@@ -22,7 +22,7 @@
 @property (nonatomic, weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
 @property (nonatomic) UIImageView *transitioningImageView;
-@property (nonatomic) id <UIViewControllerContextTransitioning> transitionContext;
+@property (nonatomic, weak) id <UIViewControllerContextTransitioning> transitionContext;
 
 @property (nonatomic) CGPoint translation;
 @property (nonatomic) CGPoint delta;

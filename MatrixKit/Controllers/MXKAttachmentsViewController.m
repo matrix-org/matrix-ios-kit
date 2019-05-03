@@ -94,7 +94,7 @@
 //animations
 @property (nonatomic) MXKAttachmentInteractionController *interactionController;
 
-@property (nonatomic) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
+@property (nonatomic, weak) UIViewController <MXKSourceAttachmentAnimatorDelegate> *sourceViewController;
 
 @property (nonatomic) UIImageView *originalImageView;
 @property (nonatomic) CGRect convertedFrame;
@@ -297,7 +297,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(coordinator.transitionDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         // Cell width will be updated, force collection layout refresh to take into account the changes
-        [_attachmentsCollection.collectionViewLayout invalidateLayout];
+        [self->_attachmentsCollection.collectionViewLayout invalidateLayout];
         
         // Refresh the current attachment display
         [self refreshAttachmentCollectionContentOffset];
@@ -561,12 +561,12 @@
     if (attachment.isEncrypted)
     {
         [attachment decryptToTempFile:^(NSString *file) {
-            if (tempFile)
+            if (self->tempFile)
             {
-                [[NSFileManager defaultManager] removeItemAtPath:tempFile error:nil];
+                [[NSFileManager defaultManager] removeItemAtPath:self->tempFile error:nil];
             }
-            tempFile = file;
-            videoFile = file;
+            self->tempFile = file;
+            self->videoFile = file;
             success();
         } failure:^(NSError *error) {
             if (failure) failure(error);
@@ -582,7 +582,7 @@
         else
         {
             [attachment prepare:^{
-                videoFile = attachment.cacheFilePath;
+                self->videoFile = attachment.cacheFilePath;
                 success();
             } failure:^(NSError *error) {
                 if (failure) failure(error);
@@ -1006,7 +1006,7 @@
                         {
                             selectedCell.moviePlayer.view.hidden = NO;
                             selectedCell.centerIcon.hidden = YES;
-                            selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:videoFile];
+                            selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:self->videoFile];
                             [selectedCell.moviePlayer play];
                             
                             [pieChartView removeFromSuperview];
@@ -1249,14 +1249,16 @@
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
-                                                           typeof(self) self = weakSelf;
+                                                           MXWeakify(self);
+                                                           
                                                            self->currentAlert = nil;
                                                            
                                                            [self startActivityIndicator];
                                                            
                                                            [attachment prepareShare:^(NSURL *fileURL) {
                                                                
-                                                               typeof(self) self = weakSelf;
+                                                               MXStrongifyAndReturnIfNil(self);
+                                                               
                                                                [self stopActivityIndicator];
                                                                
                                                                self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
@@ -1272,7 +1274,8 @@
                                                                
                                                            } failure:^(NSError *error) {
                                                                
-                                                               typeof(self) self = weakSelf;
+                                                               MXStrongifyAndReturnIfNil(self);
+                                                               
                                                                [self stopActivityIndicator];
                                                                
                                                                // Notify MatrixKit user

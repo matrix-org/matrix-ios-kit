@@ -1,3 +1,18 @@
+Changes in MatrixKit in 0.9.9 (2019-xx-xx)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.12.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.12.5)).
+ * Upgraded to Xcode 10.2, fixed most of the compiler warnings, thanks to @tladesignz (PR #536).
+ * MXKReceiptSendersContainer: Add possibility to customize `more label` text color (PR #539).
+ * MXKEncryptionInfoView: Make it easier to customise.
+ * MXKRoomViewController: remove the implicit retains of "self".
+
+Bug fix:
+ * Fix some potential crashes with ivar using a weak self (PR #537).
+ * MXKSessionRecentsDataSource: Hide a room if needed on room summary change (vector-im/riot-ios/issues/2148).
+ * MXKAttachmentsViewController: Fix some retain cycles (PR #544).
+
 Changes in MatrixKit in 0.9.8 (2019-03-21)
 ==========================================
 
@@ -6,6 +21,7 @@ Improvements:
 
 Bug fix:
  * MXKRoomBubbleTableViewCell: Fix tap on file attachment when using a messageTextView of class `MXKMessageTextView` (PR #532).
+ * MXKContactManager: some matrix contacts are missing in the search result (offline mode).
 
 Changes in MatrixKit in 0.9.7 (2019-03-13)
 ==========================================

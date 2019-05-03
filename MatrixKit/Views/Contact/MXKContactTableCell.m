@@ -144,7 +144,7 @@ NSString *const kMXKContactCellContactIdKey = @"kMXKContactCellContactIdKey";
             mxPresenceObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKContactManagerMatrixUserPresenceChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
                 
                 // get the matrix identifiers
-                NSArray* matrixIdentifiers = contact.matrixIdentifiers;
+                NSArray* matrixIdentifiers = self->contact.matrixIdentifiers;
                 if (matrixIdentifiers.count > 0)
                 {
                     // Consider only the first id

@@ -276,7 +276,7 @@
             MXKCellData* cellData = [self.dataSource cellDataAtIndex:idx];
             Class<MXKCellRendering> class = [self cellViewClassForCellData:cellData];
 
-            tableViewOffset.y += [class heightForCellData:cellData withMaximumWidth:_searchTableView.frame.size.width];
+            tableViewOffset.y += [class heightForCellData:cellData withMaximumWidth:self->_searchTableView.frame.size.width];
 
         }];
 

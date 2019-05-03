@@ -25,22 +25,7 @@
 static NSAttributedString *verticalWhitespace = nil;
 
 @interface MXKEncryptionInfoView ()
-{
-    /**
-     The displayed event
-     */
-    MXEvent *mxEvent;
-    
-    /**
-     The matrix session.
-     */
-    MXSession *mxSession;
-    
-    /**
-     The event device info
-     */
-    MXDeviceInfo *mxDeviceInfo;
-    
+{    
     /**
      Current request in progress.
      */
@@ -111,9 +96,9 @@ static NSAttributedString *verticalWhitespace = nil;
     self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     if (self)
     {
-        mxEvent = event;
-        mxSession = session;
-        mxDeviceInfo = nil;
+        _mxEvent = event;
+        _mxSession = session;
+        _mxDeviceInfo = nil;
         
         [self setTranslatesAutoresizingMaskIntoConstraints: NO];
         
@@ -128,9 +113,9 @@ static NSAttributedString *verticalWhitespace = nil;
     self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
     if (self)
     {
-        mxEvent = nil;
-        mxDeviceInfo = deviceInfo;
-        mxSession = session;
+        _mxEvent = nil;
+        _mxDeviceInfo = deviceInfo;
+        _mxSession = session;
         
         [self setTranslatesAutoresizingMaskIntoConstraints: NO];
         
@@ -142,9 +127,9 @@ static NSAttributedString *verticalWhitespace = nil;
 
 - (void)dealloc
 {
-    mxEvent = nil;
-    mxSession = nil;
-    mxDeviceInfo = nil;
+    _mxEvent = nil;
+    _mxSession = nil;
+    _mxDeviceInfo = nil;
 }
 
 #pragma mark - 
@@ -157,36 +142,37 @@ static NSAttributedString *verticalWhitespace = nil;
                                                            attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
                                                                         NSFontAttributeName: [UIFont boldSystemFontOfSize:17]}];
 
-    if (mxEvent)
+    if (_mxEvent)
     {
-        NSString *senderId = mxEvent.sender;
+        NSString *senderId = _mxEvent.sender;
         
-        if (mxSession && mxSession.crypto && !mxDeviceInfo)
+        if (_mxSession && _mxSession.crypto && !_mxDeviceInfo)
         {
-            mxDeviceInfo = [mxSession.crypto eventDeviceInfo:mxEvent];
+            _mxDeviceInfo = [_mxSession.crypto eventDeviceInfo:_mxEvent];
             
-            if (!mxDeviceInfo)
+            if (!_mxDeviceInfo)
             {
                 // Trigger a server request to get the device information for the event sender
-                mxCurrentOperation = [mxSession.crypto downloadKeys:@[senderId] forceDownload:NO success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
+                mxCurrentOperation = [_mxSession.crypto downloadKeys:@[senderId] forceDownload:NO success:^(MXUsersDevicesMap<MXDeviceInfo *> *usersDevicesInfoMap) {
                     
-                    mxCurrentOperation = nil;
+                    self->mxCurrentOperation = nil;
                     
                     // Sanity check: check whether some device information has been retrieved.
-                    mxDeviceInfo = [mxSession.crypto eventDeviceInfo:mxEvent];
-                    if (mxDeviceInfo)
+                    self->_mxDeviceInfo = [self.mxSession.crypto eventDeviceInfo:self.mxEvent];
+                    if (self.mxDeviceInfo)
                     {
                         [self updateTextViewText];
                     }
                     
                 } failure:^(NSError *error) {
                     
-                    mxCurrentOperation = nil;
-                    
-                    NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", mxEvent.sender);
+                    self->mxCurrentOperation = nil;
+
+                    NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", self.mxEvent.sender);
                     
                     // Notify MatrixKit user
-                    NSString *myUserId = mxSession.myUser.userId;
+                    NSString *myUserId = self.mxSession.myUser.userId;
+
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
                     
                 }];
@@ -200,15 +186,15 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                           NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
         [eventInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
         
-        NSString *senderKey = mxEvent.senderKey;
-        NSString *claimedKey = mxEvent.keysClaimed[@"ed25519"];
-        NSString *algorithm = mxEvent.wireContent[@"algorithm"];
-        NSString *sessionId = mxEvent.wireContent[@"session_id"];
+        NSString *senderKey = _mxEvent.senderKey;
+        NSString *claimedKey = _mxEvent.keysClaimed[@"ed25519"];
+        NSString *algorithm = _mxEvent.wireContent[@"algorithm"];
+        NSString *sessionId = _mxEvent.wireContent[@"session_id"];
         
         NSString *decryptionError;
-        if (mxEvent.decryptionError)
+        if (_mxEvent.decryptionError)
         {
-            decryptionError = [NSString stringWithFormat:@"** %@ **", mxEvent.decryptionError.localizedDescription];
+            decryptionError = [NSString stringWithFormat:@"** %@ **", _mxEvent.decryptionError.localizedDescription];
         }
         
         if (!senderKey.length)
@@ -300,17 +286,17 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                        NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
     [deviceInformationString appendAttributedString:[MXKEncryptionInfoView verticalWhitespace]];
     
-    if (mxDeviceInfo)
+    if (_mxDeviceInfo)
     {
-        NSString *name = mxDeviceInfo.displayName;
-        NSString *deviceId = mxDeviceInfo.deviceId;
+        NSString *name = _mxDeviceInfo.displayName;
+        NSString *deviceId = _mxDeviceInfo.deviceId;
         NSMutableAttributedString *verification;
-        NSString *fingerprint = mxDeviceInfo.fingerprint;
+        NSString *fingerprint = _mxDeviceInfo.fingerprint;
         
         // Display here the Verify and Block buttons except if the device is the current one.
-        _verifyButton.hidden = _blockButton.hidden = [mxDeviceInfo.deviceId isEqualToString:mxSession.matrixRestClient.credentials.deviceId];
+        _verifyButton.hidden = _blockButton.hidden = [_mxDeviceInfo.deviceId isEqualToString:_mxSession.matrixRestClient.credentials.deviceId];
         
-        switch (mxDeviceInfo.verified)
+        switch (_mxDeviceInfo.verified)
         {
             case MXDeviceUnknown:
             case MXDeviceUnverified:
@@ -424,14 +410,14 @@ static NSAttributedString *verticalWhitespace = nil;
         }
     }
     // Note: Verify and Block buttons are hidden when the deviceInfo is not available
-    else if (sender == _confirmVerifyButton && mxDeviceInfo)
+    else if (sender == _confirmVerifyButton && _mxDeviceInfo)
     {
-        [mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
+        [_mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:_mxDeviceInfo.deviceId ofUser:_mxDeviceInfo.userId success:^{
 
-            mxDeviceInfo.verified = MXDeviceVerified;
-            if (_delegate)
+            self.mxDeviceInfo.verified = MXDeviceVerified;
+            if (self->_delegate)
             {
-                [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+                [self->_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:self.mxDeviceInfo];
             }
             [self removeFromSuperview];
 
@@ -439,17 +425,17 @@ static NSAttributedString *verticalWhitespace = nil;
             [self removeFromSuperview];
         }];
     }
-    else if (mxDeviceInfo)
+    else if (_mxDeviceInfo)
     {
         MXDeviceVerification verificationStatus;
         
         if (sender == _verifyButton)
         {
-            verificationStatus = ((mxDeviceInfo.verified == MXDeviceVerified) ? MXDeviceUnverified : MXDeviceVerified);
+            verificationStatus = ((_mxDeviceInfo.verified == MXDeviceVerified) ? MXDeviceUnverified : MXDeviceVerified);
         }
         else if (sender == _blockButton)
         {
-            verificationStatus = ((mxDeviceInfo.verified == MXDeviceBlocked) ? MXDeviceUnverified : MXDeviceBlocked);
+            verificationStatus = ((_mxDeviceInfo.verified == MXDeviceBlocked) ? MXDeviceUnverified : MXDeviceBlocked);
         }
         else
         {
@@ -465,7 +451,7 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                    initWithString:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_title"]                                                                   attributes:@{NSForegroundColorAttributeName: _defaultTextColor,
                                                                                 NSFontAttributeName: [UIFont boldSystemFontOfSize:17]}];
             
-            NSString *message = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_message"], mxDeviceInfo.displayName, mxDeviceInfo.deviceId, mxDeviceInfo.fingerprint];
+            NSString *message = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_event_encryption_verify_message"], _mxDeviceInfo.displayName, _mxDeviceInfo.deviceId, _mxDeviceInfo.fingerprint];
             
             [textViewAttributedString appendAttributedString:[[NSMutableAttributedString alloc]
                                                              initWithString:message
@@ -481,12 +467,12 @@ static NSAttributedString *verticalWhitespace = nil;
         }
         else
         {
-            [mxSession.crypto setDeviceVerification:verificationStatus forDevice:mxDeviceInfo.deviceId ofUser:mxDeviceInfo.userId success:^{
+            [_mxSession.crypto setDeviceVerification:verificationStatus forDevice:_mxDeviceInfo.deviceId ofUser:_mxDeviceInfo.userId success:^{
 
-                mxDeviceInfo.verified = verificationStatus;
-                if (_delegate)
+                self.mxDeviceInfo.verified = verificationStatus;
+                if (self->_delegate)
                 {
-                    [_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:mxDeviceInfo];
+                    [self->_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:self.mxDeviceInfo];
                 }
 
                 [self removeFromSuperview];

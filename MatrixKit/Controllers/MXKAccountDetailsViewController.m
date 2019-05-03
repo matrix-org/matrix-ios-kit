@@ -198,37 +198,37 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         // Add observer on user's information
         accountUserInfoObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXKAccountUserInfoDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             // Ignore any refresh when saving is in progress
-            if (isSavingInProgress)
+            if (self->isSavingInProgress)
             {
                 return;
             }
             
             NSString *accountUserId = notif.object;
             
-            if ([accountUserId isEqualToString:_mxAccount.mxCredentials.userId])
+            if ([accountUserId isEqualToString:self->_mxAccount.mxCredentials.userId])
             {   
                 // Update displayName
-                if (![currentDisplayName isEqualToString:_mxAccount.userDisplayName])
+                if (![self->currentDisplayName isEqualToString:self->_mxAccount.userDisplayName])
                 {
-                    currentDisplayName = _mxAccount.userDisplayName;
-                    self.userDisplayName.text = _mxAccount.userDisplayName;
+                    self->currentDisplayName = self->_mxAccount.userDisplayName;
+                    self.userDisplayName.text = self->_mxAccount.userDisplayName;
                 }
                 // Update user's avatar
-                [self updateUserPicture:_mxAccount.userAvatarUrl force:NO];
+                [self updateUserPicture:self->_mxAccount.userAvatarUrl force:NO];
                 
                 // Update button management
                 [self updateSaveUserInfoButtonStatus];
                 
                 // Display user's presence
-                UIColor *presenceColor = [MXKAccount presenceColor:_mxAccount.userPresence];
+                UIColor *presenceColor = [MXKAccount presenceColor:self->_mxAccount.userPresence];
                 if (presenceColor)
                 {
-                    userPictureButton.layer.borderWidth = 2;
-                    userPictureButton.layer.borderColor = presenceColor.CGColor;
+                    self->userPictureButton.layer.borderWidth = 2;
+                    self->userPictureButton.layer.borderColor = presenceColor.CGColor;
                 }
                 else
                 {
-                    userPictureButton.layer.borderWidth = 0;
+                    self->userPictureButton.layer.borderWidth = 0;
                 }
             }
         }];
@@ -251,16 +251,16 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"message_unsaved_changes"] preferredStyle:UIAlertControllerStyleAlert];
             
-            [alertsArray addObject:alert];
+            [self->alertsArray addObject:alert];
             [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"discard"]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
-                                                        [alertsArray removeObject:alert];
+                                                        [self->alertsArray removeObject:alert];
                                                         
                                                         // Discard changes
-                                                        self.userDisplayName.text = currentDisplayName;
-                                                        [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                                                        self.userDisplayName.text = self->currentDisplayName;
+                                                        [self updateUserPicture:self->_mxAccount.userAvatarUrl force:YES];
                                                         
                                                         // Ready to leave
                                                         if (handler)
@@ -274,10 +274,10 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
-                                                        [alertsArray removeObject:alert];
+                                                        [self->alertsArray removeObject:alert];
                                                         
                                                         // Start saving (Report handler to leave at the end).
-                                                        onReadyToLeaveHandler = handler;
+                                                        self->onReadyToLeaveHandler = handler;
                                                         [self saveUserInfo];
                                                         
                                                     }]];
@@ -390,6 +390,19 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         // Reset account to dispose all resources (Discard here potentials changes)
         self.mxAccount = nil;
         
+        if (imageLoader)
+        {
+            [imageLoader cancel];
+            imageLoader = nil;
+        }
+        
+        // Remove listener
+        if (accountUserInfoObserver)
+        {
+            [[NSNotificationCenter defaultCenter] removeObserver:accountUserInfoObserver];
+            accountUserInfoObserver = nil;
+        }
+        
         [super destroy];
     }
 }
@@ -477,37 +490,44 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             // Retrieve the current picture and make sure its orientation is up
             UIImage *updatedPicture = [MXKTools forceImageOrientationUp:[self.userPictureButton imageForState:UIControlStateNormal]];
             
+            MXWeakify(self);
+            
             // Upload picture
             MXMediaLoader *uploader = [MXMediaManager prepareUploaderWithMatrixSession:self.mainSession initialRange:0 andRange:1.0];
             [uploader uploadData:UIImageJPEGRepresentation(updatedPicture, 0.5) filename:nil mimeType:@"image/jpeg" success:^(NSString *url)
              {
+                 MXStrongifyAndReturnIfNil(self);
+                 
                  // Store uploaded picture url and trigger picture saving
-                 uploadedPictureURL = url;
+                 self->uploadedPictureURL = url;
                  [self saveUserInfo];
              } failure:^(NSError *error)
              {
                  NSLog(@"[MXKAccountDetailsVC] Failed to upload image");
+                 MXStrongifyAndReturnIfNil(self);
                  [self handleErrorDuringPictureSaving:error];
              }];
             
         }
         else
         {
-            __weak typeof(self) weakSelf = self;
+            MXWeakify(self);
+            
             [_mxAccount setUserAvatarUrl:uploadedPictureURL
                                  success:^{
                                      
                                      // uploadedPictureURL becomes the user's picture
-                                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                     [strongSelf updateUserPicture:strongSelf->uploadedPictureURL force:YES];
+                                     MXStrongifyAndReturnIfNil(self);
+                                     
+                                     [self updateUserPicture:self->uploadedPictureURL force:YES];
                                      // Loop to end saving
-                                     [strongSelf saveUserInfo];
+                                     [self saveUserInfo];
                                      
                                  }
                                  failure:^(NSError *error) {
                                      NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url");
-                                     __strong __typeof(weakSelf)strongSelf = weakSelf;
-                                     [strongSelf handleErrorDuringPictureSaving:error];
+                                     MXStrongifyAndReturnIfNil(self);
+                                     [self handleErrorDuringPictureSaving:error];
                                  }];
         }
         
@@ -542,11 +562,11 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
-                                                [alertsArray removeObject:alert];
+                                                [self->alertsArray removeObject:alert];
                                                 
                                                 // Remove change
-                                                self.userDisplayName.text = currentDisplayName;
-                                                [self updateUserPicture:_mxAccount.userAvatarUrl force:YES];
+                                                self.userDisplayName.text = self->currentDisplayName;
+                                                [self updateUserPicture:self->_mxAccount.userAvatarUrl force:YES];
                                                 // Loop to end saving
                                                 [self saveUserInfo];
                                                 
@@ -556,7 +576,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
-                                                [alertsArray removeObject:alert];
+                                                [self->alertsArray removeObject:alert];
                                                 
                                                 // Loop to retry saving
                                                 [self saveUserInfo];
@@ -717,9 +737,9 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
-                                                [alertsArray removeObject:alert];
+                                                [self->alertsArray removeObject:alert];
                                                 
-                                                emailSubmitButton.enabled = YES;
+                                                self->emailSubmitButton.enabled = YES;
                                                 
                                             }]];
     
@@ -727,12 +747,12 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
-                                                [alertsArray removeObject:alert];
+                                                [self->alertsArray removeObject:alert];
                                                 
                                                 __weak typeof(self) weakSelf = self;
                                                 
                                                 // We always bind emails when registering, so let's do the same here
-                                                [submittedEmail add3PIDToUser:YES success:^{
+                                                [self->submittedEmail add3PIDToUser:YES success:^{
                                                     
                                                     if (weakSelf)
                                                     {
@@ -827,7 +847,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
-                                                        [alertsArray removeObject:alert];
+                                                        [self->alertsArray removeObject:alert];
                                                         
                                                     }]];
             

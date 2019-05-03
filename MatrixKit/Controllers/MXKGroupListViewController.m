@@ -588,7 +588,7 @@
         // display at least 0.3s the spinner to show to the user that something is pending
         // else the UI is flickering
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            restartConnection = NO;
+            self->restartConnection = NO;
             
             if (![self canReconnect])
             {

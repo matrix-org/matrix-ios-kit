@@ -350,7 +350,7 @@ static NSAttributedString *verticalWhitespace = nil;
     
     mxCurrentOperation = [mxSession.matrixRestClient getSessionToDeleteDeviceByDeviceId:mxDevice.deviceId success:^(MXAuthenticationSession *authSession) {
         
-        mxCurrentOperation = nil;
+        self->mxCurrentOperation = nil;
 
         // Check whether the password based type is supported
         BOOL isPasswordBasedTypeSupported = NO;
@@ -366,22 +366,22 @@ static NSAttributedString *verticalWhitespace = nil;
         if (isPasswordBasedTypeSupported && authSession.session)
         {
             // Prompt for a password
-            [currentAlert dismissViewControllerAnimated:NO completion:nil];
+            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
             
             __weak typeof(self) weakSelf = self;
             
             // Prompt the user before deleting the device.
-            currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_title"] message:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
+            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_title"] message:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
             
             
-            [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            [self->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 
                 textField.secureTextEntry = YES;
                 textField.placeholder = nil;
                 textField.keyboardType = UIKeyboardTypeDefault;
             }];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -394,14 +394,14 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                
                                                            }]];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"submit"]
+            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"submit"]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
                                                                if (weakSelf)
                                                                {
                                                                    typeof(self) self = weakSelf;
-                                                                   UITextField *textField = [currentAlert textFields].firstObject;
+                                                                   UITextField *textField = [self->currentAlert textFields].firstObject;
                                                                    self->currentAlert = nil;
                                                                    
                                                                    NSString *userId = self->mxSession.myUser.userId;
@@ -453,23 +453,23 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                
                                                            }]];
             
-            [self.delegate deviceView:self presentAlertController:currentAlert];
+            [self.delegate deviceView:self presentAlertController:self->currentAlert];
         }
         else
         {
-            NSLog(@"[MXKDeviceView] Delete device (%@) failed, auth session flow type is not supported", mxDevice.deviceId);
+            NSLog(@"[MXKDeviceView] Delete device (%@) failed, auth session flow type is not supported", self->mxDevice.deviceId);
             [self.activityIndicator stopAnimating];
         }
         
     } failure:^(NSError *error) {
         
-        mxCurrentOperation = nil;
+        self->mxCurrentOperation = nil;
         
-        NSLog(@"[MXKDeviceView] Delete device (%@) failed, unable to get auth session", mxDevice.deviceId);
+        NSLog(@"[MXKDeviceView] Delete device (%@) failed, unable to get auth session", self->mxDevice.deviceId);
         [self.activityIndicator stopAnimating];
         
         // Notify MatrixKit user
-        NSString *myUserId = mxSession.myUser.userId;
+        NSString *myUserId = self->mxSession.myUser.userId;
         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
     }];
 }

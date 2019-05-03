@@ -630,7 +630,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         {
                             // Create a group instance for the groups that the current user did not join.
                             group = [[MXGroup alloc] initWithGroupId:groupId];
-                            [externalRelatedGroups setObject:group forKey:groupId];
+                            [self->externalRelatedGroups setObject:group forKey:groupId];
                         }
 
                         // Refresh the group profile from server.

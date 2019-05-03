@@ -28,7 +28,7 @@
 
 @property (nonatomic) CGFloat height;
 
-@property (nonatomic) id<MXKRoomActivitiesViewDelegate> delegate;
+@property (weak, nonatomic) id<MXKRoomActivitiesViewDelegate> delegate;
 
 /**
  Returns the `UINib` object initialized for a `MXKRoomActivitiesView`.

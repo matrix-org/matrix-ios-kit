@@ -176,7 +176,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Refresh call display according to the call room state.
         [self callRoomStateDidChange:^{
             // Refresh call status
-            [self call:mxCall stateDidChange:mxCall.state reason:nil];
+            [self call:self->mxCall stateDidChange:self->mxCall.state reason:nil];
         }];
 
     }
@@ -342,11 +342,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
                    if (granted)
                    {
-                       localPreviewContainerView.hidden = NO;
-                       remotePreviewContainerView.hidden = NO;
+                       self->localPreviewContainerView.hidden = NO;
+                       self->remotePreviewContainerView.hidden = NO;
 
-                       call.selfVideoView = localPreviewContainerView;
-                       call.remoteVideoView = remotePreviewContainerView;
+                       call.selfVideoView = self->localPreviewContainerView;
+                       call.remoteVideoView = self->remotePreviewContainerView;
                        [self applyDeviceOrientation:YES];
 
                        [[NSNotificationCenter defaultCenter] addObserver:self
@@ -484,7 +484,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
                if (granted)
                {
-                   [mxCall answer];
+                   [self->mxCall answer];
                }
            }];
     }

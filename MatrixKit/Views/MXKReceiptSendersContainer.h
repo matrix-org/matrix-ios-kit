@@ -55,6 +55,11 @@ typedef NS_ENUM(NSInteger, ReadReceiptsAlignment)
  */
 @property (nonatomic) UILabel* moreLabel;
 
+/**
+ The more label text color (If set to nil `moreLabel.textColor` use `UIColor.blackColor` as default color).
+ */
+@property (nonatomic) UIColor* moreLabelTextColor;
+
 /*
  The read receipt objects for details required in the details view
  */

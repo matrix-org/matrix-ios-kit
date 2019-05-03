@@ -62,7 +62,7 @@
     {
         
         // Replace only black colored texts
-        if (attrs[NSForegroundColorAttributeName] == bubbleData.eventFormatter.defaultTextColor)
+        if (attrs[NSForegroundColorAttributeName] == self->bubbleData.eventFormatter.defaultTextColor)
         {
             
             // By white

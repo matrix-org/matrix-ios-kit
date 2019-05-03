@@ -1222,4 +1222,13 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
      }];
 }
 
+#pragma mark - Push
+
+// Trim push token before printing it in logs
++ (NSString*)logForPushToken:(NSData*)pushToken
+{
+    NSUInteger len = ((pushToken.length > 8) ? 8 : pushToken.length / 2);
+    return [NSString stringWithFormat:@"%@...", [pushToken subdataWithRange:NSMakeRange(0, len)]];
+}
+
 @end
