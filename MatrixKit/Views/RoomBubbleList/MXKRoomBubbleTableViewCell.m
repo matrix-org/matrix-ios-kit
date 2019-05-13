@@ -27,6 +27,7 @@
 
 #import "NSBundle+MatrixKit.h"
 #import "MXRoom+Sync.h"
+#import "MXKMessageTextView.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
@@ -52,11 +53,14 @@ NSString *const kMXKRoomBubbleCellUrlItemInteraction = @"kMXKRoomBubbleCellUrlIt
 
 static BOOL _disableLongPressGestureOnEvent;
 
-@interface MXKRoomBubbleTableViewCell ()
+@interface MXKRoomBubbleTableViewCell () <UIGestureRecognizerDelegate>
 {
     // The list of UIViews used to fix the display of side borders for HTML blockquotes
     NSMutableArray<UIView*> *htmlBlockquoteSideBorderViews;
 }
+
+@property (nonatomic, weak) UIView *messageTextBackgroundView;
+
 @end
 
 @implementation MXKRoomBubbleTableViewCell
@@ -176,7 +180,28 @@ static BOOL _disableLongPressGestureOnEvent;
         {
             // Add a long gesture recognizer on text view (in order to display for example the event details)
             UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
-            [self.messageTextView addGestureRecognizer:longPress];
+            longPress.delegate = self;
+            
+            // MXKMessageTextView does not catch touches outside of links. Add a background view to handle long touch.
+            if ([self.messageTextView isKindOfClass:[MXKMessageTextView class]])
+            {
+                UIView *messageTextBackgroundView = [[UIView alloc] initWithFrame:self.messageTextView.frame];
+                messageTextBackgroundView.backgroundColor = [UIColor clearColor];
+                [self.contentView insertSubview:messageTextBackgroundView belowSubview:self.messageTextView];
+                messageTextBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+                [messageTextBackgroundView.leftAnchor constraintEqualToAnchor:self.messageTextView.leftAnchor].active = YES;
+                [messageTextBackgroundView.rightAnchor constraintEqualToAnchor:self.messageTextView.rightAnchor].active = YES;
+                [messageTextBackgroundView.topAnchor constraintEqualToAnchor:self.messageTextView.topAnchor].active = YES;
+                [messageTextBackgroundView.bottomAnchor constraintEqualToAnchor:self.messageTextView.bottomAnchor].active = YES;
+                
+                [messageTextBackgroundView addGestureRecognizer:longPress];
+                
+                self.messageTextBackgroundView = messageTextBackgroundView;
+            }
+            else
+            {
+                [self.messageTextView addGestureRecognizer:longPress];
+            }
         }
     }
     
@@ -201,6 +226,14 @@ static BOOL _disableLongPressGestureOnEvent;
     [tapGesture setNumberOfTapsRequired:1];
     [tapGesture setDelegate:self];
     [self.contentView addGestureRecognizer:tapGesture];
+    
+    if (_disableLongPressGestureOnEvent == NO)
+    {
+        // Add a long gesture recognizer on text view (in order to display for example the event details)
+        UILongPressGestureRecognizer *longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressGesture:)];
+        longPressGestureRecognizer.delegate = self;
+        [self.contentView addGestureRecognizer:longPressGestureRecognizer];
+    }
 }
 
 - (void)customizeTableViewCellRendering
@@ -1048,6 +1081,44 @@ API_AVAILABLE(ios(10.0)) {
     && bubbleData.attachment.contentInfo;
 }
 
+- (MXKRoomBubbleComponent*)closestBubbleComponentForGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer locationInView:(UIView*)view
+{
+    CGPoint tapPoint = [gestureRecognizer locationInView:view];
+    MXKRoomBubbleComponent *tappedComponent;
+    
+    if (tapPoint.y >= 0 && tapPoint.y <= view.frame.size.height)
+    {
+        tappedComponent = [self closestBubbleComponentAtPosition:tapPoint];
+    }
+    
+    return tappedComponent;
+}
+
+- (MXKRoomBubbleComponent*)closestBubbleComponentAtPosition:(CGPoint)position
+{
+    MXKRoomBubbleComponent *tappedComponent;
+    
+    NSArray *bubbleComponents = bubbleData.bubbleComponents;
+    
+    for (MXKRoomBubbleComponent *component in bubbleComponents)
+    {
+        // Ignore components without display (For example redacted event or state events)
+        if (!component.attributedTextMessage)
+        {
+            continue;
+        }
+        
+        if (component.position.y > position.y)
+        {
+            break;
+        }
+        
+        tappedComponent = component;
+    }
+    
+    return tappedComponent;
+}
+
 #pragma mark - Attachment progress handling
 
 - (void)updateProgressUI:(NSDictionary*)statisticsDict
@@ -1248,35 +1319,8 @@ static NSMutableDictionary *childClasses;
             }
             else
             {
-                MXEvent *tappedEvent = nil;
-                NSArray *bubbleComponents = bubbleData.bubbleComponents;
-                if (bubbleComponents.count == 1)
-                {
-                    MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-                    tappedEvent = component.event;
-                }
-                else if (bubbleComponents.count)
-                {
-                    
-                    // Look for the tapped component
-                    UIView* view = sender.view;
-                    CGPoint tapPoint = [sender locationInView:view];
-                    
-                    for (MXKRoomBubbleComponent *component in bubbleComponents)
-                    {
-                        // Ignore components without display.
-                        if (!component.attributedTextMessage)
-                        {
-                            continue;
-                        }
-                        
-                        if (tapPoint.y < component.position.y)
-                        {
-                            break;
-                        }
-                        tappedEvent = component.event;
-                    }
-                }
+                MXKRoomBubbleComponent *tappedComponent = [self closestBubbleComponentForGestureRecognizer:sender locationInView:sender.view];
+                MXEvent *tappedEvent = tappedComponent.event;
                 
                 [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
             }
@@ -1330,19 +1374,11 @@ static NSMutableDictionary *childClasses;
     {
         // Check whether a bubble component is displayed at the level of the tapped line.
         MXKRoomBubbleComponent *tappedComponent = nil;
-        NSArray *bubbleComponents = bubbleData.bubbleComponents;
         
-        CGPoint tapPoint;
         if (self.attachmentView)
         {
             // Check whether the user tapped on the side of the attachment.
-            tapPoint = [sender locationInView:self.attachmentView];
-            
-            if (tapPoint.y > 0 && tapPoint.y < self.attachmentView.frame.size.height)
-            {
-                // Only one component is available in bubble with attachment.
-                tappedComponent = [bubbleComponents firstObject];
-            }
+            tappedComponent = [self closestBubbleComponentForGestureRecognizer:sender locationInView:self.attachmentView];
         }
         else if (self.messageTextView)
         {
@@ -1359,24 +1395,7 @@ static NSMutableDictionary *childClasses;
             else
             {
                 // Check whether the user tapped in front of a text component.
-                tapPoint = [sender locationInView:self.messageTextView];
-                
-                if (tapPoint.y > 0 && tapPoint.y < self.messageTextView.frame.size.height)
-                {
-                    // Consider by default the first component
-                    tappedComponent = [bubbleComponents firstObject];
-                    
-                    for (NSInteger index = 1; index < bubbleComponents.count; index++)
-                    {
-                        // Here the bubble is composed by multiple text messages
-                        MXKRoomBubbleComponent *component = bubbleComponents[index];
-                        if (tapPoint.y < component.position.y)
-                        {
-                            break;
-                        }
-                        tappedComponent = component;
-                    }
-                }
+                tappedComponent = [self closestBubbleComponentForGestureRecognizer:sender locationInView:self.messageTextView];
             }
         }
         
@@ -1390,42 +1409,15 @@ static NSMutableDictionary *childClasses;
     {
         UIView* view = longPressGestureRecognizer.view;
         
-        NSArray *bubbleComponents = bubbleData.bubbleComponents;
-        
         // Check the view on which long press has been detected
         if (view == self.progressView)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnProgressView userInfo:nil];
         }
-        else if (view == self.messageTextView || view == self.attachmentView)
+        else if (view == self.messageTextView || view == self.messageTextBackgroundView || view == self.attachmentView)
         {
-            MXEvent *selectedEvent = nil;
-            if (bubbleComponents.count == 1)
-            {
-                MXKRoomBubbleComponent *component = [bubbleComponents firstObject];
-                selectedEvent = component.event;
-            }
-            else if (bubbleComponents.count)
-            {
-                // Here the selected view is a textView (attachment has no more than one component)
-                
-                // Look for the selected component
-                CGPoint longPressPoint = [longPressGestureRecognizer locationInView:view];
-                for (MXKRoomBubbleComponent *component in bubbleComponents)
-                {
-                    // Ignore components without display.
-                    if (!component.attributedTextMessage)
-                    {
-                        continue;
-                    }
-                    
-                    if (longPressPoint.y < component.position.y)
-                    {
-                        break;
-                    }
-                    selectedEvent = component.event;
-                }
-            }
+            MXKRoomBubbleComponent *tappedComponent = [self closestBubbleComponentForGestureRecognizer:longPressGestureRecognizer locationInView:view];
+            MXEvent *selectedEvent = tappedComponent.event;
             
             if (selectedEvent)
             {
@@ -1435,6 +1427,24 @@ static NSMutableDictionary *childClasses;
         else if (view == self.pictureView)
         {
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnAvatarView userInfo:@{kMXKRoomBubbleCellUserIdKey: bubbleData.senderId}];
+        }
+        else if (view == self.contentView)
+        {
+            // Check whether a bubble component is displayed at the level of the tapped line.
+            MXKRoomBubbleComponent *tappedComponent = nil;
+            
+            if (self.attachmentView)
+            {
+                // Check whether the user tapped on the side of the attachment.
+                tappedComponent = [self closestBubbleComponentForGestureRecognizer:longPressGestureRecognizer locationInView:self.attachmentView];
+            }
+            else if (self.messageTextView)
+            {
+                // Check whether the user tapped in front of a text component.
+                tappedComponent = [self closestBubbleComponentForGestureRecognizer:longPressGestureRecognizer locationInView:self.messageTextView];
+            }
+            
+            [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnEvent userInfo:(tappedComponent ? @{kMXKRoomBubbleCellEventKey:tappedComponent.event} : nil)];
         }
     }
 }
@@ -1479,6 +1489,19 @@ static NSMutableDictionary *childClasses;
         _attachmentWebView.hidden = NO;
         self.attachmentView.image = nil;
     }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    // Recognize simultaneously the `messageTextView` UITextView built-in UILongPressGestureRecognizer with other UILongPressGestureRecognizer
+    // to allows long touch on hyperlinks in UITextView and trigger `-[cell:didRecognizeAction:userInfo:]` delegate method at the same time.
+    if (otherGestureRecognizer.view == self.messageTextView && [otherGestureRecognizer isMemberOfClass:[UILongPressGestureRecognizer class]] && [gestureRecognizer isMemberOfClass:[UILongPressGestureRecognizer class]])
+    {
+        return YES;
+    }
+    return NO;
 }
 
 @end
