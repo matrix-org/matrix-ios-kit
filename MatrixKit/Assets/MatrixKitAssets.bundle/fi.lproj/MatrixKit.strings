@@ -137,3 +137,13 @@
 "call_invite_expired" = "Puhelukutsu vanhentui";
 "ssl_logout_account" = "Kirjaudu ulos";
 "ssl_fingerprint_hash" = "Sormenjälki (%@):";
+"room_event_encryption_info_verify" = "Vahvista...";
+"room_event_encryption_info_unverify" = "Poista vahvistus";
+"room_event_encryption_verify_title" = "Vahvista laite\n\n";
+"room_event_encryption_verify_ok" = "Vahvista";
+"account_email_validation_error" = "Sähköpostin vahvistaminen epäonnistui. Tarkistathan sähköpostisi ja seuraa linkkiä, joka on lähettämässämme viestissä. Sen jälkeen, täppää jatka";
+"account_msisdn_validation_title" = "Vahvistus meneillään";
+"account_msisdn_validation_error" = "Puhelinnumeron vahvistus epäonnistui.";
+"account_error_display_name_change_failed" = "Näyttönimen vaihtaminen epäonnistui";
+"account_error_picture_change_failed" = "Kuvan vaihtaminen epäonnistui";
+"ssl_could_not_verify" = "Etäpalvelimen identiteetin vahvistaminen epäonnistui.";
