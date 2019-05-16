@@ -8,7 +8,7 @@
 "continue" = "Folytatás";
 "leave" = "Elhagyás";
 "invite" = "Meghívás";
-"login_home_server_info" = "A Saját szerver tárolja minden beszélgetésedet és felhasználói fiók adatodat";
+"login_home_server_info" = "A matrix szerver tárolja minden beszélgetésedet és felhasználói fiók adatodat";
 "login_identity_server_title" = "Azonosító szerver:";
 "login_identity_server_info" = "Matrix biztosít egy azonosító szerver ami nyilvántartja, hogy melyik matrix azonosítóhoz milyen e-mail cím, stb. tartozik. Jelenleg csak a https://matrix.org az egyetlen ilyen szerver.";
 "login_user_id_placeholder" = "Matrix azonosító (pl.: @bob:matrix.org vagy csak bob)";
@@ -291,7 +291,7 @@
 "resend" = "Újraküld";
 "redact" = "Töröl";
 "share" = "Megosztás";
-"set_power_level" = "Hozzáférési szint";
+"set_power_level" = "Hozzáférési szint beállítása";
 "delete" = "Töröl";
 // actions 
 "action_logout" = "Kilép";
