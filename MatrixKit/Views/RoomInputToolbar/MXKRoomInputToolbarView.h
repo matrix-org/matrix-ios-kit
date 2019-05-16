@@ -248,6 +248,11 @@ typedef enum : NSUInteger
 @property (nonatomic) BOOL enableAutoSaving;
 
 /**
+ Tell whether the text is editable. YES by default.
+ */
+@property(nonatomic, getter=isEditable) BOOL editable;
+
+/**
  `onTouchUpInside` action is registered on `Touch Up Inside` event for both buttons (left and right input toolbar buttons).
  Override this method to customize user interaction handling
  

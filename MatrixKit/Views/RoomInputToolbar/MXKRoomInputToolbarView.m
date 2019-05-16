@@ -90,6 +90,9 @@
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
     
+    // Enable text edition by default
+    self.editable = YES;
+    
     // Localize string
     [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateNormal];
     [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateHighlighted];

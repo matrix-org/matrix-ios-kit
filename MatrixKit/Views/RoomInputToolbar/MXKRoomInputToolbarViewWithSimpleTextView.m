@@ -105,6 +105,11 @@
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    if (!self.isEditable)
+    {
+        return NO;
+    }
+    
     // Hanlde here `Done` key pressed
     if([text isEqualToString:@"\n"])
     {
