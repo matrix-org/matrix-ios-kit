@@ -5,6 +5,7 @@ Improvements:
  * Update deployment target to iOS 9 (PR #546).
  * MXKRoomBubbleTableViewCell: Enhance long press behavior (PR #546).
  * MXKRoomInputToolbarView: Add a property to enable or disable text edition (PR #547).
+ * MXKRoomBubbleCellData: expose reactions made on messages.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
