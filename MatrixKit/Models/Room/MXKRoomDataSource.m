@@ -2,6 +2,7 @@
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -80,6 +81,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
      The listener to the related groups state events in the room.
      */
     id relatedGroupsListener;
+
+    /**
+     The listener to reactions changed in the room.
+     */
+    id reactionsChangeListener;
     
     /**
      Mapping between events ids and bubbles.
@@ -439,6 +445,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
     [self unregisterScanManagerNotifications];
+    [self unregisterReactionsChangeListener];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
 
@@ -969,6 +976,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     else
     {
         [self unregisterScanManagerNotifications];
+    }
+
+    // Register to reaction notification only when a delegate is set
+    if (delegate)
+    {
+        [self registerReactionsChangeListener];
+    }
+    else
+    {
+        [self unregisterReactionsChangeListener];
     }
 }
 
@@ -2598,7 +2615,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
                             }
                         }
-                        
+
+                        [self updateCellDataReactions:bubbleData forEventId:queuedEvent.event.eventId];
+
                         // Store event-bubble link to the map
                         @synchronized (self->eventIdToBubbleMap)
                         {
@@ -2887,6 +2906,64 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // TODO: Avoid to call the delegate to often. Set a minimum time interval to avoid table view flickering.
     [self.delegate dataSource:self didCellChange:nil];
+}
+
+
+#pragma mark - Reactions
+
+- (void)registerReactionsChangeListener
+{
+    MXWeakify(self);
+    reactionsChangeListener = [self.mxSession.aggregations listenToReactionCountUpdateInRoom:self.roomId block:^(NSDictionary<NSString *,MXReactionCountChange *> * _Nonnull changes) {
+        MXStrongifyAndReturnIfNil(self);
+
+        BOOL updated = NO;
+        for (NSString *eventId in changes)
+        {
+            id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
+            if (bubbleData)
+            {
+                // TODO: Be smarted and use changes[eventId]
+                [self updateCellDataReactions:bubbleData forEventId:eventId];
+                updated = YES;
+            }
+        }
+
+        if (updated)
+        {
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+    }];
+}
+
+- (void)unregisterReactionsChangeListener
+{
+    if (receiptsListener)
+    {
+        [self.mxSession.aggregations removeListener:receiptsListener];
+        receiptsListener = nil;
+    }
+}
+
+- (void)updateCellDataReactions:(id<MXKRoomBubbleCellDataStoring>)cellData forEventId:(NSString*)eventId
+{
+    if (![cellData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        return;
+    }
+
+    MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
+
+    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId];
+    if (aggregatedReactions)
+    {
+        if (!roomBubbleCellData.reactions)
+        {
+            roomBubbleCellData.reactions = [NSMutableDictionary dictionary];
+        }
+
+        roomBubbleCellData.reactions[eventId] = aggregatedReactions;
+    }
 }
 
 @end
