@@ -1,6 +1,7 @@
 /*
  Copyright 2016 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -254,6 +255,79 @@ NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
     {
         // Reset the original state
         self.navigationItem.rightBarButtonItems = originalRightBarButtonItems;
+    }
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable credential))completionHandler
+{
+    NSURLProtectionSpace *protectionSpace = [challenge protectionSpace];
+    
+    // We handle here only the server trust authentication.
+    // We fallback to the default logic for other cases.
+    if (protectionSpace.authenticationMethod != NSURLAuthenticationMethodServerTrust || !protectionSpace.serverTrust)
+    {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+        return;
+    }
+    
+    SecTrustRef serverTrust = [protectionSpace serverTrust];
+    
+    // Check first whether there are some pinned certificates (certificate included in the bundle).
+    NSArray *paths = [[NSBundle mainBundle] pathsForResourcesOfType:@"cer" inDirectory:@"."];
+    if (paths.count)
+    {
+        NSMutableArray *pinnedCertificates = [NSMutableArray array];
+        for (NSString *path in paths)
+        {
+            NSData *certificateData = [NSData dataWithContentsOfFile:path];
+            [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
+        }
+        // Only use these certificates to pin against, and do not trust the built-in anchor certificates.
+        SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
+    }
+    else
+    {
+        // Check whether some certificates have been trusted by the user (self-signed certificates support).
+        NSSet<NSData *> *certificates = [MXAllowedCertificates sharedInstance].certificates;
+        if (certificates.count)
+        {
+            NSMutableArray *allowedCertificates = [NSMutableArray array];
+            for (NSData *certificateData in certificates)
+            {
+                [allowedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
+            }
+            // Add all the allowed certificates to the chain of trust
+            SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)allowedCertificates);
+            // Reenable trusting the built-in anchor certificates in addition to those passed in via the SecTrustSetAnchorCertificates API.
+            SecTrustSetAnchorCertificatesOnly(serverTrust, false);
+        }
+    }
+    
+    // Re-evaluate the trust policy
+    SecTrustResultType secresult = kSecTrustResultInvalid;
+    if (SecTrustEvaluate(serverTrust, &secresult) != errSecSuccess)
+    {
+        // Reject the server auth if an error occurs
+        completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
+    }
+    else
+    {
+        switch (secresult)
+        {
+            case kSecTrustResultUnspecified:    // The OS trusts this certificate implicitly.
+            case kSecTrustResultProceed:        // The user explicitly told the OS to trust it.
+            {
+                NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+                break;
+            }
+                
+            default:
+            {
+                completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+                break;
+            }
+        }
     }
 }
 
