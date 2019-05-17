@@ -445,6 +445,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
     [self unregisterScanManagerNotifications];
+    [self unregisterReactionsChangeListener];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
 
