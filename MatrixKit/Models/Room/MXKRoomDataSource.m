@@ -2913,6 +2913,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerReactionsChangeListener
 {
+    if (!self.showReactions)
+    {
+        return;
+    }
+
     MXWeakify(self);
     reactionsChangeListener = [self.mxSession.aggregations listenToReactionCountUpdateInRoom:self.roomId block:^(NSDictionary<NSString *,MXReactionCountChange *> * _Nonnull changes) {
         MXStrongifyAndReturnIfNil(self);
@@ -2947,7 +2952,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)updateCellDataReactions:(id<MXKRoomBubbleCellDataStoring>)cellData forEventId:(NSString*)eventId
 {
-    if (![cellData isKindOfClass:MXKRoomBubbleCellData.class])
+    if (!self.showReactions || ![cellData isKindOfClass:MXKRoomBubbleCellData.class])
     {
         return;
     }
