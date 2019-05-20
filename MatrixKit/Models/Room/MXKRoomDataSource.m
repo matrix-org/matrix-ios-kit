@@ -2964,6 +2964,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
         roomBubbleCellData.reactions[eventId] = aggregatedReactions;
     }
+    else
+    {
+        // unreaction
+        roomBubbleCellData.reactions[eventId] = nil;
+    }
 }
 
 @end
