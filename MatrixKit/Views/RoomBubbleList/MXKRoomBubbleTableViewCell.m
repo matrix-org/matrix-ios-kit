@@ -1504,4 +1504,28 @@ static NSMutableDictionary *childClasses;
     return NO;
 }
 
+// Prevent gesture recognizer to be recognized by a custom view added to the cell contentView and with user interaction enabled
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    UIView *recognizerView = gestureRecognizer.view;
+    
+    if ([recognizerView isDescendantOfView:self.contentView])
+    {
+        for (UIView *tmpSubview in self.tmpSubviews)
+        {
+            if (tmpSubview.isUserInteractionEnabled && [tmpSubview isDescendantOfView:self.contentView])
+            {
+                CGPoint touchedPoint = [touch locationInView:tmpSubview];
+                
+                if (CGRectContainsPoint(tmpSubview.bounds, touchedPoint))
+                {
+                    return NO;
+                }
+            }
+        }
+    }
+    
+    return YES;
+}
+
 @end
