@@ -802,8 +802,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             // This will fix potential UISIs other peoples receive for our messages.
             [mxSession.crypto resetDeviceKeys];
             
-            // Clean the scan manager database.
+            // Clean other stores
             [mxSession.scanManager deleteAllAntivirusScans];
+            [mxSession.aggregations resetData];
         }
         else
         {

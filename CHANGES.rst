@@ -6,6 +6,7 @@ Improvements:
  * MXKRoomBubbleTableViewCell: Enhance long press behavior (PR #546).
  * MXKRoomInputToolbarView: Add a property to enable or disable text edition (PR #547).
  * MXKWebViewViewController: Handle authentication challenge in order to support a potential certificates pinning.
+ * MXKRoomBubbleCellData: expose reactions made on messages.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
