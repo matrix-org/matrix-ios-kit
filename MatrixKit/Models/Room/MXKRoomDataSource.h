@@ -190,6 +190,11 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 @property (nonatomic) BOOL useCustomReceipts;
 
 /**
+ Show the reactions in rendered bubble cell. NO by default.
+ */
+@property (nonatomic) BOOL showReactions;
+
+/**
  A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
  */
 @property (nonatomic) BOOL useCustomUnsentButton;
