@@ -2974,6 +2974,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // unreaction
         roomBubbleCellData.reactions[eventId] = nil;
     }
+
+    // Recompute the text message layout
+    roomBubbleCellData.attributedTextMessage = nil;
 }
 
 @end
