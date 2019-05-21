@@ -334,7 +334,7 @@
         optionsListView = nil;
     }
     
-    [self dismissMediaPicker];
+    [self dismissMediaPickerh];
     
     self.delegate = nil;
     
@@ -1001,94 +1001,55 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    [self dismissMediaPicker];
-    
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
-    {
-        UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-        if (selectedImage)
-        {
-            // Media picker does not offer a preview
-            // so add a preview to let the user validates his selection
-            if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
-            {
-                __weak typeof(self) weakSelf = self;
-                
-                MXKImageView *imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
-                imageValidationView.stretchable = YES;
-                
-                // the user validates the image
-                [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
-                 {
-                     if (weakSelf)
-                     {
-                         typeof(self) self = weakSelf;
-                         
-                         // Dismiss the image view
-                         [self dismissValidationViews];
-                         
-                         NSURL *imageLocalURL = [info objectForKey:UIImagePickerControllerReferenceURL];
-                         if (imageLocalURL)
-                         {
-                             CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[imageLocalURL.path pathExtension] , NULL);
-                             NSString *mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
-                             CFRelease(uti);
-                             
-                             NSData *imageData = [NSData dataWithContentsOfFile:imageLocalURL.path];
-                             
-                             // attach the selected image
-                             [self sendSelectedImage:imageData withMimeType:mimetype andCompressionMode:MXKRoomInputToolbarCompressionModePrompt isPhotoLibraryAsset:YES];
-                         }
-                     }
-                     
-                 }];
-                
-                // the user wants to use an other image
-                [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
-                 {
-                     if (weakSelf)
-                     {
-                         typeof(self) self = weakSelf;
-                         
-                         // dismiss the image view
-                         [self dismissValidationViews];
-                         
-                         // Open again media gallery
-                         self->mediaPicker = [[UIImagePickerController alloc] init];
-                         self->mediaPicker.delegate = self;
-                         self->mediaPicker.sourceType = picker.sourceType;
-                         self->mediaPicker.allowsEditing = NO;
-                         self->mediaPicker.mediaTypes = picker.mediaTypes;
-                         [self.delegate roomInputToolbarView:self presentViewController:self->mediaPicker];
-                     }
-                 }];
-                
-                imageValidationView.image = selectedImage;
-                
-                [validationViews addObject:imageValidationView];
-                [imageValidationView showFullScreen];
-                [self.delegate roomInputToolbarView:self hideStatusBar:YES];
-            }
-            else
-            {
-                // Suggest compression before sending image
-                NSData *imageData = UIImageJPEGRepresentation(selectedImage, 0.9);
-                [self sendSelectedImage:imageData withMimeType:nil andCompressionMode:MXKRoomInputToolbarCompressionModePrompt isPhotoLibraryAsset:NO];
-            }
-        }
-    }
+    //if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
+    //{
+		UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+		if (selectedImage)
+		{
+
+			NSURL *imageLocalURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+			if (imageLocalURL)
+			{
+				CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[imageLocalURL.path pathExtension] , NULL);
+				NSString *mimetype = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+				CFRelease(uti);
+
+				NSMutableArray *arr = [[NSMutableArray alloc] init];
+				[arr addObject:imageLocalURL];
+				
+				PHFetchResult *asset = [PHAsset fetchAssetsWithALAssetURLs:arr options:nil];
+
+				[[PHImageManager defaultManager] requestImageDataForAsset:asset.firstObject options:nil resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+
+					if (imageData)
+					{
+						NSLog(@"didFinishPickingMediaWithInfo: Got image data");
+
+						// attach the selected image
+						[self sendSelectedImage:imageData withMimeType:mimetype andCompressionMode:MXKRoomInputToolbarCompressionModePrompt isPhotoLibraryAsset:YES];
+					}
+					else
+					{
+						NSLog(@"didFinishPickingMediaWithInfo: Failed to get image data for asset");
+					}
+				}];
+			}
+		}
+    /*}
     else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
     {
         NSURL* selectedVideo = [info objectForKey:UIImagePickerControllerMediaURL];
         
         [self sendSelectedVideo:selectedVideo isPhotoLibraryAsset:(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)];
-    }
+    }*/
+
+	[self dismissMediaPickerh];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [self dismissMediaPicker];
+    [self dismissMediaPickerh];
 }
 
 - (void)dismissValidationViews
@@ -1125,19 +1086,19 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 }
 
-- (void)dismissMediaPicker
+- (void)dismissMediaPickerh
 {
-    if (mediaPicker)
-    {
-        mediaPicker.delegate = nil;
-        
-        if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissViewControllerAnimated:completion:)])
-        {
-            [self.delegate roomInputToolbarView:self dismissViewControllerAnimated:NO completion:^{
-                self->mediaPicker = nil;
-            }];
-        }
-    }
+	if (mediaPicker)
+	{
+		mediaPicker.delegate = nil;
+
+		if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:dismissViewControllerAnimated:completion:)])
+		{
+			[self.delegate roomInputToolbarView:self dismissViewControllerAnimated:YES completion:^{
+				self->mediaPicker = nil;
+			}];
+		}
+	}
 }
 
 #pragma mark - Clipboard - Handle image/data paste from general pasteboard
