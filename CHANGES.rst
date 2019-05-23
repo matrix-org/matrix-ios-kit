@@ -7,6 +7,7 @@ Improvements:
  * MXKRoomInputToolbarView: Add a property to enable or disable text edition (PR #547).
  * MXKWebViewViewController: Handle authentication challenge in order to support a potential certificates pinning.
  * MXKRoomBubbleCellData: expose reactions made on messages.
+ * MXKContactManager: Add a property to override the Matrix users discovering mechanism.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
