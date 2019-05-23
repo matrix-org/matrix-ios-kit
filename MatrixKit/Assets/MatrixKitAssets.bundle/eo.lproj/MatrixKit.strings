@@ -8,3 +8,4 @@
 // Settings
 "settings" = "Agordoj";
 "message_reply_to_message_to_reply_to_prefix" = "Respondanta al";
+"room_event_encryption_verify_title" = "Kontroli aparaton\n\n";
