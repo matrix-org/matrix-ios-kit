@@ -201,7 +201,7 @@
 "room_error_timeline_event_not_found" = "De app heeft geprobeerd een specifiek punt in de tijdslijn van dit gesprek te laden, maar kon het niet vinden";
 "room_left" = "U heeft het gesprek verlaten";
 "room_no_power_to_create_conference_call" = "U heeft toestemming nodig om een vergadering in dit groepsgesprek te starten";
-"room_no_conference_call_in_encrypted_rooms" = "Vergadergesprekken worden niet ondersteund in versleutelde kamers";
+"room_no_conference_call_in_encrypted_rooms" = "Vergadergesprekken worden niet ondersteund in versleutelde gesprekken";
 // Room members
 "room_member_ignore_prompt" = "Weet u zeker dat u alle berichten van deze gebruiker wilt verbergen?";
 "room_member_power_level_prompt" = "U kunt deze veranderingen niet ongedaan maken aangezien u de gebruiker tot hetzelfde niveau als uzelf promoveert.\nWeet u het zeker?";
@@ -234,7 +234,7 @@
 "e2e_passphrase_enter" = "Voer wachtwoord in";
 // E2E export
 "e2e_export_room_keys" = "Gesprekssleutels exporteren";
-"e2e_export_prompt" = "Dit proces maakt het mogelijk om de sleutels voor berichten die u heeft ontvangen in versleutelde ruimtes te exporteren naar een lokaal bestand. Daarna kunt u het bestand in de toekomst in een andere Matrix-cliënt importeren, zodat die cliënt ook deze berichten zal kunnen ontsleutelen.\nHet geëxporteerde bestand zal iedereen die het kan lezen de mogelijkheid bieden om de versleutelde berichten die u kunt zien te ontsleutelen, dus wees voorzichtig en bewaar het op een veilige plaats.";
+"e2e_export_prompt" = "Dit proces maakt het mogelijk om de sleutels voor berichten die u heeft ontvangen in versleutelde gesprekken te exporteren naar een lokaal bestand. Daarna kunt u het bestand in de toekomst in een andere Matrix-cliënt importeren, zodat die cliënt ook deze berichten zal kunnen ontsleutelen.\nHet geëxporteerde bestand zal iedereen die het kan lezen de mogelijkheid bieden om de versleutelde berichten die u kunt zien te ontsleutelen, dus wees voorzichtig en bewaar het op een veilige plaats.";
 "e2e_export" = "Exporteren";
 "e2e_passphrase_confirm" = "Bevestig wachtwoord";
 "e2e_passphrase_empty" = "Wachtwoord mag niet leeg zijn";
@@ -381,11 +381,11 @@
 "notification_settings_contain_my_display_name" = "Meld mij met geluid over berichten die mijn weergavenaam bevatten";
 "notification_settings_just_sent_to_me" = "Meld mij met geluid over berichten die alleen naar mij gestuurd zijn";
 "notification_settings_invite_to_a_new_room" = "Meld mij wanneer ik in een nieuw gesprek uitgenodigd word";
-"notification_settings_people_join_leave_rooms" = "Meld mij wanneer mensen de kamer verlaten of betreden";
+"notification_settings_people_join_leave_rooms" = "Meld mij wanneer mensen het gesprek verlaten of betreden";
 "notification_settings_receive_a_call" = "Meld mij wanneer ik een oproep ontvang";
 "notification_settings_suppress_from_bots" = "Meldingen van robots onderdrukken";
 "notification_settings_by_default" = "Standaard…";
-"notification_settings_notify_all_other" = "Melden voor alle andere berichten/kamers";
+"notification_settings_notify_all_other" = "Melden voor alle andere berichten/gesprekken";
 // gcm section 
 "settings_config_home_server" = "Thuisserver: %@";
 "settings_config_identity_server" = "Identiteitsserver: %@";
