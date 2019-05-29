@@ -3,7 +3,7 @@
 "login_create_account" = "Регистрация:";
 "login_server_url_placeholder" = "URL (например https://matrix.org)";
 "login_home_server_title" = "Домашний сервер:";
-"login_home_server_info" = "Ваш домашний сервер хранит ваши разговоры и данные об  аккаунте";
+"login_home_server_info" = "Ваш домашний сервер хранит все ваши разговоры и данные о аккаунте";
 "login_identity_server_title" = "Сервер идентификации:";
 "login_identity_server_info" = "Серверы идентификации Matrix обеспечивают определение соответствия между email и Matrix ID. В настоящее время существует только https://matrix.org.";
 "login_user_id_placeholder" = "Matrix ID (например, @bob:matrix.org или bob)";
@@ -162,7 +162,7 @@
 "resend" = "Переотправить";
 "redact" = "Удалить";
 "share" = "Поделиться";
-"set_power_level" = "Уровень доступа";
+"set_power_level" = "Установить уровень мощности";
 "delete" = "Удалить";
 // actions 
 "action_logout" = "Выйти";
@@ -347,7 +347,7 @@
 "ssl_only_accept" = "Примите сертификат ТОЛЬКО в том случае, если администратор сервера опубликовал отпечаток, соответствующий приведенному выше.";
 "ssl_fingerprint_hash" = "Отпечаток (%@):";
 "notification_settings_per_word_notifications" = "Уведомления по одному слову";
-"notification_settings_per_word_info" = "Слова несовместимы с регистром и могут содержать подстановочный знак *. Так:\nFoo соответствует строке foo, окруженной разделителями слов (например, пунктуацией и пробелом или началом / концом строки).\nFoo * соответствует любому такому слову, которое начинается foo.\n* Foo * соответствует любому такому слову, которое включает в себя 3 буквы foo.";
+"notification_settings_per_word_info" = "Слова нечувствительны к регистру и могут содержать * спецсимвол. Так:\nFoo соответствует строке foo, окруженной разделителями слов (например, пунктуацией и пробелом или началом/концом строки).\nFoo * соответствует любому такому слову, которое начинается с foo.\n* Foo * соответствует любому такому слову, которое включает в себя 3 буквы foo.";
 "notification_settings_highlight" = "Подсветка";
 "notification_settings_per_room_notifications" = "Уведомления для каждой комнаты";
 "notification_settings_per_sender_notifications" = "Уведомления для отдельного собеседника";
@@ -373,6 +373,6 @@
 "login_error_resource_limit_exceeded_title" = "Превышен лимит ресурса";
 "login_error_resource_limit_exceeded_contact_button" = "Связаться с администратором";
 "login_error_resource_limit_exceeded_message_default" = "Этот сервер превысил один из лимитов ресурсов.";
-"login_error_resource_limit_exceeded_message_monthly_active_user" = "Этот сервер  достиг ежемесячного лимита активных пользователей.";
-"login_error_resource_limit_exceeded_message_contact" = "\n\nПожалуста свяжитесь с вашим администратором что бы продолжить пользоваться этим сервисом.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Этот сервер достиг ежемесячного лимита активных пользователей.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nПожалуйста свяжитесь с вашим администратором что бы продолжить пользоваться этим сервисом.";
 "e2e_passphrase_create" = "Создать парольную фразу";
