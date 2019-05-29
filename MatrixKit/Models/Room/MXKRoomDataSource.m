@@ -1060,6 +1060,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return 0;
 }
 
+- (void)refreshBubblesCellData
+{
+    @synchronized(bubbles)
+    {
+        for (id<MXKRoomBubbleCellDataStoring> bubble in bubbles)
+        {
+            bubble.attributedTextMessage = nil;
+        }
+    }
+}
+
 #pragma mark - Pagination
 - (void)paginate:(NSUInteger)numItems direction:(MXTimelineDirection)direction onlyFromStore:(BOOL)onlyFromStore success:(void (^)(NSUInteger addedCellNumber))success failure:(void (^)(NSError *error))failure
 {
