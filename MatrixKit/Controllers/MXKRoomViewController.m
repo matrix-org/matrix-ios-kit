@@ -413,7 +413,7 @@
         
         // Force full table refresh to take into account cell width change.
         self.bubbleTableViewDisplayInTransition = YES;
-        [self reloadBubblesTable:YES forceBubbleCellDataRefresh:YES];
+        [self reloadBubblesTable:YES invalidateBubblesCellDataCache:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
         self->shouldScrollToBottomOnTableRefresh = NO;
@@ -2229,10 +2229,10 @@
 
 - (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor
 {
-    return [self reloadBubblesTable:useBottomAnchor forceBubbleCellDataRefresh:NO];
+    return [self reloadBubblesTable:useBottomAnchor invalidateBubblesCellDataCache:NO];
 }
 
-- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor forceBubbleCellDataRefresh:(BOOL)forceBubbleCellDataRefresh
+- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor invalidateBubblesCellDataCache:(BOOL)invalidateBubblesCellDataCache
 {
     BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
@@ -2244,9 +2244,9 @@
     }
     
     // Force bubblesCellData message recalculation if requested
-    if (forceBubbleCellDataRefresh)
+    if (invalidateBubblesCellDataCache)
     {
-        [self.roomDataSource refreshBubblesCellData];
+        [self.roomDataSource invalidateBubblesCellDataCache];
     }
     
     // When scroll to bottom is not active, check whether we should keep the current event displayed at the bottom of the table

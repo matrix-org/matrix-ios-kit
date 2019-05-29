@@ -361,7 +361,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 /**
  Force bubbles cell data message recalculation.
  */
-- (void)refreshBubblesCellData;
+- (void)invalidateBubblesCellDataCache;
 
 #pragma mark - Pagination
 /**

@@ -1060,7 +1060,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return 0;
 }
 
-- (void)refreshBubblesCellData
+- (void)invalidateBubblesCellDataCache
 {
     @synchronized(bubbles)
     {
