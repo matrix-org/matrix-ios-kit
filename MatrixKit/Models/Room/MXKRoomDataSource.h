@@ -357,6 +357,12 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth;
 
+
+/**
+ Force bubbles cell data message recalculation.
+ */
+- (void)invalidateBubblesCellDataCache;
+
 #pragma mark - Pagination
 /**
  Load more messages.

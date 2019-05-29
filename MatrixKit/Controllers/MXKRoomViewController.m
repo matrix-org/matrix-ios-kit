@@ -413,7 +413,7 @@
         
         // Force full table refresh to take into account cell width change.
         self.bubbleTableViewDisplayInTransition = YES;
-        [self reloadBubblesTable:YES];
+        [self reloadBubblesTable:YES invalidateBubblesCellDataCache:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
         self->shouldScrollToBottomOnTableRefresh = NO;
@@ -2229,6 +2229,11 @@
 
 - (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor
 {
+    return [self reloadBubblesTable:useBottomAnchor invalidateBubblesCellDataCache:NO];
+}
+
+- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor invalidateBubblesCellDataCache:(BOOL)invalidateBubblesCellDataCache
+{
     BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
     // When no size transition is in progress, check if the bottom of the content is currently visible.
@@ -2236,6 +2241,12 @@
     if (!isSizeTransitionInProgress && !shouldScrollToBottom)
     {
         shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
+    }
+    
+    // Force bubblesCellData message recalculation if requested
+    if (invalidateBubblesCellDataCache)
+    {
+        [self.roomDataSource invalidateBubblesCellDataCache];
     }
     
     // When scroll to bottom is not active, check whether we should keep the current event displayed at the bottom of the table
