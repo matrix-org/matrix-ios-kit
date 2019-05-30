@@ -98,7 +98,7 @@
 "notice_room_power_level_intro" = "Het machtsniveau van gespreksleden is:";
 "notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen is:";
 "notice_room_power_level_event_requirement" = "De minimale machtsniveaus gerelateerd aan gebeurtenissen zijn:";
-"notice_room_aliases" = "De gespreksaliassen zijn: %@";
+"notice_room_aliases" = "De gespreksbijnamen zijn: %@";
 "notice_encrypted_message" = "Versleuteld bericht";
 "notice_encryption_enabled" = "%@ heeft eind-tot-eind-versleuteling aangezet (%@-algoritme)";
 "notice_image_attachment" = "afbeeldingsbijlage";
@@ -185,7 +185,7 @@
 // Room creation
 "room_creation_name_title" = "Gespreksnaam:";
 "room_creation_name_placeholder" = "(bv. lunchGroep)";
-"room_creation_alias_title" = "Gespreksalias:";
+"room_creation_alias_title" = "Gespreksbijnaam:";
 "room_creation_alias_placeholder" = "(bv. #foo:voorbeeld.org)";
 "room_creation_alias_placeholder_with_homeserver" = "(bv. #foo%@)";
 "room_creation_participants_title" = "Deelnemers:";
