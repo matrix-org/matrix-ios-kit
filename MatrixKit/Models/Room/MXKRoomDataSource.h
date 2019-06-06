@@ -604,4 +604,32 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (MXGroup *)groupWithGroupId:(NSString*)groupId;
 
+#pragma mark - Reactions
+
+/**
+ Send a reaction to an event.
+
+ @param reaction Reaction to add.
+ @param eventId The id of the event.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)addReaction:(NSString *)reaction
+         forEventId:(NSString *)eventId
+            success:(void (^)(NSString *eventId))success
+            failure:(void (^)(NSError *error))failure;
+
+/**
+ Unreact a reaction to an event.
+
+ @param reaction Reaction to unreact.
+ @param eventId The id of the event.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)removeReaction:(NSString *)reaction
+            forEventId:(NSString *)eventId
+               success:(void (^)(void))success
+               failure:(void (^)(NSError *error))failure;
+
 @end

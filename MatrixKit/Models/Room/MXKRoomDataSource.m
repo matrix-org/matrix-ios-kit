@@ -2990,4 +2990,26 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     roomBubbleCellData.attributedTextMessage = nil;
 }
 
+- (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+    [self.mxSession.aggregations sendReaction:reaction toEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
+        NSLog(@"[MXKRoomDataSource] Fail to send reaction on eventId: %@", eventId);
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
+- (void)removeReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
+{
+    [self.mxSession.aggregations unReactOnReaction:reaction toEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
+        NSLog(@"[MXKRoomDataSource] Fail to unreact on eventId: %@", eventId);
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
 @end
