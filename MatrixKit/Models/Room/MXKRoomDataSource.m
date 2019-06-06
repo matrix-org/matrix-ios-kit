@@ -2136,7 +2136,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (BOOL)canPerformActionOnEvent:(MXEvent*)event
 {
     BOOL isSent = event.sentState == MXEventSentStateSent;
-    BOOL isRoomMessage = event.sentState == MXEventSentStateSent;
+    BOOL isRoomMessage = event.eventType == MXEventTypeRoomMessage;
     
     NSString *messageType = event.content[@"msgtype"];
     
