@@ -10,6 +10,7 @@ Improvements:
  * MXKContactManager: Add a property to override the Matrix users discovering mechanism.
  * MXRoomViewController: Refresh room bubbles cell data messages calculation on orientation change (PR #559).
  * MXKRoomDataSource: Add react and unreact on event methods (PR #560).
+ * MXKRoomDataSource: Add can react and can edit an event method (PR #561).
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
