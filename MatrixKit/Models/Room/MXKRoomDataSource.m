@@ -3028,4 +3028,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }];
 }
 
+#pragma mark - Editions
+
+- (BOOL)canEditEventWithId:(NSString*)eventId
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    NSString *messageType = event.content[@"msgtype"];
+    
+    return [self canPerformActionOnEvent:event] && [messageType isEqualToString:kMXMessageTypeText] && [event.eventId isEqualToString:self.mxSession.myUser.userId];
+}
+
 @end

@@ -647,4 +647,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
                success:(void (^)(void))success
                failure:(void (^)(NSError *error))failure;
 
+#pragma mark - Editions
+
+/**
+ Indicates if it's possible to edit the event content.
+ 
+ @param eventId The id of the event.
+ @return True to indicates edition possibility for this event.
+ */
+- (BOOL)canEditEventWithId:(NSString*)eventId;
+
 @end
