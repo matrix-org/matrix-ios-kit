@@ -425,7 +425,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
                        success:(void (^)(NSString *))success
                        failure:(void (^)(NSError *))failure;
 
-- (BOOL)canReplyToEventWithId:(NSString*)eventIdToReply;
+/**
+ Indicates if replying to the provided event is supported.
+ Only event of type 'MXEventTypeRoomMessage' are supported for the moment, and for certain msgtype.
+ 
+ @param eventId The id of the event.
+ @return YES if it is possible to reply to this event.
+ */
+- (BOOL)canReplyToEventWithId:(NSString*)eventId;
 
 /**
  Send an image to the room.
@@ -607,6 +614,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 #pragma mark - Reactions
 
 /**
+ Indicates if it's possible to react on the event.
+
+ @param eventId The id of the event.
+ @return True to indicates reaction possibility for this event.
+ */
+- (BOOL)canReactToEventWithId:(NSString*)eventId;
+
+/**
  Send a reaction to an event.
 
  @param reaction Reaction to add.
@@ -631,5 +646,15 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
             forEventId:(NSString *)eventId
                success:(void (^)(void))success
                failure:(void (^)(NSError *error))failure;
+
+#pragma mark - Editions
+
+/**
+ Indicates if it's possible to edit the event content.
+ 
+ @param eventId The id of the event.
+ @return True to indicates edition possibility for this event.
+ */
+- (BOOL)canEditEventWithId:(NSString*)eventId;
 
 @end

@@ -1417,7 +1417,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (BOOL)canReplyToEventWithId:(NSString*)eventIdToReply
 {
     MXEvent *eventToReply = [self eventWithEventId:eventIdToReply];
-    return [self.room canReplyToEvent:eventToReply];
+    return [self canPerformActionOnEvent:eventToReply] && [self.room canReplyToEvent:eventToReply];
 }
 
 - (void)sendImage:(NSData *)imageData mimeType:(NSString *)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
@@ -2132,6 +2132,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+// Indicates whether an event has base requirements to allow actions (like reply, reactions, edit, etc.)
+- (BOOL)canPerformActionOnEvent:(MXEvent*)event
+{
+    BOOL isSent = event.sentState == MXEventSentStateSent;
+    BOOL isRoomMessage = event.eventType == MXEventTypeRoomMessage;
+    
+    NSString *messageType = event.content[@"msgtype"];
+    
+    return isSent && isRoomMessage && messageType && ![messageType isEqualToString:@"m.bad.encrypted"];
+}
 
 #pragma mark - Asynchronous events processing
  + (dispatch_queue_t)processingQueue
@@ -2990,6 +3000,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     roomBubbleCellData.attributedTextMessage = nil;
 }
 
+- (BOOL)canReactToEventWithId:(NSString*)eventId
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    return [self canPerformActionOnEvent:event];
+}
+
 - (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     [self.mxSession.aggregations sendReaction:reaction toEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
@@ -3010,6 +3026,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             failure(error);
         }
     }];
+}
+
+#pragma mark - Editions
+
+- (BOOL)canEditEventWithId:(NSString*)eventId
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    NSString *messageType = event.content[@"msgtype"];
+    
+    return [self canPerformActionOnEvent:event] && [messageType isEqualToString:kMXMessageTypeText] && [event.eventId isEqualToString:self.mxSession.myUser.userId];
 }
 
 @end
