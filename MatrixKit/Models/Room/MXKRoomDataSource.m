@@ -35,6 +35,8 @@
 
 #import "MXEventScan.h"
 
+#import "MXEventReplace.h"
+
 #pragma mark - Constant definitions
 
 NSString *const kMXKRoomBubbleCellDataIdentifier = @"kMXKRoomBubbleCellDataIdentifier";
@@ -86,6 +88,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
      The listener to reactions changed in the room.
      */
     id reactionsChangeListener;
+    
+    /**
+     The listener to reactions changed in the room.
+     */
+    id eventEditsListener;
     
     /**
      Mapping between events ids and bubbles.
@@ -713,6 +720,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Register a new one with the requested filter
         __weak typeof(self) weakSelf = self;
         liveEventsListener = [_timeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
             if (MXTimelineDirectionForwards == direction && weakSelf)
             {
                 typeof(self) self = weakSelf;
@@ -982,10 +990,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (delegate)
     {
         [self registerReactionsChangeListener];
+        [self registerEventEditsListener];
     }
     else
     {
         [self unregisterReactionsChangeListener];
+        [self unregisterEventEditsListener];
     }
 }
 
@@ -3036,6 +3046,83 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSString *messageType = event.content[@"msgtype"];
     
     return [self canPerformActionOnEvent:event] && [messageType isEqualToString:kMXMessageTypeText] && [event.eventId isEqualToString:self.mxSession.myUser.userId];
+}
+
+- (void)registerEventEditsListener
+{
+    MXWeakify(self);
+    eventEditsListener = [self.mxSession.aggregations listenToEditsUpdateInRoom:self.roomId block:^(MXEvent * _Nonnull replaceEvent) {
+        MXStrongifyAndReturnIfNil(self);
+        
+        NSString *editedEventId = replaceEvent.relatesTo.eventId;
+        
+        dispatch_async(MXKRoomDataSource.processingQueue, ^{
+            
+            // Check whether a message contains the edited event
+            id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:editedEventId];
+            if (bubbleData)
+            {
+                BOOL hasChanged = [self updateCellData:bubbleData forEditionWithReplaceEvent:replaceEvent andEventId:editedEventId];
+                
+                if (hasChanged)
+                {
+                    // Update the delegate on main thread
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        if (self.delegate)
+                        {
+                            [self.delegate dataSource:self didCellChange:nil];
+                        }
+                        
+                    });
+                }
+            }
+        });
+    }];
+}
+
+- (void)unregisterEventEditsListener
+{
+    if (receiptsListener)
+    {
+        [self.mxSession.aggregations removeListener:receiptsListener];
+        receiptsListener = nil;
+    }
+}
+
+- (BOOL)updateCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData forEditionWithReplaceEvent:(MXEvent*)replaceEvent andEventId:(NSString*)eventId
+{
+    BOOL hasChanged = NO;
+    
+    @synchronized (bubbleCellData)
+    {
+        // Retrieve the original event to edit it
+        NSArray *events = bubbleCellData.events;
+        MXEvent *editedEvent = nil;
+        
+        // Handle non live timeline in memory store (permalink). TODO: Improve non live timeline to avoid processing event twice.
+        for (MXEvent *event in events)
+        {
+            if ([event.eventId isEqualToString:eventId])
+            {
+                // Check whether the event was not already edits.
+                if (![event.unsignedData.relations.replace.eventId isEqualToString:replaceEvent.eventId])
+                {
+                    editedEvent = [event editedEventFromReplacementEvent:replaceEvent];
+                }
+                break;
+            }
+        }
+        
+        if (editedEvent)
+        {
+            [bubbleCellData updateEvent:eventId withEvent:editedEvent];
+            bubbleCellData.attributedTextMessage = nil;
+            hasChanged = YES;
+        }
+    }
+    
+    return hasChanged;
 }
 
 @end

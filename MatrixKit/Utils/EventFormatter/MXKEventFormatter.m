@@ -852,6 +852,10 @@
                 }
                 displayText = redactedInfo;
             }
+            else if (event.isEditEvent)
+            {
+                return nil;
+            }
             else
             {
                 NSString *msgtype;
