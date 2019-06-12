@@ -3058,7 +3058,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         dispatch_async(MXKRoomDataSource.processingQueue, ^{
             
-            // Check whether a message contains the redacted event
+            // Check whether a message contains the edited event
             id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:editedEventId];
             if (bubbleData)
             {
@@ -3099,8 +3099,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Retrieve the original event to edit it
         NSArray *events = bubbleCellData.events;
         MXEvent *editedEvent = nil;
-
-        // TODO: Handle non live timeline in memory store (permalink)
+        
+        // Handle non live timeline in memory store (permalink). TODO: Improve non live timeline to avoid processing event twice.
         for (MXEvent *event in events)
         {
             if ([event.eventId isEqualToString:eventId])
