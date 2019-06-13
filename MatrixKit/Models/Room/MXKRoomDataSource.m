@@ -2990,7 +2990,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
 
-    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId];
+    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount;
     if (aggregatedReactions)
     {
         if (!roomBubbleCellData.reactions)
@@ -3016,9 +3016,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return [self canPerformActionOnEvent:event];
 }
 
-- (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    [self.mxSession.aggregations sendReaction:reaction toEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
+    [self.mxSession.aggregations addReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
         NSLog(@"[MXKRoomDataSource] Fail to send reaction on eventId: %@", eventId);
         if (failure)
         {
@@ -3029,7 +3029,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)removeReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    [self.mxSession.aggregations unReactOnReaction:reaction toEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
+    [self.mxSession.aggregations removeReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
         NSLog(@"[MXKRoomDataSource] Fail to unreact on eventId: %@", eventId);
         if (failure)
         {

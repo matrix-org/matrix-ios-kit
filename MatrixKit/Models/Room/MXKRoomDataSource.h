@@ -631,7 +631,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (void)addReaction:(NSString *)reaction
          forEventId:(NSString *)eventId
-            success:(void (^)(NSString *eventId))success
+            success:(void (^)(void))success
             failure:(void (^)(NSError *error))failure;
 
 /**
