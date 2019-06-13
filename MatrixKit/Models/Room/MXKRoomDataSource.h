@@ -657,4 +657,18 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (BOOL)canEditEventWithId:(NSString*)eventId;
 
+/**
+ Replace a text in an event.
+
+ @param eventId The eventId of event to replace.
+ @param text The new message text.
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the homeserver.
+ @param failure A block object called when the operation fails.
+ */
+- (void)replaceTextMessageForEventWithId:(NSString *)eventId
+                         withTextMessage:(NSString *)text
+                                 success:(void (^)(NSString *eventId))success
+                                 failure:(void (^)(NSError *error))failure;
+
 @end

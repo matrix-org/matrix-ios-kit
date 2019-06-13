@@ -3045,7 +3045,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXEvent *event = [self eventWithEventId:eventId];
     NSString *messageType = event.content[@"msgtype"];
     
-    return [self canPerformActionOnEvent:event] && [messageType isEqualToString:kMXMessageTypeText] && [event.eventId isEqualToString:self.mxSession.myUser.userId];
+    return [self canPerformActionOnEvent:event] && [messageType isEqualToString:kMXMessageTypeText] && [event.sender isEqualToString:self.mxSession.myUser.userId];
 }
 
 - (void)registerEventEditsListener
@@ -3123,6 +3123,29 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     return hasChanged;
+}
+
+- (void)replaceTextMessageForEventWithId:(NSString*)eventId
+                         withTextMessage:(NSString *)text                           
+                                 success:(void (^)(NSString *))success
+                                 failure:(void (^)(NSError *))failure
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    
+    NSString *sanitizedText = [self sanitizedMessageText:text];
+    NSString *formattedText = [self htmlMessageFromSanitizedText:sanitizedText];
+    
+    NSString *eventBody = event.content[@"body"];
+    NSString *eventFormattedBody = event.content[@"formatted_body"];
+    
+    if (![sanitizedText isEqualToString:eventBody] && (!eventFormattedBody || ![formattedText isEqualToString:eventFormattedBody]))
+    {
+        [self.mxSession.aggregations replaceTextMessageEvent:event withTextMessage:sanitizedText formattedText:formattedText success:success failure:failure];
+    }
+    else
+    {
+        failure(nil);
+    }
 }
 
 @end
