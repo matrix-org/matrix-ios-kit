@@ -3053,32 +3053,37 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     MXWeakify(self);
     eventEditsListener = [self.mxSession.aggregations listenToEditsUpdateInRoom:self.roomId block:^(MXEvent * _Nonnull replaceEvent) {
         MXStrongifyAndReturnIfNil(self);
-        
-        NSString *editedEventId = replaceEvent.relatesTo.eventId;
-        
-        dispatch_async(MXKRoomDataSource.processingQueue, ^{
-            
-            // Check whether a message contains the edited event
-            id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:editedEventId];
-            if (bubbleData)
-            {
-                BOOL hasChanged = [self updateCellData:bubbleData forEditionWithReplaceEvent:replaceEvent andEventId:editedEventId];
-                
-                if (hasChanged)
-                {
-                    // Update the delegate on main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        if (self.delegate)
-                        {
-                            [self.delegate dataSource:self didCellChange:nil];
-                        }
-                        
-                    });
-                }
-            }
-        });
+
+        [self updateEventWithReplaceEvent:replaceEvent];
     }];
+}
+
+- (void)updateEventWithReplaceEvent:(MXEvent*)replaceEvent
+{
+    NSString *editedEventId = replaceEvent.relatesTo.eventId;
+
+    dispatch_async(MXKRoomDataSource.processingQueue, ^{
+
+        // Check whether a message contains the edited event
+        id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:editedEventId];
+        if (bubbleData)
+        {
+            BOOL hasChanged = [self updateCellData:bubbleData forEditionWithReplaceEvent:replaceEvent andEventId:editedEventId];
+
+            if (hasChanged)
+            {
+                // Update the delegate on main thread
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    if (self.delegate)
+                    {
+                        [self.delegate dataSource:self didCellChange:nil];
+                    }
+
+                });
+            }
+        }
+    });
 }
 
 - (void)unregisterEventEditsListener
@@ -3100,12 +3105,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         NSArray *events = bubbleCellData.events;
         MXEvent *editedEvent = nil;
         
-        // Handle non live timeline in memory store (permalink). TODO: Improve non live timeline to avoid processing event twice.
+        // If not already done, update edited event content in-place
+        // This is required for:
+        //   - local echo
+        //   - non live timeline in memory store (permalink)
         for (MXEvent *event in events)
         {
             if ([event.eventId isEqualToString:eventId])
             {
-                // Check whether the event was not already edits.
+                // Check whether the event was not already edited
                 if (![event.unsignedData.relations.replace.eventId isEqualToString:replaceEvent.eventId])
                 {
                     editedEvent = [event editedEventFromReplacementEvent:replaceEvent];
@@ -3116,6 +3124,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         if (editedEvent)
         {
+            if (editedEvent.sentState != replaceEvent.sentState)
+            {
+                // Relay the replace event state to the edited event so that the display
+                // of the edited will rerun the classic sending color flow.
+                // Note: this must be done on the main thread (this operation triggers
+                // the call of [self eventDidChangeSentState])
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    editedEvent.sentState = replaceEvent.sentState;
+                });
+            }
+
             [bubbleCellData updateEvent:eventId withEvent:editedEvent];
             bubbleCellData.attributedTextMessage = nil;
             hasChanged = YES;
@@ -3140,7 +3159,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     if (![sanitizedText isEqualToString:eventBody] && (!eventFormattedBody || ![formattedText isEqualToString:eventFormattedBody]))
     {
-        [self.mxSession.aggregations replaceTextMessageEvent:event withTextMessage:sanitizedText formattedText:formattedText success:success failure:failure];
+        MXEvent *replaceEventLocalEcho;
+        [self.mxSession.aggregations replaceTextMessageEvent:event withTextMessage:sanitizedText formattedText:formattedText localEcho:&replaceEventLocalEcho success:success failure:failure];
+
+        // Apply the local echo to the timeline
+        [self updateEventWithReplaceEvent:replaceEventLocalEcho];
     }
     else
     {
