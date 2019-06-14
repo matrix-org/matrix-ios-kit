@@ -1427,7 +1427,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (BOOL)canReplyToEventWithId:(NSString*)eventIdToReply
 {
     MXEvent *eventToReply = [self eventWithEventId:eventIdToReply];
-    return [self canPerformActionOnEvent:eventToReply] && [self.room canReplyToEvent:eventToReply];
+    return [self.room canReplyToEvent:eventToReply];
 }
 
 - (void)sendImage:(NSData *)imageData mimeType:(NSString *)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
@@ -3043,9 +3043,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (BOOL)canEditEventWithId:(NSString*)eventId
 {
     MXEvent *event = [self eventWithEventId:eventId];
+    BOOL isRoomMessage = event.eventType == MXEventTypeRoomMessage;
     NSString *messageType = event.content[@"msgtype"];
     
-    return [self canPerformActionOnEvent:event] && [messageType isEqualToString:kMXMessageTypeText] && [event.sender isEqualToString:self.mxSession.myUser.userId];
+    return isRoomMessage
+    && [messageType isEqualToString:kMXMessageTypeText]
+    && [event.sender isEqualToString:self.mxSession.myUser.userId];
 }
 
 - (void)registerEventEditsListener
