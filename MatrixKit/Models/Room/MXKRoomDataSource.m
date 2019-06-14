@@ -3162,11 +3162,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     if (![sanitizedText isEqualToString:eventBody] && (!eventFormattedBody || ![formattedText isEqualToString:eventFormattedBody]))
     {
-        MXEvent *replaceEventLocalEcho;
-        [self.mxSession.aggregations replaceTextMessageEvent:event withTextMessage:sanitizedText formattedText:formattedText localEcho:&replaceEventLocalEcho success:success failure:failure];
+        [self.mxSession.aggregations replaceTextMessageEvent:event withTextMessage:sanitizedText formattedText:formattedText localEchoBlock:^(MXEvent * _Nonnull replaceEventLocalEcho) {
 
-        // Apply the local echo to the timeline
-        [self updateEventWithReplaceEvent:replaceEventLocalEcho];
+            // Apply the local echo to the timeline
+            [self updateEventWithReplaceEvent:replaceEventLocalEcho];
+            
+        } success:success failure:failure];
     }
     else
     {
