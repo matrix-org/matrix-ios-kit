@@ -2004,6 +2004,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 eventIdToBubbleMap[event.eventId] = bubbleData;
                 [eventIdToBubbleMap removeObjectForKey:previousId];
+
+                // The bubble data must use the final event id too
+                [bubbleData updateEvent:previousId withEvent:event];
             }
         }
         
