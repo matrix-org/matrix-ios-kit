@@ -3,7 +3,7 @@
 "login_create_account" = "Crear cuenta:";
 "login_server_url_placeholder" = "URL (ej. https://matrix.org)";
 "login_home_server_title" = "Servidor Doméstico:";
-"login_home_server_info" = "Tu servidor doméstico almacena todos tus datos de conservación y cuenta";
+"login_home_server_info" = "Tu servidor doméstico almacena todas tus conversaciones y los datos de tu cuenta";
 "login_identity_server_title" = "Servidor de Identidad:";
 "login_identity_server_info" = "Matrix proporciona servidores de identidad para rastrear qué correos electrónicos, etc. pertenecen a qué IDs de Matrix. Actualmente solo existe https://matrix.org.";
 "login_user_id_placeholder" = "ID de Matrix (ej. @juan:matrix.org o juan)";
@@ -295,9 +295,9 @@
 "send" = "Enviar";
 "copy" = "Copiar";
 "resend" = "Reenviar";
-"redact" = "Redactar";
+"redact" = "Eliminar";
 "share" = "Compartir";
-"set_power_level" = "Nivel de autoridad";
+"set_power_level" = "Establecer nivel de permisos";
 "delete" = "Eliminar";
 "view" = "Ver";
 // actions 
@@ -375,3 +375,4 @@
 "ssl_expected_existing_expl" = "El certificado cambió de uno que era confiable a uno que no es confiable. El servidor puede haber renovado su certificado. Contacta al administrador del servidor para obtener la huella digital.";
 "ssl_only_accept" = "SOLO acepta el certificado si el administrador del servidor ha publicado una huella digital que coincide con la anterior.";
 "notice_placed_video_call" = "%@ realizó una llamada de vídeo";
+"e2e_passphrase_create" = "Crear contraseña";
