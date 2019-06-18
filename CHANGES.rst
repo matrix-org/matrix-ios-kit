@@ -12,6 +12,10 @@ Improvements:
  * MXKRoomDataSource: Add react and unreact on event methods (PR #560).
  * MXKRoomDataSource: Add can react and can edit an event method (PR #561).
  * MXKRoomDataSource: Support message editing.
+ * MXKRoomBubbleTableViewCell: Add possibility to reset attachement view bottom constraint constant to default value.
+
+Bug fix:
+ * MXKRoomViewController: Handle safe area when asking cell dimension in landscape.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
