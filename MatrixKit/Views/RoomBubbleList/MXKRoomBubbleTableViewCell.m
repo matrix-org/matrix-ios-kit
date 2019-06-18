@@ -60,6 +60,7 @@ static BOOL _disableLongPressGestureOnEvent;
 }
 
 @property (nonatomic, weak) UIView *messageTextBackgroundView;
+@property (nonatomic) double attachmentViewBottomConstraintDefaultConstant;
 
 @end
 
@@ -234,6 +235,8 @@ static BOOL _disableLongPressGestureOnEvent;
         longPressGestureRecognizer.delegate = self;
         [self.contentView addGestureRecognizer:longPressGestureRecognizer];
     }
+    
+    [self setupConstraintsConstantDefaultValues];
 }
 
 - (void)customizeTableViewCellRendering
@@ -1056,6 +1059,8 @@ static BOOL _disableLongPressGestureOnEvent;
     self.readReceiptsAlignment = ReadReceiptAlignmentLeft;
     _allTextHighlighted = NO;
     _isAutoAnimatedGif = NO;
+    
+    [self resetConstraintsConstantToDefault];
 }
 
 - (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteraction:(UITextItemInteraction)urlItemInteraction
@@ -1117,6 +1122,21 @@ API_AVAILABLE(ios(10.0)) {
     }
     
     return tappedComponent;
+}
+
+- (void)setupConstraintsConstantDefaultValues
+{
+    self.attachmentViewBottomConstraintDefaultConstant = self.attachViewBottomConstraint.constant;
+}
+
+- (void)resetAttachmentViewBottomConstraintConstant
+{
+    self.attachViewBottomConstraint.constant = self.attachmentViewBottomConstraintDefaultConstant;
+}
+
+- (void)resetConstraintsConstantToDefault
+{
+    [self resetAttachmentViewBottomConstraintConstant];
 }
 
 #pragma mark - Attachment progress handling
