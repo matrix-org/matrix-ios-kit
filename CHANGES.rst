@@ -12,6 +12,7 @@ Improvements:
  * MXKRoomDataSource: Add react and unreact on event methods (PR #560).
  * MXKRoomDataSource: Add can react and can edit an event method (PR #561).
  * MXKRoomDataSource: Support message editing.
+ * Read receipts: They are now counted by MatrixKit
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================

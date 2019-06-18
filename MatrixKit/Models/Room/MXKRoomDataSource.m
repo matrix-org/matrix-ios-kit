@@ -2424,6 +2424,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
                             }
 
+                            if (self.showBubbleReceipts || [bubbleData isKindOfClass:MXKRoomBubbleCellData.class])
+                            {
+                                MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)bubbleData;
+                                roomBubbleCellData.readReceipts[queuedEvent.event.eventId] = [self.room getEventReceipts:queuedEvent.event.eventId sorted:YES];
+                            }
+
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
                                 // The new bubble data will be inserted at first position.
