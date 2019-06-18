@@ -1771,17 +1771,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 @synchronized(self->bubbles)
                 {
-                    if (!cellData.hasNoDisplay)
-                    {
-                        cellData.readReceipts[eventId] = [self.room getEventReceipts:eventId sorted:YES];
-                    }
-                    else
-                    {
-                        // Ignore the read receipts on the events without an actual display.
-                        // TODO: Bug!
-                        // Easy to fix on live
-                        cellData.readReceipts[eventId] = nil;
-                    }
+                    [self addReadReceiptsForEvent:eventId inCellDatas:self->bubbles startingAtCellData:cellData];
                 }
             }
         }
@@ -2502,12 +2492,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
                             }
 
-                            if (self.showBubbleReceipts || [bubbleData isKindOfClass:MXKRoomBubbleCellData.class])
-                            {
-                                MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)bubbleData;
-                                roomBubbleCellData.readReceipts[queuedEvent.event.eventId] = [self.room getEventReceipts:queuedEvent.event.eventId sorted:YES];
-                            }
-
                             if (queuedEvent.direction == MXTimelineDirectionBackwards)
                             {
                                 // The new bubble data will be inserted at first position.
@@ -2750,6 +2734,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
+                for (MXKQueuedEvent *queuedEvent in self->eventsToProcessSnapshot)
+                {
+                    @autoreleasepool
+                    {
+                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId]];
+                    }
+                }
+
                 // Check if all cells of self.bubbles belongs to a single collapse series.
                 // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
                 // in order to handle next forward or backward pagination.
@@ -2861,6 +2853,76 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         }
     });
+}
+
+/**
+ Add the read receipts of an event into the timeline (which is in array of cell datas)
+
+ If the event is not displayed, read receipts will be added to a previous displayed message.
+
+ @param eventId the id of the event.
+ @param cellDatas the working array of cell datas.
+ @param cellData the original cell data the event belongs to.
+ */
+- (void)addReadReceiptsForEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas startingAtCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
+{
+    if (self.showBubbleReceipts)
+    {
+        NSArray<MXReceiptData*> *readReceipts = [self.room getEventReceipts:eventId sorted:YES];
+        if (readReceipts.count)
+        {
+            NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
+            if (cellDataIndex != NSNotFound)
+            {
+                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
+            }
+        }
+    }
+}
+
+- (void)addReadReceipts:(NSArray<MXReceiptData*> *)readReceipts forEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas atCellDataIndex:(NSInteger)cellDataIndex
+{
+    id<MXKRoomBubbleCellDataStoring> cellData = cellDatas[cellDataIndex];
+
+    if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
+
+        BOOL areReadReceiptsAssigned = NO;
+        for (MXKRoomBubbleComponent *component in roomBubbleCellData.bubbleComponents.reverseObjectEnumerator)
+        {
+            if (component.attributedTextMessage)
+            {
+                if (roomBubbleCellData.readReceipts[component.event.eventId])
+                {
+                    roomBubbleCellData.readReceipts[component.event.eventId] = [roomBubbleCellData.readReceipts[component.event.eventId] arrayByAddingObjectsFromArray:readReceipts];
+                }
+                else
+                {
+                    roomBubbleCellData.readReceipts[component.event.eventId] = readReceipts;
+                }
+                areReadReceiptsAssigned = YES;
+                break;
+            }
+
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Read receipts for an event(%@) that is not displayed", eventId);
+        }
+
+        if (!areReadReceiptsAssigned)
+        {
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Try to attach read receipts to an older message", eventId);
+
+            // Try to assign RRs to a previous cell data
+            if (cellDataIndex >= 1)
+            {
+                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex - 1];
+            }
+            else
+            {
+                NSLog(@"[MXKRoomDataSource] addReadReceipts: Fail to attach read receipts for an event(%@)", eventId);
+            }
+        }
+    }
 }
 
 
