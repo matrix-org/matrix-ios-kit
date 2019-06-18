@@ -635,6 +635,21 @@
     }
 }
 
+- (CGFloat)tableViewSafeAreaWidth
+{
+    CGFloat safeAreaInsetsWidth;
+    
+    if (@available(iOS 11.0, *))
+    {
+        // Take safe area into account
+        safeAreaInsetsWidth = self.bubblesTableView.safeAreaInsets.left + self.bubblesTableView.safeAreaInsets.right;
+    } else {
+        safeAreaInsetsWidth = 0;
+    }
+    
+    return self.bubblesTableView.frame.size.width - safeAreaInsetsWidth;
+}
+
 #pragma mark - Public API
 
 - (void)displayRoom:(MXKRoomDataSource *)dataSource
@@ -3157,7 +3172,7 @@
 {
     if (tableView == _bubblesTableView)
     {
-        return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
+        return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:self.tableViewSafeAreaWidth];
     }
     
     return 0;
