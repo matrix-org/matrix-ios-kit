@@ -1708,13 +1708,91 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState
 {
-    // `MXKRoomDataSource-inherited` instance should override this method to handle the receipt event.
-    
-    // Update the delegate
-    if (self.delegate)
-    {
-        [self.delegate dataSource:self didCellChange:nil];
-    }
+    // Do the processing on the same processing queue
+    MXWeakify(self);
+    dispatch_async(MXKRoomDataSource.processingQueue, ^{
+        MXStrongifyAndReturnIfNil(self);
+
+        // Remove the previous displayed read receipt for each user who sent a
+        // new read receipt.
+        // To implement it, we need to find the sender id of each new read receipt
+        // among the read receipts array of all events in all bubbles.
+        NSArray *readReceiptSenders = receiptEvent.readReceiptSenders;
+
+        @synchronized(self->bubbles)
+        {
+            for (MXKRoomBubbleCellData *cellData in self->bubbles)
+            {
+                NSMutableDictionary<NSString* /* eventId */, NSArray<MXReceiptData*> *> *updatedCellDataReadReceipts = [NSMutableDictionary dictionary];
+
+                for (NSString *eventId in cellData.readReceipts)
+                {
+                    for (MXReceiptData *receiptData in cellData.readReceipts[eventId])
+                    {
+                        for (NSString *senderId in readReceiptSenders)
+                        {
+                            if ([receiptData.userId isEqualToString:senderId])
+                            {
+                                if (!updatedCellDataReadReceipts[eventId])
+                                {
+                                    updatedCellDataReadReceipts[eventId] = cellData.readReceipts[eventId];
+                                }
+
+                                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"userId!=%@", receiptData.userId];
+                                updatedCellDataReadReceipts[eventId] = [updatedCellDataReadReceipts[eventId] filteredArrayUsingPredicate:predicate];
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+                // Flush found changed to the cell data
+                for (NSString *eventId in updatedCellDataReadReceipts)
+                {
+                    if (updatedCellDataReadReceipts[eventId].count)
+                    {
+                        cellData.readReceipts[eventId] = updatedCellDataReadReceipts[eventId];
+                    }
+                    else
+                    {
+                        cellData.readReceipts[eventId] = nil;
+                    }
+                }
+            }
+        }
+
+        // Update cell data we have received a read receipt for
+        NSArray *readEventIds = receiptEvent.readReceiptEventIds;
+        for (NSString* eventId in readEventIds)
+        {
+            MXKRoomBubbleCellData *cellData = [self cellDataOfEventWithEventId:eventId];
+            if (cellData)
+            {
+                @synchronized(self->bubbles)
+                {
+                    if (!cellData.hasNoDisplay)
+                    {
+                        cellData.readReceipts[eventId] = [self.room getEventReceipts:eventId sorted:YES];
+                    }
+                    else
+                    {
+                        // Ignore the read receipts on the events without an actual display.
+                        // TODO: Bug!
+                        // Easy to fix on live
+                        cellData.readReceipts[eventId] = nil;
+                    }
+                }
+            }
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+        });
+    });
 }
 
 - (void)handleUnsentMessages
