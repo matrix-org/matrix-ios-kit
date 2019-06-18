@@ -671,4 +671,13 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
                                  success:(void (^)(NSString *eventId))success
                                  failure:(void (^)(NSError *error))failure;
 
+
+/**
+ Update reactions for an event in a bubble cell data.
+
+ @param cellData The cell data to update.
+ @param eventId The id of the event.
+ */
+- (void)updateCellDataReactions:(id<MXKRoomBubbleCellDataStoring>)cellData forEventId:(NSString*)eventId;
+
 @end
