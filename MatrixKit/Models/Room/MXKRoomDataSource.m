@@ -3315,7 +3315,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
             // Apply the local echo to the timeline
             [self updateEventWithReplaceEvent:replaceEventLocalEcho];
-            
+
+            // Integrate the replace local event into the timeline like when sending a message
+            // This also allows to manage read receipt on this replace event
+            [self queueEventForProcessing:replaceEventLocalEcho withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+            [self processQueuedEvents:nil];
+
         } success:success failure:failure];
     }
     else
