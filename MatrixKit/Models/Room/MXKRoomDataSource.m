@@ -1708,13 +1708,81 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState
 {
-    // `MXKRoomDataSource-inherited` instance should override this method to handle the receipt event.
-    
-    // Update the delegate
-    if (self.delegate)
-    {
-        [self.delegate dataSource:self didCellChange:nil];
-    }
+    // Do the processing on the same processing queue
+    MXWeakify(self);
+    dispatch_async(MXKRoomDataSource.processingQueue, ^{
+        MXStrongifyAndReturnIfNil(self);
+
+        // Remove the previous displayed read receipt for each user who sent a
+        // new read receipt.
+        // To implement it, we need to find the sender id of each new read receipt
+        // among the read receipts array of all events in all bubbles.
+        NSArray *readReceiptSenders = receiptEvent.readReceiptSenders;
+
+        @synchronized(self->bubbles)
+        {
+            for (MXKRoomBubbleCellData *cellData in self->bubbles)
+            {
+                NSMutableDictionary<NSString* /* eventId */, NSArray<MXReceiptData*> *> *updatedCellDataReadReceipts = [NSMutableDictionary dictionary];
+
+                for (NSString *eventId in cellData.readReceipts)
+                {
+                    for (MXReceiptData *receiptData in cellData.readReceipts[eventId])
+                    {
+                        for (NSString *senderId in readReceiptSenders)
+                        {
+                            if ([receiptData.userId isEqualToString:senderId])
+                            {
+                                if (!updatedCellDataReadReceipts[eventId])
+                                {
+                                    updatedCellDataReadReceipts[eventId] = cellData.readReceipts[eventId];
+                                }
+
+                                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"userId!=%@", receiptData.userId];
+                                updatedCellDataReadReceipts[eventId] = [updatedCellDataReadReceipts[eventId] filteredArrayUsingPredicate:predicate];
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+                // Flush found changed to the cell data
+                for (NSString *eventId in updatedCellDataReadReceipts)
+                {
+                    if (updatedCellDataReadReceipts[eventId].count)
+                    {
+                        cellData.readReceipts[eventId] = updatedCellDataReadReceipts[eventId];
+                    }
+                    else
+                    {
+                        cellData.readReceipts[eventId] = nil;
+                    }
+                }
+            }
+        }
+
+        // Update cell data we have received a read receipt for
+        NSArray *readEventIds = receiptEvent.readReceiptEventIds;
+        for (NSString* eventId in readEventIds)
+        {
+            MXKRoomBubbleCellData *cellData = [self cellDataOfEventWithEventId:eventId];
+            if (cellData)
+            {
+                @synchronized(self->bubbles)
+                {
+                    [self addReadReceiptsForEvent:eventId inCellDatas:self->bubbles startingAtCellData:cellData];
+                }
+            }
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+        });
+    });
 }
 
 - (void)handleUnsentMessages
@@ -2666,6 +2734,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
+                for (MXKQueuedEvent *queuedEvent in self->eventsToProcessSnapshot)
+                {
+                    @autoreleasepool
+                    {
+                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId]];
+                    }
+                }
+
                 // Check if all cells of self.bubbles belongs to a single collapse series.
                 // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
                 // in order to handle next forward or backward pagination.
@@ -2777,6 +2853,95 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         }
     });
+}
+
+/**
+ Add the read receipts of an event into the timeline (which is in array of cell datas)
+
+ If the event is not displayed, read receipts will be added to a previous displayed message.
+
+ @param eventId the id of the event.
+ @param cellDatas the working array of cell datas.
+ @param cellData the original cell data the event belongs to.
+ */
+- (void)addReadReceiptsForEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas startingAtCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
+{
+    if (self.showBubbleReceipts)
+    {
+        NSArray<MXReceiptData*> *readReceipts = [self.room getEventReceipts:eventId sorted:YES];
+        if (readReceipts.count)
+        {
+            NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
+            if (cellDataIndex != NSNotFound)
+            {
+                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
+            }
+        }
+    }
+}
+
+- (void)addReadReceipts:(NSArray<MXReceiptData*> *)readReceipts forEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas atCellDataIndex:(NSInteger)cellDataIndex
+{
+    id<MXKRoomBubbleCellDataStoring> cellData = cellDatas[cellDataIndex];
+
+    if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
+
+        BOOL areReadReceiptsAssigned = NO;
+        for (MXKRoomBubbleComponent *component in roomBubbleCellData.bubbleComponents.reverseObjectEnumerator)
+        {
+            if (component.attributedTextMessage)
+            {
+                if (roomBubbleCellData.readReceipts[component.event.eventId])
+                {
+                    NSArray<MXReceiptData*> *currentReadReceipts = roomBubbleCellData.readReceipts[component.event.eventId];
+                    NSMutableArray<MXReceiptData*> *newReadReceipts = [NSMutableArray arrayWithArray:currentReadReceipts];
+                    for (MXReceiptData *readReceipt in readReceipts)
+                    {
+                        BOOL alreadyHere = NO;
+                        for (MXReceiptData *currentReadReceipt in currentReadReceipts)
+                        {
+                            if ([readReceipt.userId isEqualToString:currentReadReceipt.userId])
+                            {
+                                alreadyHere = YES;
+                                break;
+                            }
+                        }
+
+                        if (!alreadyHere)
+                        {
+                            [newReadReceipts addObject:readReceipt];
+                        }
+                    }
+                    roomBubbleCellData.readReceipts[component.event.eventId] = newReadReceipts;
+                }
+                else
+                {
+                    roomBubbleCellData.readReceipts[component.event.eventId] = readReceipts;
+                }
+                areReadReceiptsAssigned = YES;
+                break;
+            }
+
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Read receipts for an event(%@) that is not displayed", eventId);
+        }
+
+        if (!areReadReceiptsAssigned)
+        {
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Try to attach read receipts to an older message", eventId);
+
+            // Try to assign RRs to a previous cell data
+            if (cellDataIndex >= 1)
+            {
+                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex - 1];
+            }
+            else
+            {
+                NSLog(@"[MXKRoomDataSource] addReadReceipts: Fail to attach read receipts for an event(%@)", eventId);
+            }
+        }
+    }
 }
 
 
@@ -3169,7 +3334,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
             // Apply the local echo to the timeline
             [self updateEventWithReplaceEvent:replaceEventLocalEcho];
-            
+
+            // Integrate the replace local event into the timeline like when sending a message
+            // This also allows to manage read receipt on this replace event
+            [self queueEventForProcessing:replaceEventLocalEcho withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+            [self processQueuedEvents:nil];
+
         } success:success failure:failure];
     }
     else

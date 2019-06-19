@@ -151,6 +151,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                     kMXEventTypeStringRoomRedaction,
                                                                     kMXEventTypeStringRoomThirdPartyInvite,
                                                                     kMXEventTypeStringRoomRelatedGroups,
+                                                                    kMXEventTypeStringReaction,
                                                                     kMXEventTypeStringCallInvite,
                                                                     kMXEventTypeStringCallAnswer,
                                                                     kMXEventTypeStringCallHangup,
