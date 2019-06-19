@@ -80,6 +80,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
 #pragma mark - MXKRoomDataSource
 @protocol MXKRoomBubbleCellDataStoring;
+@class MXKRoomBubbleCellData;
 
 /**
  The data source for `MXKRoomViewController`.
@@ -574,6 +575,15 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  @param roomState the room state right before the event
  */
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState;
+
+/**
+ Update read receipts for an event in a bubble cell data.
+
+ @param cellData The cell data to update.
+ @param readReceipts The new read receipts.
+ @param eventId The id of the event.
+ */
+- (void)updateCellData:(MXKRoomBubbleCellData*)cellData withReadReceipts:(NSArray<MXReceiptData*>*)readReceipts forEventId:(NSString*)eventId;
 
 /**
  Overridable method to customise the way how unsent messages are managed.

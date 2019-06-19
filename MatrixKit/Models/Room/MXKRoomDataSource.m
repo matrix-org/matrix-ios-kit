@@ -1752,11 +1752,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 {
                     if (updatedCellDataReadReceipts[eventId].count)
                     {
-                        cellData.readReceipts[eventId] = updatedCellDataReadReceipts[eventId];
+                        [self updateCellData:cellData withReadReceipts:updatedCellDataReadReceipts[eventId] forEventId:eventId];
                     }
                     else
                     {
-                        cellData.readReceipts[eventId] = nil;
+                        [self updateCellData:cellData withReadReceipts:nil forEventId:eventId];
                     }
                 }
             }
@@ -1783,6 +1783,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         });
     });
+}
+
+- (void)updateCellData:(MXKRoomBubbleCellData*)cellData withReadReceipts:(NSArray<MXReceiptData*>*)readReceipts forEventId:(NSString*)eventId
+{
+    cellData.readReceipts[eventId] = readReceipts;
 }
 
 - (void)handleUnsentMessages
@@ -2914,11 +2919,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             [newReadReceipts addObject:readReceipt];
                         }
                     }
-                    roomBubbleCellData.readReceipts[component.event.eventId] = newReadReceipts;
+                    [self updateCellData:roomBubbleCellData withReadReceipts:newReadReceipts forEventId:component.event.eventId];
                 }
                 else
                 {
-                    roomBubbleCellData.readReceipts[component.event.eventId] = readReceipts;
+                    [self updateCellData:roomBubbleCellData withReadReceipts:readReceipts forEventId:component.event.eventId];
                 }
                 areReadReceiptsAssigned = YES;
                 break;
