@@ -2895,7 +2895,26 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 if (roomBubbleCellData.readReceipts[component.event.eventId])
                 {
-                    roomBubbleCellData.readReceipts[component.event.eventId] = [roomBubbleCellData.readReceipts[component.event.eventId] arrayByAddingObjectsFromArray:readReceipts];
+                    NSArray<MXReceiptData*> *currentReadReceipts = roomBubbleCellData.readReceipts[component.event.eventId];
+                    NSMutableArray<MXReceiptData*> *newReadReceipts = [NSMutableArray arrayWithArray:currentReadReceipts];
+                    for (MXReceiptData *readReceipt in readReceipts)
+                    {
+                        BOOL alreadyHere = NO;
+                        for (MXReceiptData *currentReadReceipt in currentReadReceipts)
+                        {
+                            if ([readReceipt.userId isEqualToString:currentReadReceipt.userId])
+                            {
+                                alreadyHere = YES;
+                                break;
+                            }
+                        }
+
+                        if (!alreadyHere)
+                        {
+                            [newReadReceipts addObject:readReceipt];
+                        }
+                    }
+                    roomBubbleCellData.readReceipts[component.event.eventId] = newReadReceipts;
                 }
                 else
                 {
