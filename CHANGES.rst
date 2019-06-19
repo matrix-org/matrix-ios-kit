@@ -12,8 +12,12 @@ Improvements:
  * MXKRoomDataSource: Add react and unreact on event methods (PR #560).
  * MXKRoomDataSource: Add can react and can edit an event method (PR #561).
  * MXKRoomDataSource: Support message editing.
+
+Bug fix:
+ * MXKRoomViewController: Handle safe area when asking cell dimension in landscape.
  * Read receipts: They are now counted by MatrixKit.
  * Read receipts: Attach read receipts on non displayed events to their nearest displayed events.
+ * MXKRoomBubbleTableViewCell: Add possibility to reset attachement view bottom constraint constant to default value.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
