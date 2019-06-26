@@ -3293,6 +3293,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 if (![event.unsignedData.relations.replace.eventId isEqualToString:replaceEvent.eventId])
                 {
                     editedEvent = [event editedEventFromReplacementEvent:replaceEvent];
+
+                    // Make sure the edited event is decrypted
+                    if (editedEvent.isEncrypted && !editedEvent.clearEvent)
+                    {
+                        [self.mxSession decryptEvent:editedEvent inTimeline:nil];
+                    }
                 }
                 break;
             }
