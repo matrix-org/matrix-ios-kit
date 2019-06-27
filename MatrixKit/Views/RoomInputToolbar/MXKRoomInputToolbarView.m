@@ -274,7 +274,7 @@
             NSLog(@"[MXKRoomInputToolbarView] No option is supported");
         }
     }
-    else if (button == self.rightInputToolbarButton)
+    else if (button == self.rightInputToolbarButton && self.textMessage.length)
     {
         // This forces an autocorrect event to happen when "Send" is pressed, which is necessary to accept a pending correction on send
         self.textMessage = [NSString stringWithFormat:@"%@ ", self.textMessage];
