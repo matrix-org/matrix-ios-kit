@@ -23,6 +23,7 @@
 
 #import "MXKAppSettings.h"
 
+#import "MXAggregatedReactions+MatrixKit.h"
 #import "MXEvent+MatrixKit.h"
 #import "MXRoom+Sync.h"
 #import "NSBundle+MatrixKit.h"

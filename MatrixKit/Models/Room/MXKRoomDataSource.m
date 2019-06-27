@@ -25,6 +25,7 @@
 #import "MXKRoomBubbleCellData.h"
 
 #import "MXKTools.h"
+#import "MXAggregatedReactions+MatrixKit.h"
 
 #import "MXKAppSettings.h"
 
@@ -3163,7 +3164,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
 
-    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount;
+    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount.aggregatedReactionsWithSingleEmoji;
     if (aggregatedReactions)
     {
         if (!roomBubbleCellData.reactions)
