@@ -3221,7 +3221,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSString *messageType = event.content[@"msgtype"];
     
     return isRoomMessage
-    && [messageType isEqualToString:kMXMessageTypeText]
+    && ([messageType isEqualToString:kMXMessageTypeText] || [messageType isEqualToString:kMXMessageTypeEmote])
     && [event.sender isEqualToString:self.mxSession.myUser.userId];
 }
 
