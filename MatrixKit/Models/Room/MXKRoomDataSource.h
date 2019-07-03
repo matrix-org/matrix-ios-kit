@@ -690,4 +690,12 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (void)updateCellDataReactions:(id<MXKRoomBubbleCellDataStoring>)cellData forEventId:(NSString*)eventId;
 
+/**
+ Retrieve editable text message from an event.
+
+ @param event An event.
+ @return Event text editable by user.
+ */
+- (NSString*)editableTextMessageForEvent:(MXEvent*)event;
+
 @end

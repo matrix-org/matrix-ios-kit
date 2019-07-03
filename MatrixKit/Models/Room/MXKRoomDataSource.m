@@ -3225,6 +3225,25 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     && [event.sender isEqualToString:self.mxSession.myUser.userId];
 }
 
+- (NSString*)editableTextMessageForEvent:(MXEvent*)event
+{
+    NSString *editableTextMessage;
+    
+    if (event.isReplyEvent)
+    {
+        MXReplyEventParser *replyEventParser = [MXReplyEventParser new];
+        MXReplyEventParts *replyEventParts = [replyEventParser parse:event];
+        
+        editableTextMessage = replyEventParts.bodyParts.replyText;
+    }
+    else
+    {
+        editableTextMessage = event.content[@"body"];
+    }
+    
+    return editableTextMessage;
+}
+
 - (void)registerEventEditsListener
 {
     MXWeakify(self);
