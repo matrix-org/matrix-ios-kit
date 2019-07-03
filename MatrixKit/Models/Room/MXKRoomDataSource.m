@@ -1532,7 +1532,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    NSLog(@"[MXKRoomDataSource] resendEventWithEventId. Event: %@", event);
+    NSLog(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
     
     // Check first whether the event is encrypted
     if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
