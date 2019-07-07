@@ -38,3 +38,62 @@
 "set_moderator" = "조정자로 설정";
 "set_admin" = "관리자로 설정";
 "start_chat" = "대화 시작하기";
+"abort" = "중지";
+"discard" = "";
+"start_voice_call" = "음성 통화 시작";
+"start_video_call" = "영상 통화 시작";
+"select_account" = "계정 선택";
+"capture_media" = "사진/영상 찍기";
+"invite_user" = "Matrix 사용자 초대";
+"reset_to_default" = "기본으로 되돌리기";
+"resend_message" = "메시지 다시 보내기";
+"select_all" = "모두 선택";
+"cancel_upload" = "올리지 않기";
+"cancel_download" = "받지 않기";
+"show_details" = "자세히 보기";
+"answer_call" = "통화 받기";
+"reject_call" = "통화 거부";
+"end_call" = "통화 끝내기";
+"ignore" = "무시";
+"unignore" = "무시해제";
+"notice_sticker" = "스티커";
+// room display name
+"room_displayname_empty_room" = "빈 방";
+"room_displayname_two_members" = "%@ 와 %@";
+// Settings
+"settings" = "설정";
+"settings_enable_push_notifications" = "푸시 알림 켜기";
+// Devices
+"device_details_title" = "기기 정보\n";
+"device_details_name" = "이름\n";
+"device_details_identifier" = "기기 ID\n";
+"device_details_rename_prompt_message" = "기기 이름:";
+"device_details_delete_prompt_title" = "인증";
+"device_details_delete_prompt_message" = "이 작업은 추가 인증이 필요합니다.\n계속하려면, 비밀번호를 입력해주세요.";
+// Encryption information
+"room_event_encryption_info_title" = "종단간 암호화 정보\n\n";
+"room_event_encryption_info_event_user_id" = "사용자 ID\n";
+"room_event_encryption_info_event_algorithm" = "알고리즘\n";
+"room_event_encryption_info_event_unencrypted" = "암호화되지 않음";
+"room_event_encryption_info_device" = "\n보낸 기기 정보\n";
+"room_event_encryption_info_device_unknown" = "알 수 없는 기기\n";
+"room_event_encryption_info_device_name" = "이름\n";
+"room_event_encryption_info_device_id" = "기기 ID\n";
+"room_event_encryption_info_device_verification" = "확인\n";
+"room_event_encryption_info_device_fingerprint" = "Ed25519 지문\n";
+"room_event_encryption_info_device_verified" = "확인됨";
+"room_event_encryption_info_device_not_verified" = "확인되지 않음";
+"account_link_email" = "이메일 연결";
+"account_linked_emails" = "이메일 연결함";
+// Others
+"user_id_title" = "사용자 ID:";
+"offline" = "미접속";
+"error" = "오류";
+"not_supported_yet" = "아직 지원하지 않습니다";
+"default" = "기본";
+"ssl_homeserver_url" = "홈서버 URL: %@";
+// Country picker
+"country_picker_title" = "국가를 고르세요";
+// Language picker
+"language_picker_title" = "언어를 고르세요";
+"language_picker_default_language" = "기본 (%@)";
