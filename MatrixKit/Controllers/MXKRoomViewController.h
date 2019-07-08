@@ -1,18 +1,19 @@
 /*
-Copyright 2015 OpenMarket Ltd
+ Copyright 2015 OpenMarket Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 #import <MatrixSDK/MatrixSDK.h>
 
@@ -274,11 +275,13 @@ limitations under the License.
  It fails if a join request is already running too.
  
  @param roomIdOrAlias the id or the alias of the room to join.
+ @param viaServers The server names to try and join through in addition to those that are automatically chosen. It is optional and can be nil.
  @param signUrl the signurl paramater passed with a 3PID invitation. It is optional and can be nil.
+
  @param completion the block to execute at the end of the operation.
  You may specify nil for this parameter.
  */
-- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias viaServers:(NSArray<NSString*>*)viaServers andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
 
 /**
  Update view controller appearance when the user is about to leave the displayed room.
