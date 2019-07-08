@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.9.10 (2019-05-xx)
 
 Improvements:
  * Update deployment target to iOS 9 (PR #546).
+ * Join Room: Support via parameters to better handle federation (vector-im/riot-ios/issues/2547).
  * MXKRoomBubbleTableViewCell: Enhance long press behavior (PR #546).
  * MXKRoomInputToolbarView: Add a property to enable or disable text edition (PR #547).
  * MXKWebViewViewController: Handle authentication challenge in order to support a potential certificates pinning.
@@ -18,6 +19,9 @@ Bug fix:
  * Read receipts: They are now counted by MatrixKit.
  * Read receipts: Attach read receipts on non displayed events to their nearest displayed events.
  * MXKRoomBubbleTableViewCell: Add possibility to reset attachement view bottom constraint constant to default value.
+ 
+ API break:
+  * MXKRoomViewController: Add viaServers parameter to joinRoomWithRoomIdOrAlias.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
