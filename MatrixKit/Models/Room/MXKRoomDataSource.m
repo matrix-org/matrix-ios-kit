@@ -3164,7 +3164,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
 
-    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount.aggregatedReactionsWithSingleEmoji;
+    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount;
+    
+    if (self.showOnlySingleEmojiReactions)
+    {
+        aggregatedReactions = aggregatedReactions.aggregatedReactionsWithSingleEmoji;
+    }
+    
     if (aggregatedReactions)
     {
         if (!roomBubbleCellData.reactions)
