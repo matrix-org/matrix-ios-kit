@@ -806,12 +806,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             
             void (^failure)(NSError *) = ^(NSError *error) {
                 NSLog(@"[MXKContactManager] updateMatrixIDsForLocalContact failed");
-                MXStrongifyAndReturnIfNil(self);
-                
-                // try later
-                dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [self updateMatrixIDsForLocalContact:contact];
-                });
             };
             
             if (self.discoverUsersBoundTo3PIDsBlock)
@@ -926,12 +920,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             
             void (^failure)(NSError *) = ^(NSError *error) {
                 NSLog(@"[MXKContactManager] updateMatrixIDsForAllLocalContacts failed");
-                MXStrongifyAndReturnIfNil(self);
-                
-                // try later
-                dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [self updateMatrixIDsForAllLocalContacts];
-                });
             };
             
             if (self.discoverUsersBoundTo3PIDsBlock)
