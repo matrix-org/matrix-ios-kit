@@ -25,10 +25,7 @@
     NSMutableArray *reactions = [NSMutableArray arrayWithCapacity:self.reactions.count];
     for (MXReactionCount *reactionCount in self.reactions)
     {
-        if ([MXKTools isSingleEmojiString:reactionCount.reaction])
-        {
-            [reactions addObject:reactionCount];
-        }
+        [reactions addObject:reactionCount];
     }
 
     MXAggregatedReactions *aggregatedReactionsWithSingleEmoji;
