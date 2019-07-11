@@ -54,10 +54,15 @@
 		71352D6A1C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D681C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib */; };
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
-		79FA5AB121247287B85FA151 /* libPods-MatrixKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */; };
+		8ED6A60960BB5870EAD0D728 /* Pods_MatrixKit_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1505350C98235270BC59A8F3 /* Pods_MatrixKit_MatrixKitSample.framework */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
-		ACD9DAA6B4DCFC7E33E12A97 /* libPods-MatrixKitSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */; };
+		AB9875BBBF7ED80D590357E4 /* Pods_MatrixKit_MatrixKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2863FD546B4229BADA9821DC /* Pods_MatrixKit_MatrixKitTests.framework */; };
 		B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */; };
+		B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */; };
+		B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10322D62A4800570CA4 /* MXKUTITests.swift */; };
+		B125D10722D62AB900570CA4 /* Text.txt in Resources */ = {isa = PBXBuildFile; fileRef = B125D10622D62AB900570CA4 /* Text.txt */; };
+		B125D10A22D63C1600570CA4 /* MXKDocumentPickerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10822D6396700570CA4 /* MXKDocumentPickerPresenter.swift */; };
+		B125D10C22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10B22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift */; };
 		B12C470C20BECAF8004FBF96 /* MXKErrorViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470920BECAF7004FBF96 /* MXKErrorViewModel.m */; };
 		B12C470D20BECAF8004FBF96 /* MXKErrorAlertPresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470A20BECAF7004FBF96 /* MXKErrorAlertPresentation.m */; };
 		B12C471020BED312004FBF96 /* MXKErrorPresentableBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */; };
@@ -249,6 +254,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		1505350C98235270BC59A8F3 /* Pods_MatrixKit_MatrixKitSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKit_MatrixKitSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
+		2863FD546B4229BADA9821DC /* Pods_MatrixKit_MatrixKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKit_MatrixKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3203F26C1D2E9CAE0021F170 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3205ED741E96905A003D65FA /* MXKDirectoryServerCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKDirectoryServerCellData.h; sourceTree = "<group>"; };
@@ -308,7 +318,7 @@
 		32BDC981211AD6D10064AF51 /* AUTHORS.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS.rst; sourceTree = "<group>"; };
 		32BDC982211AD6D10064AF51 /* CHANGES.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGES.rst; sourceTree = "<group>"; };
 		32BDC983211AD6D10064AF51 /* README.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.rst; sourceTree = "<group>"; };
-		32BDC984211AD6D10064AF51 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		32BDC984211AD6D10064AF51 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		32C3ABB822C4F23B00CA0449 /* MXAggregatedReactions+MatrixKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXAggregatedReactions+MatrixKit.h"; sourceTree = "<group>"; };
 		32C3ABB922C4F23B00CA0449 /* MXAggregatedReactions+MatrixKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MXAggregatedReactions+MatrixKit.m"; sourceTree = "<group>"; };
 		32CEE2201AB1E37600F7C74D /* MXKRecentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRecentListViewController.h; sourceTree = "<group>"; };
@@ -328,7 +338,6 @@
 		32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionKeysExportView.m; sourceTree = "<group>"; };
 		392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptedAttachmentsTest.m; sourceTree = "<group>"; };
-		665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		71352D521C0ED240001D50B0 /* MXKRoomSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomSettingsViewController.h; sourceTree = "<group>"; };
 		71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomSettingsViewController.m; sourceTree = "<group>"; };
 		71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomSettingsViewController.xib; sourceTree = "<group>"; };
@@ -342,9 +351,15 @@
 		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSoundPlayer.h; sourceTree = "<group>"; };
 		92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSoundPlayer.m; sourceTree = "<group>"; };
-		9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MatrixKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B11D3C7C20C032BD00938BCB /* MXKBarButtonItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKBarButtonItem.h; sourceTree = "<group>"; };
 		B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKBarButtonItem.m; sourceTree = "<group>"; };
+		B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKUTI.swift; sourceTree = "<group>"; };
+		B125D0FE22D5D32500570CA4 /* MatrixKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MatrixKit-Bridging-Header.h"; sourceTree = "<group>"; };
+		B125D0FF22D61F1D00570CA4 /* MatrixKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MatrixKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		B125D10322D62A4800570CA4 /* MXKUTITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MXKUTITests.swift; sourceTree = "<group>"; };
+		B125D10622D62AB900570CA4 /* Text.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Text.txt; sourceTree = "<group>"; };
+		B125D10822D6396700570CA4 /* MXKDocumentPickerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKDocumentPickerPresenter.swift; sourceTree = "<group>"; };
+		B125D10B22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKVideoThumbnailGenerator.swift; sourceTree = "<group>"; };
 		B12C470620BECAF7004FBF96 /* MXKErrorPresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKErrorPresentation.h; sourceTree = "<group>"; };
 		B12C470720BECAF7004FBF96 /* MXKErrorViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKErrorViewModel.h; sourceTree = "<group>"; };
 		B12C470820BECAF7004FBF96 /* MXKErrorAlertPresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKErrorAlertPresentation.h; sourceTree = "<group>"; };
@@ -359,6 +374,7 @@
 		B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKSendReplyEventStringLocalizations.m; sourceTree = "<group>"; };
 		B1668ABE21072F93002B14F1 /* MXKSlashCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSlashCommands.h; sourceTree = "<group>"; };
 		B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSlashCommands.m; sourceTree = "<group>"; };
+		B916E03315461FC06BE01B42 /* Pods-MatrixKit-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		CE14CA621E80122600E329A3 /* MXKAttachmentAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentAnimator.h; sourceTree = "<group>"; };
@@ -652,7 +668,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				79FA5AB121247287B85FA151 /* libPods-MatrixKitTests.a in Frameworks */,
+				AB9875BBBF7ED80D590357E4 /* Pods_MatrixKit_MatrixKitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,7 +676,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACD9DAA6B4DCFC7E33E12A97 /* libPods-MatrixKitSample.a in Frameworks */,
+				8ED6A60960BB5870EAD0D728 /* Pods_MatrixKit_MatrixKitSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,9 +686,11 @@
 		3203F2691D2E9CAE0021F170 /* MatrixKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				B125D10222D62A4800570CA4 /* UTI */,
 				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
 				3203F26C1D2E9CAE0021F170 /* Info.plist */,
 				550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */,
+				B125D0FF22D61F1D00570CA4 /* MatrixKitTests-Bridging-Header.h */,
 			);
 			path = MatrixKitTests;
 			sourceTree = "<group>";
@@ -732,6 +750,7 @@
 				3219CBBC1AA6FB1C0027D7E2 /* Models */,
 				32CEE21C1AB1A57E00F7C74D /* Utils */,
 				3219CBBD1AA6FB1C0027D7E2 /* Views */,
+				B125D0FE22D5D32500570CA4 /* MatrixKit-Bridging-Header.h */,
 				3219CBC11AA6FB6B0027D7E2 /* MatrixKit.h */,
 			);
 			path = MatrixKit;
@@ -967,6 +986,9 @@
 				F0F535BC1ACD748E00B603F8 /* MXKResponderRageShaking.h */,
 				92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */,
 				92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */,
+				B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */,
+				B125D10822D6396700570CA4 /* MXKDocumentPickerPresenter.swift */,
+				B125D10B22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1021,6 +1043,10 @@
 				392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */,
 				BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */,
 				8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */,
+				1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */,
+				B916E03315461FC06BE01B42 /* Pods-MatrixKit-MatrixKitSample.release.xcconfig */,
+				1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */,
+				0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1032,6 +1058,23 @@
 				B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */,
 			);
 			path = BarButtonItem;
+			sourceTree = "<group>";
+		};
+		B125D10222D62A4800570CA4 /* UTI */ = {
+			isa = PBXGroup;
+			children = (
+				B125D10322D62A4800570CA4 /* MXKUTITests.swift */,
+				B125D10422D62A4800570CA4 /* Files */,
+			);
+			path = UTI;
+			sourceTree = "<group>";
+		};
+		B125D10422D62A4800570CA4 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				B125D10622D62AB900570CA4 /* Text.txt */,
+			);
+			path = Files;
 			sourceTree = "<group>";
 		};
 		B12C470520BECAF7004FBF96 /* ErrorPresentation */ = {
@@ -1052,8 +1095,8 @@
 		CC4E6F6D4101B9B731F29FB7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				665BACA3D253B4407B1C4FD7 /* libPods-MatrixKitSample.a */,
-				9F0ED791C0728768E176BE57 /* libPods-MatrixKitTests.a */,
+				1505350C98235270BC59A8F3 /* Pods_MatrixKit_MatrixKitSample.framework */,
+				2863FD546B4229BADA9821DC /* Pods_MatrixKit_MatrixKitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1448,6 +1491,7 @@
 				3203F2641D2E9CAE0021F170 /* Sources */,
 				3203F2651D2E9CAE0021F170 /* Frameworks */,
 				3203F2661D2E9CAE0021F170 /* Resources */,
+				7BD5A21B95A7AC019AB69341 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1467,7 +1511,7 @@
 				3219CB641AA6F2780027D7E2 /* Sources */,
 				3219CB651AA6F2780027D7E2 /* Frameworks */,
 				3219CB661AA6F2780027D7E2 /* Resources */,
-				823C4FED456AD37C7A8B72D0 /* [CP] Copy Pods Resources */,
+				377905BE14B160E84117ED22 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1490,12 +1534,14 @@
 					3203F2671D2E9CAE0021F170 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 7J4U792NQT;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3219CB671AA6F2780027D7E2;
 					};
 					3219CB671AA6F2780027D7E2 = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = 7J4U792NQT;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1524,6 +1570,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B125D10722D62AB900570CA4 /* Text.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1621,41 +1668,99 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MatrixKitTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MatrixKit-MatrixKitTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		823C4FED456AD37C7A8B72D0 /* [CP] Copy Pods Resources */ = {
+		377905BE14B160E84117ED22 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample-resources.sh",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Controllers/JSQMessagesViewController.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesCollectionViewCellIncoming.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesCollectionViewCellOutgoing.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesLoadEarlierHeaderView.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesToolbarContentView.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesTypingIndicatorFooterView.xib",
+				"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/DTCoreText/DTCoreText.framework",
+				"${BUILT_PRODUCTS_DIR}/DTFoundation/DTFoundation.framework",
+				"${BUILT_PRODUCTS_DIR}/GZIP/GZIP.framework",
+				"${BUILT_PRODUCTS_DIR}/HPGrowingTextView/HPGrowingTextView.framework",
+				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
+				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
+				"${BUILT_PRODUCTS_DIR}/MatrixSDK/MatrixSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/OLMKit/OLMKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftUTI/SwiftUTI.framework",
+				"${BUILT_PRODUCTS_DIR}/cmark/cmark.framework",
+				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
+				"${BUILT_PRODUCTS_DIR}/libbase58/libbase58.framework",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesAssets.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesViewController.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesCollectionViewCellIncoming.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesCollectionViewCellOutgoing.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesLoadEarlierHeaderView.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesToolbarContentView.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSQMessagesTypingIndicatorFooterView.nib",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTCoreText.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTFoundation.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GZIP.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HPGrowingTextView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MatrixSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OLMKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftUTI.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/cmark.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libbase58.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7BD5A21B95A7AC019AB69341 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/DTCoreText/DTCoreText.framework",
+				"${BUILT_PRODUCTS_DIR}/DTFoundation/DTFoundation.framework",
+				"${BUILT_PRODUCTS_DIR}/GZIP/GZIP.framework",
+				"${BUILT_PRODUCTS_DIR}/HPGrowingTextView/HPGrowingTextView.framework",
+				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
+				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
+				"${BUILT_PRODUCTS_DIR}/MatrixSDK/MatrixSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/OLMKit/OLMKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftUTI/SwiftUTI.framework",
+				"${BUILT_PRODUCTS_DIR}/cmark/cmark.framework",
+				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
+				"${BUILT_PRODUCTS_DIR}/libbase58/libbase58.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTCoreText.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTFoundation.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GZIP.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HPGrowingTextView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MatrixSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OLMKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftUTI.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/cmark.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libbase58.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */ = {
@@ -1669,7 +1774,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MatrixKitSample-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MatrixKit-MatrixKitSample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1685,6 +1790,7 @@
 			files = (
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
+				B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
 				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
 			);
@@ -1703,6 +1809,7 @@
 				3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */,
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
 				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
+				B125D10C22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift in Sources */,
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
 				F079333E1F38A6A600F04D4C /* MXKView.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
@@ -1793,6 +1900,7 @@
 				F06E76951AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.m in Sources */,
 				F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */,
 				F0DD7D851B7B3CF100C4BE02 /* MXKRoomCreationInputs.m in Sources */,
+				B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */,
 				F094D15E1ACC8B9300994F67 /* MXKRoomInputToolbarViewWithSimpleTextView.m in Sources */,
 				32185B2D1F20AFEB00752141 /* MXKLanguagePickerViewController.m in Sources */,
 				F05927AE1FD92E36009F2A68 /* MXKGroupTableViewCell.m in Sources */,
@@ -1818,6 +1926,7 @@
 				F00BB44A1AB840B300AE388E /* MXKRoomInputToolbarViewWithHPGrowingText.m in Sources */,
 				32CEE22B1AB1EC9B00F7C74D /* MXKSessionRecentsDataSource.m in Sources */,
 				71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */,
+				B125D10A22D63C1600570CA4 /* MXKDocumentPickerPresenter.swift in Sources */,
 				F095E5121B25899F009606CE /* MXKSectionedContacts.m in Sources */,
 				F06E76881AF0FEBC00980E5A /* MXKAccount.m in Sources */,
 				3235CD801C33C6640084EA40 /* MXKSearchTableViewCell.m in Sources */,
@@ -1879,40 +1988,49 @@
 /* Begin XCBuildConfiguration section */
 		3203F2701D2E9CAE0021F170 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */;
+			baseConfigurationReference = 1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = MatrixKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.matrix.MatrixKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MatrixKitTests/MatrixKitTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatrixKitSample.app/MatrixKitSample";
 			};
 			name = Debug;
 		};
 		3203F2711D2E9CAE0021F170 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */;
+			baseConfigurationReference = 0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = MatrixKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.matrix.MatrixKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MatrixKitTests/MatrixKitTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatrixKitSample.app/MatrixKitSample";
 			};
 			name = Release;
@@ -1946,6 +2064,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2000,6 +2119,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2020,10 +2140,11 @@
 		};
 		3219CB8F1AA6F2790027D7E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */;
+			baseConfigurationReference = 1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				INFOPLIST_FILE = "$(SRCROOT)/Samples/MatrixKitSample/Info.plist";
@@ -2031,15 +2152,19 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.matrix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MatrixKit/MatrixKit-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		3219CB901AA6F2790027D7E2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */;
+			baseConfigurationReference = B916E03315461FC06BE01B42 /* Pods-MatrixKit-MatrixKitSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				INFOPLIST_FILE = "$(SRCROOT)/Samples/MatrixKitSample/Info.plist";
@@ -2049,6 +2174,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "MatrixKit/MatrixKit-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
