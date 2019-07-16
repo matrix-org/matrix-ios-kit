@@ -91,7 +91,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     id reactionsChangeListener;
     
     /**
-     The listener to reactions changed in the room.
+     The listener to edits in the room.
      */
     id eventEditsListener;
     
@@ -3290,10 +3290,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)unregisterEventEditsListener
 {
-    if (receiptsListener)
+    if (eventEditsListener)
     {
-        [self.mxSession.aggregations removeListener:receiptsListener];
-        receiptsListener = nil;
+        [self.mxSession.aggregations removeListener:eventEditsListener];
+        eventEditsListener = nil;
     }
 }
 
