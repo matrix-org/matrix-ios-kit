@@ -453,7 +453,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         else
         {
             NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Error: Cannot enable Push");
-            failure(nil);
+
+            NSError *error = [NSError errorWithDomain:kMXKAccountErrorDomain
+                                                 code:0
+                                             userInfo:@{
+                                                        NSLocalizedDescriptionKey:
+                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                        }];
+            failure (error);
         }
     }
     else if (_hasPusherForPushKitNotifications)
