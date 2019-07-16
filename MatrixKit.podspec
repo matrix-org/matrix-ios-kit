@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
   s.dependency 'DTCoreText', '~> 1.6.21'
   s.dependency 'cmark', '~> 0.24.1'
-  s.dependency 'SwiftUTI', '~> 1.0.7'
+  s.dependency 'SwiftUTI', '~> 1.0.6'
 
   s.default_subspec = 'Core'
 
