@@ -19,9 +19,11 @@ Bug fix:
  * Read receipts: They are now counted by MatrixKit.
  * Read receipts: Attach read receipts on non displayed events to their nearest displayed events.
  * MXKRoomBubbleTableViewCell: Add possibility to reset attachement view bottom constraint constant to default value.
+ * Push notifications are spontaneously disabling themselves (vector-im/riot-ios/issues/2348).
  
  API break:
   * MXKRoomViewController: Add viaServers parameter to joinRoomWithRoomIdOrAlias.
+  * MXKAccount: make setEnablePushKitNotifications async.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================

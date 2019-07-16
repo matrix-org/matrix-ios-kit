@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -154,15 +155,29 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic) BOOL enablePushNotifications;
 
 /**
- The Push notification activity (based on PushKit) for this account. YES when Push is turned on (locally available and synced with server).
+ The Push notification activity (based on PushKit) for this account.
+ YES when Push is turned on (locally available and enabled homeserver side).
  */
 @property (nonatomic, readonly) BOOL isPushKitNotificationActive;
 
 /**
- Enable Push notification based on Pushkit. Set YES to sync the device with the server.
- NO by default.
+ Enable Push notification based on PushKit.
+
+ This method creates or removes a pusher on the homeserver.
+
+ @param enablePushKitNotifications YES to enable it.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
  */
-@property (nonatomic) BOOL enablePushKitNotifications;
+- (void)setEnablePushKitNotifications:(BOOL)enablePushKitNotifications
+                              success:(void (^)(void))success
+                              failure:(void (^)(NSError *))failure;
+
+/**
+ Flag to indicate that a PushKit pusher has been set on the homeserver for this device.
+ */
+@property (nonatomic, readonly) BOOL enablePushKitNotifications;
+
 
 /**
  Enable In-App notifications based on Remote notifications rules.
