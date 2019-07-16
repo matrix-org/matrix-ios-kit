@@ -277,12 +277,6 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 - (void)deletePusher;
 
 /**
- Delete the potential pusher used to receive push notifications via PushKit, without changing 'enablePushKitNotifications' property.
- Used to delete existing pusher related to out-of-date Push device token.
- */
-- (void)deletePushKitPusher;
-
-/**
  Pause the current matrix session.
  
  @warning: This matrix session is paused without using background task if no background mode handler

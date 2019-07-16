@@ -463,7 +463,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
                     [accountsWithPushKitPusher addObject:account];
                 }
 
-                [account deletePushKitPusher];
+                [account setEnablePushKitNotifications:NO success:nil failure:nil];
             }
             
             // Update the token

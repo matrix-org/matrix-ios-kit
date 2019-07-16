@@ -498,7 +498,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         if (_disabled)
         {
             [self deletePusher];
-            [self deletePushKitPusher];
+            [self setEnablePushKitNotifications:NO success:nil failure:nil];
             
             // Close session (keep the storage).
             [self closeSession:NO];
@@ -858,7 +858,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logout:(void (^)(void))completion 
 {
     [self deletePusher];
-    [self deletePushKitPusher];
+    [self setEnablePushKitNotifications:NO success:nil failure:nil];
     
     MXHTTPOperation *operation = [mxSession logout:^{
         
@@ -887,7 +887,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logoutLocally:(void (^)(void))completion
 {
     [self deletePusher];
-    [self deletePushKitPusher];
+    [self setEnablePushKitNotifications:NO success:nil failure:nil];
     
     [mxSession enableCrypto:NO success:^{
         [self closeSession:YES];
@@ -926,14 +926,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     if (self.pushNotificationServiceIsActive)
     {
         [self enableAPNSPusher:NO success:nil failure:nil];
-    }
-}
-
-- (void)deletePushKitPusher
-{
-    if (self.isPushKitNotificationActive)
-    {
-        [self enablePushKitPusher:NO success:nil failure:nil];
     }
 }
 
