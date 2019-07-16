@@ -23,7 +23,8 @@ Bug fix:
  
  API break:
   * MXKRoomViewController: Add viaServers parameter to joinRoomWithRoomIdOrAlias.
-  * MXKAccount: make setEnablePushKitNotifications async.
+  * MXKAccount: Make setEnablePushKitNotifications async.
+  * MXKAccount: Rename enablePushKitNotifications to hasPusherForPushKitNotifications.
 
 Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================

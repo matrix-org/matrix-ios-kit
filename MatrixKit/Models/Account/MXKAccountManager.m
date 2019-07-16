@@ -458,7 +458,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // Delete the pushers related to the old token
             for (MXKAccount *account in activeAccounts)
             {
-                if (account.enablePushKitNotifications)
+                if (account.hasPusherForPushKitNotifications)
                 {
                     [accountsWithPushKitPusher addObject:account];
                 }

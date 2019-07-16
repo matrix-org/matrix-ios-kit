@@ -176,7 +176,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 /**
  Flag to indicate that a PushKit pusher has been set on the homeserver for this device.
  */
-@property (nonatomic, readonly) BOOL enablePushKitNotifications;
+@property (nonatomic, readonly) BOOL hasPusherForPushKitNotifications;
 
 
 /**
