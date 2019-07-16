@@ -206,6 +206,7 @@
 "account_error_email_wrong_description" = "This doesn't appear to be a valid email address";
 "account_error_msisdn_wrong_title" = "Invalid Phone Number";
 "account_error_msisdn_wrong_description" = "This doesn't appear to be a valid phone number";
+"account_error_push_not_allowed" = "Notifications not allowed";
 
 // Room creation
 "room_creation_name_title" = "Room name:";

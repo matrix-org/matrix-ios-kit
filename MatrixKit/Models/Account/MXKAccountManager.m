@@ -2,7 +2,8 @@
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
- 
+ Copyright 2019 The Matrix.org Foundation C.I.C
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -306,7 +307,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn off the Apns flag for all accounts if any
             for (MXKAccount *account in mxAccounts)
             {
-                account.enablePushNotifications = NO;
+                [account enablePushNotifications:NO success:nil failure:nil];
             }
         }
         
@@ -325,17 +326,24 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn on the Apns flag for all accounts, when the Apns registration succeeds for the first time
             for (MXKAccount *account in activeAccounts)
             {
-                account.enablePushNotifications = YES;
+                [account enablePushNotifications:YES success:nil failure:nil];
             }
         }
         else if (![oldToken isEqualToData:apnsDeviceToken])
         {
             NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: update APNS device token");
-            
+
+            NSMutableArray<MXKAccount*> *accountsWithAPNSPusher = [NSMutableArray new];
+
             // Delete the pushers related to the old token
             for (MXKAccount *account in activeAccounts)
             {
-                [account deletePusher];
+                if (account.hasPusherForPushNotifications)
+                {
+                    [accountsWithAPNSPusher addObject:account];
+                }
+
+                [account enablePushNotifications:NO success:nil failure:nil];
             }
             
             // Update the token
@@ -344,10 +352,14 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // Refresh pushers with the new token.
             for (MXKAccount *account in activeAccounts)
             {
-                if (account.pushNotificationServiceIsActive)
+                if ([accountsWithAPNSPusher containsObject:account])
                 {
                     NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: Resync APNS for %@ account", account.mxCredentials.userId);
-                    account.enablePushNotifications = YES;
+                    [account enablePushNotifications:YES success:nil failure:nil];
+                }
+                else
+                {
+                    NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: hasPusherForPushNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
                 }
             }
         }
@@ -417,7 +429,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn off the Push flag for all accounts if any
             for (MXKAccount *account in mxAccounts)
             {
-                account.enablePushKitNotifications = NO;
+                [account enablePushKitNotifications:NO success:nil failure:nil];
             }
         }
         
@@ -445,17 +457,24 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn on the Push flag for all accounts
             for (MXKAccount *account in activeAccounts)
             {
-                account.enablePushKitNotifications = YES;
+                [account enablePushKitNotifications:YES success:nil failure:nil];
             }
         }
         else if (![oldToken isEqualToData:pushDeviceToken])
         {
             NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Update Push device token");
-            
+
+            NSMutableArray<MXKAccount*> *accountsWithPushKitPusher = [NSMutableArray new];
+
             // Delete the pushers related to the old token
             for (MXKAccount *account in activeAccounts)
             {
-                [account deletePushKitPusher];
+                if (account.hasPusherForPushKitNotifications)
+                {
+                    [accountsWithPushKitPusher addObject:account];
+                }
+
+                [account enablePushKitNotifications:NO success:nil failure:nil];
             }
             
             // Update the token
@@ -472,14 +491,14 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // Refresh pushers with the new token.
             for (MXKAccount *account in activeAccounts)
             {
-                if (account.isPushKitNotificationActive)
+                if ([accountsWithPushKitPusher containsObject:account])
                 {
                     NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Resync Push for %@ account", account.mxCredentials.userId);
-                    account.enablePushKitNotifications = YES;
+                    [account enablePushKitNotifications:YES success:nil failure:nil];
                 }
                 else
                 {
-                    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: isPushKitNotificationActive = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
+                    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: hasPusherForPushKitNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
                 }
             }
         }

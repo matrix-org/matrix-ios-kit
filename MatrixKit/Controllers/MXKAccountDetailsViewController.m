@@ -889,7 +889,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     }
     else if (sender == apnsNotificationsSwitch)
     {
-        _mxAccount.enablePushNotifications = apnsNotificationsSwitch.on;
+        [_mxAccount enablePushNotifications:apnsNotificationsSwitch.on success:nil failure:nil];
         apnsNotificationsSwitch.enabled = NO;
     }
     else if (sender == inAppNotificationsSwitch)

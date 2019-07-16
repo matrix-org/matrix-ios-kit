@@ -2,6 +2,7 @@
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -188,8 +189,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             _pushGatewayURL = [coder decodeObjectForKey:@"pushgatewayurl"];
         }
         
-        _enablePushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
-        _enablePushKitNotifications = [coder decodeBoolForKey:@"enablePushKitNotifications"];
+        _hasPusherForPushNotifications = [coder decodeBoolForKey:@"_enablePushNotifications"];
+        _hasPusherForPushKitNotifications = [coder decodeBoolForKey:@"enablePushKitNotifications"];
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
@@ -246,8 +247,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [coder encodeObject:_pushGatewayURL forKey:@"pushgatewayurl"];
     }
     
-    [coder encodeBool:_enablePushNotifications forKey:@"_enablePushNotifications"];
-    [coder encodeBool:_enablePushKitNotifications forKey:@"enablePushKitNotifications"];
+    [coder encodeBool:_hasPusherForPushNotifications forKey:@"_enablePushNotifications"];
+    [coder encodeBool:_hasPusherForPushKitNotifications forKey:@"enablePushKitNotifications"];
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
     [coder encodeBool:_disabled forKey:@"disabled"];
@@ -375,78 +376,148 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (BOOL)pushNotificationServiceIsActive
 {
-    BOOL pushNotificationServiceIsActive = ([[MXKAccountManager sharedManager] isAPNSAvailable] && _enablePushNotifications && mxSession);
+    BOOL pushNotificationServiceIsActive = ([[MXKAccountManager sharedManager] isAPNSAvailable] && _hasPusherForPushNotifications && mxSession);
     NSLog(@"[MXKAccount][Push] pushNotificationServiceIsActive: %@", @(pushNotificationServiceIsActive));
 
     return pushNotificationServiceIsActive;
 }
 
-- (void)setEnablePushNotifications:(BOOL)enablePushNotifications
+- (void)enablePushNotifications:(BOOL)enable
+                        success:(void (^)(void))success
+                        failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] setEnablePushNotifications: %@", @(enablePushNotifications));
+    NSLog(@"[MXKAccount][Push] enablePushNotifications: %@", @(enable));
 
-    if (enablePushNotifications)
+    if (enable)
     {
-        _enablePushNotifications = YES;
-        
-        // Archive updated field
-        [[MXKAccountManager sharedManager] saveAccounts];
-        
-        [self refreshAPNSPusher];
+        if ([[MXKAccountManager sharedManager] isPushAvailable])
+        {
+            NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push for %@ account", self.mxCredentials.userId);
+
+            // Create/restore the pusher
+            [self enableAPNSPusher:YES success:^{
+
+                NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push: Success");
+                if (success)
+                {
+                    success();
+                }
+            } failure:^(NSError *error) {
+
+                NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push: Error: %@", error);
+                if (failure)
+                {
+                    failure(error);
+                }
+            }];
+        }
+        else
+        {
+            NSLog(@"[MXKAccount][Push] enablePushNotifications: Error: Cannot enable Push");
+
+            NSError *error = [NSError errorWithDomain:kMXKAccountErrorDomain
+                                                 code:0
+                                             userInfo:@{
+                                                        NSLocalizedDescriptionKey:
+                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                        }];
+            failure (error);
+        }
     }
-    else if (_enablePushNotifications)
+    else if (_hasPusherForPushNotifications)
     {
-        NSLog(@"[MXKAccount] Disable APNS for %@ account", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] enablePushNotifications: Disable APNS for %@ account", self.mxCredentials.userId);
         
         // Delete the pusher, report the new value only on success.
         [self enableAPNSPusher:NO
                        success:^{
-                           
-                           self->_enablePushNotifications = NO;
-                           
-                           // Archive updated field
-                           [[MXKAccountManager sharedManager] saveAccounts];
-                           
-                       }
-                       failure:nil];
+
+                           NSLog(@"[MXKAccount][Push] enablePushNotifications: Disable Push: Success");
+                           if (success)
+                           {
+                               success();
+                           }
+                       } failure:^(NSError *error) {
+
+                           NSLog(@"[MXKAccount][Push] enablePushNotifications: Disable Push: Error: %@", error);
+                           if (failure)
+                           {
+                               failure(error);
+                           }
+                       }];
     }
 }
 
 - (BOOL)isPushKitNotificationActive
 {
-    BOOL isPushKitNotificationActive = ([[MXKAccountManager sharedManager] isPushAvailable] && _enablePushKitNotifications && mxSession);
+    BOOL isPushKitNotificationActive = ([[MXKAccountManager sharedManager] isPushAvailable] && _hasPusherForPushKitNotifications && mxSession);
     NSLog(@"[MXKAccount][Push] isPushKitNotificationActive: %@", @(isPushKitNotificationActive));
 
     return isPushKitNotificationActive;
 }
 
-- (void)setEnablePushKitNotifications:(BOOL)enablePushKitNotifications
+- (void)enablePushKitNotifications:(BOOL)enable
+                           success:(void (^)(void))success
+                           failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: %@", @(enablePushKitNotifications));
+    NSLog(@"[MXKAccount][Push] enablePushKitNotifications: %@", @(enable));
 
-    if (enablePushKitNotifications)
+    if (enable)
     {
-        _enablePushKitNotifications = YES;
-        
-        // Archive updated field
-        [[MXKAccountManager sharedManager] saveAccounts];
-        
-        [self refreshPushKitPusher];
+        if ([[MXKAccountManager sharedManager] isPushAvailable])
+        {
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push for %@ account", self.mxCredentials.userId);
+
+            // Create/restore the pusher
+            [self enablePushKitPusher:YES success:^{
+
+                NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Success");
+                if (success)
+                {
+                    success();
+                }
+            } failure:^(NSError *error) {
+
+                NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Error: %@", error);
+                if (failure)
+                {
+                    failure(error);
+                }
+            }];
+        }
+        else
+        {
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Error: Cannot enable Push");
+
+            NSError *error = [NSError errorWithDomain:kMXKAccountErrorDomain
+                                                 code:0
+                                             userInfo:@{
+                                                        NSLocalizedDescriptionKey:
+                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                        }];
+            failure (error);
+        }
     }
-    else if (_enablePushKitNotifications)
+    else if (_hasPusherForPushKitNotifications)
     {
-        NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
-        
+        NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
+
         // Delete the pusher, report the new value only on success.
-        [self enablePushKitPusher:NO
-                   success:^{
-                       
-                       self->_enablePushKitNotifications = NO;
-                       
-                       // Archive updated field
-                       [[MXKAccountManager sharedManager] saveAccounts];
-                   }
-                   failure:nil];
+        [self enablePushKitPusher:NO success:^{
+
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Success");
+            if (success)
+            {
+                success();
+            }
+        } failure:^(NSError *error) {
+
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Error: %@", error);
+            if (failure)
+            {
+                failure(error);
+            }
+        }];
     }
 }
 
@@ -469,7 +540,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         if (_disabled)
         {
             [self deletePusher];
-            [self deletePushKitPusher];
+            [self enablePushKitNotifications:NO success:nil failure:nil];
             
             // Close session (keep the storage).
             [self closeSession:NO];
@@ -829,7 +900,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logout:(void (^)(void))completion 
 {
     [self deletePusher];
-    [self deletePushKitPusher];
+    [self enablePushKitNotifications:NO success:nil failure:nil];
     
     MXHTTPOperation *operation = [mxSession logout:^{
         
@@ -858,7 +929,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logoutLocally:(void (^)(void))completion
 {
     [self deletePusher];
-    [self deletePushKitPusher];
+    [self enablePushKitNotifications:NO success:nil failure:nil];
     
     [mxSession enableCrypto:NO success:^{
         [self closeSession:YES];
@@ -897,14 +968,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     if (self.pushNotificationServiceIsActive)
     {
         [self enableAPNSPusher:NO success:nil failure:nil];
-    }
-}
-
-- (void)deletePushKitPusher
-{
-    if (self.isPushKitNotificationActive)
-    {
-        [self enablePushKitPusher:NO success:nil failure:nil];
     }
 }
 
@@ -1042,14 +1105,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self enableAPNSPusher:YES
                        success:nil
                        failure:^(NSError *error) {
-                           
-                           self->_enablePushNotifications = NO;
-                           
-                           // Archive updated field
-                           [[MXKAccountManager sharedManager] saveAccounts];
+                           NSLog(@"[MXKAccount][Push] ;: Error: %@", error);
                        }];
     }
-    else if (_enablePushNotifications && mxSession)
+    else if (_hasPusherForPushNotifications && mxSession)
     {
         // Turn off pusher if user denied remote notification.
         NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
@@ -1073,6 +1132,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [self enablePusher:enabled appId:appId token:[MXKAccountManager sharedManager].apnsDeviceToken pushData:pushData success:^{
         
         NSLog(@"[MXKAccount][Push] enableAPNSPusher: Succeeded to update APNS pusher for %@ (%d)", self.mxCredentials.userId, enabled);
+
+        self->_hasPusherForPushNotifications = enabled;
+        [[MXKAccountManager sharedManager] saveAccounts];
         
         if (success)
         {
@@ -1133,14 +1195,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self enablePushKitPusher:YES
                           success:nil
                           failure:^(NSError *error) {
-                              
-                              self->_enablePushKitNotifications = NO;
-                              
-                              // Archive updated field
-                              [[MXKAccountManager sharedManager] saveAccounts];
+                              NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Error: %@", error);
                           }];
     }
-    else if (_enablePushKitNotifications && mxSession)
+    else if (_hasPusherForPushKitNotifications && mxSession)
     {
         // Turn off pusher if user denied remote notification.
         NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
@@ -1167,6 +1225,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [self enablePusher:enabled appId:appId token:token pushData:pushData success:^{
         
         NSLog(@"[MXKAccount][Push] enablePushKitPusher: Succeeded to update PushKit pusher for %@. Enabled: %@. Token: %@", self.mxCredentials.userId, @(enabled), [MXKTools logForPushToken:token]);
+
+        self->_hasPusherForPushKitNotifications = enabled;
+        [[MXKAccountManager sharedManager] saveAccounts];
         
         if (success)
         {
