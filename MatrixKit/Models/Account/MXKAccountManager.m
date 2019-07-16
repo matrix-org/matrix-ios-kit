@@ -307,7 +307,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn off the Apns flag for all accounts if any
             for (MXKAccount *account in mxAccounts)
             {
-                [account enablePushNotifications:YES success:nil failure:nil];
+                [account enablePushNotifications:NO success:nil failure:nil];
             }
         }
         
@@ -498,7 +498,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
                 }
                 else
                 {
-                    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: hasPusherForPushNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
+                    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: hasPusherForPushKitNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
                 }
             }
         }

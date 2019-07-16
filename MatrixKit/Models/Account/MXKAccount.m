@@ -1134,6 +1134,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         NSLog(@"[MXKAccount][Push] enableAPNSPusher: Succeeded to update APNS pusher for %@ (%d)", self.mxCredentials.userId, enabled);
 
         self->_hasPusherForPushNotifications = enabled;
+        [[MXKAccountManager sharedManager] saveAccounts];
         
         if (success)
         {
