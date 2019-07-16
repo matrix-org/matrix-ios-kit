@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "MatrixKit"
-  s.version      = "0.9.9"
+  s.version      = "0.10.0"
   s.summary      = "The Matrix reusable UI library for iOS based on MatrixSDK."
 
   s.description  = <<-DESC
@@ -15,28 +15,31 @@ Pod::Spec.new do |s|
   s.author             = { "matrix.org" => "support@matrix.org" }
   s.social_media_url   = "http://twitter.com/matrixdotorg"
 
-  s.platform     = :ios, "8.0"
+  s.platform     = :ios, "9.0"
 
   s.source       = { :git => "https://github.com/matrix-org/matrix-ios-kit.git", :tag => "v#{s.version}" }
 
   s.requires_arc  = true
 
-  s.dependency 'MatrixSDK', '0.12.5'
+  s.swift_version = '5.0'
+
+  s.dependency 'MatrixSDK', '0.13.0'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
   s.dependency 'DTCoreText', '~> 1.6.21'
   s.dependency 'cmark', '~> 0.24.1'
+  s.dependency 'SwiftUTI', '~> 1.0.7'
 
   s.default_subspec = 'Core'
 
   s.subspec 'Core' do |core|
-    core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m}"
+    core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}"
     core.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     core.dependency 'DTCoreText'
   end
 
   s.subspec 'AppExtension' do |ext|
-    ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m}"
+    ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}"
     ext.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     ext.dependency 'DTCoreText/Extension'
   end

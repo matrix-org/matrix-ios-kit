@@ -90,6 +90,9 @@
     // Disable send button
     self.rightInputToolbarButton.enabled = NO;
     
+    // Enable text edition by default
+    self.editable = YES;
+    
     // Localize string
     [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateNormal];
     [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateHighlighted];
@@ -271,7 +274,7 @@
             NSLog(@"[MXKRoomInputToolbarView] No option is supported");
         }
     }
-    else if (button == self.rightInputToolbarButton)
+    else if (button == self.rightInputToolbarButton && self.textMessage.length)
     {
         // This forces an autocorrect event to happen when "Send" is pressed, which is necessary to accept a pending correction on send
         self.textMessage = [NSString stringWithFormat:@"%@ ", self.textMessage];

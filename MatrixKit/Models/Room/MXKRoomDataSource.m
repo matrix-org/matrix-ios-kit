@@ -2,6 +2,7 @@
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,6 +25,7 @@
 #import "MXKRoomBubbleCellData.h"
 
 #import "MXKTools.h"
+#import "MXAggregatedReactions+MatrixKit.h"
 
 #import "MXKAppSettings.h"
 
@@ -33,6 +35,8 @@
 #import "MXKSlashCommands.h"
 
 #import "MXEventScan.h"
+
+#import "MXEventReplace.h"
 
 #pragma mark - Constant definitions
 
@@ -80,6 +84,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
      The listener to the related groups state events in the room.
      */
     id relatedGroupsListener;
+
+    /**
+     The listener to reactions changed in the room.
+     */
+    id reactionsChangeListener;
+    
+    /**
+     The listener to edits in the room.
+     */
+    id eventEditsListener;
     
     /**
      Mapping between events ids and bubbles.
@@ -439,6 +453,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSLog(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
     
     [self unregisterScanManagerNotifications];
+    [self unregisterReactionsChangeListener];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
 
@@ -706,6 +721,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Register a new one with the requested filter
         __weak typeof(self) weakSelf = self;
         liveEventsListener = [_timeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
             if (MXTimelineDirectionForwards == direction && weakSelf)
             {
                 typeof(self) self = weakSelf;
@@ -970,6 +986,18 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [self unregisterScanManagerNotifications];
     }
+
+    // Register to reaction notification only when a delegate is set
+    if (delegate)
+    {
+        [self registerReactionsChangeListener];
+        [self registerEventEditsListener];
+    }
+    else
+    {
+        [self unregisterReactionsChangeListener];
+        [self unregisterEventEditsListener];
+    }
 }
 
 #pragma mark - KVO
@@ -1041,6 +1069,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     return 0;
+}
+
+- (void)invalidateBubblesCellDataCache
+{
+    @synchronized(bubbles)
+    {
+        for (id<MXKRoomBubbleCellDataStoring> bubble in bubbles)
+        {
+            bubble.attributedTextMessage = nil;
+        }
+    }
 }
 
 #pragma mark - Pagination
@@ -1493,7 +1532,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    NSLog(@"[MXKRoomDataSource] resendEventWithEventId. Event: %@", event);
+    NSLog(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
     
     // Check first whether the event is encrypted
     if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
@@ -1670,13 +1709,86 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState
 {
-    // `MXKRoomDataSource-inherited` instance should override this method to handle the receipt event.
-    
-    // Update the delegate
-    if (self.delegate)
-    {
-        [self.delegate dataSource:self didCellChange:nil];
-    }
+    // Do the processing on the same processing queue
+    MXWeakify(self);
+    dispatch_async(MXKRoomDataSource.processingQueue, ^{
+        MXStrongifyAndReturnIfNil(self);
+
+        // Remove the previous displayed read receipt for each user who sent a
+        // new read receipt.
+        // To implement it, we need to find the sender id of each new read receipt
+        // among the read receipts array of all events in all bubbles.
+        NSArray *readReceiptSenders = receiptEvent.readReceiptSenders;
+
+        @synchronized(self->bubbles)
+        {
+            for (MXKRoomBubbleCellData *cellData in self->bubbles)
+            {
+                NSMutableDictionary<NSString* /* eventId */, NSArray<MXReceiptData*> *> *updatedCellDataReadReceipts = [NSMutableDictionary dictionary];
+
+                for (NSString *eventId in cellData.readReceipts)
+                {
+                    for (MXReceiptData *receiptData in cellData.readReceipts[eventId])
+                    {
+                        for (NSString *senderId in readReceiptSenders)
+                        {
+                            if ([receiptData.userId isEqualToString:senderId])
+                            {
+                                if (!updatedCellDataReadReceipts[eventId])
+                                {
+                                    updatedCellDataReadReceipts[eventId] = cellData.readReceipts[eventId];
+                                }
+
+                                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"userId!=%@", receiptData.userId];
+                                updatedCellDataReadReceipts[eventId] = [updatedCellDataReadReceipts[eventId] filteredArrayUsingPredicate:predicate];
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+                // Flush found changed to the cell data
+                for (NSString *eventId in updatedCellDataReadReceipts)
+                {
+                    if (updatedCellDataReadReceipts[eventId].count)
+                    {
+                        [self updateCellData:cellData withReadReceipts:updatedCellDataReadReceipts[eventId] forEventId:eventId];
+                    }
+                    else
+                    {
+                        [self updateCellData:cellData withReadReceipts:nil forEventId:eventId];
+                    }
+                }
+            }
+        }
+
+        // Update cell data we have received a read receipt for
+        NSArray *readEventIds = receiptEvent.readReceiptEventIds;
+        for (NSString* eventId in readEventIds)
+        {
+            MXKRoomBubbleCellData *cellData = [self cellDataOfEventWithEventId:eventId];
+            if (cellData)
+            {
+                @synchronized(self->bubbles)
+                {
+                    [self addReadReceiptsForEvent:eventId inCellDatas:self->bubbles startingAtCellData:cellData];
+                }
+            }
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.delegate)
+            {
+                [self.delegate dataSource:self didCellChange:nil];
+            }
+        });
+    });
+}
+
+- (void)updateCellData:(MXKRoomBubbleCellData*)cellData withReadReceipts:(NSArray<MXReceiptData*>*)readReceipts forEventId:(NSString*)eventId
+{
+    cellData.readReceipts[eventId] = readReceipts;
 }
 
 - (void)handleUnsentMessages
@@ -1966,6 +2078,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 eventIdToBubbleMap[event.eventId] = bubbleData;
                 [eventIdToBubbleMap removeObjectForKey:previousId];
+
+                // The bubble data must use the final event id too
+                [bubbleData updateEvent:previousId withEvent:event];
             }
         }
         
@@ -2104,6 +2219,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+// Indicates whether an event has base requirements to allow actions (like reply, reactions, edit, etc.)
+- (BOOL)canPerformActionOnEvent:(MXEvent*)event
+{
+    BOOL isSent = event.sentState == MXEventSentStateSent;
+    BOOL isRoomMessage = event.eventType == MXEventTypeRoomMessage;
+    
+    NSString *messageType = event.content[@"msgtype"];
+    
+    return isSent && isRoomMessage && messageType && ![messageType isEqualToString:@"m.bad.encrypted"];
+}
 
 #pragma mark - Asynchronous events processing
  + (dispatch_queue_t)processingQueue
@@ -2598,7 +2723,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
                             }
                         }
-                        
+
+                        [self updateCellDataReactions:bubbleData forEventId:queuedEvent.event.eventId];
+
                         // Store event-bubble link to the map
                         @synchronized (self->eventIdToBubbleMap)
                         {
@@ -2610,6 +2737,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             // Listen to the identifier change for the local events.
                             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(localEventDidChangeIdentifier:) name:kMXEventDidChangeIdentifierNotification object:queuedEvent.event];
                         }
+                    }
+                }
+
+                for (MXKQueuedEvent *queuedEvent in self->eventsToProcessSnapshot)
+                {
+                    @autoreleasepool
+                    {
+                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId]];
                     }
                 }
 
@@ -2724,6 +2859,95 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         }
     });
+}
+
+/**
+ Add the read receipts of an event into the timeline (which is in array of cell datas)
+
+ If the event is not displayed, read receipts will be added to a previous displayed message.
+
+ @param eventId the id of the event.
+ @param cellDatas the working array of cell datas.
+ @param cellData the original cell data the event belongs to.
+ */
+- (void)addReadReceiptsForEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas startingAtCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
+{
+    if (self.showBubbleReceipts)
+    {
+        NSArray<MXReceiptData*> *readReceipts = [self.room getEventReceipts:eventId sorted:YES];
+        if (readReceipts.count)
+        {
+            NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
+            if (cellDataIndex != NSNotFound)
+            {
+                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
+            }
+        }
+    }
+}
+
+- (void)addReadReceipts:(NSArray<MXReceiptData*> *)readReceipts forEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas atCellDataIndex:(NSInteger)cellDataIndex
+{
+    id<MXKRoomBubbleCellDataStoring> cellData = cellDatas[cellDataIndex];
+
+    if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
+
+        BOOL areReadReceiptsAssigned = NO;
+        for (MXKRoomBubbleComponent *component in roomBubbleCellData.bubbleComponents.reverseObjectEnumerator)
+        {
+            if (component.attributedTextMessage)
+            {
+                if (roomBubbleCellData.readReceipts[component.event.eventId])
+                {
+                    NSArray<MXReceiptData*> *currentReadReceipts = roomBubbleCellData.readReceipts[component.event.eventId];
+                    NSMutableArray<MXReceiptData*> *newReadReceipts = [NSMutableArray arrayWithArray:currentReadReceipts];
+                    for (MXReceiptData *readReceipt in readReceipts)
+                    {
+                        BOOL alreadyHere = NO;
+                        for (MXReceiptData *currentReadReceipt in currentReadReceipts)
+                        {
+                            if ([readReceipt.userId isEqualToString:currentReadReceipt.userId])
+                            {
+                                alreadyHere = YES;
+                                break;
+                            }
+                        }
+
+                        if (!alreadyHere)
+                        {
+                            [newReadReceipts addObject:readReceipt];
+                        }
+                    }
+                    [self updateCellData:roomBubbleCellData withReadReceipts:newReadReceipts forEventId:component.event.eventId];
+                }
+                else
+                {
+                    [self updateCellData:roomBubbleCellData withReadReceipts:readReceipts forEventId:component.event.eventId];
+                }
+                areReadReceiptsAssigned = YES;
+                break;
+            }
+
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Read receipts for an event(%@) that is not displayed", eventId);
+        }
+
+        if (!areReadReceiptsAssigned)
+        {
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Try to attach read receipts to an older message", eventId);
+
+            // Try to assign RRs to a previous cell data
+            if (cellDataIndex >= 1)
+            {
+                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex - 1];
+            }
+            else
+            {
+                NSLog(@"[MXKRoomDataSource] addReadReceipts: Fail to attach read receipts for an event(%@)", eventId);
+            }
+        }
+    }
 }
 
 
@@ -2887,6 +3111,278 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // TODO: Avoid to call the delegate to often. Set a minimum time interval to avoid table view flickering.
     [self.delegate dataSource:self didCellChange:nil];
+}
+
+
+#pragma mark - Reactions
+
+- (void)registerReactionsChangeListener
+{
+    if (!self.showReactions)
+    {
+        return;
+    }
+
+    MXWeakify(self);
+    reactionsChangeListener = [self.mxSession.aggregations listenToReactionCountUpdateInRoom:self.roomId block:^(NSDictionary<NSString *,MXReactionCountChange *> * _Nonnull changes) {
+        MXStrongifyAndReturnIfNil(self);
+
+        BOOL updated = NO;
+        for (NSString *eventId in changes)
+        {
+            id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
+            if (bubbleData)
+            {
+                // TODO: Be smarted and use changes[eventId]
+                [self updateCellDataReactions:bubbleData forEventId:eventId];
+                updated = YES;
+            }
+        }
+
+        if (updated)
+        {
+            [self.delegate dataSource:self didCellChange:nil];
+        }
+    }];
+}
+
+- (void)unregisterReactionsChangeListener
+{
+    if (receiptsListener)
+    {
+        [self.mxSession.aggregations removeListener:receiptsListener];
+        receiptsListener = nil;
+    }
+}
+
+- (void)updateCellDataReactions:(id<MXKRoomBubbleCellDataStoring>)cellData forEventId:(NSString*)eventId
+{
+    if (!self.showReactions || ![cellData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        return;
+    }
+
+    MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
+
+    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount;
+    
+    if (self.showOnlySingleEmojiReactions)
+    {
+        aggregatedReactions = aggregatedReactions.aggregatedReactionsWithSingleEmoji;
+    }
+    
+    if (aggregatedReactions)
+    {
+        if (!roomBubbleCellData.reactions)
+        {
+            roomBubbleCellData.reactions = [NSMutableDictionary dictionary];
+        }
+
+        roomBubbleCellData.reactions[eventId] = aggregatedReactions;
+    }
+    else
+    {
+        // unreaction
+        roomBubbleCellData.reactions[eventId] = nil;
+    }
+
+    // Recompute the text message layout
+    roomBubbleCellData.attributedTextMessage = nil;
+}
+
+- (BOOL)canReactToEventWithId:(NSString*)eventId
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    return [self canPerformActionOnEvent:event];
+}
+
+- (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
+{
+    [self.mxSession.aggregations addReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
+        NSLog(@"[MXKRoomDataSource] Fail to send reaction on eventId: %@", eventId);
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
+- (void)removeReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
+{
+    [self.mxSession.aggregations removeReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
+        NSLog(@"[MXKRoomDataSource] Fail to unreact on eventId: %@", eventId);
+        if (failure)
+        {
+            failure(error);
+        }
+    }];
+}
+
+#pragma mark - Editions
+
+- (BOOL)canEditEventWithId:(NSString*)eventId
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    BOOL isRoomMessage = event.eventType == MXEventTypeRoomMessage;
+    NSString *messageType = event.content[@"msgtype"];
+    
+    return isRoomMessage
+    && ([messageType isEqualToString:kMXMessageTypeText] || [messageType isEqualToString:kMXMessageTypeEmote])
+    && [event.sender isEqualToString:self.mxSession.myUser.userId];
+}
+
+- (NSString*)editableTextMessageForEvent:(MXEvent*)event
+{
+    NSString *editableTextMessage;
+    
+    if (event.isReplyEvent)
+    {
+        MXReplyEventParser *replyEventParser = [MXReplyEventParser new];
+        MXReplyEventParts *replyEventParts = [replyEventParser parse:event];
+        
+        editableTextMessage = replyEventParts.bodyParts.replyText;
+    }
+    else
+    {
+        editableTextMessage = event.content[@"body"];
+    }
+    
+    return editableTextMessage;
+}
+
+- (void)registerEventEditsListener
+{
+    MXWeakify(self);
+    eventEditsListener = [self.mxSession.aggregations listenToEditsUpdateInRoom:self.roomId block:^(MXEvent * _Nonnull replaceEvent) {
+        MXStrongifyAndReturnIfNil(self);
+
+        [self updateEventWithReplaceEvent:replaceEvent];
+    }];
+}
+
+- (void)updateEventWithReplaceEvent:(MXEvent*)replaceEvent
+{
+    NSString *editedEventId = replaceEvent.relatesTo.eventId;
+
+    dispatch_async(MXKRoomDataSource.processingQueue, ^{
+
+        // Check whether a message contains the edited event
+        id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:editedEventId];
+        if (bubbleData)
+        {
+            BOOL hasChanged = [self updateCellData:bubbleData forEditionWithReplaceEvent:replaceEvent andEventId:editedEventId];
+
+            if (hasChanged)
+            {
+                // Update the delegate on main thread
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    if (self.delegate)
+                    {
+                        [self.delegate dataSource:self didCellChange:nil];
+                    }
+
+                });
+            }
+        }
+    });
+}
+
+- (void)unregisterEventEditsListener
+{
+    if (eventEditsListener)
+    {
+        [self.mxSession.aggregations removeListener:eventEditsListener];
+        eventEditsListener = nil;
+    }
+}
+
+- (BOOL)updateCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleCellData forEditionWithReplaceEvent:(MXEvent*)replaceEvent andEventId:(NSString*)eventId
+{
+    BOOL hasChanged = NO;
+    
+    @synchronized (bubbleCellData)
+    {
+        // Retrieve the original event to edit it
+        NSArray *events = bubbleCellData.events;
+        MXEvent *editedEvent = nil;
+        
+        // If not already done, update edited event content in-place
+        // This is required for:
+        //   - local echo
+        //   - non live timeline in memory store (permalink)
+        for (MXEvent *event in events)
+        {
+            if ([event.eventId isEqualToString:eventId])
+            {
+                // Check whether the event was not already edited
+                if (![event.unsignedData.relations.replace.eventId isEqualToString:replaceEvent.eventId])
+                {
+                    editedEvent = [event editedEventFromReplacementEvent:replaceEvent];
+
+                    // Make sure the edited event is decrypted
+                    if (editedEvent.isEncrypted && !editedEvent.clearEvent)
+                    {
+                        [self.mxSession decryptEvent:editedEvent inTimeline:nil];
+                    }
+                }
+                break;
+            }
+        }
+        
+        if (editedEvent)
+        {
+            if (editedEvent.sentState != replaceEvent.sentState)
+            {
+                // Relay the replace event state to the edited event so that the display
+                // of the edited will rerun the classic sending color flow.
+                // Note: this must be done on the main thread (this operation triggers
+                // the call of [self eventDidChangeSentState])
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    editedEvent.sentState = replaceEvent.sentState;
+                });
+            }
+
+            [bubbleCellData updateEvent:eventId withEvent:editedEvent];
+            bubbleCellData.attributedTextMessage = nil;
+            hasChanged = YES;
+        }
+    }
+    
+    return hasChanged;
+}
+
+- (void)replaceTextMessageForEventWithId:(NSString*)eventId
+                         withTextMessage:(NSString *)text                           
+                                 success:(void (^)(NSString *))success
+                                 failure:(void (^)(NSError *))failure
+{
+    MXEvent *event = [self eventWithEventId:eventId];
+    
+    NSString *sanitizedText = [self sanitizedMessageText:text];
+    NSString *formattedText = [self htmlMessageFromSanitizedText:sanitizedText];
+    
+    NSString *eventBody = event.content[@"body"];
+    NSString *eventFormattedBody = event.content[@"formatted_body"];
+    
+    if (![sanitizedText isEqualToString:eventBody] && (!eventFormattedBody || ![formattedText isEqualToString:eventFormattedBody]))
+    {
+        [self.mxSession.aggregations replaceTextMessageEvent:event withTextMessage:sanitizedText formattedText:formattedText localEchoBlock:^(MXEvent * _Nonnull replaceEventLocalEcho) {
+
+            // Apply the local echo to the timeline
+            [self updateEventWithReplaceEvent:replaceEventLocalEcho];
+
+            // Integrate the replace local event into the timeline like when sending a message
+            // This also allows to manage read receipt on this replace event
+            [self queueEventForProcessing:replaceEventLocalEcho withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+            [self processQueuedEvents:nil];
+
+        } success:success failure:failure];
+    }
+    else
+    {
+        failure(nil);
+    }
 }
 
 @end

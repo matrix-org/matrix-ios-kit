@@ -179,4 +179,9 @@
     }
 }
 
+- (BOOL)growingTextView:(HPGrowingTextView *)growingTextView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    return self.isEditable;
+}
+
 @end

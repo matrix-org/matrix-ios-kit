@@ -239,3 +239,9 @@
 "notice_room_related_groups" = "此聊天室關聯的群組是：%@";
 "notice_encryption_enabled" = "%@ 開啓了端對端加密 （演算法 %@）";
 "notice_feedback" = "回報事件 （id：%@）：%@";
+"notice_redaction" = "%@ 取消了一个事件 (id: %@)";
+"notice_error_unsupported_event" = "不支援的事件";
+"notice_error_unexpected_event" = "意外事件";
+"notice_error_unknown_event_type" = "未知的事件類型";
+"notice_room_history_visible_to_anyone" = "%@ 讓任何人都能看到未來的聊天室歷史記錄。";
+"notice_room_history_visible_to_members" = "%@ 讓所有聊天室成員都能看到未來的房間歷史記錄。";

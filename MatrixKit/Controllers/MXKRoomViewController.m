@@ -2,7 +2,8 @@
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
- 
+ Copyright 2019 The Matrix.org Foundation C.I.C
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -413,7 +414,7 @@
         
         // Force full table refresh to take into account cell width change.
         self.bubbleTableViewDisplayInTransition = YES;
-        [self reloadBubblesTable:YES];
+        [self reloadBubblesTable:YES invalidateBubblesCellDataCache:YES];
         self.bubbleTableViewDisplayInTransition = NO;
         
         self->shouldScrollToBottomOnTableRefresh = NO;
@@ -633,6 +634,21 @@
         // Deduce max height of the message text input by considering the minimum height of the table view.
         inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     }
+}
+
+- (CGFloat)tableViewSafeAreaWidth
+{
+    CGFloat safeAreaInsetsWidth;
+    
+    if (@available(iOS 11.0, *))
+    {
+        // Take safe area into account
+        safeAreaInsetsWidth = self.bubblesTableView.safeAreaInsets.left + self.bubblesTableView.safeAreaInsets.right;
+    } else {
+        safeAreaInsetsWidth = 0;
+    }
+    
+    return self.bubblesTableView.frame.size.width - safeAreaInsetsWidth;
 }
 
 #pragma mark - Public API
@@ -887,7 +903,7 @@
     }
 }
 
-- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias viaServers:(NSArray<NSString*>*)viaServers andSignUrl:(NSString*)signUrl  completion:(void(^)(BOOL succeed))completion
 {
     // Check whether a join request is not already running
     if (!joinRoomRequest)
@@ -953,11 +969,11 @@
         // Does the join need to be validated before?
         if (signUrl)
         {
-            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias withSignUrl:signUrl success:success failure:failure];
+            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers withSignUrl:signUrl success:success failure:failure];
         }
         else
         {
-            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias success:success failure:failure];
+            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers success:success failure:failure];
         }
     }
     else if (completion)
@@ -1362,7 +1378,8 @@
         // Check
         if (roomAlias.length)
         {
-            [roomDataSource.mxSession joinRoom:roomAlias success:^(MXRoom *room) {
+            // TODO: /join command does not support via parameters yet
+            [roomDataSource.mxSession joinRoom:roomAlias viaServers:nil success:^(MXRoom *room) {
                 // Do nothing by default when we succeed to join the room
             } failure:^(NSError *error) {
                 
@@ -2229,6 +2246,11 @@
 
 - (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor
 {
+    return [self reloadBubblesTable:useBottomAnchor invalidateBubblesCellDataCache:NO];
+}
+
+- (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor invalidateBubblesCellDataCache:(BOOL)invalidateBubblesCellDataCache
+{
     BOOL shouldScrollToBottom = shouldScrollToBottomOnTableRefresh;
     
     // When no size transition is in progress, check if the bottom of the content is currently visible.
@@ -2236,6 +2258,12 @@
     if (!isSizeTransitionInProgress && !shouldScrollToBottom)
     {
         shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
+    }
+    
+    // Force bubblesCellData message recalculation if requested
+    if (invalidateBubblesCellDataCache)
+    {
+        [self.roomDataSource invalidateBubblesCellDataCache];
     }
     
     // When scroll to bottom is not active, check whether we should keep the current event displayed at the bottom of the table
@@ -3146,7 +3174,7 @@
 {
     if (tableView == _bubblesTableView)
     {
-        return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:tableView.frame.size.width];
+        return [roomDataSource cellHeightAtIndex:indexPath.row withMaximumWidth:self.tableViewSafeAreaWidth];
     }
     
     return 0;

@@ -13,7 +13,7 @@
 "login_create_account" = "Регистрация:";
 "login_server_url_placeholder" = "URL (напр. https://matrix.org)";
 "login_home_server_title" = "Home сървър:";
-"login_home_server_info" = "Вашият Home сървър съхранява всичките данни за Вашия профил и разговорите Ви";
+"login_home_server_info" = "Сървърът Ви съхранява цялата кореспонденция и профилни данни";
 "login_identity_server_title" = "Сървър за самоличност:";
 "login_identity_server_info" = "Matrix предоставя сървъри за самоличност, които проследяват кои имейли и т.н. на кои Matrix идентификатори принадлежат. В момента съществува само https://matrix.org.";
 "login_user_id_placeholder" = "Matrix ID (напр. @ivan:matrix.org или ivan)";

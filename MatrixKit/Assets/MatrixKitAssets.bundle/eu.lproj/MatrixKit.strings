@@ -117,7 +117,7 @@
 // Login Screen
 "login_create_account" = "Sortu kontua:";
 "login_server_url_placeholder" = "URL-a (adib. https://matrix.org)";
-"login_home_server_info" = "Zure hasiera zerbitzariak gordetzen ditu zure kontuaren datuak";
+"login_home_server_info" = "Zure hasiera-zerbitzariak gordetzen ditu zure elkarrizketa guztiak eta kontuaren datuak";
 "login_identity_server_info" = "Matrixek identitate zerbitzariak hornitzen ditu e-mailak eta abar zein Matrix ID-ri dagokien jakiteko, Orain https://matrix.org da dagoen bakarra.";
 "login_user_id_placeholder" = "Matrix ID-a (adib. @urko:matrix.org edo urko)";
 "login_optional_field" = "aukerakoa";
@@ -299,7 +299,7 @@
 "notice_answered_video_call" = "%@ erabiltzaileak deia erantzun du";
 "notice_ended_video_call" = "%@ erabiltzaileak deia amaitu du";
 "notice_conference_call_request" = "%@ erabiltzaileak VoIP konferentzia bat eskatu du";
-"set_power_level" = "Botere-maila";
+"set_power_level" = "Ezarri botere-maila";
 // actions 
 "action_logout" = "Amaitu saioa";
 "login" = "Hasi saioa";

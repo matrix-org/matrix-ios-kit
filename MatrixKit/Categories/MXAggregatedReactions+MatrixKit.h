@@ -1,6 +1,4 @@
 /*
- Copyright 2015 OpenMarket Ltd
- Copyright 2018 New Vector Ltd
  Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +14,19 @@
  limitations under the License.
  */
 
-#import "MXKConstants.h"
+#import <MatrixSDK/MatrixSDK.h>
 
-NSString *const MatrixKitVersion = @"0.10.0";
+#import "MXKEventFormatter.h"
 
-NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
+NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
+/**
+ Define a `MXEvent` category at matrixKit level to store data related to UI handling.
+ */
+@interface MXAggregatedReactions (MatrixKit)
+
+- (nullable MXAggregatedReactions *)aggregatedReactionsWithSingleEmoji;
+
+@end
+
+NS_ASSUME_NONNULL_END

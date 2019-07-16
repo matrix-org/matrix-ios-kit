@@ -1,4 +1,34 @@
-Changes in MatrixKit in 0.9.9 (2019-xx-xx)
+Changes in MatrixKit in 0.10.0 (2019-07-16)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.13.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.13.0)).
+ * Update deployment target to iOS 9 (PR #546).
+ * Join Room: Support via parameters to better handle federation (vector-im/riot-ios/issues/2547).
+ * MXKRoomBubbleTableViewCell: Enhance long press behavior (PR #546).
+ * MXKRoomInputToolbarView: Add a property to enable or disable text edition (PR #547).
+ * MXKWebViewViewController: Handle authentication challenge in order to support a potential certificates pinning.
+ * MXKRoomBubbleCellData: expose reactions made on messages.
+ * MXKContactManager: Add a property to override the Matrix users discovering mechanism.
+ * MXRoomViewController: Refresh room bubbles cell data messages calculation on orientation change (PR #559).
+ * MXKRoomDataSource: Add react and unreact on event methods (PR #560).
+ * MXKRoomDataSource: Add can react and can edit an event method (PR #561).
+ * MXKRoomDataSource: Support message editing.
+
+Bug fix:
+ * MXKRoomViewController: Handle safe area when asking cell dimension in landscape.
+ * Read receipts: They are now counted by MatrixKit.
+ * Read receipts: Attach read receipts on non displayed events to their nearest displayed events.
+ * MXKRoomBubbleTableViewCell: Add possibility to reset attachement view bottom constraint constant to default value.
+ * Push notifications are spontaneously disabling themselves (vector-im/riot-ios/issues/2348).
+ 
+ API break:
+  * MXKRoomViewController: Add viaServers parameter to joinRoomWithRoomIdOrAlias.
+  * MXKAccount: Remove setEnablePushKitNotifications and replace it by the async enablePushKitNotifications method.
+  * MXKAccount: Rename enablePushKitNotifications to hasPusherForPushKitNotifications.
+  * MXKAccount: Remove deletePushKitPusher. Use enablePushKitNotifications:NO instead.
+
+Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
 
 Improvements:

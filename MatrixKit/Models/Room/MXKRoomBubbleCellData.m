@@ -41,6 +41,9 @@
     if (self)
     {
         roomDataSource = roomDataSource2;
+
+        // Initialize read receipts
+        self.readReceipts = [NSMutableDictionary dictionary];
         
         // Create the bubble component based on matrix event
         MXKRoomBubbleComponent *firstComponent = [[MXKRoomBubbleComponent alloc] initWithEvent:event andRoomState:roomState andEventFormatter:roomDataSource.eventFormatter];

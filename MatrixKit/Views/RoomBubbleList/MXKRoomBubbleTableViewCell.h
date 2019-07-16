@@ -307,4 +307,9 @@ extern NSString *const kMXKRoomBubbleCellUrlItemInteraction;
  */
 - (CGFloat)bottomPositionOfEvent:(NSString*)eventId;
 
+/**
+ Restore `attachViewBottomConstraint` constant to default value.
+ */
+- (void)resetAttachmentViewBottomConstraintConstant;
+
 @end

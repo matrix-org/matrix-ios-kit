@@ -80,6 +80,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
 #pragma mark - MXKRoomDataSource
 @protocol MXKRoomBubbleCellDataStoring;
+@class MXKRoomBubbleCellData;
 
 /**
  The data source for `MXKRoomViewController`.
@@ -188,6 +189,16 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  A Boolean value that determines whether the read receipts are customized (By default read receipts display is handled by MatrixKit). NO by default.
  */
 @property (nonatomic) BOOL useCustomReceipts;
+
+/**
+ Show the reactions in rendered bubble cell. NO by default.
+ */
+@property (nonatomic) BOOL showReactions;
+
+/**
+ Show only reactions with single Emoji. NO by default.
+ */
+@property (nonatomic) BOOL showOnlySingleEmojiReactions;
 
 /**
  A Boolean value that determines whether the unsent button is customized (By default an 'Unsent' button is displayed by MatrixKit in front of unsent events). NO by default.
@@ -352,6 +363,12 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (CGFloat)cellHeightAtIndex:(NSInteger)index withMaximumWidth:(CGFloat)maxWidth;
 
+
+/**
+ Force bubbles cell data message recalculation.
+ */
+- (void)invalidateBubblesCellDataCache;
+
 #pragma mark - Pagination
 /**
  Load more messages.
@@ -414,7 +431,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
                        success:(void (^)(NSString *))success
                        failure:(void (^)(NSError *))failure;
 
-- (BOOL)canReplyToEventWithId:(NSString*)eventIdToReply;
+/**
+ Indicates if replying to the provided event is supported.
+ Only event of type 'MXEventTypeRoomMessage' are supported for the moment, and for certain msgtype.
+ 
+ @param eventId The id of the event.
+ @return YES if it is possible to reply to this event.
+ */
+- (BOOL)canReplyToEventWithId:(NSString*)eventId;
 
 /**
  Send an image to the room.
@@ -558,6 +582,15 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 - (void)didReceiveReceiptEvent:(MXEvent *)receiptEvent roomState:(MXRoomState *)roomState;
 
 /**
+ Update read receipts for an event in a bubble cell data.
+
+ @param cellData The cell data to update.
+ @param readReceipts The new read receipts.
+ @param eventId The id of the event.
+ */
+- (void)updateCellData:(MXKRoomBubbleCellData*)cellData withReadReceipts:(NSArray<MXReceiptData*>*)readReceipts forEventId:(NSString*)eventId;
+
+/**
  Overridable method to customise the way how unsent messages are managed.
  By default, they are added to the end of the timeline.
  */
@@ -592,5 +625,82 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  @return the MXGroup instance.
  */
 - (MXGroup *)groupWithGroupId:(NSString*)groupId;
+
+#pragma mark - Reactions
+
+/**
+ Indicates if it's possible to react on the event.
+
+ @param eventId The id of the event.
+ @return True to indicates reaction possibility for this event.
+ */
+- (BOOL)canReactToEventWithId:(NSString*)eventId;
+
+/**
+ Send a reaction to an event.
+
+ @param reaction Reaction to add.
+ @param eventId The id of the event.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)addReaction:(NSString *)reaction
+         forEventId:(NSString *)eventId
+            success:(void (^)(void))success
+            failure:(void (^)(NSError *error))failure;
+
+/**
+ Unreact a reaction to an event.
+
+ @param reaction Reaction to unreact.
+ @param eventId The id of the event.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
+ */
+- (void)removeReaction:(NSString *)reaction
+            forEventId:(NSString *)eventId
+               success:(void (^)(void))success
+               failure:(void (^)(NSError *error))failure;
+
+#pragma mark - Editions
+
+/**
+ Indicates if it's possible to edit the event content.
+ 
+ @param eventId The id of the event.
+ @return True to indicates edition possibility for this event.
+ */
+- (BOOL)canEditEventWithId:(NSString*)eventId;
+
+/**
+ Replace a text in an event.
+
+ @param eventId The eventId of event to replace.
+ @param text The new message text.
+ @param success A block object called when the operation succeeds. It returns
+ the event id of the event generated on the homeserver.
+ @param failure A block object called when the operation fails.
+ */
+- (void)replaceTextMessageForEventWithId:(NSString *)eventId
+                         withTextMessage:(NSString *)text
+                                 success:(void (^)(NSString *eventId))success
+                                 failure:(void (^)(NSError *error))failure;
+
+
+/**
+ Update reactions for an event in a bubble cell data.
+
+ @param cellData The cell data to update.
+ @param eventId The id of the event.
+ */
+- (void)updateCellDataReactions:(id<MXKRoomBubbleCellDataStoring>)cellData forEventId:(NSString*)eventId;
+
+/**
+ Retrieve editable text message from an event.
+
+ @param event An event.
+ @return Event text editable by user.
+ */
+- (NSString*)editableTextMessageForEvent:(MXEvent*)event;
 
 @end
