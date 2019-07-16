@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.10.1 (2019-07-16)
+==========================================
+
+Bug fix:
+ * Use a usable pod of SwiftUTI.
+
 Changes in MatrixKit in 0.10.0 (2019-07-16)
 ==========================================
 
