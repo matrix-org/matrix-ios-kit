@@ -418,7 +418,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn off the Push flag for all accounts if any
             for (MXKAccount *account in mxAccounts)
             {
-                [account setEnablePushKitNotifications:NO success:nil failure:nil];
+                [account enablePushKitNotifications:NO success:nil failure:nil];
             }
         }
         
@@ -446,7 +446,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
             // turn on the Push flag for all accounts
             for (MXKAccount *account in activeAccounts)
             {
-                [account setEnablePushKitNotifications:YES success:nil failure:nil];
+                [account enablePushKitNotifications:YES success:nil failure:nil];
             }
         }
         else if (![oldToken isEqualToData:pushDeviceToken])
@@ -463,7 +463,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
                     [accountsWithPushKitPusher addObject:account];
                 }
 
-                [account setEnablePushKitNotifications:NO success:nil failure:nil];
+                [account enablePushKitNotifications:NO success:nil failure:nil];
             }
             
             // Update the token
@@ -483,7 +483,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
                 if ([accountsWithPushKitPusher containsObject:account])
                 {
                     NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Resync Push for %@ account", account.mxCredentials.userId);
-                    [account setEnablePushKitNotifications:YES success:nil failure:nil];
+                    [account enablePushKitNotifications:YES success:nil failure:nil];
                 }
                 else
                 {

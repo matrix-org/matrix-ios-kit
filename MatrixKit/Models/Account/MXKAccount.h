@@ -165,13 +165,13 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 
  This method creates or removes a pusher on the homeserver.
 
- @param enablePushKitNotifications YES to enable it.
+ @param enable YES to enable it.
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)setEnablePushKitNotifications:(BOOL)enablePushKitNotifications
-                              success:(void (^)(void))success
-                              failure:(void (^)(NSError *))failure;
+- (void)enablePushKitNotifications:(BOOL)enable
+                           success:(void (^)(void))success
+                           failure:(void (^)(NSError *))failure;
 
 /**
  Flag to indicate that a PushKit pusher has been set on the homeserver for this device.

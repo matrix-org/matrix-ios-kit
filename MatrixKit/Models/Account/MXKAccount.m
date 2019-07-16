@@ -421,29 +421,29 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     return isPushKitNotificationActive;
 }
 
-- (void)setEnablePushKitNotifications:(BOOL)enablePushKitNotifications
+- (void)enablePushKitNotifications:(BOOL)enable
                               success:(void (^)(void))success
                               failure:(void (^)(NSError *))failure;
 {
-    NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: %@", @(enablePushKitNotifications));
+    NSLog(@"[MXKAccount][Push] enablePushKitNotifications: %@", @(enable));
 
-    if (enablePushKitNotifications)
+    if (enable)
     {
         if ([[MXKAccountManager sharedManager] isPushAvailable])
         {
-            NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Enable Push for %@ account", self.mxCredentials.userId);
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push for %@ account", self.mxCredentials.userId);
 
             // Create/restore the pusher
             [self enablePushKitPusher:YES success:^{
 
-                NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Enable Push: Success");
+                NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Success");
                 if (success)
                 {
                     success();
                 }
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Enable Push: Error: %@", error);
+                NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Error: %@", error);
                 if (failure)
                 {
                     failure(error);
@@ -452,25 +452,25 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Error: Cannot enable Push");
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Error: Cannot enable Push");
             failure(nil);
         }
     }
     else if (_hasPusherForPushKitNotifications)
     {
-        NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
+        NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
 
         // Delete the pusher, report the new value only on success.
         [self enablePushKitPusher:NO success:^{
 
-            NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Disable Push: Success");
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Success");
             if (success)
             {
                 success();
             }
         } failure:^(NSError *error) {
 
-            NSLog(@"[MXKAccount][Push] setEnablePushKitNotifications: Disable Push: Error: %@", error);
+            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Error: %@", error);
             if (failure)
             {
                 failure(error);
@@ -498,7 +498,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         if (_disabled)
         {
             [self deletePusher];
-            [self setEnablePushKitNotifications:NO success:nil failure:nil];
+            [self enablePushKitNotifications:NO success:nil failure:nil];
             
             // Close session (keep the storage).
             [self closeSession:NO];
@@ -858,7 +858,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logout:(void (^)(void))completion 
 {
     [self deletePusher];
-    [self setEnablePushKitNotifications:NO success:nil failure:nil];
+    [self enablePushKitNotifications:NO success:nil failure:nil];
     
     MXHTTPOperation *operation = [mxSession logout:^{
         
@@ -887,7 +887,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)logoutLocally:(void (^)(void))completion
 {
     [self deletePusher];
-    [self setEnablePushKitNotifications:NO success:nil failure:nil];
+    [self enablePushKitNotifications:NO success:nil failure:nil];
     
     [mxSession enableCrypto:NO success:^{
         [self closeSession:YES];
