@@ -149,10 +149,22 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic, readonly) BOOL pushNotificationServiceIsActive;
 
 /**
- Enable Apple Push Notification Service (APNS). Set YES to sync the device with the server.
- NO by default.
+ Enable Push notification based on Apple Push Notification Service (APNS).
+
+ This method creates or removes a pusher on the homeserver.
+
+ @param enable YES to enable it.
+ @param success A block object called when the operation succeeds.
+ @param failure A block object called when the operation fails.
  */
-@property (nonatomic) BOOL enablePushNotifications;
+- (void)enablePushNotifications:(BOOL)enable
+                        success:(void (^)(void))success
+                        failure:(void (^)(NSError *))failure;
+
+/**
+ Flag to indicate that an APNS pusher has been set on the homeserver for this device.
+ */
+@property (nonatomic, readonly) BOOL hasPusherForPushNotifications;
 
 /**
  The Push notification activity (based on PushKit) for this account.
@@ -269,12 +281,6 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  */
 - (void)logoutSendingServerRequest:(BOOL)sendLogoutServerRequest
                         completion:(void (^)(void))completion;
-
-/**
- Delete the potential APNS pusher, without changing 'enablePushNotifications' property.
- Used to delete existing pusher related to out-of-date APNS device token.
- */
-- (void)deletePusher;
 
 /**
  Pause the current matrix session.
