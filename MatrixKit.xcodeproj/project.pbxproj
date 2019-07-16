@@ -47,6 +47,7 @@
 		32D9F4E221D54A08008007F2 /* UIViewController+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9F4E121D54A08008007F2 /* UIViewController+MatrixKit.m */; };
 		32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */; };
 		32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */; };
+		4F236C27EC459185548BEF4F /* Pods_MatrixKitSamplePods_MatrixKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B455B95A7B9ECAD75BA21E12 /* Pods_MatrixKitSamplePods_MatrixKitTests.framework */; };
 		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
 		71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */; };
 		71352D561C0ED240001D50B0 /* MXKRoomSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */; };
@@ -54,9 +55,8 @@
 		71352D6A1C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 71352D681C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.xib */; };
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
-		8ED6A60960BB5870EAD0D728 /* Pods_MatrixKit_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1505350C98235270BC59A8F3 /* Pods_MatrixKit_MatrixKitSample.framework */; };
+		8EE45E64044E107FAB59C7D1 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
-		AB9875BBBF7ED80D590357E4 /* Pods_MatrixKit_MatrixKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2863FD546B4229BADA9821DC /* Pods_MatrixKit_MatrixKitTests.framework */; };
 		B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */; };
 		B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */; };
 		B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10322D62A4800570CA4 /* MXKUTITests.swift */; };
@@ -254,11 +254,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B24B45B3C37CC4E22FABCEF /* Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
-		1505350C98235270BC59A8F3 /* Pods_MatrixKit_MatrixKitSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKit_MatrixKitSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
-		2863FD546B4229BADA9821DC /* Pods_MatrixKit_MatrixKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKit_MatrixKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3203F26C1D2E9CAE0021F170 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3205ED741E96905A003D65FA /* MXKDirectoryServerCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKDirectoryServerCellData.h; sourceTree = "<group>"; };
@@ -338,6 +338,8 @@
 		32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionKeysExportView.m; sourceTree = "<group>"; };
 		392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptedAttachmentsTest.m; sourceTree = "<group>"; };
+		5537B7A941FDD5CF92368345 /* Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKitSamplePods_MatrixKitSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		71352D521C0ED240001D50B0 /* MXKRoomSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomSettingsViewController.h; sourceTree = "<group>"; };
 		71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomSettingsViewController.m; sourceTree = "<group>"; };
 		71352D541C0ED240001D50B0 /* MXKRoomSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRoomSettingsViewController.xib; sourceTree = "<group>"; };
@@ -374,6 +376,7 @@
 		B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKSendReplyEventStringLocalizations.m; sourceTree = "<group>"; };
 		B1668ABE21072F93002B14F1 /* MXKSlashCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSlashCommands.h; sourceTree = "<group>"; };
 		B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSlashCommands.m; sourceTree = "<group>"; };
+		B455B95A7B9ECAD75BA21E12 /* Pods_MatrixKitSamplePods_MatrixKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKitSamplePods_MatrixKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B916E03315461FC06BE01B42 /* Pods-MatrixKit-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		BFDF88630F521F8C5854F64F /* Pods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C97E32A7F1D6C4B99A47EF /* Pods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -381,6 +384,7 @@
 		CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAttachmentAnimator.m; sourceTree = "<group>"; };
 		CE14CA641E80122600E329A3 /* MXKAttachmentInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentInteractionController.h; sourceTree = "<group>"; };
 		CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAttachmentInteractionController.m; sourceTree = "<group>"; };
+		E5AB7F3690B214D676BB9B72 /* Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F0026B641C91EED1001D2C04 /* MXKWebViewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKWebViewViewController.h; sourceTree = "<group>"; };
 		F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKWebViewViewController.m; sourceTree = "<group>"; };
 		F0036EEC1AB98DC40008E432 /* MXKRoomInputToolbarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomInputToolbarView.h; sourceTree = "<group>"; };
@@ -668,7 +672,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB9875BBBF7ED80D590357E4 /* Pods_MatrixKit_MatrixKitTests.framework in Frameworks */,
+				4F236C27EC459185548BEF4F /* Pods_MatrixKitSamplePods_MatrixKitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,7 +680,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8ED6A60960BB5870EAD0D728 /* Pods_MatrixKit_MatrixKitSample.framework in Frameworks */,
+				8EE45E64044E107FAB59C7D1 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1047,6 +1051,10 @@
 				B916E03315461FC06BE01B42 /* Pods-MatrixKit-MatrixKitSample.release.xcconfig */,
 				1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */,
 				0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */,
+				E5AB7F3690B214D676BB9B72 /* Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig */,
+				0B24B45B3C37CC4E22FABCEF /* Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig */,
+				5537B7A941FDD5CF92368345 /* Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig */,
+				1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1095,8 +1103,8 @@
 		CC4E6F6D4101B9B731F29FB7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1505350C98235270BC59A8F3 /* Pods_MatrixKit_MatrixKitSample.framework */,
-				2863FD546B4229BADA9821DC /* Pods_MatrixKit_MatrixKitTests.framework */,
+				5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */,
+				B455B95A7B9ECAD75BA21E12 /* Pods_MatrixKitSamplePods_MatrixKitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1668,7 +1676,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MatrixKit-MatrixKitTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MatrixKitSamplePods-MatrixKitTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1681,7 +1689,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/DTCoreText/DTCoreText.framework",
 				"${BUILT_PRODUCTS_DIR}/DTFoundation/DTFoundation.framework",
@@ -1716,7 +1724,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7BD5A21B95A7AC019AB69341 /* [CP] Embed Pods Frameworks */ = {
@@ -1725,7 +1733,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/DTCoreText/DTCoreText.framework",
 				"${BUILT_PRODUCTS_DIR}/DTFoundation/DTFoundation.framework",
@@ -1760,7 +1768,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */ = {
@@ -1774,7 +1782,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MatrixKit-MatrixKitSample-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MatrixKitSamplePods-MatrixKitSample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1988,7 +1996,7 @@
 /* Begin XCBuildConfiguration section */
 		3203F2701D2E9CAE0021F170 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */;
+			baseConfigurationReference = 5537B7A941FDD5CF92368345 /* Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2013,7 +2021,7 @@
 		};
 		3203F2711D2E9CAE0021F170 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */;
+			baseConfigurationReference = 1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2140,7 +2148,7 @@
 		};
 		3219CB8F1AA6F2790027D7E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */;
+			baseConfigurationReference = E5AB7F3690B214D676BB9B72 /* Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2160,7 +2168,7 @@
 		};
 		3219CB901AA6F2790027D7E2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B916E03315461FC06BE01B42 /* Pods-MatrixKit-MatrixKitSample.release.xcconfig */;
+			baseConfigurationReference = 0B24B45B3C37CC4E22FABCEF /* Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;

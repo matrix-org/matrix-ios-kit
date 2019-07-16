@@ -1,7 +1,8 @@
-Changes in MatrixKit in 0.9.10 (2019-05-xx)
+Changes in MatrixKit in 0.10.0 (2019-07-16)
 ==========================================
 
 Improvements:
+ * Upgrade MatrixSDK version ([v0.13.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.13.0)).
  * Update deployment target to iOS 9 (PR #546).
  * Join Room: Support via parameters to better handle federation (vector-im/riot-ios/issues/2547).
  * MXKRoomBubbleTableViewCell: Enhance long press behavior (PR #546).
