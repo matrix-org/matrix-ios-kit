@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.10.2 (2019-07-)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.13.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.13.1)).
+ * Support soft logout (vector-im/riot-ios/issues/2540).
+
+ Bug fix:
+
+ API break:
+
 Changes in MatrixKit in 0.10.1 (2019-07-16)
 ==========================================
 

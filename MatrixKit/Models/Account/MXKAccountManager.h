@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -30,6 +31,12 @@ extern NSString *const kMXKAccountManagerDidAddAccountNotification;
  The notification object is the removed account.
  */
 extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
+
+/**
+ Posted when an existing account is soft logged out.
+ The notification object is the account.
+ */
+extern NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification;
 
 
 /**
@@ -146,6 +153,26 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  @param completion the block to execute at the end of the operation.
  */
 - (void)logoutWithCompletion:(void (^)(void))completion;
+
+/**
+ Soft logout an account.
+
+ @param account a matrix account.
+ */
+- (void)softLogout:(MXKAccount*)account;
+
+/**
+ Hydrate an existing account by using the credentials provided.
+
+ This updates account credentials and restarts the account session
+
+ If the credentials belong to a different user from the account already stored,
+ the old account will be cleared automatically.
+
+ @param account a matrix account.
+ @param credentials the new credentials.
+ */
+- (void)hydrateAccount:(MXKAccount*)account withCredentials:(MXCredentials*)credentials;
 
 /**
  Retrieve the account for a user id.

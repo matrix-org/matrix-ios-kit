@@ -963,6 +963,35 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
+
+#pragma mark - Soft logout
+
+- (void)softLogout
+{
+    _isSoftLogout = YES;
+
+    // Stop SDK making requests to the homeserver
+    [mxSession close];
+}
+
+- (void)hydrateWithCredentials:(MXCredentials*)credentials
+{
+    // Sanity check
+    if ([mxCredentials.userId isEqualToString:credentials.userId])
+    {
+        mxCredentials = credentials;
+        _isSoftLogout = NO;
+        [[MXKAccountManager sharedManager] saveAccounts];
+
+        [self prepareRESTClient];
+    }
+    else
+    {
+        NSLog(@"[MXKAccount] hydrateWithCredentials: Error: users ids mismatch: %@ vs %@", credentials.userId, mxCredentials.userId);
+    }
+}
+
+
 - (void)deletePusher
 {
     if (self.pushNotificationServiceIsActive)
@@ -1550,6 +1579,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         // Logout this account
         [[MXKAccountManager sharedManager] removeAccount:self completion:nil];
+    }
+    else if (mxSession.state == MXSessionStateSoftLogout)
+    {
+        // Soft logout this account
+        [[MXKAccountManager sharedManager] softLogout:self];
     }
 }
 
