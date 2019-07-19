@@ -194,6 +194,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+        _isSoftLogout = [coder decodeBoolForKey:@"isSoftLogout"];
 
         _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
@@ -252,6 +253,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
     [coder encodeBool:_disabled forKey:@"disabled"];
+    [coder encodeBool:_isSoftLogout forKey:@"isSoftLogout"];
 
     [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
     
@@ -969,6 +971,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 - (void)softLogout
 {
     _isSoftLogout = YES;
+    [[MXKAccountManager sharedManager] saveAccounts];
 
     // Stop SDK making requests to the homeserver
     [mxSession close];
