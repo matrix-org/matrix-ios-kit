@@ -1195,6 +1195,10 @@
     
     // Update authentication inputs view to return in initial step
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+    if (self.softLogoutCredentials)
+    {
+        self.authInputsView.softLogoutCredentials = self.softLogoutCredentials;
+    }
 }
 
 - (void)showResourceLimitExceededError:(NSDictionary *)errorDict onAdminContactTapped:(void (^)(NSURL *adminContact))onAdminContactTapped
