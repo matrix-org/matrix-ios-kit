@@ -901,6 +901,24 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)logout:(void (^)(void))completion 
 {
+    if (!mxSession)
+    {
+        NSLog(@"[MXKAccount] logout: Need to open the closed session to make a logout request");
+        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
+
+        MXWeakify(self);
+        [mxSession setStore:store success:^{
+            MXStrongifyAndReturnIfNil(self);
+
+            [self logout:completion];
+
+        } failure:^(NSError *error) {
+            completion();
+        }];
+        return;
+    }
+
     [self deletePusher];
     [self enablePushKitNotifications:NO success:nil failure:nil];
     
