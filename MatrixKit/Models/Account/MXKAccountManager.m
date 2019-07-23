@@ -224,8 +224,13 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
     }
     else
     {
-        // TODO
         NSLog(@"[MXKAccountManager] hydrateAccount: Credentials given for another account: %@", credentials.userId);
+
+        // Logout the old account and create a new one with the new credentials
+        [self removeAccount:account sendLogoutRequest:YES completion:nil];
+
+        MXKAccount *newAccount = [[MXKAccount alloc] initWithCredentials:credentials];
+        [self addAccount:newAccount andOpenSession:YES];
     }
 }
 
