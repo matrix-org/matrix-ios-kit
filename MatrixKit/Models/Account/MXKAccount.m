@@ -194,6 +194,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _enableInAppNotifications = [coder decodeBoolForKey:@"enableInAppNotifications"];
         
         _disabled = [coder decodeBoolForKey:@"disabled"];
+        _isSoftLogout = [coder decodeBoolForKey:@"isSoftLogout"];
 
         _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
@@ -252,6 +253,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeBool:_enableInAppNotifications forKey:@"enableInAppNotifications"];
     
     [coder encodeBool:_disabled forKey:@"disabled"];
+    [coder encodeBool:_isSoftLogout forKey:@"isSoftLogout"];
 
     [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
     
@@ -899,6 +901,24 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)logout:(void (^)(void))completion 
 {
+    if (!mxSession)
+    {
+        NSLog(@"[MXKAccount] logout: Need to open the closed session to make a logout request");
+        id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
+        mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
+
+        MXWeakify(self);
+        [mxSession setStore:store success:^{
+            MXStrongifyAndReturnIfNil(self);
+
+            [self logout:completion];
+
+        } failure:^(NSError *error) {
+            completion();
+        }];
+        return;
+    }
+
     [self deletePusher];
     [self enablePushKitNotifications:NO success:nil failure:nil];
     
@@ -962,6 +982,36 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         [self logoutLocally:completion];
     }
 }
+
+
+#pragma mark - Soft logout
+
+- (void)softLogout
+{
+    _isSoftLogout = YES;
+    [[MXKAccountManager sharedManager] saveAccounts];
+
+    // Stop SDK making requests to the homeserver
+    [mxSession close];
+}
+
+- (void)hydrateWithCredentials:(MXCredentials*)credentials
+{
+    // Sanity check
+    if ([mxCredentials.userId isEqualToString:credentials.userId])
+    {
+        mxCredentials = credentials;
+        _isSoftLogout = NO;
+        [[MXKAccountManager sharedManager] saveAccounts];
+
+        [self prepareRESTClient];
+    }
+    else
+    {
+        NSLog(@"[MXKAccount] hydrateWithCredentials: Error: users ids mismatch: %@ vs %@", credentials.userId, mxCredentials.userId);
+    }
+}
+
 
 - (void)deletePusher
 {
@@ -1550,6 +1600,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     {
         // Logout this account
         [[MXKAccountManager sharedManager] removeAccount:self completion:nil];
+    }
+    else if (mxSession.state == MXSessionStateSoftLogout)
+    {
+        // Soft logout this account
+        [[MXKAccountManager sharedManager] softLogout:self];
     }
 }
 

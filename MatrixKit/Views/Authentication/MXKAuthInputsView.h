@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -205,6 +206,11 @@ typedef enum {
  @return YES if the provided set of parameters is supported.
  */
 - (BOOL)setExternalRegistrationParameters:(NSDictionary *)registrationParameters;
+
+/**
+ Update the current authentication session by providing soft logout credentials.
+ */
+@property (nonatomic) MXCredentials *softLogoutCredentials;
 
 /**
  Tell whether all required fields are set
