@@ -627,7 +627,9 @@
         }
         // Check whether all listed flows in this authentication session are supported
         // We suggest using the fallback page (if any), when at least one flow is not supported.
-        else if ((authInputsView.authSession.flows.count != authSession.flows.count) && authenticationFallback.length)
+        else if ((authInputsView.authSession.flows.count != authSession.flows.count)
+                 && authenticationFallback.length
+                 && !_softLogoutCredentials)
         {
             NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
             authInputsView = nil;
