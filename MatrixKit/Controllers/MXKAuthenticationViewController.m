@@ -627,7 +627,9 @@
         }
         // Check whether all listed flows in this authentication session are supported
         // We suggest using the fallback page (if any), when at least one flow is not supported.
-        else if ((authInputsView.authSession.flows.count != authSession.flows.count) && authenticationFallback.length)
+        else if ((authInputsView.authSession.flows.count != authSession.flows.count)
+                 && authenticationFallback.length
+                 && !_softLogoutCredentials)
         {
             NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
             authInputsView = nil;
@@ -1905,7 +1907,26 @@
         NSArray *rightBarButtonItems = self.navigationItem.rightBarButtonItems;
         self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:cancelFallbackBarButton] : @[cancelFallbackBarButton];
     }
-    
+
+    if (self.softLogoutCredentials)
+    {
+        // Add device_id as query param of the fallback
+        NSURLComponents *components = [[NSURLComponents alloc] initWithString:fallbackPage];
+
+        NSMutableArray<NSURLQueryItem*> *queryItems = [components.queryItems mutableCopy];
+        if (!queryItems)
+        {
+            queryItems = [NSMutableArray array];
+        }
+
+        [queryItems addObject:[NSURLQueryItem queryItemWithName:@"device_id"
+                                                          value:self.softLogoutCredentials.deviceId]];
+
+        components.queryItems = queryItems;
+
+        fallbackPage = components.URL.absoluteString;
+    }
+
     [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXLoginResponse *loginResponse) {
         
         MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse andDefaultCredentials:self->mxRestClient.credentials];
