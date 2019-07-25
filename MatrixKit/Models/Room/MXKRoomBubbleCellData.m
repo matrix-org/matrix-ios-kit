@@ -428,6 +428,18 @@
     }
 }
 
+- (NSInteger)bubbleComponentIndexForEventId:(NSString *)eventId
+{
+    return [self.bubbleComponents indexOfObjectPassingTest:^BOOL(MXKRoomBubbleComponent * _Nonnull bubbleComponent, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([bubbleComponent.event.eventId isEqualToString:eventId])
+        {
+            *stop = YES;
+            return YES;
+        }
+        return NO;
+    }];
+}
+
 #pragma mark - Text measuring
 
 // Return the raw height of the provided text by removing any margin
