@@ -238,7 +238,7 @@
 
     @synchronized(bubbleComponents)
     {
-        NSInteger componentIndex = [self componentIndexOfEvent:eventId];
+        NSInteger componentIndex = [self bubbleComponentIndexForEventId:eventId];
 
         if (NSNotFound != componentIndex)
         {
@@ -860,23 +860,6 @@
         // Update resulting message body
         attributedTextMessage = customAttributedTextMsg;
     }
-}
-
-- (NSInteger)componentIndexOfEvent:(NSString*)eventId
-{
-    NSInteger index = NSNotFound;
-
-    for (NSInteger i = 0; i < bubbleComponents.count; i++)
-    {
-        MXKRoomBubbleComponent *roomBubbleComponent = bubbleComponents[i];
-        if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
-        {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
 }
 
 - (void)didMXSessionUpdatePublicisedGroupsForUsers:(NSNotification *)notif
