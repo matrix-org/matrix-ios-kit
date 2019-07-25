@@ -4,6 +4,7 @@ Changes in MatrixKit in 0.10.2 (2019-07-)
 Improvements:
  * Upgrade MatrixSDK version ([v0.13.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.13.1)).
  * Support soft logout (vector-im/riot-ios/issues/2540).
+ * MXKRoomBubbleCellData: Add method to get bubble component index from event id.
 
  Bug fix:
 
@@ -31,6 +32,9 @@ Improvements:
  * MXKRoomDataSource: Add react and unreact on event methods (PR #560).
  * MXKRoomDataSource: Add can react and can edit an event method (PR #561).
  * MXKRoomDataSource: Support message editing.
+ * Add MXKUTI class that represents a Universal Type Identifier.
+ * Add MXKDocumentPickerPresenter that presents a controller that provides access to documents or destinations outside the app’s sandbox.
+ * Add MXKVideoThumbnailGenerator a utility class to generate a thumbnail image from a video file.
 
 Bug fix:
  * MXKRoomViewController: Handle safe area when asking cell dimension in landscape.
