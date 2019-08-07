@@ -271,6 +271,11 @@
     
     // Finalize table view configuration
     [self configureBubblesTableView];
+
+    if (!@available(iOS 13.0, *))
+    {
+        [self addTextContentSizeComputingViews];
+    }
     
     // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
     MXWeakify(self);
@@ -299,8 +304,6 @@
 {
     [super viewWillAppear:animated];
 
-    [self addTextContentSizeComputingViews];
-
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 
@@ -324,21 +327,11 @@
     // so give a breath to scroll to the bottom if required
     if (shouldScrollToBottomOnTableRefresh)
     {
+        // Will be reset in viewDidAppear
         self.bubbleTableViewDisplayInTransition = YES;
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            
             [self scrollBubblesTableViewToBottomAnimated:NO];
-            
-            // Show bubbles table after initial scrolling to the bottom
-            // Patch: We need to delay this operation to wait for the end of scrolling.
-            dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                
-                self->_bubblesTableView.hidden = NO;
-                self.bubbleTableViewDisplayInTransition = NO;
-                
-            });
-            
         });
     }
     else
@@ -350,6 +343,18 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+
+    if (@available(iOS 13.0, *))
+    {
+        // We can safely use text size computing views only from that point
+        [self addTextContentSizeComputingViews];
+
+        // Rebuild the table for height badly computed before
+        [self reloadBubblesTable:YES];
+    }
+
+    self->_bubblesTableView.hidden = NO;
+    self.bubbleTableViewDisplayInTransition = NO;
 
     if (@available(iOS 11.0, *))
     {
@@ -375,7 +380,10 @@
     
     [self removeReconnectingView];
 
-    [self removeTextContentSizeComputingViews];
+    if (@available(iOS 13.0, *))
+    {
+        [self removeTextContentSizeComputingViews];
+    }
 }
 
 - (void)dealloc
@@ -3944,6 +3952,9 @@
  Add views used by MXKtextContentSizeComputingDelegate.
 
  They are added dynamically so that a MXKRoomViewController child can benefit of it.
+
+ On iOS 13, we need to wait the call of viewDidAppear before playing with the frames of these created
+ views else the OS hangs.
  */
 - (void)addTextContentSizeComputingViews
 {
@@ -3988,21 +3999,9 @@
     // Select the right text view for measurement
     UITextView *selectedTextView = (removeVerticalInset ? measurementTextViewWithoutInset : measurementTextView);
 
-    // We need to be sure that the view is on the screen before updating frames
-    // Else `setFrame` hangs on iOS13
-    // This check works because this class plays with the bubblesTableView.hidden
-    // property between viewDidLoad and viewWillAppear
-    if (!self.bubblesTableView.isHidden)
+    if (maxWidth != selectedTextView.frame.size.width)
     {
-        if (maxWidth != selectedTextView.frame.size.width)
-        {
-            selectedTextView.frame = CGRectMake(0, 0, maxWidth, MAXFLOAT);
-        }
-    }
-    else
-    {
-        // Note: This is probobaly not an issue because [bubblesTableView reloadData] is called hundreds of times
-        NSLog(@"[MXKRoomVC] textContentSizeForAttributedString. Warning: Cannot update frame");
+        selectedTextView.frame = CGRectMake(0, 0, maxWidth, MAXFLOAT);
     }
 
     selectedTextView.attributedText = attributedText;
