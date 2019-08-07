@@ -392,7 +392,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
     if (enable)
     {
-        if ([[MXKAccountManager sharedManager] isPushAvailable])
+        if ([[MXKAccountManager sharedManager] isAPNSAvailable])
         {
             NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push for %@ account", self.mxCredentials.userId);
 
@@ -423,7 +423,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                                                         NSLocalizedDescriptionKey:
                                                             [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
                                                         }];
-            failure (error);
+            if (failure)
+            {
+                failure (error);
+            }
         }
     }
     else if (_hasPusherForPushNotifications)
