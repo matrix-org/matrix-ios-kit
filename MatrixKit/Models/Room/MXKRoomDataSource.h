@@ -21,7 +21,7 @@
 #import "MXKDataSource.h"
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
-
+#import "MXKTextContentSizeComputing.h"
 
 /**
  Define the threshold which triggers a bubbles count flush.
@@ -232,6 +232,12 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  Note: The stickers are not retained by this filter.
  */
 @property (nonatomic) BOOL filterMessagesWithURL;
+
+/**
+ Delegate to compute text size.
+*/
+@property (nonatomic, weak)  id<MXKTextContentSizeComputing> textContentSizeComputingDelegate;
+
 
 #pragma mark - Life cycle
 

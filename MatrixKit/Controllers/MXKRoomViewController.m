@@ -52,7 +52,7 @@
 #import "UIScrollView+MatrixKit.h"
 #import "MXKSlashCommands.h"
 
-@interface MXKRoomViewController ()
+@interface MXKRoomViewController () <MXKTextContentSizeComputing> 
 {
     /**
      YES if scrolling to bottom is in progress
@@ -123,6 +123,9 @@
      The restart the event connnection
      */
     BOOL restartConnection;
+
+    UITextView* measurementTextView;
+    UITextView* measurementTextViewWithoutInset;
 }
 
 /**
@@ -295,7 +298,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
+    [self addTextContentSizeComputingViews];
+
     // Observe server sync process at room data source level too
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMatrixSessionChange) name:kMXKRoomDataSourceSyncStatusChanged object:nil];
 
@@ -369,6 +374,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidSyncNotification object:nil];
     
     [self removeReconnectingView];
+
+    [self removeTextContentSizeComputingViews];
 }
 
 - (void)dealloc
@@ -547,6 +554,7 @@
     _bubblesTableView = nil;
     
     roomDataSource.delegate = nil;
+    roomDataSource.textContentSizeComputingDelegate = nil;
     
     if (_hasRoomDataSourceOwnership)
     {
@@ -658,6 +666,7 @@
     if (roomDataSource)
     {
         roomDataSource.delegate = nil;
+        roomDataSource.textContentSizeComputingDelegate = nil;
         
         if (self.hasRoomDataSourceOwnership)
         {
@@ -683,6 +692,7 @@
         
         roomDataSource = dataSource;
         roomDataSource.delegate = self;
+        roomDataSource.textContentSizeComputingDelegate = self;
         roomDataSource.paginationLimitAroundInitialEvent = _paginationLimit;
         
         // Report the matrix session at view controller level to update UI according to session state
@@ -1007,6 +1017,7 @@
     _bubblesTableView.delegate = nil;
     
     roomDataSource.delegate = nil;
+    roomDataSource.textContentSizeComputingDelegate = nil;
     
     if (self.hasRoomDataSourceOwnership)
     {
@@ -3924,6 +3935,94 @@
     }
     //default frame which will be used if the user scrolls to other attachments in MXKAttachmentsViewController
     return CGRectMake(CGRectGetWidth(self.view.frame)/2, 0.0, 0.0, 0.0);
+}
+
+
+#pragma mark - Text size computing
+
+/**
+ Add views used by MXKtextContentSizeComputingDelegate.
+
+ They are added dynamically so that a MXKRoomViewController child can benefit of it.
+ */
+- (void)addTextContentSizeComputingViews
+{
+    measurementTextView = [[UITextView alloc] init];
+    measurementTextView.hidden = YES;
+
+    measurementTextViewWithoutInset = [[UITextView alloc] init];
+    measurementTextViewWithoutInset.hidden = YES;
+    // Remove the container inset: this operation impacts only the vertical margin.
+    // Note: consider textContainer.lineFragmentPadding to remove horizontal margin
+    measurementTextViewWithoutInset.textContainerInset = UIEdgeInsetsZero;
+
+    [self.view addSubview:measurementTextView];
+    [self.view addSubview:measurementTextViewWithoutInset];
+}
+
+/**
+ Remove views used by MXKtextContentSizeComputingDelegate.
+
+ iOS13 hangs when leaving the VC if dynamically added views are not removed.
+*/
+- (void)removeTextContentSizeComputingViews
+{
+    [measurementTextView removeFromSuperview];
+    measurementTextView = nil;
+    [measurementTextViewWithoutInset removeFromSuperview];
+    measurementTextViewWithoutInset = nil;
+}
+
+
+#pragma mark - MXKtextContentSizeComputingDelegate
+
+- (CGSize)textContentSizeForAttributedString:(NSAttributedString*)attributedText withMaxWith:(CGFloat)maxWidth removeVerticalInset:(BOOL)removeVerticalInset
+{
+    if (!measurementTextView || !measurementTextViewWithoutInset)
+    {
+        // Note: This is probobaly not an issue because [bubblesTableView reloadData] is called hundreds of times
+        NSLog(@"[MXKRoomVC] textContentSizeForAttributedString. Warning: Computing views not available");
+        return CGSizeZero;
+    }
+
+    // Select the right text view for measurement
+    UITextView *selectedTextView = (removeVerticalInset ? measurementTextViewWithoutInset : measurementTextView);
+
+    // We need to be sure that the view is on the screen before updating frames
+    // Else `setFrame` hangs on iOS13
+    // This check works because this class plays with the bubblesTableView.hidden
+    // property between viewDidLoad and viewWillAppear
+    if (!self.bubblesTableView.isHidden)
+    {
+        if (maxWidth != selectedTextView.frame.size.width)
+        {
+            selectedTextView.frame = CGRectMake(0, 0, maxWidth, MAXFLOAT);
+        }
+    }
+    else
+    {
+        // Note: This is probobaly not an issue because [bubblesTableView reloadData] is called hundreds of times
+        NSLog(@"[MXKRoomVC] textContentSizeForAttributedString. Warning: Cannot update frame");
+    }
+
+    selectedTextView.attributedText = attributedText;
+
+    CGSize size = [selectedTextView sizeThatFits:selectedTextView.frame.size];
+
+    // Manage the case where a string attribute has a single paragraph with a left indent
+    // In this case, [UITextViex sizeThatFits] ignores the indent and return the width
+    // of the text only.
+    // So, add this indent afterwards
+    NSRange textRange = NSMakeRange(0, attributedText.length);
+    NSRange longestEffectiveRange;
+    NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 longestEffectiveRange:&longestEffectiveRange inRange:textRange];
+
+    if (NSEqualRanges(textRange, longestEffectiveRange))
+    {
+        size.width = size.width + paragraphStyle.headIndent;
+    }
+    
+    return size;
 }
 
 @end

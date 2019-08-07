@@ -17,6 +17,7 @@
 
 #import "MXKCellData.h"
 #import "MXKRoomBubbleCellDataStoring.h"
+#import "MXKTextContentSizeComputing.h"
 
 #import "MXKRoomBubbleComponent.h"
 
@@ -93,6 +94,11 @@
  - Attached file: returns suitable content size of a text view to display the file name (no icon is used presently).
  */
 @property (nonatomic) CGSize contentSize;
+
+/**
+ Delegate to compute text size.
+*/
+@property (nonatomic, weak)  id<MXKTextContentSizeComputing> textContentSizeComputingDelegate;
 
 /**
  Set of flags indicating fixes that need to be applied at display time.

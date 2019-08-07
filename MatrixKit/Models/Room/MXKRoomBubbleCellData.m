@@ -2,6 +2,7 @@
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -462,46 +463,18 @@
 
 - (CGSize)textContentSize:(NSAttributedString*)attributedText removeVerticalInset:(BOOL)removeVerticalInset
 {
-    static UITextView* measurementTextView = nil;
-    static UITextView* measurementTextViewWithoutInset = nil;
-    
-    if (attributedText.length)
+    if (!attributedText.length)
     {
-        if (!measurementTextView)
-        {
-            measurementTextView = [[UITextView alloc] init];
-            
-            measurementTextViewWithoutInset = [[UITextView alloc] init];
-            // Remove the container inset: this operation impacts only the vertical margin.
-            // Note: consider textContainer.lineFragmentPadding to remove horizontal margin
-            measurementTextViewWithoutInset.textContainerInset = UIEdgeInsetsZero;
-        }
-        
-        // Select the right text view for measurement
-        UITextView *selectedTextView = (removeVerticalInset ? measurementTextViewWithoutInset : measurementTextView);
-        
-        selectedTextView.frame = CGRectMake(0, 0, _maxTextViewWidth, MAXFLOAT);
-        selectedTextView.attributedText = attributedText;
-            
-        CGSize size = [selectedTextView sizeThatFits:selectedTextView.frame.size];
+        return CGSizeZero;
+    }
 
-        // Manage the case where a string attribute has a single paragraph with a left indent
-        // In this case, [UITextViex sizeThatFits] ignores the indent and return the width
-        // of the text only.
-        // So, add this indent afterwards
-        NSRange textRange = NSMakeRange(0, attributedText.length);
-        NSRange longestEffectiveRange;
-        NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 longestEffectiveRange:&longestEffectiveRange inRange:textRange];
-
-        if (NSEqualRanges(textRange, longestEffectiveRange))
-        {
-            size.width = size.width + paragraphStyle.headIndent;
-        }
-
-        return size;
+    if (!self.textContentSizeComputingDelegate)
+    {
+        NSLog(@"[MXKRoomBubbleCellData] textContentSizeForAttributedString. Error: no self.textContentSizeComputingDelegate");
+        return CGSizeZero;
     }
     
-    return CGSizeZero;
+    return [self.textContentSizeComputingDelegate textContentSizeForAttributedString:attributedText withMaxWith:_maxTextViewWidth removeVerticalInset:removeVerticalInset];
 }
 
 #pragma mark - Properties

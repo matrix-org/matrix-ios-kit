@@ -276,6 +276,7 @@
 		3219CBBE1AA6FB470027D7E2 /* MXKRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomViewController.h; sourceTree = "<group>"; };
 		3219CBBF1AA6FB470027D7E2 /* MXKRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomViewController.m; sourceTree = "<group>"; };
 		3219CBC11AA6FB6B0027D7E2 /* MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixKit.h; sourceTree = "<group>"; };
+		3228E4C822F970D900120175 /* MXKTextContentSizeComputing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKTextContentSizeComputing.h; sourceTree = "<group>"; };
 		3230A3701ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSampleJSQMessageMediaData.h; sourceTree = "<group>"; };
 		3230A3711ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSampleJSQMessageMediaData.m; sourceTree = "<group>"; };
 		3230A3731ACADC1800CC57F5 /* MXKRoomDataSourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomDataSourceManager.h; sourceTree = "<group>"; };
@@ -1247,6 +1248,7 @@
 				B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */,
 				B1668ABE21072F93002B14F1 /* MXKSlashCommands.h */,
 				B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */,
+				3228E4C822F970D900120175 /* MXKTextContentSizeComputing.h */,
 			);
 			path = Room;
 			sourceTree = "<group>";

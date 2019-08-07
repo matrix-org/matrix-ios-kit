@@ -7,6 +7,7 @@ Improvements:
  * MXKRoomBubbleCellData: Add method to get bubble component index from event id.
 
  Bug fix:
+ * iOS13: Rooms do not load (vector-im/riot-ios/issues/2619).
 
  API break:
 

@@ -47,7 +47,7 @@ NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSou
 NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
 NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTimelineErrorErrorKey";
 
-@interface MXKRoomDataSource ()
+@interface MXKRoomDataSource () <MXKTextContentSizeComputing>
 {
     /**
      If the data is not from a live timeline, `initialEventId` is the event in the past
@@ -2148,6 +2148,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     Class class = [self cellDataClassForCellIdentifier:kMXKRoomBubbleCellDataIdentifier];
 
                     id<MXKRoomBubbleCellDataStoring> newBubbleData = [[class alloc] initWithEvent:removedEvents[0] andRoomState:self.roomState andRoomDataSource:self];
+                    [self setupTextContentSizeComputingDelegateForCellData:newBubbleData];
 
                     if (eventIsFirstInBubble)
                     {
@@ -2186,6 +2187,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         if (i == 1)
                         {
                             newBubbleData = [[class alloc] initWithEvent:removedEvent andRoomState:self.roomState andRoomDataSource:self];
+                            [self setupTextContentSizeComputingDelegateForCellData:newBubbleData];
                         }
                         else
                         {
@@ -2417,6 +2419,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 // The event is ignored
                                 continue;
                             }
+
+                            [self setupTextContentSizeComputingDelegateForCellData:bubbleData];
 
                             // Check cells collapsing
                             if (bubbleData.hasAttributedTextMessage)
@@ -3383,6 +3387,30 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         failure(nil);
     }
+}
+
+#pragma mark - Text size computing
+
+- (void)setupTextContentSizeComputingDelegateForCellData:(id<MXKRoomBubbleCellDataStoring>)bubbleData
+{
+    if ([bubbleData isKindOfClass:MXKRoomBubbleCellData.class])
+    {
+        MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)bubbleData;
+        roomBubbleCellData.textContentSizeComputingDelegate = self;
+    }
+}
+
+#pragma mark - MXKtextContentSizeComputingDelegate
+
+- (CGSize)textContentSizeForAttributedString:(NSAttributedString*)attributedText withMaxWith:(CGFloat)maxWidth removeVerticalInset:(BOOL)removeVerticalInset
+{
+    if (!self.textContentSizeComputingDelegate)
+    {
+        NSLog(@"[MXKViewController] textContentSizeForAttributedString. Error: no self.textContentSizeComputingDelegate");
+        return CGSizeZero;
+    }
+    
+    return [self.textContentSizeComputingDelegate textContentSizeForAttributedString:attributedText withMaxWith:maxWidth removeVerticalInset:removeVerticalInset];
 }
 
 @end
