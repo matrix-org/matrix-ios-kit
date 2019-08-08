@@ -282,6 +282,28 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 - (void)logoutSendingServerRequest:(BOOL)sendLogoutServerRequest
                         completion:(void (^)(void))completion;
 
+
+#pragma mark - Soft logout
+
+/**
+ Flag to indicate if the account has been logged out by the homeserver admin.
+ */
+@property (nonatomic, readonly) BOOL isSoftLogout;
+
+/**
+ Soft logout the account.
+
+ The matix session is stopped but the data is kept.
+ */
+- (void)softLogout;
+
+/**
+ Hydrate the account using the credentials provided.
+
+ @param credentials the new credentials.
+*/
+- (void)hydrateWithCredentials:(MXCredentials*)credentials;
+
 /**
  Pause the current matrix session.
  

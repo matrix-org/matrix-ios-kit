@@ -26,6 +26,7 @@ static NSString *const kMXKAccountsKey = @"accounts";
 
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
+NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccountManagerDidSoftlogoutAccountNotification";
 
 @interface MXKAccountManager()
 {
@@ -75,7 +76,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     for (MXKAccount *account in mxAccounts)
     {
         // Check whether the account is enabled. Open a new matrix session if none.
-        if (!account.isDisabled && !account.mxSession)
+        if (!account.isDisabled && !account.isSoftLogout && !account.mxSession)
         {
             NSLog(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
             
@@ -195,6 +196,44 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     }
 }
 
+- (void)softLogout:(MXKAccount*)account
+{
+    [account softLogout];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidSoftlogoutAccountNotification
+                                                        object:account
+                                                      userInfo:nil];
+}
+
+- (void)hydrateAccount:(MXKAccount*)account withCredentials:(MXCredentials*)credentials
+{
+    NSLog(@"[MXKAccountManager] hydrateAccount: %@", account.mxCredentials.userId);
+
+    if ([account.mxCredentials.userId isEqualToString:credentials.userId])
+    {
+        // Restart the account
+        [account hydrateWithCredentials:credentials];
+
+        NSLog(@"[MXKAccountManager] hydrateAccount: Open session");
+
+        id<MXStore> store = [[_storeClass alloc] init];
+        [account openSessionWithStore:store];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountManagerDidAddAccountNotification
+                                                            object:account
+                                                          userInfo:nil];
+    }
+    else
+    {
+        NSLog(@"[MXKAccountManager] hydrateAccount: Credentials given for another account: %@", credentials.userId);
+
+        // Logout the old account and create a new one with the new credentials
+        [self removeAccount:account sendLogoutRequest:YES completion:nil];
+
+        MXKAccount *newAccount = [[MXKAccount alloc] initWithCredentials:credentials];
+        [self addAccount:newAccount andOpenSession:YES];
+    }
+}
+
 - (MXKAccount *)accountForUserId:(NSString *)userId
 {
     for (MXKAccount *account in mxAccounts)
@@ -272,7 +311,7 @@ NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountMa
     NSMutableArray *activeAccounts = [NSMutableArray arrayWithCapacity:mxAccounts.count];
     for (MXKAccount *account in mxAccounts)
     {
-        if (!account.disabled)
+        if (!account.disabled && !account.isSoftLogout)
         {
             [activeAccounts addObject:account];
         }

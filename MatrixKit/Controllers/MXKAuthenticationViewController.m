@@ -1,7 +1,8 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
- 
+ Copyright 2019 The Matrix.org Foundation C.I.C
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -626,7 +627,9 @@
         }
         // Check whether all listed flows in this authentication session are supported
         // We suggest using the fallback page (if any), when at least one flow is not supported.
-        else if ((authInputsView.authSession.flows.count != authSession.flows.count) && authenticationFallback.length)
+        else if ((authInputsView.authSession.flows.count != authSession.flows.count)
+                 && authenticationFallback.length
+                 && !_softLogoutCredentials)
         {
             NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
             authInputsView = nil;
@@ -662,6 +665,11 @@
                 // Restore login screen on failure
                 self.authType = MXKAuthenticationTypeLogin;
             }
+        }
+
+        if (_softLogoutCredentials)
+        {
+            [authInputsView setSoftLogoutCredentials:_softLogoutCredentials];
         }
     }
     else
@@ -755,6 +763,35 @@
         // Restore default UI
         self.authType = _authType;
     }
+}
+
+- (void)setSoftLogoutCredentials:(MXCredentials *)softLogoutCredentials
+{
+    NSLog(@"[MXKAuthenticationVC] setSoftLogoutCredentials");
+
+    // Cancel the current operation if any.
+    [self cancel];
+
+    // Load the view controller’s view if it has not yet been loaded.
+    // This is required before updating view's textfields (homeserver url...)
+    [self loadViewIfNeeded];
+
+    // Force register mode
+    self.authType = MXKAuthenticationTypeLogin;
+
+    [self setHomeServerTextFieldText:softLogoutCredentials.homeServer];
+    [self setIdentityServerTextFieldText:softLogoutCredentials.identityServer];
+
+    // Cancel potential request in progress
+    [mxCurrentOperation cancel];
+    mxCurrentOperation = nil;
+
+    // Remove the current auth inputs view
+    self.authInputsView = nil;
+
+    // Set parameters and trigger a refresh (the parameters will be taken into account during [handleAuthenticationSession:])
+    _softLogoutCredentials = softLogoutCredentials;
+    [self refreshAuthenticationSession];
 }
 
 - (void)setOnUnrecognizedCertificateBlock:(MXHTTPClientOnUnrecognizedCertificate)onUnrecognizedCertificateBlock
@@ -1160,6 +1197,10 @@
     
     // Update authentication inputs view to return in initial step
     [self.authInputsView setAuthSession:self.authInputsView.authSession withAuthType:_authType];
+    if (self.softLogoutCredentials)
+    {
+        self.authInputsView.softLogoutCredentials = self.softLogoutCredentials;
+    }
 }
 
 - (void)showResourceLimitExceededError:(NSDictionary *)errorDict onAdminContactTapped:(void (^)(NSURL *adminContact))onAdminContactTapped
@@ -1239,9 +1280,20 @@
     mxCurrentOperation = nil;
     [_authenticationActivityIndicator stopAnimating];
     self.userInteractionEnabled = YES;
-    
+
+    if (self.softLogoutCredentials)
+    {
+        // Hydrate the account with the new access token
+        MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:self.softLogoutCredentials.userId];
+        [[MXKAccountManager sharedManager] hydrateAccount:account withCredentials:credentials];
+
+        if (_delegate)
+        {
+            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+        }
+    }
     // Sanity check: check whether the user is not already logged in with this id
-    if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
+    else if ([[MXKAccountManager sharedManager] accountForUserId:credentials.userId])
     {
         //Alert user
         __weak typeof(self) weakSelf = self;
@@ -1855,7 +1907,26 @@
         NSArray *rightBarButtonItems = self.navigationItem.rightBarButtonItems;
         self.navigationItem.rightBarButtonItems = rightBarButtonItems ? [rightBarButtonItems arrayByAddingObject:cancelFallbackBarButton] : @[cancelFallbackBarButton];
     }
-    
+
+    if (self.softLogoutCredentials)
+    {
+        // Add device_id as query param of the fallback
+        NSURLComponents *components = [[NSURLComponents alloc] initWithString:fallbackPage];
+
+        NSMutableArray<NSURLQueryItem*> *queryItems = [components.queryItems mutableCopy];
+        if (!queryItems)
+        {
+            queryItems = [NSMutableArray array];
+        }
+
+        [queryItems addObject:[NSURLQueryItem queryItemWithName:@"device_id"
+                                                          value:self.softLogoutCredentials.deviceId]];
+
+        components.queryItems = queryItems;
+
+        fallbackPage = components.URL.absoluteString;
+    }
+
     [_authFallbackWebView openFallbackPage:fallbackPage success:^(MXLoginResponse *loginResponse) {
         
         MXCredentials *credentials = [[MXCredentials alloc] initWithLoginResponse:loginResponse andDefaultCredentials:self->mxRestClient.credentials];

@@ -1,6 +1,7 @@
 /*
  Copyright 2015 OpenMarket Ltd
  Copyright 2017 Vector Creations Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -119,6 +120,11 @@
  Use this property to pursue a registration from the next_link sent in an email validation email.
  */
 @property (nonatomic) NSDictionary* externalRegistrationParameters;
+
+/**
+ Use a login process based on the soft logout credentials.
+ */
+@property (nonatomic) MXCredentials *softLogoutCredentials;
 
 /**
  Enable/disable overall the user interaction option.

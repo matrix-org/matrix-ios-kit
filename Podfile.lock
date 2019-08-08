@@ -32,16 +32,16 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.13):
     - DTFoundation/Core
-  - GZIP (1.2.2)
+  - GZIP (1.2.3)
   - HPGrowingTextView (1.1)
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libbase58 (0.1.4)
   - libPhoneNumber-iOS (0.9.13)
-  - MatrixSDK (0.13.0):
-    - MatrixSDK/Core (= 0.13.0)
-  - MatrixSDK/Core (0.13.0):
+  - MatrixSDK (0.13.1):
+    - MatrixSDK/Core (= 0.13.1)
+  - MatrixSDK/Core (0.13.1):
     - AFNetworking (~> 3.2.0)
     - GZIP (~> 1.2.2)
     - libbase58 (~> 0.1.4)
@@ -63,7 +63,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (from `../matrix-ios-sdk/MatrixSDK.podspec`)
+  - MatrixSDK (= 0.13.1)
   - SwiftUTI (from `https://github.com/speramusinc/SwiftUTI.git`, branch `master`)
 
 SPEC REPOS:
@@ -78,12 +78,11 @@ SPEC REPOS:
     - JSQSystemSoundPlayer
     - libbase58
     - libPhoneNumber-iOS
+    - MatrixSDK
     - OLMKit
     - Realm
 
 EXTERNAL SOURCES:
-  MatrixSDK:
-    :path: "../matrix-ios-sdk/MatrixSDK.podspec"
   SwiftUTI:
     :branch: master
     :git: https://github.com/speramusinc/SwiftUTI.git
@@ -98,17 +97,17 @@ SPEC CHECKSUMS:
   cmark: 1d9ad0375e3b9fa281732e992467903606015520
   DTCoreText: e5d688cffc9f6a61eddd1a4f94e2046851230de3
   DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
-  GZIP: 12374d285e3b5d46cfcd480700fcfc7e16caf4f1
+  GZIP: af5c90ef903776a7e9afe6ebebd794a84a2929d4
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libbase58: 7c040313537b8c44b6e2d15586af8e21f7354efd
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
-  MatrixSDK: 6886e7234c650408db5876b44a7f7608c865ce30
+  MatrixSDK: 16c8c4b530a7f9fb264baced52b6b0948b1d0a98
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
   Realm: 50071da38fe079e0735e47c9f2eae738c68c5996
   SwiftUTI: 917993c124f8eac25e88ced0202fc58d7eb50fa8
 
-PODFILE CHECKSUM: a95bc04d9204f496a27a79ce2dcd2625938e264b
+PODFILE CHECKSUM: dc5e4b59b17d9f4fdfa054772dfbdcdd298374b9
 
 COCOAPODS: 1.7.2

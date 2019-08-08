@@ -1,1 +1,17 @@
-
+"matrix" = "Matrix";
+// Login Screen
+"login_create_account" = "Account anmoakn:";
+"login_server_url_placeholder" = "URL (bv. https://matrix.org)";
+"login_home_server_title" = "Thuusserver:";
+"login_home_server_info" = "Je thuusserver sloat al je gespreks- en accountgegeevns ip";
+"login_identity_server_title" = "Identiteitsserver:";
+"login_user_id_placeholder" = "Matrix-ID (bv. @jean:matrix.org of jean)";
+"login_password_placeholder" = "Paswoord";
+"login_optional_field" = "optioneel";
+"login_display_name_placeholder" = "Weergoavenoame (bv. Jean Kieckens)";
+"login_email_info" = "Door een e-mailadresse in te geevn kunn andere gebruukers je gemakkeliker ip Matrix wereviendn, en 't gift jen ook e maniere voor in den toekomst je paswoord te verandern.";
+"login_email_placeholder" = "E-mailadresse";
+"login_prompt_email_token" = "Gif jen e-mailadressevalidoatiebewys in:";
+"login_error_title" = "Anmeldn mislukt";
+"login_error_no_login_flow" = "Iphoaln van de authenticoatie-informoatie van dezen thuusserver is mislukt";
+"view" = "Toogn";

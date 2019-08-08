@@ -128,4 +128,12 @@
  */
 - (CGSize)textContentSize:(NSAttributedString*)attributedText removeVerticalInset:(BOOL)removeVerticalInset;
 
+/**
+ Get bubble component index from event id.
+
+ @param eventId Event id of bubble component.
+ @return Index of bubble component associated to event id or NSNotFound
+ */
+- (NSInteger)bubbleComponentIndexForEventId:(NSString *)eventId;
+
 @end

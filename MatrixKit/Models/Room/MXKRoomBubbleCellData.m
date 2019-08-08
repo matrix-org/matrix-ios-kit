@@ -238,7 +238,7 @@
 
     @synchronized(bubbleComponents)
     {
-        NSInteger componentIndex = [self componentIndexOfEvent:eventId];
+        NSInteger componentIndex = [self bubbleComponentIndexForEventId:eventId];
 
         if (NSNotFound != componentIndex)
         {
@@ -426,6 +426,18 @@
         CGFloat positionY = (attachment == nil || attachment.type == MXKAttachmentTypeFile || attachment.type == MXKAttachmentTypeAudio) ? MXKROOMBUBBLECELLDATA_TEXTVIEW_DEFAULT_VERTICAL_INSET : 0;
         firstComponent.position = CGPointMake(0, positionY);
     }
+}
+
+- (NSInteger)bubbleComponentIndexForEventId:(NSString *)eventId
+{
+    return [self.bubbleComponents indexOfObjectPassingTest:^BOOL(MXKRoomBubbleComponent * _Nonnull bubbleComponent, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([bubbleComponent.event.eventId isEqualToString:eventId])
+        {
+            *stop = YES;
+            return YES;
+        }
+        return NO;
+    }];
 }
 
 #pragma mark - Text measuring
@@ -848,23 +860,6 @@
         // Update resulting message body
         attributedTextMessage = customAttributedTextMsg;
     }
-}
-
-- (NSInteger)componentIndexOfEvent:(NSString*)eventId
-{
-    NSInteger index = NSNotFound;
-
-    for (NSInteger i = 0; i < bubbleComponents.count; i++)
-    {
-        MXKRoomBubbleComponent *roomBubbleComponent = bubbleComponents[i];
-        if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
-        {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
 }
 
 - (void)didMXSessionUpdatePublicisedGroupsForUsers:(NSNotification *)notif
