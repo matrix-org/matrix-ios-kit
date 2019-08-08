@@ -1,4 +1,4 @@
-Changes in MatrixKit in 0.10.2 (2019-07-)
+Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
 
 Improvements:
@@ -8,8 +8,6 @@ Improvements:
 
  Bug fix:
  * APNS Push: fix logic when enabling APNS push. Avoid calling nil callback method.
- 
- API break:
 
 Changes in MatrixKit in 0.10.1 (2019-07-16)
 ==========================================
