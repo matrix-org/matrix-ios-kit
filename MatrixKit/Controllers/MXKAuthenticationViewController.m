@@ -503,13 +503,7 @@
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
-{
-    if (!identityServerUrl.length)
-    {
-        // Force refresh with default value
-        identityServerUrl = _defaultIdentityServerUrl;
-    }
-    
+{    
     _identityServerTextField.text = identityServerUrl;
     
     // Update REST client

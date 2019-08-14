@@ -272,9 +272,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     else
     {
-        _identityServerURL = nil;
-        // By default, use the same address for the identity server
-        [mxRestClient setIdentityServer:mxCredentials.homeServer];
+        _identityServerURL = nil;        
+        [mxRestClient setIdentityServer:nil];
     }
     
     // Archive updated field
