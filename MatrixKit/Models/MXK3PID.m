@@ -27,6 +27,8 @@
 @property (nonatomic) NSString *clientSecret;
 @property (nonatomic) NSUInteger sendAttempt;
 @property (nonatomic) NSString *sid;
+@property (nonatomic) MXIdentityService *identityService;
+
 @end
 
 @implementation MXK3PID
@@ -50,6 +52,7 @@
     [currentRequest cancel];
     currentRequest = nil;
     mxRestClient = nil;
+    self.identityService = nil;
 
     self.sendAttempt = 1;
     self.sid = nil;
@@ -76,6 +79,13 @@
         {
             _validationState = MXK3PIDAuthStateTokenRequested;
             mxRestClient = restClient;
+            
+            NSString *identityServer = restClient.credentials.identityServer;
+            if (identityServer)
+            {
+                // Use same identity server as REST client for validation token submission
+                self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer];
+            }
             
             currentRequest = [mxRestClient requestTokenForEmail:self.address isDuringRegistration:isDuringRegistration clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid) {
                 
@@ -156,7 +166,7 @@
     {
         _validationState = MXK3PIDAuthStateTokenSubmitted;
         
-        currentRequest = [mxRestClient submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+        currentRequest = [self.identityService submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
             
             self->_validationState = MXK3PIDAuthStateAuthenticated;
             self->currentRequest = nil;
