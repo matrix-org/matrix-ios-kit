@@ -164,34 +164,51 @@
     // Sanity Check
     if (_validationState == MXK3PIDAuthStateTokenReceived)
     {
-        _validationState = MXK3PIDAuthStateTokenSubmitted;
-        
-        currentRequest = [self.identityService submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+        if (self.identityService)
+        {
+            _validationState = MXK3PIDAuthStateTokenSubmitted;
             
-            self->_validationState = MXK3PIDAuthStateAuthenticated;
-            self->currentRequest = nil;
-            
-            if (success)
-            {
-                success();
-            }
-            
-        } failure:^(NSError *error) {
-            
-            // Return in previous state
-            self->_validationState = MXK3PIDAuthStateTokenReceived;
-            self->currentRequest = nil;
+            currentRequest = [self.identityService submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+                
+                self->_validationState = MXK3PIDAuthStateAuthenticated;
+                self->currentRequest = nil;
+                
+                if (success)
+                {
+                    success();
+                }
+                
+            } failure:^(NSError *error) {
+                
+                // Return in previous state
+                self->_validationState = MXK3PIDAuthStateTokenReceived;
+                self->currentRequest = nil;
+                
+                if (failure)
+                {
+                    failure (error);
+                }
+                
+            }];
+        }
+        else
+        {
+            NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), identity service is not set", self.address, self.medium);
             
             if (failure)
             {
-                failure (error);
+                failure(nil);
             }
-            
-        }];
+        }
     }
     else
     {
         NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
+        
+        if (failure)
+        {
+            failure(nil);
+        }
     }
 }
 
