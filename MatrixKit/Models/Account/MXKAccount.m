@@ -269,11 +269,15 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         _identityServerURL = identityServerURL;
         // Update the current restClient
         [mxRestClient setIdentityServer:identityServerURL];
+        
+        // Update identity service
+        mxSession.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServerURL];
     }
     else
     {
-        _identityServerURL = nil;        
+        _identityServerURL = nil;
         [mxRestClient setIdentityServer:nil];
+        mxSession.identityService = nil;
     }
     
     // Archive updated field
