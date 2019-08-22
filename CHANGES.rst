@@ -5,6 +5,7 @@ Improvements:
  * Upgrade MatrixSDK version ([v0.13.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.13.1)).
  * Support soft logout (vector-im/riot-ios/issues/2540).
  * MXKRoomBubbleCellData: Add method to get bubble component index from event id.
+ * MXKEmail: force in lowercase the email address.
 
  Bug fix:
  * APNS Push: fix logic when enabling APNS push. Avoid calling nil callback method.

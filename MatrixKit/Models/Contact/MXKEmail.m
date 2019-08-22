@@ -1,5 +1,6 @@
 /*
  Copyright 2015 OpenMarket Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -37,7 +38,7 @@
     
     if (self)
     {
-        _emailAddress = anEmailAddress;
+        _emailAddress = [anEmailAddress lowercaseString];
         _type = aType;
     }
     
