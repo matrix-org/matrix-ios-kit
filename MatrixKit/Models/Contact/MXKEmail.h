@@ -19,7 +19,7 @@
 
 @interface MXKEmail : MXKContactField
 
-// email info
+// email info (the address is stored in lowercase)
 @property (nonatomic, readonly) NSString *type;
 @property (nonatomic, readonly) NSString *emailAddress;
 
