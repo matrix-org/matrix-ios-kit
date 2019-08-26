@@ -74,7 +74,7 @@
     if (self)
     {
         _type = [coder decodeObjectForKey:@"type"];
-        _emailAddress = [coder decodeObjectForKey:@"emailAddress"];
+        _emailAddress = [[coder decodeObjectForKey:@"emailAddress"] lowercaseString];
     }
     
     return self;
