@@ -259,8 +259,9 @@ static NSAttributedString *verticalWhitespace = nil;
     [currentAlert dismissViewControllerAnimated:NO completion:nil];
     __weak typeof(self) weakSelf = self;
     
-    currentAlert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
-    
+    currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_title"]
+                                                       message:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
+
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         
         textField.secureTextEntry = NO;

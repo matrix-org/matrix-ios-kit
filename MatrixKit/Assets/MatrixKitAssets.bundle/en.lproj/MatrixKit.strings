@@ -150,11 +150,12 @@
 
 // Devices
 "device_details_title" = "Device information\n";
-"device_details_name" = "Name\n";
-"device_details_identifier" = "Device ID\n";
+"device_details_name" = "Public Name\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Last seen\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Device name:";
+"device_details_rename_prompt_title" = "Device Name";
+"device_details_rename_prompt_message" = "A device's public name is visible to people you communicate with";
 "device_details_delete_prompt_title" = "Authentication";
 "device_details_delete_prompt_message" = "This operation requires additional authentication.\nTo continue, please enter your password.";
 
@@ -171,8 +172,8 @@
 "room_event_encryption_info_event_none" = "none";
 "room_event_encryption_info_device" = "\nSender device information\n";
 "room_event_encryption_info_device_unknown" = "unknown device\n";
-"room_event_encryption_info_device_name" = "Name\n";
-"room_event_encryption_info_device_id" = "Device ID\n";
+"room_event_encryption_info_device_name" = "Public Name\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verification\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 fingerprint\n";
 "room_event_encryption_info_device_verified" = "Verified";
