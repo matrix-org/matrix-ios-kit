@@ -34,7 +34,7 @@
 "yes" = "Ja";
 "abort" = "Abbrechen";
 "back" = "Zurück";
-"close" = "Schließen";
+"close" = "Beenden";
 "continue" = "Fortsetzen";
 "discard" = "Verwerfen";
 "dismiss" = "Ablehnen";
@@ -376,3 +376,4 @@
 "login_error_resource_limit_exceeded_message_contact" = "\n\nBitte kontaktiere deinen Dienst-Administrator um mit der Nutzung dieses Dienstes fortzufahren.";
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktiere Administrator";
 "e2e_passphrase_create" = "Passphrase erzeugen";
+"account_error_push_not_allowed" = "Benachrichtigungen nicht erlaubt";

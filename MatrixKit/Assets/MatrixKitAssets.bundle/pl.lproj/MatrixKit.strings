@@ -169,3 +169,4 @@
 "notification_settings_by_default" = "Domyślnie…";
 "notification_settings_suppress_from_bots" = "Ogranicz powiadomienia od botów";
 "notification_settings_custom_sound" = "Dźwięk niestandardowy";
+"login_home_server_info" = "Twój serwer domowy przechowuje wszystkie Twoje rozmowy i dane konta";
