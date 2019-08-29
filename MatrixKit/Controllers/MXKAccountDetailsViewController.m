@@ -751,8 +751,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                 
                                                 __weak typeof(self) weakSelf = self;
                                                 
-                                                // We always bind emails when registering, so let's do the same here
-                                                [self->submittedEmail add3PIDToUser:YES success:^{
+                                                // We do not bind anymore emails when registering, so let's do the same here
+                                                [self->submittedEmail add3PIDToUser:NO success:^{
                                                     
                                                     if (weakSelf)
                                                     {
