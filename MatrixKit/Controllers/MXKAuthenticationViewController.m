@@ -518,7 +518,7 @@
 {
     if (![self.identityService.identityServer isEqualToString:url])
     {
-        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url];
+        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url andHomeserverRestClient:mxRestClient];
     }
     
     [mxRestClient setIdentityServer:url];
