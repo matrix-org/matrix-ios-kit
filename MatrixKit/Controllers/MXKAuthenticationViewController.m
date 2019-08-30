@@ -188,7 +188,10 @@
     
     _homeServerTextField.text = _defaultHomeServerUrl;
     _identityServerTextField.text = _defaultIdentityServerUrl;
-    
+
+    // Hide the identity server by default
+    [self setIdentityServerHidden:YES];
+
     // Create here REST client (if homeserver is defined)
     [self updateRESTClient];
     
@@ -370,6 +373,8 @@
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
     }
+
+    [self checkIdentityServerRequirement];
 }
 
 - (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
@@ -505,6 +510,8 @@
             self.authType = _authType;
         }
     }
+
+    [self checkIdentityServerRequirement];
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
@@ -522,6 +529,34 @@
     }
     
     [mxRestClient setIdentityServer:url];
+}
+
+- (void)setIdentityServerHidden:(BOOL)hidden
+{
+    _identityServerContainer.hidden = hidden;
+}
+
+- (void)checkIdentityServerRequirement
+{
+    // The identity server is only required for registration
+    // It is then stored in the user account data
+    [self setIdentityServerHidden:YES];
+
+    if (_authType == MXKAuthenticationTypeRegister)
+    {
+        [mxRestClient supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
+
+            if (matrixVersions.doesServerRequireIdentityServerParam)
+            {
+                [self setIdentityServerHidden:NO];
+            }
+
+        } failure:^(NSError *error) {
+            // No need to report this error to the end user
+            // There will be already an error about failing to get the auth flow from the HS
+            NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement. Error: %@", error);
+        }];
+    }
 }
 
 - (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled
@@ -1830,6 +1865,8 @@
 {
     if (textField == _homeServerTextField)
     {
+        [self setIdentityServerHidden:YES];
+
         // Cancel supported AuthFlow refresh if a request is in progress
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
         

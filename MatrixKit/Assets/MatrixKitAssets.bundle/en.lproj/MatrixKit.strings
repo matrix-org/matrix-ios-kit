@@ -24,9 +24,9 @@
 // Login Screen
 "login_create_account" = "Create account:";
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
-"login_home_server_title" = "Home Server:";
+"login_home_server_title" = "Homeserver URL:";
 "login_home_server_info" = "Your homeserver stores all your conversations and account data";
-"login_identity_server_title" = "Identity Server:";
+"login_identity_server_title" = "Identity Server URL:";
 "login_identity_server_info" = "Matrix provides identity servers to track which emails etc. belong to which Matrix IDs. Only https://matrix.org currently exists.";
 "login_user_id_placeholder" = "Matrix ID (e.g. @bob:matrix.org or bob)";
 "login_password_placeholder" = "Password";
@@ -301,7 +301,7 @@
 "power_level" = "Power Level";
 "network_error_not_reachable" = "Please check your network connectivity";
 "user_id_placeholder" = "ex: @bob:homeserver";
-"ssl_homeserver_url" = "Home Server URL: %@";
+"ssl_homeserver_url" = "Homeserver URL: %@";
 
 // Permissions
 "camera_access_not_granted_for_call" = "Video calls require access to the Camera but %@ doesn't have permission to use it";
@@ -454,7 +454,7 @@
 "notification_settings_notify_all_other" = "Notify for all other messages/rooms";
 
 // gcm section 
-"settings_config_home_server" = "Home server: %@";
+"settings_config_home_server" = "Homeserver: %@";
 "settings_config_identity_server" = "Identity server: %@";
 "settings_config_user_id" = "User ID: %@";
 

@@ -5,6 +5,7 @@ Improvements:
  * Upgrade MatrixSDK version ([v0.14.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.14.0)).
  * MXKDeviceView: Make clear that device names are publicly readable (vector-im/riot-ios/issues/2662).
  * Privacy: Remove the bind true flag from 3PID adds in settings (vector-im/riot-ios/issues/2650).
+ * Privacy: Remove the ability to set an IS at login/registration (vector-im/riot-ios/issues/2661).
 
 Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
