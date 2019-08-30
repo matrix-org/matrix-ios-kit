@@ -75,6 +75,11 @@
     NSTimer* registrationTimer;
 }
 
+/**
+ The identity service used to make identity server API requests.
+ */
+@property (nonatomic) MXIdentityService *identityService;
+
 @end
 
 @implementation MXKAuthenticationViewController
@@ -506,11 +511,17 @@
 {    
     _identityServerTextField.text = identityServerUrl;
     
-    // Update REST client
-    if (![mxRestClient.identityServer isEqualToString:identityServerUrl])
+    [self updateIdentityServerURL:identityServerUrl];
+}
+
+- (void)updateIdentityServerURL:(NSString*)url
+{
+    if (![self.identityService.identityServer isEqualToString:url])
     {
-        [mxRestClient setIdentityServer:identityServerUrl];
+        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url andHomeserverRestClient:mxRestClient];
     }
+    
+    [mxRestClient setIdentityServer:url];
 }
 
 - (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled
@@ -1469,7 +1480,7 @@
             
             if (_identityServerTextField.text.length)
             {
-                [mxRestClient setIdentityServer:_identityServerTextField.text];
+                [self updateIdentityServerURL:self.identityServerTextField.text];
             }
         }
     }
@@ -1875,6 +1886,11 @@
 - (MXRestClient *)authInputsViewThirdPartyIdValidationRestClient:(MXKAuthInputsView *)authInputsView
 {
     return mxRestClient;
+}
+
+- (MXIdentityService *)authInputsViewThirdPartyIdValidationIdentityService:(MXIdentityService *)authInputsView
+{
+    return self.identityService;
 }
 
 #pragma mark - Authentication Fallback

@@ -14,6 +14,8 @@ Improvements:
  * Support soft logout (vector-im/riot-ios/issues/2540).
  * MXKRoomBubbleCellData: Add method to get bubble component index from event id.
  * MXKEmail: force in lowercase the email address.
+ * Use MXIdentityService to perform identity server requests (vector-im/riot-ios#2647).
+ * Support identity server v2 API (vector-im/riot-ios#2603 and /vector-im/riot-ios#2652).
 
  Bug fix:
  * APNS Push: fix logic when enabling APNS push. Avoid calling nil callback method.
