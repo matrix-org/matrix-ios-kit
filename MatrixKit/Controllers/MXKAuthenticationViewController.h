@@ -80,6 +80,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *homeServerLabel;
 @property (weak, nonatomic) IBOutlet UITextField *homeServerTextField;
 @property (weak, nonatomic) IBOutlet UILabel *homeServerInfoLabel;
+@property (weak, nonatomic) IBOutlet UIView *identityServerContainer;
 @property (weak, nonatomic) IBOutlet UILabel *identityServerLabel;
 @property (weak, nonatomic) IBOutlet UITextField *identityServerTextField;
 @property (weak, nonatomic) IBOutlet UILabel *identityServerInfoLabel;
@@ -231,6 +232,11 @@
  @param identityServerUrl the identity server url to use
  */
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl;
+
+/**
+ Check if the selected homeserver requires an identity server.
+ */
+- (void)checkIdentityServerRequirement;
 
 /**
  Force dismiss keyboard
