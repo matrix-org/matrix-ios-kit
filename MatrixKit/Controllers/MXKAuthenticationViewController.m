@@ -373,6 +373,8 @@
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
     }
+
+    [self checkIdentityServerRequirement];
 }
 
 - (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
