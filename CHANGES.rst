@@ -1,3 +1,11 @@
+Changes in MatrixKit in 0.11.0 (2019-08-)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.14.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.14.0)).
+ * MXKDeviceView: Make clear that device names are publicly readable (vector-im/riot-ios/issues/2662).
+ * Privacy: Remove the bind true flag from 3PID adds in settings (vector-im/riot-ios/issues/2650).
+
 Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
 
@@ -5,6 +13,7 @@ Improvements:
  * Upgrade MatrixSDK version ([v0.13.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.13.1)).
  * Support soft logout (vector-im/riot-ios/issues/2540).
  * MXKRoomBubbleCellData: Add method to get bubble component index from event id.
+ * MXKEmail: force in lowercase the email address.
  * Use MXIdentityService to perform identity server requests (vector-im/riot-ios#2647).
  * Support identity server v2 API (vector-im/riot-ios#2603 and /vector-im/riot-ios#2652).
 
