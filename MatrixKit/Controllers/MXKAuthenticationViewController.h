@@ -234,9 +234,10 @@
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl;
 
 /**
- Check if the selected homeserver requires an identity server.
+ Fetch the identity server from the wellknown API of the selected homeserver.
+ and check if the HS requires an identity server.
  */
-- (void)checkIdentityServerRequirement;
+- (void)checkIdentityServer;
 
 /**
  Force dismiss keyboard
