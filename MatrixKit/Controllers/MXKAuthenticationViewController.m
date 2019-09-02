@@ -73,6 +73,11 @@
      The timer used to postpone the registration when the authentication is pending (for example waiting for email validation)
      */
     NSTimer* registrationTimer;
+
+    /**
+     Identity Server discovery.
+     */
+    MXAutoDiscovery *autoDiscovery;
 }
 
 /**
@@ -374,7 +379,7 @@
         [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
     }
 
-    [self checkIdentityServerRequirement];
+    [self checkIdentityServer];
 }
 
 - (void)setAuthInputsView:(MXKAuthInputsView *)authInputsView
@@ -511,7 +516,7 @@
         }
     }
 
-    [self checkIdentityServerRequirement];
+    [self checkIdentityServer];
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
@@ -536,26 +541,72 @@
     _identityServerContainer.hidden = hidden;
 }
 
-- (void)checkIdentityServerRequirement
+- (void)checkIdentityServer
 {
-    // The identity server is only required for registration
-    // It is then stored in the user account data
+    // Hide the field while checking data
     [self setIdentityServerHidden:YES];
 
+    // First, fetch the IS advertised by the HS
+    if (mxRestClient.homeserver)
+    {
+        NSLog(@"[MXKAuthenticationVC] checkIdentityServer for homeserver %@", mxRestClient.homeserver);
+
+        autoDiscovery = [[MXAutoDiscovery alloc] initWithUrl:mxRestClient.homeserver];
+
+        MXWeakify(self);
+        [autoDiscovery findClientConfig:^(MXDiscoveredClientConfig * _Nonnull discoveredClientConfig) {
+            MXStrongifyAndReturnIfNil(self);
+
+            NSString *identityServer = discoveredClientConfig.wellKnown.identityServer.baseUrl;
+            NSLog(@"[MXKAuthenticationVC] checkIdentityServer: Identity server: %@", identityServer);
+
+            if (identityServer)
+            {
+                // Apply the provided IS
+                [self setIdentityServerTextFieldText:identityServer];
+            }
+
+            // Then, check if the HS needs an IS for running
+            [self checkIdentityServerRequirementWithCompletion:^(BOOL identityServerRequired) {
+
+                // Show the field only if an IS is required so that the user can customise it
+                [self setIdentityServerHidden:!identityServerRequired];
+            }];
+
+            self->autoDiscovery = nil;
+
+        } failure:^(NSError *error) {
+            MXStrongifyAndReturnIfNil(self);
+
+            // No need to report this error to the end user
+            // There will be already an error about failing to get the auth flow from the HS
+            NSLog(@"[MXKAuthenticationVC] checkIdentityServer. Error: %@", error);
+
+            self->autoDiscovery = nil;
+        }];
+    }
+}
+
+- (void)checkIdentityServerRequirementWithCompletion:(void (^)(BOOL identityServerRequired))completion
+{
     if (_authType == MXKAuthenticationTypeRegister)
     {
         [mxRestClient supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
 
-            if (matrixVersions.doesServerRequireIdentityServerParam)
-            {
-                [self setIdentityServerHidden:NO];
-            }
+            NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement: %@", matrixVersions.doesServerRequireIdentityServerParam ? @"YES": @"NO");
+            completion(matrixVersions.doesServerRequireIdentityServerParam);
 
         } failure:^(NSError *error) {
             // No need to report this error to the end user
             // There will be already an error about failing to get the auth flow from the HS
             NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement. Error: %@", error);
         }];
+    }
+    else
+    {
+        // The identity server is only required for registration
+        // It is then stored in the user account data
+        completion(NO);
     }
 }
 
