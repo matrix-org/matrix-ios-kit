@@ -530,10 +530,17 @@
 {
     if (![self.identityService.identityServer isEqualToString:url])
     {
-        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url andHomeserverRestClient:mxRestClient];
+        if (url.length)
+        {
+            self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url andHomeserverRestClient:mxRestClient];
+        }
+        else
+        {
+            self.identityService = nil;
+        }
     }
     
-    [mxRestClient setIdentityServer:url];
+    [mxRestClient setIdentityServer:url.length ? url : nil];
 }
 
 - (void)setIdentityServerHidden:(BOOL)hidden
@@ -589,7 +596,13 @@
 
 - (void)checkIdentityServerRequirementWithCompletion:(void (^)(BOOL identityServerRequired))completion
 {
-    if (_authType == MXKAuthenticationTypeRegister)
+    if (_authType == MXKAuthenticationTypeLogin)
+    {
+        // The identity server is only required for registration and password reset
+        // It is then stored in the user account data
+        completion(NO);
+    }
+    else
     {
         [mxRestClient supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
 
@@ -601,12 +614,6 @@
             // There will be already an error about failing to get the auth flow from the HS
             NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement. Error: %@", error);
         }];
-    }
-    else
-    {
-        // The identity server is only required for registration
-        // It is then stored in the user account data
-        completion(NO);
     }
 }
 
