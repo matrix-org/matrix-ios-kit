@@ -491,7 +491,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     {
         MXSession *mxSession = self.mxSessions.firstObject;
         
-        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer andHomeserverRestClient:mxSession.matrixRestClient];
+        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxSession.matrixRestClient];
         
         // Lookup the matrix users in all the local contacts.
         [self updateMatrixIDsForAllLocalContacts];
@@ -525,7 +525,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         
         if (identityServer)
         {
-            _identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer andHomeserverRestClient:mxSession.matrixRestClient];
+            _identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxSession.matrixRestClient];
         }
         else
         {

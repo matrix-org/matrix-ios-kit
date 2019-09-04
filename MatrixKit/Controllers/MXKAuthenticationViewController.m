@@ -532,7 +532,7 @@
     {
         if (url.length)
         {
-            self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url andHomeserverRestClient:mxRestClient];
+            self.identityService = [[MXIdentityService alloc] initWithIdentityServer:url accessToken:nil andHomeserverRestClient:mxRestClient];
         }
         else
         {

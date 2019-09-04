@@ -274,20 +274,15 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     if (identityServerURL.length)
     {
         _identityServerURL = identityServerURL;
-        // Update the current restClient
-        [mxRestClient setIdentityServer:identityServerURL];
-        
         mxCredentials.identityServer = identityServerURL;
         
-        // Update identity service
-        MXIdentityService *identityService = [[MXIdentityService alloc] initWithCredentials:mxCredentials andHomeserverRestClient:mxRestClient];
-        mxSession.identityService = identityService;
+        // Update services used in MXSession
+        [mxSession setIdentityServer:mxCredentials.identityServer andAccessToken:mxCredentials.identityServerAccessToken];
     }
     else
     {
         _identityServerURL = nil;
-        [mxRestClient setIdentityServer:nil];
-        mxSession.identityService = nil;
+        [mxSession setIdentityServer:nil andAccessToken:nil];
     }
     
     // Archive updated field
