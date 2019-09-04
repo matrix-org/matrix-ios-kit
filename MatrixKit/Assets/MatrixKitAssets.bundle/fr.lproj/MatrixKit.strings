@@ -253,7 +253,6 @@
 "notice_room_invite" = "%@ a invité %@";
 "notice_room_third_party_invite" = "%@ a envoyé une invitation à %@ pour rejoindre ce salon";
 "notice_room_third_party_registered_invite" = "%@ a accepté l'invitation à %@";
-"notice_room_third_party_revoked_invite" = "%@ a retiré l'invitation de %@ pour rejoindre ce salon";
 "notice_room_join" = "%@ est arrivé(e)";
 "notice_room_leave" = "%@ est parti(e)";
 "notice_room_reject" = "%@ a rejeté l'invitation";
