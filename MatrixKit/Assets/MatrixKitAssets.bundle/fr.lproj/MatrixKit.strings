@@ -377,3 +377,4 @@
 "login_error_resource_limit_exceeded_contact_button" = "Contacter l'administrateur";
 "e2e_passphrase_create" = "Créer la phrase de passe";
 "account_error_push_not_allowed" = "Les notifications ne sont pas autorisées";
+"notice_room_third_party_revoked_invite" = "%@ a retiré l'invitation de %@ pour rejoindre ce salon";
