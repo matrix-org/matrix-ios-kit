@@ -1008,7 +1008,18 @@
         }
         case MXEventTypeRoomThirdPartyInvite:
         {
-            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, event.content[@"display_name"]];
+            NSString *displayname;
+            MXJSONModelSetString(displayname, event.content[@"display_name"]);
+            if (displayname)
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+            }
+            else
+            {
+                // Consider the invite has been revoked
+                MXJSONModelSetString(displayname, event.prevContent[@"display_name"]);
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+            }
             break;
         }
         case MXEventTypeCallInvite:
