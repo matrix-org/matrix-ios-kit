@@ -553,16 +553,24 @@
     // Hide the field while checking data
     [self setIdentityServerHidden:YES];
 
-    // First, fetch the IS advertised by the HS
-    if (mxRestClient.homeserver)
-    {
-        NSLog(@"[MXKAuthenticationVC] checkIdentityServer for homeserver %@", mxRestClient.homeserver);
+    NSString *homeserver = mxRestClient.homeserver;
 
-        autoDiscovery = [[MXAutoDiscovery alloc] initWithUrl:mxRestClient.homeserver];
+    // First, fetch the IS advertised by the HS
+    if (homeserver)
+    {
+        NSLog(@"[MXKAuthenticationVC] checkIdentityServer for homeserver %@", homeserver);
+
+        autoDiscovery = [[MXAutoDiscovery alloc] initWithUrl:homeserver];
 
         MXWeakify(self);
         [autoDiscovery findClientConfig:^(MXDiscoveredClientConfig * _Nonnull discoveredClientConfig) {
             MXStrongifyAndReturnIfNil(self);
+
+            if (![homeserver isEqualToString:self->mxRestClient.homeserver])
+            {
+                // Avoid race conditions
+                return;
+            }
 
             NSString *identityServer = discoveredClientConfig.wellKnown.identityServer.baseUrl;
             NSLog(@"[MXKAuthenticationVC] checkIdentityServer: Identity server: %@", identityServer);
@@ -575,6 +583,12 @@
 
             // Then, check if the HS needs an IS for running
             [self checkIdentityServerRequirementWithCompletion:^(BOOL identityServerRequired) {
+
+                if (![homeserver isEqualToString:self->mxRestClient.homeserver])
+                {
+                    // Avoid race conditions
+                    return;
+                }
 
                 // Show the field only if an IS is required so that the user can customise it
                 [self setIdentityServerHidden:!identityServerRequired];
