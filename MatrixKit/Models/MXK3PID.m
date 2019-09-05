@@ -84,7 +84,7 @@
             if (identityServer)
             {
                 // Use same identity server as REST client for validation token submission
-                self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer andHomeserverRestClient:mxRestClient];
+                self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxRestClient];
             }
             
             currentRequest = [mxRestClient requestTokenForEmail:self.address isDuringRegistration:isDuringRegistration clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid) {
