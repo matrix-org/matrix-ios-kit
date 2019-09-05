@@ -129,7 +129,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
-        
+
+        [self registerAccountDataDidChangeIdentityServerNotification];
         [self registerIdentityServiceDidChangeAccessTokenNotification];
     }
     return self;
@@ -171,6 +172,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         [self prepareRESTClient];
         
+        [self registerAccountDataDidChangeIdentityServerNotification];
         [self registerIdentityServiceDidChangeAccessTokenNotification];
 
         if ([coder decodeObjectForKey:@"threePIDs"])
@@ -1975,6 +1977,34 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
 }
 
+
+#pragma mark - Identity Server updates
+
+- (void)registerAccountDataDidChangeIdentityServerNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAccountDataDidChangeIdentityServerNotification:) name:kMXSessionAccountDataDidChangeIdentityServerNotification object:nil];
+}
+
+- (void)handleAccountDataDidChangeIdentityServerNotification:(NSNotification*)notification
+{
+    MXSession *mxSession = notification.object;
+    if (mxSession == self.mxSession)
+    {
+        if (![mxCredentials.identityServer isEqualToString:self.mxSession.accountDataIdentityServer])
+        {
+            _identityServerURL = self.mxSession.accountDataIdentityServer;
+            mxCredentials.identityServer = _identityServerURL;
+            mxCredentials.identityServerAccessToken = nil;
+
+            // Archive updated field
+            [[MXKAccountManager sharedManager] saveAccounts];
+        }
+    }
+}
+
+
+#pragma mark - Identity Server Access Token updates
+
 - (void)identityService:(MXIdentityService *)identityService didUpdateAccessToken:(NSString *)accessToken
 {
     mxCredentials.identityServerAccessToken = accessToken;
@@ -1996,6 +2026,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     if (userId && identityServer && accessToken && [mxCredentials.identityServer isEqualToString:identityServer])
     {
         mxCredentials.identityServerAccessToken = accessToken;
+
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
     }
 }
 
