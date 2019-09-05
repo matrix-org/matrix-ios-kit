@@ -1917,14 +1917,17 @@
 - (void)onTextFieldChange:(NSNotification *)notif
 {
     _submitButton.enabled = _authInputsView.areAllRequiredFieldsSet;
+
+    if (notif.object == _homeServerTextField)
+    {
+        [self setIdentityServerHidden:YES];
+    }
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
     if (textField == _homeServerTextField)
     {
-        [self setIdentityServerHidden:YES];
-
         // Cancel supported AuthFlow refresh if a request is in progress
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AFNetworkingReachabilityDidChangeNotification object:nil];
         
