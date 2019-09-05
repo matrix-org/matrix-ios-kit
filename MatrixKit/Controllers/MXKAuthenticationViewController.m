@@ -514,9 +514,12 @@
             // Restore default UI
             self.authType = _authType;
         }
+        else
+        {
+            // Refresh the IS anyway
+            [self checkIdentityServer];
+        }
     }
-
-    [self checkIdentityServer];
 }
 
 - (void)setIdentityServerTextFieldText:(NSString *)identityServerUrl
@@ -566,7 +569,7 @@
         [autoDiscovery findClientConfig:^(MXDiscoveredClientConfig * _Nonnull discoveredClientConfig) {
             MXStrongifyAndReturnIfNil(self);
 
-            if (![homeserver isEqualToString:self->mxRestClient.homeserver])
+            if (![homeserver isEqualToString:self.homeServerTextField.text])
             {
                 // Avoid race conditions
                 return;
@@ -584,7 +587,7 @@
             // Then, check if the HS needs an IS for running
             [self checkIdentityServerRequirementWithCompletion:^(BOOL identityServerRequired) {
 
-                if (![homeserver isEqualToString:self->mxRestClient.homeserver])
+                if (![homeserver isEqualToString:self.homeServerTextField.text])
                 {
                     // Avoid race conditions
                     return;
