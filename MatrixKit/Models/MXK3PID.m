@@ -79,8 +79,8 @@
         {
             _validationState = MXK3PIDAuthStateTokenRequested;
             mxRestClient = restClient;
-            
-            NSString *identityServer = restClient.credentials.identityServer;
+
+            NSString *identityServer = restClient.identityServer;
             if (identityServer)
             {
                 // Use same identity server as REST client for validation token submission
