@@ -78,6 +78,8 @@
      Identity Server discovery.
      */
     MXAutoDiscovery *autoDiscovery;
+
+    MXHTTPOperation *checkIdentityServerOperation;
 }
 
 /**
@@ -279,11 +281,14 @@
         registrationTimer = nil;
     }
     
-    if (mxCurrentOperation){
+    if (mxCurrentOperation)
+    {
         [mxCurrentOperation cancel];
         mxCurrentOperation = nil;
     }
-    
+
+    [self cancelIdentityServerCheck];
+
     [mxRestClient close];
     mxRestClient = nil;
 
@@ -553,6 +558,8 @@
 
 - (void)checkIdentityServer
 {
+    [self cancelIdentityServerCheck];
+
     // Hide the field while checking data
     [self setIdentityServerHidden:YES];
 
@@ -566,14 +573,8 @@
         autoDiscovery = [[MXAutoDiscovery alloc] initWithUrl:homeserver];
 
         MXWeakify(self);
-        [autoDiscovery findClientConfig:^(MXDiscoveredClientConfig * _Nonnull discoveredClientConfig) {
+        checkIdentityServerOperation = [autoDiscovery findClientConfig:^(MXDiscoveredClientConfig * _Nonnull discoveredClientConfig) {
             MXStrongifyAndReturnIfNil(self);
-
-            if (![homeserver isEqualToString:self.homeServerTextField.text])
-            {
-                // Avoid race conditions
-                return;
-            }
 
             NSString *identityServer = discoveredClientConfig.wellKnown.identityServer.baseUrl;
             NSLog(@"[MXKAuthenticationVC] checkIdentityServer: Identity server: %@", identityServer);
@@ -585,17 +586,23 @@
             }
 
             // Then, check if the HS needs an IS for running
-            [self checkIdentityServerRequirementWithCompletion:^(BOOL identityServerRequired) {
+            MXWeakify(self);
+            MXHTTPOperation *operation = [self checkIdentityServerRequirementWithCompletion:^(BOOL identityServerRequired) {
 
-                if (![homeserver isEqualToString:self.homeServerTextField.text])
-                {
-                    // Avoid race conditions
-                    return;
-                }
+                self->checkIdentityServerOperation = nil;
 
                 // Show the field only if an IS is required so that the user can customise it
                 [self setIdentityServerHidden:!identityServerRequired];
             }];
+
+            if (operation)
+            {
+                [self->checkIdentityServerOperation mutateTo:operation];
+            }
+            else
+            {
+                self->checkIdentityServerOperation = nil;
+            }
 
             self->autoDiscovery = nil;
 
@@ -611,8 +618,19 @@
     }
 }
 
-- (void)checkIdentityServerRequirementWithCompletion:(void (^)(BOOL identityServerRequired))completion
+- (void)cancelIdentityServerCheck
 {
+    if (checkIdentityServerOperation)
+    {
+        [checkIdentityServerOperation cancel];
+        checkIdentityServerOperation = nil;
+    }
+}
+
+- (MXHTTPOperation*)checkIdentityServerRequirementWithCompletion:(void (^)(BOOL identityServerRequired))completion
+{
+    MXHTTPOperation *operation;
+
     if (_authType == MXKAuthenticationTypeLogin)
     {
         // The identity server is only required for registration and password reset
@@ -621,7 +639,7 @@
     }
     else
     {
-        [mxRestClient supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
+        operation = [mxRestClient supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
 
             NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement: %@", matrixVersions.doesServerRequireIdentityServerParam ? @"YES": @"NO");
             completion(matrixVersions.doesServerRequireIdentityServerParam);
@@ -632,6 +650,8 @@
             NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement. Error: %@", error);
         }];
     }
+
+    return operation;
 }
 
 - (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled
@@ -1937,6 +1957,9 @@
 
     if (notif.object == _homeServerTextField)
     {
+        // If any, the current request is obsolete
+        [self cancelIdentityServerCheck];
+
         [self setIdentityServerHidden:YES];
     }
 }
