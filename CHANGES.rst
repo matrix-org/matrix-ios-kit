@@ -7,6 +7,7 @@ Improvements:
  * Privacy: Remove the bind true flag from 3PID adds in settings (vector-im/riot-ios/issues/2650).
  * Privacy: Remove the ability to set an IS at login/registration (vector-im/riot-ios/issues/2661).
  * Privacy: Use wellknown to discover the IS of a custom HS (vector-im/riot-ios/issues/2686).
+ * Tools: Add human readable MSISDN formatting method.
 
 Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
