@@ -108,3 +108,16 @@
 "save" = "Ipsloan";
 "leave" = "Verloatn";
 "invite" = "Uutnodign";
+"notice_room_history_visible_to_members" = "%@ èt de toekomstige gespreksgeschiedenisse voor alle gespreksleedn zichtboar gemakt ghed.";
+"notice_crypto_unable_to_decrypt" = "** Kostege nie ountsleutern: %@ **";
+"notice_crypto_error_unknown_inbound_session_id" = "’t Toestel van den afzender èt uus geen sleuters vo da bericht hier gestuurd ghed.";
+"notice_sticker" = "sticker";
+"notice_in_reply_to" = "In antwoord op";
+// room display name
+"room_displayname_empty_room" = "Leeg gesprek";
+"room_displayname_two_members" = "%@ en %@";
+"room_displayname_more_than_two_members" = "%@ en %@ anderen";
+// Settings
+"settings" = "Instelliengn";
+"settings_enable_inapp_notifications" = "In-app-meldiengn inschoakeln";
+"settings_enable_push_notifications" = "Pushmeldiengn inschoakeln";
