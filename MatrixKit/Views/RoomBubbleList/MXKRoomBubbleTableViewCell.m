@@ -1471,9 +1471,16 @@ static NSMutableDictionary *childClasses;
 
 #pragma mark - UITextView delegate
 
-// Hyperlink quick tap in `messageTextView` are intercepted by `-(void)onMessageTap:` method. Otherwise longer tap, long press and force touch on a link are still catched here.
+// On iOS 10 to iOS 13.0: Hyperlink quick tap in `messageTextView` are intercepted by `-(void)onMessageTap:` method. Otherwise longer tap, long press and force touch on a link are still catched here.
+// On iOS 13.1+: The inner tap gesture of `messageTextView` is called before the tap gesture manually added by `MXKRoomBubbleTableViewCell`. Hyperlink quick tap and long press are intercepted here.
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction API_AVAILABLE(ios(10.0))
 {
+    // Do not interact with hyperlink on quick tap (default action). Let `-(void)onMessageTap:` method handle hyperlink quick tap.
+    if (interaction == UITextItemInteractionInvokeDefaultAction)
+    {
+        return NO;
+    }
+    
     BOOL shouldInteractWithURL = YES;
     
     if (delegate && URL)
