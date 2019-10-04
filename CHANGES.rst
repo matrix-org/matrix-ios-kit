@@ -1,4 +1,4 @@
-Changes in MatrixKit in 0.11.0 (2019-08-)
+Changes in MatrixKit in 0.11.0 (2019-10-)
 ==========================================
 
 Improvements:
@@ -9,6 +9,9 @@ Improvements:
  * Privacy: Use wellknown to discover the IS of a custom HS (vector-im/riot-ios/issues/2686).
  * Tools: Add human readable MSISDN formatting method.
 
+Bug fix:
+ * Display correctly the revoked third-party invite.
+ 
 Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
 

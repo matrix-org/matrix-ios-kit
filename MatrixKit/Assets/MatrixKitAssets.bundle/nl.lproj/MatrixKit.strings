@@ -55,7 +55,7 @@
 "abort" = "Afbreken";
 "back" = "Terug";
 "close" = "Sluiten";
-"continue" = "Verder gaan";
+"continue" = "Verdergaan";
 "discard" = "Verwerpen";
 "dismiss" = "Sluiten";
 "retry" = "Opnieuw proberen";
@@ -96,7 +96,7 @@
 "notice_room_created" = "%@ heeft het gesprek aangemaakt";
 "notice_room_join_rule" = "De toetredingsregel is: %@";
 "notice_room_power_level_intro" = "Het machtsniveau van gespreksleden is:";
-"notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen is:";
+"notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen zijn:";
 "notice_room_power_level_event_requirement" = "De minimale machtsniveaus gerelateerd aan gebeurtenissen zijn:";
 "notice_room_aliases" = "De gespreksbijnamen zijn: %@";
 "notice_encrypted_message" = "Versleuteld bericht";
@@ -320,7 +320,7 @@
 "resend" = "Opnieuw versturen";
 "redact" = "Verwijderen";
 "share" = "Delen";
-"set_power_level" = "Machtsniveau";
+"set_power_level" = "Machtsniveau instellen";
 "delete" = "Verwijderen";
 "view" = "Weergeven";
 // actions 
@@ -427,7 +427,7 @@
 "error_common_message" = "Er is een fout opgetreden. Probeer het later opnieuw.";
 "login_error_resource_limit_exceeded_title" = "Bronlimiet overschreden";
 "login_error_resource_limit_exceeded_message_default" = "Deze thuisserver heeft één of meerdere van zijn bronlimieten overschreden.";
-"login_error_resource_limit_exceeded_message_monthly_active_user" = "Deze homeserver heeft zijn limiet voor maandelijks actieve gebruikers bereikt.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Deze thuisserver heeft zijn limiet voor maandelijks actieve gebruikers bereikt.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nGelieve contact op te nemen met uw dienstbeheerder om deze dienst te blijven gebruiken.";
 "login_error_resource_limit_exceeded_contact_button" = "Beheerder contacteren";
 // Reply to message
@@ -437,3 +437,4 @@
 "message_reply_to_sender_sent_a_file" = "heeft een bestand gestuurd.";
 "message_reply_to_message_to_reply_to_prefix" = "In antwoord op";
 "e2e_passphrase_create" = "Wachtwoord aanmaken";
+"account_error_push_not_allowed" = "Meldingen niet toegestaan";
