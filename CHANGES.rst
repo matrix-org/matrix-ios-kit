@@ -11,6 +11,7 @@ Improvements:
 
 Bug fix:
  * Display correctly the revoked third-party invite.
+ * MXKRoomBubbleTableViewCell: Fix issue with links too easily touchable on iOS 13 (vector-im/riot-ios/issues/2738).
  
 Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
