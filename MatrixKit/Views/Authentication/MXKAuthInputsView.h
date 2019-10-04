@@ -70,6 +70,11 @@ typedef enum {
 - (MXRestClient *)authInputsViewThirdPartyIdValidationRestClient:(MXKAuthInputsView *)authInputsView;
 
 /**
+ The identity service used to validate third-party identifiers.
+ */
+- (MXIdentityService *)authInputsViewThirdPartyIdValidationIdentityService:(MXKAuthInputsView *)authInputsView;
+
+/**
  Tell the delegate to present a view controller modally.
  
  Note: This method is used to display the countries list during the phone number handling.

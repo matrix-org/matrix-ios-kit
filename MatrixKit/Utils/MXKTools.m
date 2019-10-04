@@ -281,6 +281,23 @@ static NSRegularExpression *htmlTagsRegex;
     return msisdn;
 }
 
++ (NSString*)readableMSISDN:(NSString*)msisdn
+{
+    NSString *e164;
+    
+    if (([e164 hasPrefix:@"+"]))
+    {
+        e164 = msisdn;
+    }
+    else
+    {
+        e164 = [NSString stringWithFormat:@"+%@", msisdn];
+    }
+    
+    NBPhoneNumber *phoneNb = [[NBPhoneNumberUtil sharedInstance] parse:e164 defaultRegion:nil error:nil];
+    return [[NBPhoneNumberUtil sharedInstance] format:phoneNb numberFormat:NBEPhoneNumberFormatINTERNATIONAL error:nil];
+}
+
 #pragma mark - Hex color to UIColor conversion
 
 + (UIColor *)colorWithRGBValue:(NSUInteger)rgbValue

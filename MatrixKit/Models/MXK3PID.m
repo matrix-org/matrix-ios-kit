@@ -27,6 +27,8 @@
 @property (nonatomic) NSString *clientSecret;
 @property (nonatomic) NSUInteger sendAttempt;
 @property (nonatomic) NSString *sid;
+@property (nonatomic) MXIdentityService *identityService;
+
 @end
 
 @implementation MXK3PID
@@ -50,6 +52,7 @@
     [currentRequest cancel];
     currentRequest = nil;
     mxRestClient = nil;
+    self.identityService = nil;
 
     self.sendAttempt = 1;
     self.sid = nil;
@@ -70,6 +73,13 @@
         if (_validationState != MXK3PIDAuthStateUnknown)
         {
             [self cancelCurrentRequest];
+        }
+        
+        NSString *identityServer = restClient.identityServer;
+        if (identityServer)
+        {
+            // Use same identity server as REST client for validation token submission
+            self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:restClient];
         }
         
         if ([self.medium isEqualToString:kMX3PIDMediumEmail])
@@ -154,34 +164,51 @@
     // Sanity Check
     if (_validationState == MXK3PIDAuthStateTokenReceived)
     {
-        _validationState = MXK3PIDAuthStateTokenSubmitted;
-        
-        currentRequest = [mxRestClient submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+        if (self.identityService)
+        {
+            _validationState = MXK3PIDAuthStateTokenSubmitted;
             
-            self->_validationState = MXK3PIDAuthStateAuthenticated;
-            self->currentRequest = nil;
-            
-            if (success)
-            {
-                success();
-            }
-            
-        } failure:^(NSError *error) {
-            
-            // Return in previous state
-            self->_validationState = MXK3PIDAuthStateTokenReceived;
-            self->currentRequest = nil;
+            currentRequest = [self.identityService submit3PIDValidationToken:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+                
+                self->_validationState = MXK3PIDAuthStateAuthenticated;
+                self->currentRequest = nil;
+                
+                if (success)
+                {
+                    success();
+                }
+                
+            } failure:^(NSError *error) {
+                
+                // Return in previous state
+                self->_validationState = MXK3PIDAuthStateTokenReceived;
+                self->currentRequest = nil;
+                
+                if (failure)
+                {
+                    failure (error);
+                }
+                
+            }];
+        }
+        else
+        {
+            NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), identity service is not set", self.address, self.medium);
             
             if (failure)
             {
-                failure (error);
+                failure(nil);
             }
-            
-        }];
+        }
     }
     else
     {
         NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
+        
+        if (failure)
+        {
+            failure(nil);
+        }
     }
 }
 

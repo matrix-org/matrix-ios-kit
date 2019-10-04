@@ -129,6 +129,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
+
+        [self registerAccountDataDidChangeIdentityServerNotification];
+        [self registerIdentityServiceDidChangeAccessTokenNotification];
     }
     return self;
 }
@@ -156,16 +159,21 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         NSString *userId = [coder decodeObjectForKey:@"userid"];
         NSString *accessToken = [coder decodeObjectForKey:@"accesstoken"];
         _identityServerURL = [coder decodeObjectForKey:@"identityserverurl"];
+        NSString *identityServerAccessToken = [coder decodeObjectForKey:@"identityserveraccesstoken"];
         
         mxCredentials = [[MXCredentials alloc] initWithHomeServer:homeServerURL
                                                            userId:userId
                                                       accessToken:accessToken];
 
         mxCredentials.identityServer = _identityServerURL;
+        mxCredentials.identityServerAccessToken = identityServerAccessToken;
         mxCredentials.deviceId = [coder decodeObjectForKey:@"deviceId"];  
         mxCredentials.allowedCertificate = [coder decodeObjectForKey:@"allowedCertificate"];
         
         [self prepareRESTClient];
+        
+        [self registerAccountDataDidChangeIdentityServerNotification];
+        [self registerIdentityServiceDidChangeAccessTokenNotification];
 
         if ([coder decodeObjectForKey:@"threePIDs"])
         {
@@ -212,6 +220,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [coder encodeObject:mxCredentials.homeServer forKey:@"homeserverurl"];
     [coder encodeObject:mxCredentials.userId forKey:@"userid"];
     [coder encodeObject:mxCredentials.accessToken forKey:@"accesstoken"];
+    [coder encodeObject:mxCredentials.identityServerAccessToken forKey:@"identityserveraccesstoken"];
 
     if (mxCredentials.deviceId)
     {
@@ -267,13 +276,15 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     if (identityServerURL.length)
     {
         _identityServerURL = identityServerURL;
-        // Update the current restClient
-        [mxRestClient setIdentityServer:identityServerURL];
+        mxCredentials.identityServer = identityServerURL;
+        
+        // Update services used in MXSession
+        [mxSession setIdentityServer:mxCredentials.identityServer andAccessToken:mxCredentials.identityServerAccessToken];
     }
     else
     {
-        _identityServerURL = nil;        
-        [mxRestClient setIdentityServer:nil];
+        _identityServerURL = nil;
+        [mxSession setIdentityServer:nil andAccessToken:nil];
     }
     
     // Archive updated field
@@ -1963,6 +1974,61 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             // Should never happen
             completion(NO);
         }];
+    }
+}
+
+
+#pragma mark - Identity Server updates
+
+- (void)registerAccountDataDidChangeIdentityServerNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAccountDataDidChangeIdentityServerNotification:) name:kMXSessionAccountDataDidChangeIdentityServerNotification object:nil];
+}
+
+- (void)handleAccountDataDidChangeIdentityServerNotification:(NSNotification*)notification
+{
+    MXSession *mxSession = notification.object;
+    if (mxSession == self.mxSession)
+    {
+        if (![mxCredentials.identityServer isEqualToString:self.mxSession.accountDataIdentityServer])
+        {
+            _identityServerURL = self.mxSession.accountDataIdentityServer;
+            mxCredentials.identityServer = _identityServerURL;
+            mxCredentials.identityServerAccessToken = nil;
+
+            // Archive updated field
+            [[MXKAccountManager sharedManager] saveAccounts];
+        }
+    }
+}
+
+
+#pragma mark - Identity Server Access Token updates
+
+- (void)identityService:(MXIdentityService *)identityService didUpdateAccessToken:(NSString *)accessToken
+{
+    mxCredentials.identityServerAccessToken = accessToken;
+}
+
+- (void)registerIdentityServiceDidChangeAccessTokenNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleIdentityServiceDidChangeAccessTokenNotification:) name:MXIdentityServiceDidChangeAccessTokenNotification object:nil];
+}
+
+- (void)handleIdentityServiceDidChangeAccessTokenNotification:(NSNotification*)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    
+    NSString *userId = userInfo[MXIdentityServiceNotificationUserIdKey];
+    NSString *identityServer = userInfo[MXIdentityServiceNotificationIdentityServerKey];
+    NSString *accessToken = userInfo[MXIdentityServiceNotificationAccessTokenKey];
+    
+    if (userId && identityServer && accessToken && [mxCredentials.identityServer isEqualToString:identityServer])
+    {
+        mxCredentials.identityServerAccessToken = accessToken;
+
+        // Archive updated field
+        [[MXKAccountManager sharedManager] saveAccounts];
     }
 }
 

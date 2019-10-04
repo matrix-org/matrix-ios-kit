@@ -72,9 +72,10 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 }
 
 /**
- The current REST client defined with the identity server.
+ The current identity service defined with the identity server.
  */
-@property (nonatomic) MXRestClient *identityRESTClient;
+@property (nonatomic) MXIdentityService *identityService;
+
 @end
 
 @implementation MXKContactManager
@@ -135,7 +136,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     mxSessionArray = nil;
     mxEventListeners = nil;
     _identityServer = nil;
-    _identityRESTClient = nil;
     
     [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"syncLocalContacts"];
     [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"phonebookCountryCode"];
@@ -274,8 +274,8 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         [mxEventListeners removeObjectAtIndex:index];
         [mxSessionArray removeObjectAtIndex:index];
         
-        // Reset the current rest client (It will be rebuild if need)
-        _identityRESTClient = nil;
+        // Reset the current identity service (It will be rebuild if need)
+        self.identityService = nil;
         
         if (!mxSessionArray.count) {
             if (mxSessionStateObserver) {
@@ -489,49 +489,57 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     
     if (identityServer)
     {
-        MXCredentials *credentials = [MXCredentials new];
-        credentials.identityServer = identityServer;
-
-        _identityRESTClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:nil];
+        MXSession *mxSession = self.mxSessions.firstObject;
+        
+        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxSession.matrixRestClient];
         
         // Lookup the matrix users in all the local contacts.
         [self updateMatrixIDsForAllLocalContacts];
     }
     else
     {
-        _identityRESTClient = nil;
+        self.identityService = nil;
     }
 }
 
-- (MXRestClient*)identityRESTClient
+- (MXIdentityService*)identityService
 {
-    if (!_identityRESTClient)
+    if (!_identityService)
     {
+        NSString *identityServer;
+        MXSession *mxSession = [mxSessionArray firstObject];
+        
         if (self.identityServer)
         {
-            MXCredentials *credentials = [MXCredentials new];
-            credentials.identityServer = self.identityServer;
-
-            _identityRESTClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:nil];
+            identityServer = self.identityServer;
         }
         else if (mxSessionArray.count)
         {
-            MXSession *mxSession = [mxSessionArray firstObject];
-
-            MXCredentials *credentials = [MXCredentials new];
-            credentials.identityServer = mxSession.matrixRestClient.identityServer;
-
-            _identityRESTClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:nil];
+            identityServer = mxSession.identityService.identityServer;
+            
+            if (!identityServer)
+            {
+                identityServer = mxSession.matrixRestClient.identityServer;
+            }
+        }
+        
+        if (identityServer)
+        {
+            _identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxSession.matrixRestClient];
+        }
+        else
+        {
+            _identityService = nil;
         }
     }
     
-    return _identityRESTClient;
+    return _identityService;
 }
 
 - (BOOL)isUsersDiscoveringEnabled
 {
     // Check whether the 3pid lookup is available
-    return (self.discoverUsersBoundTo3PIDsBlock || self.identityRESTClient);
+    return (self.discoverUsersBoundTo3PIDsBlock || self.identityService);
 }
 
 #pragma mark -
@@ -815,9 +823,9 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             else
             {
                 // Consider the potential identity server url by default
-                [self.identityRESTClient lookup3pids:lookup3pidsArray
-                                             success:success
-                                             failure:failure];
+                [self.identityService lookup3pids:lookup3pidsArray
+                                          success:success
+                                          failure:failure];
             }
         }
     }
@@ -928,9 +936,9 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             }
             else
             {
-                [self.identityRESTClient lookup3pids:lookup3pidsArray
-                                             success:success
-                                             failure:failure];
+                [self.identityService lookup3pids:lookup3pidsArray
+                                          success:success
+                                          failure:failure];
             }
         }
         else
@@ -965,7 +973,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     mxSessionArray = nil;
     mxEventListeners = nil;
     _identityServer = nil;
-    _identityRESTClient = nil;
+    self.identityService = nil;
     
     // warn of the contacts list update
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
