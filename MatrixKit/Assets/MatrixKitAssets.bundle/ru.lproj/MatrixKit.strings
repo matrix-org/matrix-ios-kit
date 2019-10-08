@@ -376,3 +376,5 @@
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Этот сервер достиг ежемесячного лимита активных пользователей.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nПожалуйста свяжитесь с вашим администратором что бы продолжить пользоваться этим сервисом.";
 "e2e_passphrase_create" = "Создать парольную фразу";
+"account_error_push_not_allowed" = "Уведомления не разрешены";
+"notice_room_third_party_revoked_invite" = "%@ отозвал приглашение для %@ на вступление в комнату";

@@ -377,3 +377,4 @@
 "room_displayname_more_than_two_members" = "%@ és %@ mások";
 "e2e_passphrase_create" = "Jelmondat készítés";
 "account_error_push_not_allowed" = "Értesítések nincsenek engedélyezve";
+"notice_room_third_party_revoked_invite" = "%@ visszavonta a a meghívót ehhez a szobához: %@";

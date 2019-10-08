@@ -377,3 +377,4 @@
 "room_event_encryption_info_event_fingerprint_key" = "U pretendua për kyç Ed25519 shenjash gishtash\n";
 "notice_feedback" = "Akt dhënieje përshtypjesh (id: %@): %@";
 "account_error_push_not_allowed" = "Nuk lejohen njoftime";
+"notice_room_third_party_revoked_invite" = "%@ shfuqizoi ftesën për pjesëmarrje në dhomë për %@";
