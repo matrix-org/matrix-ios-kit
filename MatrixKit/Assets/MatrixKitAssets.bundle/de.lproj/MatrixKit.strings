@@ -377,3 +377,4 @@
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktiere Administrator";
 "e2e_passphrase_create" = "Passphrase erzeugen";
 "account_error_push_not_allowed" = "Benachrichtigungen nicht erlaubt";
+"notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
