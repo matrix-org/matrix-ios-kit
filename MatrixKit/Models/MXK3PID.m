@@ -28,6 +28,7 @@
 @property (nonatomic) NSUInteger sendAttempt;
 @property (nonatomic) NSString *sid;
 @property (nonatomic) MXIdentityService *identityService;
+@property (nonatomic) NSString *submitUrl;
 
 @end
 
@@ -120,11 +121,12 @@
             
             NSString *phoneNumber = [NSString stringWithFormat:@"+%@", self.address];
             
-            currentRequest = [mxRestClient requestTokenForPhoneNumber:phoneNumber isDuringRegistration:isDuringRegistration countryCode:nil clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid, NSString *msisdn) {
+            currentRequest = [mxRestClient requestTokenForPhoneNumber:phoneNumber isDuringRegistration:isDuringRegistration countryCode:nil clientSecret:self.clientSecret sendAttempt:self.sendAttempt nextLink:nextLink success:^(NSString *sid, NSString *msisdn, NSString *submitUrl) {
                 
                 self->_validationState = MXK3PIDAuthStateTokenReceived;
                 self->currentRequest = nil;
                 self.sid = sid;
+                self.submitUrl = submitUrl;
                 
                 if (success)
                 {
@@ -164,7 +166,34 @@
     // Sanity Check
     if (_validationState == MXK3PIDAuthStateTokenReceived)
     {
-        if (self.identityService)
+        if (self.submitUrl)
+        {
+            _validationState = MXK3PIDAuthStateTokenSubmitted;
+
+            currentRequest = [self submitMsisdnTokenOtherUrl:self.submitUrl token:token medium:self.medium clientSecret:self.clientSecret sid:self.sid success:^{
+
+                self->_validationState = MXK3PIDAuthStateAuthenticated;
+                self->currentRequest = nil;
+
+                if (success)
+                {
+                    success();
+                }
+
+            } failure:^(NSError *error) {
+
+                // Return in previous state
+                self->_validationState = MXK3PIDAuthStateTokenReceived;
+                self->currentRequest = nil;
+
+                if (failure)
+                {
+                    failure (error);
+                }
+
+            }];
+        }
+        else if (self.identityService)
         {
             _validationState = MXK3PIDAuthStateTokenSubmitted;
             
@@ -210,6 +239,30 @@
             failure(nil);
         }
     }
+}
+
+- (MXHTTPOperation *)submitMsisdnTokenOtherUrl:(NSString *)url
+                                         token:(NSString*)token
+                                        medium:(NSString *)medium
+                                  clientSecret:(NSString *)clientSecret
+                                           sid:(NSString *)sid
+                                       success:(void (^)(void))success
+                                       failure:(void (^)(NSError *))failure
+{
+    NSDictionary *parameters = @{
+                                 @"sid": sid,
+                                 @"client_secret": clientSecret,
+                                 @"token": token
+                                 };
+
+    MXHTTPClient *httpClient = [[MXHTTPClient alloc] initWithBaseURL:nil andOnUnrecognizedCertificateBlock:nil];
+    return [httpClient requestWithMethod:@"POST"
+                                    path:url
+                              parameters:parameters
+                                 success:^(NSDictionary *JSONResponse) {
+                                     success();
+                                 }
+                                 failure:failure];
 }
 
 - (void)add3PIDToUser:(BOOL)bind
