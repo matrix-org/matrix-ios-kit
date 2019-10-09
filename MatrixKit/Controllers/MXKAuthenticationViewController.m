@@ -1457,8 +1457,12 @@
     else
     {
         // Report the new account in account manager
+        if (!credentials.identityServer)
+        {
+            credentials.identityServer = _identityServerTextField.text;
+        }
         MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-        account.identityServerURL = _identityServerTextField.text;
+        account.identityServerURL = credentials.identityServer;
         
         [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
         
