@@ -112,6 +112,8 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         // Observe related settings change
         [[MXKAppSettings standardAppSettings]  addObserver:self forKeyPath:@"syncLocalContacts" options:0 context:nil];
         [[MXKAppSettings standardAppSettings]  addObserver:self forKeyPath:@"phonebookCountryCode" options:0 context:nil];
+
+        [self registerAccountDataDidChangeIdentityServerNotification];
     }
     
     return self;
@@ -485,6 +487,11 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 
 - (void)setIdentityServer:(NSString *)identityServer
 {
+    if (_identityServer == identityServer)
+    {
+        return;
+    }
+
     _identityServer = identityServer;
     
     if (identityServer)
@@ -499,6 +506,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     else
     {
         self.identityService = nil;
+        [self resetMatrixIDs];
     }
 }
 
@@ -934,11 +942,17 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             {
                 self.discoverUsersBoundTo3PIDsBlock(lookup3pidsArray, success, failure);
             }
-            else
+            else if (self.identityService)
             {
                 [self.identityService lookup3pids:lookup3pidsArray
                                           success:success
                                           failure:failure];
+            }
+            else
+            {
+                // No IS, no detection of Matrix users in local contacts
+                self->matrixIDBy3PID = nil;
+                [self cacheMatrixIDsDict];
             }
         }
         else
@@ -946,6 +960,19 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             self->matrixIDBy3PID = nil;
             [self cacheMatrixIDsDict];
         }
+    });
+}
+
+- (void)resetMatrixIDs
+{
+    dispatch_async(processingQueue, ^{
+        
+        self->matrixIDBy3PID = nil;
+        [self cacheMatrixIDsDict];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactMatrixIDsNotification object:nil userInfo:nil];
+        });
     });
 }
 
@@ -1471,6 +1498,30 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     
     return user;
 }
+
+
+#pragma mark - Identity Server updates
+
+- (void)registerAccountDataDidChangeIdentityServerNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAccountDataDidChangeIdentityServerNotification:) name:kMXSessionAccountDataDidChangeIdentityServerNotification object:nil];
+}
+
+- (void)handleAccountDataDidChangeIdentityServerNotification:(NSNotification*)notification
+{
+    NSLog(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification");
+
+    // Use the identity server of the up
+    MXSession *mxSession = notification.object;
+
+    NSString *accountDataIdentityServer = mxSession.accountDataIdentityServer;
+    if (_identityServer != mxSession.accountDataIdentityServer
+        || ![_identityServer isEqualToString:accountDataIdentityServer])
+    {
+        self.identityServer = accountDataIdentityServer;
+    }
+}
+
 
 #pragma mark - KVO
 
