@@ -71,11 +71,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     NSMutableDictionary* matrixContactByMatrixID;
 }
 
-/**
- The current identity service defined with the identity server.
- */
-@property (nonatomic) MXIdentityService *identityService;
-
 @end
 
 @implementation MXKContactManager
@@ -137,7 +132,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     }
     mxSessionArray = nil;
     mxEventListeners = nil;
-    _identityServer = nil;
     
     [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"syncLocalContacts"];
     [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"phonebookCountryCode"];
@@ -275,9 +269,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         
         [mxEventListeners removeObjectAtIndex:index];
         [mxSessionArray removeObjectAtIndex:index];
-        
-        // Reset the current identity service (It will be rebuild if need)
-        self.identityService = nil;
         
         if (!mxSessionArray.count) {
             if (mxSessionStateObserver) {
@@ -485,63 +476,12 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     return directContacts.allValues;
 }
 
-- (void)setIdentityServer:(NSString *)identityServer
-{
-    if (_identityServer == identityServer)
-    {
-        return;
-    }
-
-    _identityServer = identityServer;
-    
-    if (identityServer)
-    {
-        MXSession *mxSession = self.mxSessions.firstObject;
-        
-        self.identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxSession.matrixRestClient];
-        
-        // Lookup the matrix users in all the local contacts.
-        [self updateMatrixIDsForAllLocalContacts];
-    }
-    else
-    {
-        self.identityService = nil;
-        [self resetMatrixIDs];
-    }
-}
-
+// The current identity service used with the contact manager
 - (MXIdentityService*)identityService
 {
-    if (!_identityService)
-    {
-        NSString *identityServer;
-        MXSession *mxSession = [mxSessionArray firstObject];
-        
-        if (self.identityServer)
-        {
-            identityServer = self.identityServer;
-        }
-        else if (mxSessionArray.count)
-        {
-            identityServer = mxSession.identityService.identityServer;
-            
-            if (!identityServer)
-            {
-                identityServer = mxSession.matrixRestClient.identityServer;
-            }
-        }
-        
-        if (identityServer)
-        {
-            _identityService = [[MXIdentityService alloc] initWithIdentityServer:identityServer accessToken:nil andHomeserverRestClient:mxSession.matrixRestClient];
-        }
-        else
-        {
-            _identityService = nil;
-        }
-    }
-    
-    return _identityService;
+    // For the moment, only use the one of the first session
+    MXSession *mxSession = [mxSessionArray firstObject];
+    return mxSession.identityService;
 }
 
 - (BOOL)isUsersDiscoveringEnabled
@@ -999,8 +939,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     }
     mxSessionArray = nil;
     mxEventListeners = nil;
-    _identityServer = nil;
-    self.identityService = nil;
     
     // warn of the contacts list update
     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateMatrixContactsNotification object:nil userInfo:nil];
@@ -1513,12 +1451,19 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 
     // Use the identity server of the up
     MXSession *mxSession = notification.object;
-
-    NSString *accountDataIdentityServer = mxSession.accountDataIdentityServer;
-    if (_identityServer != mxSession.accountDataIdentityServer
-        || ![_identityServer isEqualToString:accountDataIdentityServer])
+    if (mxSession != mxSessionArray.firstObject)
     {
-        self.identityServer = accountDataIdentityServer;
+        return;
+    }
+
+    if (self.identityService)
+    {
+        // Do a full lookup
+        [self updateMatrixIDsForAllLocalContacts];
+    }
+    else
+    {
+        [self resetMatrixIDs];
     }
 }
 

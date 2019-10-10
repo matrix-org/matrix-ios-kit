@@ -103,14 +103,6 @@ typedef void(^MXKContactManagerDiscoverUsersBoundTo3PIDs)(NSArray<NSArray<NSStri
 @property (nonatomic, nullable) MXKContactManagerDiscoverUsersBoundTo3PIDs discoverUsersBoundTo3PIDsBlock;
 
 /**
- The identity server URL used to link matrix ids to the local contacts according to their 3PIDs (email, phone number...).
- This property is nil by default. It is ignored when the property `discoverUsersBoundTo3PIDsBlock` is defined.
- 
- If this property is not set whereas some matrix sessions are added, the identity server of the first available matrix session is used.
- */
-@property (nonatomic, nullable) NSString *identityServer;
-
-/**
  Define if the room member must have their dedicated contact even if they are not define in the device contacts book.
  The default value is MXKContactManagerMXRoomSourceDirectChats;
  */
