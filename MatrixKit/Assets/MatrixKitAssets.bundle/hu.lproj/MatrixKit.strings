@@ -2,14 +2,14 @@
 // Login Screen
 "login_create_account" = "Fiók létrehozása:";
 "login_server_url_placeholder" = "URL (például https://matrix.org)";
-"login_home_server_title" = "Saját szerver:";
+"login_home_server_title" = "Matrix szerver URL:";
 "view" = "Megtekintés";
 "back" = "Vissza";
 "continue" = "Folytatás";
 "leave" = "Elhagyás";
 "invite" = "Meghívás";
 "login_home_server_info" = "A matrix szerver tárolja minden beszélgetésedet és felhasználói fiók adatodat";
-"login_identity_server_title" = "Azonosító szerver:";
+"login_identity_server_title" = "Azonosítási szerver URL:";
 "login_identity_server_info" = "Matrix biztosít egy azonosító szerver ami nyilvántartja, hogy melyik matrix azonosítóhoz milyen e-mail cím, stb. tartozik. Jelenleg csak a https://matrix.org az egyetlen ilyen szerver.";
 "login_user_id_placeholder" = "Matrix azonosító (pl.: @bob:matrix.org vagy csak bob)";
 "login_password_placeholder" = "Jelszó";
@@ -115,11 +115,11 @@
 "notification_settings_room_rule_title" = "Szoba: '%@'";
 // Devices
 "device_details_title" = "Eszköz információ\n";
-"device_details_name" = "Név\n";
-"device_details_identifier" = "Eszköz azonosító\n";
+"device_details_name" = "Nyilvános Név\n";
+"device_details_identifier" = "Azon.\n";
 "device_details_last_seen" = "Utoljára ekkor láttuk:\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Eszköz neve:";
+"device_details_rename_prompt_message" = "Az eszköz nyilvános neve megjelenik azoknál az embereknél akikkel beszélgetsz";
 "device_details_delete_prompt_title" = "Azonosítás";
 "device_details_delete_prompt_message" = "A művelethet további azonosítás szükséges.\nA továbblépéshez add meg a jelszavadat.";
 // Encryption information
@@ -135,8 +135,8 @@
 "room_event_encryption_info_event_none" = "nincs";
 "room_event_encryption_info_device" = "\nKüldő eszköz információ\n";
 "room_event_encryption_info_device_unknown" = "ismeretlen eszköz\n";
-"room_event_encryption_info_device_name" = "Név\n";
-"room_event_encryption_info_device_id" = "Eszköz azonosító\n";
+"room_event_encryption_info_device_name" = "Nyilvános Név\n";
+"room_event_encryption_info_device_id" = "Azon.\n";
 "room_event_encryption_info_device_verification" = "Ellenőrzés\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 ujjlenyomat\n";
 "room_event_encryption_info_device_verified" = "Ellenőrizve";
@@ -252,7 +252,7 @@
 "microphone_access_not_granted_for_call" = "Hívásokhoz engedélyezni kell a hozzáférést a mikrofonhoz, de %@ nem rendelkezik ilyen engedéllyel";
 "local_contacts_access_not_granted" = "Címjegyzékben található felhasználók feltérképezéséhez engedéllyel kell rendelkezni a címjegyzékhez, de %@ nem rendelkezik ilyen engedéllyel";
 "local_contacts_access_discovery_warning_title" = "Felhasználók keresése";
-"local_contacts_access_discovery_warning" = "%@ e-mail címeket és telefonszámokat szeretne feltölteni a címjegyzékből hogy felhasználókat keressen";
+"local_contacts_access_discovery_warning" = "Az olyan ismerősök felderítéséhez akik már használják a Matrixot, %@ el tudja küldeni a címjegyzékben található e-mail címeket és telefonszámokat az általad választott Matrix azonosítási szervernek. Ahol lehetséges a személyes adatok hash-elve lesznek - kérlek ellenőrizd az azonosítási szervered adatvédelmi szabályait.";
 // Country picker
 "country_picker_title" = "Válassz országot";
 // Language picker
@@ -378,3 +378,4 @@
 "e2e_passphrase_create" = "Jelmondat készítés";
 "account_error_push_not_allowed" = "Értesítések nincsenek engedélyezve";
 "notice_room_third_party_revoked_invite" = "%@ visszavonta a a meghívót ehhez a szobához: %@";
+"device_details_rename_prompt_title" = "Eszköz Neve";

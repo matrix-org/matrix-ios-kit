@@ -378,3 +378,4 @@
 "e2e_passphrase_create" = "Passphrase erzeugen";
 "account_error_push_not_allowed" = "Benachrichtigungen nicht erlaubt";
 "notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
+"device_details_rename_prompt_title" = "Gerätename";

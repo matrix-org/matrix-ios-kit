@@ -22,9 +22,9 @@
 // Login Screen
 "login_create_account" = "Account aanmaken:";
 "login_server_url_placeholder" = "URL (bv. https://matrix.org)";
-"login_home_server_title" = "Thuisserver:";
+"login_home_server_title" = "Thuisserver-URL:";
 "login_home_server_info" = "Uw thuisserver slaat al uw gespreks- en accountgegevens op";
-"login_identity_server_title" = "Identiteitsserver:";
+"login_identity_server_title" = "Identiteitsserver-URL:";
 "login_identity_server_info" = "Matrix verstrekt identiteitsservers om te achterhalen welke e-mailadressen enz. bij welke Matrix-ID’s horen. Tot nu toe bestaat alleen https://matrix.org.";
 "login_user_id_placeholder" = "Matrix-ID (bv. @jan:matrix.org of jan)";
 "login_password_placeholder" = "Wachtwoord";
@@ -131,11 +131,11 @@
 "notification_settings_room_rule_title" = "Gesprek: ‘%@’";
 // Devices
 "device_details_title" = "Apparaatinformatie\n";
-"device_details_name" = "Naam\n";
-"device_details_identifier" = "Apparaats-ID\n";
+"device_details_name" = "Publieke naam\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Laatst gezien\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Apparaatnaam:";
+"device_details_rename_prompt_message" = "De publieke naam van een apparaat is zichtbaar voor de personen waarmee u communiceert";
 "device_details_delete_prompt_title" = "Authenticatie";
 "device_details_delete_prompt_message" = "Deze handeling vereist bijkomende authenticatie.\nVoer uw wachtwoord in om verder te gaan.";
 // Encryption information
@@ -151,8 +151,8 @@
 "room_event_encryption_info_event_none" = "geen";
 "room_event_encryption_info_device" = "\nInformatie over apparaat van afzender\n";
 "room_event_encryption_info_device_unknown" = "onbekend apparaat\n";
-"room_event_encryption_info_device_name" = "Naam\n";
-"room_event_encryption_info_device_id" = "Apparaats-ID\n";
+"room_event_encryption_info_device_name" = "Publieke naam\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verificatie\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519-vingerafdruk\n";
 "room_event_encryption_info_device_verified" = "Geverifieerd";
@@ -439,3 +439,4 @@
 "e2e_passphrase_create" = "Wachtwoord aanmaken";
 "account_error_push_not_allowed" = "Meldingen niet toegestaan";
 "notice_room_third_party_revoked_invite" = "%@ heeft de uitnodiging voor %@ om tot het gesprek toe te treden ingetrokken";
+"device_details_rename_prompt_title" = "Apparaatnaam";
