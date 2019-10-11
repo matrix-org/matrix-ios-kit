@@ -12,9 +12,9 @@
 // Login Screen
 "login_create_account" = "Créer un compte :";
 "login_server_url_placeholder" = "URL (par ex. https://matrix.org)";
-"login_home_server_title" = "Serveur d'accueil :";
+"login_home_server_title" = "URL du serveur d’accueil :";
 "login_home_server_info" = "Votre serveur d’accueil stocke toutes vos discussions et les données de votre compte";
-"login_identity_server_title" = "Serveur d'identité :";
+"login_identity_server_title" = "URL du serveur d’identité :";
 "login_identity_server_info" = "Matrix fournit des serveurs d'identité pour lier les e-mail, etc aux identifiants Matrix. Seul https://matrix.org existe pour l'instant.";
 "login_user_id_placeholder" = "Identifiant Matrix (par ex. @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Mot de passe";
@@ -117,11 +117,11 @@
 "notification_settings_room_rule_title" = "Salon : '%@'";
 // Devices
 "device_details_title" = "Informations sur l'appareil\n";
-"device_details_name" = "Nom\n";
-"device_details_identifier" = "Identifiant de l'appareil\n";
+"device_details_name" = "Nom public\n";
+"device_details_identifier" = "Identifiant\n";
 "device_details_last_seen" = "Vu pour la dernière fois\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Nom de l'appareil :";
+"device_details_rename_prompt_message" = "Le nom public de l’appareil est visible par les personnes avec qui vous communiquez";
 "device_details_delete_prompt_title" = "Authentification";
 "device_details_delete_prompt_message" = "Cette opération requiert une nouvelle authentification.\nPour continuer, saisissez votre mot de passe.";
 // Encryption information
@@ -137,8 +137,8 @@
 "room_event_encryption_info_event_none" = "aucun";
 "room_event_encryption_info_device" = "\nInformations sur l'appareil de l'expéditeur\n";
 "room_event_encryption_info_device_unknown" = "appareil inconnu\n";
-"room_event_encryption_info_device_name" = "Nom\n";
-"room_event_encryption_info_device_id" = "Identifiant de l'appareil\n";
+"room_event_encryption_info_device_name" = "Nom public\n";
+"room_event_encryption_info_device_id" = "Identifiant\n";
 "room_event_encryption_info_device_verification" = "Vérification\n";
 "room_event_encryption_info_device_fingerprint" = "Empreinte Ed25519\n";
 "room_event_encryption_info_device_verified" = "Vérifié";
@@ -241,13 +241,13 @@
 "power_level" = "Rang";
 "network_error_not_reachable" = "Vérifiez votre connexion au réseau";
 "user_id_placeholder" = "ex : @bob:serveurdaccueil";
-"ssl_homeserver_url" = "URL du serveur d'accueil : %@";
+"ssl_homeserver_url" = "URL du serveur d’accueil : %@";
 // Permissions
 "camera_access_not_granted_for_call" = "Pour passer un appel vidéo, l'accès à l'appareil photo est indispensable mais %@ n'a pas les permissions nécessaires";
 "microphone_access_not_granted_for_call" = "Pour passer un appel, l'accès au microphone est indispensable mais %@ n'a pas les permissions nécessaires";
 "local_contacts_access_not_granted" = "Pour découvrir des utilisateurs à partir des contacts locaux, l'accès aux contacts est indispensable mais %@ n'a pas les permissions nécessaires";
 "local_contacts_access_discovery_warning_title" = "Découverte des utilisateurs";
-"local_contacts_access_discovery_warning" = "%@ souhaite récupérer les adresses e-mail et numéros de téléphone de vos contacts pour découvrir des utilisateurs";
+"local_contacts_access_discovery_warning" = "Pour découvrir des contacts utilisant déjà Matrix, %@ peut envoyer les adresses e-mail et les numéros de téléphone de votre répertoire au serveur d’identité que vous avez choisi. S’il le prend en charge, vos données personnelles sont hachées avant d’être envoyées − vérifiez la politique de vie privée de votre serveur d’identité pour plus de détails.";
 // Country picker
 "country_picker_title" = "Choisissez un pays";
 "notice_room_invite" = "%@ a invité %@";
@@ -332,7 +332,7 @@
 "notification_settings_by_default" = "Par défaut...";
 "notification_settings_notify_all_other" = "Notifier pour tous les autres messages ou salons";
 // gcm section 
-"settings_config_home_server" = "Serveur d'accueil : %@";
+"settings_config_home_server" = "Serveur d’accueil : %@";
 "settings_config_identity_server" = "Serveur d'identité : %@";
 "settings_config_user_id" = "Identifiant utilisateur : %@";
 // call string
@@ -376,3 +376,6 @@
 "login_error_resource_limit_exceeded_message_contact" = "\n\nVeuillez contacter l'administrateur de votre service pour continuer à l'utiliser.";
 "login_error_resource_limit_exceeded_contact_button" = "Contacter l'administrateur";
 "e2e_passphrase_create" = "Créer la phrase de passe";
+"account_error_push_not_allowed" = "Les notifications ne sont pas autorisées";
+"notice_room_third_party_revoked_invite" = "%@ a retiré l'invitation de %@ pour rejoindre ce salon";
+"device_details_rename_prompt_title" = "Nom de l’appareil";

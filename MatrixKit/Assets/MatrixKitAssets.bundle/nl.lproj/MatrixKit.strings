@@ -22,9 +22,9 @@
 // Login Screen
 "login_create_account" = "Account aanmaken:";
 "login_server_url_placeholder" = "URL (bv. https://matrix.org)";
-"login_home_server_title" = "Thuisserver:";
+"login_home_server_title" = "Thuisserver-URL:";
 "login_home_server_info" = "Uw thuisserver slaat al uw gespreks- en accountgegevens op";
-"login_identity_server_title" = "Identiteitsserver:";
+"login_identity_server_title" = "Identiteitsserver-URL:";
 "login_identity_server_info" = "Matrix verstrekt identiteitsservers om te achterhalen welke e-mailadressen enz. bij welke Matrix-ID’s horen. Tot nu toe bestaat alleen https://matrix.org.";
 "login_user_id_placeholder" = "Matrix-ID (bv. @jan:matrix.org of jan)";
 "login_password_placeholder" = "Wachtwoord";
@@ -55,7 +55,7 @@
 "abort" = "Afbreken";
 "back" = "Terug";
 "close" = "Sluiten";
-"continue" = "Verder gaan";
+"continue" = "Verdergaan";
 "discard" = "Verwerpen";
 "dismiss" = "Sluiten";
 "retry" = "Opnieuw proberen";
@@ -96,7 +96,7 @@
 "notice_room_created" = "%@ heeft het gesprek aangemaakt";
 "notice_room_join_rule" = "De toetredingsregel is: %@";
 "notice_room_power_level_intro" = "Het machtsniveau van gespreksleden is:";
-"notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen is:";
+"notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen zijn:";
 "notice_room_power_level_event_requirement" = "De minimale machtsniveaus gerelateerd aan gebeurtenissen zijn:";
 "notice_room_aliases" = "De gespreksbijnamen zijn: %@";
 "notice_encrypted_message" = "Versleuteld bericht";
@@ -122,7 +122,7 @@
 // room display name
 "room_displayname_empty_room" = "Leeg gesprek";
 "room_displayname_two_members" = "%@ en %@";
-"room_displayname_more_than_two_members" = "%@ en %u anderen";
+"room_displayname_more_than_two_members" = "%@ en %@ anderen";
 // Settings
 "settings" = "Instellingen";
 "settings_enable_inapp_notifications" = "In-app-meldingen inschakelen";
@@ -131,11 +131,11 @@
 "notification_settings_room_rule_title" = "Gesprek: ‘%@’";
 // Devices
 "device_details_title" = "Apparaatinformatie\n";
-"device_details_name" = "Naam\n";
-"device_details_identifier" = "Apparaats-ID\n";
+"device_details_name" = "Publieke naam\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Laatst gezien\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Apparaatnaam:";
+"device_details_rename_prompt_message" = "De publieke naam van een apparaat is zichtbaar voor de personen waarmee u communiceert";
 "device_details_delete_prompt_title" = "Authenticatie";
 "device_details_delete_prompt_message" = "Deze handeling vereist bijkomende authenticatie.\nVoer uw wachtwoord in om verder te gaan.";
 // Encryption information
@@ -151,8 +151,8 @@
 "room_event_encryption_info_event_none" = "geen";
 "room_event_encryption_info_device" = "\nInformatie over apparaat van afzender\n";
 "room_event_encryption_info_device_unknown" = "onbekend apparaat\n";
-"room_event_encryption_info_device_name" = "Naam\n";
-"room_event_encryption_info_device_id" = "Apparaats-ID\n";
+"room_event_encryption_info_device_name" = "Publieke naam\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verificatie\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519-vingerafdruk\n";
 "room_event_encryption_info_device_verified" = "Geverifieerd";
@@ -320,7 +320,7 @@
 "resend" = "Opnieuw versturen";
 "redact" = "Verwijderen";
 "share" = "Delen";
-"set_power_level" = "Machtsniveau";
+"set_power_level" = "Machtsniveau instellen";
 "delete" = "Verwijderen";
 "view" = "Weergeven";
 // actions 
@@ -427,7 +427,7 @@
 "error_common_message" = "Er is een fout opgetreden. Probeer het later opnieuw.";
 "login_error_resource_limit_exceeded_title" = "Bronlimiet overschreden";
 "login_error_resource_limit_exceeded_message_default" = "Deze thuisserver heeft één of meerdere van zijn bronlimieten overschreden.";
-"login_error_resource_limit_exceeded_message_monthly_active_user" = "Deze homeserver heeft zijn limiet voor maandelijks actieve gebruikers bereikt.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Deze thuisserver heeft zijn limiet voor maandelijks actieve gebruikers bereikt.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nGelieve contact op te nemen met uw dienstbeheerder om deze dienst te blijven gebruiken.";
 "login_error_resource_limit_exceeded_contact_button" = "Beheerder contacteren";
 // Reply to message
@@ -437,3 +437,6 @@
 "message_reply_to_sender_sent_a_file" = "heeft een bestand gestuurd.";
 "message_reply_to_message_to_reply_to_prefix" = "In antwoord op";
 "e2e_passphrase_create" = "Wachtwoord aanmaken";
+"account_error_push_not_allowed" = "Meldingen niet toegestaan";
+"notice_room_third_party_revoked_invite" = "%@ heeft de uitnodiging voor %@ om tot het gesprek toe te treden ingetrokken";
+"device_details_rename_prompt_title" = "Apparaatnaam";

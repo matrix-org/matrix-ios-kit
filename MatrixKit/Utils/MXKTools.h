@@ -107,6 +107,15 @@ typedef struct
  */
 + (NSString*)msisdnWithPhoneNumber:(NSString *)phoneNumber andCountryCode:(NSString *)countryCode;
 
+/**
+ Format an MSISDN to a human readable international phone number.
+
+ @param msisdn The MSISDN to format.
+ 
+ @return Human readable international phone number.
+ */
++ (NSString*)readableMSISDN:(NSString*)msisdn;
+
 #pragma mark - Hex color to UIColor conversion
 
 /**

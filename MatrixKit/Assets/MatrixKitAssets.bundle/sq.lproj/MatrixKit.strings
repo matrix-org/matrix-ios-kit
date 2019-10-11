@@ -234,7 +234,7 @@
 "send" = "Dërgoje";
 "copy" = "Kopjoje";
 "resend" = "Ridërgoje";
-"set_power_level" = "Shkallë pushteti";
+"set_power_level" = "Caktoni Shkallë Pushteti";
 "delete" = "Fshije";
 "view" = "Shiheni";
 // actions 
@@ -302,7 +302,7 @@
 "unsent" = "Të padërguar";
 "network_error_not_reachable" = "Ju lutemi, kontrolloni aftësinë e lidhjes në rrjetin tuaj";
 "share" = "Ndajeni me të tjerët";
-"login_home_server_info" = "Shërbyesi juaj home depoziton krejt të dhënat tuaja të bisedave dhe llogarive";
+"login_home_server_info" = "Shërbyesi juaj home depoziton krejt të dhënat e bisedave dhe llogarive tuaja";
 "login_identity_server_info" = "Matrix ofron shërbyes identiteti për të ndjekur se cilat email-e, etj, u përkasin ID-ve Matrix IDs. Hëpërhë ekziston vetëm https://matrix.org.";
 "login_user_id_placeholder" = "ID Matrix (p.sh. @poku:matrix.org ose poku)";
 "login_display_name_placeholder" = "Emër në ekran (p.sh. Mane Trimi)";
@@ -376,3 +376,5 @@
 "e2e_passphrase_create" = "Krijoni frazëkalim";
 "room_event_encryption_info_event_fingerprint_key" = "U pretendua për kyç Ed25519 shenjash gishtash\n";
 "notice_feedback" = "Akt dhënieje përshtypjesh (id: %@): %@";
+"account_error_push_not_allowed" = "Nuk lejohen njoftime";
+"notice_room_third_party_revoked_invite" = "%@ shfuqizoi ftesën për pjesëmarrje në dhomë për %@";

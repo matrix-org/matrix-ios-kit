@@ -376,3 +376,5 @@
 "login_error_resource_limit_exceeded_message_contact" = "\n\nМоля, свържете се с администратора на услугата за да продължите да я използвате.";
 "login_error_resource_limit_exceeded_contact_button" = "Свържи се с администратора";
 "e2e_passphrase_create" = "Създай парола";
+"account_error_push_not_allowed" = "Уведомленията не са разрешени";
+"notice_room_third_party_revoked_invite" = "%@ оттегли поканата за присъединяването на %@ към стаята";
