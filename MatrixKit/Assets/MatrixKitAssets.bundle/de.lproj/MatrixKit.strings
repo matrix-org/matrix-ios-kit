@@ -2,9 +2,9 @@
 // Login Screen
 "login_create_account" = "Konto erstellen:";
 "login_server_url_placeholder" = "URL (z.B. https://matrix.org)";
-"login_home_server_title" = "Home-Server:";
+"login_home_server_title" = "Heimserver-Adresse-URL:";
 "login_home_server_info" = "Dein Home-Server speichert alle deine Gespräche und Benutzerkontodaten";
-"login_identity_server_title" = "Identitätsserver:";
+"login_identity_server_title" = "Identitätsserver-URL:";
 "login_identity_server_info" = "Matrix stellt Identitätsserver bereit, um feststellen zu können, welche E-Mail-Adressen, etc. zu welchen Matrix-IDs gehören. Momentan existiert nur https://vector.im.";
 "login_user_id_placeholder" = "Matrix-ID (z.B. @bob:matrix.org oder bob)";
 "login_password_placeholder" = "Passwort";
@@ -110,11 +110,11 @@
 "notification_settings_room_rule_title" = "Raum: '%@'";
 // Devices
 "device_details_title" = "Geräte Information\n";
-"device_details_name" = "Name\n";
-"device_details_identifier" = "Geräte ID\n";
+"device_details_name" = "Öffentlicher Name\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Zuletzt gesehen:\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Gerätename:";
+"device_details_rename_prompt_message" = "Der öffentliche Name eines Geräts ist für Personen sichtbar, mit denen Sie kommunizieren";
 "device_details_delete_prompt_title" = "Authentifizierung";
 "device_details_delete_prompt_message" = "Diese Aktion erfordert zusätzliche Authentifizierung.\nBitte gib dein Passwort ein.";
 // Encryption information
@@ -130,8 +130,8 @@
 "room_event_encryption_info_event_none" = "keine";
 "room_event_encryption_info_device" = "\nAbsender-Gerät Information\n";
 "room_event_encryption_info_device_unknown" = "Unbekanntes Gerät\n";
-"room_event_encryption_info_device_name" = "Name\n";
-"room_event_encryption_info_device_id" = "Geräte ID\n";
+"room_event_encryption_info_device_name" = "Öffentlicher Name\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Überprüfung\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 Fingerabdruck\n";
 "room_event_encryption_info_device_verified" = "Überprüft";
@@ -230,13 +230,13 @@
 "power_level" = "Berechtigungsstufe";
 "network_error_not_reachable" = "Bitte Netzwerkverbindung prüfen";
 "user_id_placeholder" = "z. B.: @thomas:heimserver";
-"ssl_homeserver_url" = "Home-Server URL: %@";
+"ssl_homeserver_url" = "Heim-Server URL: %@";
 // Permissions
 "camera_access_not_granted_for_call" = "Video-Anrufe benötigen Zugriff auf die Kamera, aber %@ hat keine Berechtigung";
 "microphone_access_not_granted_for_call" = "Anrufe benötigen Zugriff auf das Mikrofon, aber %@ hat keine Berechtigung";
 "local_contacts_access_not_granted" = "Finden von Benutzern in lokalen Kontakten benötigt Zugriff auf die Kontakte, aber %@ hat keine Berechtigung";
 "local_contacts_access_discovery_warning_title" = "Benutzer finden";
-"local_contacts_access_discovery_warning" = "%@ möchte Mail-Adressen und Telefonnummern von deinen Kontakten hochladen, um andere Benutzer zu finden";
+"local_contacts_access_discovery_warning" = "Um Kontakte zu erkennen, die Matrix bereits verwenden, kann %@ E-Mail-Adressen und Telefonnummern in Ihrem Adressbuch an den von Ihnen ausgewählten Matrix-Identitätsserver senden. Sofern dies unterstützt wird, werden personenbezogene Daten vor dem Senden gehasht. Weitere Informationen finden Sie in den Datenschutzrichtlinien Ihres Identitätsservers.";
 // Country picker
 "country_picker_title" = "Wähle ein Land";
 "notice_room_invite" = "%@ hat %@ eingeladen";
@@ -328,7 +328,7 @@
 "notification_settings_by_default" = "Als Standard...";
 "notification_settings_notify_all_other" = "Benachrichtige für alle andereren Nachrichten/Räume";
 // gcm section 
-"settings_config_home_server" = "Home-Server: %@";
+"settings_config_home_server" = "Heim-Server: %@";
 "settings_config_identity_server" = "Identitätsserver: %@";
 "settings_config_user_id" = "Benutzer ID: %@";
 // call string
