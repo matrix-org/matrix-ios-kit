@@ -1460,7 +1460,16 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
     if (self.identityService)
     {
         // Do a full lookup
-        [self updateMatrixIDsForAllLocalContacts];
+        // But check first if the data is loaded
+        if (!self->localContactByContactID )
+        {
+            // Load data. That will trigger updateMatrixIDsForAllLocalContacts if needed
+            [self refreshLocalContacts];
+        }
+        else
+        {
+            [self updateMatrixIDsForAllLocalContacts];
+        }
     }
     else
     {
