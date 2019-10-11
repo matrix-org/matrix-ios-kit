@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.11.1 (2019-10-11)
+==========================================
+
+Bug fix:
+ * MXKContactManager: Fix assertion failure because of early call of updateMatrixIDsForAllLocalContacts.
+
 Changes in MatrixKit in 0.11.0 (2019-10-11)
 ==========================================
 
