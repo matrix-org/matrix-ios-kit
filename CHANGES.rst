@@ -8,6 +8,7 @@ Improvements:
  * Privacy: Remove the ability to set an IS at login/registration (vector-im/riot-ios/issues/2661).
  * Privacy: Use wellknown to discover the IS of a custom HS (vector-im/riot-ios/issues/2686).
  * Tools: Add human readable MSISDN formatting method.
+ * MXKContactManager: Limit the number of full lookups. Do it once per new matrix session.
 
 Bug fix:
  * Display correctly the revoked third-party invite.

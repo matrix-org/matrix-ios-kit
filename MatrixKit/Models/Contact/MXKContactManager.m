@@ -254,9 +254,6 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
             [self refreshMatrixContacts];
         });
     }
-    
-    // Lookup the matrix users in all the local contacts.
-    [self updateMatrixIDsForAllLocalContacts];
 }
 
 - (void)removeMatrixSession:(MXSession*)mxSession
@@ -782,6 +779,10 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 
 - (void)updateMatrixIDsForAllLocalContacts
 {
+    // If localContactByContactID is not loaded, the manager will consider there is no local contacts
+    // and will reset its cache
+    NSAssert(localContactByContactID, @"[MXKContactManager] updateMatrixIDsForAllLocalContacts: refreshLocalContacts must be called before");
+
     // Check if the user allowed to sync local contacts.
     // + Check if at least an identity server is available, and if the loading step is not in progress.
     if (![MXKAppSettings standardAppSettings].syncLocalContacts || ![self isUsersDiscoveringEnabled] || isLocalContactListRefreshing)
