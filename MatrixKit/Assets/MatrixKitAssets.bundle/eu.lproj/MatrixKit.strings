@@ -31,8 +31,8 @@
 "start_video_call" = "Hasi bideo deia";
 "submit" = "Bidali";
 "login_password_placeholder" = "Pasahitza";
-"login_home_server_title" = "Hasiera zerbitzaria:";
-"login_identity_server_title" = "Identitate zerbitzaria:";
+"login_home_server_title" = "Hasiera-zerbitzariaren URLa:";
+"login_identity_server_title" = "Identitate-zerbitzariaren URL-a:";
 "login_error_must_start_http" = "http[s]:// gisa hasi behar da URLa";
 "login_error_forbidden" = "Erabiltzaile-izen / pasahitz baliogabea";
 "login_error_unknown_token" = "Ez da ezagutzen zehaztutako sarbide katea";
@@ -175,7 +175,7 @@
 "power_level" = "Botere maila";
 "network_error_not_reachable" = "Egiaztatu zure sare konexioa";
 "user_id_placeholder" = "adib: @urko:hasierazerbitzaria";
-"ssl_homeserver_url" = "Hasiera zerbitzariaren URL-a: %@";
+"ssl_homeserver_url" = "Hasiera-zerbitzariaren URL-a: %@";
 "language_picker_default_language" = "Lehenetsia (%@)";
 "notice_room_invite" = "%@ erabiltzaileak %@ gonbidatu du";
 "notice_room_third_party_invite" = "%@ erabiltzaileak gelara elkartzeko gonbidapen bat bidali dio %@ erabiltzaileari";
@@ -200,11 +200,11 @@
 "notification_settings_room_rule_title" = "Gela: '%@'";
 // Devices
 "device_details_title" = "Gailuaren informazioa\n";
-"device_details_name" = "Izena\n";
-"device_details_identifier" = "Gailuaren ID-a\n";
+"device_details_name" = "Izen publikoa\n";
+"device_details_identifier" = "ID-a\n";
 "device_details_last_seen" = "Azkenekoz ikusia\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Gailuaren izena:";
+"device_details_rename_prompt_message" = "Gailuaren izen publikoa zurekin komunikatzen duen jendeak ikusi dezake";
 // Encryption information
 "room_event_encryption_info_title" = "Muturretik muturrerako zifratzearen informazioa\n\n";
 "room_event_encryption_info_event_user_id" = "Erabiltzailearen ID-a\n";
@@ -214,8 +214,8 @@
 "room_event_encryption_info_event_decryption_error" = "Deszifratze errorea\n";
 "room_event_encryption_info_device" = "\nIgorlearen gailuaren informazioa\n";
 "room_event_encryption_info_device_unknown" = "gailu ezezaguna\n";
-"room_event_encryption_info_device_name" = "Izena\n";
-"room_event_encryption_info_device_id" = "Gailuaren ID-a\n";
+"room_event_encryption_info_device_name" = "Izen publikoa\n";
+"room_event_encryption_info_device_id" = "ID-a\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 hatz-marka\n";
 // Account
 "account_save_changes" = "Gorde aldaketak";
@@ -287,7 +287,7 @@
 "camera_access_not_granted_for_call" = "Bideo deiek kamera atzitzeko baimena behar dute baina %@ aplikazioak ez du baimenik";
 "microphone_access_not_granted_for_call" = "Deiek mikrofonoa atzitzeko baimena behar dute baina %@ aplikazioak ez du baimenik";
 "local_contacts_access_discovery_warning_title" = "Erabiltzaileak aurkitzea";
-"local_contacts_access_discovery_warning" = "%@ aplikazioak zure kontaktuen e-mail eta telefono zenbakiak igo nahi ditu erabiltzaileak aurkitu ahal izateko";
+"local_contacts_access_discovery_warning" = "Matrix darabilten kontaktuak aukitzeko, %@ aplikazioak zure helbide-liburuko kontaktuen e-mail eta telefono zenbakiak igo ahal ditu zuk hautatutako Matrix identitate-zerbitzarira. AHal denean, datu pertsonalak hasheatu egingo dira bidali aurretik, egiaztatu zure identitate-zerbitzariaren pribatutasun politika xehetasun gehiagorako.";
 "notice_room_withdraw" = "%@ erabiltzaileak %@ erabiltzailearen gonbidapena atzera bota du";
 "notice_room_reason" = ".Arrazoia: %@";
 "notice_avatar_url_changed" = "%@ erabiltzaileak abatarra aldatu du";
@@ -340,7 +340,7 @@
 "notification_settings_by_default" = "Lehenetsita...";
 "notification_settings_notify_all_other" = "Jakinarazi beste mezu/gela guztietarako";
 // gcm section 
-"settings_config_home_server" = "Hasiera zerbitzaria: %@";
+"settings_config_home_server" = "Hasiera-zerbitzaria: %@";
 "settings_config_identity_server" = "Identitate zerbitzaria: %@";
 "settings_config_user_id" = "Erabiltzaile ID-a: %@";
 // call string
@@ -377,3 +377,5 @@
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktatu administratzailea";
 "e2e_passphrase_create" = "Sortu pasaesaldia";
 "account_error_push_not_allowed" = "Jakinarazpenak ez dira onartzen";
+"device_details_rename_prompt_title" = "Gailuaren izena";
+"notice_room_third_party_revoked_invite" = "%@ erabiltzaileak %@ gelara elkartzeko gonbidapena indargabetu du";
