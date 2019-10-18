@@ -1381,6 +1381,7 @@
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState
 {
     // Use the default updater as first pass
+    MXEvent *currentlastMessageEvent = summary.lastMessageEvent;
     BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event eventState:eventState roomState:roomState];
     if (updated)
     {
@@ -1390,18 +1391,21 @@
         // Note that we use the current room state (roomState) because when we display
         // users displaynames, we want current displaynames
         MXKEventFormatterError error;
-        summary.lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
-
-        // Store the potential error
-        summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
-
-        if (0 == summary.lastMessageString.length)
+        NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
+        if (0 == lastMessageString.length)
         {
             // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
             updated = NO;
+            // Restore the previous lastMessageEvent
+            summary.lastMessageEvent = currentlastMessageEvent;
         }
         else
         {
+            summary.lastMessageString = lastMessageString;
+            
+            // Store the potential error
+            summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
+            
             summary.lastMessageOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
 
             // Check whether the sender name has to be added
