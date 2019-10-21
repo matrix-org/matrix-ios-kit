@@ -2830,8 +2830,16 @@
                                                                    // Cancel event highlighting
                                                                    [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
                                                                    
-                                                                   [[UIPasteboard generalPasteboard] setString:selectedComponent.textMessage];
+                                                                   NSString *textMessage = selectedComponent.textMessage;
                                                                    
+                                                                   if (textMessage)
+                                                                   {
+                                                                       [[UIPasteboard generalPasteboard] setString:textMessage];
+                                                                   }
+                                                                   else
+                                                                   {
+                                                                       NSLog(@"[MXKRoomViewController] Copy text failed. Text is nil.");
+                                                                   }
                                                                }]];
                 
                 [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
@@ -3133,7 +3141,14 @@
 
 - (void)copy:(id)sender
 {
-    [[UIPasteboard generalPasteboard] setString:selectedText];
+    if (selectedText)
+    {
+        [[UIPasteboard generalPasteboard] setString:selectedText];
+    }
+    else
+    {
+        NSLog(@"[MXKRoomViewController] Selected text copy failed. Selected text is nil");
+    }
 }
 
 - (void)share:(id)sender
