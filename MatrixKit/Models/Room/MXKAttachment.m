@@ -364,7 +364,22 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     [self getAttachmentData:^(NSData *data) {
         
         UIImage *img = [UIImage imageWithData:data];
-        if (onSuccess) onSuccess(self, img);
+        
+        if (img)
+        {
+            if (onSuccess)
+            {
+                onSuccess(self, img);
+            }
+        }
+        else
+        {
+            if (onFailure)
+            {
+                NSError *error = [NSError errorWithDomain:kMXKAttachmentErrorDomain code:0 userInfo:@{@"err": @"error_get_image_from_data"}];
+                onFailure(self, error);
+            }
+        }
         
     } failure:^(NSError *error) {
         
