@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.11.2 (2019-XX-XX)
 
 Bug fix:
  * MXKRoomBubbleCellData: Fix a crash in `shouldHideSenderName` method.
+ * Pasteboard: Fix a crash when passing a nil object to `UIPasteboard`.
 
 Changes in MatrixKit in 0.11.1 (2019-10-11)
 ==========================================
