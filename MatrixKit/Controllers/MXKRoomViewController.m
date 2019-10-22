@@ -2838,7 +2838,7 @@
                                                                    }
                                                                    else
                                                                    {
-                                                                       NSLog(@"[MXKRoomViewController] Copy text failed. Text is nil.");
+                                                                       NSLog(@"[MXKRoomViewController] Copy text failed. Text is nil for room id/event id: %@/%@", selectedComponent.event.roomId, selectedComponent.event.eventId);
                                                                    }
                                                                }]];
                 
