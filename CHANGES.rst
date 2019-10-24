@@ -1,6 +1,9 @@
 Changes in MatrixKit in 0.11.2 (2019-XX-XX)
 ==========================================
 
+Improvements:
+ * MXKEventFormatter: In the case of "in reply to" event, replace the user Matrix ID by his display name when available (vector-im/riot-ios/issues/2154).
+
 Bug fix:
  * MXKRoomBubbleCellData: Fix a crash in `shouldHideSenderName` method.
  * Pasteboard: Fix a crash when passing a nil object to `UIPasteboard`.
