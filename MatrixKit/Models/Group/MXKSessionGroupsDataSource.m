@@ -1,6 +1,7 @@
 /*
  Copyright 2017 Vector Creations Ltd
  Copyright 2018 New Vector Ltd
+ Copyright 2019 The Matrix.org Foundation C.I.C
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -89,7 +90,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)didMXSessionStateChange
 {
-    if (MXSessionStateStoreDataReady <= self.mxSession.state)
+    if (MXSessionStateRunning <= self.mxSession.state)
     {
         // Check whether some data have been already load
         if (0 == internalCellDataArray.count)
