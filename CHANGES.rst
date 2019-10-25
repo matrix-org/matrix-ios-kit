@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.11.2 (2019-XX-XX)
 
 Improvements:
  * MXKEventFormatter: In the case of "in reply to" event, replace the user Matrix ID by his display name when available (vector-im/riot-ios/issues/2154).
+ * Groups: Load them only after the session got sync'ed with the homeserver (vector-im/riot-ios/issues/2793).
 
 Bug fix:
  * MXKRoomBubbleCellData: Fix a crash in `shouldHideSenderName` method.
