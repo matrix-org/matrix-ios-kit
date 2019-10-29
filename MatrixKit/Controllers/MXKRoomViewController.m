@@ -1745,7 +1745,7 @@
                 isScrollingToBottom = YES;
                 BOOL savedBubbleTableViewDisplayInTransition = self.isBubbleTableViewDisplayInTransition;
                 self.bubbleTableViewDisplayInTransition = YES;
-                [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
+                [self setBubbleTableViewContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
                 self.bubbleTableViewDisplayInTransition = savedBubbleTableViewDisplayInTransition;
             }
             else
@@ -1756,7 +1756,7 @@
         }
         else
         {
-            [_bubblesTableView setContentOffset:CGPointMake(0, -_bubblesTableView.mxk_adjustedContentInset.top) animated:animated];
+            [self setBubbleTableViewContentOffset:CGPointMake(0, -_bubblesTableView.mxk_adjustedContentInset.top) animated:animated];            
         }
         
         shouldScrollToBottomOnTableRefresh = NO;
