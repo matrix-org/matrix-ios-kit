@@ -363,8 +363,8 @@
 "call_connecting" = "전화 연결 중...";
 "call_ended" = "전화 종료됨";
 "call_ring" = "전화 중...";
-"incoming_video_call" = "오는 영상 통화";
-"incoming_voice_call" = "오는 음성 통화";
+"incoming_video_call" = "수신 영상 통화";
+"incoming_voice_call" = "수신 음성 통화";
 "call_invite_expired" = "전화 초대가 만료됨";
 // unrecognized SSL certificate
 "ssl_trust" = "신뢰";
