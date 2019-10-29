@@ -1745,7 +1745,7 @@
                 isScrollingToBottom = YES;
                 BOOL savedBubbleTableViewDisplayInTransition = self.isBubbleTableViewDisplayInTransition;
                 self.bubbleTableViewDisplayInTransition = YES;
-                [_bubblesTableView setContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
+                [self setBubbleTableViewContentOffset:CGPointMake(0, wantedOffsetY) animated:animated];
                 self.bubbleTableViewDisplayInTransition = savedBubbleTableViewDisplayInTransition;
             }
             else
@@ -1756,7 +1756,7 @@
         }
         else
         {
-            [_bubblesTableView setContentOffset:CGPointMake(0, -_bubblesTableView.mxk_adjustedContentInset.top) animated:animated];
+            [self setBubbleTableViewContentOffset:CGPointMake(0, -_bubblesTableView.mxk_adjustedContentInset.top) animated:animated];            
         }
         
         shouldScrollToBottomOnTableRefresh = NO;
@@ -1788,6 +1788,16 @@
     
     // Dispose potential keyboard view
     self.keyboardView = nil;
+}
+
+- (void)setBubbleTableViewContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
+{
+    if (preventBubblesTableViewScroll)
+    {
+        return;
+    }
+    
+    [self.bubblesTableView setContentOffset:contentOffset animated:animated];
 }
 
 #pragma mark - properties
@@ -1907,7 +1917,7 @@
                                                contentOffset.y = self->_bubblesTableView.contentSize.height - lastVisibleContentRowOffset;
                                            }
                                            
-                                           [self->_bubblesTableView setContentOffset:contentOffset animated:NO];
+                                           [self setBubbleTableViewContentOffset:contentOffset animated:NO];
                                            
                                            
                                            // Update the read receipt and potentially the read marker.
@@ -2007,12 +2017,12 @@
             {
                 // Adjust vertical offset in order to compensate scrolling
                 contentOffset.y += verticalOffset;
-                [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+                [self setBubbleTableViewContentOffset:contentOffset animated:NO];
             }
         }
         else
         {
-            [self.bubblesTableView setContentOffset:contentOffset animated:NO];
+            [self setBubbleTableViewContentOffset:contentOffset animated:NO];
         }
 
         // Restore scrolling and the scroll indicator
@@ -2355,7 +2365,7 @@
                     
                     CGPoint contentOffset = _bubblesTableView.contentOffset;
                     contentOffset.y = contentOffsetY;
-                    [_bubblesTableView setContentOffset:contentOffset animated:NO];
+                    [self setBubbleTableViewContentOffset:contentOffset animated:NO];
                 }
                 
                 if (cellTmp && [cellTmp conformsToProtocol:@protocol(MXKCellRendering)] && [cellTmp respondsToSelector:@selector(didEndDisplay)])
@@ -2602,7 +2612,7 @@
     // Resetting the contentOffset after the reload fixes the issue.
     if (hasScrolledToTheBottom == NO)
     {
-        [_bubblesTableView setContentOffset:contentOffset animated:NO];
+        [self setBubbleTableViewContentOffset:contentOffset animated:NO];
     }
     
     self.bubbleTableViewDisplayInTransition = NO;

@@ -83,6 +83,11 @@
      The current visibility of the status bar in this view controller.
      */
     BOOL isStatusBarHidden;
+    
+    /**
+     YES to prevent `bubblesTableView` scrolling when calling -[setBubbleTableViewContentOffset:animated:]
+     */
+    BOOL preventBubblesTableViewScroll;
 }
 
 /**
@@ -403,5 +408,13 @@
  @return a boolean value which tells whether the table has been scrolled to the bottom.
  */
 - (BOOL)reloadBubblesTable:(BOOL)useBottomAnchor;
+
+/**
+ Sets the offset from the content `bubblesTableView`'s origin. Take into account `preventBubblesTableViewScroll` value.
+
+ @param contentOffset Offset from the content `bubblesTableView`’s origin.
+ @param animated YES to animate the transition.
+ */
+- (void)setBubbleTableViewContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 
 @end
