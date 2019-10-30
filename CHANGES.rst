@@ -9,6 +9,7 @@ Improvements:
 Bug fix:
  * MXKRoomBubbleCellData: Fix a crash in `shouldHideSenderName` method.
  * Pasteboard: Fix a crash when passing a nil object to `UIPasteboard`.
+ * MXKImageView: UI API called from background thread (#517).
 
 Changes in MatrixKit in 0.11.1 (2019-10-11)
 ==========================================
