@@ -748,30 +748,36 @@ andImageOrientation:(UIImageOrientation)orientation
     MXWeakify(self);
     [attachment getThumbnail:^(MXKAttachment *attachment2, UIImage *img) {
         MXStrongifyAndReturnIfNil(self);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
 
-        if (self->currentAttachment != attachment2)
-        {
-            return;
-        }
-
-        if (img && self->imageOrientation != UIImageOrientationUp)
-        {
-            self.image = [UIImage imageWithCGImage:img.CGImage scale:1.0 orientation:self->imageOrientation];
-        }
-        else
-        {
-            self.image = img;
-        }
-        [self stopActivityIndicator];
+            if (self->currentAttachment != attachment2)
+            {
+                return;
+            }
+            
+            if (img && self->imageOrientation != UIImageOrientationUp)
+            {
+                self.image = [UIImage imageWithCGImage:img.CGImage scale:1.0 orientation:self->imageOrientation];
+            }
+            else
+            {
+                self.image = img;
+            }
+            [self stopActivityIndicator];
+        });
+            
     } failure:^(MXKAttachment *attachment2, NSError *error) {
         MXStrongifyAndReturnIfNil(self);
-
-        if (self->currentAttachment != attachment2)
-        {
-            return;
-        }
-
-        [self stopActivityIndicator];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->currentAttachment != attachment2)
+            {
+                return;
+            }
+            
+            [self stopActivityIndicator];
+        });
     }];
 }
 
