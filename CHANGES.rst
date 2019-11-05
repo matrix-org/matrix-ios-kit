@@ -5,6 +5,7 @@ Improvements:
  * MXKEventFormatter: In the case of "in reply to" event, replace the user Matrix ID by his display name when available (vector-im/riot-ios/issues/2154).
  * Groups: Load them only after the session got sync'ed with the homeserver (vector-im/riot-ios/issues/2793).
  * MXKRoomViewController: Add possibility to prevent `bubblesTableView` scroll using `contentOffset`.
+ * MXKAccount: Handle updated MXBackgroundModeHandler and now use MXBackgroundTask.
 
 Bug fix:
  * MXKRoomBubbleCellData: Fix a crash in `shouldHideSenderName` method.

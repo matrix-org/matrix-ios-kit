@@ -73,7 +73,6 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     // Background sync management
     MXOnBackgroundSyncDone backgroundSyncDone;
     MXOnBackgroundSyncFail backgroundSyncfails;
-    UIBackgroundTaskIdentifier backgroundSyncBgTask;
     NSTimer* backgroundSyncTimer;
 
     // Observe UIApplicationSignificantTimeChangeNotification to refresh MXRoomSummaries on time formatting change.
@@ -83,7 +82,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     id NSCurrentLocaleDidChangeNotificationObserver;
 }
 
-@property (nonatomic) UIBackgroundTaskIdentifier bgTask;
+@property (nonatomic, strong) id<MXBackgroundTask> backgroundTask;
+@property (nonatomic, strong) id<MXBackgroundTask> backgroundSyncBgTask;
 
 @end
 
@@ -1044,18 +1044,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
         if (handler)
         {
-            if (_bgTask == [handler invalidIdentifier])
+            if (!self.backgroundTask.isRunning)
             {
-                _bgTask = [handler startBackgroundTaskWithName:@"MXKAccountBackgroundTask" completion:^{
-                    
-                    NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX expired", (unsigned long)self->_bgTask);
-                    [handler endBackgrounTaskWithIdentifier:self->_bgTask];
-                    self->_bgTask = [handler invalidIdentifier];
-                    
-                }];
+                self.backgroundTask = [handler startBackgroundTaskWithName:@"[MXKAccount] pauseInBackgroundTask" expirationHandler:nil];
             }
-            
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX starts", (unsigned long)_bgTask);
         }
         
         // Pause SDK
@@ -1069,12 +1061,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             {
                 typeof(self) self = weakSelf;
                 
-                if (self.bgTask != [handler invalidIdentifier])
+                if (self.backgroundTask.isRunning)
                 {
-                    NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX ends", (unsigned long)self.bgTask);
-                    [handler endBackgrounTaskWithIdentifier:self.bgTask];
-                    self.bgTask = [handler invalidIdentifier];
-                    NSLog(@"[MXKAccount] >>>>> background pause task finished");
+                    [self.backgroundTask stop];
+                    self.backgroundTask = nil;
                 }
             }
             
@@ -1128,13 +1118,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             [self refreshPushKitPusher];
         }
         
-        id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
-        if (handler && _bgTask != [handler invalidIdentifier])
+        // Cancel background task
+        if (self.backgroundTask.isRunning)
         {
-            // Cancel background task
-            [handler endBackgrounTaskWithIdentifier:_bgTask];
-            NSLog(@"[MXKAccount] pauseInBackgroundTask : %08lX cancelled", (unsigned long)_bgTask);
-            _bgTask = [handler invalidIdentifier];
+            [self.backgroundTask stop];
+            self.backgroundTask = nil;
         }
     }
 }
@@ -1692,10 +1680,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)cancelBackgroundSync
 {
-    if (backgroundSyncBgTask != UIBackgroundTaskInvalid)
+    if (self.backgroundSyncBgTask.isRunning)
     {
         NSLog(@"[MXKAccount] The background Sync is cancelled.");
-
+        
         if (mxSession)
         {
             if (mxSession.state == MXSessionStateBackgroundSyncInProgress)
@@ -1729,13 +1717,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     backgroundSyncDone = nil;
     backgroundSyncfails = nil;
     
-    id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
-    if (handler && backgroundSyncBgTask != [handler invalidIdentifier])
+    // End background task
+    if (self.backgroundSyncBgTask.isRunning)
     {
-        // End background task
-        [handler endBackgrounTaskWithIdentifier:backgroundSyncBgTask];
-        NSLog(@"[MXKAccount] onBackgroundSyncDone: %08lX stop", (unsigned long)backgroundSyncBgTask);
-        backgroundSyncBgTask = [handler invalidIdentifier];
+        [self.backgroundSyncBgTask stop];
+        self.backgroundSyncBgTask = nil;
     }
 }
 
@@ -1759,16 +1745,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             backgroundSyncDone = success;
             backgroundSyncfails = failure;
             
-            if (backgroundSyncBgTask != [handler invalidIdentifier])
-            {
-                [handler endBackgrounTaskWithIdentifier:backgroundSyncBgTask];
-            }
+            MXWeakify(self);
             
-            backgroundSyncBgTask = [handler startBackgroundTaskWithName:@"MXKAccountBackgroundSyncTask" completion:^{
+            self.backgroundSyncBgTask = [handler startBackgroundTaskWithName:@"[MXKAccount] backgroundSync:success:failure:" expirationHandler:^{
+                
+                MXStrongifyAndReturnIfNil(self);
                 
                 NSLog(@"[MXKAccount] the background Sync fails because of the bg task timeout");
                 [self cancelBackgroundSync];
-                
             }];
             
             // ensure that the backgroundSync will be really done in the expected time
