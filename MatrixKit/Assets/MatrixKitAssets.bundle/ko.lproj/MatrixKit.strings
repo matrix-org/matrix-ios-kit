@@ -279,8 +279,8 @@
 "notice_room_leave" = "%@님이 떠났습니다";
 "notice_room_reject" = "%@님이 초대를 거절했습니다";
 "notice_room_kick" = "%@님이 %@님을 추방했습니다";
-"notice_room_unban" = "%@님이 %@님의 차단을 풀었습니다";
-"notice_room_ban" = "%@님이 %@님을 차단했습니다";
+"notice_room_unban" = "%@님이 %@님의 출입 금지를 풀었습니다";
+"notice_room_ban" = "%@님이 %@님을 출입 금지했습니다";
 "notice_room_withdraw" = "%@님이 %@님의 초대를 취소했습니다";
 "notice_room_reason" = ". 이유: %@";
 "notice_avatar_url_changed" = "%@님이 아바타를 바꿨습니다";
@@ -311,12 +311,12 @@
 "create_account" = "계정 만들기";
 "membership_invite" = "초대받음";
 "membership_leave" = "떠남";
-"membership_ban" = "차단당함";
+"membership_ban" = "출입 금지당함";
 "num_members_one" = "%@명의 사용자";
 "num_members_other" = "%@명의 사용자";
 "kick" = "추방";
-"ban" = "차단";
-"unban" = "차단 풀기";
+"ban" = "출입 금지";
+"unban" = "출입 금지 풀기";
 "message_unsaved_changes" = "저장하지 않은 변경 사항이 있습니다. 떠나게 되면 변경 사항은 버려집니다.";
 // Login Screen 
 "login_error_already_logged_in" = "이미 로그인됨";
@@ -363,8 +363,8 @@
 "call_connecting" = "전화 연결 중...";
 "call_ended" = "전화 종료됨";
 "call_ring" = "전화 중...";
-"incoming_video_call" = "오는 영상 통화";
-"incoming_voice_call" = "오는 음성 통화";
+"incoming_video_call" = "수신 영상 통화";
+"incoming_voice_call" = "수신 음성 통화";
 "call_invite_expired" = "전화 초대가 만료됨";
 // unrecognized SSL certificate
 "ssl_trust" = "신뢰";

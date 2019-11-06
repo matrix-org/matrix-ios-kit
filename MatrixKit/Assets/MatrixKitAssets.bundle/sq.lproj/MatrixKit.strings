@@ -2,8 +2,8 @@
 // Login Screen
 "login_create_account" = "Krijo llogari:";
 "login_server_url_placeholder" = "URL (p.sh. https://matrix.org)";
-"login_home_server_title" = "Shërbyes Home:";
-"login_identity_server_title" = "Shërbyes Identitetesh:";
+"login_home_server_title" = "URL Shërbyesi Home:";
+"login_identity_server_title" = "URL Shërbyesi Identitetesh:";
 "login_password_placeholder" = "Fjalëkalim";
 "login_optional_field" = "opsionale";
 "login_email_placeholder" = "Adresë email";
@@ -93,11 +93,11 @@
 "notification_settings_room_rule_title" = "Dhomë: '%@'";
 // Devices
 "device_details_title" = "Të dhënash pajisjeje\n";
-"device_details_name" = "Emër\n";
-"device_details_identifier" = "ID Pajisjeje\n";
+"device_details_name" = "Emër Publik\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Parë së fundi më\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Emër pajisjeje:";
+"device_details_rename_prompt_message" = "Emri publik i një pajisjeje është i dukshëm për persona me të cilët komunikoni";
 "device_details_delete_prompt_title" = "Mirëfilltësim";
 // Encryption information
 "room_event_encryption_info_title" = "Të dhëna fshehtëzimi skaj-më-skaj\n\n";
@@ -111,8 +111,8 @@
 "room_event_encryption_info_event_none" = "asnjë";
 "room_event_encryption_info_device" = "\nTë dhëna pajisjeje dërguesi\n";
 "room_event_encryption_info_device_unknown" = "pajisje e panjohur\n";
-"room_event_encryption_info_device_name" = "Emër\n";
-"room_event_encryption_info_device_id" = "ID Pajisjeje\n";
+"room_event_encryption_info_device_name" = "Emër Publik\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verifikim\n";
 "room_event_encryption_info_device_fingerprint" = "Shenja gishtash Ed25519\n";
 "room_event_encryption_info_device_verified" = "E verifikuar";
@@ -342,7 +342,7 @@
 "camera_access_not_granted_for_call" = "Thirrjet video lypin përdorim të Kamerës, por %@ s’ka leje për ta përdorur";
 "microphone_access_not_granted_for_call" = "Thirrjet lypin përdorim të Mikrofonit, por %@ s’ka leje ta përdorë atë";
 "local_contacts_access_not_granted" = "Zbulimi i përdoruesve nga kontaktet vendore lyp hyrje te kontaktet tuaja, por %@ s’ka leje t’i përdorë ato";
-"local_contacts_access_discovery_warning" = "Që të mund të zbulojë përdorues, %@ dëshiron të ngarkojë email-e dhe numra telefonash nga Kontaktet tuaja";
+"local_contacts_access_discovery_warning" = "Që të mund të zbulojë kontakte që përdorin tashmë Matrix-in, %@ mund të dërgojë adresa email dhe numra telefonash nga libri juaj i adresave te shërbyesi juaj i zgjedhur i identiteteve Matrix. Kur kjo mbulohet, të dhënat personale fshehtëzohen, përpara dërgimit - për më tepër hollësi, ju lutemi kontrolloni rregulla privatësie të shërbyesit tuaj të identiteteve.";
 "notice_room_unban" = "%@ i hoqi dëbimin %@";
 "redact" = "Hiqe";
 // contacts list screen 
@@ -378,3 +378,4 @@
 "notice_feedback" = "Akt dhënieje përshtypjesh (id: %@): %@";
 "account_error_push_not_allowed" = "Nuk lejohen njoftime";
 "notice_room_third_party_revoked_invite" = "%@ shfuqizoi ftesën për pjesëmarrje në dhomë për %@";
+"device_details_rename_prompt_title" = "Emër Pajisjeje";
