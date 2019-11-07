@@ -15,22 +15,22 @@ PODS:
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
   - cmark (0.24.1)
-  - DTCoreText (1.6.21):
-    - DTCoreText/Core (= 1.6.21)
+  - DTCoreText (1.6.23):
+    - DTCoreText/Core (= 1.6.23)
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTCoreText/Core (1.6.21):
+  - DTCoreText/Core (1.6.23):
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTFoundation/Core (1.7.13)
-  - DTFoundation/DTAnimatedGIF (1.7.13)
-  - DTFoundation/DTHTMLParser (1.7.13):
+  - DTFoundation/Core (1.7.14)
+  - DTFoundation/DTAnimatedGIF (1.7.14)
+  - DTFoundation/DTHTMLParser (1.7.14):
     - DTFoundation/Core
-  - DTFoundation/UIKit (1.7.13):
+  - DTFoundation/UIKit (1.7.14):
     - DTFoundation/Core
   - GZIP (1.2.3)
   - HPGrowingTextView (1.1)
@@ -38,23 +38,23 @@ PODS:
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libbase58 (0.1.4)
-  - libPhoneNumber-iOS (0.9.13)
-  - MatrixSDK (0.14.0):
-    - MatrixSDK/Core (= 0.14.0)
-  - MatrixSDK/Core (0.14.0):
+  - libPhoneNumber-iOS (0.9.15)
+  - MatrixSDK (0.15.0):
+    - MatrixSDK/Core (= 0.15.0)
+  - MatrixSDK/Core (0.15.0):
     - AFNetworking (~> 3.2.0)
     - GZIP (~> 1.2.2)
     - libbase58 (~> 0.1.4)
     - OLMKit (~> 3.1.0)
-    - Realm (~> 3.13.1)
+    - Realm (~> 3.17.3)
   - OLMKit (3.1.0):
     - OLMKit/olmc (= 3.1.0)
     - OLMKit/olmcpp (= 3.1.0)
   - OLMKit/olmc (3.1.0)
   - OLMKit/olmcpp (3.1.0)
-  - Realm (3.13.1):
-    - Realm/Headers (= 3.13.1)
-  - Realm/Headers (3.13.1)
+  - Realm (3.17.3):
+    - Realm/Headers (= 3.17.3)
+  - Realm/Headers (3.17.3)
   - SwiftUTI (1.0.7)
 
 DEPENDENCIES:
@@ -63,22 +63,21 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.14.0)
+  - MatrixSDK (= 0.15.0)
   - SwiftUTI (from `https://github.com/speramusinc/SwiftUTI.git`, branch `master`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
+    - AFNetworking
     - cmark
     - DTCoreText
     - DTFoundation
+    - GZIP
     - HPGrowingTextView
     - JSQMessagesViewController
     - JSQSystemSoundPlayer
-    - libPhoneNumber-iOS
-  trunk:
-    - AFNetworking
-    - GZIP
     - libbase58
+    - libPhoneNumber-iOS
     - MatrixSDK
     - OLMKit
     - Realm
@@ -90,25 +89,25 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SwiftUTI:
-    :commit: c21237f13e9fb31a07f3fcd5243c5cf79d75901c
+    :commit: b6b46942fb3aad819610851f62a70e17a528444e
     :git: https://github.com/speramusinc/SwiftUTI.git
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   cmark: 1d9ad0375e3b9fa281732e992467903606015520
-  DTCoreText: e5d688cffc9f6a61eddd1a4f94e2046851230de3
-  DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
+  DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
+  DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   GZIP: af5c90ef903776a7e9afe6ebebd794a84a2929d4
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libbase58: 7c040313537b8c44b6e2d15586af8e21f7354efd
-  libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
-  MatrixSDK: 0f965f8700420696ab15bf48d827a03d98b0ffac
+  libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
+  MatrixSDK: 342384d62bac5d95a31a7dab79e5f687bd87ddca
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
-  Realm: 50071da38fe079e0735e47c9f2eae738c68c5996
+  Realm: 5a1d9d47bfc101dd597668b1a8af4288a2557f6d
   SwiftUTI: 917993c124f8eac25e88ced0202fc58d7eb50fa8
 
-PODFILE CHECKSUM: 210bad650cff8cb4300306d4afe3e221603086f1
+PODFILE CHECKSUM: 32fb4e07ca2d3bea60009cc8495aa3e01a7795bf
 
-COCOAPODS: 1.8.3
+COCOAPODS: 1.8.4
