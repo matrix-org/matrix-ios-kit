@@ -16,9 +16,10 @@
 
 #import "MXKRoomMemberListDataSource.h"
 
+@import MatrixSDK.MXCallManager;
+
 #import "MXKRoomMemberCellData.h"
 
-#import "MXCallManager.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";

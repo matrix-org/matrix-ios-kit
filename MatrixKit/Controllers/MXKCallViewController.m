@@ -17,8 +17,9 @@
 
 #import "MXKCallViewController.h"
 
+@import MatrixSDK.MXMediaManager;
+
 #import "MXKAppSettings.h"
-#import "MXMediaManager.h"
 #import "MXKSoundPlayer.h"
 #import "MXKTools.h"
 #import "NSBundle+MatrixKit.h"

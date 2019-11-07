@@ -16,9 +16,9 @@
 
 #import "MXKLanguagePickerViewController.h"
 
-#import "NSBundle+MatrixKit.h"
+@import libPhoneNumber_iOS;
 
-#import "NBPhoneNumberUtil.h"
+#import "NSBundle+MatrixKit.h"
 
 NSString* const kMXKLanguagePickerViewControllerCellId = @"kMXKLanguagePickerViewControllerCellId";
 

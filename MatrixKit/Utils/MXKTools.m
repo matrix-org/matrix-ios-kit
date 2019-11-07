@@ -17,15 +17,12 @@
 
 #import "MXKTools.h"
 
-#import <AddressBook/AddressBook.h>
+@import MatrixSDK;
+@import AddressBook;
+@import libPhoneNumber_iOS;
+@import DTCoreText;
 
 #import "NSBundle+MatrixKit.h"
-
-#import "NBPhoneNumberUtil.h"
-
-#import "MXCall.h"
-
-#import "DTCoreText.h"
 
 #pragma mark - Constants definitions
 

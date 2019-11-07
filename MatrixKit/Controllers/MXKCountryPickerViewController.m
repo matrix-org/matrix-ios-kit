@@ -16,9 +16,10 @@
 
 #import "MXKCountryPickerViewController.h"
 
+@import libPhoneNumber_iOS;
+
 #import "NSBundle+MatrixKit.h"
 
-#import "NBPhoneNumberUtil.h"
 
 NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPickerViewControllerCountryCellId";
 
