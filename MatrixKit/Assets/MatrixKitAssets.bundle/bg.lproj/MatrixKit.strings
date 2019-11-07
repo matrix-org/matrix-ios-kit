@@ -12,9 +12,9 @@
 // Login Screen
 "login_create_account" = "Регистрация:";
 "login_server_url_placeholder" = "URL (напр. https://matrix.org)";
-"login_home_server_title" = "Home сървър:";
+"login_home_server_title" = "Home сървър адрес:";
 "login_home_server_info" = "Сървърът Ви съхранява цялата кореспонденция и профилни данни";
-"login_identity_server_title" = "Сървър за самоличност:";
+"login_identity_server_title" = "Адрес на сървър за самоличност:";
 "login_identity_server_info" = "Matrix предоставя сървъри за самоличност, които проследяват кои имейли и т.н. на кои Matrix идентификатори принадлежат. В момента съществува само https://matrix.org.";
 "login_user_id_placeholder" = "Matrix ID (напр. @ivan:matrix.org или ivan)";
 "login_password_placeholder" = "Парола";
@@ -121,11 +121,11 @@
 "notification_settings_room_rule_title" = "Стая: '%@'";
 // Devices
 "device_details_title" = "Информация за устройство\n";
-"device_details_name" = "Име\n";
-"device_details_identifier" = "ID на устройство\n";
+"device_details_name" = "Публично име\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Последно видян\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Име на устройство:";
+"device_details_rename_prompt_message" = "Публичното име на устройството е видимо за всеки, с който комуникирате";
 "device_details_delete_prompt_title" = "Автентикация";
 "device_details_delete_prompt_message" = "Тази операция изискра допълнителна автентикация.\nЗа да продължите, моля, въведете Вашата парола.";
 // Encryption information
@@ -141,8 +141,8 @@
 "room_event_encryption_info_event_none" = "няма";
 "room_event_encryption_info_device" = "\nИнформация за устройството на подателя\n";
 "room_event_encryption_info_device_unknown" = "неизвестно устройство\n";
-"room_event_encryption_info_device_name" = "Име\n";
-"room_event_encryption_info_device_id" = "ID на устройство\n";
+"room_event_encryption_info_device_name" = "Публично име\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Потвърждение\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 отпечатък\n";
 "room_event_encryption_info_device_verified" = "Потвърдено";
@@ -245,13 +245,13 @@
 "power_level" = "Ниво на достъп";
 "network_error_not_reachable" = "Моля, проверете интернет връзката си";
 "user_id_placeholder" = "напр.: @ivan:homeserver";
-"ssl_homeserver_url" = "URL на Home сървър: %@";
+"ssl_homeserver_url" = "Адрес на Home сървър: %@";
 // Permissions
 "camera_access_not_granted_for_call" = "Видео разговорите изискват достъп до камерата, но %@ няма разрешение да я използва";
 "microphone_access_not_granted_for_call" = "Разговорите изискват достъп до микрофона, но %@ няма разрешение да го използва";
 "local_contacts_access_not_granted" = "Откриване на потребители от локални контакти изисква достъп до контактите Ви, но %@ няма разрешение да ги използва";
 "local_contacts_access_discovery_warning_title" = "Откриване на потребители";
-"local_contacts_access_discovery_warning" = "За да открие потребители, %@ желае да качи имейли и телефонни номера от Вашите контакти";
+"local_contacts_access_discovery_warning" = "За да открие контакти използващи Matrix, %@ може да изпрати имейл адресите и телефонните номера от телефонния указател към избрания от вас Matrix сървър за самоличност. Ако се поддържа, личните данни могат да бъдат хеширани преди изпращане - вижте политиката за поверителност на сървъра за самоличност за повече информация.";
 // Country picker
 "country_picker_title" = "Избор на държава";
 // Language picker
@@ -378,3 +378,4 @@
 "e2e_passphrase_create" = "Създай парола";
 "account_error_push_not_allowed" = "Уведомленията не са разрешени";
 "notice_room_third_party_revoked_invite" = "%@ оттегли поканата за присъединяването на %@ към стаята";
+"device_details_rename_prompt_title" = "Име на устройство";

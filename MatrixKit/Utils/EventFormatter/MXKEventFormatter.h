@@ -191,9 +191,10 @@ typedef enum : NSUInteger {
 
  @param htmlString the HTLM string to render.
  @param event the event associated to the string.
+ @param roomState the room state right before the event.
  @return an attributed string.
  */
-- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event;
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState;
 
 /**
  Same as [self renderString:forEvent:] but add a prefix.

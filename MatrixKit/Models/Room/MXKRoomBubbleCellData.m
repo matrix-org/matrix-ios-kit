@@ -602,10 +602,11 @@
     BOOL res = NO;
     
     MXKRoomBubbleComponent *firstDisplayedComponent = [self getFirstBubbleComponentWithDisplay];
+    NSString *senderDisplayName = self.senderDisplayName;
     
     if (firstDisplayedComponent)
     {
-        res = (firstDisplayedComponent.event.isEmote || (firstDisplayedComponent.event.isState && [firstDisplayedComponent.textMessage hasPrefix:senderDisplayName]));
+        res = (firstDisplayedComponent.event.isEmote || (firstDisplayedComponent.event.isState && senderDisplayName && [firstDisplayedComponent.textMessage hasPrefix:senderDisplayName]));
     }
     
     return res;

@@ -2,9 +2,9 @@
 // Login Screen
 "login_create_account" = "Регистрация:";
 "login_server_url_placeholder" = "URL (например https://matrix.org)";
-"login_home_server_title" = "Домашний сервер:";
+"login_home_server_title" = "URL домашнего сервера:";
 "login_home_server_info" = "Ваш домашний сервер хранит все ваши разговоры и данные о аккаунте";
-"login_identity_server_title" = "Сервер идентификации:";
+"login_identity_server_title" = "URL сервера идентификации:";
 "login_identity_server_info" = "Серверы идентификации Matrix обеспечивают определение соответствия между email и Matrix ID. В настоящее время существует только https://matrix.org.";
 "login_user_id_placeholder" = "Matrix ID (например, @bob:matrix.org или bob)";
 "login_password_placeholder" = "Пароль";
@@ -102,11 +102,11 @@
 "notification_settings_room_rule_title" = "Комната: '%@'";
 // Devices
 "device_details_title" = "Информация об устройстве\n";
-"device_details_name" = "Название\n";
-"device_details_identifier" = "ID устройства\n";
+"device_details_name" = "Публичное имя\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Последняя активность\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Название устройства:";
+"device_details_rename_prompt_message" = "Публичные имена устройств видны людям, с которыми вы общаетесь";
 "device_details_delete_prompt_title" = "Аутентификация";
 "room_event_encryption_info_event" = "Информация о событии\n";
 "room_event_encryption_info_event_user_id" = "ID пользователя\n";
@@ -116,7 +116,7 @@
 "room_event_encryption_info_event_unencrypted" = "незашифровано";
 "room_event_encryption_info_device" = "\nИнформация об устройстве отправителя\n";
 "room_event_encryption_info_device_unknown" = "неизвестное устройство\n";
-"room_event_encryption_info_device_name" = "Название\n";
+"room_event_encryption_info_device_name" = "Публичное имя\n";
 "room_creation_participants_title" = "Участники:";
 // Room
 "room_please_select" = "Пожалуйста, выберите комнату";
@@ -285,7 +285,7 @@
 "microphone_access_not_granted_for_call" = "Для звонков требуется доступ к микрофону, но %@ не имеет разрешения на его использование";
 "local_contacts_access_not_granted" = "Поиск пользователей из локальных контактов требует доступа к вашим контактам, но %@ не имеет разрешения на их использование";
 "local_contacts_access_discovery_warning_title" = "Обнаружение пользователей";
-"local_contacts_access_discovery_warning" = "%@ необходимо загрузить адреса электронной почты и номера телефонов ваших контактов, чтобы обнаружить пользователей";
+"local_contacts_access_discovery_warning" = "Чтобы обнаружить контакты, уже использующие Matrix, %@ может отправлять адреса электронной почты и номера телефонов в вашей адресной книге на выбранный вами сервер идентификации Matrix. Там, где это поддерживается, личные данные перед отправкой хэшируются - пожалуйста, ознакомьтесь с политикой конфиденциальности вашего сервера идентификации для более подробной информации.";
 "notice_room_invite" = "%@ пригласил(а) %@";
 "notice_room_third_party_invite" = "%@ отправил(а) приглашение для %@ войти в комнату";
 "notice_room_third_party_registered_invite" = "%@ принял(а) приглашение от %@";
@@ -378,3 +378,4 @@
 "e2e_passphrase_create" = "Создать парольную фразу";
 "account_error_push_not_allowed" = "Уведомления не разрешены";
 "notice_room_third_party_revoked_invite" = "%@ отозвал приглашение для %@ на вступление в комнату";
+"device_details_rename_prompt_title" = "Имя устройства";

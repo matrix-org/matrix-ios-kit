@@ -588,6 +588,8 @@
             // Then, check if the HS needs an IS for running
             MXWeakify(self);
             MXHTTPOperation *operation = [self checkIdentityServerRequirementWithCompletion:^(BOOL identityServerRequired) {
+                
+                MXStrongifyAndReturnIfNil(self);
 
                 self->checkIdentityServerOperation = nil;
 

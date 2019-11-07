@@ -32,6 +32,8 @@
 
 #import "MXDecryptionResult.h"
 
+static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
+
 @interface MXKEventFormatter ()
 {
     /**
@@ -954,7 +956,7 @@
                     if (isHTML)
                     {
                         // Build the attributed string from the HTML string
-                        attributedDisplayText = [self renderHTMLString:body forEvent:event];
+                        attributedDisplayText = [self renderHTMLString:body forEvent:event withRoomState:roomState];
                     }
                     else
                     {
@@ -1190,7 +1192,7 @@
     return [self postRenderAttributedString:str];
 }
 
-- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event
+- (NSAttributedString*)renderHTMLString:(NSString*)htmlString forEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
     NSString *html = htmlString;
 
@@ -1199,7 +1201,7 @@
     MXJSONModelSetDictionary(relatesTo, event.content[@"m.relates_to"]);
     if ([relatesTo[@"m.in_reply_to"] isKindOfClass:NSDictionary.class])
     {
-        html = [self renderReplyTo:html];
+        html = [self renderReplyTo:html withRoomState:roomState];
     }
 
     // Do some sanitisation before rendering the string
@@ -1244,30 +1246,88 @@
  According to https://docs.google.com/document/d/1BPd4lBrooZrWe_3s_lHw_e-Dydvc7bXbm02_sV2k6Sc/edit.
 
  @param htmlString an html string containing a reply-to message.
+ @param roomState the room state right before the event.
  @return a displayable internationalised html string.
  */
-- (NSString*)renderReplyTo:(NSString*)htmlString
+- (NSString*)renderReplyTo:(NSString*)htmlString withRoomState:(MXRoomState*)roomState
 {
     NSString *html = htmlString;
-
+    
+    static NSRegularExpression *htmlATagRegex;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        htmlATagRegex = [NSRegularExpression regularExpressionWithPattern:kHTMLATagRegexPattern options:NSRegularExpressionCaseInsensitive error:nil];
+    });
+    
+    __block NSUInteger hrefCount = 0;
+    
+    __block NSRange inReplyToLinkRange = NSMakeRange(NSNotFound, 0);
+    __block NSRange inReplyToTextRange = NSMakeRange(NSNotFound, 0);
+    __block NSRange userIdRange = NSMakeRange(NSNotFound, 0);
+    
+    [htmlATagRegex enumerateMatchesInString:html
+                                    options:0
+                                      range:NSMakeRange(0, html.length)
+                                 usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
+                                     
+                                     if (hrefCount > 1)
+                                     {
+                                         *stop = YES;
+                                     }
+                                     else if (hrefCount == 0 && match.numberOfRanges >= 2)
+                                     {
+                                        inReplyToLinkRange = [match rangeAtIndex:1];
+                                        inReplyToTextRange = [match rangeAtIndex:2];
+                                     }
+                                     else if (hrefCount == 1 && match.numberOfRanges >= 2)
+                                     {
+                                         userIdRange = [match rangeAtIndex:2];
+                                     }
+                                     
+                                     hrefCount++;
+                                 }];
+    
+    // Note: Take care to replace text starting with the end
+    
+    // Replace <a href=\"https://matrix.to/#/mxid\">mxid</a>
+    // By <a href=\"https://matrix.to/#/mxid\">Display name</a>
+    // To replace the user Matrix ID by his display name when available.
+    // This link is the second <a> HTML node of the html string
+    
+    if (userIdRange.location != NSNotFound)
+    {
+        NSString *userId = [html substringWithRange:userIdRange];
+        
+        NSString *senderDisplayName = [roomState.members memberName:userId];
+        
+        if (senderDisplayName)
+        {
+            html = [html stringByReplacingCharactersInRange:userIdRange withString:senderDisplayName];
+        }
+    }
+    
     // Replace <mx-reply><blockquote><a href=\"__permalink__\">In reply to</a>
     // By <mx-reply><blockquote><a href=\"#\">['In reply to' from resources]</a>
     // To disable the link and to localize the "In reply to" string
     // This link is the first <a> HTML node of the html string
-    NSRange hyperlinkTagStart = [html rangeOfString:@"<a"];
-    NSRange hyperlinkTagEnd = [html rangeOfString:@"</a>"];
-    if (hyperlinkTagStart.location != NSNotFound && hyperlinkTagEnd.location != NSNotFound)
+    
+    if (inReplyToTextRange.location != NSNotFound)
     {
-        NSString *inReplyToATag = [NSString stringWithFormat:@"<a href=\"#\">%@", [NSBundle mxk_localizedStringForKey:@"notice_in_reply_to"]];
-        html = [html stringByReplacingCharactersInRange:NSMakeRange(hyperlinkTagStart.location, hyperlinkTagEnd.location - hyperlinkTagStart.location) withString:inReplyToATag];
+        html = [html stringByReplacingCharactersInRange:inReplyToTextRange withString:[NSBundle mxk_localizedStringForKey:@"notice_in_reply_to"]];
     }
-
+    
+    if (inReplyToLinkRange.location != NSNotFound)
+    {
+        html = [html stringByReplacingCharactersInRange:inReplyToLinkRange withString:@"#"];
+    }
+    
     // <blockquote> content in a reply-to message must be under a <p> child like
     // other quoted messages. Else it breaks the workaround we use to display
     // the vertical bar on blockquotes with DTCoreText
     html = [html stringByReplacingOccurrencesOfString:@"<mx-reply><blockquote>" withString:@"<blockquote><p>"];
     html = [html stringByReplacingOccurrencesOfString:@"</blockquote></mx-reply>" withString:@"</p></blockquote>"];
-
+    
     return html;
 }
 
@@ -1381,6 +1441,7 @@
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState
 {
     // Use the default updater as first pass
+    MXEvent *currentlastMessageEvent = summary.lastMessageEvent;
     BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event eventState:eventState roomState:roomState];
     if (updated)
     {
@@ -1390,18 +1451,21 @@
         // Note that we use the current room state (roomState) because when we display
         // users displaynames, we want current displaynames
         MXKEventFormatterError error;
-        summary.lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
-
-        // Store the potential error
-        summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
-
-        if (0 == summary.lastMessageString.length)
+        NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
+        if (0 == lastMessageString.length)
         {
             // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
             updated = NO;
+            // Restore the previous lastMessageEvent
+            summary.lastMessageEvent = currentlastMessageEvent;
         }
         else
         {
+            summary.lastMessageString = lastMessageString;
+            
+            // Store the potential error
+            summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
+            
             summary.lastMessageOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
 
             // Check whether the sender name has to be added

@@ -61,7 +61,7 @@
 - (void)testRenderHTMLStringWithPreCode
 {
     NSString *html = @"<pre><code>1\n2\n3\n4\n</code></pre>";
-    NSAttributedString *as = [eventFormatter renderHTMLString:html forEvent:anEvent];
+    NSAttributedString *as = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
 
     NSString *a = as.string;
 
