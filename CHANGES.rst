@@ -1,7 +1,8 @@
-Changes in MatrixKit in 0.11.2 (2019-XX-XX)
+Changes in MatrixKit in 0.11.2 (2019-11-06)
 ==========================================
 
 Improvements:
+ * Upgrade MatrixSDK version ([v0.15.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.15.0)).
  * MXKEventFormatter: In the case of "in reply to" event, replace the user Matrix ID by his display name when available (vector-im/riot-ios/issues/2154).
  * Groups: Load them only after the session got sync'ed with the homeserver (vector-im/riot-ios/issues/2793).
  * MXKRoomViewController: Add possibility to prevent `bubblesTableView` scroll using `contentOffset`.
