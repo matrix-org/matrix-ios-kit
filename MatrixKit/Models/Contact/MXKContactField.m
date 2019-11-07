@@ -18,7 +18,8 @@
 
 #import "MXKContactField.h"
 
-#import "MXMediaManager.h"
+@import MatrixSDK.MXMediaManager;
+
 #import "MXKContactManager.h"
 
 @interface MXKContactField()

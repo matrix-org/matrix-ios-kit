@@ -18,19 +18,17 @@
 
 #import "MXKEventFormatter.h"
 
+@import MatrixSDK;
+@import DTCoreText;
+@import cmark;
+
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
-
-#import "MXRoomSummaryUpdater.h"
-#import "MXKRoomNameStringLocalizations.h"
 
 #import "MXKTools.h"
 #import "MXRoom+Sync.h"
 
-#import "DTCoreText.h"
-#import "cmark.h"
-
-#import "MXDecryptionResult.h"
+#import "MXKRoomNameStringLocalizations.h"
 
 static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 

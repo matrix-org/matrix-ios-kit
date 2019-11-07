@@ -18,14 +18,13 @@
 
 #import "MXKRoomInputToolbarView.h"
 
-#import <MediaPlayer/MediaPlayer.h>
-#import <MobileCoreServices/MobileCoreServices.h>
-
-#import <Photos/Photos.h>
+@import MatrixSDK.MXMediaManager;
+@import MediaPlayer;
+@import MobileCoreServices;
+@import Photos;
 
 #import "MXKImageView.h"
 
-#import "MXMediaManager.h"
 #import "MXKTools.h"
 
 #import "NSBundle+MatrixKit.h"

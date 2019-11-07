@@ -17,9 +17,10 @@
 
 #import "MXKContactTableCell.h"
 
+@import MatrixSDK.MXTools;
+
 #import "MXKContactManager.h"
 #import "MXKAppSettings.h"
-#import "MXTools.h"
 
 #import "NSBundle+MatrixKit.h"
 

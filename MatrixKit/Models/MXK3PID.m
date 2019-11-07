@@ -17,7 +17,7 @@
 
 #import "MXK3PID.h"
 
-#import "NBPhoneNumberUtil.h"
+@import libPhoneNumber_iOS;
 
 @interface MXK3PID ()
 {

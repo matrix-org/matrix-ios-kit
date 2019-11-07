@@ -18,9 +18,9 @@
 
 #import "MXKRoomMemberDetailsViewController.h"
 
-#import "MXKTableViewCellWithButtons.h"
+@import MatrixSDK.MXMediaManager;
 
-#import "MXMediaManager.h"
+#import "MXKTableViewCellWithButtons.h"
 
 #import "NSBundle+MatrixKit.h"
 
