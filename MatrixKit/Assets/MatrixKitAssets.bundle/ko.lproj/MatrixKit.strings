@@ -152,7 +152,7 @@
 "notice_room_history_visible_to_members" = "%@님이 이후 방 기록을 모든 방 구성원이 볼 수 있게 했습니다.";
 "notice_room_history_visible_to_members_from_invited_point" = "%@님이 이후 방 기록을 초대된 시점부터 모든 방 구성원이 볼 수 있게 했습니다.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@님이 이후 방 기록을 참가한 시점부터 모든 방 구성원이 볼 수 있게 했습니다.";
-"notice_crypto_unable_to_decrypt" = "** 암호 해독할 수 없음: %@ **";
+"notice_crypto_unable_to_decrypt" = "** 암호를 복호화할 수 없음: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "발신자의 기기에서 이 메시지의 키를 보내지 않았습니다.";
 "notice_in_reply_to" = "관련 대화";
 "room_displayname_more_than_two_members" = "%@님 외 %@명";
@@ -165,7 +165,7 @@
 "room_event_encryption_info_event_identity_key" = "Curve25519 ID 키\n";
 "room_event_encryption_info_event_fingerprint_key" = "Ed25519 핑거프린트 키가 필요함\n";
 "room_event_encryption_info_event_session_id" = "세션 ID\n";
-"room_event_encryption_info_event_decryption_error" = "암호 해독 오류\n";
+"room_event_encryption_info_event_decryption_error" = "암호 복호화 오류\n";
 "room_event_encryption_info_event_none" = "없음";
 "room_event_encryption_info_device_blocked" = "블랙리스트 대상";
 "room_event_encryption_info_verify" = "확인 중...";
@@ -248,12 +248,12 @@
 "format_time_d" = "일";
 // E2E import
 "e2e_import_room_keys" = "방 키 가져오기";
-"e2e_import_prompt" = "이 과정으로 다른 Matrix 클라이언트에서 이전에 내보낸 암호화 키를 가져올 수 있습니다. 이 키로 다른 클라이언트에서 해독할 수 있는 모든 메시지를 해독할 수 있게 됩니다.\n내보낸 파일은 암호로 보호됩니다. 파일을 해독하려면 여기에 암호를 입력해야 합니다.";
+"e2e_import_prompt" = "이 과정으로 다른 Matrix 클라이언트에서 이전에 내보낸 암호화 키를 가져올 수 있습니다. 이 키로 다른 클라이언트에서 복호화할 수 있는 모든 메시지를 복호화할 수 있게 됩니다.\n내보낸 파일은 암호로 보호됩니다. 파일을 복호화하려면 여기에 암호를 입력해야 합니다.";
 "e2e_import" = "가져오기";
 "e2e_passphrase_enter" = "암호 입력";
 // E2E export
 "e2e_export_room_keys" = "방 키 내보내기";
-"e2e_export_prompt" = "이 과정으로 암호화된 방에서 받은 메시지의 키를 로컬 파일로 내보낼 수 있습니다. 그런 다음 이후 다른 Matrix 클라이언트에 파일을 가져올 수 있습니다, 이 키로 메시지를 해독할 수 있게 됩니다.\n파일을 읽을 수 있는 모든 사용자는 내보낸 파일로 볼 수 있는 암호화된 메시지를 해독할 수 있으므로, 안전하게 보관해야 합니다.";
+"e2e_export_prompt" = "이 과정으로 암호화된 방에서 받은 메시지의 키를 로컬 파일로 내보낼 수 있습니다. 그런 다음 이후 다른 Matrix 클라이언트에 파일을 가져올 수 있습니다, 이 키로 메시지를 복호화할 수 있게 됩니다.\n파일을 읽을 수 있는 모든 사용자는 내보낸 파일로 볼 수 있는 암호화된 메시지를 복호화할 수 있으므로, 안전하게 보관해야 합니다.";
 "e2e_export" = "내보내기";
 "e2e_passphrase_confirm" = "암호 확인";
 "e2e_passphrase_empty" = "암호를 입력해주세요";
