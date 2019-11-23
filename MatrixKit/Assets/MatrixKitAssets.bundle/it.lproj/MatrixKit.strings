@@ -148,3 +148,234 @@
 "room_event_encryption_info_device_name" = "Nome pubblico\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verifica\n";
+"room_event_encryption_info_device_fingerprint" = "Impronta Ed25519\n";
+"room_event_encryption_info_device_verified" = "Verificato";
+"room_event_encryption_info_device_not_verified" = "NON verificato";
+"room_event_encryption_info_device_blocked" = "Bloccato";
+"room_event_encryption_info_verify" = "Verifica...";
+"room_event_encryption_info_unverify" = "Annulla verifica";
+"room_event_encryption_info_block" = "Bloccato";
+"room_event_encryption_info_unblock" = "Sbloccato";
+"room_event_encryption_verify_title" = "Verifica dispositivo\n\n";
+"room_event_encryption_verify_message" = "Per verificare che questo dispositivo possa essere fidato, si prega di contattare il suo proprietario in altro modo (es. di persona o via telefonica) e chiedergli se la chiave che lui vede nelle Impostazioni Utente per il dispositivo sia uguale a questa:\n\n\tNome dispositivo: %@\n\tID dispositivo: %@\n\tChiave dispositivo: %@\n\nSe le chiavi sono identiche, premere il pulsante di verifica qui sotto. Se non lo sono, allora quancun altro sta intercettando questo dispositivo e probabilmente dovresti bloccarlo.\n\nIn futuro questo processo di verifica sarà più sofisticato.";
+"room_event_encryption_verify_ok" = "Verifica";
+// Account
+"account_save_changes" = "Salva cambiamenti";
+"account_link_email" = "Collegamento email";
+"account_linked_emails" = "Indirizzi email collegati";
+"account_email_validation_title" = "Verifica in corso";
+"account_email_validation_message" = "Controlla l'email e clicca sul collegamento che contiene. Dopo averlo fatto, clicca su continua.";
+"account_email_validation_error" = "Impossibile verificare l'indirizzo email. Controlla l'email e clicca sul collegamento che contiene. Dopo averlo fatto, clicca su continua";
+"account_msisdn_validation_title" = "Verifica in corso";
+"account_msisdn_validation_message" = "Abbiamo inviato un SMS con un codice di attivazione. Inserisci il codice qui sotto.";
+"account_msisdn_validation_error" = "Impossibile verificare il numero di telefono.";
+"account_error_display_name_change_failed" = "Cambio del nome completo fallito";
+"account_error_picture_change_failed" = "Cambio dell'immagine fallito";
+"account_error_matrix_session_is_not_opened" = "La sessione Matrix non è attiva";
+"account_error_email_wrong_title" = "Indirizzo email non valido";
+"account_error_email_wrong_description" = "Questo non sembra essere un indirizzo email valido";
+"account_error_msisdn_wrong_title" = "Numero di telefono non valido";
+"account_error_msisdn_wrong_description" = "Questo non sembra essere un numero telefonico valido";
+"account_error_push_not_allowed" = "Notifiche non permesse";
+// Room creation
+"room_creation_name_title" = "Nome canale:";
+"room_creation_name_placeholder" = "(es. gruppoPranzo)";
+"room_creation_alias_title" = "Alias canale:";
+"room_creation_alias_placeholder" = "(es. #blah:dominio.it)";
+"room_creation_alias_placeholder_with_homeserver" = "(es. #blah%@)";
+"room_creation_participants_title" = "Partecipanti:";
+"room_creation_participants_placeholder" = "(e.g. @gianni:homeserver1; @alice:homeserver2...)";
+// Room
+"room_please_select" = "Seleziona un canale";
+"room_error_join_failed_title" = "Accesso al canale fallito";
+"room_error_join_failed_empty_room" = "Non è possibile al momento rientrare in un canale senza partecipanti.";
+"room_error_name_edition_not_authorized" = "Non sei autorizzato a modificare il nome di questo canale";
+"room_error_topic_edition_not_authorized" = "Non sei autorizzato a modificare l'argomento di questo canale";
+"room_error_cannot_load_timeline" = "Caricamento storico dei messaggi fallito";
+"room_error_timeline_event_not_found_title" = "Caricamento della posizione nello storico fallito";
+"room_error_timeline_event_not_found" = "L'applicazione ha cercato di caricare un punto specifico dello storico dei messaggi in questo canale, ma non è riuscita a trovarlo";
+"room_left" = "Sei uscito dal canale";
+"room_no_power_to_create_conference_call" = "Hai bisogno del permesso per invitare a iniziare una conferenza in questo canale";
+"room_no_conference_call_in_encrypted_rooms" = "Le chiamate in conferenza non sono supportate nei canali criptati";
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "immagine inviata.";
+"message_reply_to_sender_sent_a_video" = "video inviato.";
+"message_reply_to_sender_sent_an_audio_file" = "file audio inviato.";
+"message_reply_to_sender_sent_a_file" = "file inviato.";
+"message_reply_to_message_to_reply_to_prefix" = "In risposta a";
+// Room members
+"room_member_ignore_prompt" = "Sei sicuro di voler nascondere tutti i messaggi da questo utente?";
+"room_member_power_level_prompt" = "Non potrai annullare questa modifica perché stai innalzando i permessi dell'utente al tuo stesso livello di accesso.\nSei sicuro?";
+// Attachment
+"attachment_size_prompt" = "Vuoi inviare come:";
+"attachment_original" = "Originale: %@";
+"attachment_small" = "Piccolo: %@";
+"attachment_medium" = "Medio: %@";
+"attachment_large" = "Grande: %@";
+"attachment_cancel_download" = "Interrompi scaricamento?";
+"attachment_cancel_upload" = "Interrompi caricamento?";
+"attachment_multiselection_size_prompt" = "Vuoi inviare le immagini come:";
+"attachment_multiselection_original" = "Originali";
+"attachment_e2e_keys_file_prompt" = "Questo file contiene le chiavi crittografiche esportate da un client Matrix.\nVuoi visualizzarlo o importare le chiavi che contiene?";
+"attachment_e2e_keys_import" = "Importa...";
+// Contacts
+"contact_mx_users" = "Utenti Matrix";
+"contact_local_contacts" = "Contatti locali";
+// Groups
+"group_invite_section" = "Inviti";
+"group_section" = "Gruppi";
+// Search
+"search_no_results" = "Nessun risultato";
+"search_searching" = "Ricerca in corso...";
+// Time
+"format_time_s" = "s";
+"format_time_m" = "m";
+"format_time_h" = "h";
+"format_time_d" = "d";
+// E2E import
+"e2e_import_room_keys" = "Importa le chiavi del canale";
+"e2e_import_prompt" = "Questo processo ti consente di importare le chiavi di crittografia che hai precedentemente esportato da un altro client Matrix. Sarai quindi in grado di decriptare gli stessi messaggi leggibili dall'altro client.";
+"e2e_import" = "Importa";
+"e2e_passphrase_enter" = "Inserisci password";
+// E2E export
+"e2e_export_room_keys" = "Esporta chiavi del canale";
+"e2e_export_prompt" = "Questo processo consente di esportare in un file locale le chiavi per leggere i messaggi ricevuti in canali criptati. Sarai quindi in grado di importare il file in un altro client Matrix, in modo da rendergli possibile decriptare quei messaggi in futuro.\nIl file esportato consentirà a chiunque di decriptare tutti i messaggi che puoi leggere, quindi dovresti tenerlo al sicuro.";
+"e2e_export" = "Esporta";
+"e2e_passphrase_confirm" = "Conferma password di accesso";
+"e2e_passphrase_empty" = "La password di accesso non può essere vuota";
+"e2e_passphrase_not_match" = "Le password di accesso devono corrispondere";
+"e2e_passphrase_create" = "Crea password di accesso";
+// Others
+"user_id_title" = "ID utente:";
+"offline" = "non in linea";
+"unsent" = "Non inviato";
+"error" = "Errore";
+"error_common_message" = "Si è verificato un errore. Riprova più tardi.";
+"not_supported_yet" = "Non ancora supportato";
+"default" = "predefinito";
+"private" = "Privato";
+"public" = "Pubblico";
+"power_level" = "Livello di accesso";
+"network_error_not_reachable" = "Verifica di essere connesso alla rete";
+"user_id_placeholder" = "es.: @gianni@homeserver";
+"ssl_homeserver_url" = "URL homeserver: %@";
+// Permissions
+"camera_access_not_granted_for_call" = "Le video chiamate necessitano di accesso alla videocamera ma %@ non ha il permesso di usarla";
+"microphone_access_not_granted_for_call" = "Le telefonate necessitano l'accesso al microfono, ma %@ non ha il permesso di usarlo";
+"local_contacts_access_not_granted" = "La ricerca degli utenti fra i contatti locali necessita l'accesso alla rubrica, ma %@ non ha il permesso di usarla";
+"local_contacts_access_discovery_warning_title" = "Ricerca utenti";
+"local_contacts_access_discovery_warning" = "Per scoprire chi fra i tuoi contatti sta già usando Matrix, %@ può inviare gli indirizzi email e i numeri telefonici della tua rubrica al tuo server d'identità Matrix. Se possibile, i dati personali vengono codificati prima di essere inviati - controlla la politica di riservatezza del tuo server d'identità per maggiori dettagli.";
+// Country picker
+"country_picker_title" = "Scegli un paese";
+// Language picker
+"language_picker_title" = "Scegli una lingua";
+"language_picker_default_language" = "Predefinito (%@)";
+"notice_room_invite" = "%@ invitato %@";
+"notice_room_third_party_invite" = "%@ ha invitato %@ a unirsi al canale";
+"notice_room_third_party_registered_invite" = "%@ ha accettato l'invito per %@";
+"notice_room_third_party_revoked_invite" = "%@ ha ritirato l'invito per %@ a unirsi al canale";
+"notice_room_join" = "%@ si è unito al canale";
+"notice_room_leave" = "%@ ha lasciato il canale";
+"notice_room_reject" = "%@ ha rifiutato l'invito";
+"notice_room_kick" = "%@ ha espulso %@";
+"notice_room_unban" = "%@ ha revocato il divieto di accesso a %@";
+"notice_room_ban" = "%@ ha vietato l'accesso a %@";
+"notice_room_withdraw" = "%@ ha ritirato l'invito di %@";
+"notice_room_reason" = ". Motivo: %@";
+"notice_avatar_url_changed" = "%@ ha modificato la sua immagine";
+"notice_display_name_set" = "%@ ha impostato il suo nome in %@";
+"notice_display_name_changed_from" = "%@ ha cambiato il suo nome da %@ a %@";
+"notice_display_name_removed" = "%@ ha rimosso il suo nome";
+"notice_topic_changed" = "%@ ha cambiato l'argomento in: %@";
+"notice_room_name_changed" = "%@ ha cambiato il nome del canale in: %@";
+"notice_placed_voice_call" = "%@ ha effettuato una telefonata";
+"notice_placed_video_call" = "%@ ha effettuato una videochiamata";
+"notice_answered_video_call" = "%@ ha risposto alla chiamata";
+"notice_ended_video_call" = "%@ ha terminato la chiamata";
+"notice_conference_call_request" = "%@ ha richiesto una conferenza VoIP";
+"notice_conference_call_started" = "Conferenza VoIP iniziata";
+"notice_conference_call_finished" = "Conferenza VoIP terminata";
+// button names 
+"ok" = "OK";
+"cancel" = "Annulla";
+"save" = "Salva";
+"leave" = "Esci";
+"send" = "Invia";
+"copy" = "Copia";
+"resend" = "Invia di nuovo";
+"redact" = "Cancella";
+"share" = "Condividi";
+"delete" = "Elimina";
+"view" = "Visualizza";
+// actions 
+"action_logout" = "Esci";
+"create_room" = "Crea un canale";
+"login" = "Entra";
+"create_account" = "Crea utente";
+"membership_invite" = "Invitati";
+"membership_leave" = "Uscito";
+"membership_ban" = "Espulso";
+"num_members_one" = "%@ utente";
+"num_members_other" = "%@ utenti";
+"invite" = "Invita";
+"kick" = "Espelli";
+"ban" = "Vieta accesso";
+"unban" = "Consenti accesso";
+"message_unsaved_changes" = "Ci sono modifiche non salvate. Uscendo saranno perse.";
+// Login Screen 
+"login_error_already_logged_in" = "Accesso già effettuato";
+"login_error_must_start_http" = "l'URL deve iniziare con http[s]://";
+// room details dialog screen
+"room_details_title" = "Dettagli canale";
+// Settings screen 
+"settings_title_config" = "Configurazione";
+"settings_title_notifications" = "Notifiche";
+// Notification settings screen 
+"notification_settings_disable_all" = "Disabilita tutte le notifiche";
+"notification_settings_enable_notifications" = "Abilita le notifiche";
+"notification_settings_enable_notifications_warning" = "Le notifiche sono al momento disabilitate per tutti i dispositivi.";
+"notification_settings_global_info" = "Le impostazioni di notifica sono salvate nel tuo account e condivise fra i client che le supportano (incluse le notifiche del desktop)\n\nLe regole si applicano in ordine; la prima regola che corrisponde definisce l'esito del messaggio.\nQuindi: Le notifiche per-parola hanno la precedenza sulle notifiche per-canale, che precedono quelle per-mittente.\nSe esistono diverse regole dello stesso tipo, viene applicata la prima della lista.";
+"notification_settings_per_word_notifications" = "Notifiche per-parola";
+"notification_settings_per_word_info" = "Le parole sono confrontate senza tenere conto dei caratteri maiuscoli/minuscoli, e possono includere asterischi. Quindi:\nblah corrisponde alla stringa blah con qualsiasi delimitatore di parola (es. segni di punteggiatura e spazi o segni di accapo).\nblah* corrisponde a qualsiasi parola inizi con blah.\n*blah* corrisponde a qualsiasi parola contenga le 4 lettere blah.";
+"notification_settings_always_notify" = "Notifica sempre";
+"notification_settings_never_notify" = "Non notificare mai";
+"notification_settings_word_to_match" = "parola da cercare";
+"notification_settings_highlight" = "Evidenziare";
+"notification_settings_custom_sound" = "Suono personalizzato";
+"notification_settings_per_room_notifications" = "Notifiche per-canale";
+"notification_settings_per_sender_notifications" = "Notifiche per-mittente";
+"notification_settings_sender_hint" = "@utente:dominio.it";
+"notification_settings_select_room" = "Seleziona un canale";
+"notification_settings_other_alerts" = "Altri avvisi";
+"notification_settings_contain_my_user_name" = "Notifica con un suono i messaggi che contengono il mio nome utente";
+"notification_settings_contain_my_display_name" = "Notifica con un suono i messaggi che contengono il mio nome completo";
+"notification_settings_just_sent_to_me" = "Notifica con un suono i messaggi inviati solo a me";
+"notification_settings_invite_to_a_new_room" = "Notifica quando sono invitato in un nuovo canale";
+"notification_settings_people_join_leave_rooms" = "Notifica quando gli utenti entrano o escono dai canali";
+"notification_settings_receive_a_call" = "Notifica quando ricevo una chiamata";
+"notification_settings_suppress_from_bots" = "Sopprimi le notifiche dai bot";
+"notification_settings_by_default" = "Come predefinito...";
+"notification_settings_notify_all_other" = "Notifica tutti gli altri messaggi/canali";
+// gcm section 
+"settings_config_home_server" = "Homeserver: %@";
+"settings_config_identity_server" = "Server d'identità: %@";
+"settings_config_user_id" = "ID utente: %@";
+// call string
+"call_waiting" = "Attendere...";
+"call_connecting" = "In connessione...";
+"call_ended" = "Chiamata terminata";
+"call_ring" = "Chiamata in corso...";
+"incoming_video_call" = "Video chiamata in arrivo";
+"incoming_voice_call" = "Telefonata in arrivo";
+"call_invite_expired" = "Tempo di chiamata scaduto";
+// unrecognized SSL certificate
+"ssl_trust" = "Fidati";
+"ssl_logout_account" = "Esci";
+"ssl_remain_offline" = "Ignora";
+"ssl_fingerprint_hash" = "Impronta (%@):";
+"ssl_could_not_verify" = "Impossibile verificare l'identità del server remoto.";
+"ssl_cert_not_trust" = "Potrebbe voler dire che qualcuno sta intercettando il tuo traffico, o che il tuo telefono non si fida del certificato offerto dal server remoto.";
+"ssl_cert_new_account_expl" = "Se l'amministratore del server ti ha detto che questo sarebbe successo, accertati che l'impronta qui sotto corrisponda a quella che lui ti ha fornito.";
+"ssl_unexpected_existing_expl" = "Il certificato è diverso da quello di cui il tuo telefono si fidava. Questo è un COMPORTAMENTO ANOMALO. Si consiglia di NON ACCETTARE questo nuovo certificato.";
+"ssl_expected_existing_expl" = "Il certificato è cambiato da uno precedentemente accettato a uno che non è fidato. Il server potrebbe averlo rinnovato. Contatta l'amministratore del server per verificarne l'impronta.";
+"ssl_only_accept" = "Accetta il certificato SOLAMENTE se l'amministratore del server ha pubblicato un'impronta che corrisponde a quella qui sopra.";
