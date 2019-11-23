@@ -1,1 +1,34 @@
-
+"matrix" = "Matrix";
+// Login Screen
+"login_create_account" = "Nuovo utente:";
+"login_server_url_placeholder" = "URL (es. https://matrix.org)";
+"login_home_server_title" = "URL homeserver:";
+"login_home_server_info" = "Lo storico delle conversazioni e i dati utente sono salvati sul tuo homeserver";
+"login_identity_server_title" = "URL del server d'identità:";
+"login_identity_server_info" = "Matrix fornisce dei server d'identità per associare i tuoi recapiti (es. l'indirizzo email) al tuo ID Matrix. Attualmente esiste solo il server https://matrix.org.";
+"login_user_id_placeholder" = "ID Matrix (es. @gianni:matrix.org o gianni)";
+"login_password_placeholder" = "Password";
+"login_optional_field" = "opzionale";
+"login_display_name_placeholder" = "Nome completo (es. Gianni Rossi)";
+"login_email_info" = "Indicare un indirizzo email consente ad altri utenti di trovarti facilmente in Matrix, e ti da modo di resettare la password in caso di necessità.";
+"login_email_placeholder" = "Indirizzo email";
+"login_prompt_email_token" = "Inserisci il token di validazione della tua email:";
+"login_error_title" = "Accesso fallito";
+"login_error_no_login_flow" = "Impossibile ottenere i dati di autenticazione da questo Home Server";
+"login_error_do_not_support_login_flows" = "Al momento non è supportato alcuno dei flussi di accesso definiti da questo Home Server";
+"login_error_registration_is_not_supported" = "La registrazione non è consentita al momento";
+"login_error_forbidden" = "Nome utente o password errati";
+"login_error_unknown_token" = "Il token di accesso inserito non è stato riconosciuto";
+"login_error_bad_json" = "JSON malformato";
+"login_error_not_json" = "Contenuto JSON non valido";
+"login_error_limit_exceeded" = "Limite di richieste superato";
+"login_error_user_in_use" = "Questo nome utente è già in uso";
+"login_error_login_email_not_yet" = "Il link inviato via email che non è stata ancora visitato";
+"login_use_fallback" = "Usa la pagina alternativa";
+"login_leave_fallback" = "Annulla";
+"login_invalid_param" = "Parametro non valido";
+"register_error_title" = "Registrazione fallita";
+"login_error_forgot_password_is_not_supported" = "Le password dimenticate non sono supportate";
+"notice_room_join_rule" = "Regole per accedere: %@";
+// contacts list screen 
+"invitation_message" = "Vorrei comunicare con te usando Matrix. Visita il sito web http://matrix.org per avere maggiori informazioni.";
