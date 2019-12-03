@@ -15,6 +15,14 @@
  */
 
 #import "MXKMessageTextView.h"
+#import "UITextView+MatrixKit.h"
+
+@interface MXKMessageTextView()
+
+@property (nonatomic, readwrite) CGPoint lastHitTestLocation;
+
+@end
+
 
 @implementation MXKMessageTextView
 
@@ -28,6 +36,12 @@
     return NO;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+    self.lastHitTestLocation = point;
+    return [super hitTest:point withEvent:event];
+}
+
 // Indicate to receive a touch event only if a link is hitted.
 // Otherwise it means that the touch event will pass through and could be received by a view below.
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
@@ -37,30 +51,7 @@
         return NO;
     }
     
-    UITextPosition *textPosition = [self closestPositionToPoint:point];
-
-    if (!textPosition)
-    {
-        return NO;
-    }
-
-    UITextRange *textRange = [self.tokenizer rangeEnclosingPosition:textPosition
-                                                    withGranularity:UITextGranularityCharacter
-                                                        inDirection:UITextLayoutDirectionLeft];
-
-    if (!textRange)
-    {
-        return NO;
-    }
-
-    NSInteger startIndex = [self offsetFromPosition:self.beginningOfDocument toPosition:textRange.start];
-
-    if (startIndex < 0)
-    {
-        return NO;
-    }
-
-    return [self.attributedText attribute:NSLinkAttributeName atIndex:startIndex effectiveRange:NULL] != nil;
+    return [self isThereALinkNearPoint:point];
 }
 
 @end

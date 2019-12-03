@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface MXKMessageTextView : UITextView
 
+// The last hit test location received by the view.
+@property (nonatomic, readonly) CGPoint lastHitTestLocation;
+
 @end
 
 NS_ASSUME_NONNULL_END
