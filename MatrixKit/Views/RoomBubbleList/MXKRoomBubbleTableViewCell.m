@@ -28,6 +28,7 @@
 #import "NSBundle+MatrixKit.h"
 #import "MXRoom+Sync.h"
 #import "MXKMessageTextView.h"
+#import "UITextView+MatrixKit.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRoomBubbleCellTapOnMessageTextView = @"kMXKRoomBubbleCellTapOnMessageTextView";
@@ -1063,17 +1064,22 @@ static BOOL _disableLongPressGestureOnEvent;
     [self resetConstraintsConstantToDefault];
 }
 
-- (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteraction:(UITextItemInteraction)urlItemInteraction
+- (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteraction:(UITextItemInteraction)urlItemInteraction associatedEvent:(MXEvent*)associatedEvent
 API_AVAILABLE(ios(10.0)) {
-    return [self shouldInteractWithURL:URL urlItemInteractionValue:@(urlItemInteraction)];
+    return [self shouldInteractWithURL:URL urlItemInteractionValue:@(urlItemInteraction) associatedEvent:associatedEvent];
 }
 
-- (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteractionValue:(NSNumber*)urlItemInteractionValue
-{
-    NSDictionary *userInfo = @{
+- (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteractionValue:(NSNumber*)urlItemInteractionValue associatedEvent:(MXEvent*)associatedEvent
+{    
+    NSMutableDictionary *userInfo = [@{
                                kMXKRoomBubbleCellUrl:URL,
                                kMXKRoomBubbleCellUrlItemInteraction:urlItemInteractionValue
-                               };
+                               } mutableCopy];
+    
+    if (associatedEvent)
+    {
+        userInfo[kMXKRoomBubbleCellEventKey] = associatedEvent;
+    }
     
     return [delegate cell:self shouldDoAction:kMXKRoomBubbleCellShouldInteractWithURL userInfo:userInfo defaultValue:YES];
 }
@@ -1323,25 +1329,25 @@ static NSMutableDictionary *childClasses;
                 }
             }
             
+            MXKRoomBubbleComponent *tappedComponent = [self closestBubbleComponentForGestureRecognizer:sender locationInView:sender.view];
+            MXEvent *tappedEvent = tappedComponent.event;
+            
             // If a link has been touched warn delegate immediately.
             if (tappedUrl)
             {
                 // Send default URL interaction `UITextItemInteractionInvokeDefaultAction` for a quick tap as received by UITextViewDelegate method `- (BOOL)textView:shouldInteractWithURL:inRange:interaction:` for a tap.
                 if (@available(iOS 10.0, *))
                 {
-                    [self shouldInteractWithURL:tappedUrl urlItemInteraction:UITextItemInteractionInvokeDefaultAction];
+                    [self shouldInteractWithURL:tappedUrl urlItemInteraction:UITextItemInteractionInvokeDefaultAction associatedEvent:tappedEvent];
                 }
                 else
                 {
                     // Use UITextItemInteractionInvokeDefaultAction raw value for iOS 9
-                    [self shouldInteractWithURL:tappedUrl urlItemInteractionValue:@(0)];
+                    [self shouldInteractWithURL:tappedUrl urlItemInteractionValue:@(0) associatedEvent:tappedEvent];
                 }
             }
             else
             {
-                MXKRoomBubbleComponent *tappedComponent = [self closestBubbleComponentForGestureRecognizer:sender locationInView:sender.view];
-                MXEvent *tappedEvent = tappedComponent.event;
-                
                 [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnMessageTextView userInfo:(tappedEvent ? @{kMXKRoomBubbleCellEventKey:tappedEvent} : nil)];
             }
         }
@@ -1471,22 +1477,23 @@ static NSMutableDictionary *childClasses;
 
 #pragma mark - UITextView delegate
 
-// On iOS 10 to iOS 13.0: Hyperlink quick tap in `messageTextView` are intercepted by `-(void)onMessageTap:` method. Otherwise longer tap, long press and force touch on a link are still catched here.
-// On iOS 13.1+: The inner tap gesture of `messageTextView` is called before the tap gesture manually added by `MXKRoomBubbleTableViewCell`. Hyperlink quick tap and long press are intercepted here.
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction API_AVAILABLE(ios(10.0))
 {
-    // Do not interact with hyperlink on quick tap (default action). Let `-(void)onMessageTap:` method handle hyperlink quick tap.
-    if (interaction == UITextItemInteractionInvokeDefaultAction)
-    {
-        return NO;
-    }
-    
     BOOL shouldInteractWithURL = YES;
     
     if (delegate && URL)
     {
+        MXEvent *associatedEvent;
+        
+        if ([textView isMemberOfClass:[MXKMessageTextView class]])
+        {
+            MXKMessageTextView *mxkMessageTextView = (MXKMessageTextView *)textView;
+            MXKRoomBubbleComponent *bubbleComponent = [self closestBubbleComponentAtPosition:mxkMessageTextView.lastHitTestLocation];
+            associatedEvent = bubbleComponent.event;
+        }
+        
         // Ask the delegate if iOS can open the link
-        shouldInteractWithURL = [self shouldInteractWithURL:URL urlItemInteraction:interaction];
+        shouldInteractWithURL = [self shouldInteractWithURL:URL urlItemInteraction:interaction associatedEvent:associatedEvent];
     }
     
     return shouldInteractWithURL;
@@ -1499,8 +1506,17 @@ static NSMutableDictionary *childClasses;
     
     if (delegate && URL)
     {
+        MXEvent *associatedEvent;
+        
+        if ([textView isMemberOfClass:[MXKMessageTextView class]])
+        {
+            MXKMessageTextView *mxkMessageTextView = (MXKMessageTextView *)textView;
+            MXKRoomBubbleComponent *bubbleComponent = [self closestBubbleComponentAtPosition:mxkMessageTextView.lastHitTestLocation];
+            associatedEvent = bubbleComponent.event;
+        }
+        
         // Ask the delegate if iOS can open the link
-        shouldInteractWithURL = [self shouldInteractWithURL:URL urlItemInteractionValue:@(0)];
+        shouldInteractWithURL = [self shouldInteractWithURL:URL urlItemInteractionValue:@(0) associatedEvent:associatedEvent];
     }
     
     return shouldInteractWithURL;
@@ -1520,24 +1536,13 @@ static NSMutableDictionary *childClasses;
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    // Recognize simultaneously the `messageTextView` UITextView built-in UILongPressGestureRecognizer with other UILongPressGestureRecognizer
-    // to allows long touch on hyperlinks in UITextView and trigger `-[cell:didRecognizeAction:userInfo:]` delegate method at the same time.
-    if (otherGestureRecognizer.view == self.messageTextView && [otherGestureRecognizer isMemberOfClass:[UILongPressGestureRecognizer class]] && [gestureRecognizer isMemberOfClass:[UILongPressGestureRecognizer class]])
-    {
-        return YES;
-    }
-    return NO;
-}
-
-// Prevent gesture recognizer to be recognized by a custom view added to the cell contentView and with user interaction enabled
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     UIView *recognizerView = gestureRecognizer.view;
     
     if ([recognizerView isDescendantOfView:self.contentView])
     {
+        // Prevent gesture recognizer to be recognized by a custom view added to the cell contentView and with user interaction enabled
         for (UIView *tmpSubview in self.tmpSubviews)
         {
             if (tmpSubview.isUserInteractionEnabled && [tmpSubview isDescendantOfView:self.contentView])
@@ -1549,6 +1554,15 @@ static NSMutableDictionary *childClasses;
                     return NO;
                 }
             }
+        }
+        
+        // Prevent gesture recognizer to be recognized when user hits a link in a UITextView, let UITextViewDelegate handle links.
+        if ([touch.view isKindOfClass:[UITextView class]])
+        {
+            UITextView *textView = (UITextView*)touch.view;
+            CGPoint touchLocation = [touch locationInView:textView];
+            
+            return [textView isThereALinkNearPoint:touchLocation] == NO;
         }
     }
     

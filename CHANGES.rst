@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.11.3 (2019-xx-xx)
+==========================================
+
+Improvements:
+ * MXKRoomBubbleTableViewCell: Improve link gesture recognition.
+
 Changes in MatrixKit in 0.11.2 (2019-11-06)
 ==========================================
 
