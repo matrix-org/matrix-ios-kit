@@ -18,7 +18,7 @@
 
 #import "MXKConstants.h"
 
-NSString *const MatrixKitVersion = @"0.11.2";
+NSString *const MatrixKitVersion = @"0.11.3";
 
 NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
 
