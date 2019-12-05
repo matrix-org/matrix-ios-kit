@@ -14,17 +14,19 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- MXKMessageTextView is a UITextView subclass with link detection without text selection.
- */
-@interface MXKMessageTextView : UITextView
+@interface UITextView(MatrixKit)
 
-// The last hit test location received by the view.
-@property (nonatomic, readonly) CGPoint lastHitTestLocation;
+/**
+ Determine if there is a link near a location point in UITextView bounds.
+
+ @param point The point inside the UITextView bounds
+ @return YES to indicate that a link has been detected near the location point.
+ */
+- (BOOL)isThereALinkNearPoint:(CGPoint)point;
 
 @end
 

@@ -18,11 +18,11 @@
 
 #import "MXKRecentsDataSource.h"
 
+@import MatrixSDK.MXMediaManager;
+
 #import "NSBundle+MatrixKit.h"
 
 #import "MXKConstants.h"
-
-#import "MXMediaManager.h"
 
 @interface MXKRecentsDataSource ()
 {

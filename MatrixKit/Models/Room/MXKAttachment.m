@@ -17,11 +17,10 @@
 
 #import "MXKAttachment.h"
 
-#import "MXMediaManager.h"
-#import "MXKTools.h"
-#import "MXEncryptedAttachments.h"
+@import MatrixSDK;
+@import MobileCoreServices;
 
-#import <MobileCoreServices/MobileCoreServices.h>
+#import "MXKTools.h"
 
 // The size of thumbnail we request from the server
 // Note that this is smaller than the ones we upload: when sending, one size

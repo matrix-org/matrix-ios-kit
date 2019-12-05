@@ -20,11 +20,11 @@
 
 #define MXKROOMBUBBLECELLDATA_DEFAULT_MAX_TEXTVIEW_WIDTH 200
 
+@import MatrixSDK;
+
 #import "MXKRoomBubbleCellData.h"
 
 #import "MXKTools.h"
-#import "MXMediaManager.h"
-#import "MXEventScan.h"
 
 @implementation MXKRoomBubbleCellData
 @synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isEncryptedRoom, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment, senderFlair;

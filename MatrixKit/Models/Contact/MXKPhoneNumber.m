@@ -17,7 +17,7 @@
 
 #import "MXKPhoneNumber.h"
 
-#import "NBPhoneNumberUtil.h"
+@import libPhoneNumber_iOS;
 
 @implementation MXKPhoneNumber
 

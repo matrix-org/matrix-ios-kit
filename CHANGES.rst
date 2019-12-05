@@ -1,3 +1,14 @@
+Changes in MatrixKit in 0.11.4 (2019-xx-xx)
+==========================================
+
+
+Changes in MatrixKit in 0.11.3 (2019-12-05)
+==========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.15.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.15.2)).
+ * MXKRoomBubbleTableViewCell: Improve link gesture recognition.
+
 Changes in MatrixKit in 0.11.2 (2019-11-06)
 ==========================================
 

@@ -18,10 +18,9 @@
 
 #import "MXKAccountDetailsViewController.h"
 
-#import "MXMediaLoader.h"
+@import MatrixSDK;
 #import "MXK3PID.h"
 
-#import "MXMediaManager.h"
 #import "MXKTools.h"
 
 #import "MXKTableViewCellWithButton.h"

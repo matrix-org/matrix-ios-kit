@@ -19,6 +19,8 @@
 
 #import "MXKRoomDataSource.h"
 
+@import MatrixSDK;
+
 #import "MXKQueuedEvent.h"
 #import "MXKRoomBubbleTableViewCell.h"
 
@@ -29,14 +31,9 @@
 
 #import "MXKAppSettings.h"
 
-#import "MXEncryptedAttachments.h"
-
 #import "MXKSendReplyEventStringLocalizations.h"
 #import "MXKSlashCommands.h"
 
-#import "MXEventScan.h"
-
-#import "MXEventReplace.h"
 
 #pragma mark - Constant definitions
 

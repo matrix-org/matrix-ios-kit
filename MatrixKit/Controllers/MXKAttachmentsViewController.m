@@ -18,9 +18,9 @@
 
 #import "MXKAttachmentsViewController.h"
 
-#import "MXKMediaCollectionViewCell.h"
+@import MatrixSDK.MXMediaManager;
 
-#import "MXMediaManager.h"
+#import "MXKMediaCollectionViewCell.h"
 
 #import "MXKPieChartView.h"
 

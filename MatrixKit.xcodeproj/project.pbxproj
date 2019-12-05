@@ -66,6 +66,7 @@
 		B12C470C20BECAF8004FBF96 /* MXKErrorViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470920BECAF7004FBF96 /* MXKErrorViewModel.m */; };
 		B12C470D20BECAF8004FBF96 /* MXKErrorAlertPresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470A20BECAF7004FBF96 /* MXKErrorAlertPresentation.m */; };
 		B12C471020BED312004FBF96 /* MXKErrorPresentableBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */; };
+		B12C56F22396D75500FAC6DE /* UITextView+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */; };
 		B13652F8221E9E7A00313B09 /* MXKMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B13652F7221E9E7A00313B09 /* MXKMessageTextView.m */; };
 		B164380C210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m in Sources */ = {isa = PBXBuildFile; fileRef = B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */; };
 		B1668AC021072F93002B14F1 /* MXKSlashCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */; };
@@ -370,6 +371,8 @@
 		B12C470B20BECAF7004FBF96 /* MXKErrorPresentable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKErrorPresentable.h; sourceTree = "<group>"; };
 		B12C470E20BED312004FBF96 /* MXKErrorPresentableBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKErrorPresentableBuilder.h; sourceTree = "<group>"; };
 		B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKErrorPresentableBuilder.m; sourceTree = "<group>"; };
+		B12C56F02396D75500FAC6DE /* UITextView+MatrixKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+MatrixKit.h"; sourceTree = "<group>"; };
+		B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+MatrixKit.m"; sourceTree = "<group>"; };
 		B13652F6221E9E7A00313B09 /* MXKMessageTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKMessageTextView.h; sourceTree = "<group>"; };
 		B13652F7221E9E7A00313B09 /* MXKMessageTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKMessageTextView.m; sourceTree = "<group>"; };
 		B164380A210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKSendReplyEventStringLocalizations.h; sourceTree = "<group>"; };
@@ -1270,6 +1273,8 @@
 				F07E18131ABC563900DE3766 /* MXEvent+MatrixKit.m */,
 				32B046702101EB5E002A24A1 /* MXRoom+Sync.h */,
 				32B046712101EB5E002A24A1 /* MXRoom+Sync.m */,
+				B12C56F02396D75500FAC6DE /* UITextView+MatrixKit.h */,
+				B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -1895,6 +1900,7 @@
 				F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */,
 				F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */,
 				F09A66641FD8061D004B13B5 /* MXKSessionGroupsDataSource.m in Sources */,
+				B12C56F22396D75500FAC6DE /* UITextView+MatrixKit.m in Sources */,
 				F0A8955E1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m in Sources */,
 				F095E50F1B25899F009606CE /* MXKContactManager.m in Sources */,
 				F09617C31DE881D800093E9D /* MXKEncryptionInfoView.m in Sources */,
