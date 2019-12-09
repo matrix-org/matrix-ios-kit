@@ -546,7 +546,10 @@
     _bubblesTableView.delegate = nil;
     _bubblesTableView = nil;
     
-    roomDataSource.delegate = nil;
+    if (roomDataSource.delegate == self)
+    {
+        roomDataSource.delegate = nil;
+    }
     
     if (_hasRoomDataSourceOwnership)
     {
@@ -657,12 +660,14 @@
 {
     if (roomDataSource)
     {
-        roomDataSource.delegate = nil;
-        
         if (self.hasRoomDataSourceOwnership)
         {
             // Release the room data source
             [roomDataSource destroy];
+        }
+        else if (roomDataSource.delegate == self)
+        {
+            roomDataSource.delegate = nil;
         }
         roomDataSource = nil;
         
@@ -1006,12 +1011,14 @@
     _bubblesTableView.dataSource = nil;
     _bubblesTableView.delegate = nil;
     
-    roomDataSource.delegate = nil;
-    
     if (self.hasRoomDataSourceOwnership)
     {
         // Release the room data source
         [roomDataSource destroy];
+    }
+    else if (roomDataSource.delegate == self)
+    {
+        roomDataSource.delegate = nil;
     }
     roomDataSource = nil;
     
