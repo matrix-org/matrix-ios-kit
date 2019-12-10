@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
 
   s.swift_version = '5.0'
 
-  s.dependency 'MatrixSDK', '0.15.2', :git => 'https://github.com/samnoyes/matrix-ios-sdk.git'
+  s.dependency 'MatrixSDK', '0.15.2'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
   s.dependency 'DTCoreText', '~> 1.6.21'
