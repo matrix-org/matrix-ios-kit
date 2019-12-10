@@ -748,8 +748,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 if (nil == localEcho)
                 {
                     // Process here incoming events, and outgoing events sent from another device.
-                    [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
-                    [self processQueuedEvents:nil];
+                    if ([event.type isEqualToString:kMXEventTypeStringRoomMessage]) {
+                        [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
+                        [self processQueuedEvents:nil];
+                    }
+
                 }
             }
         }];
@@ -1316,8 +1319,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (localEchoEvent)
     {
         // Make the data source digest this fake local echo message
-        [self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-        [self processQueuedEvents:nil];
+        //[self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+        //[self processQueuedEvents:nil];
     }
 }
 
@@ -1456,8 +1459,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (localEchoEvent)
     {
         // Make the data source digest this fake local echo message
-        [self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-        [self processQueuedEvents:nil];
+        //[self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+        //[self processQueuedEvents:nil];
     }
 }
 
@@ -1470,8 +1473,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (localEchoEvent)
     {
         // Make the data source digest this fake local echo message
-        [self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-        [self processQueuedEvents:nil];
+        //[self queueEventForProcessing:localEchoEvent withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+        //[self processQueuedEvents:nil];
     }
 }
 
@@ -2167,7 +2170,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     @synchronized (eventsToProcessSnapshot)
                     {
-                        [bubbles insertObject:newBubbleData atIndex:bubbleDataIndex + 1];
+                        if ([event.type isEqualToString:kMXEventTypeStringRoomMessage]) {
+                            [bubbles insertObject:newBubbleData atIndex:bubbleDataIndex + 1];
+                        }
                     }
                 }
 
@@ -2202,7 +2207,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                     @synchronized (eventsToProcessSnapshot)
                     {
-                        [bubbles insertObject:newBubbleData atIndex:bubbleDataIndex + 2];
+                        if ([event.type isEqualToString:kMXEventTypeStringRoomMessage]) {
+                            [bubbles insertObject:newBubbleData atIndex:bubbleDataIndex + 2];
+                        }
                     }
                 }
             }
@@ -2552,7 +2559,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                                 }
 
                                 // Insert the new bubble data in first position
-                                [self->bubblesSnapshot insertObject:bubbleData atIndex:0];
+                                if ([queuedEvent.event.type isEqualToString: kMXEventTypeStringRoomMessage]) {
+                                    [self->bubblesSnapshot insertObject:bubbleData atIndex:0];
+                                }
                                 
                                 addedHistoryCellCount++;
                             }
