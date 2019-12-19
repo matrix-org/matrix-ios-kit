@@ -126,6 +126,11 @@ static BOOL _disableLongPressGestureOnEvent;
 {
     [super awakeFromNib];
     
+    [self setupViews];
+}
+
+- (void)setupViews
+{
     if (self.userNameLabel)
     {
         // Listen to name tap
@@ -1424,6 +1429,10 @@ static NSMutableDictionary *childClasses;
                 tappedComponent = [self closestBubbleComponentForGestureRecognizer:sender locationInView:self.messageTextView];
             }
         }
+        else
+        {
+            tappedComponent = [self.bubbleData getFirstBubbleComponentWithDisplay];
+        }
         
         [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellTapOnContentView userInfo:(tappedComponent ? @{kMXKRoomBubbleCellEventKey:tappedComponent.event} : nil)];
     }
@@ -1468,6 +1477,10 @@ static NSMutableDictionary *childClasses;
             {
                 // Check whether the user tapped in front of a text component.
                 tappedComponent = [self closestBubbleComponentForGestureRecognizer:longPressGestureRecognizer locationInView:self.messageTextView];
+            }
+            else
+            {
+                tappedComponent = [self.bubbleData getFirstBubbleComponentWithDisplay];
             }
             
             [delegate cell:self didRecognizeAction:kMXKRoomBubbleCellLongPressOnEvent userInfo:(tappedComponent ? @{kMXKRoomBubbleCellEventKey:tappedComponent.event} : nil)];

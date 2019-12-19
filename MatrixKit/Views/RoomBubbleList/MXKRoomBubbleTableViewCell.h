@@ -312,4 +312,14 @@ extern NSString *const kMXKRoomBubbleCellUrlItemInteraction;
  */
 - (void)resetAttachmentViewBottomConstraintConstant;
 
+/**
+ Redeclare heightForCellData:withMaximumWidth: method from MXKCellRendering to use it as a class method in Swift and not a static method.
+ */
++ (CGFloat)heightForCellData:(MXKCellData*)cellData withMaximumWidth:(CGFloat)maxWidth;
+
+/**
+ Setup outlets views. Useful to call when cell subclass does not use a xib otherwise this method is called automatically in `awakeFromNib`.
+ */
+- (void)setupViews;
+
 @end
