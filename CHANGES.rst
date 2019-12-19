@@ -1,6 +1,9 @@
 Changes in MatrixKit in 0.11.4 (2019-xx-xx)
 ==========================================
 
+Improvements:
+ * MXKRoomBubbleTableViewCell: Handle content view tap and long press when there is no `messageTextView` or `attachmentView` properties.
+
 
 Changes in MatrixKit in 0.11.3 (2019-12-05)
 ==========================================
