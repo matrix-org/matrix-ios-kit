@@ -121,6 +121,7 @@ extern NSString *const kMXKRoomBubbleCellShouldInteractWithURL;
  */
 extern NSString *const kMXKRoomBubbleCellUserIdKey;
 extern NSString *const kMXKRoomBubbleCellEventKey;
+extern NSString *const kMXKRoomBubbleCellEventIdKey;
 extern NSString *const kMXKRoomBubbleCellReceiptsContainerKey;
 extern NSString *const kMXKRoomBubbleCellUrl;
 extern NSString *const kMXKRoomBubbleCellUrlItemInteraction;

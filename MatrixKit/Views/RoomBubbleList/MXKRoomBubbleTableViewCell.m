@@ -48,6 +48,7 @@ NSString *const kMXKRoomBubbleCellShouldInteractWithURL = @"kMXKRoomBubbleCellSh
 
 NSString *const kMXKRoomBubbleCellUserIdKey = @"kMXKRoomBubbleCellUserIdKey";
 NSString *const kMXKRoomBubbleCellEventKey = @"kMXKRoomBubbleCellEventKey";
+NSString *const kMXKRoomBubbleCellEventIdKey = @"kMXKRoomBubbleCellEventIdKey";
 NSString *const kMXKRoomBubbleCellReceiptsContainerKey = @"kMXKRoomBubbleCellReceiptsContainerKey";
 NSString *const kMXKRoomBubbleCellUrl = @"kMXKRoomBubbleCellUrl";
 NSString *const kMXKRoomBubbleCellUrlItemInteraction = @"kMXKRoomBubbleCellUrlItemInteraction";
@@ -1555,6 +1556,13 @@ static NSMutableDictionary *childClasses;
     
     if ([recognizerView isDescendantOfView:self.contentView])
     {
+        UIView *touchedView = touch.view;
+        
+        if ([touchedView isKindOfClass:[UIButton class]])
+        {
+            return NO;
+        }
+        
         // Prevent gesture recognizer to be recognized by a custom view added to the cell contentView and with user interaction enabled
         for (UIView *tmpSubview in self.tmpSubviews)
         {
@@ -1570,9 +1578,9 @@ static NSMutableDictionary *childClasses;
         }
         
         // Prevent gesture recognizer to be recognized when user hits a link in a UITextView, let UITextViewDelegate handle links.
-        if ([touch.view isKindOfClass:[UITextView class]])
+        if ([touchedView isKindOfClass:[UITextView class]])
         {
-            UITextView *textView = (UITextView*)touch.view;
+            UITextView *textView = (UITextView*)touchedView;
             CGPoint touchLocation = [touch locationInView:textView];
             
             return [textView isThereALinkNearPoint:touchLocation] == NO;
