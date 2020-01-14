@@ -131,8 +131,11 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                   kMXEventTypeStringCallInvite,
                                                                   kMXEventTypeStringCallAnswer,
                                                                   kMXEventTypeStringCallHangup,
-                                                                  kMXEventTypeStringSticker
+                                                                  kMXEventTypeStringSticker,
+                                                                  kMXEventTypeStringKeyVerificationCancel,
+                                                                  kMXEventTypeStringKeyVerificationDone
                                                                   ]];
+        
 
         // List all the event types, except kMXEventTypeStringPresence which are not related to a specific room.
         allEventTypesForMessages = [NSMutableArray arrayWithArray:@[
@@ -155,7 +158,9 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                     kMXEventTypeStringCallInvite,
                                                                     kMXEventTypeStringCallAnswer,
                                                                     kMXEventTypeStringCallHangup,
-                                                                    kMXEventTypeStringSticker
+                                                                    kMXEventTypeStringSticker,
+                                                                    kMXEventTypeStringKeyVerificationCancel,
+                                                                    kMXEventTypeStringKeyVerificationDone
                                                                    ]];
     }
     return self;
