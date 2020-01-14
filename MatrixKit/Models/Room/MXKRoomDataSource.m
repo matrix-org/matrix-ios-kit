@@ -3189,8 +3189,25 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (BOOL)canReactToEventWithId:(NSString*)eventId
 {
+    BOOL canReact = NO;
+    
     MXEvent *event = [self eventWithEventId:eventId];
-    return [self canPerformActionOnEvent:event];
+    
+    if ([self canPerformActionOnEvent:event])
+    {
+        NSString *messageType = event.content[@"msgtype"];
+        
+        if ([messageType isEqualToString:kMXMessageTypeKeyVerificationRequest])
+        {
+            canReact = NO;
+        }
+        else
+        {
+            canReact = YES;
+        }
+    }
+    
+    return canReact;
 }
 
 - (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
