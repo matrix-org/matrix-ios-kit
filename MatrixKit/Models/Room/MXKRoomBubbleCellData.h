@@ -136,4 +136,11 @@
  */
 - (NSInteger)bubbleComponentIndexForEventId:(NSString *)eventId;
 
+/**
+ Get the first visible component.
+ 
+ @return First visible component or nil.
+ */
+- (MXKRoomBubbleComponent*)getFirstBubbleComponentWithDisplay;
+
 @end
