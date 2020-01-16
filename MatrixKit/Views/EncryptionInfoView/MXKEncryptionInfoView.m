@@ -296,7 +296,7 @@ static NSAttributedString *verticalWhitespace = nil;
         // Display here the Verify and Block buttons except if the device is the current one.
         _verifyButton.hidden = _blockButton.hidden = [_mxDeviceInfo.deviceId isEqualToString:_mxSession.matrixRestClient.credentials.deviceId];
         
-        switch (_mxDeviceInfo.verified)
+        switch (_mxDeviceInfo.trustLevel.localVerificationStatus)
         {
             case MXDeviceUnknown:
             case MXDeviceUnverified:
@@ -414,7 +414,8 @@ static NSAttributedString *verticalWhitespace = nil;
     {
         [_mxSession.crypto setDeviceVerification:MXDeviceVerified forDevice:_mxDeviceInfo.deviceId ofUser:_mxDeviceInfo.userId success:^{
 
-            self.mxDeviceInfo.verified = MXDeviceVerified;
+            // Refresh data
+            _mxDeviceInfo = [self.mxSession.crypto eventDeviceInfo:self.mxEvent];
             if (self->_delegate)
             {
                 [self->_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:self.mxDeviceInfo];
@@ -431,11 +432,11 @@ static NSAttributedString *verticalWhitespace = nil;
         
         if (sender == _verifyButton)
         {
-            verificationStatus = ((_mxDeviceInfo.verified == MXDeviceVerified) ? MXDeviceUnverified : MXDeviceVerified);
+            verificationStatus = ((_mxDeviceInfo.trustLevel.localVerificationStatus == MXDeviceVerified) ? MXDeviceUnverified : MXDeviceVerified);
         }
         else if (sender == _blockButton)
         {
-            verificationStatus = ((_mxDeviceInfo.verified == MXDeviceBlocked) ? MXDeviceUnverified : MXDeviceBlocked);
+            verificationStatus = ((_mxDeviceInfo.trustLevel.localVerificationStatus == MXDeviceBlocked) ? MXDeviceUnverified : MXDeviceBlocked);
         }
         else
         {
@@ -469,7 +470,9 @@ static NSAttributedString *verticalWhitespace = nil;
         {
             [_mxSession.crypto setDeviceVerification:verificationStatus forDevice:_mxDeviceInfo.deviceId ofUser:_mxDeviceInfo.userId success:^{
 
-                self.mxDeviceInfo.verified = verificationStatus;
+                // Refresh data
+                _mxDeviceInfo = [self.mxSession.crypto eventDeviceInfo:self.mxEvent];
+
                 if (self->_delegate)
                 {
                     [self->_delegate encryptionInfoView:self didDeviceInfoVerifiedChange:self.mxDeviceInfo];
