@@ -441,31 +441,24 @@
                     else
                     {
                         // Create a new room
-                        [self.mainSession createRoom:nil
-                                          visibility:kMXRoomDirectoryVisibilityPrivate
-                                           roomAlias:nil
-                                               topic:nil
-                                              invite:@[_mxRoomMember.userId]
-                                          invite3PID:nil
-                                            isDirect:YES
-                                              preset:kMXRoomPresetTrustedPrivateChat
-                                             success:^(MXRoom *room) {
-                                                 
-                                                 // Delay the call in order to be sure that the room is ready
-                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                     [room placeCallWithVideo:isVideoCall success:nil failure:nil];
-                                                     [self removePendingActionMask];
-                                                 });
-                                                 
-                                             } failure:^(NSError *error) {
-                                                 
-                                                 NSLog(@"[MXKRoomMemberDetailsVC] Create room failed");
-                                                 [self removePendingActionMask];
-                                                 // Notify MatrixKit user
-                                                 NSString *myUserId = self.mainSession.myUser.userId;
-                                                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
-                                                 
-                                             }];
+                        MXRoomCreationParameters *roomCreationParameters = [MXRoomCreationParameters parametersForDirectRoomWithUser:_mxRoomMember.userId];
+                        [self.mainSession createRoomWithParameters:roomCreationParameters success:^(MXRoom *room) {
+
+                            // Delay the call in order to be sure that the room is ready
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [room placeCallWithVideo:isVideoCall success:nil failure:nil];
+                                [self removePendingActionMask];
+                            });
+
+                        } failure:^(NSError *error) {
+
+                            NSLog(@"[MXKRoomMemberDetailsVC] Create room failed");
+                            [self removePendingActionMask];
+                            // Notify MatrixKit user
+                            NSString *myUserId = self.mainSession.myUser.userId;
+                            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
+
+                        }];
                     }
                 }
                 break;
