@@ -113,7 +113,8 @@
 "notice_room_aliases" = "The room aliases are: %@";
 "notice_room_related_groups" = "The groups associated with this room are: %@";
 "notice_encrypted_message" = "Encrypted message";
-"notice_encryption_enabled" = "%@ turned on end-to-end encryption (algorithm %@)";
+"notice_encryption_enabled_ok" = "%@ turned on end-to-end encryption.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ turned on end-to-end encryption (unrecognised algorithm %2$@).";
 "notice_image_attachment" = "image attachment";
 "notice_audio_attachment" = "audio attachment";
 "notice_video_attachment" = "video attachment";

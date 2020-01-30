@@ -806,7 +806,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 algorithm = redactedInfo;
             }
             
-            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled"], senderDisplayName, algorithm];
+            if ([algorithm isEqualToString:kMXCryptoMegolmAlgorithm])
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok"], senderDisplayName];
+            }
+            else
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm"], senderDisplayName, algorithm];
+            }
             
             break;
         }
