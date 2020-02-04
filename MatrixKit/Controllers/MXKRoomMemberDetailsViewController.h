@@ -39,7 +39,9 @@ typedef enum : NSUInteger
     MXKRoomMemberDetailsActionStartChat,
     MXKRoomMemberDetailsActionStartVoiceCall,
     MXKRoomMemberDetailsActionStartVideoCall,
-    MXKRoomMemberDetailsActionMention
+    MXKRoomMemberDetailsActionMention,
+    MXKRoomMemberDetailsActionSecurity,
+    MXKRoomMemberDetailsActionSecurityInformation
     
 } MXKRoomMemberDetailsAction;
 
