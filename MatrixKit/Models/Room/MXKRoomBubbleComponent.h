@@ -81,22 +81,29 @@ typedef enum : NSUInteger {
 @property (nonatomic) MXEventScan *eventScan;
 
 /**
+ Indicate if an encryption badge should be shown.
+ */
+@property (nonatomic, readonly) BOOL showEncryptionBadge;
+
+/**
  Create a new `MXKRoomBubbleComponent` object based on a `MXEvent` instance.
  
  @param event the event used to compose the bubble component.
  @param roomState the room state when the event occured.
  @param eventFormatter object used to format event into displayable string.
+ @param session the related matrix session.
  @return the newly created instance.
  */
-- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState andEventFormatter:(MXKEventFormatter*)eventFormatter;
+- (instancetype)initWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState eventFormatter:(MXKEventFormatter*)eventFormatter session:(MXSession*)session;
 
 /**
  Update the event because its sent state changed or it is has been redacted.
 
  @param event the new event data.
  @param roomState the up-to-date state of the room.
+ @param session the related matrix session.
  */
-- (void)updateWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState;
+- (void)updateWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session;
 
 @end
 
