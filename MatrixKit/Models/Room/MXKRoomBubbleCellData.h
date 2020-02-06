@@ -106,6 +106,11 @@
 @property (nonatomic) CGFloat uploadProgress;
 
 /**
+ Indicate a bubble component needs to show encryption badge.
+ */
+@property (nonatomic, readonly) BOOL containsBubbleComponentWithEncryptionBadge;
+
+/**
  Check and refresh the position of each component.
  */
 - (void)prepareBubbleComponentsPosition;
