@@ -74,7 +74,7 @@
 "ignore" = "Anwybyddu";
 "unignore" = "Dad-anwybyddu";
 // Events formatter
-"notice_avatar_changed_too" = "(newidiwyd cynrychlun hefyd)";
+"notice_avatar_changed_too" = "(newidiwyd rhithffurf hefyd)";
 "notice_room_name_removed" = "Tynnodd %@ enw'r ystafell";
 "notice_room_topic_removed" = "Fe wnaeth %@ ddileu'r pwnc";
 "notice_event_redacted" = "<golygwyd%@>";
@@ -280,7 +280,7 @@
 "notice_room_ban" = "Gwaharddod %@ %@";
 "notice_room_withdraw" = "Tynnodd %@ wahoddiad %@ yn ôl";
 "notice_room_reason" = ". Rheswm: %@";
-"notice_avatar_url_changed" = "Newidiodd %@ eu cynrychlun";
+"notice_avatar_url_changed" = "Newidiodd %@ eu rhithffurf";
 "notice_display_name_set" = "Gosododd %@ eu henw arddangos i %@";
 "notice_display_name_changed_from" = "Newidiodd %@ eu henw arddangos o %@ i %@";
 "notice_display_name_removed" = "Tynnodd %@ eu henw arddangos";
