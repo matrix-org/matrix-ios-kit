@@ -20,12 +20,12 @@
 
 @implementation MXKRoomBubbleComponent
 
-- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState andEventFormatter:(MXKEventFormatter*)formatter
+- (instancetype)initWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState eventFormatter:(MXKEventFormatter*)eventFormatter session:(MXSession*)session;
 {
     if (self = [super init])
     {
         // Build text component related to this event
-        _eventFormatter = formatter;
+        _eventFormatter = eventFormatter;
         MXKEventFormatterError error;
 
         NSAttributedString *eventString = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
@@ -57,6 +57,8 @@
                 _displayFix |= MXKRoomBubbleComponentDisplayFixHtmlBlockquote;
             }
         }
+        
+        _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:(MXRoomState*)roomState session:session];
     }
     return self;
 }
@@ -65,7 +67,7 @@
 {
 }
 
-- (void)updateWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)roomState
+- (void)updateWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session
 {
     // Report the new event
     _event = event;
@@ -83,6 +85,8 @@
 
     MXKEventFormatterError error;
     _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
+    
+    _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:roomState session:session];
 }
 
 - (NSString *)textMessage
@@ -92,6 +96,46 @@
         _textMessage = _attributedTextMessage.string;
     }
     return _textMessage;
+}
+
+- (BOOL)shouldShowWarningBadgeForEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session
+{
+    if (!roomState.isEncrypted)
+    {
+        return NO;
+    }
+    
+    BOOL shouldShowWarningBadge = NO;
+    
+    if (!event.isEncrypted)
+    {
+        if (event.isLocalEvent
+            || event.isState
+            || event.contentHasBeenEdited)    // Local echo for an edit is clear but uses a true event id, the one of the edited event
+        {
+            shouldShowWarningBadge = NO;
+        }
+        else
+        {
+            shouldShowWarningBadge = YES;
+        }
+    }
+    else if (event.decryptionError)
+    {
+        shouldShowWarningBadge = YES;
+    }
+    else if (event.sender)
+    {
+        MXUserTrustLevel *userTrustLevel = [session.crypto trustLevelForUser:event.sender];
+        MXDeviceInfo *deviceInfo = [session.crypto eventDeviceInfo:event];
+        
+        if (userTrustLevel.isVerified && !deviceInfo.trustLevel.isVerified)
+        {
+            shouldShowWarningBadge = YES;
+        }
+    }
+    
+    return shouldShowWarningBadge;
 }
 
 @end
