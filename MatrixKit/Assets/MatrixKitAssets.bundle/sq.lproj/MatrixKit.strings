@@ -92,12 +92,12 @@
 "settings_enter_validation_token_for" = "Jepni token vleftësimi për %@:";
 "notification_settings_room_rule_title" = "Dhomë: '%@'";
 // Devices
-"device_details_title" = "Të dhënash pajisjeje\n";
+"device_details_title" = "Të dhëna sesioni\n";
 "device_details_name" = "Emër Publik\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Parë së fundi më\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Emri publik i një pajisjeje është i dukshëm për persona me të cilët komunikoni";
+"device_details_rename_prompt_message" = "Emri publik i një sesioni është i dukshëm për persona me të cilët komunikoni";
 "device_details_delete_prompt_title" = "Mirëfilltësim";
 // Encryption information
 "room_event_encryption_info_title" = "Të dhëna fshehtëzimi skaj-më-skaj\n\n";
@@ -109,8 +109,8 @@
 "room_event_encryption_info_event_decryption_error" = "Gabim shfshehtëzimi\n";
 "room_event_encryption_info_event_unencrypted" = "të pafshehtëzuara";
 "room_event_encryption_info_event_none" = "asnjë";
-"room_event_encryption_info_device" = "\nTë dhëna pajisjeje dërguesi\n";
-"room_event_encryption_info_device_unknown" = "pajisje e panjohur\n";
+"room_event_encryption_info_device" = "\nTë dhëna sesioni dërguesi\n";
+"room_event_encryption_info_device_unknown" = "sesion i panjohur\n";
 "room_event_encryption_info_device_name" = "Emër Publik\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verifikim\n";
@@ -120,7 +120,7 @@
 "room_event_encryption_info_device_blocked" = "Në Listë të Zezë";
 "room_event_encryption_info_verify" = "Verifikoni…";
 "room_event_encryption_info_block" = "Listë e zezë";
-"room_event_encryption_verify_title" = "Verifiko pajisjen\n\n";
+"room_event_encryption_verify_title" = "Verifiko sesionin\n\n";
 "room_event_encryption_verify_ok" = "Verifikoje";
 // Account
 "account_save_changes" = "Ruaji ndryshimet";
@@ -317,12 +317,12 @@
 "notice_room_history_visible_to_members" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës.";
 "notice_room_history_visible_to_members_from_invited_point" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës, prej çastit kur janë ftuar.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ e bëri historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës, prej çastit kur morën pjesë.";
-"notice_crypto_error_unknown_inbound_session_id" = "Pajisja e dërguesit nuk na ka dërguar kyçet për këtë mesazh.";
+"notice_crypto_error_unknown_inbound_session_id" = "Sesioni i dërguesit nuk na ka dërguar kyçet për këtë mesazh.";
 "notice_in_reply_to" = "Në përgjigje të";
 "device_details_delete_prompt_message" = "Ky veprim lyp mirëfilltësim shtesë.\nQë të vazhdohet, ju lutemi, jepni fjalëkalimin tuaj.";
 "room_event_encryption_info_unverify" = "Hiqi verifikimin";
 "room_event_encryption_info_unblock" = "Hiqe nga listë e zezë";
-"room_event_encryption_verify_message" = "Që të verifikohet se kjo pajisje mund të besohet, ju lutemi, lidhuni me të zotin e saj duke përdorur ndonjë rrugë tjetër (p.sh. personalisht apo përmes një thirrjeje telefonike) dhe kërkojini nëse kyçi që sheh te Rregullimet e veta të Përdoruesit për këtë pajisje përputhet me kyçin më poshtë\n\n\tEmër pajisjeje: %@\n\tID pajisjeje: %@\n\tKyç pajisjeje: %@\n\nNëse përputhet, shtypni më poshtë butonin e verifikimit. Nëse jo, atëherë dikush tjetër është duke përgjuar këtë pajisje dhe do të donit më mirë të shtypnit butonin e kalimit në listë të zezë.\n\nNë të ardhmen ky proces verifikimi do të jetë më i sofistikuar.";
+"room_event_encryption_verify_message" = "Që të verifikohet se ky sesion mund të besohet, ju lutemi, lidhuni me të zotin e tij duke përdorur ndonjë rrugë tjetër (p.sh., personalisht apo përmes një thirrjeje telefonike) dhe kërkojini nëse kyçi që sheh te Rregullimet e veta të Përdoruesit për këtë sesion përputhet me kyçin më poshtë:\n\n\tEmër sesioni: %@\n\tID sesioni: %@\n\tKyç sesioni: %@\n\nNëse përputhet, shtypni më poshtë butonin e verifikimit. Nëse jo, atëherë dikush tjetër është duke përgjuar këtë pajisje dhe do të donit më mirë të shtypnit butonin e kalimit në listë të zezë.\n\nNë të ardhmen ky proces verifikimi do të jetë më i sofistikuar.";
 "account_email_validation_message" = "Ju lutemi, kontrolloni email-in tuaj dhe klikoni mbi lidhjen që përmban. Pasi të jetë bërë kjo, klikoni që të vazhdohet.";
 "account_email_validation_error" = "S’arrihet të verifikohet adresë email. Ju lutemi, kontrolloni email-in tuaj dhe klikoni mbi lidhjen që përmban. Pasi të jetë bërë kjo, klikoni që të vazhdohet";
 "account_msisdn_validation_message" = "Kemi dërguar një SMS me një kod aktivizimi. Ju lutemi, jepeni këtë kod më poshtë.";
@@ -378,4 +378,4 @@
 "notice_feedback" = "Akt dhënieje përshtypjesh (id: %@): %@";
 "account_error_push_not_allowed" = "Nuk lejohen njoftime";
 "notice_room_third_party_revoked_invite" = "%@ shfuqizoi ftesën për pjesëmarrje në dhomë për %@";
-"device_details_rename_prompt_title" = "Emër Pajisjeje";
+"device_details_rename_prompt_title" = "Emër Sesioni";
