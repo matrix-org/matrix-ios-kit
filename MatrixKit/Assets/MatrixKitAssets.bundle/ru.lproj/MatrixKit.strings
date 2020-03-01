@@ -89,7 +89,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ сделал(а) будущую историю комнаты видимой всем членам комнаты с момента их приглашения.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ сделал(а) будущую историю комнаты видимой всем членам комнаты с момента их входа.";
 "notice_crypto_unable_to_decrypt" = "** Не удалось расшифровать: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Устройство отправителя не отправило нам ключи для этого сообщения.";
+"notice_crypto_error_unknown_inbound_session_id" = "Сессия отправителя не отправила вам ключи для этого сообщения.";
 // room display name
 "room_displayname_empty_room" = "Пустая комната";
 "room_displayname_two_members" = "%@ и %@";
@@ -101,12 +101,12 @@
 "settings_enter_validation_token_for" = "Введите токен подтверждения для %@:";
 "notification_settings_room_rule_title" = "Комната: '%@'";
 // Devices
-"device_details_title" = "Информация об устройстве\n";
+"device_details_title" = "Информация о сессии\n";
 "device_details_name" = "Публичное имя\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Последняя активность\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Публичные имена устройств видны людям, с которыми вы общаетесь";
+"device_details_rename_prompt_message" = "Публичные имена сессий видны людям, с которыми вы общаетесь";
 "device_details_delete_prompt_title" = "Аутентификация";
 "room_event_encryption_info_event" = "Информация о событии\n";
 "room_event_encryption_info_event_user_id" = "ID пользователя\n";
@@ -114,8 +114,8 @@
 "room_event_encryption_info_event_session_id" = "ID сессии\n";
 "room_event_encryption_info_event_decryption_error" = "Ошибка расшифровки\n";
 "room_event_encryption_info_event_unencrypted" = "незашифровано";
-"room_event_encryption_info_device" = "\nИнформация об устройстве отправителя\n";
-"room_event_encryption_info_device_unknown" = "неизвестное устройство\n";
+"room_event_encryption_info_device" = "\nИнформация о сессии отправителя\n";
+"room_event_encryption_info_device_unknown" = "неизвестная сессия\n";
 "room_event_encryption_info_device_name" = "Публичное имя\n";
 "room_creation_participants_title" = "Участники:";
 // Room
@@ -202,8 +202,8 @@
 "room_event_encryption_info_unverify" = "Отменить верификацию";
 "room_event_encryption_info_block" = "Черный список";
 "room_event_encryption_info_unblock" = "Удалить из черного списка";
-"room_event_encryption_verify_title" = "Проверить устройство\n\n";
-"room_event_encryption_verify_message" = "Для верификации устройства, пожалуйста, свяжитесь с владельцем используя другие методы коммуникации (например, лично или по телефону) и попросите его подтвердить, что он видит такой же ключ как написанный ниже:\n\n\tИмя устройства: %@\n\tИдентификатор устройства: %@\n\tКлюч устройства: %@\n\nЕсли совпадают, то нажмите кнопку верификации ниже. Если нет, значит кто-то перехватил это устройство и вы, скорее всего, захотите внести его в черный список.\n\nВ будущем процесс верификации будет усложнен.";
+"room_event_encryption_verify_title" = "Проверить сессию\n\n";
+"room_event_encryption_verify_message" = "Для верификации сессии, пожалуйста, свяжитесь с владельцем используя другие методы коммуникации (например, лично или по телефону) и попросите его подтвердить, что он видит такой же ключ как написанный ниже:\n\n\tИмя сессии: %@\n\tИдентификатор сессии: %@\n\tКлюч сессии: %@\n\nЕсли совпадают, то нажмите кнопку верификации ниже. Если нет, значит кто-то перехватил эту сессию и вы, скорее всего, захотите внести его в черный список.\n\nВ будущем процесс верификации будет усложнен.";
 "room_event_encryption_verify_ok" = "Подтвердить";
 // Account
 "account_save_changes" = "Сохранить изменения";
@@ -378,4 +378,6 @@
 "e2e_passphrase_create" = "Создать парольную фразу";
 "account_error_push_not_allowed" = "Уведомления не разрешены";
 "notice_room_third_party_revoked_invite" = "%@ отозвал приглашение для %@ на вступление в комнату";
-"device_details_rename_prompt_title" = "Имя устройства";
+"device_details_rename_prompt_title" = "Имя Сессии";
+"notice_encryption_enabled_ok" = "%@ включил сквозное шифрование.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ включил сквозное шифрование (нераспознанный алгоритм %2$@).";
