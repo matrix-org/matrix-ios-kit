@@ -2,6 +2,9 @@ Changes in MatrixKit in 0.11.4 (2019-xx-xx)
 ==========================================
 
 
+ Bug fix:
+ * Push notifications: Avoid any automatic deactivation (vector-im/riot-ios#3017).
+
 Changes in MatrixKit in 0.11.3 (2019-12-05)
 ==========================================
 
