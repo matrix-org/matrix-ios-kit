@@ -97,7 +97,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Teilnahme sichtbar gemacht.";
 "notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Die Sitzung des Absenders hat keine Schlüssel für diese Nachricht gesendet.";
+"notice_crypto_error_unknown_inbound_session_id" = "Die Sitzung des Absenders hat uns keine Schlüssel für diese Nachricht gesendet.";
 // room display name
 "room_displayname_empty_room" = "Leerer Raum";
 "room_displayname_two_members" = "%@ und %@";
@@ -378,6 +378,6 @@
 "e2e_passphrase_create" = "Passphrase erzeugen";
 "account_error_push_not_allowed" = "Benachrichtigungen nicht erlaubt";
 "notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
-"device_details_rename_prompt_title" = "Sitzungs-Name";
+"device_details_rename_prompt_title" = "Sitzungsname";
 "notice_encryption_enabled_ok" = "%@ hat die Ende-zu-Ende-Verschlüsselung aktiviert.";
 "notice_encryption_enabled_unknown_algorithm" = "%1$@ hat die Ende-zu-Ende-Verschlüsselung aktiviert (unbekannter Algorithmus %2$@).";
