@@ -379,3 +379,5 @@
 "account_error_push_not_allowed" = "Nuk lejohen njoftime";
 "notice_room_third_party_revoked_invite" = "%@ shfuqizoi ftesën për pjesëmarrje në dhomë për %@";
 "device_details_rename_prompt_title" = "Emër Sesioni";
+"notice_encryption_enabled_ok" = "%@ aktivizoi fshehtëzimin skaj-më-skaj.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ aktivizoi fshehtëzimin skaj-më-skaj (algoritëm që s’është njohur %2$@).";
