@@ -1,6 +1,18 @@
-Changes in MatrixKit in 0.11.4 (2019-xx-xx)
+Changes in MatrixKit in 0.11.5 (2020-xx-xx)
 ==========================================
 
+Improvements:
+ * MXKRoomBubbleTableViewCell: Handle content view tap and long press when there is no `messageTextView` or `attachmentView` properties.
+ * MXKEventFormatter: E2E, hide duplicate message warnings (vector-im/riot-ios#2910).
+ * MXKEventFormatter: E2E, hide the algo used when turning on encryption (vector-im/riot-ios#2939).
+ * MXKRoomBubbleComponent: Add a property to indicate if an encryption badge should be shown.
+ * MXKRoomBubbleCellData: Add a property to indicate if a bubble component needs to show encryption badge.
+
+API break:
+ * MXKRoomBubbleComponent: Add session parameter to init and update method.
+
+Changes in MatrixKit in 0.11.4 (2020-04-01)
+==========================================
 
  Bug fix:
  * Push notifications: Avoid any automatic deactivation (vector-im/riot-ios#3017).
