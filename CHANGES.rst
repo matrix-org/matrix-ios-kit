@@ -1,4 +1,4 @@
-Changes in MatrixKit in 0.11.4 (2019-xx-xx)
+Changes in MatrixKit in 0.11.5 (2020-xx-xx)
 ==========================================
 
 Improvements:
@@ -10,6 +10,9 @@ Improvements:
 
 API break:
  * MXKRoomBubbleComponent: Add session parameter to init and update method.
+
+Changes in MatrixKit in 0.11.4 (2020-04-01)
+==========================================
 
  Bug fix:
  * Push notifications: Avoid any automatic deactivation (vector-im/riot-ios#3017).
