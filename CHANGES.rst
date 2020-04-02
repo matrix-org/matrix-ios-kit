@@ -7,7 +7,7 @@ Improvements:
  * MXKEventFormatter: E2E, hide the algo used when turning on encryption (vector-im/riot-ios#2939).
  * MXKRoomBubbleComponent: Add a property to indicate if an encryption badge should be shown.
  * MXKRoomBubbleCellData: Add a property to indicate if a bubble component needs to show encryption badge.
- * Push notifications: Implement logic to use a secondary appId for debug builds.
+ * Push notifications: Implement logic to use also a secondary appId for VoIP pusher on debug builds, like for APNS pusher.
 
 API break:
  * MXKRoomBubbleComponent: Add session parameter to init and update method.
