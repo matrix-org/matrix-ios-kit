@@ -1266,7 +1266,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     NSLog(@"[MXKAccount][Push] enablePushKitPusher: %@", @(enabled));
 
-    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pushKitAppIdProd"];
+    NSString *appIdKey;
+    #ifdef DEBUG
+        appIdKey = @"pushKitAppIdDev";
+    #else
+        appIdKey = @"pushKitAppIdProd";
+    #endif
+
+    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:appIdKey];
     
     NSMutableDictionary *pushData = [NSMutableDictionary dictionaryWithDictionary:@{@"url": self.pushGatewayURL}];
     
