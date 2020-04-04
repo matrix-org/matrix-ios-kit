@@ -108,7 +108,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ направи бъдещата история на стаята видима за всички членове, от момента на поканването им в нея.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ направи бъдещата история на стаята видима за всички членове, от момента на присъединяването им в нея.";
 "notice_crypto_unable_to_decrypt" = "** Неуспешно разшифроване: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Устройството на подателя не изпрати ключовете за това съобщение.";
+"notice_crypto_error_unknown_inbound_session_id" = "Сесията на подателя не изпрати ключовете за това съобщение.";
 // room display name
 "room_displayname_empty_room" = "Празна стая";
 "room_displayname_two_members" = "%@ и %@";
@@ -120,12 +120,12 @@
 "settings_enter_validation_token_for" = "Въведете код за потвърждение за %@:";
 "notification_settings_room_rule_title" = "Стая: '%@'";
 // Devices
-"device_details_title" = "Информация за устройство\n";
+"device_details_title" = "Информация за сесията\n";
 "device_details_name" = "Публично име\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Последно видян\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Публичното име на устройството е видимо за всеки, с който комуникирате";
+"device_details_rename_prompt_message" = "Публичното име на сесията е видимо за всеки, с който комуникирате";
 "device_details_delete_prompt_title" = "Автентикация";
 "device_details_delete_prompt_message" = "Тази операция изискра допълнителна автентикация.\nЗа да продължите, моля, въведете Вашата парола.";
 // Encryption information
@@ -139,8 +139,8 @@
 "room_event_encryption_info_event_decryption_error" = "Грешка при разшифроване\n";
 "room_event_encryption_info_event_unencrypted" = "нешифрован";
 "room_event_encryption_info_event_none" = "няма";
-"room_event_encryption_info_device" = "\nИнформация за устройството на подателя\n";
-"room_event_encryption_info_device_unknown" = "неизвестно устройство\n";
+"room_event_encryption_info_device" = "\nИнформация за сесията на подателя\n";
+"room_event_encryption_info_device_unknown" = "неизвестна сесия\n";
 "room_event_encryption_info_device_name" = "Публично име\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Потвърждение\n";
@@ -152,7 +152,7 @@
 "room_event_encryption_info_block" = "Блокирай";
 "room_event_encryption_info_verify" = "Потвърди...";
 "room_event_encryption_info_unverify" = "Махни потвържд.";
-"room_event_encryption_verify_title" = "Потвърди устройството\n\n";
+"room_event_encryption_verify_title" = "Потвърди сесията\n\n";
 "room_event_encryption_verify_ok" = "Потвърди";
 // Account
 "account_save_changes" = "Запази промените";
@@ -358,7 +358,7 @@
 "ssl_unexpected_existing_expl" = "Сертификатът е различен от този, на който телефонът Ви се доверява. Това е МНОГО НЕОБИЧАЙНО. Препоръчваме да НЕ ПРИЕМАТЕ този нов серфитикат.";
 "ssl_expected_existing_expl" = "Сертификатът се промени от такъв, който е бил доверен, на такъв който вече не е. Сървърът може да е подновил своя сертификат. Свържете се с администратора за правилния отпечатък.";
 "ssl_only_accept" = "Приемайте сертификата САМО ако администратора на сървъра е публикувал отпечатък, който съвпада с този по-горе.";
-"room_event_encryption_verify_message" = "За да потвърдите, че на това устройство може да се вярва, моля свържете се със собственика му по друг начин (напр. на живо или чрез телефонен разговор) и го попитайте дали ключът, който той вижда в неговите настройки на потребителя за това устройство, съвпада с ключа по-долу:\n\n\tИме на устройството: %@\n\tID на устройството: %@\n\tКлюч на устройството: %@\n\nАко съвпада, моля натиснете бутона за потвърждение по-долу. Ако не, то тогава някой друг имитира това устройство и вероятно искате вместо това да натиснете бутона за черен списък.\n\nВ бъдеще този процес на потвърждение ще бъде по-лесен.";
+"room_event_encryption_verify_message" = "За да потвърдите, че на това устройство може да се вярва, моля свържете се със собственика му по друг начин (напр. на живо или чрез телефонен разговор) и го попитайте дали ключът, който той вижда в неговите настройки на потребителя за това устройство, съвпада с ключа по-долу:\n\n\tИме на сесията: %@\n\tID на сесията: %@\n\tКлюч на сесията: %@\n\nАко съвпада, моля натиснете бутона за потвърждение по-долу. Ако не, то тогава някой друг имитира тази сесия и вероятно искате вместо това да натиснете бутона за черен списък.\n\nВ бъдеще този процес на потвърждение ще бъде по-лесен.";
 "notification_settings_global_info" = "Настройки на известията се пазят в потребителския Ви профил и се споделят измежду всички клиенти, които ги поддържат (включително и известия на работния плот).\n\nПравилата се проверяват по ред; първото съвпадащо правило дефинира резултата за съобщението.\nТака че: Известията за конкретна дума са по-важни от известията за конкретна стая, които пък са по-важни от известията за конкретен потребител.\nАко има няколко еднотипни правила, с приоритет е първото съвпадащо.";
 "notification_settings_per_word_info" = "Съвпаденията за думите се правят без взимане под внимание на малка/главна буква. Могат да съдържат и * wildcard символ. Така че:\nfoo намира съвпадения за низа foo, ограден от разделители за дума (напр. пунктуация и празно място или начало/край на ред).\nfoo* намира съвпадения във всяка дума започваща с foo.\n*foo* намира съвпадения във всяка дума включваща някъде в себе си низа foo.";
 "notice_sticker" = "стикер";
@@ -378,4 +378,6 @@
 "e2e_passphrase_create" = "Създай парола";
 "account_error_push_not_allowed" = "Уведомленията не са разрешени";
 "notice_room_third_party_revoked_invite" = "%@ оттегли поканата за присъединяването на %@ към стаята";
-"device_details_rename_prompt_title" = "Име на устройство";
+"device_details_rename_prompt_title" = "Име на сесията";
+"notice_encryption_enabled_ok" = "%@ включи шифроване от-край-до-край.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ включи шифроване от-край-до-край (неразпознат алгоритъм %2$@).";
