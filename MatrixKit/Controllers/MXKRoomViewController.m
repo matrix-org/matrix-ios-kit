@@ -3656,6 +3656,11 @@
                     
                     // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
                     self.closedAttachmentEventId = self.openedAttachmentEventId;
+
+                    if (@available(iOS 13.0, *))
+                    {
+                        attachmentsViewer.modalPresentationStyle = UIModalPresentationFullScreen;
+                    }
                     
                     [self presentViewController:attachmentsViewer animated:YES completion:nil];
                     
