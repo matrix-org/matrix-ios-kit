@@ -8,6 +8,7 @@ Improvements:
  * MXKRoomBubbleComponent: Add a property to indicate if an encryption badge should be shown.
  * MXKRoomBubbleCellData: Add a property to indicate if a bubble component needs to show encryption badge.
  * Push notifications: Implement logic to use also a secondary appId for VoIP pusher on debug builds, like for APNS pusher.
+ * SwiftUTI: Remove the no more maintained pod. Embed code instead.
 
 API break:
  * MXKRoomBubbleComponent: Add session parameter to init and update method.

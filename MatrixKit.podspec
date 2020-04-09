@@ -28,18 +28,17 @@ Pod::Spec.new do |s|
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
   s.dependency 'DTCoreText', '~> 1.6.21'
   s.dependency 'cmark', '~> 0.24.1'
-  s.dependency 'SwiftUTI', '~> 1.0.6'
 
   s.default_subspec = 'Core'
 
   s.subspec 'Core' do |core|
-    core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}"
+    core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}", "Libs/**/*.{h,m,swift}"
     core.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     core.dependency 'DTCoreText'
   end
 
   s.subspec 'AppExtension' do |ext|
-    ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}"
+    ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}", "Libs/**/*.{h,m,swift}"
     ext.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     ext.dependency 'DTCoreText/Extension'
   end
