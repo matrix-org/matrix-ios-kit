@@ -1,3 +1,10 @@
+Changes in MatrixKit in 0.11.6 (2020-xx-xx)
+==========================================
+
+Bug fix:
+ * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
+
+
 Changes in MatrixKit in 0.11.5 (2020-xx-xx)
 ==========================================
 
