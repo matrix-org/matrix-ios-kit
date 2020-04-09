@@ -24,6 +24,7 @@
 		3235CD801C33C6640084EA40 /* MXKSearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3235CD7F1C33C6640084EA40 /* MXKSearchTableViewCell.m */; };
 		3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */; };
 		323F9AF61F1E53730013AFDE /* NSBundle+MXKLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */; };
+		324978F4243F444C000D0384 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324978F3243F444C000D0384 /* UTI.swift */; };
 		32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
 		327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */; };
 		328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */; };
@@ -295,6 +296,10 @@
 		3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MXKSearchTableViewCell.xib; path = Search/MXKSearchTableViewCell.xib; sourceTree = "<group>"; };
 		323F9AF41F1E53730013AFDE /* NSBundle+MXKLanguage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+MXKLanguage.h"; sourceTree = "<group>"; };
 		323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+MXKLanguage.m"; sourceTree = "<group>"; };
+		324978E6243F431D000D0384 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		324978E8243F431D000D0384 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		324978E9243F431D000D0384 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		324978F3243F444C000D0384 /* UTI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
 		32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventFormatterTests.m; sourceTree = "<group>"; };
 		327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MXKRecentTableViewCell.xib; sourceTree = "<group>"; };
 		328AC4841AA75E000044A6FB /* MXKRoomBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleTableViewCell.h; sourceTree = "<group>"; };
@@ -734,6 +739,7 @@
 				3203F2691D2E9CAE0021F170 /* MatrixKitTests */,
 				3219CB691AA6F2780027D7E2 /* Products */,
 				69833E0CA8F7B8F25C6CC7C7 /* Pods */,
+				324978E5243F431D000D0384 /* Libs */,
 				CC4E6F6D4101B9B731F29FB7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -923,6 +929,25 @@
 				3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */,
 			);
 			name = Search;
+			sourceTree = "<group>";
+		};
+		324978E5243F431D000D0384 /* Libs */ = {
+			isa = PBXGroup;
+			children = (
+				324978E6243F431D000D0384 /* README.md */,
+				324978E7243F431D000D0384 /* SwiftUTI */,
+			);
+			path = Libs;
+			sourceTree = "<group>";
+		};
+		324978E7243F431D000D0384 /* SwiftUTI */ = {
+			isa = PBXGroup;
+			children = (
+				324978F3243F444C000D0384 /* UTI.swift */,
+				324978E8243F431D000D0384 /* LICENSE */,
+				324978E9243F431D000D0384 /* README.md */,
+			);
+			path = SwiftUTI;
 			sourceTree = "<group>";
 		};
 		328AC47A1AA75D140044A6FB /* RoomBubbleList */ = {
@@ -1705,7 +1730,6 @@
 				"${BUILT_PRODUCTS_DIR}/MatrixSDK/MatrixSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/OLMKit/OLMKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftUTI/SwiftUTI.framework",
 				"${BUILT_PRODUCTS_DIR}/cmark/cmark.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libbase58/libbase58.framework",
@@ -1722,7 +1746,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MatrixSDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OLMKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftUTI.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/cmark.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libbase58.framework",
@@ -1749,7 +1772,6 @@
 				"${BUILT_PRODUCTS_DIR}/MatrixSDK/MatrixSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/OLMKit/OLMKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftUTI/SwiftUTI.framework",
 				"${BUILT_PRODUCTS_DIR}/cmark/cmark.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libbase58/libbase58.framework",
@@ -1766,7 +1788,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MatrixSDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OLMKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftUTI.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/cmark.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libbase58.framework",
@@ -1823,6 +1844,7 @@
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
 				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
 				B125D10C22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift in Sources */,
+				324978F4243F444C000D0384 /* UTI.swift in Sources */,
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
 				F079333E1F38A6A600F04D4C /* MXKView.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,

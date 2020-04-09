@@ -15,8 +15,12 @@
  */
 
 import Foundation
+import ImageIO
 import MobileCoreServices
-import SwiftUTI
+
+// We do not use the SwiftUTI pod anymore
+// The library is embedded in MatrixKit. See Libs/SwiftUTI/README.md for more details
+//import SwiftUTI
 
 /// MXKUTI represents a Universal Type Identifier (e.g. kUTTypePNG).
 /// See https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html#//apple_ref/doc/uid/TP40001319-CH202-SW5 for more information.

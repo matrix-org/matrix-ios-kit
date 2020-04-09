@@ -55,7 +55,6 @@ PODS:
   - Realm (3.17.3):
     - Realm/Headers (= 3.17.3)
   - Realm/Headers (3.17.3)
-  - SwiftUTI (1.0.7)
 
 DEPENDENCIES:
   - cmark (~> 0.24.1)
@@ -63,8 +62,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.15.2)
-  - SwiftUTI (from `https://github.com/speramusinc/SwiftUTI.git`, branch `master`)
+  - MatrixSDK (from `../matrix-ios-sdk/MatrixSDK.podspec`)
 
 SPEC REPOS:
   trunk:
@@ -78,19 +76,12 @@ SPEC REPOS:
     - JSQSystemSoundPlayer
     - libbase58
     - libPhoneNumber-iOS
-    - MatrixSDK
     - OLMKit
     - Realm
 
 EXTERNAL SOURCES:
-  SwiftUTI:
-    :branch: master
-    :git: https://github.com/speramusinc/SwiftUTI.git
-
-CHECKOUT OPTIONS:
-  SwiftUTI:
-    :commit: b6b46942fb3aad819610851f62a70e17a528444e
-    :git: https://github.com/speramusinc/SwiftUTI.git
+  MatrixSDK:
+    :path: "../matrix-ios-sdk/MatrixSDK.podspec"
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
@@ -106,8 +97,7 @@ SPEC CHECKSUMS:
   MatrixSDK: f83bd3c5519c1cb9ac3998f6423574cf528f0250
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
   Realm: 5a1d9d47bfc101dd597668b1a8af4288a2557f6d
-  SwiftUTI: 917993c124f8eac25e88ced0202fc58d7eb50fa8
 
-PODFILE CHECKSUM: 5856db438bc5c3de4b39b48163542c87c3b67246
+PODFILE CHECKSUM: f07bfc651bc2ea2be7fae0ef6d8f01c5150a4877
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
