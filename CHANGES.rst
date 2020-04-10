@@ -1,3 +1,12 @@
+Changes in MatrixKit in 0.12.3 (2020-xx-xx)
+=========================================
+
+Improvements:
+ * MXKAttachmentsViewController: MPMoviePlayerController replaced with AVPlayerViewController (PR #651).
+
+Bug fix:
+ * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
+
 Changes in MatrixKit in 0.12.2 (2020-05-01)
 =========================================
 
