@@ -249,7 +249,8 @@
     // Stop playing any video
     for (MXKMediaCollectionViewCell *cell in self.attachmentsCollection.visibleCells)
     {
-        [cell.moviePlayer stop];
+        [cell.moviePlayer.player pause];
+        cell.moviePlayer.player = nil;
     }
     
     // Restore audio category
@@ -844,7 +845,7 @@
             {
                 [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
                 
-                selectedCell.moviePlayer = [[MPMoviePlayerController alloc] init];
+                selectedCell.moviePlayer = [[AVPlayerViewController alloc] init];
                 if (selectedCell.moviePlayer != nil)
                 {
                     // Switch in custom view
@@ -859,7 +860,7 @@
                     previewImage.center = selectedCell.customView.center;
                     [selectedCell.customView addSubview:previewImage];
                     
-                    selectedCell.moviePlayer.scalingMode = MPMovieScalingModeAspectFit;
+                    selectedCell.moviePlayer.videoGravity = AVLayerVideoGravityResizeAspect;
                     selectedCell.moviePlayer.view.frame = selectedCell.customView.frame;
                     selectedCell.moviePlayer.view.center = selectedCell.customView.center;
                     selectedCell.moviePlayer.view.hidden = YES;
@@ -914,15 +915,15 @@
                     }
 
                     [[NSNotificationCenter defaultCenter] addObserver:self
-                                                             selector:@selector(moviePlayerPlaybackDidFinishNotification:)
-                                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                                             selector:@selector(moviePlayerPlaybackDidFinishWithErrorNotification:)
+                                                                 name:AVPlayerItemFailedToPlayToEndTimeNotification
                                                                object:nil];
                 }
             }
             
             if (selectedCell.moviePlayer)
             {
-                if (selectedCell.moviePlayer.playbackState == MPMoviePlaybackStatePlaying)
+                if (selectedCell.moviePlayer.player.status == AVPlayerStatusReadyToPlay)
                 {
                     // Show or hide the navigation bar
 
@@ -1006,8 +1007,8 @@
                         {
                             selectedCell.moviePlayer.view.hidden = NO;
                             selectedCell.centerIcon.hidden = YES;
-                            selectedCell.moviePlayer.contentURL = [NSURL fileURLWithPath:self->videoFile];
-                            [selectedCell.moviePlayer play];
+                            selectedCell.moviePlayer.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:self->videoFile]];
+                            [selectedCell.moviePlayer.player play];
                             
                             [pieChartView removeFromSuperview];
                             
@@ -1069,7 +1070,8 @@
         {
             // This cell concerns an attached video.
             // We stop the player, and restore the default display based on the video thumbnail
-            [mediaCollectionViewCell.moviePlayer stop];
+            [mediaCollectionViewCell.moviePlayer.player pause];
+            mediaCollectionViewCell.moviePlayer.player = nil;
             mediaCollectionViewCell.moviePlayer = nil;
             
             mediaCollectionViewCell.mxkImageView.hidden = NO;
@@ -1124,26 +1126,20 @@
 
 #pragma mark - Movie Player
 
-- (void)moviePlayerPlaybackDidFinishNotification:(NSNotification *)notification
+- (void)moviePlayerPlaybackDidFinishWithErrorNotification:(NSNotification *)notification
 {
     NSDictionary *notificationUserInfo = [notification userInfo];
-    NSNumber *resultValue = [notificationUserInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
-    MPMovieFinishReason reason = [resultValue intValue];
-    
-    // error cases
-    if (reason == MPMovieFinishReasonPlaybackError)
-    {
-        NSError *mediaPlayerError = [notificationUserInfo objectForKey:@"error"];
-        if (mediaPlayerError)
-        {
-            NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
-            
-            // Display the navigation bar so that the user can leave this screen
-            self.navigationBar.hidden = NO;
 
-            // Notify MatrixKit user
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
-        }
+    NSError *mediaPlayerError = [notificationUserInfo objectForKey:AVPlayerItemFailedToPlayToEndTimeErrorKey];
+    if (mediaPlayerError)
+    {
+        NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
+
+        // Display the navigation bar so that the user can leave this screen
+        self.navigationBar.hidden = NO;
+
+        // Notify MatrixKit user
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:mediaPlayerError];
     }
 }
 

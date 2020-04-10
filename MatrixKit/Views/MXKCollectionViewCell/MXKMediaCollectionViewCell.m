@@ -23,7 +23,8 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    [self.moviePlayer stop];
+    [self.moviePlayer.player pause];
+    self.moviePlayer.player = nil;
     self.moviePlayer = nil;
     
     // Restore the cell in reusable state
@@ -64,7 +65,8 @@
 
 - (void)dealloc
 {
-    [self.moviePlayer stop];
+    [self.moviePlayer.player pause];
+    self.moviePlayer.player = nil;
 }
 
 @end

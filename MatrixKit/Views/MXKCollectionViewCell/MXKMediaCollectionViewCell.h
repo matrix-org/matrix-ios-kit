@@ -16,7 +16,7 @@
 
 #import "MXKCollectionViewCell.h"
 
-#import <MediaPlayer/MediaPlayer.h>
+#import <AVKit/AVKit.h>
 
 #import "MXKImageView.h"
 
@@ -35,7 +35,7 @@
 /**
  A potential player used in the cell.
  */
-@property (nonatomic) MPMoviePlayerController *moviePlayer;
+@property (nonatomic) AVPlayerViewController *moviePlayer;
 
 /**
  A potential observer used to update cell display.

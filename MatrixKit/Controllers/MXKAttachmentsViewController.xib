@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -18,11 +18,11 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" alwaysBounceHorizontal="YES" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="LOp-cf-Sji">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                     <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="RrA-v8-THJ">
                         <size key="itemSize" width="600" height="600"/>
                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -34,9 +34,8 @@
                         <outlet property="delegate" destination="-1" id="z1d-ep-n4n"/>
                     </connections>
                 </collectionView>
-                <navigationBar contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="orb-yb-k6g">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="orb-yb-k6g">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                     <items>
                         <navigationItem id="lP4-eZ-AQ8">
                             <barButtonItem key="leftBarButtonItem" image="back_icon.png" style="plain" id="VjO-K2-a0w">
@@ -50,15 +49,20 @@
             </subviews>
             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
+                <constraint firstItem="orb-yb-k6g" firstAttribute="top" secondItem="JsA-JZ-Qk5" secondAttribute="top" id="5g5-WD-CNg"/>
+                <constraint firstItem="orb-yb-k6g" firstAttribute="trailing" secondItem="JsA-JZ-Qk5" secondAttribute="trailing" id="MJF-jP-AyE"/>
                 <constraint firstItem="LOp-cf-Sji" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="RQT-el-TH0"/>
                 <constraint firstAttribute="trailing" secondItem="LOp-cf-Sji" secondAttribute="trailing" id="Vgl-Wc-CI1"/>
+                <constraint firstItem="orb-yb-k6g" firstAttribute="leading" secondItem="JsA-JZ-Qk5" secondAttribute="leading" id="asr-Rk-xWz"/>
                 <constraint firstAttribute="bottom" secondItem="LOp-cf-Sji" secondAttribute="bottom" id="d22-2K-BEZ"/>
                 <constraint firstItem="LOp-cf-Sji" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="jEc-aG-zZn"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
+            <viewLayoutGuide key="safeArea" id="JsA-JZ-Qk5"/>
+            <point key="canvasLocation" x="138" y="153"/>
         </view>
     </objects>
     <resources>
-        <image name="back_icon.png" width="13" height="23"/>
+        <image name="back_icon.png" width="13.666666984558105" height="23"/>
     </resources>
 </document>
