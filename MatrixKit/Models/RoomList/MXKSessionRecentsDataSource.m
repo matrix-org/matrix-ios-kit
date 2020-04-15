@@ -271,8 +271,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 }
 
 - (void)didRoomSummaryChanged:(NSNotification *)notif
-{
-    MXRoomSummary *roomSummary = notif.object;
+{    
     [roomSummaryChangeThrottler throttle:^{
         [self didRoomSummaryChanged2:notif];
     }];
@@ -387,8 +386,6 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 // Order cells
 - (void)sortCellDataAndNotifyChanges
 {
-    NSLog(@"###### [MXKSessionRecentsDataSource] sortCellDataAndNotifyChanges");
-    
     // Order them by origin_server_ts
     [internalCellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2)
     {
