@@ -369,12 +369,17 @@
     
     CGRect tabBarFrame = CGRectZero;
     UITabBarController *tabBarController = nil;
+    UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
     
     if (leftButtonTitle || rightButtonTitle)
     {
         UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
         if (sharedApplication)
         {
+            if (@available(iOS 11.0, *))
+            {
+                safeAreaInsets = [sharedApplication keyWindow].safeAreaInsets;
+            }
             UIViewController *rootViewController = [sharedApplication keyWindow].rootViewController;
             tabBarController = rootViewController.tabBarController;
             if (!tabBarController && [rootViewController isKindOfClass:[UITabBarController class]])
@@ -390,7 +395,7 @@
         else
         {
             // Define a default tabBar frame
-            tabBarFrame = CGRectMake(0, 0, self.frame.size.width, 44);
+            tabBarFrame = CGRectMake(0, 0, self.frame.size.width, 44 + safeAreaInsets.bottom);
         }
     }
     
@@ -464,12 +469,12 @@
         
         if (leftButton)
         {
-            leftButton.frame = CGRectMake(0, 0, CUSTOM_IMAGE_VIEW_BUTTON_WIDTH, bottomBarView.frame.size.height);
+            leftButton.frame = CGRectMake(safeAreaInsets.left, 0, CUSTOM_IMAGE_VIEW_BUTTON_WIDTH, bottomBarView.frame.size.height - safeAreaInsets.bottom);
         }
         
         if (rightButton)
         {
-            rightButton.frame = CGRectMake(bottomBarView.frame.size.width - CUSTOM_IMAGE_VIEW_BUTTON_WIDTH, 0, CUSTOM_IMAGE_VIEW_BUTTON_WIDTH, bottomBarView.frame.size.height);
+            rightButton.frame = CGRectMake(bottomBarView.frame.size.width - CUSTOM_IMAGE_VIEW_BUTTON_WIDTH - safeAreaInsets.right, 0, CUSTOM_IMAGE_VIEW_BUTTON_WIDTH, bottomBarView.frame.size.height - safeAreaInsets.bottom);
         }
     }
     

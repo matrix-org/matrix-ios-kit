@@ -21,6 +21,7 @@
 
 #pragma mark - Constant definitions
 NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
+static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 
 
 @interface MXKSessionRecentsDataSource ()
@@ -38,6 +39,11 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
      Store the current search patterns list.
      */
     NSArray* searchPatternsList;
+    
+    /**
+     Do not react on every summary change
+     */
+    MXThrottler *roomSummaryChangeThrottler;
 }
 
 @end
@@ -56,6 +62,8 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
+        
+        roomSummaryChangeThrottler = [[MXThrottler alloc] initWithMinimumDelay:roomSummaryChangeThrottlerDelay];
     }
     return self;
 }
@@ -67,6 +75,9 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
+    
+    [roomSummaryChangeThrottler cancelAll];
+    roomSummaryChangeThrottler = nil;
     
     cellDataArray = nil;
     internalCellDataArray = nil;
@@ -260,9 +271,15 @@ NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
 }
 
 - (void)didRoomSummaryChanged:(NSNotification *)notif
+{    
+    [roomSummaryChangeThrottler throttle:^{
+        [self didRoomSummaryChanged2:notif];
+    }];
+}
+
+- (void)didRoomSummaryChanged2:(NSNotification *)notif
 {
     MXRoomSummary *roomSummary = notif.object;
-
     if (roomSummary.mxSession == self.mxSession && internalCellDataArray.count)
     {
         // Find the index of the related cell data
