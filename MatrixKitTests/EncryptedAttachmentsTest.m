@@ -18,6 +18,7 @@
 
 #import "MXEncryptedAttachments.h"
 #import "MXEncryptedContentFile.h"
+#import "MXBase64Tools.h"
 
 @interface EncryptedAttachmentsTest : XCTestCase
 
@@ -94,7 +95,7 @@
         MXEncryptedContentFile *inputInfo = [MXEncryptedContentFile modelFromJSON:vector[1]];
         NSString *want = vector[2];
         
-        NSData *ctData = [[NSData alloc] initWithBase64EncodedString:[MXEncryptedAttachments padBase64:inputCiphertext] options:0];
+        NSData *ctData = [[NSData alloc] initWithBase64EncodedString:[MXBase64Tools padBase64:inputCiphertext] options:0];
         NSInputStream *inputStream = [NSInputStream inputStreamWithData:ctData];
         NSOutputStream *outputStream = [NSOutputStream outputStreamToMemory];
         
@@ -102,7 +103,7 @@
         XCTAssertNil(err);
         NSData *gotData = [outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
         
-        NSData *wantData = [[NSData alloc] initWithBase64EncodedString:[MXEncryptedAttachments padBase64:want] options:0];
+        NSData *wantData = [[NSData alloc] initWithBase64EncodedString:[MXBase64Tools padBase64:want] options:0];
         
         XCTAssertEqualObjects(wantData, gotData, "Decrypted data did not match expectation.");
     }
