@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "MatrixKit"
-  s.version      = "0.11.3"
+  s.version      = "0.12.0"
   s.summary      = "The Matrix reusable UI library for iOS based on MatrixSDK."
 
   s.description  = <<-DESC
@@ -23,23 +23,22 @@ Pod::Spec.new do |s|
 
   s.swift_version = '5.0'
 
-  s.dependency 'MatrixSDK', '0.15.2'
+  s.dependency 'MatrixSDK', '0.16.0'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
   s.dependency 'DTCoreText', '~> 1.6.21'
   s.dependency 'cmark', '~> 0.24.1'
-  s.dependency 'SwiftUTI', '~> 1.0.6'
 
   s.default_subspec = 'Core'
 
   s.subspec 'Core' do |core|
-    core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}"
+    core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}", "Libs/**/*.{h,m,swift}"
     core.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     core.dependency 'DTCoreText'
   end
 
   s.subspec 'AppExtension' do |ext|
-    ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}"
+    ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}", "Libs/**/*.{h,m,swift}"
     ext.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     ext.dependency 'DTCoreText/Extension'
   end

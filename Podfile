@@ -8,7 +8,8 @@ abstract_target 'MatrixKitSamplePods' do
     
     # Different flavours of pods to Matrix SDK
     # The tagged version on which this version of MatrixKit has been built
-    pod 'MatrixSDK', '0.15.2', :git => 'https://github.com/samnoyes/matrix-ios-sdk.git'
+
+    pod 'MatrixSDK', '0.16.0', :git => 'https://github.com/samnoyes/matrix-ios-sdk.git'
     
     # The lastest release available on the CocoaPods repository
     #pod 'MatrixSDK'
@@ -25,10 +26,8 @@ abstract_target 'MatrixKitSamplePods' do
     pod 'JSQMessagesViewController', '~> 7.2.0'
     pod 'DTCoreText', '~> 1.6.21'
     pod 'cmark', '~> 0.24.1', :inhibit_warnings => true
-    
-    pod 'SwiftUTI', :git => 'https://github.com/speramusinc/SwiftUTI.git', :branch => 'master'
-    
-    
+
+        
     target "MatrixKitSample" do
         
     end

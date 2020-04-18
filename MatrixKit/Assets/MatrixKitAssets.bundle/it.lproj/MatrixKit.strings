@@ -326,7 +326,7 @@
 "login_error_already_logged_in" = "Accesso già effettuato";
 "login_error_must_start_http" = "l'URL deve iniziare con http[s]://";
 // room details dialog screen
-"room_details_title" = "Dettagli canale";
+"room_details_title" = "Dettagli stanza";
 // Settings screen 
 "settings_title_config" = "Configurazione";
 "settings_title_notifications" = "Notifiche";

@@ -766,12 +766,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         // Make the unknown inbound session id error description more user friendly
                         errorDescription = [NSBundle mxk_localizedStringForKey:@"notice_crypto_error_unknown_inbound_session_id"];
                     }
+                    else if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
+                           && event.decryptionError.code == MXDecryptingErrorDuplicateMessageIndexCode)
+                    {
+                        // Hide duplicate message warnings
+                        NSLog(@"[MXKEventFormatter] Warning: Duplicate message with error description %@", event.decryptionError);
+                        displayText = nil;
+                    }
                     else
                     {
                         errorDescription = event.decryptionError.localizedDescription;
                     }
 
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_crypto_unable_to_decrypt"], errorDescription];
+                    if (errorDescription)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_crypto_unable_to_decrypt"], errorDescription];
+                    }
                 }
                 else
                 {
@@ -796,7 +806,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 algorithm = redactedInfo;
             }
             
-            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled"], senderDisplayName, algorithm];
+            if ([algorithm isEqualToString:kMXCryptoMegolmAlgorithm])
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok"], senderDisplayName];
+            }
+            else
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm"], senderDisplayName, algorithm];
+            }
             
             break;
         }

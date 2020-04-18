@@ -46,7 +46,7 @@
         self.readReceipts = [NSMutableDictionary dictionary];
         
         // Create the bubble component based on matrix event
-        MXKRoomBubbleComponent *firstComponent = [[MXKRoomBubbleComponent alloc] initWithEvent:event andRoomState:roomState andEventFormatter:roomDataSource.eventFormatter];
+        MXKRoomBubbleComponent *firstComponent = [[MXKRoomBubbleComponent alloc] initWithEvent:event roomState:roomState eventFormatter:roomDataSource.eventFormatter session:roomDataSource.mxSession];
         if (firstComponent)
         {
             bubbleComponents = [NSMutableArray array];
@@ -111,7 +111,7 @@
             MXKRoomBubbleComponent *roomBubbleComponent = [bubbleComponents objectAtIndex:index];
             if ([roomBubbleComponent.event.eventId isEqualToString:eventId])
             {
-                [roomBubbleComponent updateWithEvent:event andRoomState:roomDataSource.roomState];
+                [roomBubbleComponent updateWithEvent:event roomState:roomDataSource.roomState session:self.mxSession];
                 if (!roomBubbleComponent.textMessage.length)
                 {
                     [bubbleComponents removeObjectAtIndex:index];
@@ -805,6 +805,25 @@
     MXEventScan *eventScan = firstBubbleComponent.eventScan;
     
     return eventScan != nil && eventScan.antivirusScanStatus != MXAntivirusScanStatusTrusted;
+}
+
+- (BOOL)containsBubbleComponentWithEncryptionBadge
+{
+    BOOL containsBubbleComponentWithEncryptionBadge = NO;
+    
+    @synchronized(bubbleComponents)
+    {
+        for (MXKRoomBubbleComponent *component in bubbleComponents)
+        {
+            if (component.showEncryptionBadge)
+            {
+                containsBubbleComponentWithEncryptionBadge = YES;
+                break;
+            }
+        }
+    }
+    
+    return containsBubbleComponentWithEncryptionBadge;
 }
 
 #pragma mark - Bubble collapsing

@@ -504,43 +504,35 @@
         {
             // Disable button to prevent multiple request
             self->_createRoomBtn.enabled = NO;
+
+            MXRoomCreationParameters *roomCreationParameters = [MXRoomCreationParameters new];
             
-            NSString *roomName = self->_roomNameTextField.text;
-            if (! roomName.length)
+            roomCreationParameters.name = self->_roomNameTextField.text;
+            if (!roomCreationParameters.name.length)
             {
-                roomName = nil;
+                roomCreationParameters.name = nil;
             }
             
             // Check whether some users must be invited
-            NSArray *invitedUsers = self.participantsList;
+            roomCreationParameters.inviteArray = self.participantsList;
             
             // Prepare room settings
-            MXRoomDirectoryVisibility visibility;
-            BOOL isDirect = NO;
             
             if (self->_roomVisibilityControl.selectedSegmentIndex == 0)
             {
-                visibility = kMXRoomDirectoryVisibilityPublic;
+                roomCreationParameters.visibility = kMXRoomDirectoryVisibilityPublic;
             }
             else
             {
-                visibility = kMXRoomDirectoryVisibilityPrivate;
-                isDirect = (invitedUsers.count == 1);
+                roomCreationParameters.visibility = kMXRoomDirectoryVisibilityPrivate;
+                roomCreationParameters.isDirect = (roomCreationParameters.inviteArray.count == 1);
             }
             
             // Ensure direct chat are created with equal ops on both sides (the trusted_private_chat preset)
-            MXRoomPreset preset = (isDirect ? kMXRoomPresetTrustedPrivateChat : nil);
+            roomCreationParameters.preset = (roomCreationParameters.isDirect ? kMXRoomPresetTrustedPrivateChat : nil);
             
             // Create new room
-            [selectedSession createRoom:roomName
-                             visibility:visibility
-                              roomAlias:self.alias
-                                  topic:nil
-                                 invite:invitedUsers
-                             invite3PID:nil
-                               isDirect:isDirect
-                                 preset:preset
-                                success:^(MXRoom *room) {
+            [selectedSession createRoomWithParameters:roomCreationParameters success:^(MXRoom *room) {
                                     
                                     // Reset text fields
                                     self->_roomNameTextField.text = nil;

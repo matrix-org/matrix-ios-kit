@@ -1251,9 +1251,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     }
     else if (_hasPusherForPushKitNotifications && mxSession)
     {
+        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Do nothing. User denied notifications (account: %@)", self.mxCredentials.userId);
+        
+        // XXX: The following code has been commented to avoid automatic deactivation of push notifications
+        
         // Turn off pusher if user denied remote notification.
-        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
-        [self enablePushKitPusher:NO success:nil failure:nil];
+        //NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+        //[self enablePushKitPusher:NO success:nil failure:nil];
     }
 }
 
@@ -1262,7 +1266,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 {
     NSLog(@"[MXKAccount][Push] enablePushKitPusher: %@", @(enabled));
 
-    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pushKitAppIdProd"];
+    NSString *appIdKey;
+    #ifdef DEBUG
+        appIdKey = @"pushKitAppIdDev";
+    #else
+        appIdKey = @"pushKitAppIdProd";
+    #endif
+
+    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:appIdKey];
     
     NSMutableDictionary *pushData = [NSMutableDictionary dictionaryWithDictionary:@{@"url": self.pushGatewayURL}];
     

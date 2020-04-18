@@ -113,7 +113,8 @@
 "notice_room_aliases" = "The room aliases are: %@";
 "notice_room_related_groups" = "The groups associated with this room are: %@";
 "notice_encrypted_message" = "Encrypted message";
-"notice_encryption_enabled" = "%@ turned on end-to-end encryption (algorithm %@)";
+"notice_encryption_enabled_ok" = "%@ turned on end-to-end encryption.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ turned on end-to-end encryption (unrecognised algorithm %2$@).";
 "notice_image_attachment" = "image attachment";
 "notice_audio_attachment" = "audio attachment";
 "notice_video_attachment" = "video attachment";
@@ -131,7 +132,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ made future room history visible to all room members, from the point they are invited.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
 "notice_crypto_unable_to_decrypt" = "** Unable to decrypt: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "The sender's device has not sent us the keys for this message.";
+"notice_crypto_error_unknown_inbound_session_id" = "The sender's session has not sent us the keys for this message.";
 "notice_sticker" = "sticker";
 "notice_in_reply_to" = "In reply to";
 
@@ -149,13 +150,13 @@
 "notification_settings_room_rule_title" = "Room: '%@'";
 
 // Devices
-"device_details_title" = "Device information\n";
+"device_details_title" = "Session information\n";
 "device_details_name" = "Public Name\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Last seen\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_title" = "Device Name";
-"device_details_rename_prompt_message" = "A device's public name is visible to people you communicate with";
+"device_details_rename_prompt_title" = "Session Name";
+"device_details_rename_prompt_message" = "A session's public name is visible to people you communicate with";
 "device_details_delete_prompt_title" = "Authentication";
 "device_details_delete_prompt_message" = "This operation requires additional authentication.\nTo continue, please enter your password.";
 
@@ -170,8 +171,8 @@
 "room_event_encryption_info_event_decryption_error" = "Decryption error\n";
 "room_event_encryption_info_event_unencrypted" = "unencrypted";
 "room_event_encryption_info_event_none" = "none";
-"room_event_encryption_info_device" = "\nSender device information\n";
-"room_event_encryption_info_device_unknown" = "unknown device\n";
+"room_event_encryption_info_device" = "\nSender session information\n";
+"room_event_encryption_info_device_unknown" = "unknown session\n";
 "room_event_encryption_info_device_name" = "Public Name\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verification\n";
@@ -183,8 +184,8 @@
 "room_event_encryption_info_unverify" = "Unverify";
 "room_event_encryption_info_block" = "Blacklist";
 "room_event_encryption_info_unblock" = "Unblacklist";
-"room_event_encryption_verify_title" = "Verify device\n\n";
-"room_event_encryption_verify_message" = "To verify that this device can be trusted, please contact its owner using some other means (e.g. in person or a phone call) and ask them whether the key they see in their User Settings for this device matches the key below:\n\n\tDevice name: %@\n\tDevice ID: %@\n\tDevice key: %@\n\nIf it matches, press the verify button below. If it doesnt, then someone else is intercepting this device and you probably want to press the blacklist button instead.\n\nIn future this verification process will be more sophisticated.";
+"room_event_encryption_verify_title" = "Verify session\n\n";
+"room_event_encryption_verify_message" = "To verify that this session can be trusted, please contact its owner using some other means (e.g. in person or a phone call) and ask them whether the key they see in their User Settings for this session matches the key below:\n\n\tSession name: %@\n\tSession ID: %@\n\tSession key: %@\n\nIf it matches, press the verify button below. If it doesnt, then someone else is intercepting this session and you probably want to press the blacklist button instead.\n\nIn future this verification process will be more sophisticated.";
 "room_event_encryption_verify_ok" = "Verify";
 
 // Account
