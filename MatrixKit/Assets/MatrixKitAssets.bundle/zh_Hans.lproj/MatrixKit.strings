@@ -11,10 +11,10 @@
 "matrix" = "Matrix";
 // Login Screen
 "login_create_account" = "创建账户：";
-"login_server_url_placeholder" = "URL（例如 https://matrix.org）";
-"login_home_server_title" = "主服务器：";
-"login_home_server_info" = "您的主服务器存储了您所有对话和账户数据";
-"login_identity_server_title" = "身份认证服务器：";
+"login_server_url_placeholder" = "网址（例如 https://matrix.org）";
+"login_home_server_title" = "主服务器网址：";
+"login_home_server_info" = "您的主服务器存储了您所有的对话和账户数据";
+"login_identity_server_title" = "身份认证服务器网址：";
 "login_identity_server_info" = "Matrix 提供了身份认证服务器以验证邮箱地址等是否属于某个 Matrix ID。目前只有 https://matrix.org 支持。";
 "login_user_id_placeholder" = "Matrix ID （例如 @bob:matrix.org 或 bob）";
 "login_password_placeholder" = "密码";
@@ -104,7 +104,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们被邀请的时候开始。";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们加入的时候开始。";
 "notice_crypto_unable_to_decrypt" = "** 无法解密：%@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "发送者的设备没有发送给我们此消息的密钥。";
+"notice_crypto_error_unknown_inbound_session_id" = "发送者的会话没有发送给我们此消息的密钥。";
 // room display name
 "room_displayname_empty_room" = "空聊天室";
 "room_displayname_two_members" = "%@ 和 %@";
@@ -116,12 +116,12 @@
 "settings_enter_validation_token_for" = "输入 %@ 的有效令牌：";
 "notification_settings_room_rule_title" = "聊天室：“%@”";
 // Devices
-"device_details_title" = "设备信息\n";
-"device_details_name" = "名字\n";
-"device_details_identifier" = "设备 ID\n";
+"device_details_title" = "会话信息\n";
+"device_details_name" = "公开名字\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "最近一次上线\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "设备名字：";
+"device_details_rename_prompt_message" = "会话的公开名字会对你联络的人可见";
 "device_details_delete_prompt_title" = "认证";
 "device_details_delete_prompt_message" = "此操作需要额外的认证。\n要继续，请输入您的密码。";
 // Encryption information
@@ -137,17 +137,17 @@
 "room_event_encryption_info_event_decryption_error" = "解密错误\n";
 "room_event_encryption_info_event_unencrypted" = "未加密";
 "room_event_encryption_info_event_none" = "无";
-"room_event_encryption_info_device" = "\n发送者的设备信息\n";
-"room_event_encryption_info_device_unknown" = "未知设备\n";
-"room_event_encryption_info_device_name" = "名称\n";
-"room_event_encryption_info_device_id" = "设备 ID\n";
+"room_event_encryption_info_device" = "\n发送者的会话信息\n";
+"room_event_encryption_info_device_unknown" = "未知会话\n";
+"room_event_encryption_info_device_name" = "公开名称\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "验证\n";
 "room_event_encryption_info_device_verified" = "已验证";
 "room_event_encryption_info_device_not_verified" = "未验证";
 "room_event_encryption_info_device_blocked" = "已拉黑";
 "room_event_encryption_info_verify" = "验证…";
 "room_event_encryption_info_unverify" = "取消验证";
-"room_event_encryption_verify_title" = "验证设备\n\n";
+"room_event_encryption_verify_title" = "验证会话\n\n";
 "account_error_display_name_change_failed" = "修改昵称失败";
 "account_error_email_wrong_title" = "邮箱地址无效";
 "account_error_msisdn_wrong_title" = "手机号码无效";
@@ -193,7 +193,7 @@
 "power_level" = "权限级别";
 "network_error_not_reachable" = "请检查你的网络连接";
 "user_id_placeholder" = "例如：@bob:homeserver";
-"ssl_homeserver_url" = "主服务器 URL：%@";
+"ssl_homeserver_url" = "主服务器网址：%@";
 // Country picker
 "country_picker_title" = "请选择国家";
 // Language picker
@@ -222,7 +222,7 @@
 "resend" = "重新发送";
 "share" = "分享";
 "redact" = "移除";
-"set_power_level" = "权限级别";
+"set_power_level" = "设置权限级别";
 "delete" = "删除";
 "create_room" = "创建聊天室";
 "login" = "登录";
@@ -307,7 +307,7 @@
 "call_connecting" = "通话连接中…";
 "call_ring" = "正在通话…";
 "room_event_encryption_info_event_algorithm" = "算法\n";
-"room_event_encryption_verify_message" = "为验证此设备是否可信，请通过其他方式（例如面对面交换或拨打电话）与其拥有者联系，并询问他们该设备的用户设置中的密钥是否与以下密钥匹配：\n\n\n\t设备名称：%@\n\t设备 ID：%@\n\t设备密钥：%@\n\n未来，这个验证过程将会更加精致、巧妙一些。";
+"room_event_encryption_verify_message" = "为验证此会话是否可信，请通过其他方式（例如面对面交换或拨打电话）与其拥有者联系，并询问他们该会话的用户设置中的密钥是否与以下密钥匹配：\n\n\n\t会话名称：%@\n\t会话 ID：%@\n\t会话密钥：%@\n\n未来，这个验证过程将会更加精致、巧妙一些。";
 "room_event_encryption_info_event_fingerprint_key" = "声称的 Ed25519 指纹密钥\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 指纹\n";
 "room_event_encryption_verify_ok" = "验证";
@@ -353,7 +353,7 @@
 "camera_access_not_granted_for_call" = "视频通话需要摄像头使用权限，但 %@ 无此权限";
 "microphone_access_not_granted_for_call" = "通话需要麦克风使用权限，但 %@ 无此权限";
 "local_contacts_access_not_granted" = "本地通讯录用户查找功能需要通讯录权限，但 %@ 无此权限";
-"local_contacts_access_discovery_warning" = "%@ 想要读取您通讯录中的电子邮箱和电话号码以便查找用户";
+"local_contacts_access_discovery_warning" = "为了发现已经使用Matrix的联系人，%@ 可以把你地址簿里的邮箱地址和电话号码发送给你选定的Matrix身份认证服务器。如果支持的话，个人数据会在发送前被哈希——请检查你的身份认证服务器的隐私条款获知更多细节。";
 "notification_settings_global_info" = "通知设置已保存在您的账号中并在所有支持的客户端中共享（包括桌面通知）。\n\n规则会按顺序应用；第一条匹配的规则定义了消息的输出结果。\n因此：按字符规则的通知比按聊天室规则的通知级别更高，而这两者都比按发送者规则的通知级别更高。\n对于同一类型的多条规则，匹配列表中的第一条优先级最高。";
 "notification_settings_per_word_notifications" = "按字符通知";
 "notification_settings_per_word_info" = "单词不区分大小写，并且可能包含 * 通配符。 所以：\nfoo 匹配由单词分隔符包围的字符串 foo（例如标点符号和空格，或一行的开头/结尾）。\nfoo* 匹配任何以 foo 开头的单词。\n*foo* 匹配任何包含3个字母 foo 的单词。";
@@ -376,3 +376,8 @@
 "ssl_unexpected_existing_expl" = "证书已从您手机信任的证书更改过。 这是非常不寻常的。 建议您不要接受此新证书。";
 "ssl_expected_existing_expl" = "证书已从先前受信任的证书更改为不受信任的证书。 服务器可能已续订其证书。 请联系服务器管理员以获取预期的指纹。";
 "ssl_only_accept" = "请仅在服务器管理员已发布与上述指纹匹配的指纹的情况下接受该证书。";
+"notice_encryption_enabled_ok" = "%@开启了端到端加密。";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@开启了端到端加密（无法识别的算法%2$@）。";
+"device_details_rename_prompt_title" = "会话名称";
+"account_error_push_not_allowed" = "未允许通知";
+"notice_room_third_party_revoked_invite" = "%@撤回了向%@的加入聊天室邀请";

@@ -2,7 +2,7 @@
 "notice_conference_call_finished" = "VoIP konferentzia amaituta";
 // Events formatter
 "notice_avatar_changed_too" = "(abatarra ere aldatu da)";
-"notice_crypto_error_unknown_inbound_session_id" = "Igorlearen gailuak ez dizkigu mezu honetarako gakoak bidali.";
+"notice_crypto_error_unknown_inbound_session_id" = "Igorlearen saioak ez dizkigu mezu honetarako gakoak bidali.";
 "room_error_join_failed_empty_room" = "Ezin da oraingoz hutsik dagoen gela batetara berriro sartu.";
 "notice_encrypted_message" = "Zifratutako mezua";
 "login_email_placeholder" = "E-mail helbidea";
@@ -102,7 +102,7 @@
 "start_chat" = "Hasi txata";
 "room_event_encryption_info_event_unencrypted" = "zifratu gabe";
 "room_event_encryption_info_device_not_verified" = "EZ egiaztatuta";
-"room_event_encryption_info_verify" = "Egiaztatu...";
+"room_event_encryption_info_verify" = "Egiaztatu…";
 "account_error_email_wrong_title" = "E-mail helbide baliogabea";
 "account_error_email_wrong_description" = "Honek ez du baliozko e-mail baten antzik";
 "room_error_join_failed_title" = "Huts egin du gelara elkartzean";
@@ -199,12 +199,12 @@
 "settings_enable_inapp_notifications" = "Gaitu aplikazio barneko jakinarazpenak";
 "notification_settings_room_rule_title" = "Gela: '%@'";
 // Devices
-"device_details_title" = "Gailuaren informazioa\n";
+"device_details_title" = "Saioaren informazioa\n";
 "device_details_name" = "Izen publikoa\n";
 "device_details_identifier" = "ID-a\n";
 "device_details_last_seen" = "Azkenekoz ikusia\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Gailuaren izen publikoa zurekin komunikatzen duen jendeak ikusi dezake";
+"device_details_rename_prompt_message" = "Saio baten izen publikoa zurekin komunikatzen den jendeak ikusi dezake";
 // Encryption information
 "room_event_encryption_info_title" = "Muturretik muturrerako zifratzearen informazioa\n\n";
 "room_event_encryption_info_event_user_id" = "Erabiltzailearen ID-a\n";
@@ -212,8 +212,8 @@
 "room_event_encryption_info_event_algorithm" = "Algoritmoa\n";
 "room_event_encryption_info_event_session_id" = "Saioaren ID-a\n";
 "room_event_encryption_info_event_decryption_error" = "Deszifratze errorea\n";
-"room_event_encryption_info_device" = "\nIgorlearen gailuaren informazioa\n";
-"room_event_encryption_info_device_unknown" = "gailu ezezaguna\n";
+"room_event_encryption_info_device" = "\nIgorlearen saioaren informazioa\n";
+"room_event_encryption_info_device_unknown" = "saio ezezaguna\n";
 "room_event_encryption_info_device_name" = "Izen publikoa\n";
 "room_event_encryption_info_device_id" = "ID-a\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 hatz-marka\n";
@@ -238,7 +238,7 @@
 "notice_room_history_visible_to_members_from_joined_point" = "%@ erabiltzaileak etorkizuneko gelaren historiala ikusgai jarri du gelako kide guztientzat, elkartzen direnetik.";
 "room_event_encryption_info_event" = "Gertaeraren informazioa\n";
 "room_event_encryption_info_device_verification" = "Egiaztaketa\n";
-"room_event_encryption_verify_title" = "Egiaztatu gailua\n\n";
+"room_event_encryption_verify_title" = "Egiaztatu saioa\n\n";
 "account_link_email" = "Lotu e-maila";
 "account_linked_emails" = "Lotutako e-mailak";
 "account_error_display_name_change_failed" = "Huts egin du pantaila-izenaren aldaketak";
@@ -253,7 +253,7 @@
 "room_creation_alias_placeholder" = "(adib. #gela:adibidea.org)";
 "room_creation_alias_placeholder_with_homeserver" = "(adib. #gela%@)";
 "room_creation_participants_title" = "Parte hartzaileak:";
-"room_creation_participants_placeholder" = "(adib. @miren:1zerbitzaria; @peio:2zerbitzaria...)";
+"room_creation_participants_placeholder" = "(adib. @miren:1zerbitzaria; @peio:2zerbitzaria…)";
 // Room
 "room_please_select" = "Hautatu gela bat";
 "room_error_name_edition_not_authorized" = "Ez duzu gela honen izena aldatzeko baimenik";
@@ -276,13 +276,13 @@
 "attachment_multiselection_size_prompt" = "Irudiak nola bidali nahi dituzu:";
 "attachment_multiselection_original" = "Jatorrizko tamaina";
 "attachment_e2e_keys_file_prompt" = "Fitxategi honek Matrix bezero batetik esportatutako zifratze gakoak ditu.\nFitxategiaren edukia ikusi nahi duzu edo dauzkan gakoak inportatu?";
-"attachment_e2e_keys_import" = "Inportatu...";
+"attachment_e2e_keys_import" = "Inportatu…";
 // Contacts
 "contact_mx_users" = "Matrix erabiltzaileak";
 "contact_local_contacts" = "Kontaktu lokalak";
 // Search
 "search_no_results" = "Emaitzarik ez";
-"search_searching" = "Bilaketa abian...";
+"search_searching" = "Bilaketa abian…";
 // Permissions
 "camera_access_not_granted_for_call" = "Bideo deiek kamera atzitzeko baimena behar dute baina %@ aplikazioak ez du baimenik";
 "microphone_access_not_granted_for_call" = "Deiek mikrofonoa atzitzeko baimena behar dute baina %@ aplikazioak ez du baimenik";
@@ -337,20 +337,20 @@
 "notification_settings_invite_to_a_new_room" = "Jakinarazi niri gela batera gonbidatzen nautenean";
 "notification_settings_receive_a_call" = "Jakinarazi niri dei bat jasotzen dudanean";
 "notification_settings_suppress_from_bots" = "Kendu boten jakinarazpenak";
-"notification_settings_by_default" = "Lehenetsita...";
+"notification_settings_by_default" = "Lehenetsita…";
 "notification_settings_notify_all_other" = "Jakinarazi beste mezu/gela guztietarako";
 // gcm section 
 "settings_config_home_server" = "Hasiera-zerbitzaria: %@";
 "settings_config_identity_server" = "Identitate zerbitzaria: %@";
 "settings_config_user_id" = "Erabiltzaile ID-a: %@";
 // call string
-"call_waiting" = "Itxaroten...";
+"call_waiting" = "Itxaroten…";
 "call_connecting" = "Deia konektatzen…";
 "call_ring" = "Deitzen…";
 "call_invite_expired" = "Dei-gonbidapena iraungi da";
 "ssl_fingerprint_hash" = "Hatz-marka (%@):";
 "notice_feedback" = "Informazio gertaera (id: %@): %@";
-"room_event_encryption_verify_message" = "Gailu hau fidagarria dela egiaztatzeko, jarri kontaktuan jabearekin beste medio batzuk erabilita (adib. aurrez-aurre edo telefonoz deituz) eta galdetu bere erabiltzaile-ezarpenetan ikusten duten gakoa honekin bat datorren:\n\n\tGailuaren izena: %@\n\tGailuaren ID-a: %@\n\tGailuaren gakoa: %@\n\nBat badatoz, sakatu beheko egiaztatu botoia. Ez badatoz bat, beste norbait egon daiteke gailua atzematen eta ziur aski zerrenda beltzaren botoia zapaldu nahiko duzu.\n\nEtorkizunean egiaztaketa prozesu hau sofistikatuagoa izango da.";
+"room_event_encryption_verify_message" = "Saio hau fidagarria dela egiaztatzeko, jarri kontaktuan jabearekin beste medio batzuk erabilita (adib. aurrez-aurre edo telefonoz deituz) eta galdetu bere erabiltzaile-ezarpenetan ikusten duten gakoa honekin bat datorren:\n\n\tSaioaren izena: %@\n\tSaioaren ID-a: %@\n\tSaioaren gakoa: %@\n\nBat badatoz, sakatu beheko egiaztatu botoia. Ez badatoz bat, beste norbait egon daiteke saioa atzematen eta ziur aski zerrenda beltzaren botoia zapaldu nahiko duzu.\n\nEtorkizunean egiaztaketa prozesu hau sofistikatuagoa izango da.";
 "room_error_timeline_event_not_found" = "Aplikazioa gela honen denbora lerroko puntu zehatz bat kargatzen saiatu da baina ezin izan du aurkitu";
 "e2e_import_prompt" = "Prozesu honek aurretik beste Matrix bezero batetik esportatutako zifratze gakoak inportatzea ahalbidetzen du. Beste bezeroak dezifratu zitekeen mezuak deszifratu ahal izango duzu.\nEsportazio fitxategia pasaesaldi batez babestuta dago. Pasaesaldi hori hemen jarri behar duzu fitxategia deszifratzeko.";
 "e2e_export_prompt" = "Prozesu honek zifratutako geletan jaso dituzun mezuen gakoak fitxategi lokal batera esportatzea ahalbidetzen dizu. Gero beste Matrix bezero batera inportatu ditzakezu, bezero horrek ere mezu hauek dezifratu ahal izateko.\nEsportatutako fitxategiak berau irakurri dezakeen edonori zuk ikusi ditzakezun mezuak deszifratzea ahalbidetuko dio, beraz kontuz non gordetzen duzun.";
@@ -377,5 +377,7 @@
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktatu administratzailea";
 "e2e_passphrase_create" = "Sortu pasaesaldia";
 "account_error_push_not_allowed" = "Jakinarazpenak ez dira onartzen";
-"device_details_rename_prompt_title" = "Gailuaren izena";
+"device_details_rename_prompt_title" = "Saioaren izena";
 "notice_room_third_party_revoked_invite" = "%@ erabiltzaileak %@ gelara elkartzeko gonbidapena indargabetu du";
+"notice_encryption_enabled_ok" = "%@ erabiltzaileak zifratzea gaitu du.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ erabiltzaileak zifratzea gaitu du. (%2$@ algoritmo ezezaguna).";
