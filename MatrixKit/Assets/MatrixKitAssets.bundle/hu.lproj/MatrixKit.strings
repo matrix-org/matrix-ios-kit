@@ -104,7 +104,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ a szoba jövőbeni üzeneteit a szobában lévő félhasználók számára a meghívásuk pillanatától tette láthatóvá.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ a szoba jövőbeni üzeneteit a szobában lévő felhasználók számára a csatlakozásuktól tette láthatóvá.";
 "notice_crypto_unable_to_decrypt" = "** Nem sikerül visszafejteni: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "A küldő eszköz nem küldte el a kulcsot ehhez az üzenethez.";
+"notice_crypto_error_unknown_inbound_session_id" = "A küldő munkamenete nem küldte el a kulcsot ehhez az üzenethez.";
 "notice_sticker" = "Matrica";
 "notice_in_reply_to" = "Válaszolva erre:";
 // Settings
@@ -114,12 +114,12 @@
 "settings_enter_validation_token_for" = "Érvényesítő kód megadása (%@):";
 "notification_settings_room_rule_title" = "Szoba: „%@”";
 // Devices
-"device_details_title" = "Eszközinformációk\n";
+"device_details_title" = "Munkamenet információk\n";
 "device_details_name" = "Nyilvános név\n";
 "device_details_identifier" = "Azon.\n";
 "device_details_last_seen" = "Utoljára ekkor láttuk:\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Az eszköz nyilvános neve megjelenik azoknál az embereknél, akikkel beszélgetsz";
+"device_details_rename_prompt_message" = "A munkamenet nyilvános neve megjelenik azoknál az embereknél, akikkel beszélgetsz";
 "device_details_delete_prompt_title" = "Hitelesítés";
 "device_details_delete_prompt_message" = "A művelethez további hitelesítés szükséges.\nA továbblépéshez add meg a jelszavadat.";
 // Encryption information
@@ -133,8 +133,8 @@
 "room_event_encryption_info_event_decryption_error" = "Visszafejtési hiba\n";
 "room_event_encryption_info_event_unencrypted" = "titkosítatlan";
 "room_event_encryption_info_event_none" = "nincs";
-"room_event_encryption_info_device" = "\nKüldő eszköz információ\n";
-"room_event_encryption_info_device_unknown" = "ismeretlen eszköz\n";
+"room_event_encryption_info_device" = "\nKüldő munkamenetének információi\n";
+"room_event_encryption_info_device_unknown" = "ismeretlen munkamenet\n";
 "room_event_encryption_info_device_name" = "Nyilvános név\n";
 "room_event_encryption_info_device_id" = "Azon.\n";
 "room_event_encryption_info_device_verification" = "Ellenőrzés\n";
@@ -146,7 +146,7 @@
 "room_event_encryption_info_unverify" = "Ellenőrzés visszavonása";
 "room_event_encryption_info_block" = "Tiltólistára tétel";
 "room_event_encryption_info_unblock" = "Törlés a tiltólistáról";
-"room_event_encryption_verify_title" = "Eszköz ellenőrzése\n\n";
+"room_event_encryption_verify_title" = "Munkamenet ellenőrzése\n\n";
 "room_event_encryption_verify_ok" = "Ellenőrzés";
 // Account
 "account_save_changes" = "Változások mentése";
@@ -175,7 +175,7 @@
 "room_error_join_failed_title" = "A szobához való csatlakozás nem sikerült";
 "room_error_join_failed_empty_room" = "Üres szobába jelenleg nem lehet újra belépni.";
 "room_error_name_edition_not_authorized" = "A szoba nevének megváltoztatásához nincs jogosultságod";
-"room_event_encryption_verify_message" = "Ennek az eszköz hitelességének a vizsgálatához vedd fel a kapcsolatot a tulajdonossal egy másik csatornán (pl. személyes találkozó vagy telefonhívás) és kérdezd meg, hogy amit ő lát a személyes beállításoknál mint az eszközhöz tartozó kulcs az megegyezik az alábbi kulccsal:\n\n\tEszköz neve: %@\n\tEszköz azonosító: %@\n\tEszköz kulcs: %@\n\nHa egyezik akkor nyomd meg az ellenőrizve gombot alább. Ha nem egyezik, akkor valaki jogosulatlanul akarja használni az eszközt; talán a legjobb, ha a tiltólista gombot nyomod meg inkább.\n\nA jövőben ezen az ellenőrzési módon javítani fogunk.";
+"room_event_encryption_verify_message" = "Ennek a munkamenet hitelességének a vizsgálatához vedd fel a kapcsolatot a tulajdonossal egy másik csatornán (pl. személyes találkozó vagy telefonhívás) és kérdezd meg, hogy amit ő lát a személyes beállításoknál mint a munkamenethez tartozó kulcs, az megegyezik az alábbi kulccsal:\n\n\tMunkamenet neve: %@\n\tMunkamenet azonosító: %@\n\tMunkamenet kulcs: %@\n\nHa egyezik akkor nyomd meg az ellenőrizve gombot alább. Ha nem egyezik, akkor valaki jogosulatlanul akarja használni a munkamenetet; talán a legjobb, ha a tiltólista gombot nyomod meg inkább.\n\nA jövőben ezen az ellenőrzési módon javítani fogunk.";
 "account_email_validation_message" = "Ellenőrizd a leveleidet, és kattints a levélben lévő hivatkozásra. Ha az megvan, akkor kattints itt a tovább gombra.";
 "account_email_validation_error" = "Az e-mail címet nem sikerült ellenőrizni. Ellenőrizd a leveleidet, és kattints a levélben lévő hivatkozásra. Ha az megvan, akkor kattints itt a tovább gombra";
 "account_msisdn_validation_message" = "SMS-t küldtünk az aktiváló kóddal. Add meg az aktiváló kódot alább.";
@@ -378,4 +378,6 @@
 "e2e_passphrase_create" = "Jelmondat készítés";
 "account_error_push_not_allowed" = "Értesítések nincsenek engedélyezve";
 "notice_room_third_party_revoked_invite" = "%@ visszavonta a a meghívót ehhez a szobához: %@";
-"device_details_rename_prompt_title" = "Eszköznév";
+"device_details_rename_prompt_title" = "Munkamenet neve";
+"notice_encryption_enabled_ok" = "%@ bekapcsolta a végpontok közötti titkosítást.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ bekapcsolta a végpontok közötti titkosítást (ismeretlen algoritmus: %2$@).";

@@ -107,7 +107,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "Gwnaeth %@ hanes ystafell y dyfodol yn weladwy i holl aelodau'r ystafell, o'r pwynt y cawsant eu gwahodd.";
 "notice_room_history_visible_to_members_from_joined_point" = "Gwnaeth %@ hanes ystafell y dyfodol yn weladwy i holl aelodau'r ystafell, o'r pwynt yr ymunon nhw ag ef.";
 "notice_crypto_unable_to_decrypt" = "** Methu dadgryptio: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Nid yw dyfais yr anfonwr wedi anfon yr allweddi ar gyfer y neges hon atom.";
+"notice_crypto_error_unknown_inbound_session_id" = "Nid yw sesiwn yr anfonwr wedi anfon yr allweddi ar gyfer y neges hon atom.";
 "notice_sticker" = "sticer";
 "notice_in_reply_to" = "Mewn ateb i";
 // room display name
@@ -121,13 +121,13 @@
 "settings_enter_validation_token_for" = "Rhowch docyn dilysu ar gyfer %@:";
 "notification_settings_room_rule_title" = "Ystafell: '%@'";
 // Devices
-"device_details_title" = "Gwybodaeth dyfais\n";
+"device_details_title" = "Gwybodaeth sesiwn\n";
 "device_details_name" = "Enw Cyhoeddus\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Gwelwyd ddiweddaf\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_title" = "Enw Dyfais";
-"device_details_rename_prompt_message" = "Mae enw cyhoeddus dyfais yn weladwy i'r bobl rydych chi'n cyfathrebu â nhw";
+"device_details_rename_prompt_title" = "Enw Sesiwn";
+"device_details_rename_prompt_message" = "Mae enw cyhoeddus sessiwn yn weladwy i'r bobl rydych chi'n cyfathrebu â nhw";
 "device_details_delete_prompt_title" = "Dilysu";
 "device_details_delete_prompt_message" = "Mae angen dilysu ychwanegol ar gyfer y gweithgaredd hon.\nI barhau, nodwch eich cyfrinair.";
 // Encryption information
@@ -141,8 +141,8 @@
 "room_event_encryption_info_event_decryption_error" = "Gwall Dadgryptio\n";
 "room_event_encryption_info_event_unencrypted" = "digryptiedig";
 "room_event_encryption_info_event_none" = "dim";
-"room_event_encryption_info_device" = "\nGwybodaeth am ddyfais yr anfonwr\n";
-"room_event_encryption_info_device_unknown" = "dyfais anhysbys\n";
+"room_event_encryption_info_device" = "\nGwybodaeth am sesiwn yr anfonwr\n";
+"room_event_encryption_info_device_unknown" = "sesiwn anhysbys\n";
 "room_event_encryption_info_device_name" = "Enw Cyhoeddus\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Gwirio\n";
@@ -154,8 +154,8 @@
 "room_event_encryption_info_unverify" = "Dad-wirio";
 "room_event_encryption_info_block" = "Gwahardd";
 "room_event_encryption_info_unblock" = "Dad-wahardd";
-"room_event_encryption_verify_title" = "Gwirio dyfais\n\n";
-"room_event_encryption_verify_message" = "I wirio y gellir ymddiried yn y ddyfais hon, cysylltwch â'i pherchennog gan ddefnyddio rhyw fodd arall (e.e. yn bersonol neu alwad ffôn) a gofynnwch iddynt a yw'r allwedd a welant yn eu Gosodiadau Defnyddiwr ar gyfer y ddyfais hon yn cyfateb i'r allwedd isod:\n\nEnw'r ddyfais: %@\nID y ddyfais: %@\nAllwedd y ddyfais: %@\n\nOs yw'n cyd-fynd, pwyswch y botwm gwirio isod. Os nad yw'n gwneud hynny, yna mae rhywun arall yn rhyng-gipio'r ddyfais hon ac mae'n debyg eich y dylech wasgu'r botwm gwahardd yn lle.\n\nYn y dyfodol bydd y broses gwirio hon yn fwy soffistigedig.";
+"room_event_encryption_verify_title" = "Gwirio sesiwn\n\n";
+"room_event_encryption_verify_message" = "I wirio y gellir ymddiried yn y sesiwn hon, cysylltwch â'i pherchennog gan ddefnyddio rhyw fodd arall (e.e. yn bersonol neu alwad ffôn) a gofynnwch iddynt a yw'r allwedd a welant yn eu Gosodiadau Defnyddiwr ar gyfer y sesiwn hon yn cyfateb i'r allwedd isod:\n\nEnw'r sesiwn: %@\nID y sesiwn: %@\nAllwedd y sesiwn: %@\n\nOs yw'n cyd-fynd, pwyswch y botwm gwirio isod. Os nad yw'n gwneud hynny, yna mae rhywun arall yn rhyng-gipio'r sesiwn hon ac mae'n debyg eich y dylech wasgu'r botwm gwahardd yn lle.\n\nYn y dyfodol bydd y broses gwirio hon yn fwy soffistigedig.";
 "room_event_encryption_verify_ok" = "Gwirio";
 // Account
 "account_save_changes" = "Cadw newidiadau";
@@ -379,3 +379,5 @@
 "ssl_unexpected_existing_expl" = "Mae'r dystysgrif wedi newid o un yr oedd eich ffôn yn ymddiried ynddo. Mae hyn yn ANNISGWYL IAWN. Argymhellir i chi BEIDIO Â DERBYN y dystysgrif newydd hon.";
 "ssl_expected_existing_expl" = "Mae'r dystysgrif wedi newid o un yr ymddiriedwyd ynddo o'r blaen i un nad oes ymddiried ynddo. Efallai bod y gweinydd wedi adnewyddu ei dystysgrif. Cysylltwch â gweinyddwr y gweinydd i gael y llofnod disgwyliedig.";
 "ssl_only_accept" = "Peidiwch a derbyn y dystysgrif ONIBAI bod gweinyddwr y gweinydd wedi cyhoeddi llofnod sy'n cyfateb i'r un uchod.";
+"notice_encryption_enabled_ok" = "Trodd %@ amgryptio o'r dechrau i'r diwedd ymlaen.";
+"notice_encryption_enabled_unknown_algorithm" = "Trodd %@ amgryptio o'r dechrau i'r diwedd ymlaen (algorithm anghydnabyddedig %2$@).";

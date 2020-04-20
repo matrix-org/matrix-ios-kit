@@ -109,7 +109,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ ha permesso di visualizzare lo storico della conversazione solo ai partecipanti, dal momento del loro invito.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ ha permesso di visualizzare lo storico della conversazione solo ai partecipanti, dal momento della loro entrata.";
 "notice_crypto_unable_to_decrypt" = "** Impossibile decriptare: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Il dispositivo del mittente non ha inviato le chiavi per aprire questo messaggio.";
+"notice_crypto_error_unknown_inbound_session_id" = "La sessione del mittente non ci ha inviato le chiavi per questo messaggio.";
 "notice_sticker" = "etichetta";
 "notice_in_reply_to" = "In risposta a";
 // room display name
@@ -123,13 +123,13 @@
 "settings_enter_validation_token_for" = "Inserisci token di validazione per %@:";
 "notification_settings_room_rule_title" = "Canale: '%@'";
 // Devices
-"device_details_title" = "Informazioni dispositivo\n";
+"device_details_title" = "Informazioni sessione\n";
 "device_details_name" = "Nome pubblico\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Ultimo contatto\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_title" = "Nome dispositivo";
-"device_details_rename_prompt_message" = "Il nome pubblico del dispositivo è visibile alle persone con cui comunichi";
+"device_details_rename_prompt_title" = "Nome sessione";
+"device_details_rename_prompt_message" = "Il nome pubblico della sessione è visibile alle persone con cui comunichi";
 "device_details_delete_prompt_title" = "Autenticazione";
 "device_details_delete_prompt_message" = "Questa operazione necessita di ulteriore autenticazione.\nInserisci la tua password per procedere.";
 // Encryption information
@@ -143,8 +143,8 @@
 "room_event_encryption_info_event_decryption_error" = "Errore decrittazione\n";
 "room_event_encryption_info_event_unencrypted" = "non criptato";
 "room_event_encryption_info_event_none" = "nessuna";
-"room_event_encryption_info_device" = "\nInformazioni dispositivo mittente\n";
-"room_event_encryption_info_device_unknown" = "dispositivo sconosciuto\n";
+"room_event_encryption_info_device" = "\nInformazioni sessione mittente\n";
+"room_event_encryption_info_device_unknown" = "sessione sconosciuta\n";
 "room_event_encryption_info_device_name" = "Nome pubblico\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verifica\n";
@@ -156,8 +156,8 @@
 "room_event_encryption_info_unverify" = "Annulla verifica";
 "room_event_encryption_info_block" = "Bloccato";
 "room_event_encryption_info_unblock" = "Sbloccato";
-"room_event_encryption_verify_title" = "Verifica dispositivo\n\n";
-"room_event_encryption_verify_message" = "Per verificare che questo dispositivo possa essere fidato, si prega di contattare il suo proprietario in altro modo (es. di persona o via telefonica) e chiedergli se la chiave che lui vede nelle Impostazioni Utente per il dispositivo sia uguale a questa:\n\n\tNome dispositivo: %@\n\tID dispositivo: %@\n\tChiave dispositivo: %@\n\nSe le chiavi sono identiche, premere il pulsante di verifica qui sotto. Se non lo sono, allora quancun altro sta intercettando questo dispositivo e probabilmente dovresti bloccarlo.\n\nIn futuro questo processo di verifica sarà più sofisticato.";
+"room_event_encryption_verify_title" = "Verifica sessione\n\n";
+"room_event_encryption_verify_message" = "Per verificare che questa sessione possa essere fidata, si prega di contattare il suo proprietario in altro modo (es. di persona o via telefonica) e chiedergli se la chiave che lui vede nelle Impostazioni Utente per la sessione sia uguale a questa:\n\n\tNome sessione: %@\n\tID sessione: %@\n\tChiave sessione: %@\n\nSe le chiavi sono identiche, premere il pulsante di verifica qui sotto. Se non lo sono, allora quancun altro sta intercettando questa sessione e probabilmente dovresti bloccarlo.\n\nIn futuro questo processo di verifica sarà più sofisticato.";
 "room_event_encryption_verify_ok" = "Verifica";
 // Account
 "account_save_changes" = "Salva cambiamenti";
@@ -379,3 +379,5 @@
 "ssl_unexpected_existing_expl" = "Il certificato è diverso da quello di cui il tuo telefono si fidava. Questo è un COMPORTAMENTO ANOMALO. Si consiglia di NON ACCETTARE questo nuovo certificato.";
 "ssl_expected_existing_expl" = "Il certificato è cambiato da uno precedentemente accettato a uno che non è fidato. Il server potrebbe averlo rinnovato. Contatta l'amministratore del server per verificarne l'impronta.";
 "ssl_only_accept" = "Accetta il certificato SOLAMENTE se l'amministratore del server ha pubblicato un'impronta che corrisponde a quella qui sopra.";
+"notice_encryption_enabled_ok" = "%@ ha attivato la cifratura end-to-end.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ ha attivato la cifratura end-to-end (algoritmo %2$@ non riconosciuto).";

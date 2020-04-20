@@ -103,7 +103,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ a rendu l'historique futur du salon visible à tous les membres, à partir du moment où ils ont été invités.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ a rendu l'historique futur du salon visible à tous les membres, à partir de leur arrivée.";
 "notice_crypto_unable_to_decrypt" = "** Déchiffrement impossible : %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "L'appareil de l'expéditeur ne nous a pas envoyé les clés pour ce message.";
+"notice_crypto_error_unknown_inbound_session_id" = "La session de l’expéditeur ne nous a pas envoyé les clés pour ce message.";
 "notice_sticker" = "sticker";
 // room display name
 "room_displayname_empty_room" = "Salon vide";
@@ -116,12 +116,12 @@
 "settings_enter_validation_token_for" = "Saisir le jeton de validation pour %@ :";
 "notification_settings_room_rule_title" = "Salon : '%@'";
 // Devices
-"device_details_title" = "Informations sur l'appareil\n";
+"device_details_title" = "Informations sur la session\n";
 "device_details_name" = "Nom public\n";
 "device_details_identifier" = "Identifiant\n";
 "device_details_last_seen" = "Vu pour la dernière fois\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Le nom public de l’appareil est visible par les personnes avec qui vous communiquez";
+"device_details_rename_prompt_message" = "Le nom public de la session est visible par les personnes avec qui vous communiquez";
 "device_details_delete_prompt_title" = "Authentification";
 "device_details_delete_prompt_message" = "Cette opération requiert une nouvelle authentification.\nPour continuer, saisissez votre mot de passe.";
 // Encryption information
@@ -135,8 +135,8 @@
 "room_event_encryption_info_event_decryption_error" = "Erreur de déchiffrement\n";
 "room_event_encryption_info_event_unencrypted" = "non chiffré";
 "room_event_encryption_info_event_none" = "aucun";
-"room_event_encryption_info_device" = "\nInformations sur l'appareil de l'expéditeur\n";
-"room_event_encryption_info_device_unknown" = "appareil inconnu\n";
+"room_event_encryption_info_device" = "\nInformations sur la session de l’expéditeur\n";
+"room_event_encryption_info_device_unknown" = "session inconnue\n";
 "room_event_encryption_info_device_name" = "Nom public\n";
 "room_event_encryption_info_device_id" = "Identifiant\n";
 "room_event_encryption_info_device_verification" = "Vérification\n";
@@ -148,8 +148,8 @@
 "room_event_encryption_info_unverify" = "Annuler la vérification";
 "room_event_encryption_info_block" = "Ajouter à la liste noire";
 "room_event_encryption_info_unblock" = "Supprimer de la liste noire";
-"room_event_encryption_verify_title" = "Vérifier l'appareil\n\n";
-"room_event_encryption_verify_message" = "Pour vérifier que cet appareil est fiable, contactez son propriétaire par un autre moyenl (par ex. en personne ou au téléphone) et demandez lui si la clé qu'il voit dans ses paramètres utilisateur pour cet appareil est identique à la clé ci-dessous :\n\n    Nom de l'appareil : %@\n    Identifiant de l'appareil : %@\n    Clé de l'appareil : %@\n\nSi les clés sont identiques, cliquez sur le bouton vérifier ci-dessous. Sinon, quelqu'un est probablement en train d'intercepter cet appareil et vous devriez plutôt l'ajouter à la liste noire.\n\nÀ l'avenir, ce processus de vérification sera plus élaboré.";
+"room_event_encryption_verify_title" = "Vérifier la session\n\n";
+"room_event_encryption_verify_message" = "Pour vérifier que cette session est fiable, contactez son propriétaire par un autre moyen (par ex. en personne ou au téléphone) et demandez-lui si la clé qu’il voit dans ses paramètres utilisateur pour cette session est identique à la clé ci-dessous :\n\n    Nom de la session : %@\n    Identifiant de la session : %@\n    Clé de la session : %@\n\nSi les clés sont identiques, cliquez sur le bouton vérifier ci-dessous. Sinon, quelqu’un est probablement en train d’intercepter cette session et vous devriez plutôt l’ajouter à la liste noire.\n\nÀ l'avenir, ce processus de vérification sera plus élaboré.";
 "room_event_encryption_verify_ok" = "Vérifier";
 // Account
 "account_save_changes" = "Enregistrer les modifications";
@@ -378,4 +378,6 @@
 "e2e_passphrase_create" = "Créer la phrase de passe";
 "account_error_push_not_allowed" = "Les notifications ne sont pas autorisées";
 "notice_room_third_party_revoked_invite" = "%@ a retiré l'invitation de %@ pour rejoindre ce salon";
-"device_details_rename_prompt_title" = "Nom de l’appareil";
+"device_details_rename_prompt_title" = "Nom de la session";
+"notice_encryption_enabled_ok" = "%@ a activé le chiffrement de bout en bout.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ a activé le chiffrement de bout en bout (algorithme %2$@ inconnu).";

@@ -97,7 +97,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Teilnahme sichtbar gemacht.";
 "notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Das Gerät des Absenders hat keine Schlüssel für diese Nachricht gesendet.";
+"notice_crypto_error_unknown_inbound_session_id" = "Die Sitzung des/der Absenders/!n hat uns keine Schlüssel für diese Nachricht gesendet.";
 // room display name
 "room_displayname_empty_room" = "Leerer Raum";
 "room_displayname_two_members" = "%@ und %@";
@@ -109,12 +109,12 @@
 "settings_enter_validation_token_for" = "Eingabe Validierungs-Token für %@:";
 "notification_settings_room_rule_title" = "Raum: '%@'";
 // Devices
-"device_details_title" = "Geräte Information\n";
+"device_details_title" = "Sitzungs-Information\n";
 "device_details_name" = "Öffentlicher Name\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Zuletzt gesehen:\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Der öffentliche Name eines Geräts ist für Personen sichtbar, mit denen Sie kommunizieren";
+"device_details_rename_prompt_message" = "Der öffentliche Name einer Sitzung ist für Personen sichtbar, mit denen Sie kommunizieren";
 "device_details_delete_prompt_title" = "Authentifizierung";
 "device_details_delete_prompt_message" = "Diese Aktion erfordert zusätzliche Authentifizierung.\nBitte gib dein Passwort ein.";
 // Encryption information
@@ -128,8 +128,8 @@
 "room_event_encryption_info_event_decryption_error" = "Entschlüsselungs-Fehler\n";
 "room_event_encryption_info_event_unencrypted" = "nicht verschlüsselt";
 "room_event_encryption_info_event_none" = "keine";
-"room_event_encryption_info_device" = "\nAbsender-Gerät Information\n";
-"room_event_encryption_info_device_unknown" = "Unbekanntes Gerät\n";
+"room_event_encryption_info_device" = "\nAbsender-Sitzungs-Information\n";
+"room_event_encryption_info_device_unknown" = "Unbekannte Sitzung\n";
 "room_event_encryption_info_device_name" = "Öffentlicher Name\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Überprüfung\n";
@@ -141,8 +141,8 @@
 "room_event_encryption_info_unverify" = "Verifizierung widerrufen";
 "room_event_encryption_info_block" = "Blockieren";
 "room_event_encryption_info_unblock" = "Blockierung aufheben";
-"room_event_encryption_verify_title" = "Überprüfe Gerät\n\n";
-"room_event_encryption_verify_message" = "Um zu prüfen, dass diesem Gerät vertraut werden kann, bitte den Eigentümer über einen anderen Weg kontaktieren (z.B. in Person oder mit einem Telefonanruf) und ihn fragen ob der Schlüssel, den er in seinen Benutzereinstellungen sieht, dem Schlüssel unten entspricht:\n\n\tGeräte Name: %@\n\tGeräte ID: %@\n\tGeräteschlüssel: %@\n\nWenn es übereinstimmt, die \"Überprüfe\" Schaltfläche drücken. Wenn nicht, dann hört jemand anderes dieses Gerät ab und du willst vermutlich die Schaltfläche \"Blockieren\" stattdessen drücken.\n\nIn Zukunft wird dieser Überprüfungs-Prozess ausgefeilter sein.";
+"room_event_encryption_verify_title" = "Überprüfe Sitzung\n\n";
+"room_event_encryption_verify_message" = "Um zu prüfen, dass dieser Sitzung vertraut werden kann, kontaktiere bitte den Eigentümer über einen anderen Weg (z.B. in Person oder mit einem Telefonanruf) und frage ihn, ob der Schlüssel, den er in seinen Benutzereinstellungen für diese Sitzung sieht, dem folgenden Schlüssel entspricht:\n\n\tSitzungs-Name: %@\n\tSitzungs-ID: %@\n\tSitzungs-Schlüssel: %@\n\nWenn es übereinstimmt, die \"Überprüfe\" Schaltfläche drücken. Wenn nicht, dann hört jemand anderes diese Sitzung ab und du willst stattdessen vermutlich die Schaltfläche \"Blockieren\" drücken.\n\nIn Zukunft wird dieser Überprüfungs-Prozess ausgefeilter sein.";
 "room_event_encryption_verify_ok" = "Überprüfe";
 // Account
 "account_save_changes" = "Änderungen speichern";
@@ -378,4 +378,6 @@
 "e2e_passphrase_create" = "Passphrase erzeugen";
 "account_error_push_not_allowed" = "Benachrichtigungen nicht erlaubt";
 "notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
-"device_details_rename_prompt_title" = "Gerätename";
+"device_details_rename_prompt_title" = "Sitzungsname";
+"notice_encryption_enabled_ok" = "%@ hat die Ende-zu-Ende-Verschlüsselung aktiviert.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ hat die Ende-zu-Ende-Verschlüsselung aktiviert (unbekannter Algorithmus %2$@).";

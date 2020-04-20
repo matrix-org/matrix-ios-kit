@@ -118,7 +118,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ heeft de toekomstige gespreksgeschiedenis zichtbaar gemaakt voor alle gespreksleden, vanaf het moment dat ze uitgenodigd zijn.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ heeft de toekomstige gespreksgeschiedenis zichtbaar gemaakt voor alle gespreksleden, vanaf het moment dat ze toetreden.";
 "notice_crypto_unable_to_decrypt" = "** Kan niet ontsleutelen: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "Het apparaat van de afzender heeft ons geen sleutels voor dit bericht gestuurd.";
+"notice_crypto_error_unknown_inbound_session_id" = "De sessie van de afzender heeft ons geen sleutels voor dit bericht gestuurd.";
 // room display name
 "room_displayname_empty_room" = "Leeg gesprek";
 "room_displayname_two_members" = "%@ en %@";
@@ -130,12 +130,12 @@
 "settings_enter_validation_token_for" = "Voer validatiebewijs voor %@ in:";
 "notification_settings_room_rule_title" = "Gesprek: ‘%@’";
 // Devices
-"device_details_title" = "Apparaatinformatie\n";
+"device_details_title" = "Sessie-informatie\n";
 "device_details_name" = "Publieke naam\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "Laatst gezien\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "De publieke naam van een apparaat is zichtbaar voor de personen waarmee u communiceert";
+"device_details_rename_prompt_message" = "De publieke naam van een sessie is zichtbaar voor de personen waarmee u communiceert";
 "device_details_delete_prompt_title" = "Authenticatie";
 "device_details_delete_prompt_message" = "Deze handeling vereist bijkomende authenticatie.\nVoer uw wachtwoord in om verder te gaan.";
 // Encryption information
@@ -149,8 +149,8 @@
 "room_event_encryption_info_event_decryption_error" = "Ontsleutelingsfout\n";
 "room_event_encryption_info_event_unencrypted" = "onversleuteld";
 "room_event_encryption_info_event_none" = "geen";
-"room_event_encryption_info_device" = "\nInformatie over apparaat van afzender\n";
-"room_event_encryption_info_device_unknown" = "onbekend apparaat\n";
+"room_event_encryption_info_device" = "\nInformatie over sessie van afzender\n";
+"room_event_encryption_info_device_unknown" = "onbekende sessie\n";
 "room_event_encryption_info_device_name" = "Publieke naam\n";
 "room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "Verificatie\n";
@@ -162,8 +162,8 @@
 "room_event_encryption_info_unverify" = "Ontverifiëren";
 "room_event_encryption_info_block" = "Blokkeren";
 "room_event_encryption_info_unblock" = "Deblokkeren";
-"room_event_encryption_verify_title" = "Apparaat verifiëren\n\n";
-"room_event_encryption_verify_message" = "Om te verifiëren dat dit apparaat vertrouwd kan worden, neemt u contact op met de eigenaar van het apparaat op een andere manier (bv. persoonlijk of door te bellen) en vraagt u hem/haar of de sleutel die hij/zij in de gebruikersinstellingen ziet overeenkomt met de onderstaande sleutel:\n\n\tApparaatnaam: %@\n\tApparaats-ID: %@\n\tApparaatssleutel: %@\n\nAls het overeenkomt, klikt u hieronder op de knop ‘Verifiëren’. Als het niet overeenkomt, onderschept iemand anders dit apparaat en drukt u in plaats daarvan op de knop ‘Blokkeren’.\n\nIn de toekomst zal dit verificatieproces verbeterd worden.";
+"room_event_encryption_verify_title" = "Sessie verifiëren\n\n";
+"room_event_encryption_verify_message" = "Om te verifiëren dat deze sessie vertrouwd kan worden, neemt u contact op met de eigenaar van de sessie op een andere manier (bv. persoonlijk of door te bellen) en vraagt u hem/haar of de sleutel die hij/zij in de gebruikersinstellingen ziet overeenkomt met de onderstaande sleutel:\n\n\tSessienaam: %@\n\tSessie-ID: %@\n\tSessiesleutel: %@\n\nAls het overeenkomt, klikt u hieronder op de knop ‘Verifiëren’. Als het niet overeenkomt, onderschept iemand anders deze sessie en drukt u in plaats daarvan op de knop ‘Blokkeren’.\n\nIn de toekomst zal dit verificatieproces verbeterd worden.";
 "room_event_encryption_verify_ok" = "Verifiëren";
 // Account
 "account_save_changes" = "Wijzigingen opslaan";
@@ -257,7 +257,7 @@
 "microphone_access_not_granted_for_call" = "Oproepen vereisen toegang tot de camera, maar %@ heeft hier geen toestemming voor";
 "local_contacts_access_not_granted" = "Gebruikers zoeken op basis van uw lokale contacten vereist toegang tot die contacten, maar %@ heeft hier geen toestemming voor";
 "local_contacts_access_discovery_warning_title" = "Gebruikers zoeken";
-"local_contacts_access_discovery_warning" = "%@ wil de e-mailadressen en telefoonnummers van uw contacten uploaden om gebruikers te vinden";
+"local_contacts_access_discovery_warning" = "Om contacten te vinden die Matrix al gebruiken, kan %@ de e-mailadressen en telefoonnummers in uw adresboek naar uw gekozen Matrix-identiteitsserver sturen. Waar ondersteund worden de persoonlijke gegevens gehasht vóór het versturen - bekijk het privacybeleid van uw identiteitsserver voor meer informatie.";
 // Country picker
 "country_picker_title" = "Kies een land";
 /* -*- 
@@ -439,4 +439,6 @@
 "e2e_passphrase_create" = "Wachtwoord aanmaken";
 "account_error_push_not_allowed" = "Meldingen niet toegestaan";
 "notice_room_third_party_revoked_invite" = "%@ heeft de uitnodiging voor %@ om tot het gesprek toe te treden ingetrokken";
-"device_details_rename_prompt_title" = "Apparaatnaam";
+"device_details_rename_prompt_title" = "Sessienaam";
+"notice_encryption_enabled_ok" = "%@ heeft eind-tot-eind-versleuteling ingeschakeld.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ heeft eind-tot-eind-versleuteling ingeschakeld (onbekend algoritme %2$@).";
