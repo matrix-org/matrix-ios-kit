@@ -1,3 +1,13 @@
+Changes in MatrixKit in 0.12.1 (2020-04-24)
+=========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.1)).
+
+Bug fix:
+ * MXKAttachmentsViewController: Make navigation bar respect to safe area insets (PR #659).
+ * MXKAuthenticationViewController: Remove bottomLayoutGuide and content view equal width constraints (PR #660).
+
 Changes in MatrixKit in 0.12.0 (2020-04-17)
 ==========================================
 

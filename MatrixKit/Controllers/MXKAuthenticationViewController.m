@@ -138,54 +138,7 @@
     
     // Load welcome image from MatrixKit asset bundle
     self.welcomeImageView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"logoHighRes"];
-    
-    // Adjust bottom constraint of the scroll view in order to take into account potential tabBar
-    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-    {
-        [NSLayoutConstraint deactivateConstraints:@[_authScrollViewBottomConstraint]];
-    }
-    else
-    {
-        [self.view removeConstraint:_authScrollViewBottomConstraint];
-    }
-    
-    _authScrollViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
-                                                                   attribute:NSLayoutAttributeTop
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.authenticationScrollView
-                                                                   attribute:NSLayoutAttributeBottom
-                                                                  multiplier:1.0f
-                                                                    constant:0.0f];
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-    {
-        [NSLayoutConstraint activateConstraints:@[_authScrollViewBottomConstraint]];
-    }
-    else
-    {
-        [self.view addConstraint:_authScrollViewBottomConstraint];
-    }
-    
-    // Force contentView in full width
-    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
-                                                                      attribute:NSLayoutAttributeLeading
-                                                                      relatedBy:0
-                                                                         toItem:self.view
-                                                                      attribute:NSLayoutAttributeLeading
-                                                                     multiplier:1.0
-                                                                       constant:0];
-    [self.view addConstraint:leftConstraint];
-    
-    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
-                                                                       attribute:NSLayoutAttributeTrailing
-                                                                       relatedBy:0
-                                                                          toItem:self.view
-                                                                       attribute:NSLayoutAttributeTrailing
-                                                                      multiplier:1.0
-                                                                        constant:0];
-    [self.view addConstraint:rightConstraint];
-    
-    [self.view setNeedsUpdateConstraints];
-    
+
     _authenticationScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     _subTitleLabel.numberOfLines = 0;
