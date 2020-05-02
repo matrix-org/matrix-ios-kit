@@ -42,7 +42,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
 @implementation MXKAppSettings
 @synthesize syncWithLazyLoadOfRoomMembers;
-@synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
+@synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory;
+@synthesize httpLinkScheme, httpsLinkScheme, httpHttpsBaseURL, httpHttpsQueryParam;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
@@ -116,6 +117,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        httpHttpsBaseURL = @"";
+        httpHttpsQueryParam = @"";
         
         enableCallKit = YES;
         
@@ -194,6 +197,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpLinkScheme"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpHttpsBaseURL"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpHttpsQueryParam"];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
 	}
@@ -218,6 +223,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        httpHttpsBaseURL = @"";
+        httpHttpsQueryParam = @"";
         
         enableCallKit = YES;
     }
@@ -448,6 +455,62 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         httpsLinkScheme = stringValue;
+    }
+}
+
+- (NSString *)httpHttpsBaseURL
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        NSString *ret = [[NSUserDefaults standardUserDefaults] stringForKey:@"httpHttpsBaseURL"];
+        if (ret == nil) {
+            ret = @"";
+        }
+        return ret;
+    }
+    else
+    {
+        return httpHttpsBaseURL;
+    }
+}
+
+- (void)setHttpHttpsBaseURL:(NSString *)stringValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"httpHttpsBaseURL"];
+    }
+    else
+    {
+        httpHttpsBaseURL = stringValue;
+    }
+}
+
+- (NSString *)httpHttpsQueryParam
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        NSString *ret = [[NSUserDefaults standardUserDefaults] stringForKey:@"httpHttpsQueryParam"];
+        if (ret == nil) {
+            ret = @"";
+        }
+        return ret;
+    }
+    else
+    {
+        return httpHttpsQueryParam;
+    }
+}
+
+- (void)setHttpHttpsQueryParam:(NSString *)stringValue
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:stringValue forKey:@"httpHttpsQueryParam"];
+    }
+    else
+    {
+        httpHttpsQueryParam = stringValue;
     }
 }
 

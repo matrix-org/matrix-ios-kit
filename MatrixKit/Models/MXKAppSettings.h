@@ -85,17 +85,29 @@
 @property (nonatomic) BOOL showUnsupportedEventsInRoomHistory;
 
 /**
- Scheme with which to open HTTP links. e.g. if this is set to "googlechrome", any http:// links displayed in a room will be rewritten to use the googlechrome:// scheme.
+ Scheme with which to open HTTP links. e.g. if this is set to "googlechrome" and httpHttpsBaseURL is empty, any http:// links displayed in a room will be rewritten to use the googlechrome:// scheme.
  Defaults to "http".
  */
 @property (nonatomic) NSString *httpLinkScheme;
 
 /**
- Scheme with which to open HTTPS links. e.g. if this is set to "googlechromes", any https:// links displayed in a room will be rewritten to use the googlechromes:// scheme.
+ Scheme with which to open HTTPS links. e.g. if this is set to "googlechromes" and httpHttpsBaseURL is empty, any https:// links displayed in a room will be rewritten to use the googlechromes:// scheme.
  Defaults to "https".
  */
 @property (nonatomic) NSString *httpsLinkScheme;
 
+/**
+ Base URL which to use to open HTTP and HTTPS links. If this is set and httpLinkScheme or httpsLinkScheme has a value other than its default, any HTTP(S) links displayed in a room will be rewritten to httpHttpsBaseURL?httpHttpsQueryParam=URL.
+ The http(s)LinkScheme params are not used for the construction of the URL. They are only needed to detect the presence of this parameter.
+ Defaults to "".
+ */
+@property (nonatomic) NSString *httpHttpsBaseURL;
+
+/**
+ Name of the query parameter with which the URL of any link is concatenated (escaped) to the httpHttpsBaseURL if the conditions to use it are met.
+ Defaults to "".
+ */
+@property (nonatomic) NSString *httpHttpsQueryParam;
 
 #pragma mark - Room members
 

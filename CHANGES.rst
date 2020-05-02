@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.12.5 (2020-05-XX)
+=========================================
+
+Improvements:
+ * Add more flexibility to open links in other browsers, e.g. FF Mobile
+
 Changes in MatrixKit in 0.12.5 (2020-05-13)
 =========================================
 
@@ -18,6 +24,12 @@ Changes in MatrixKit in 0.12.3 (2020-05-07)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.3)).
+
+Changes in MatrixKit in 0.12.3 (2020-XX-XX)
+=========================================
+
+Improvements:
+ * Add more flexibility to open links in other browsers, e.g. FF Mobile (vector-im/riot-ios#2949).
 
 Changes in MatrixKit in 0.12.2 (2020-05-01)
 =========================================
