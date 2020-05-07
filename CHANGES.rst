@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.12.3 (2020-05-07)
+=========================================
+
+Improvements:
+* Upgrade MatrixSDK version ([v0.16.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.3)).
+
 Changes in MatrixKit in 0.12.2 (2020-05-01)
 =========================================
 
