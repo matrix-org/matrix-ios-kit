@@ -380,6 +380,7 @@
 		B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+MatrixKit.m"; sourceTree = "<group>"; };
 		B13652F6221E9E7A00313B09 /* MXKMessageTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKMessageTextView.h; sourceTree = "<group>"; };
 		B13652F7221E9E7A00313B09 /* MXKMessageTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKMessageTextView.m; sourceTree = "<group>"; };
+		B13AC545246447ED00A6B899 /* MatrixKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = MatrixKit.podspec; sourceTree = "<group>"; };
 		B164380A210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKSendReplyEventStringLocalizations.h; sourceTree = "<group>"; };
 		B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKSendReplyEventStringLocalizations.m; sourceTree = "<group>"; };
 		B1668ABE21072F93002B14F1 /* MXKSlashCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSlashCommands.h; sourceTree = "<group>"; };
@@ -731,6 +732,7 @@
 			isa = PBXGroup;
 			children = (
 				32BDC984211AD6D10064AF51 /* Podfile */,
+				B13AC545246447ED00A6B899 /* MatrixKit.podspec */,
 				32BDC981211AD6D10064AF51 /* AUTHORS.rst */,
 				32BDC982211AD6D10064AF51 /* CHANGES.rst */,
 				32BDC983211AD6D10064AF51 /* README.rst */,
