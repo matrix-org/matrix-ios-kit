@@ -18,6 +18,8 @@
 
 #import "MXKAttachmentsViewController.h"
 
+#import <WebKit/WebKit.h>
+
 @import MatrixSDK.MXMediaManager;
 
 #import "MXKMediaCollectionViewCell.h"
@@ -686,12 +688,11 @@
                     height = minSize;
                 }
                 
-                UIWebView *animatedGifViewer = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+                WKWebView *animatedGifViewer = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
                 animatedGifViewer.center = cell.customView.center;
                 animatedGifViewer.opaque = NO;
                 animatedGifViewer.backgroundColor = cell.customView.backgroundColor;
                 animatedGifViewer.contentMode = UIViewContentModeScaleAspectFit;
-                animatedGifViewer.scalesPageToFit = YES;
                 animatedGifViewer.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
                 animatedGifViewer.userInteractionEnabled = NO;
                 [cell.customView addSubview:animatedGifViewer];
@@ -745,7 +746,7 @@
                     
                     if (animatedGifViewer.superview)
                     {
-                        [animatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
+                        [animatedGifViewer loadData:data MIMEType:@"image/gif" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
                         
                         [pieChartView removeFromSuperview];
                         [previewImage removeFromSuperview];

@@ -22,7 +22,7 @@ NSString *kMXKRecaptchaHTMLString = @"<html> \
 <meta name='viewport' content='initial-scale=1.0' /> \
 <script type=\"text/javascript\"> \
 var verifyCallback = function(response) { \
-    /* Generic method to make a bridge between JS and the UIWebView*/ \
+    /* Generic method to make a bridge between JS and the WKWebView*/ \
     var iframe = document.createElement('iframe'); \
     iframe.setAttribute('src', 'js:' + JSON.stringify({'action': 'verifyCallback', 'response': response})); \
  \
@@ -101,7 +101,7 @@ var onloadCallback = function() { \
 
     if ([urlString hasPrefix:@"js:"])
     {
-        // Listen only to scheme of the JS-UIWebView bridge
+        // Listen only to scheme of the JS-WKWebView bridge
         NSString *jsonString = [[[urlString componentsSeparatedByString:@"js:"] lastObject]  stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
         NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
 
