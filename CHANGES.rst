@@ -1,6 +1,9 @@
 Changes in MatrixKit in 0.12.4 (2020-xx-xx)
 =========================================
 
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.4)).
+
 Bug fix:
  * Replace UIWebView with WKWebView (PR #663).
 
@@ -8,13 +11,13 @@ Changes in MatrixKit in 0.12.3 (2020-05-07)
 =========================================
 
 Improvements:
-* Upgrade MatrixSDK version ([v0.16.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.3)).
+ * Upgrade MatrixSDK version ([v0.16.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.3)).
 
 Changes in MatrixKit in 0.12.2 (2020-05-01)
 =========================================
 
 Improvements:
-* Upgrade MatrixSDK version ([v0.16.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.2)).
+ * Upgrade MatrixSDK version ([v0.16.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.2)).
 
 Changes in MatrixKit in 0.12.1 (2020-04-24)
 =========================================
