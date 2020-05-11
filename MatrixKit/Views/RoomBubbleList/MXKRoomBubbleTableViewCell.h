@@ -19,6 +19,8 @@
 #import "MXKCellRendering.h"
 #import "MXKReceiptSendersContainer.h"
 
+#import <WebKit/WebKit.h>
+
 @class MXKImageView;
 @class MXKPieChartView;
 @class MXKRoomBubbleCellData;
@@ -135,7 +137,7 @@ extern NSString *const kMXKRoomBubbleCellUrlItemInteraction;
  To optimize bubbles rendering, we advise to define a .xib for each kind of bubble layout (with or without sender's information, with or without attachment...).
  Each inherited class should define only the actual displayed items.
  */
-@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate, UIWebViewDelegate>
+@interface MXKRoomBubbleTableViewCell : MXKTableViewCell <MXKCellRendering, UITextViewDelegate, WKNavigationDelegate>
 {
 @protected
     /**
@@ -233,7 +235,7 @@ extern NSString *const kMXKRoomBubbleCellUrlItemInteraction;
 /**
  The potential webview used to render an attachment (for example an animated gif).
  */
-@property (nonatomic) UIWebView *attachmentWebView;
+@property (nonatomic) WKWebView *attachmentWebView;
 
 /**
  Called during the designated initializer of the UITableViewCell class to set the default
