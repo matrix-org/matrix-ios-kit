@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.12.4 (2020-xx-xx)
+=========================================
+
+Bug fix:
+ * Replace UIWebView with WKWebView (PR #663).
+
 Changes in MatrixKit in 0.12.3 (2020-05-07)
 =========================================
 

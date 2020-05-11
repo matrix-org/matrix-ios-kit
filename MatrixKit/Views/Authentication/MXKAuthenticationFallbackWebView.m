@@ -16,7 +16,7 @@
 
 #import "MXKAuthenticationFallbackWebView.h"
 
-// Generic method to make a bridge between JS and the UIWebView
+// Generic method to make a bridge between JS and the WKWebView
 NSString *kMXKJavascriptSendObjectMessage = @"window.sendObjectMessage = function(parameters) {   \
 var iframe = document.createElement('iframe');                              \
 iframe.setAttribute('src', 'js:' + JSON.stringify(parameters));             \
@@ -67,7 +67,7 @@ sendObjectMessage({  \
 
 - (void)openFallbackPage:(NSString *)fallbackPage success:(void (^)(MXLoginResponse *))success
 {
-    self.delegate = self;
+    self.navigationDelegate = self;
     
     onSuccess = success;
     
@@ -86,7 +86,9 @@ sendObjectMessage({  \
     [self loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:fallbackPage]]];
 }
 
--(void)webViewDidFinishLoad:(UIWebView *)webView
+#pragma mark - WKNavigationDelegate
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     if (activityIndicator)
     {
@@ -95,18 +97,24 @@ sendObjectMessage({  \
         activityIndicator = nil;
     }
     
-    [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptSendObjectMessage];
-    [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptOnRegistered];
-    [self stringByEvaluatingJavaScriptFromString:kMXKJavascriptOnLogin];
+    [self evaluateJavaScript:kMXKJavascriptSendObjectMessage completionHandler:^(id _Nullable response, NSError * _Nullable error) {
+        
+    }];
+    [self evaluateJavaScript:kMXKJavascriptOnRegistered completionHandler:^(id _Nullable response, NSError * _Nullable error) {
+        
+    }];
+    [self evaluateJavaScript:kMXKJavascriptOnLogin completionHandler:^(id _Nullable response, NSError * _Nullable error) {
+        
+    }];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    NSString *urlString = [[request URL] absoluteString];
+    NSString *urlString = navigationAction.request.URL.absoluteString;
     
     if ([urlString hasPrefix:@"js:"])
     {
-        // Listen only to scheme of the JS-UIWebView bridge
+        // Listen only to scheme of the JS-WKWebView bridge
         NSString *jsonString = [[[urlString componentsSeparatedByString:@"js:"] lastObject]  stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
         NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
         
@@ -148,9 +156,10 @@ sendObjectMessage({  \
                 }
             }
         }
-        return NO;
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

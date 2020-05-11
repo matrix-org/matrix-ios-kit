@@ -874,26 +874,25 @@ static BOOL _disableLongPressGestureOnEvent;
                 [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
                 
                 // Animated gif is displayed in a webview added on the attachment view
-                self.attachmentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.attachmentView.frame.size.width, self.attachmentView.frame.size.height)];
+                self.attachmentWebView = [[WKWebView alloc] initWithFrame:self.attachmentView.bounds];
                 self.attachmentWebView.opaque = NO;
                 self.attachmentWebView.backgroundColor = [UIColor clearColor];
                 self.attachmentWebView.contentMode = UIViewContentModeScaleAspectFit;
-                self.attachmentWebView.scalesPageToFit = YES;
                 self.attachmentWebView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
                 self.attachmentWebView.userInteractionEnabled = NO;
                 self.attachmentWebView.hidden = YES;
                 [self.attachmentView addSubview:self.attachmentWebView];
                 
-                __weak UIWebView *weakAnimatedGifViewer = self.attachmentWebView;
+                __weak WKWebView *weakAnimatedGifViewer = self.attachmentWebView;
                 __weak typeof(self) weakSelf = self;
                 
                 void (^onDownloaded)(NSData *) = ^(NSData *data){
                     
                     if (weakAnimatedGifViewer && weakAnimatedGifViewer.superview)
                     {
-                        UIWebView *strongAnimatedGifViewer = weakAnimatedGifViewer;
-                        strongAnimatedGifViewer.delegate = weakSelf;
-                        [strongAnimatedGifViewer loadData:data MIMEType:@"image/gif" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
+                        WKWebView *strongAnimatedGifViewer = weakAnimatedGifViewer;
+                        strongAnimatedGifViewer.navigationDelegate = weakSelf;
+                        [strongAnimatedGifViewer loadData:data MIMEType:@"image/gif" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@"http://"]];
                     }
                 };
                 
@@ -987,7 +986,7 @@ static BOOL _disableLongPressGestureOnEvent;
     if (_attachmentWebView)
     {
         [_attachmentWebView removeFromSuperview];
-        _attachmentWebView.delegate = nil;
+        _attachmentWebView.navigationDelegate = nil;
         _attachmentWebView = nil;
     }
     
@@ -1536,9 +1535,9 @@ static NSMutableDictionary *childClasses;
     return shouldInteractWithURL;
 }
 
-#pragma mark - UIWebView delegate
+#pragma mark - WKNavigationDelegate
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     if (webView == _attachmentWebView && self.attachmentView)
     {
