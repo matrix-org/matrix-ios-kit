@@ -376,3 +376,8 @@
 "ssl_expected_existing_expl" = "証明書が以前に信頼されたものから信頼されていないものに変更されました。 サーバーが証明書を更新した可能性があります。 予想される指紋については、サーバー管理者にお問い合わせください。";
 "ssl_only_accept" = "サーバー管理者が上記のものと一致する指紋を発行した場合にのみ、証明書を受け入れます。";
 "unignore" = "無視しない";
+"notice_encryption_enabled_ok" = "%@ がエンドツーエンド暗号化をオンにしました。";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ がエンドツーエンド暗号化をオンにしました (不明なアルゴリズム %2$@)。";
+"device_details_rename_prompt_title" = "セッション名";
+"account_error_push_not_allowed" = "通知は許可されていません";
+"notice_room_third_party_revoked_invite" = "%@ は %@ の部屋への招待を取り消しました";
