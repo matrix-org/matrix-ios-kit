@@ -451,6 +451,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     [self unregisterScanManagerNotifications];
     [self unregisterReactionsChangeListener];
+    [self unregisterEventEditsListener];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidUpdatePublicisedGroupsForUsersNotification object:self.mxSession];
 
@@ -775,7 +776,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 
     // Register a listener to handle redaction which can affect live and past timelines
-    redactionListener = [_room listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
+    redactionListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
 
         // Consider only live redaction events
         if (direction == MXTimelineDirectionForwards)
@@ -974,14 +975,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     super.delegate = delegate;
     
+    [self unregisterScanManagerNotifications];
+    [self unregisterReactionsChangeListener];
+    [self unregisterEventEditsListener];
+    
     // Register to MXScanManager notification only when a delegate is set
     if (delegate && self.mxSession.scanManager)
     {
         [self registerScanManagerNotifications];
-    }
-    else
-    {
-        [self unregisterScanManagerNotifications];
     }
 
     // Register to reaction notification only when a delegate is set
@@ -989,11 +990,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [self registerReactionsChangeListener];
         [self registerEventEditsListener];
-    }
-    else
-    {
-        [self unregisterReactionsChangeListener];
-        [self unregisterEventEditsListener];
     }
 }
 
