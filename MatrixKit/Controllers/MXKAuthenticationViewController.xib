@@ -12,7 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKAuthenticationViewController">
             <connections>
                 <outlet property="authFallbackContentView" destination="q1e-Wg-6t7" id="mR6-hS-5YB"/>
-                <outlet property="authFallbackWebView" destination="Vhh-m0-nXN" id="YWJ-8T-74t"/>
+                <outlet property="authFallbackWebViewContainer" destination="6Em-Jj-UPO" id="F5d-zg-2ED"/>
                 <outlet property="authInputContainerViewHeightConstraint" destination="e04-1Y-4gZ" id="5qa-cu-M8v"/>
                 <outlet property="authInputContainerViewMinHeightConstraint" destination="2s6-K4-8Vv" id="x5P-zJ-hA6"/>
                 <outlet property="authInputsContainerView" destination="xWb-IJ-v7F" id="DEo-Ji-wPT"/>
@@ -264,19 +264,19 @@
                                 <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="Pxo-2q-AdE"/>
                             </connections>
                         </button>
-                        <webView contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhh-m0-nXN" userLabel="fallback WebView" customClass="MXKAuthenticationFallbackWebView" customModule="MatrixKitSample">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Em-Jj-UPO">
                             <rect key="frame" x="0.0" y="40" width="375" height="607"/>
-                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        </webView>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstItem="Vhh-m0-nXN" firstAttribute="leading" secondItem="q1e-Wg-6t7" secondAttribute="leading" id="8zH-1r-Jgh"/>
+                        <constraint firstItem="6Em-Jj-UPO" firstAttribute="top" secondItem="9qj-5c-Sfb" secondAttribute="bottom" id="1b1-7U-PeK"/>
                         <constraint firstAttribute="trailing" secondItem="9qj-5c-Sfb" secondAttribute="trailing" constant="8" id="AUi-MV-V60"/>
-                        <constraint firstAttribute="trailing" secondItem="Vhh-m0-nXN" secondAttribute="trailing" id="K9n-rL-E72"/>
+                        <constraint firstAttribute="bottom" secondItem="6Em-Jj-UPO" secondAttribute="bottom" id="PaB-bb-nat"/>
+                        <constraint firstItem="6Em-Jj-UPO" firstAttribute="leading" secondItem="q1e-Wg-6t7" secondAttribute="leading" id="TBi-7x-M9c"/>
                         <constraint firstItem="9qj-5c-Sfb" firstAttribute="top" secondItem="q1e-Wg-6t7" secondAttribute="top" constant="5" id="ZKZ-pg-xzV"/>
-                        <constraint firstAttribute="bottom" secondItem="Vhh-m0-nXN" secondAttribute="bottom" id="qEl-Dd-BlB"/>
-                        <constraint firstItem="Vhh-m0-nXN" firstAttribute="top" secondItem="9qj-5c-Sfb" secondAttribute="bottom" id="uCo-aG-Xa8"/>
+                        <constraint firstAttribute="trailing" secondItem="6Em-Jj-UPO" secondAttribute="trailing" id="e1s-Hg-1Fa"/>
                     </constraints>
                 </view>
             </subviews>
@@ -292,6 +292,7 @@
                 <constraint firstItem="q1e-Wg-6t7" firstAttribute="top" secondItem="5rn-KE-plm" secondAttribute="top" constant="20" id="sT2-HR-vou"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
+            <point key="canvasLocation" x="138.40000000000001" y="152.47376311844079"/>
         </view>
     </objects>
 </document>

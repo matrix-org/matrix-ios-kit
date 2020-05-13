@@ -136,6 +136,13 @@
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
+    self.authFallbackWebView = [[MXKAuthenticationFallbackWebView alloc] initWithFrame:self.authFallbackWebViewContainer.bounds];
+    [self.authFallbackWebViewContainer addSubview:self.authFallbackWebView];
+    [self.authFallbackWebView.leadingAnchor constraintEqualToAnchor:self.authFallbackWebViewContainer.leadingAnchor constant:0].active = YES;
+    [self.authFallbackWebView.trailingAnchor constraintEqualToAnchor:self.authFallbackWebViewContainer.trailingAnchor constant:0].active = YES;
+    [self.authFallbackWebView.topAnchor constraintEqualToAnchor:self.authFallbackWebViewContainer.topAnchor constant:0].active = YES;
+    [self.authFallbackWebView.bottomAnchor constraintEqualToAnchor:self.authFallbackWebViewContainer.bottomAnchor constant:0].active = YES;
+    
     // Load welcome image from MatrixKit asset bundle
     self.welcomeImageView.image = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"logoHighRes"];
 
