@@ -1,4 +1,10 @@
-Changes in MatrixKit in 0.12.4 (2020-xx-xx)
+Changes in MatrixKit in 0.12.5 (2020-05-13)
+=========================================
+
+Bug fix:
+ * Remove UIWebView dependency from MXKAuthenticationViewController (PR #666).
+
+Changes in MatrixKit in 0.12.4 (2020-05-11)
 =========================================
 
 Improvements:
