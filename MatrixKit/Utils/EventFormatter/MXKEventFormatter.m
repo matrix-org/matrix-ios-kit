@@ -1186,13 +1186,21 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
             if (url)
             {
-                if ([url.scheme isEqualToString: @"http"])
+                if ([[_settings httpHttpsBaseURL] length] != 0)
                 {
-                    url.scheme = [_settings httpLinkScheme];
+                    url = [[NSURLComponents new] initWithURL:[_settings httpHttpsBaseURL] resolvingAgainstBaseURL:NO];
+                    [url setQueryItems:@[[[NSURLQueryItem new] initWithName:[_settings httpHttpsQueryParam] value:matchUrl]]];
                 }
-                else if ([url.scheme isEqualToString: @"https"])
+                else
                 {
-                    url.scheme = [_settings httpsLinkScheme];
+                    if ([url.scheme isEqualToString: @"http"])
+                    {
+                        url.scheme = [_settings httpLinkScheme];
+                    }
+                    else if ([url.scheme isEqualToString: @"https"])
+                    {
+                        url.scheme = [_settings httpsLinkScheme];
+                    }
                 }
 
                 if (url.URL)
