@@ -93,7 +93,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *retryButton;
 
 @property (weak, nonatomic) IBOutlet UIView *authFallbackContentView;
-@property (weak, nonatomic) IBOutlet MXKAuthenticationFallbackWebView *authFallbackWebView;
+//  WKWebView is not available to be created from xib because of NSCoding support below iOS 11. So we're using a container view.
+// See this: https://stackoverflow.com/questions/46221577/xcode-9-gm-wkwebview-nscoding-support-was-broken-in-previous-versions
+@property (weak, nonatomic) IBOutlet UIView *authFallbackWebViewContainer;
+@property (strong, nonatomic) MXKAuthenticationFallbackWebView *authFallbackWebView;
 @property (weak, nonatomic) IBOutlet UIButton *cancelAuthFallbackButton;
 
 /**
