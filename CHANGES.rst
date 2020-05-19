@@ -1,4 +1,4 @@
-Changes in MatrixKit in 0.12.3 (2020-xx-xx)
+Changes in MatrixKit in 0.12.x (2020-xx-xx)
 =========================================
 
 Improvements:
@@ -7,11 +7,32 @@ Improvements:
 Bug fix:
  * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
 
+Changes in MatrixKit in 0.12.5 (2020-05-13)
+=========================================
+
+Bug fix:
+ * Remove UIWebView dependency from MXKAuthenticationViewController (PR #666).
+
+Changes in MatrixKit in 0.12.4 (2020-05-11)
+=========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.4)).
+
+Bug fix:
+ * Replace UIWebView with WKWebView (PR #663).
+
+Changes in MatrixKit in 0.12.3 (2020-05-07)
+=========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.3)).
+
 Changes in MatrixKit in 0.12.2 (2020-05-01)
 =========================================
 
 Improvements:
-* Upgrade MatrixSDK version ([v0.16.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.2)).
+ * Upgrade MatrixSDK version ([v0.16.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.2)).
 
 Changes in MatrixKit in 0.12.1 (2020-04-24)
 =========================================
