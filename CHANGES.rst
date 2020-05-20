@@ -1,3 +1,9 @@
+Changes in MatrixKit in 0.12.7 (2020-05-xx)
+=========================================
+
+Improvements:
+* DTCoreText: Update DTCoreText dependency to 1.6.23 minimum to be sure to not reference UIWebView.
+
 Changes in MatrixKit in 0.12.6 (2020-05-18)
 =========================================
 
