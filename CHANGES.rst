@@ -2,7 +2,10 @@ Changes in MatrixKit in 0.12.7 (2020-05-xx)
 =========================================
 
 Improvements:
-* DTCoreText: Update DTCoreText dependency to 1.6.23 minimum to be sure to not reference UIWebView.
+ * DTCoreText: Update DTCoreText dependency to 1.6.23 minimum to be sure to not reference UIWebView.
+
+Bug fix:
+ * MXKRoomDataSource: Wait for store data ready when finalizing initialization on data source (vector-im/riot-ios/issues/3159).
 
 Changes in MatrixKit in 0.12.6 (2020-05-18)
 =========================================
@@ -1408,4 +1411,3 @@ MatrixKit contains the following reusable UI components:
  * MXKRecentListViewController
  * MXKRoomMemberListViewController
  
-
