@@ -167,7 +167,29 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId andMatrixSession:mxSession];
-    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+    //  if store is not ready, roomDataSource.room will be nil. So onComplete block will never be called.
+    //  In order to successfully fetch the room, we should wait for store to be ready.
+    if (mxSession.state >= MXSessionStateStoreDataReady)
+    {
+        if (!roomDataSource.room)
+        {
+            [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+        }
+    }
+    else
+    {
+        id sessionStateObserver = nil;
+        sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            if (mxSession.state >= MXSessionStateStoreDataReady)
+            {
+                [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
+                if (!roomDataSource.room)
+                {
+                    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+                }
+            }
+        }];
+    }
 }
 
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
