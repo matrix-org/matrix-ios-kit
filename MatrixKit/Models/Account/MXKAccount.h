@@ -324,8 +324,6 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  */
 - (void)backgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure;
 
-- (void)initialBackgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure;
-
 /**
  Resume the current matrix session.
  */

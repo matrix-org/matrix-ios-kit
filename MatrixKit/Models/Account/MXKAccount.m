@@ -1743,32 +1743,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 
 - (void)backgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    [self _backgroundSync:timeout isInitial:NO success:success failure:failure];
-}
-
-- (void)initialBackgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure
-{
-    [self _backgroundSync:timeout isInitial:YES success:success failure:failure];
-}
-
-- (void)_backgroundSync:(unsigned int)timeout isInitial:(BOOL)isInitial success:(void (^)(void))success failure:(void (^)(NSError *))failure
-{
-    // Sanity check: Make sure backgroundSync and initialBackgroundSync methods are not used at the same time.
-    NSParameterAssert(backgroundSyncDone == nil);
-    NSParameterAssert(backgroundSyncfails == nil);
-    NSParameterAssert(_backgroundSyncBgTask == nil);
-    NSParameterAssert(backgroundSyncTimer == nil);
-    
     // Check whether a background mode handler has been set.
     id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
     if (handler)
     {
         // Only work when the application is suspended.
         // Check conditions before launching background sync
-        // if not an initial sync, then check for mxSession state
-        // isInitial: Do not check for session state
-        // !isInitial: Force for session state to be paused
-        if (mxSession && (isInitial || (!isInitial && mxSession.state == MXSessionStatePaused)))
+        if (mxSession && mxSession.state == MXSessionStatePaused)
         {
             NSLog(@"[MXKAccount] starts a background Sync");
             
@@ -1797,24 +1778,19 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             
             [[NSRunLoop mainRunLoop] addTimer:backgroundSyncTimer forMode:NSDefaultRunLoopMode];
             
-            void (^successBlock)(void) = ^{
+            [mxSession backgroundSync:timeout success:^{
                 NSLog(@"[MXKAccount] the background Sync succeeds");
                 [self onBackgroundSyncDone:nil];
-            };
-            
-            void (^failureBlock)(NSError *) = ^(NSError* error) {
-                NSLog(@"[MXKAccount] the background Sync fails");
-                [self onBackgroundSyncDone:error];
-            };
-            
-            if (isInitial)
-            {
-                [mxSession initialBackgroundSync:timeout success:successBlock failure:failureBlock];
+                
             }
-            else
-            {
-                [mxSession backgroundSync:timeout success:successBlock failure:failureBlock];
-            }
+                              failure:^(NSError* error) {
+                                  
+                                  NSLog(@"[MXKAccount] the background Sync fails");
+                                  [self onBackgroundSyncDone:error];
+                                  
+                              }
+             
+             ];
         }
         else
         {
