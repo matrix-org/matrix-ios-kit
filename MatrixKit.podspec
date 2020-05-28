@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "MatrixKit"
-  s.version      = "0.12.5"
+  s.version      = "0.12.6"
   s.summary      = "The Matrix reusable UI library for iOS based on MatrixSDK."
 
   s.description  = <<-DESC
@@ -23,10 +23,10 @@ Pod::Spec.new do |s|
 
   s.swift_version = '5.0'
 
-  s.dependency 'MatrixSDK', '0.16.4'
+  s.dependency 'MatrixSDK', '0.16.5'
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
-  s.dependency 'DTCoreText', '~> 1.6.21'
+  s.dependency 'DTCoreText', '~> 1.6.23'
   s.dependency 'cmark', '~> 0.24.1'
 
   s.default_subspec = 'Core'
