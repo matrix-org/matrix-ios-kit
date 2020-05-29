@@ -142,16 +142,40 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 
     // Hide search bar for the moment
     // TODO: Enable it once we have enough translations to fill pages and pages
-    [self hideSearchBar:YES];
+//    [self setupSearchController];
 
     self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"language_picker_title"];
+        
 }
 
-- (void)hideSearchBar:(BOOL)hidden
+- (void)viewDidAppear:(BOOL)animated
 {
-    self.searchBar.hidden = hidden;
-    self.tableView.contentInset = UIEdgeInsetsMake(hidden ? -44 : 0, 0, 0 ,0);
-    [self.view setNeedsUpdateConstraints];
+    [super viewDidAppear:animated];
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.hidesSearchBarWhenScrolling = YES;
+    }
+}
+
+#pragma mark - Private
+
+- (void)setupSearchController
+{
+    UISearchController *searchController = [[UISearchController alloc]
+     initWithSearchResultsController:nil];
+    searchController.dimsBackgroundDuringPresentation = NO;
+    searchController.hidesNavigationBarDuringPresentation = NO;
+    searchController.searchResultsUpdater = self;
+            
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = searchController;
+        // Make the search bar visible on first view appearance
+        self.navigationItem.hidesSearchBarWhenScrolling = NO;
+    }
+    
+    self.definesPresentationContext = YES;
+    
+    self.searchController = searchController;
 }
 
 #pragma mark - UITableView dataSource
@@ -198,6 +222,10 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
+        else
+        {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
     }
     
     return cell;
@@ -230,10 +258,12 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     }
 }
 
-#pragma mark - UISearchBarDelegate
+#pragma mark - UISearchResultsUpdating
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    NSString *searchText = searchController.searchBar.text;
+    
     if (searchText.length)
     {
         searchText = [searchText lowercaseString];
@@ -276,12 +306,6 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         previousSearchPattern = nil;
         filteredCellDataArray = nil;
     }
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    previousSearchPattern = nil;
-    filteredCellDataArray = nil;
 }
 
 @end
