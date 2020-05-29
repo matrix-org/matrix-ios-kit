@@ -109,6 +109,17 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
     }
     
     self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"country_picker_title"];
+    
+    [self setupSearchController];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.hidesSearchBarWhenScrolling = YES;
+    }
 }
 
 #pragma mark - 
@@ -134,6 +145,27 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
         
         [self.tableView reloadData];
     }
+}
+
+#pragma mark - Private
+
+- (void)setupSearchController
+{
+    UISearchController *searchController = [[UISearchController alloc]
+     initWithSearchResultsController:nil];
+    searchController.dimsBackgroundDuringPresentation = NO;
+    searchController.hidesNavigationBarDuringPresentation = NO;
+    searchController.searchResultsUpdater = self;
+            
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = searchController;
+        // Make the search bar visible on first view appearance
+        self.navigationItem.hidesSearchBarWhenScrolling = NO;
+    }
+    
+    self.definesPresentationContext = YES;
+    
+    self.searchController = searchController;
 }
 
 #pragma mark - UITableView dataSource
@@ -215,10 +247,12 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
     }
 }
 
-#pragma mark - UISearchBarDelegate
+#pragma mark - UISearchResultsUpdating
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    NSString *searchText = searchController.searchBar.text;
+    
     if (searchText.length)
     {
         searchText = [searchText lowercaseString];
@@ -261,12 +295,8 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
         previousSearchPattern = nil;
         filteredCountryNames = nil;
     }
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    previousSearchPattern = nil;
-    filteredCountryNames = nil;
+    
+    [self.tableView reloadData];
 }
 
 @end
