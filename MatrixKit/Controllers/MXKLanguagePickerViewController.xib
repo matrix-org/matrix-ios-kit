@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MXKLanguagePickerViewController">
             <connections>
-                <outlet property="searchBar" destination="crr-l5-sJz" id="Z91-Ph-n4I"/>
-                <outlet property="searchDisplayController" destination="A2g-v2-wP4" id="Of5-SZ-arM"/>
                 <outlet property="view" destination="bSe-Sh-aQf" id="4es-L5-nel"/>
             </connections>
         </placeholder>
@@ -19,28 +16,12 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <searchBar key="tableHeaderView" contentMode="redraw" id="crr-l5-sJz">
-                <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                <textInputTraits key="textInputTraits"/>
-                <connections>
-                    <outlet property="delegate" destination="-1" id="fY5-YU-VP4"/>
-                </connections>
-            </searchBar>
             <connections>
                 <outlet property="dataSource" destination="-1" id="nhc-tM-1py"/>
                 <outlet property="delegate" destination="-1" id="9uq-Pc-RpB"/>
             </connections>
+            <point key="canvasLocation" x="140" y="154"/>
         </tableView>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <searchDisplayController id="A2g-v2-wP4">
-            <connections>
-                <outlet property="delegate" destination="-1" id="p8n-LM-CZd"/>
-                <outlet property="searchBar" destination="crr-l5-sJz" id="GGx-dP-Ba3"/>
-                <outlet property="searchContentsController" destination="-1" id="ptQ-lq-wuM"/>
-                <outlet property="searchResultsDataSource" destination="-1" id="L0L-zV-jfm"/>
-                <outlet property="searchResultsDelegate" destination="-1" id="hfY-eA-tMP"/>
-            </connections>
-        </searchDisplayController>
     </objects>
 </document>

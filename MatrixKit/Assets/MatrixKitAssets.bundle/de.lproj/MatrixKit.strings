@@ -186,14 +186,14 @@
 "room_member_power_level_prompt" = "Du kannst diese Änderung nicht rückgangig machen, weil du dem Benutzer die gleiche Berechtigungsstufe gibst, die du selbst hast.\nBist du sicher?";
 // Attachment
 "attachment_size_prompt" = "Möchtest du senden als:";
-"attachment_original" = "Aktuelle Größe: %@";
+"attachment_original" = "Originalgröße: %@";
 "attachment_small" = "Klein: %@";
 "attachment_medium" = "Mittel: %@";
 "attachment_large" = "Groß: %@";
 "attachment_cancel_download" = "Herunterladen abbrechen?";
 "attachment_cancel_upload" = "Hochladen abbrechen?";
 "attachment_multiselection_size_prompt" = "Bilder senden als:";
-"attachment_multiselection_original" = "Aktuelle Größe";
+"attachment_multiselection_original" = "Originalgröße";
 "attachment_e2e_keys_file_prompt" = "Diese Datei enthält von einem Matrix Client exportierte Schlüssel.\nMöchtest du den Dateiinhalt sehen oder die Schlüssel importieren?";
 "attachment_e2e_keys_import" = "Importiere...";
 // Contacts

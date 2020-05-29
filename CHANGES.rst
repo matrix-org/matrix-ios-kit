@@ -6,7 +6,25 @@ Improvements:
  * MXKCallViewController: Fix incoming call view for ringing state (PR #669).
 
 Bug fix:
- * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
+* MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
+
+Changes in MatrixKit in 0.12.7 (2020-05-xx)
+=========================================
+
+Improvements:
+ * DTCoreText: Update DTCoreText dependency to 1.6.23 minimum to be sure to not reference UIWebView.
+ * MXKCountryPickerViewController: Replace deprecated UISearchDisplayController by UISearchViewController.
+ * MXKLanguagePickerViewController: Replace deprecated UISearchDisplayController by UISearchViewController.
+
+Bug fix:
+ * MXKRoomDataSource: Wait for store data ready when finalizing initialization on data source (vector-im/riot-ios/issues/3159).
+ * MXKLanguagePickerViewController: Fix selected cell reuse issue.
+
+Changes in MatrixKit in 0.12.6 (2020-05-18)
+=========================================
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.5)).
 
 Changes in MatrixKit in 0.12.5 (2020-05-13)
 =========================================
@@ -1406,4 +1424,3 @@ MatrixKit contains the following reusable UI components:
  * MXKRecentListViewController
  * MXKRoomMemberListViewController
  
-
