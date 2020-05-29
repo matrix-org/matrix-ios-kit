@@ -140,9 +140,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
 
-    // Hide search bar for the moment
-    // TODO: Enable it once we have enough translations to fill pages and pages
-//    [self setupSearchController];
+    [self setupSearchController];
 
     self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"language_picker_title"];
         
@@ -168,7 +166,9 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     searchController.searchResultsUpdater = self;
             
     if (@available(iOS 11.0, *)) {
-        self.navigationItem.searchController = searchController;
+        // Search bar is hidden for the moment, uncomment following line to enable it.
+        // TODO: Enable it once we have enough translations to fill pages and pages
+//        self.navigationItem.searchController = searchController;
         // Make the search bar visible on first view appearance
         self.navigationItem.hidesSearchBarWhenScrolling = NO;
     }
