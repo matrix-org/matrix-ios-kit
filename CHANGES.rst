@@ -3,6 +3,7 @@ Changes in MatrixKit in 0.12.x (2020-xx-xx)
 
 Improvements:
  * MXKAttachmentsViewController: MPMoviePlayerController replaced with AVPlayerViewController (PR #651).
+ * MXKCallViewController: Fix incoming call view for ringing state (PR #669).
 
 Bug fix:
  * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
