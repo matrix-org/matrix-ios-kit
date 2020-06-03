@@ -167,41 +167,75 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId andMatrixSession:mxSession];
-    //  if store is not ready, roomDataSource.room will be nil. So onComplete block will never be called.
-    //  In order to successfully fetch the room, we should wait for store to be ready.
-    if (mxSession.state >= MXSessionStateStoreDataReady)
-    {
-        if (!roomDataSource.room)
-        {
-            [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
-        }
-    }
-    else
-    {
-        id sessionStateObserver = nil;
-        sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
-            if (mxSession.state >= MXSessionStateStoreDataReady)
-            {
-                [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
-                if (!roomDataSource.room)
-                {
-                    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
-                }
-            }
-        }];
-    }
+    [self ensureSessionStateForDataSource:roomDataSource initialEventId:nil andMatrixSession:mxSession onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId initialEventId:initialEventId andMatrixSession:mxSession];
-    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+    [self ensureSessionStateForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithPeekingRoom:peekingRoom andInitialEventId:initialEventId];
     [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+}
+
+/// Ensure session state to be store data ready for the roomDataSource.
++ (void)ensureSessionStateForDataSource:(MXKRoomDataSource*)roomDataSource initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
+{
+    //  if store is not ready, roomDataSource.room will be nil. So onComplete block will never be called.
+    //  In order to successfully fetch the room, we should wait for store to be ready.
+    if (mxSession.state >= MXSessionStateStoreDataReady)
+    {
+        [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+    }
+    else
+    {
+        //  wait for session state to be store data ready
+        id sessionStateObserver = nil;
+        sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            if (mxSession.state >= MXSessionStateStoreDataReady)
+            {
+                [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
+                [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+            }
+        }];
+    }
+}
+
+/// Ensure initial event existence for the roomDataSource.
++ (void)ensureInitialEventExistenceForDataSource:(MXKRoomDataSource*)roomDataSource initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
+{
+    if (roomDataSource.room)
+    {
+        //  already finalized
+        return;
+    }
+    
+    if (initialEventId == nil)
+    {
+        //  if an initialEventId not provided, finalize
+        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+        return;
+    }
+    
+    //  ensure event with id 'initialEventId' exists in the session store
+    if ([mxSession.store eventExistsWithEventId:initialEventId inRoom:roomDataSource.roomId])
+    {
+        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+    }
+    else
+    {
+        //  give a chance for the specific event to be existent, for only one sync
+        //  use kMXSessionDidSyncNotification here instead of MXSessionStateRunning, because session does not send this state update if it's already in this state
+        id syncObserver = nil;
+        syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            [[NSNotificationCenter defaultCenter] removeObserver:syncObserver];
+            [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+        }];
+    }
 }
 
 + (void)finalizeRoomDataSource:(MXKRoomDataSource*)roomDataSource onComplete:(void (^)(id roomDataSource))onComplete
