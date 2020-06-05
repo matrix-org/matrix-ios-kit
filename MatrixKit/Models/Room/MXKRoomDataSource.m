@@ -161,7 +161,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 }
 
 /**
- Indicate to stop back-paginating when find an un-decryptable event as previous event.
+ Indicate to stop back-paginating when finding an un-decryptable event as previous event.
  It is used to hide pre join UTD events before joining the room.
  */
 @property (nonatomic, assign) BOOL shouldPreventBackPaginationOnPreviousUTDEvent;
