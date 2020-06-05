@@ -99,7 +99,7 @@
 /**
  Indicate to hide un-decryptable events before joining the room.
  */
-@property (nonatomic) BOOL hidePreJointUndecryptableEvents;
+@property (nonatomic) BOOL hidePreJoinedUndecryptableEvents;
 
 #pragma mark - Room members
 
