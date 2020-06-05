@@ -2322,7 +2322,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     // Check for undecryptable messages that were sent while the user was not in the room and hide them
-    if ([MXKAppSettings standardAppSettings].hidePreJointUndecryptableEvents
+    if ([MXKAppSettings standardAppSettings].hidePreJoinedUndecryptableEvents
         && direction == MXTimelineDirectionBackwards)
     {
         [self checkForPreJoinUTDWithEvent:event roomState:roomState];
