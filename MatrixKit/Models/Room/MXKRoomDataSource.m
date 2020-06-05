@@ -160,6 +160,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSString *emoteMessageSlashCommandPrefix;
 }
 
+/**
+ Indicate to stop back-paginating when finding an un-decryptable event as previous event.
+ It is used to hide pre join UTD events before joining the room.
+ */
+@property (nonatomic, assign) BOOL shouldPreventBackPaginationOnPreviousUTDEvent;
+
+/**
+ Indicate to stop back-paginating.
+ */
+@property (nonatomic, assign) BOOL shouldStopBackPagination;
+
 @end
 
 @implementation MXKRoomDataSource
@@ -1155,7 +1166,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    if (NO == [_timeline canPaginate:direction])
+    if (NO == [self canPaginate:direction])
     {
         NSLog(@"[MXKRoomDataSource] paginate: No more events to paginate");
         if (success)
@@ -1287,7 +1298,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         }
     }
-    else if (minRequestMessagesCount && [_timeline canPaginate:direction])
+    else if (minRequestMessagesCount && [self canPaginate:direction])
     {
         NSLog(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
         // Give a chance to load data from the store before doing homeserver requests
@@ -1305,7 +1316,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (bubblesTotalHeight < rect.size.height)
     {
         // No. Paginate to get more messages
-        if ([_timeline canPaginate:direction])
+        if ([self canPaginate:direction])
         {
             // Bound the minimal height to 44
             minMessageHeight = MIN(minMessageHeight, 44);
@@ -2310,6 +2321,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
     }
     
+    // Check for undecryptable messages that were sent while the user was not in the room and hide them
+    if ([MXKAppSettings standardAppSettings].hidePreJointUndecryptableEvents
+        && direction == MXTimelineDirectionBackwards)
+    {
+        [self checkForPreJoinUTDWithEvent:event roomState:roomState];
+        
+        // Hide pre joint UTD events
+        if (self.shouldStopBackPagination)
+        {
+            return;
+        }
+    }
+    
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
     
     // Count queued events when the server sync is in progress
@@ -2329,6 +2353,97 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [eventsToProcess addObject:queuedEvent];
     }
+}
+
+- (BOOL)canPaginate:(MXTimelineDirection)direction
+{
+    if (![_timeline canPaginate:direction])
+    {
+        return NO;
+    }
+    
+    if (direction == MXTimelineDirectionBackwards && self.shouldStopBackPagination)
+    {
+        return NO;
+    }
+    
+    return YES;
+}
+
+// Check for undecryptable messages that were sent while the user was not in the room.
+- (void)checkForPreJoinUTDWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState
+{
+    // Only check for encrypted rooms
+    if (!self.room.summary.isEncrypted)
+    {
+        return;
+    }
+    
+    // Back pagination is stopped do not check for other pre join events
+    if (self.shouldStopBackPagination)
+    {
+        return;
+    }
+    
+    // if we reach a UTD and flag is set, hide previous encrypted messages and stop back-paginating
+    if (event.eventType == MXEventTypeRoomEncrypted
+        && [event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
+        && self.shouldPreventBackPaginationOnPreviousUTDEvent)
+    {
+        self.shouldStopBackPagination = YES;
+        return;
+    }
+    
+    self.shouldStopBackPagination = NO;
+    
+    if (event.eventType != MXEventTypeRoomMember)
+    {
+        return;
+    }
+    
+    NSString *userId = event.stateKey;
+    
+    // Only check "m.room.member" event for current user
+    if (![userId isEqualToString:self.mxSession.myUserId])
+    {
+        return;
+    }
+    
+    BOOL shouldPreventBackPaginationOnPreviousUTDEvent = NO;
+    
+    MXRoomMember *member = [roomState.members memberWithUserId:userId];
+    
+    if (member)
+    {
+        switch (member.membership) {
+            case MXMembershipJoin:
+            {
+                // if we reach a join event for the user:
+                //  - if prev-content is invite, continue back-paginating
+                //  - if prev-content is join (was just an avatar or displayname change), continue back-paginating
+                //  - otherwise, set a flag and continue back-paginating
+                
+                NSString *previousMemberhsip = event.prevContent[@"membership"];
+                
+                BOOL isPrevContentAnInvite = [previousMemberhsip isEqualToString:@"invite"];
+                BOOL isPrevContentAJoin = [previousMemberhsip isEqualToString:@"join"];
+                
+                if (!(isPrevContentAnInvite || isPrevContentAJoin))
+                {
+                    shouldPreventBackPaginationOnPreviousUTDEvent = YES;
+                }
+            }
+                break;
+            case MXMembershipInvite:
+                // if we reach an invite event for the user, set flag and continue back-paginating
+                shouldPreventBackPaginationOnPreviousUTDEvent = YES;
+                break;
+            default:
+                break;
+        }
+    }
+    
+    self.shouldPreventBackPaginationOnPreviousUTDEvent = shouldPreventBackPaginationOnPreviousUTDEvent;
 }
 
 - (BOOL)checkBing:(MXEvent*)event

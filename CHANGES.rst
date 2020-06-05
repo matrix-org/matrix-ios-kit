@@ -5,6 +5,8 @@ Improvements:
  * DTCoreText: Update DTCoreText dependency to 1.6.23 minimum to be sure to not reference UIWebView.
  * MXKCountryPickerViewController: Replace deprecated UISearchDisplayController by UISearchViewController.
  * MXKLanguagePickerViewController: Replace deprecated UISearchDisplayController by UISearchViewController.
+ * MXKAppSettings: Add an option to hide un-decryptable events before joining the room.
+ * MXKRoomDataSource: Hide un-decryptable messages that were sent while the user was not in the room if needed.
 
 Bug fix:
  * MXKRoomDataSource: Wait for store data ready when finalizing initialization on data source (vector-im/riot-ios/issues/3159).
