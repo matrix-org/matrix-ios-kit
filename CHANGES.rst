@@ -33,6 +33,7 @@ Improvements:
 
 Bug fix:
  * Replace UIWebView with WKWebView (PR #663).
+ * Fix range of allowed surrogate emoji characters to 0x1d000-0x1f9ff.
 
 Changes in MatrixKit in 0.12.3 (2020-05-07)
 =========================================
