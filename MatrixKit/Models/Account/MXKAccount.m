@@ -1178,7 +1178,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdProd"];
 #endif
     
-    NSDictionary *pushData = @{@"url": self.pushGatewayURL};
+    NSDictionary *pushData = @{
+        @"url": self.pushGatewayURL,
+        @"format": @"event_id_only",
+        @"fallback_content": @(YES)
+    };
     
     [self enablePusher:enabled appId:appId token:[MXKAccountManager sharedManager].apnsDeviceToken pushData:pushData success:^{
         
