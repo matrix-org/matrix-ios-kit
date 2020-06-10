@@ -6,7 +6,8 @@ Improvements:
  * MXKCallViewController: Fix incoming call view for ringing state (PR #669).
 
 Bug fix:
-* MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
+ * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
+ * MXKAccount: Add format and fallback_content to APNS push data (vector-im/riot-ios/issues/3325).
 
 Changes in MatrixKit in 0.12.7 (2020-05-xx)
 =========================================
