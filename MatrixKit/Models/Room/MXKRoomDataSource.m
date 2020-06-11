@@ -205,8 +205,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     else
     {
         //  wait for session state to be store data ready
-        id sessionStateObserver = nil;
-        sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __block id sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
             if (mxSession.state >= MXSessionStateStoreDataReady)
             {
                 [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
@@ -241,8 +240,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         //  give a chance for the specific event to be existent, for only one sync
         //  use kMXSessionDidSyncNotification here instead of MXSessionStateRunning, because session does not send this state update if it's already in this state
-        id syncObserver = nil;
-        syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __block id syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
             [[NSNotificationCenter defaultCenter] removeObserver:syncObserver];
             [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
         }];

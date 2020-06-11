@@ -12,6 +12,7 @@ Bug fix:
  * MXKRoomDataSource: Wait for store data ready when finalizing initialization on data source (vector-im/riot-ios/issues/3159).
  * MXKLanguagePickerViewController: Fix selected cell reuse issue.
  * MXKRoomDataSource: Wait for initial event existence if provided (vector-im/riot-ios/issues/3290).
+ * MXKRoomDataSource: Convert one-time observers to block variables to avoid releasing (vector-im/riot-ios/issues/3337).
 
 Changes in MatrixKit in 0.12.6 (2020-05-18)
 =========================================
