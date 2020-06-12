@@ -251,8 +251,8 @@
 "notice_room_withdraw" = "%@ hat %@s Einladung zurückgezogen";
 "notice_room_reason" = ". Grund: %@";
 "notice_avatar_url_changed" = "%@ hat seinen Avatar geändert";
-"notice_display_name_set" = "%@ setzte seinen Anzeigenamen zu %@";
-"notice_display_name_changed_from" = "%@ änderte seinen Anzeigenamen von %@ auf %@";
+"notice_display_name_set" = "%@ setzte den Anzeigenamen auf %@";
+"notice_display_name_changed_from" = "%@ änderte den Anzeigenamen von %@ auf %@";
 "notice_display_name_removed" = "%@ hat den Anzeigenamen entfernt";
 "notice_topic_changed" = "%@ wechselte das Thema zu: %@";
 "notice_room_name_changed" = "%@ änderte den Raum-Namen zu: %@";
