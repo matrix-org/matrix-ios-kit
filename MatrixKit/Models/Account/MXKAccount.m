@@ -1181,7 +1181,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     NSDictionary *pushData = @{
         @"url": self.pushGatewayURL,
         @"format": @"event_id_only",
-        @"fallback_content": @(YES)
+        @"default_payload": @{@"aps": @{@"mutable-content": @(1), @"alert": @{@"loc-key": @"SINGLE_UNREAD", @"loc-args": @[]}}}
     };
     
     [self enablePusher:enabled appId:appId token:[MXKAccountManager sharedManager].apnsDeviceToken pushData:pushData success:^{
