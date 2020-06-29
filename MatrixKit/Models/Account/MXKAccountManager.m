@@ -468,12 +468,13 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
             // turn off the Push flag for all accounts if any
             for (MXKAccount *account in mxAccounts)
             {
-                [account enablePushKitNotifications:NO success:nil failure:nil];
+                [account enablePushKitNotifications:NO success:^{
+                    //  make sure pusher really removed before losing token.
+                    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
+                    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
+                } failure:nil];
             }
         }
-        
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushDeviceToken"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"pushOptions"];
     }
     else
     {
