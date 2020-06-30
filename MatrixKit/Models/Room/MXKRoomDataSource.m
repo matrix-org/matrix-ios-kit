@@ -160,6 +160,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     NSString *emoteMessageSlashCommandPrefix;
 }
 
+/**
+ Indicate to stop back-paginating when finding an un-decryptable event as previous event.
+ It is used to hide pre join UTD events before joining the room.
+ */
+@property (nonatomic, assign) BOOL shouldPreventBackPaginationOnPreviousUTDEvent;
+
+/**
+ Indicate to stop back-paginating.
+ */
+@property (nonatomic, assign) BOOL shouldStopBackPagination;
+
 @end
 
 @implementation MXKRoomDataSource
@@ -167,19 +178,73 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId andMatrixSession:mxSession];
-    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+    [self ensureSessionStateForDataSource:roomDataSource initialEventId:nil andMatrixSession:mxSession onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithRoomId:roomId initialEventId:initialEventId andMatrixSession:mxSession];
-    [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+    [self ensureSessionStateForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
 }
 
 + (void)loadRoomDataSourceWithPeekingRoom:(MXPeekingRoom*)peekingRoom andInitialEventId:(NSString*)initialEventId onComplete:(void (^)(id roomDataSource))onComplete
 {
     MXKRoomDataSource *roomDataSource = [[self alloc] initWithPeekingRoom:peekingRoom andInitialEventId:initialEventId];
     [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+}
+
+/// Ensure session state to be store data ready for the roomDataSource.
++ (void)ensureSessionStateForDataSource:(MXKRoomDataSource*)roomDataSource initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
+{
+    //  if store is not ready, roomDataSource.room will be nil. So onComplete block will never be called.
+    //  In order to successfully fetch the room, we should wait for store to be ready.
+    if (mxSession.state >= MXSessionStateStoreDataReady)
+    {
+        [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+    }
+    else
+    {
+        //  wait for session state to be store data ready
+        __block id sessionStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionStateDidChangeNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            if (mxSession.state >= MXSessionStateStoreDataReady)
+            {
+                [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
+                [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+            }
+        }];
+    }
+}
+
+/// Ensure initial event existence for the roomDataSource.
++ (void)ensureInitialEventExistenceForDataSource:(MXKRoomDataSource*)roomDataSource initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
+{
+    if (roomDataSource.room)
+    {
+        //  already finalized
+        return;
+    }
+    
+    if (initialEventId == nil)
+    {
+        //  if an initialEventId not provided, finalize
+        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+        return;
+    }
+    
+    //  ensure event with id 'initialEventId' exists in the session store
+    if ([mxSession.store eventExistsWithEventId:initialEventId inRoom:roomDataSource.roomId])
+    {
+        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+    }
+    else
+    {
+        //  give a chance for the specific event to be existent, for only one sync
+        //  use kMXSessionDidSyncNotification here instead of MXSessionStateRunning, because session does not send this state update if it's already in this state
+        __block id syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            [[NSNotificationCenter defaultCenter] removeObserver:syncObserver];
+            [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+        }];
+    }
 }
 
 + (void)finalizeRoomDataSource:(MXKRoomDataSource*)roomDataSource onComplete:(void (^)(id roomDataSource))onComplete
@@ -1099,7 +1164,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    if (NO == [_timeline canPaginate:direction])
+    if (NO == [self canPaginate:direction])
     {
         NSLog(@"[MXKRoomDataSource] paginate: No more events to paginate");
         if (success)
@@ -1231,7 +1296,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             }
         }
     }
-    else if (minRequestMessagesCount && [_timeline canPaginate:direction])
+    else if (minRequestMessagesCount && [self canPaginate:direction])
     {
         NSLog(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
         // Give a chance to load data from the store before doing homeserver requests
@@ -1249,7 +1314,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (bubblesTotalHeight < rect.size.height)
     {
         // No. Paginate to get more messages
-        if ([_timeline canPaginate:direction])
+        if ([self canPaginate:direction])
         {
             // Bound the minimal height to 44
             minMessageHeight = MIN(minMessageHeight, 44);
@@ -2254,6 +2319,19 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
     }
     
+    // Check for undecryptable messages that were sent while the user was not in the room and hide them
+    if ([MXKAppSettings standardAppSettings].hidePreJoinedUndecryptableEvents
+        && direction == MXTimelineDirectionBackwards)
+    {
+        [self checkForPreJoinUTDWithEvent:event roomState:roomState];
+        
+        // Hide pre joint UTD events
+        if (self.shouldStopBackPagination)
+        {
+            return;
+        }
+    }
+    
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
     
     // Count queued events when the server sync is in progress
@@ -2273,6 +2351,97 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         [eventsToProcess addObject:queuedEvent];
     }
+}
+
+- (BOOL)canPaginate:(MXTimelineDirection)direction
+{
+    if (![_timeline canPaginate:direction])
+    {
+        return NO;
+    }
+    
+    if (direction == MXTimelineDirectionBackwards && self.shouldStopBackPagination)
+    {
+        return NO;
+    }
+    
+    return YES;
+}
+
+// Check for undecryptable messages that were sent while the user was not in the room.
+- (void)checkForPreJoinUTDWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState
+{
+    // Only check for encrypted rooms
+    if (!self.room.summary.isEncrypted)
+    {
+        return;
+    }
+    
+    // Back pagination is stopped do not check for other pre join events
+    if (self.shouldStopBackPagination)
+    {
+        return;
+    }
+    
+    // if we reach a UTD and flag is set, hide previous encrypted messages and stop back-paginating
+    if (event.eventType == MXEventTypeRoomEncrypted
+        && [event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
+        && self.shouldPreventBackPaginationOnPreviousUTDEvent)
+    {
+        self.shouldStopBackPagination = YES;
+        return;
+    }
+    
+    self.shouldStopBackPagination = NO;
+    
+    if (event.eventType != MXEventTypeRoomMember)
+    {
+        return;
+    }
+    
+    NSString *userId = event.stateKey;
+    
+    // Only check "m.room.member" event for current user
+    if (![userId isEqualToString:self.mxSession.myUserId])
+    {
+        return;
+    }
+    
+    BOOL shouldPreventBackPaginationOnPreviousUTDEvent = NO;
+    
+    MXRoomMember *member = [roomState.members memberWithUserId:userId];
+    
+    if (member)
+    {
+        switch (member.membership) {
+            case MXMembershipJoin:
+            {
+                // if we reach a join event for the user:
+                //  - if prev-content is invite, continue back-paginating
+                //  - if prev-content is join (was just an avatar or displayname change), continue back-paginating
+                //  - otherwise, set a flag and continue back-paginating
+                
+                NSString *previousMemberhsip = event.prevContent[@"membership"];
+                
+                BOOL isPrevContentAnInvite = [previousMemberhsip isEqualToString:@"invite"];
+                BOOL isPrevContentAJoin = [previousMemberhsip isEqualToString:@"join"];
+                
+                if (!(isPrevContentAnInvite || isPrevContentAJoin))
+                {
+                    shouldPreventBackPaginationOnPreviousUTDEvent = YES;
+                }
+            }
+                break;
+            case MXMembershipInvite:
+                // if we reach an invite event for the user, set flag and continue back-paginating
+                shouldPreventBackPaginationOnPreviousUTDEvent = YES;
+                break;
+            default:
+                break;
+        }
+    }
+    
+    self.shouldPreventBackPaginationOnPreviousUTDEvent = shouldPreventBackPaginationOnPreviousUTDEvent;
 }
 
 - (BOOL)checkBing:(MXEvent*)event

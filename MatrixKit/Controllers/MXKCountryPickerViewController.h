@@ -36,18 +36,19 @@
 @end
 
 /**
- 'MXKCountryPickerViewController' instance displays the list of supported countries.
- 
- TODO: UISearchDisplayController is deprecated in iOS 8. MXKCountryPickerViewController must use UISearchController to manage the presentation of a search bar and display search results.
+ 'MXKCountryPickerViewController' instance displays the list of supported countries. 
  */
-@interface MXKCountryPickerViewController : MXKTableViewController <UISearchBarDelegate>
+@interface MXKCountryPickerViewController : MXKTableViewController <UISearchResultsUpdating>
 
-@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
+/**
+The searchController used to manage search.
+*/
+@property (nonatomic, strong) UISearchController *searchController;
 
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKCountryPickerViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKCountryPickerViewControllerDelegate> delegate;
 
 #pragma mark - Class methods
 

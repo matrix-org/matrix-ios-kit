@@ -194,7 +194,7 @@
 "room_error_cannot_load_timeline" = "Caricamento storico dei messaggi fallito";
 "room_error_timeline_event_not_found_title" = "Caricamento della posizione nello storico fallito";
 "room_error_timeline_event_not_found" = "L'applicazione ha cercato di caricare un punto specifico dello storico dei messaggi in questo canale, ma non è riuscita a trovarlo";
-"room_left" = "Sei uscito dal canale";
+"room_left" = "Sei uscito dalla stanza";
 "room_no_power_to_create_conference_call" = "Hai bisogno del permesso per invitare a iniziare una conferenza in questo canale";
 "room_no_conference_call_in_encrypted_rooms" = "Le chiamate in conferenza non sono supportate nei canali criptati";
 // Reply to message
