@@ -2,6 +2,7 @@ Changes in MatrixKit in 0.12.7 (2020-05-xx)
 =========================================
 
 Improvements:
+ * Upgrade MatrixSDK version ([v0.16.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.6)).
  * DTCoreText: Update DTCoreText dependency to 1.6.23 minimum to be sure to not reference UIWebView.
  * MXKCountryPickerViewController: Replace deprecated UISearchDisplayController by UISearchViewController.
  * MXKLanguagePickerViewController: Replace deprecated UISearchDisplayController by UISearchViewController.
