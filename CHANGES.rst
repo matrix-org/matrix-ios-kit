@@ -5,6 +5,7 @@ Improvements:
  * MXKAttachmentsViewController: MPMoviePlayerController replaced with AVPlayerViewController (PR #651).
  * MXKCallViewController: Fix incoming call view for ringing state (PR #669).
  * MXKAccount: Make sure PushKit pusher removed before losing the push token (vector-im/riot-ios/issues/3369).
+ * Strings: Use you instead of display name on notice events (vector-im/riot-ios/issues/3282).
 
 Bug fix:
  * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
