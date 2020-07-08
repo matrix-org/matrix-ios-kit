@@ -50,13 +50,13 @@
 // Settings
 "settings" = "Asetukset";
 "notification_settings_room_rule_title" = "Huone: '%@'";
-"device_details_name" = "Nimi\n";
+"device_details_name" = "Julkinen nimi\n";
 "device_details_last_seen" = "Viimeksi nähty\n";
-"device_details_rename_prompt_message" = "Laitenimi:";
+"device_details_rename_prompt_message" = "Istunnon julkinen nimi näkyy henkilöille, joiden kanssa keskustelet";
 "room_event_encryption_info_event_algorithm" = "Algoritmi\n";
-"room_event_encryption_info_event_session_id" = "";
-"room_event_encryption_info_device_unknown" = "tuntematon laite\n";
-"room_event_encryption_info_device_name" = "Nimi\n";
+"room_event_encryption_info_event_session_id" = "Istunnon tunnus\n";
+"room_event_encryption_info_device_unknown" = "tuntematon istunto\n";
+"room_event_encryption_info_device_name" = "Julkinen nimi\n";
 // Account
 "account_save_changes" = "Tallenna muutokset";
 "account_error_matrix_session_is_not_opened" = "Matrix-istunto ei ole avattuna";
@@ -139,7 +139,7 @@
 "ssl_fingerprint_hash" = "Sormenjälki (%@):";
 "room_event_encryption_info_verify" = "Vahvista...";
 "room_event_encryption_info_unverify" = "Poista vahvistus";
-"room_event_encryption_verify_title" = "Vahvista laite\n\n";
+"room_event_encryption_verify_title" = "Varmenna istunto\n\n";
 "room_event_encryption_verify_ok" = "Vahvista";
 "account_email_validation_error" = "Sähköpostin vahvistaminen epäonnistui. Tarkistathan sähköpostisi ja seuraa linkkiä, joka on lähettämässämme viestissä. Sen jälkeen, täppää jatka";
 "account_msisdn_validation_title" = "Vahvistus meneillään";
