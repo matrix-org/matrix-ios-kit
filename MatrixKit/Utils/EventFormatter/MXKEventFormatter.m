@@ -573,7 +573,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (event.content[@"third_party_invite"])
                     {
-                        if (isEventSenderMyUser)
+                        if ([event.stateKey isEqualToString:mxSession.myUserId])
                         {
                             displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite_by_you"], event.content[@"third_party_invite"][@"display_name"]];
                         }
