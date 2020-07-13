@@ -1,1 +1,96 @@
-
+"matrix" = "Matrix";
+// Login Screen
+"login_create_account" = "Loo kasutajakonto:";
+"login_server_url_placeholder" = "URL (näiteks https://matrix.org)";
+"login_home_server_title" = "Koduserveri aadress:";
+"login_home_server_info" = "Sinu koduserver salvestab kõik vestlused ning kogu sinu kontoteabe";
+"login_identity_server_title" = "Isikutuvastusserveri aadress:";
+"login_password_placeholder" = "Salasõna";
+"login_optional_field" = "kui soovid";
+"login_display_name_placeholder" = "Kuvatav nimi (näiteks Kadri Maasikas)";
+"login_email_placeholder" = "E-posti aadress";
+"back" = "Tagasi";
+"close" = "Sulge";
+"continue" = "Jätka";
+"retry" = "Proovi uuesti";
+// Settings
+"settings" = "Seadistused";
+"settings_enable_inapp_notifications" = "Võta kasutusele rakenduse-sisesed teavitused";
+"settings_enable_push_notifications" = "Võta kasutusele tõuketeavitused";
+"notification_settings_room_rule_title" = "Jututuba: '%@'";
+// Devices
+"device_details_title" = "Sessiooniteave\n";
+"device_details_name" = "Avalik nimi\n";
+"device_details_identifier" = "Tunnus\n";
+"device_details_last_seen" = "Viimati nähtud\n";
+"device_details_last_seen_format" = "%@ @ %@\n";
+"device_details_rename_prompt_title" = "Sessiooni nimi";
+"device_details_rename_prompt_message" = "Sessiooni avalik nimi on nähtav neile, kellega sa suhtled";
+"device_details_delete_prompt_title" = "Autentimine";
+"account_error_email_wrong_title" = "Vigane e-posti aadress";
+"account_error_email_wrong_description" = "See ei tundu olema e-posti aadressi moodi";
+"account_error_msisdn_wrong_title" = "Vigane telefoninumber";
+"account_error_msisdn_wrong_description" = "See ei tundu olema telefoninumbri moodi";
+"account_error_push_not_allowed" = "Teavitused ei ole lubatud";
+// Room creation
+"room_creation_name_title" = "Jututoa nimi:";
+"room_member_power_level_prompt" = "Sa ei saa seda muudatust hiljem tagasi pöörata, sest annad teisele kasutajale samad õigused, mis sinul on.\nKas sa oled ikka kindel?";
+// Attachment
+"attachment_size_prompt" = "Kas sa soovid faili saata:";
+"attachment_original" = "Tegelikus suuruses: %@";
+"attachment_small" = "Väiksena: %@";
+"attachment_medium" = "Keskmisena: %@";
+"attachment_large" = "Suurena: %@";
+"attachment_cancel_download" = "Kas katkestame allalaadimise?";
+"attachment_cancel_upload" = "Kas katkestame üleslaadimise?";
+"attachment_multiselection_size_prompt" = "Kas sa soovid pilte saata:";
+"attachment_multiselection_original" = "Tegelikus suuruses";
+"attachment_e2e_keys_file_prompt" = "Selles failis leiduvad ühest Matrix'i kliendist eksporditud krüptovõtmed.\nKas sa soovid vaadata faili sisu või importida seal leiduvad võtmeid?";
+"attachment_e2e_keys_import" = "Impordi...";
+// Contacts
+"contact_mx_users" = "Matrix'i kasutajad";
+"contact_local_contacts" = "Kohalikud kasutajad";
+// Groups
+"group_invite_section" = "Kutsed";
+"group_section" = "Grupid";
+// Search
+"search_no_results" = "Tulemusi ei ole";
+"search_searching" = "Otsing on pooleli...";
+// Time
+"format_time_s" = "s";
+"format_time_m" = "m";
+"format_time_h" = "t";
+"format_time_d" = "p";
+// E2E import
+"e2e_import_room_keys" = "Impordi jututoa krüptovõtmed";
+"error_common_message" = "Ilmnes viga. Palun proovi hiljem uuesti.";
+"not_supported_yet" = "Pole veel toetatud";
+"default" = "vaikimisi";
+"public" = "Avalik";
+"cancel" = "Loobu";
+"save" = "Salvesta";
+"leave" = "Lahku";
+"resend" = "Saada uuesti";
+"redact" = "Eemalda";
+"share" = "Jaga";
+"delete" = "Kustuta";
+"view" = "Näita";
+// actions 
+"action_logout" = "Logi välja";
+"create_room" = "Loo jututuba";
+"login" = "Logi sisse";
+"create_account" = "Loo konto";
+"membership_invite" = "Kutsutud";
+"num_members_one" = "%@ kasutaja";
+"num_members_other" = "%@ kasutajat";
+"invite" = "Kutsu";
+"kick" = "Müksa välja";
+"unban" = "Eemalda suhtluskeeld";
+"login_error_must_start_http" = "Serveri aadressi alguses peab olema http[s]://";
+// room details dialog screen
+"room_details_title" = "Jututoa üksikasjad";
+"settings_title_notifications" = "Teavitused";
+// Notification settings screen 
+"notification_settings_disable_all" = "Lülita kõik teavitused välja";
+"notification_settings_enable_notifications" = "Võta teavitused kasutusele";
+"notification_settings_enable_notifications_warning" = "Kõik teavituste liigid on hetkel kõikidel seadmetel välja lülitatud.";
