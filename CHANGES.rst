@@ -1,4 +1,4 @@
-Changes in MatrixKit in 0.12.x (2020-xx-xx)
+Changes in MatrixKit in 0.12.8 (2020-07-13)
 =========================================
 
 Improvements:
