@@ -289,7 +289,7 @@
 "notice_topic_changed" = "%@ ha cambiato l'argomento in: %@";
 "notice_room_name_changed" = "%@ ha cambiato il nome del canale in: %@";
 "notice_placed_voice_call" = "%@ ha effettuato una telefonata";
-"notice_placed_video_call" = "%@ ha effettuato una videochiamata";
+"notice_placed_video_call" = "%@ ha iniziato una videochiamata";
 "notice_answered_video_call" = "%@ ha risposto alla chiamata";
 "notice_ended_video_call" = "%@ ha terminato la chiamata";
 "notice_conference_call_request" = "%@ ha richiesto una conferenza VoIP";
@@ -365,7 +365,7 @@
 "call_connecting" = "In connessione...";
 "call_ended" = "Chiamata terminata";
 "call_ring" = "Chiamata in corso...";
-"incoming_video_call" = "Video chiamata in arrivo";
+"incoming_video_call" = "Videochiamata in arrivo";
 "incoming_voice_call" = "Telefonata in arrivo";
 "call_invite_expired" = "Tempo di chiamata scaduto";
 // unrecognized SSL certificate
@@ -400,8 +400,8 @@
 "notice_display_name_removed_by_you" = "Hai rimosso il tuo nome visualizzato";
 "notice_topic_changed_by_you" = "Hai cambiato l'argomento a: %@";
 "notice_room_name_changed_by_you" = "Hai cambiato il nome della stanza a: %@";
-"notice_placed_voice_call_by_you" = "Hai iniziato una chiamata vocale";
-"notice_placed_video_call_by_you" = "Hai iniziato una chiamata video";
+"notice_placed_voice_call_by_you" = "Hai iniziato una telefonata";
+"notice_placed_video_call_by_you" = "Hai iniziato una videochiamata";
 "notice_answered_video_call_by_you" = "Hai risposto alla chiamata";
 "notice_ended_video_call_by_you" = "Hai terminato la chiamata";
 "notice_conference_call_request_by_you" = "Hai richiesto una conferenza VoIP";
